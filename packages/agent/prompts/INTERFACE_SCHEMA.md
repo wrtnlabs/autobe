@@ -124,13 +124,33 @@ When designing relationships between DTOs, follow the hierarchy-first approach t
 
 **Start from table names, then analyze scope boundaries and conceptual independence.**
 
-DTOs are built by:
+DTOs establish relationships by:
 1. Following the natural hierarchy in table names
 2. Respecting scope boundaries (independent concepts = separate scopes)
 3. Validating with FK direction
 4. Applying actor/category reference rules
 
 **Critical:** Hierarchy indicates ownership and relationship direction. Different scopes always use **weak relationships** (reference). Same scope uses **strong relationships** (aggregation) unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
+
+**The Three Relationship Types:**
+
+**Strong Relationship (Aggregation)**
+- Full object inclusion in parent DTO
+- Same scope, same event/actor
+- Child lifecycle depends on parent
+- Examples: `order.items[]`, `article.snapshots[]`
+
+**Weak Relationship (Reference)**
+- Summary or ID-only inclusion
+- Different scope or different actor
+- Independent lifecycle
+- Examples: `article.author`, `order.customer`
+
+**ID Relationship**
+- ID field only, no object
+- Minimal coupling
+- Used in Create/Update DTOs
+- Examples: `category_id`, `parent_id`
 
 #### 4.2.2. Table Name Hierarchy (Primary Signal)
 
@@ -143,43 +163,292 @@ Root Table:     bbs_articles
        └─ Level 2: bbs_article_snapshot_files
 ```
 
-**Key Insight**: Each level adds one more segment to the name. Hierarchy signals ownership but NOT automatic strong relationship in parent.
+**Key Insight**: Each level adds one more segment to the name.
+
+**Hierarchy Signals Ownership (Not Automatic Strong Relationship):**
 
 ```typescript
-// ✅ CORRECT: Analyze usage & size first
-interface IBbsArticle {
-  snapshots_count: number;  // Audit data, separate API
-  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
-}
-
-// When loading snapshots directly
+// Hierarchy chain: bbs_articles → bbs_article_snapshots → bbs_article_snapshot_*
 interface IBbsArticleSnapshot {
   images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: strong relationship when snapshot loaded
   files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: strong relationship when snapshot loaded
 }
 ```
 
+**⚠️ IMPORTANT: Hierarchy ≠ Automatic Strong Relationship in Parent**
+
+```typescript
+// ❌ WRONG: Auto-aggregation based on hierarchy alone
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // ❌ Could be 100+ audit records!
+}
+```
+
+```typescript
+// ✅ CORRECT: Analyze usage & size first
+interface IBbsArticle {
+  snapshots_count: number;  // ✅ Audit data, separate API
+  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+}
+```
+
+**❌ Do NOT create strong relationships across hierarchy roots:**
+```typescript
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // ✅ Same hierarchy
+  comments: IBbsArticleComment[];     // ❌ Different hierarchy root!
+}
+```
+
+**Why?** `bbs_article_comments` is its own hierarchy root, not a child of `bbs_articles`.
+
+**Key insight:** Hierarchy indicates **ownership and relationship direction**. After identifying hierarchy, check:
+- Is child conceptually independent? (separate scope)
+- Different scope = Weak Relationship
+- Same scope = Strong Relationship
+
 #### 4.2.3. Scope Boundary Detection
 
 A **scope** is an independent conceptual entity with its own lifecycle and hierarchy.
 
+**What is a Scope?**
+
+```
+Scope A: bbs_articles
+  └─ bbs_article_snapshots
+      ├─ bbs_article_snapshot_images
+      └─ bbs_article_snapshot_files
+
+Scope B: bbs_article_comments (SEPARATE ROOT)
+  └─ bbs_article_comment_snapshots
+      ├─ bbs_article_comment_snapshot_images
+      └─ bbs_article_comment_snapshot_files
+
+Scope C: shopping_orders
+  ├─ shopping_order_goods (strong relationship)
+  │   └─ shopping_cart_commodities (weak relationship)
+  │       └─ shopping_cart_commodity_stocks (strong relationship)
+  ├─ shopping_order_deliveries
+  ├─ shopping_order_payments
+  └─ shopping_customer (weak relationship)
+
+Scope D: shopping_sales
+  ├─ shopping_sellers (weak relationship)
+  └─ shopping_sale_units (strong relationship)
+      ├─ shopping_sale_unit_options (strong relationship)
+      │   └─ shopping_sale_unit_option_candidates (strong relationship)
+      └─ shopping_sale_unit_stocks (strong relationship)
+```
+
+**Identifying Scope Boundaries**
+
 **Critical question:** "Is this a different event or created by a different actor?"
 
 ```typescript
-// Different Event/Actor = Separate Scope = Weak Relationship
+// ✅ Different Event/Actor = Separate Scope
 bbs_article_comments
   - Created by readers (different actor from article author)
   - Different event: "commenting" vs "writing article"
-  → SEPARATE SCOPE → Weak Relationship (Reference)
+  - Can exist as "user's comments list"
+  → SEPARATE SCOPE → Weak Relationship
 
-// Same Event/Actor = Same Scope = Strong Relationship
+shopping_sale_questions
+  - Created by potential buyers (different actor from seller)
+  - Different event: "asking question" vs "registering sale"
+  - Has its own lifecycle
+  → SEPARATE SCOPE → Weak Relationship
+
+shopping_sale_reviews
+  - Created by customers (different actor from seller)
+  - Different event: "writing review" vs "registering sale"
+  - Independent feature (product reviews page)
+  → SEPARATE SCOPE → Weak Relationship
+
+// ❌ Same Event/Actor = Same Scope
 bbs_article_snapshots
   - Created by article author (same actor)
   - Same event: "editing article" creates snapshot
-  → SAME SCOPE → Strong Relationship (Aggregation)
+  - Part of article's version history
+  → SAME SCOPE → Strong Relationship
+
+shopping_sale_units
+  - Created by seller (same actor as sale)
+  - Same event: "registering sale" includes units
+  - Cannot exist without sale
+  → SAME SCOPE → Strong Relationship
 ```
 
-#### 4.2.4. Actor & Category Relationships
+#### 4.2.4. Domain Independence Test
+
+**The Three Questions**
+
+Before deciding Strong vs Weak Relationship, ask:
+
+1. **Table Name:** Does child extend parent's name? (`parent_*`)
+2. **Event/Actor:** Is this created by the same actor in the same event?
+3. **Operations:** Can child be queried/managed independently?
+
+**Decision Matrix**
+
+| Question | Answer | Signal |
+|----------|--------|---------|
+| Name pattern | `bbs_article_snapshot_images` | ✅ Strong relationship candidate |
+| Event/Actor | Same event (editing), same actor | ✅ Part of snapshot |
+| Operations | Only via parent | ✅ **Strong Relationship** |
+
+| Question | Answer | Signal |
+|----------|--------|---------|
+| Name pattern | `bbs_article_comments` | 🤔 Looks like strong relationship |
+| Event/Actor | Different event (commenting), different actor (readers) | ❌ Separate scope |
+| Operations | User's comments, search, etc. | ❌ **Weak Relationship** |
+
+| Question | Answer | Signal |
+|----------|--------|---------|
+| Name pattern | `shopping_sale_reviews` | 🤔 Looks like strong relationship |
+| Event/Actor | Different event (reviewing), different actor (customers) | ❌ Separate scope |
+| Operations | Product reviews page, rating aggregation | ❌ **Weak Relationship** |
+
+| Question | Answer | Signal |
+|----------|--------|---------|
+| Name pattern | `shopping_sale_units` | ✅ Same hierarchy |
+| Event/Actor | Same event (registering sale), same actor (seller) | ✅ Part of sale |
+| Operations | Only via parent | ✅ **Strong Relationship** |
+
+**Examples**
+
+```typescript
+// ✅ STRONG RELATIONSHIP: Same event/actor
+bbs_articles → bbs_article_snapshots (author edits article)
+bbs_article_snapshots → bbs_article_snapshot_images (part of edit)
+shopping_orders → shopping_order_goods (customer places order)
+shopping_sales → shopping_sale_units (seller registers sale)
+
+// ✅ WEAK RELATIONSHIP: Different event/actor
+bbs_articles → bbs_article_comments (readers comment - different event)
+shopping_sales → shopping_sale_reviews (customers review - different event)
+shopping_sales → shopping_sale_questions (buyers ask - different event)
+bbs_articles → bbs_members (author - different scope)
+shopping_orders → shopping_customers (customer - different scope)
+```
+
+#### 4.2.5. FK Direction Validation
+
+**Purpose**
+
+FK direction confirms ownership, but **table name hierarchy comes first**.
+
+**Validation Rules**
+
+```typescript
+// Step 1: Check table name hierarchy
+bbs_article_snapshots → bbs_article_snapshot_images
+  → Name suggests strong relationship ✅
+
+// Step 2: Validate with FK direction
+model BbsArticleSnapshotImage {
+  snapshot_id String  // ✅ Child → Parent FK (confirms strong relationship)
+  snapshot    BbsArticleSnapshot @relation(...)
+}
+
+// Step 3: Check cascade
+ON DELETE CASCADE  // ✅ Confirms ownership
+```
+
+**Conflict Resolution**
+
+When table name and FK conflict:
+
+```prisma
+// Case: article_statuses (looks like child by name)
+model Article {
+  status_id String  // ❌ Parent → Child FK (reversed!)
+  status    ArticleStatus @relation(...)
+}
+
+model ArticleStatus {
+  id   String
+  name String  // "draft", "published"
+}
+```
+
+**Resolution:** FK direction wins → **Weak Relationship (lookup table)**
+
+#### 4.2.6. Relationship Depth Limits
+
+**The Problem**
+
+Hierarchy can go deep. Where to stop?
+
+```
+bbs_articles
+  └─ bbs_article_snapshots
+      ├─ bbs_article_snapshot_images
+      └─ bbs_article_snapshot_files
+```
+
+**Rules by Entity Type**
+
+**Main Entity (IEntity):**
+- Depth 1: Always include (e.g., `snapshots`)
+- Depth 2+: Case by case (usually separate API)
+
+```typescript
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // ✅ Depth 1
+
+  // Or: Snapshots via separate API (audit/history)
+  // GET /articles/:id/snapshots
+}
+
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: If snapshots are loaded, include their children
+  files: IBbsArticleSnapshotFile[];
+}
+```
+
+**Summary Entity (IEntity.ISummary):**
+- No strong relationships at all (performance)
+
+```typescript
+interface IBbsArticle.ISummary {
+  id: string;
+  title: string;
+  author_name: string;  // Denormalized
+  file_count: number;   // Count, not array
+}
+```
+
+**Reverse Relationships (CRITICAL)**
+
+**NEVER create reverse direction relationships - Actor/Parent entities must NOT have child entity arrays.**
+
+```typescript
+// ❌ WRONG: Reverse relationship
+interface IShoppingSeller {
+  sales: IShoppingSale[];  // ❌ Reverse direction!
+}
+
+interface IBbsMember {
+  articles: IBbsArticle[];  // ❌ Reverse direction!
+}
+
+// ✅ CORRECT: Forward direction only
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;  // ✅ Child → Parent reference
+}
+
+interface IBbsArticle {
+  author: IBbsMember.ISummary;  // ✅ Child → Parent reference
+}
+```
+
+**Why reverse is forbidden:**
+- Violates single direction principle
+- Different scopes (Seller scope ≠ Sales scope)
+- Actor pattern: Users/Sellers/Members are actors, not containers
+- Use separate API: `GET /sellers/:id/sales`
+
+#### 4.2.7. Actor & Category Relationships
 
 **Actors** create or modify entities. They are ALWAYS from different scopes.
 
@@ -200,7 +469,7 @@ interface IBbsMember {
 // GET /members/:id/articles → IPage<IBbsArticle.ISummary>
 ```
 
-#### 4.2.5. IInvert Pattern
+#### 4.2.8. IInvert Pattern
 
 **IInvert** = Entity from reverse perspective, includes parent context
 
@@ -227,7 +496,7 @@ interface IBbsArticleComment.IInvert {
 }
 ```
 
-#### 4.2.6. Quick Decision Guide
+#### 4.2.9. Quick Decision Guide
 
 ```
 1. START with table names
@@ -248,6 +517,356 @@ interface IBbsArticleComment.IInvert {
 | Actor | `author`, `creator` | Different scope | ❌ Weak Relationship |
 | Actor reverse | `seller.sales[]` | Reverse direction | ❌ Forbidden |
 | Category | `category`, `tags` | Different scope | ❌ Weak Relationship |
+| Lookup | `article_statuses` | Reversed FK | ❌ Weak Relationship |
+| Recursive | `parent_id` | Self-reference | 🔄 Use IInvert |
+
+#### 4.2.10. Complete Examples
+
+**Example 1: BBS System**
+
+```typescript
+// =====================
+// Scope: bbs_articles
+// =====================
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+
+  // Strong relationship: Same scope (article's snapshots)
+  snapshots: IBbsArticleSnapshot[] {
+    id: string;
+    content: string;
+    created_at: string;
+
+    images: IBbsArticleSnapshotImage[] {
+      id: string;
+      url: string;
+    }[];
+
+    files: IBbsArticleSnapshotFile[] {
+      id: string;
+      url: string;
+      name: string;
+    }[];
+  }[];
+
+  // Weak relationship: Different scope (actor)
+  author: IBbsMember.ISummary {
+    id: string;
+    nickname: string;
+    avatar_url: string;
+  };
+
+  // Weak relationship: Different scope (category)
+  category: IBbsCategory {
+    id: string;
+    name: string;
+  };
+
+  // Different scope: Count only (large collection)
+  comment_count: number;
+  like_count: number;
+}
+
+// =====================
+// Scope: bbs_article_comments (SEPARATE ROOT)
+// =====================
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  created_at: string;
+
+  // Weak relationship: Different scope (actor)
+  author: IBbsMember.ISummary {
+    id: string;
+    nickname: string;
+  };
+
+  // Weak relationship: Parent scope (ID only in default)
+  article_id: string;
+}
+
+// IInvert: For comment-centric views
+interface IBbsArticleComment.IInvert {
+  id: string;
+  content: string;
+  created_at: string;
+
+  author: IBbsMember.ISummary {
+    id: string;
+    nickname: string;
+  };
+
+  article: IBbsArticle.ISummary {  // ✅ Parent context
+    id: string;
+    title: string;
+    // NO comments array!
+  };
+}
+
+// Usage:
+// GET /articles/:id → IBbsArticle { comments: IBbsArticleComment[] }
+// GET /members/:id/comments → IPageIBbsArticleComment.IInvert
+```
+
+**Example 2: Shopping System - Orders**
+
+```typescript
+// =====================
+// Scope: shopping_orders
+// =====================
+interface IShoppingOrder {
+  id: string;
+  order_number: string;
+  status: string;
+  created_at: string;
+
+  // Strong relationship: Same scope (order's components)
+  goods: IShoppingOrderGoods[] {
+    id: string;
+    quantity: number;
+    price: number;
+
+    // Weak relationship: Different scope (cart commodity lookup)
+    commodity: IShoppingCartCommodity.ISummary {
+      id: string;
+      name: string;
+
+      // Strong relationship: Stocks belong to commodity
+      stocks: IShoppingCartCommodityStock[] {
+        id: string;
+        inventory_id: string;
+        quantity: number;
+      }[];
+    };
+  }[];
+
+  deliveries: IShoppingOrderDelivery[] {
+    id: string;
+    address: string;
+    status: string;
+    tracking_number: string;
+  }[];
+
+  payments: IShoppingOrderPayment[] {
+    id: string;
+    method: string;
+    amount: number;
+    paid_at: string;
+  }[];
+
+  // Weak relationship: Different scope (actor)
+  customer: IShoppingCustomer.ISummary {
+    id: string;
+    name: string;
+    email: string;
+  };
+
+  total_amount: number;
+}
+
+// Summary: No strong relationships
+interface IShoppingOrder.ISummary {
+  id: string;
+  order_number: string;
+  status: string;
+
+  // Denormalized
+  customer_name: string;
+  total_amount: number;
+  goods_count: number;
+
+  created_at: string;
+}
+```
+
+**Example 3: Shopping System - Sales (Deep Hierarchy)**
+
+```typescript
+// =====================
+// Scope: shopping_sales
+// =====================
+interface IShoppingSale {
+  id: string;
+  name: string;
+  description: string;
+  created_at: string;
+
+  // Weak relationship: Different scope (actor)
+  seller: IShoppingSeller.ISummary {
+    id: string;
+    name: string;
+    company: string;
+  };
+
+  // Strong relationship: Same event/actor (seller registers sale with units)
+  units: IShoppingSaleUnit[] {
+    id: string;
+    name: string;
+    price: number;
+
+    // Strong relationship: Unit's options (Depth 2)
+    options: IShoppingSaleUnitOption[] {
+      id: string;
+      name: string;
+      type: string;
+
+      // Strong relationship: Option's candidates (Depth 3)
+      candidates: IShoppingSaleUnitOptionCandidate[] {
+        id: string;
+        value: string;
+        price_delta: number;
+      }[];
+    }[];
+
+    // Strong relationship: Unit's stocks (Depth 2)
+    stocks: IShoppingSaleUnitStock[] {
+      id: string;
+      warehouse_id: string;
+      quantity: number;
+      reserved: number;
+    }[];
+  }[];
+
+  // Different event/actor: Separate API
+  reviews_count: number;  // ✅ Customers write reviews (different event)
+  questions_count: number;  // ✅ Buyers ask questions (different event)
+  average_rating: number;  // ✅ Denormalized from reviews
+  // GET /sales/:id/reviews → IPage<IShoppingSaleReview>
+  // GET /sales/:id/questions → IPage<IShoppingSaleQuestion>
+}
+
+// =====================
+// Different scope: Reviews (SEPARATE ROOT)
+// =====================
+interface IShoppingSaleReview {
+  id: string;
+  sale_id: string;
+  rating: number;
+  content: string;
+  created_at: string;
+
+  // Weak relationship: Different scope (customer who reviewed)
+  customer: IShoppingCustomer.ISummary {
+    id: string;
+    name: string;
+  };
+}
+
+// =====================
+// Different scope: Questions (SEPARATE ROOT)
+// =====================
+interface IShoppingSaleQuestion {
+  id: string;
+  sale_id: string;
+  question: string;
+  answer: string | null;
+  created_at: string;
+
+  // Weak relationship: Different scope (buyer who asked)
+  questioner: IShoppingMember.ISummary {
+    id: string;
+    nickname: string;
+  };
+}
+
+// When loading individual unit (avoids deep nesting)
+interface IShoppingSaleUnit {
+  id: string;
+  sale_id: string;
+  name: string;
+  price: number;
+
+  // Depth 2: Include children when unit is loaded
+  options: IShoppingSaleUnitOption[] {
+    id: string;
+    name: string;
+    type: string;
+
+    candidates: IShoppingSaleUnitOptionCandidate[] {
+      id: string;
+      value: string;
+      price_delta: number;
+    }[];
+  }[];
+
+  stocks: IShoppingSaleUnitStock[] {
+    id: string;
+    warehouse_id: string;
+    quantity: number;
+    reserved: number;
+  }[];
+}
+```
+
+**Example 4: Hierarchy Chain**
+
+```typescript
+// =====================
+// Chain: articles → snapshots → snapshot_images/files
+// =====================
+
+// Depth 0: Root
+interface IBbsArticle {
+  id: string;
+  title: string;
+
+  snapshots: IBbsArticleSnapshot[];  // ✅ Depth 1
+
+  // Or: Depth 1 via separate API
+  // GET /articles/:id/snapshots
+}
+
+// Depth 1: Loaded when needed
+interface IBbsArticleSnapshot {
+  id: string;
+  article_id: string;
+  content: string;
+  created_at: string;
+  reason: string;
+
+  // Depth 2: When snapshot is loaded, include its children
+  images: IBbsArticleSnapshotImage[] {
+    id: string;
+    url: string;
+  }[];
+
+  files: IBbsArticleSnapshotFile[] {
+    id: string;
+    url: string;
+    name: string;
+  }[];
+}
+
+// =====================
+// Separate chain: comments → comment_snapshots → comment_snapshot_images/files
+// =====================
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+
+  // Depth 2: Separate API
+  // GET /comments/:id/snapshots
+}
+
+interface IBbsArticleCommentSnapshot {
+  id: string;
+  comment_id: string;
+  content: string;
+
+  images: IBbsArticleCommentSnapshotImage[] {
+    id: string;
+    url: string;
+  }[];
+
+  files: IBbsArticleCommentSnapshotFile[] {
+    id: string;
+    url: string;
+  }[];
+}
+```
 
 ### 4.3. Schema Definition Requirements
 

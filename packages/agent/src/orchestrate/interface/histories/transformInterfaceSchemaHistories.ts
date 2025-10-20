@@ -60,7 +60,10 @@ export const transformInterfaceSchemaHistories = (props: {
       ## Schemas
 
       Here is the list of request/response bodies' type names from
-      OpenAPI operations. Reference them when creating DTO schema components.
+      OpenAPI operations. 
+      
+      Reference them when creating DTO schema components, especially
+      considering the DTO relationships.
 
       ${Array.from(schemas)
         .map((k) => `- \`${k}\``)
