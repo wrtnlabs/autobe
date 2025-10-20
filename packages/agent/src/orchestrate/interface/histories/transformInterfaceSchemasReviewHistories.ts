@@ -21,6 +21,12 @@ export const transformInterfaceSchemasReviewHistories = (
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
     },
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_COMPOSITION,
+    },
     ...transformInterfaceAssetHistories(state),
     {
       type: "systemMessage",

@@ -1,765 +1,530 @@
-# Composition & Reference Decision Rules for DTO Schema Design
+# Composition & Reference Rules for DTO Schema Design
 
-## Overview
+## Core Principle
 
-This document provides comprehensive guidelines for deciding when to use **Composition** (embedding full objects/arrays) versus **Reference** (using IDs or Summary objects) in DTO schemas. Proper application of these rules prevents infinite recursion, performance issues, and ensures maintainable API designs.
+**Start from table names, then carefully analyze business concept, usage patterns, and size.**
 
-## Critical Principles
+DTOs are built by:
+1. Following the natural hierarchy in table names
+2. Respecting scope boundaries
+3. **Analyzing business concept and usage patterns** (core vs auxiliary, always-loaded vs rarely-accessed)
+4. **Considering expected size** (10 items vs 1000+ items)
+5. Validating with FK direction
 
-### The Fundamental Problem
-
-**DTOs MUST NOT be 1:1 mappings of database schemas.** Database schemas contain bidirectional relationships that, if naively translated to DTOs, cause:
-
-1. **Infinite Recursion**: `Article → User → Articles → Users → ...`
-2. **Performance Explosions**: Loading one article loads 1000 comments, each loading author with their 1000 articles
-3. **Circular Dependencies**: Type definitions that reference each other infinitely
-
-### The Solution
-
-Apply **asymmetric relationship handling**:
-- One direction gets **Composition** (full object/array)
-- Reverse direction gets **Reference** (Summary object or separate API)
+**Critical:** Same scope ≠ Automatic composition. Even within the same hierarchy, you must analyze whether the relationship should be composed or separated into a different API based on business logic, size, and usage patterns.
 
 ---
 
-## Rule 1: Foreign Key Relationship Analysis (Strongest Signal)
+## Rule 1: Table Name Hierarchy (Primary Signal)
 
-**Foreign key relationships in combination with table naming patterns are the most reliable indicators of ownership.**
+### 1.1. The Hierarchy Pattern
 
-### 1.1. Composition Pattern: `{Parent}_{Child}` + Foreign Key Check
+Table names reveal ownership hierarchy through naming patterns:
 
-When child table name follows the `{parent}_*` or `{parent_singular}_*` pattern **AND** has a foreign key to the parent, check the relationship type:
-
-**✅ Composition (1:N or 1:1 owned)**:
-- Child has FK to parent: `parent_id` column
-- Parent does NOT have FK to child
-- Cascade delete applies
-- Child cannot exist without parent
-
-**❌ NOT Composition (Metadata/Lookup)**:
-- Table name might follow `{parent}_*` pattern but serves as metadata
-- May have reverse FK (parent has FK to this table)
-- Independent lifecycle
-- Examples: `user_roles` (role metadata), `article_statuses` (status lookup)
-
-### 1.1.1. Metadata Table Examples (NOT Composition)
-
-```prisma
-// ❌ Looks like composition by name, but it's a LOOKUP table
-model Article {
-  id        String
-  title     String
-  status_id String   // FK pointing TO article_statuses
-  status    ArticleStatus @relation(...)  // ❌ NOT composition - it's a reference
-}
-
-model ArticleStatus {  // Table: article_statuses
-  id          String
-  name        String  // "draft", "published", "archived"
-  description String
-  articles    Article[]  // Reverse relation (not included in DTO)
-}
-
-// Result: article_statuses is a LOOKUP table, NOT owned by articles
-// DTO: IArticle { status: IArticleStatus { id, name } }  // Reference, not composition
+```
+Root Table:     bbs_articles
+  └─ Level 1:   bbs_article_snapshots
+       └─ Level 2: bbs_article_snapshot_images
+       └─ Level 2: bbs_article_snapshot_files
 ```
 
-```prisma
-// ✅ True composition - owned children
-model Article {
-  id    String
-  title String
-  files ArticleFile[]  // Reverse relation
-}
+**Key Insight**: Each level adds one more segment to the name.
 
-model ArticleFile {  // Table: article_files
-  id         String
-  article_id String  // FK pointing TO articles
-  url        String
-  article    Article @relation(...)
-}
+### 1.2. Hierarchy Signals Ownership (Not Automatic Composition)
 
-// Result: article_files is OWNED by articles
-// DTO: IArticle { files: IArticleFile[] }  // Composition
-```
-
-**Key Difference:**
-- **Lookup/Metadata**: Parent has FK → Child (articles.status_id → statuses.id)
-- **Composition**: Child has FK → Parent (files.article_id → articles.id)
-
+**Table hierarchy shows ownership relationship:**
 ```typescript
-// ✅ True Composition Examples
-
-// Pattern: bbs_articles → bbs_article_*
-interface IBbsArticle {
-  files: IBbsArticleFile[];      // bbs_article_files
-  images: IBbsArticleImage[];    // bbs_article_images
-  // NOTE: snapshots are NOT in main entity - they're audit/history metadata
-}
-
-// Snapshots are separate - accessed via dedicated API
-// GET /articles/:id/snapshots → IPageIBbsArticleSnapshot
+// Hierarchy chain: bbs_articles → bbs_article_snapshots → bbs_article_snapshot_*
 interface IBbsArticleSnapshot {
-  id: string;
-  article_id: string;
-  content: string;
-  created_at: string;
-  files: IBbsArticleSnapshotFile[];  // ✅ Correct naming
-}
-
-// Pattern: shopping_orders → shopping_order_*
-interface IShoppingOrder {
-  items: IShoppingOrderItem[];       // shopping_order_items
-  payments: IShoppingOrderPayment[]; // shopping_order_payments
-  shipments: IShoppingOrderShipment[]; // shopping_order_shipments
-}
-
-// Pattern: reddit_articles → reddit_article_*
-interface IRedditArticle {
-  files: IRedditArticleFile[];     // reddit_article_files
-  // NOTE: snapshots are audit metadata, not in main entity
+  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: compose when snapshot loaded
+  files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: compose when snapshot loaded
 }
 ```
 
-**Why this works**: Table naming `{parent}_{child}` indicates:
-- Strong ownership (child cannot exist without parent)
-- Cascade deletion (parent deletion removes children)
-- Tight coupling (child is part of parent's lifecycle)
-
-### 1.2. Reference Pattern: Different Domains
-
-When referenced table is from a different domain or is an independent entity, use **Reference**.
+**⚠️ IMPORTANT: Hierarchy ≠ Automatic Composition in Parent**
 
 ```typescript
-// ✅ Reference Examples
-
-interface IRedditArticle {
-  // Different domain: reddit_articles → reddit_members
-  // ID field can be omitted if Summary object includes id
-  author: IRedditMember.ISummary {
-    id: string;  // ID is here, no need for separate reddit_member_id
-    nickname: string;
-    avatar_url: string;
-  };
-
-  // Different domain: reddit_articles → reddit_categories
-  category: IRedditCategory {
-    id: string;  // ID is here, no need for separate category_id
-    name: string;
-  };
-}
-
-interface IShoppingOrder {
-  // Different domain: shopping_orders → shopping_customers
-  customer: IShoppingCustomer.ISummary {
-    id: string;  // ID is here
-    name: string;
-    email: string;
-  };
-}
-
+// ❌ WRONG: Auto-composition based on hierarchy alone
 interface IBbsArticle {
-  // Different domain: bbs_articles → bbs_members
-  author: IBbsMember.ISummary {
-    id: string;  // ID is here
-    nickname: string;
-  };
-
-  // Different domain: bbs_articles → bbs_categories
-  category: IBbsCategory {
-    id: string;  // ID is here
-    name: string;
-  };
+  snapshots: IBbsArticleSnapshot[];  // ❌ Could be 100+ audit records!
 }
 
-// ⚠️ NOTE: You may keep both the ID field AND the object for backward compatibility
-// or API design preferences, but it's redundant. Choose one pattern consistently:
-//
-// Option A (Recommended): Object only
-//   author: IUser.ISummary { id, name, ... }
-//
-// Option B: Both (redundant but explicit)
-//   author_id: string;
-//   author: IUser.ISummary { id, name, ... }
-//
-// Option C: ID only (minimal, requires separate fetch for details)
-//   author_id: string;
+// ✅ CORRECT: Analyze usage & size first
+interface IBbsArticle {
+  snapshots_count: number;  // ✅ Audit data, separate API
+  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+}
 ```
 
-### 1.3. Decision Algorithm
+**❌ Do NOT compose across hierarchy roots:**
+```typescript
+interface IBbsArticle {
+  images: IBbsArticleImage[];         // 🤔 Same hierarchy (check size!)
+  comments: IBbsArticleComment[];     // ❌ Different hierarchy root!
+}
+```
+
+**Why?** `bbs_article_comments` is its own hierarchy root, not a child of `bbs_articles`.
+
+**Key insight:** Hierarchy indicates **ownership**, not necessarily **composition**. After identifying hierarchy, analyze:
+- Business concept (core vs auxiliary)
+- Expected size (< 20 vs 100+)
+- Usage pattern (always loaded vs separate feature)
+
+---
+
+## Rule 2: Scope Boundary Detection
+
+### 2.1. What is a Scope?
+
+A **scope** is an independent conceptual entity with its own lifecycle and hierarchy.
+
+**Examples:**
+```
+Scope A: bbs_articles
+  └─ bbs_article_snapshots
+      ├─ bbs_article_snapshot_images
+      └─ bbs_article_snapshot_files
+
+Scope B: bbs_article_comments (SEPARATE ROOT)
+  └─ bbs_article_comment_snapshots
+      ├─ bbs_article_comment_snapshot_images
+      └─ bbs_article_comment_snapshot_files
+
+Scope C: shopping_orders
+  ├─ shopping_order_goods (composite)
+  │   └─ shopping_cart_commodities (reference)
+  │       └─ shopping_cart_commodity_stocks (composite)
+  ├─ shopping_order_deliveries
+  ├─ shopping_order_payments
+  └─ shopping_customer (reference)
+
+Scope D: shopping_sales
+  ├─ shopping_sellers (reference)
+  └─ shopping_sale_units (composite)
+      ├─ shopping_sale_unit_options (composite)
+      │   └─ shopping_sale_unit_option_candidates (composite)
+      └─ shopping_sale_unit_stocks (composite)
+```
+
+### 2.2. Identifying Scope Boundaries
+
+**Question to ask:** "Can this entity exist independently and meaningfully?"
 
 ```typescript
-/**
- * Determines if childTable should be composed into parentTable's DTO
- * CRITICAL: Must analyze Prisma schema relationships, not just table names
- */
-function shouldCompose(
-  parentTable: string,
-  childTable: string,
-  prismaSchema: PrismaSchema
-): boolean {
-  // Step 1: Check if child has FK to parent
-  const childModel = prismaSchema.models.find(m => m.tableName === childTable);
-  const parentModel = prismaSchema.models.find(m => m.tableName === parentTable);
+// ✅ Independent Scope (separate root)
+bbs_article_comments
+  - Can exist as "user's comments list"
+  - Has its own lifecycle and operations
+  - Has its own children (comment_snapshots)
+  → SEPARATE SCOPE
 
-  if (!childModel || !parentModel) return false;
+// ❌ Not Independent (part of parent scope)
+bbs_article_snapshot_images
+  - Only makes sense in context of snapshot
+  - Cannot be queried independently
+  - No meaningful operations without parent
+  → SAME SCOPE as bbs_article_snapshots
+```
 
-  // Find FK relationship from child to parent
-  const fkToParent = childModel.fields.find(f =>
-    f.relationToModel === parentModel.name && f.isForeignKey
-  );
+### 2.3. Scope Crossing = Reference
 
-  // No FK from child to parent → Not composition
-  if (!fkToParent) return false;
+**When tables are from different scopes, use Reference:**
 
-  // Step 2: Check table name pattern (secondary signal)
-  const parentBase = getTableBaseName(parentTable);
-  const childBase = getTableBaseName(childTable);
+```typescript
+// Scopes: articles vs snapshots vs comments vs members
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // 🤔 Same scope, but check usage!
 
-  const hasParentPrefix =
-    childBase.startsWith(parentBase + '_') ||
-    childBase.startsWith(toSingular(parentBase) + '_');
-
-  // Step 3: Distinguish between owned children and metadata tables
-
-  // Pattern 1: Clear ownership pattern (table name + FK)
-  if (hasParentPrefix && fkToParent) {
-    // Check if it's a metadata/lookup table by examining other relationships
-    const parentHasFkToChild = parentModel.fields.some(f =>
-      f.relationToModel === childModel.name && f.isForeignKey
-    );
-
-    // If parent has FK to child, it's likely a metadata/lookup table
-    if (parentHasFkToChild) {
-      return false; // ✅ Reference (e.g., articles.status_id → article_statuses)
-    }
-
-    return true; // ✅ Composition
-  }
-
-  // Pattern 2: Junction/Mapping tables (many-to-many)
-  if (childBase.includes('_to_') ||
-      childBase.includes('_x_') ||
-      childBase.startsWith('mv_') ||
-      childBase.startsWith('map_')) {
-    // Verify it has FKs to both sides
-    const relationCount = childModel.fields.filter(f => f.isForeignKey).length;
-    return relationCount >= 2; // ✅ Composition (junction table)
-  }
-
-  // Pattern 3: Different domain → Reference
-  if (!hasParentPrefix) {
-    return false; // ✅ Reference (e.g., articles → members)
-  }
-
-  // Default: Reference (safer choice)
-  return false;
+  // Different scopes → Reference
+  comments_count: number;  // ✅ Count only
+  author: IBbsMember.ISummary;  // ✅ Reference
 }
 
-// Examples with Prisma schema context
-shouldCompose('reddit_articles', 'reddit_article_files', schema)
-// → Check: reddit_article_files.article_id → reddit_articles.id ✅
-// → Check: Table name pattern ✅
-// → Result: true (Composition)
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // ✅ Same scope → Composition
+  files: IBbsArticleSnapshotFile[];    // ✅ Same scope → Composition
+}
 
-shouldCompose('reddit_articles', 'reddit_article_statuses', schema)
-// → Check: reddit_articles.status_id → reddit_article_statuses.id ❌
-// → Direction is reversed (parent → child, not child → parent)
-// → Result: false (Reference - it's a lookup table)
+interface IBbsArticleComment {
+  // ✅ Comment scope (no owned children in this example)
 
-shouldCompose('reddit_articles', 'reddit_members', schema)
-// → Check: reddit_articles.member_id → reddit_members.id
-// → Check: Table name pattern ❌ (different domain)
-// → Result: false (Reference)
+  // Different scopes → Reference
+  author: IBbsMember.ISummary;  // ✅ Reference
+  article: IBbsArticle.ISummary;  // ✅ Reference (via IInvert)
+}
+```
 
-shouldCompose('bbs_articles', 'bbs_article_comments', schema)
-// → Check: bbs_article_comments.article_id → bbs_articles.id ✅
-// → Check: Table name pattern ✅
-// → Result: true (Composition)
+### 2.4. Same Scope ≠ Automatic Composition
+
+**CRITICAL:** Even within same scope, consider business logic and usage patterns.
+
+```typescript
+// Same scope (bbs_articles hierarchy), but different usage:
+
+// Case 1: Images (always loaded with article)
+interface IBbsArticle {
+  images: IBbsArticleSnapshotImage[];  // ✅ Composition
+  // Reason: < 10 images, always displayed
+}
+
+// Case 2: Snapshots (audit trail, rarely accessed)
+interface IBbsArticle {
+  snapshots_count: number;  // ✅ Count only, separate API
+  // Reason: Could be 100+ snapshots, audit-only feature
+  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+}
+```
+
+**Decision factors for same-scope relationships:**
+1. **Expected size**: How many child records typically? (< 10 vs 100+)
+2. **Usage frequency**: Always loaded together? Or separate feature?
+3. **Business concept**: Core data vs auxiliary data (audit, history)?
+4. **Performance**: Loading children acceptable in main query?
+
+**Examples:**
+```typescript
+// ✅ COMPOSITION: Same scope + Always together
+shopping_orders → shopping_order_goods (typical: 5-20 items)
+bbs_articles → bbs_article_snapshot_images (typical: 3-10 images)
+
+// ✅ SEPARATE API: Same scope + Different usage
+bbs_articles → bbs_article_snapshots (audit trail, separate page)
+shopping_sales → shopping_sale_reviews (could be 1000+ reviews)
 ```
 
 ---
 
-## Rule 2: Relationship Semantics
+## Rule 3: Domain Independence Test
 
-**The meaning of the relationship determines the representation strategy.**
+### 3.1. The Four Questions
 
-### 2.1. Composition Relationships
+Before deciding Composition vs Reference, ask:
 
-Use **Composition** (full array in DTO) when the relationship represents:
+1. **Table Name:** Does child extend parent's name? (`parent_*`)
+2. **Concept:** Is child an independent concept or just data attached to parent?
+3. **Operations:** Can child be queried/managed independently?
+4. **Usage & Size:** Always loaded together? How many records? (< 10 vs 100+)
 
-#### A. Ownership (Strong Aggregation)
-Child entities **belong to** and **cannot exist without** the parent.
+### 3.2. Decision Matrix
 
-```typescript
-interface IShoppingOrder {
-  // Order OWNS its items - items cannot exist without an order
-  items: IShoppingOrderItem[] {
-    id: string;
-    product_id: string;
-    product: IShoppingProduct.ISummary;
-    quantity: number;
-    price: number;
-  }[];
-}
+| Question | Answer | Signal |
+|----------|--------|--------|
+| Name pattern | `bbs_article_snapshot_images` | ✅ Composition candidate |
+| Concept | "Snapshot Images" (not independent) | ✅ Part of snapshot |
+| Operations | Only via parent | ✅ Signals composition |
+| Usage & Size | Always shown, < 10 items | ✅ **Composition** |
 
-interface IBbsArticle {
-  // Article OWNS its attachments
-  files: IBbsArticleFile[] {
-    id: string;
-    url: string;
-    name: string;
-    size: number;
-    mime_type: string;
-  }[];
-}
-```
+| Question | Answer | Signal |
+|----------|--------|--------|
+| Name pattern | `bbs_article_comments` | 🤔 Looks like composition |
+| Concept | "Comments" (independent concept) | ❌ Separate entity |
+| Operations | User's comments, search, etc. | ❌ Independent operations |
+| Usage & Size | Separate page, 100+ items | ❌ **Reference (separate scope)** |
 
-#### B. History/Audit Trail
-Tracking changes or historical states of the parent entity.
+| Question | Answer | Signal |
+|----------|--------|--------|
+| Name pattern | `bbs_article_snapshots` | ✅ Same hierarchy |
+| Concept | "Snapshots" (audit trail) | 🤔 Attached but auxiliary |
+| Operations | Only via parent | ✅ Part of article |
+| Usage & Size | Audit page, 100+ items | ❌ **Separate API (same scope but large)** |
 
-**IMPORTANT**: History/audit data is often HEAVY and should be accessed via separate APIs, not included in main entity.
+### 3.3. Examples
 
 ```typescript
-// ❌ BAD: Including full history in main entity
-interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // Could be 100+ snapshots!
-}
+// ✅ COMPOSITION: Hierarchy chains
+bbs_articles → bbs_article_snapshots → bbs_article_snapshot_images
+shopping_orders → shopping_order_goods
+shopping_orders → shopping_order_deliveries
 
-// ✅ GOOD: Separate API for history
-interface IBbsArticle {
-  id: string;
-  title: string;
-  content: string;
-  // No snapshots array
-}
-
-// Access via: GET /articles/:id/snapshots
-// Returns: IPageIBbsArticleSnapshot
-
-// ✅ EXCEPTION: Small, essential status history
-interface IShoppingOrder {
-  // ONLY if status changes are few (< 10) and essential
-  status_history: IShoppingOrderStatusHistory[] {
-    id: string;
-    status: string;
-    changed_at: string;
-  }[];  // Limited to recent changes
-}
-```
-
-#### C. Components (Essential Parts)
-Child entities are **integral components** that define the parent's structure.
-
-```typescript
-interface ISurvey {
-  // Survey is composed of questions
-  questions: ISurveyQuestion[] {
-    id: string;
-    text: string;
-    type: 'multiple_choice' | 'text' | 'rating';
-    order: number;
-    options?: ISurveyQuestionOption[];
-  }[];
-}
-
-interface IInvoice {
-  // Invoice is composed of line items
-  line_items: IInvoiceLineItem[] {
-    id: string;
-    description: string;
-    quantity: number;
-    unit_price: number;
-    total: number;
-  }[];
-}
-```
-
-### 2.2. Reference Relationships
-
-Use **Reference** (Summary object or ID) when the relationship represents:
-
-#### A. Actor (Agent/Subject)
-Entities representing **who performed an action** (creator, author, modifier).
-
-```typescript
-// ✅ CORRECT: Article references author (Summary object includes id)
-interface IRedditArticle {
-  author: IRedditMember.ISummary {
-    id: string;  // ID is in the object, no separate reddit_member_id needed
-    nickname: string;
-    avatar_url: string;
-    level: number;
-  };
-}
-
-// ❌ FORBIDDEN: Member contains articles
-interface IRedditMember {
-  id: string;
-  nickname: string;
-  // ❌ NEVER DO THIS - creates explosion
-  articles: IRedditArticle[];
-  comments: IRedditComment[];
-  likes: IRedditLike[];
-}
-
-// ✅ CORRECT: Use separate API for reverse direction
-// GET /members/:id/articles → IPageIRedditArticle.ISummary
-```
-
-**Critical Rule**: **NEVER include reverse collections in Actor entities.**
-
-When you see fields like:
-- `author_id`, `creator_id`, `writer_id`
-- `user_id`, `member_id`, `customer_id`
-- `seller_id`, `vendor_id`, `supplier_id`
-- `modifier_id`, `updated_by_id`, `created_by_id`
-
-These indicate **Actor relationships** → Use Reference (Summary), never Composition.
-
-#### B. Category/Classification
-Entities used for **grouping or classification**.
-
-```typescript
-interface IBbsArticle {
-  category: IBbsCategory {
-    id: string;  // ID is here, no need for separate category_id
-    name: string;
-    parent_id?: string;
-    // ❌ Do NOT include: articles: IBbsArticle[]
-  };
-
-  tags: IBbsTag[] {
-    id: string;
-    name: string;
-    // ❌ Do NOT include: articles: IBbsArticle[]
-  }[];
-}
-
-// ✅ Reverse direction uses separate API
-// GET /categories/:id/articles → IPageIBbsArticle.ISummary
-```
-
-#### C. Lookup/Master Data
-References to **independent entities** that exist separately.
-
-```typescript
-interface IShoppingOrderItem {
-  product_id: string;
-  product: IShoppingProduct.ISummary {
-    id: string;
-    name: string;
-    thumbnail_url: string;
-    price: number;
-  };
-  // Product exists independently, not owned by order item
-}
-
-interface IEmployeeAssignment {
-  project_id: string;
-  project: IProject.ISummary {
-    id: string;
-    name: string;
-    status: string;
-  };
-  // Project is independent, not owned by assignment
-}
+// ✅ REFERENCE: Independent concepts
+bbs_articles → bbs_article_comments (separate scope)
+bbs_articles → bbs_members (actor)
+shopping_orders → shopping_customers (actor)
+shopping_order_goods → shopping_products (lookup)
 ```
 
 ---
 
-## Rule 3: Reverse Direction Prohibition
+## Rule 4: FK Direction Validation
 
-**The most critical rule to prevent infinite recursion and performance disasters.**
+### 4.1. Purpose
 
-### 3.1. The Principle
+FK direction confirms ownership, but **table name hierarchy comes first**.
 
-When A references B, **B must NEVER reference back to A** in the same DTO type.
+### 4.2. Validation Rules
 
 ```typescript
-// ✅ CORRECT: One-way reference
-interface IArticle {
-  author: IUser.ISummary;  // Article → User
+// Step 1: Check table name hierarchy
+bbs_article_snapshots → bbs_article_snapshot_images
+  → Name suggests composition ✅
+
+// Step 2: Validate with FK direction
+model BbsArticleSnapshotImage {
+  snapshot_id String  // ✅ Child → Parent FK (confirms composition)
+  snapshot    BbsArticleSnapshot @relation(...)
 }
 
-interface IUser {
-  id: string;
-  name: string;
-  // ✅ No articles here
+// Step 3: Check cascade
+ON DELETE CASCADE  // ✅ Confirms ownership
+```
+
+### 4.3. Conflict Resolution
+
+**When table name and FK conflict:**
+
+```prisma
+// Case: article_statuses (looks like child by name)
+model Article {
+  status_id String  // ❌ Parent → Child FK (reversed!)
+  status    ArticleStatus @relation(...)
 }
 
-// ❌ WRONG: Bidirectional reference
-interface IArticle {
-  author: IUser;  // Article → User → Articles → Users → ...
-}
-
-interface IUser {
-  articles: IArticle[];  // ❌ INFINITE RECURSION
+model ArticleStatus {
+  id   String
+  name String  // "draft", "published"
 }
 ```
 
-### 3.2. Reverse Queries Use Separate APIs
+**Resolution:** FK direction wins → **Reference (lookup table)**
 
-```typescript
-// Primary direction: Article → Author
-interface IRedditArticle {
-  reddit_member_id: string;
-  author: IRedditMember.ISummary;
-}
+---
 
-interface IRedditMember {
-  id: string;
-  nickname: string;
-  email: string;
-  avatar_url: string;
-  // ❌ NO articles array here!
-}
+## Rule 5: Composition Depth Limits
 
-// ✅ Reverse direction: Separate API endpoint
-// GET /members/:memberId/articles
-// Response: IPageIRedditArticle.ISummary
-{
-  pagination: { ... },
-  data: [
-    { id: "article-1", title: "...", ... },
-    { id: "article-2", title: "...", ... }
-  ]
-}
+### 5.1. The Problem
+
+Hierarchy can go deep. Where to stop?
+
+```
+bbs_articles
+  └─ bbs_article_snapshots
+      ├─ bbs_article_snapshot_images
+      └─ bbs_article_snapshot_files
 ```
 
-### 3.3. Statistics and Aggregates
+### 5.2. Rules by Entity Type
 
-If you need aggregate information on the "reference" side, use a **separate DTO variant**:
-
-```typescript
-// Main DTO: Clean, no aggregates
-interface IRedditMember {
-  id: string;
-  nickname: string;
-  email: string;
-  avatar_url: string;
-}
-
-// Statistics DTO: Separate variant
-interface IRedditMember.IWithStats {
-  id: string;
-  nickname: string;
-  avatar_url: string;
-
-  // Aggregates
-  article_count: number;
-  comment_count: number;
-  total_likes_received: number;
-  reputation_score: number;
-}
-
-// Use cases:
-// GET /members/:id → IRedditMember
-// GET /members/:id?include=stats → IRedditMember.IWithStats
-// GET /members (leaderboard) → IRedditMember.IWithStats[]
-```
-
-### 3.4. Why This Matters: The Explosion Example
+**Main Entity (IEntity):**
+- Depth 1: Always include (e.g., `snapshots`)
+- Depth 2+: Case by case (usually separate API)
 
 ```typescript
-// ❌ BAD DESIGN: Bidirectional composition
-interface IRedditArticle {
-  author: IRedditMember;  // Not Summary!
-  comments: IRedditComment[];
-}
-
-interface IRedditMember {
-  articles: IRedditArticle[];  // Disaster!
-  comments: IRedditComment[];
-}
-
-interface IRedditComment {
-  article: IRedditArticle;
-  author: IRedditMember;
-  replies: IRedditComment[];
-}
-
-// What happens when you GET /articles/1:
-{
-  id: "article-1",
-  title: "Hello",
-  author: {
-    id: "member-1",
-    articles: [  // 1000 articles
-      {
-        id: "article-2",
-        author: {
-          articles: [  // Another 1000 articles
-            {
-              author: {
-                articles: [  // INFINITE LOOP
-                  ...
-                ]
-              }
-            }
-          ]
-        },
-        comments: [  // 500 comments per article
-          {
-            article: {
-              comments: [  // CIRCULAR REFERENCE
-                ...
-              ]
-            },
-            author: {
-              articles: [  // More articles
-                ...
-              ]
-            }
-          }
-        ]
-      }
-    ]
-  },
-  comments: [
-    // ... same explosion
-  ]
-}
-
-// Result:
-// - Infinite recursion
-// - Millions of records loaded
-// - Server crashes
-// - API timeout
-```
-
-### 3.4. Child → Parent Back-Reference Problem
-
-**CRITICAL**: When parent composes children, children must NOT reference back to parent (except by ID).
-
-```typescript
-// Prisma Schema
-model BbsArticle {
-  id       String
-  title    String
-  comments BbsArticleComment[]  // Parent has children
-}
-
-model BbsArticleComment {
-  id         String
-  content    String
-  article_id String  // FK to parent
-  article    BbsArticle @relation(...)
-}
-
-// ❌ WRONG: Child references full parent
 interface IBbsArticle {
-  id: string;
-  title: string;
-  content: string;
-  comments: IBbsArticleComment[];  // Composition
+  snapshots: IBbsArticleSnapshot[];  // ✅ Depth 1
+
+  // Or: Snapshots via separate API (audit/history)
+  // GET /articles/:id/snapshots
 }
 
-interface IBbsArticleComment {
-  id: string;
-  content: string;
-  article: IBbsArticle;  // ❌ DISASTER! Full parent reference
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: If snapshots are loaded, include their children
+  files: IBbsArticleSnapshotFile[];
 }
+```
 
-// What happens when you GET /articles/1:
-{
-  id: "article-1",
-  title: "Hello",
-  comments: [
-    {
-      id: "comment-1",
-      content: "Nice post",
-      article: {  // ❌ CIRCULAR REFERENCE
-        id: "article-1",
-        title: "Hello",
-        comments: [  // ❌ INFINITE LOOP
-          {
-            id: "comment-1",
-            article: {
-              comments: [
-                // ... INFINITE RECURSION
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-}
+**Summary Entity (IEntity.ISummary):**
+- No composition at all (performance)
 
-// ✅ CORRECT: Child uses ID only or Summary without children
-interface IBbsArticle {
-  id: string;
-  title: string;
-  content: string;
-  comments: IBbsArticleComment[];  // Composition
-}
-
-interface IBbsArticleComment {
-  id: string;
-  content: string;
-  article_id: string;  // ✅ ID only (best)
-
-  // OR if you need some parent info:
-  article: IBbsArticle.ISummary {  // ✅ Summary WITHOUT comments
-    id: string;
-    title: string;
-    // NO comments array here!
-  };
-}
-
+```typescript
 interface IBbsArticle.ISummary {
   id: string;
   title: string;
-  // ✅ NO comments array - this is for child's back-reference
+  author_name: string;  // Denormalized
+  file_count: number;   // Count, not array
+}
+```
+
+### 5.3. Size Considerations (CRITICAL)
+
+**Even if same scope, large collections (100+ records) MUST use separate API.**
+
+```typescript
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // ✅ < 10 snapshots typical
+
+  // If potentially large (100+):
+  comment_count: number;  // ✅ Count only
+  like_count: number;
+  // ✅ Use separate API: GET /articles/:id/comments
 }
 ```
 
 **Why this matters:**
+- Same scope doesn't mean unlimited composition
+- Performance: 100+ items = slow response, large payload
+- UX: Pagination needed for large lists
 
-1. **Parent → Children Composition**: Article includes `comments[]` array
-2. **Child → Parent Reference**: Each comment needs to know which article it belongs to
-3. **Problem**: If child includes full parent, parent includes children, which includes parent again → ♾️
-
-**Solution Patterns:**
-
+**Critical for reverse relationships:**
 ```typescript
-// Pattern 1: Child with ID only (BEST - most common)
-interface IBbsArticleComment {
+// ❌ DISASTER: Seller with all their sales
+interface IShoppingSeller {
   id: string;
-  content: string;
-  article_id: string;  // ✅ Just the ID
-  // No article object at all
+  name: string;
+
+  sales: IShoppingSale[];  // ❌❌❌ Could be 1000+ sales!
 }
 
-// Pattern 2: Child with minimal Summary (when UI needs parent info)
-interface IBbsArticleComment {
+// ✅ CORRECT: Count + separate API
+interface IShoppingSeller {
   id: string;
-  content: string;
-  article: IBbsArticle.ISummary {  // ✅ Summary variant
+  name: string;
+
+  sales_count: number;  // ✅ Just count
+}
+
+// GET /sellers/:id/sales → IPage<IShoppingSale.ISummary>
+```
+
+**Domain crossing makes it worse:**
+```typescript
+// shopping_sales → shopping_sellers (reference)
+// But reverse would be catastrophic:
+
+interface IShoppingSeller {
+  sales: IShoppingSale[];  // ❌ Different domain + Large size = DISASTER
+}
+```
+
+---
+
+## Rule 6: Actor & Category References
+
+### 6.1. Actor Pattern
+
+**Actors** create or modify entities. They are ALWAYS from different scopes.
+
+**Rule:** Actor → Entity (reference), but NEVER Entity array in Actor
+
+```typescript
+// ✅ CORRECT: Actor as Reference
+interface IBbsArticle {
+  author: IBbsMember.ISummary {
     id: string;
-    title: string;
-    // CRITICAL: No comments, files, images, or any arrays!
+    nickname: string;
+    avatar_url: string;
   };
 }
 
-// Pattern 3: Use IInvert for reverse perspective (RECOMMENDED)
-interface IBbsArticleComment {
-  // Default: For article detail page - No article info (redundant)
-  id: string;
-  content: string;
-  article_id: string;
-  author: IBbsMember.ISummary;
-  created_at: string;
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary {
+    id: string;
+    name: string;
+    company: string;
+  };
 }
 
+// ✅ CORRECT: Actor definition
+interface IBbsMember {
+  id: string;
+  nickname: string;
+  // ❌ NEVER: articles: IBbsArticle[]
+}
+
+interface IShoppingSeller {
+  id: string;
+  name: string;
+  company: string;
+  // ❌ NEVER: sales: IShoppingSale[]  (Could be 1000+ items!)
+
+  sales_count: number;  // ✅ Count only
+}
+
+// Reverse direction: Separate API
+// GET /members/:id/articles → IPage<IBbsArticle.ISummary>
+// GET /sellers/:id/sales → IPage<IShoppingSale.ISummary>
+```
+
+**Why NEVER reverse collections:**
+1. **Size explosion**: Seller might have 1000+ sales
+2. **Different domains**: Sales and Sellers are separate business concepts
+3. **Performance**: Loading all related entities is catastrophic
+4. **Pagination**: Large lists need pagination, not composition
+
+**Key Fields:** `author_id`, `creator_id`, `user_id`, `member_id`, `customer_id`, `seller_id`
+
+### 6.2. Category Pattern
+
+**Categories/Tags** classify entities. Usually separate scopes.
+
+```typescript
+interface IBbsArticle {
+  category: IBbsCategory {
+    id: string;
+    name: string;
+  };
+
+  tags: IBbsTag[] {  // ✅ Small lookup (< 10)
+    id: string;
+    name: string;
+  }[];
+}
+
+interface IBbsCategory {
+  id: string;
+  name: string;
+  // ❌ NEVER: articles: IBbsArticle[]
+}
+```
+
+### 6.3. ID Field Convention
+
+**For references, include ID in Summary object (no separate field needed):**
+
+```typescript
+// ✅ RECOMMENDED: Object includes ID
+interface IBbsArticle {
+  author: IBbsMember.ISummary {
+    id: string;  // ID is here
+    nickname: string;
+  };
+}
+
+// ⚠️ ACCEPTABLE but redundant:
+interface IBbsArticle {
+  author_id: string;  // Redundant
+  author: IBbsMember.ISummary { id, nickname };
+}
+
+// ✅ For Create DTOs: ID only
+interface IBbsArticle.ICreate {
+  category_id: string;  // ✅ Just ID
+  // NO author_id (from auth context)
+}
+```
+
+---
+
+## Rule 7: IInvert Pattern
+
+### 7.1. The Problem
+
+What if a child scope needs parent context?
+
+```typescript
+// Child scope needs parent info:
+GET /members/:id/comments → Need article title for each comment
+GET /comments/recent → Need article context
+```
+
+### 7.2. Solution: IInvert
+
+**IInvert** = Entity from reverse perspective, includes parent context
+
+```typescript
+// Default: No parent object (article detail page)
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  article_id: string;  // ✅ ID only
+  author: IBbsMember.ISummary;
+}
+
+// Inverted: Includes parent context (user's comments list)
 interface IBbsArticleComment.IInvert {
-  // Inverted perspective: For comment-centric views
-  // When viewing from comment's perspective, need parent context
   id: string;
   content: string;
   author: IBbsMember.ISummary;
-  created_at: string;
 
   article: IBbsArticle.ISummary {  // ✅ Parent context
     id: string;
@@ -769,1159 +534,699 @@ interface IBbsArticleComment.IInvert {
 }
 ```
 
-**Real-world scenarios with IInvert:**
+### 7.3. When to Use IInvert
+
+**Use IInvert when:**
+- ✅ Child is primary focus (user's comments)
+- ✅ Need parent context for display (article title)
+- ✅ Search results (comments + article info)
+
+**Don't use when:**
+- ❌ Parent detail page (redundant)
+- ❌ Child is already in parent's composition
+
+### 7.4. Recursive Trees
+
+**Special case:** Self-referencing hierarchies
 
 ```typescript
-// Scenario 1: Article detail page
-// GET /articles/:id → IBbsArticle
-{
-  id: "article-1",
-  title: "My Post",
-  comments: [  // IBbsArticleComment[]
-    {
-      id: "comment-1",
-      content: "Nice",
-      article_id: "article-1",  // ✅ ID only (already know the article)
-      author: { id: "user-1", nickname: "John" }
-    }
-  ]
-}
-
-// Scenario 2: User's recent comments page (INVERTED perspective)
-// GET /users/:id/comments → IPageIBbsArticleComment.IInvert
-{
-  data: [  // IBbsArticleComment.IInvert[]
-    {
-      id: "comment-1",
-      content: "Nice",
-      author: { id: "user-1", nickname: "John" },
-      article: {  // ✅ IInvert includes parent context
-        id: "article-1",
-        title: "My Post"  // No comments array!
-      }
-    },
-    {
-      id: "comment-2",
-      content: "Great!",
-      author: { id: "user-1", nickname: "John" },
-      article: {
-        id: "article-2",
-        title: "Another Post"
-      }
-    }
-  ]
-}
-
-// Scenario 3: Recent comments feed (site-wide)
-// GET /comments/recent → IPageIBbsArticleComment.IInvert
-{
-  data: [  // IBbsArticleComment.IInvert[]
-    {
-      id: "comment-5",
-      content: "Interesting",
-      author: { id: "user-3", nickname: "Alice" },
-      article: {
-        id: "article-1",
-        title: "My Post"
-      }
-    }
-  ]
-}
-```
-
-**Key Principles:**
-- **Parent → Child**: Can use full composition (array)
-- **Child → Parent (default)**: Use ID only
-- **Child → Parent (inverted view)**: Use `IEntity.IInvert` with parent Summary (no grandchildren)
-- **Never**: Both directions with full objects
-
-**When to use IInvert:**
-- ✅ User's comments list (need article context for each comment)
-- ✅ Site-wide recent comments feed (need article title)
-- ✅ Search results showing comments (need parent entity info)
-- ✅ Any view where child entity is the primary focus, but parent context is needed
-- ❌ Article detail page (redundant - already have parent context)
-
-**Naming Convention:**
-- `IEntity.IInvert`: Alternative representation from child's perspective
-- Main entity: `IBbsArticleComment` (default, no parent object)
-- Inverted: `IBbsArticleComment.IInvert` (includes parent context)
-
-### 3.5. Recursive Tree Structures with IInvert
-
-**CRITICAL**: For self-referencing tree structures (categories, folders, org charts), use IInvert to avoid infinite recursion.
-
-```typescript
-// Prisma Schema
-model ShoppingCategory {
-  id        String
-  name      String
-  parent_id String?  // Self-reference
-  parent    ShoppingCategory?  @relation("CategoryTree", fields: [parent_id])
-  children  ShoppingCategory[] @relation("CategoryTree")
-}
-
-// ❌ WRONG: Both directions in one type
-interface IShoppingCategory {
-  id: string;
-  name: string;
-  parent: IShoppingCategory;   // ❌ Infinite up
-  children: IShoppingCategory[]; // ❌ Infinite down
-}
-
-// ✅ CORRECT: Separate by navigation direction
 // Top-down navigation (explore children)
 interface IShoppingCategory {
   id: string;
   name: string;
-  parent_id: string | null;  // ✅ ID only, no object
+  parent_id: string | null;  // ✅ ID only
 
-  // Children for tree exploration (limited depth)
-  children: IShoppingCategory[] {
+  children: IShoppingCategory[] {  // ✅ Depth 1-2
     id: string;
     name: string;
     parent_id: string;
-    // NO children here (depth limit = 1)
-    // For deeper navigation, use separate API
+    // No children here (depth limit)
   }[];
 }
 
-// Bottom-up navigation (breadcrumb trail)
+// Bottom-up navigation (breadcrumb)
 interface IShoppingCategory.IInvert {
   id: string;
   name: string;
 
-  // Parent chain for breadcrumb
-  parent: IShoppingCategory.IInvert | null {
+  parent: IShoppingCategory.IInvert | null {  // ✅ Recursive chain
     id: string;
     name: string;
-    parent: IShoppingCategory.IInvert | null;  // ✅ Recursive up
-    // NO children array - only upward navigation
+    parent: IShoppingCategory.IInvert | null;
   };
-
-  // NO children array here
-}
-```
-
-**Real-world scenarios:**
-
-```typescript
-// Scenario 1: Category tree exploration (top-down)
-// GET /categories/:id → IShoppingCategory
-{
-  id: "electronics",
-  name: "Electronics",
-  parent_id: null,
-  children: [  // ✅ Depth 1
-    {
-      id: "computers",
-      name: "Computers",
-      parent_id: "electronics"
-      // No children (depth limit)
-    },
-    {
-      id: "smartphones",
-      name: "Smartphones",
-      parent_id: "electronics"
-    }
-  ]
+  // NO children array
 }
 
-// Scenario 2: Breadcrumb navigation (bottom-up)
-// GET /categories/:id/breadcrumb → IShoppingCategory.IInvert
-{
-  id: "macbook-pro",
-  name: "MacBook Pro",
-  parent: {  // ✅ Recursive up
-    id: "laptops",
-    name: "Laptops",
-    parent: {
-      id: "computers",
-      name: "Computers",
-      parent: {
-        id: "electronics",
-        name: "Electronics",
-        parent: null  // Root
-      }
-    }
-  }
-}
-
-// Scenario 3: Product with category breadcrumb
-// GET /products/:id → IShoppingProduct
-{
-  id: "product-123",
-  name: "MacBook Pro 16\"",
-  price: 2499,
-
-  category: IShoppingCategory.IInvert {  // ✅ IInvert for breadcrumb
-    id: "macbook-pro",
-    name: "MacBook Pro",
-    parent: {
-      id: "laptops",
-      name: "Laptops",
-      parent: {
-        id: "computers",
-        name: "Computers",
-        parent: {
-          id: "electronics",
-          name: "Electronics",
-          parent: null
-        }
-      }
-    }
-  }
-}
-```
-
-**Key Principles for Recursive Structures:**
-
-1. **Default (Top-down)**:
-   - Include `children` array
-   - `parent_id` only (no parent object)
-   - Limit depth (1-2 levels max)
-   - Deeper navigation via separate API
-
-2. **IInvert (Bottom-up)**:
-   - Include `parent` chain (recursive)
-   - NO `children` array
-   - Full path to root (unlimited depth OK - typically 5-10 levels)
-   - Used for breadcrumbs, path display
-
-3. **NEVER**:
-   - Both `parent` object AND `children` array in same type
-   - Unlimited depth in both directions
-
-**Other recursive structure examples:**
-- Organization charts: `IEmployee { subordinates[] }` vs `IEmployee.IInvert { manager, manager.manager... }`
-- File system: `IFolder { subfolders[] }` vs `IFolder.IInvert { parent_folder }`
-- Comment threads: `IComment { replies[] }` vs `IComment.IInvert { parent_comment }`
-- Menu navigation: `IMenuItem { submenu[] }` vs `IMenuItem.IInvert { parent_menu }`
-
----
-
-## Rule 4: Cascade Delete Test + FK Direction
-
-**Combine two questions:**
-1. **FK Direction**: "Who has the foreign key?"
-2. **Cascade Delete**: "If the parent is deleted, should the children be deleted?"
-
-### 4.1. Cascade = Composition (Child → Parent FK)
-
-```typescript
-// When parent is deleted, children should also be deleted
-// CRITICAL: Children have FK pointing TO parent
-
-// Prisma Schema
-model BbsArticle {
-  id        String
-  files     BbsArticleFile[]     // Reverse relation
-  snapshots BbsArticleSnapshot[] // Reverse relation
-}
-
-model BbsArticleFile {
-  id         String
-  article_id String  // ✅ FK: Child → Parent
-  article    BbsArticle @relation(...)
-}
-
-// SQL: ON DELETE CASCADE
-DELETE FROM bbs_articles WHERE id = 'article-1';
-// Automatically deletes:
-// ✅ bbs_article_files (children with article_id = 'article-1')
-// ✅ bbs_article_images
-// ✅ bbs_article_snapshots (cascade deleted, but NOT in main DTO)
-
-// DTO: Composition (only lightweight children)
-interface IBbsArticle {
-  files: IBbsArticleFile[];   // Small, essential
-  images: IBbsArticleImage[]; // Small, essential
-  // snapshots: NOT here (heavy audit data)
-}
-```
-
-### 4.2. No Cascade = Reference (Parent → Child FK)
-
-```typescript
-// When parent is deleted, referenced entities should remain
-// CRITICAL: Parent has FK pointing TO referenced entity
-
-// Prisma Schema
-model RedditArticle {
-  id        String
-  member_id String  // ✅ FK: Parent → Referenced entity
-  member    RedditMember @relation(...)
-
-  category_id String  // ✅ FK: Parent → Referenced entity
-  category    RedditCategory @relation(...)
-}
-
-model RedditMember {
-  id       String
-  articles RedditArticle[]  // Reverse relation (NOT in DTO)
-}
-
-// SQL: ON DELETE RESTRICT or SET NULL
-DELETE FROM reddit_articles WHERE id = 'article-1';
-// Does NOT delete:
-// ✅ reddit_members (member is independent)
-// ✅ reddit_categories (category is independent)
-
-// But you CANNOT delete:
-DELETE FROM reddit_members WHERE id = 'member-1';
-// ERROR: Cannot delete - reddit_articles still reference this member
-// (unless ON DELETE CASCADE, which would be wrong for this relationship)
-
-// DTO: Reference
-interface IRedditArticle {
-  author: IRedditMember.ISummary;     // Reference (no FK in child)
-  category: IRedditCategory;           // Reference (no FK in child)
-}
-```
-
-### 4.3. FK Direction Summary
-
-| FK Location | Example | Cascade Behavior | DTO Strategy |
-|-------------|---------|------------------|--------------|
-| **Child → Parent** | `article_files.article_id → articles.id` | CASCADE | ✅ Composition (array in parent) |
-| **Parent → Child** | `articles.member_id → members.id` | RESTRICT/SET NULL | ✅ Reference (object in parent) |
-| **Both directions** | Rare, usually metadata | Depends | ❌ Likely metadata table |
-
-### 4.4. Database Constraints as Validation
-
-```sql
--- ✅ Composition: Child has FK, CASCADE delete
-CREATE TABLE bbs_article_files (
-  id UUID PRIMARY KEY,
-  article_id UUID NOT NULL,  -- FK to parent
-  url TEXT NOT NULL,
-  FOREIGN KEY (article_id)
-    REFERENCES bbs_articles(id)
-    ON DELETE CASCADE  -- Children deleted with parent
-);
-
--- ✅ Reference: Parent has FK, RESTRICT delete
-CREATE TABLE reddit_articles (
-  id UUID PRIMARY KEY,
-  title TEXT NOT NULL,
-  member_id UUID NOT NULL,  -- FK to referenced entity
-  FOREIGN KEY (member_id)
-    REFERENCES reddit_members(id)
-    ON DELETE RESTRICT  -- Cannot delete member if articles exist
-);
-
--- ❌ Metadata/Lookup: Parent has FK, but it's a lookup table
-CREATE TABLE article_statuses (
-  id UUID PRIMARY KEY,
-  name TEXT NOT NULL  -- "draft", "published", "archived"
-);
-
-CREATE TABLE articles (
-  id UUID PRIMARY KEY,
-  status_id UUID NOT NULL,  -- FK to lookup table
-  FOREIGN KEY (status_id)
-    REFERENCES article_statuses(id)
-    ON DELETE RESTRICT  -- Statuses are reusable, not owned
-);
-
--- DTO: articles.status is Reference, NOT Composition
--- Even though table name could be "article_statuses"
+// Usage:
+// GET /categories/:id → IShoppingCategory (explore children)
+// GET /products/:id → IShoppingProduct { category: IShoppingCategory.IInvert } (breadcrumb)
 ```
 
 ---
 
-## Rule 5: Array Size Consideration
+## Quick Decision Guide
 
-**The expected volume of child records affects the representation strategy.**
+### Step-by-Step Process
 
-### 5.1. Small Collections (< 100 items): Full Composition
-
-Safe to include full arrays in the DTO.
-
-```typescript
-interface IUser {
-  // User typically has 1-5 sessions
-  sessions: IUserSession[] {
-    id: string;
-    device: string;
-    ip_address: string;
-    last_active: string;
-  }[];
-
-  // User typically has 1-3 addresses
-  addresses: IUserAddress[] {
-    id: string;
-    street: string;
-    city: string;
-    postal_code: string;
-    is_default: boolean;
-  }[];
-}
+```
+1. START with table names
+   │
+   ├─ Same hierarchy chain? (parent_child_*)
+   │  └─ YES → Composition candidate
+   │     │
+   │     ├─ Independent concept? (comments, orders)
+   │     │  └─ YES → Separate scope → Reference
+   │     │  └─ NO → Continue (same scope)
+   │     │
+   │     ├─ Check FK direction
+   │     │  ├─ Child → Parent FK → Continue
+   │     │  └─ Parent → Child FK → Reference (lookup)
+   │     │
+   │     ├─ Analyze business usage
+   │     │  ├─ Core data (always loaded)? → Continue
+   │     │  └─ Auxiliary data (audit, history)? → Consider separate API
+   │     │
+   │     ├─ Check size & frequency
+   │     │  ├─ < 20 items, always shown → Composition ✅
+   │     │  ├─ 20-100 items, case by case → Carefully decide
+   │     │  └─ > 100 items or rarely used → Count + Separate API ✅
+   │     │
+   │     └─ Final decision
+   │        └─ Composition ✅ OR Separate API ✅
+   │
+   └─ Different hierarchy? (members, sellers, products)
+      └─ Reference ✅
 ```
 
-### 5.2. Medium Collections (100-1000 items): Count + Optional Composition
+### Quick Lookup
 
-Include count in main DTO, provide separate endpoint for full list.
+| Pattern | Example | Rule | Result |
+|---------|---------|------|--------|
+| `parent_*` data | `snapshot_images` | Same scope + Small | ✅ Composition |
+| `parent_*` concept | `article_comments` | Different scope | ❌ Reference |
+| Actor | `author`, `creator` | Different domain | ❌ Reference |
+| Actor reverse | `seller.sales[]` | Reverse + Large | ❌ Count + API |
+| Category | `category`, `tags` | Different domain | ❌ Reference |
+| Lookup | `article_statuses` | Reversed FK | ❌ Reference |
+| Large collection | `comments` (100+) | Size limit | ❌ Count + API |
+| Recursive | `parent_id` | Self-reference | 🔄 Use IInvert |
+
+---
+
+## Complete Examples
+
+### Example 1: BBS System
 
 ```typescript
-// Main DTO: Count only
+// =====================
+// Scope: bbs_articles
+// =====================
 interface IBbsArticle {
-  comment_count: number;  // Could be 500 comments
-}
-
-// Detail DTO: Optional composition with pagination
-interface IBbsArticle.IWithComments {
   id: string;
   title: string;
   content: string;
+  created_at: string;
 
-  // Top N comments only
-  recent_comments: IBbsComment.ISummary[] {  // Top 10
+  // Composition: Same scope (article's snapshots)
+  snapshots: IBbsArticleSnapshot[] {
     id: string;
     content: string;
-    author: IUser.ISummary;
     created_at: string;
+
+    images: IBbsArticleSnapshotImage[] {
+      id: string;
+      url: string;
+    }[];
+
+    files: IBbsArticleSnapshotFile[] {
+      id: string;
+      url: string;
+      name: string;
+    }[];
   }[];
 
-  comment_count: number;  // Total count
-}
-
-// Full list: Separate API
-// GET /articles/:id/comments?page=1&limit=20
-// Response: IPageIBbsComment
-```
-
-### 5.3. Large Collections (> 1000 items): Separate API Only
-
-Never include in main DTO, always use separate paginated endpoint.
-
-```typescript
-// Main DTO: No composition, count only
-interface IRedditMember {
-  id: string;
-  nickname: string;
-
-  // Statistics only
-  article_count: number;  // Could be 50,000
-  comment_count: number;  // Could be 200,000
-
-  // ❌ NEVER include arrays here
-}
-
-// Separate APIs for collections:
-// GET /members/:id/articles?page=1&limit=20 → IPageIRedditArticle.ISummary
-// GET /members/:id/comments?page=1&limit=20 → IPageIRedditComment.ISummary
-```
-
-### 5.4. Decision Matrix
-
-| Expected Size | Main DTO | Detail DTO | Separate API |
-|--------------|----------|------------|--------------|
-| 1-10 items | Full array ✅ | Full array ✅ | Optional |
-| 10-100 items | Full array ✅ | Full array ✅ | Recommended |
-| 100-1000 items | Count only | Top N (10-20) | Required ✅ |
-| 1000+ items | Count only | Count only | Required ✅ |
-
----
-
-## Rule 6: DTO Type Specific Rules
-
-**Different DTO types have different composition strategies.**
-
-### 6.1. Main Entity (IEntity) - Full Detail
-
-Used for: `GET /entities/:id` (single item detail view)
-
-```typescript
-interface IRedditArticle {
-  // Core fields
-  id: string;
-  title: string;
-  content: string;
-
-  // ✅ Composition: Small owned collections
-  images: IRedditArticleImage[];       // < 20 images
-  files: IRedditArticleFile[];         // < 10 files
-  // snapshots: Separate API (audit/history data)
-
-  // ✅ Reference: Actor (Summary)
-  author: IRedditMember.ISummary;
-
-  // ✅ Reference: Category (Full or Summary)
-  category: IRedditCategory;
-
-  // ✅ Large collections: Count only
-  comment_count: number;
-  like_count: number;
-  view_count: number;
-}
-```
-
-**Depth limit: Maximum 2 levels**
-
-```typescript
-// ✅ ALLOWED: Depth 2
-interface IArticle {
-  author: IUser.ISummary {           // Level 1
-    profile: IUserProfile {           // Level 2
-      avatar_url: string;
-    }
-  }
-}
-
-// ❌ FORBIDDEN: Depth 3+
-interface IArticle {
-  author: IUser {
-    profile: IUserProfile {
-      badges: IBadge[] {              // Level 3 - TOO DEEP
-        achievements: IAchievement[]  // Level 4 - WAY TOO DEEP
-      }
-    }
-  }
-}
-```
-
-### 6.2. Summary (IEntity.ISummary) - Minimal Info
-
-Used for: `GET /entities` (list view), search results, related items
-
-```typescript
-interface IRedditArticle.ISummary {
-  // Essential identification
-  id: string;
-  title: string;
-
-  // ❌ NO Composition - arrays excluded for performance
-  // files: IRedditArticleFile[];  ❌
-  // images: IRedditArticleImage[];  ❌
-
-  // ✅ Reference: Denormalized essential display fields only
-  // No nested objects, all flattened for performance
-  author_nickname: string;  // Denormalized from author
-  author_avatar_url: string;
-
-  category_name: string;  // Denormalized from category
-
-  // ✅ Counts and stats
-  comment_count: number;
-  like_count: number;
-  view_count: number;
-
-  // ✅ Essential metadata
-  created_at: string;
-  updated_at: string;
-}
-```
-
-**Key principle**: Summary DTOs prioritize **performance over completeness**.
-- ❌ NO nested objects (not even Summary objects)
-- ✅ Denormalize essential reference fields for display
-- ✅ All fields are flat primitives (string, number, boolean)
-
-### 6.3. Create (IEntity.ICreate) - Input DTO
-
-Used for: `POST /entities` (creation)
-
-```typescript
-interface IRedditArticle.ICreate {
-  // Required business fields
-  title: string;
-  content: string;
-
-  // ✅ Composition: Can create children simultaneously
-  images?: IRedditArticleImage.ICreate[] {
-    url: string;
-    order: number;
-  }[];
-
-  files?: IRedditArticleFile.ICreate[] {
-    url: string;
-    name: string;
-    size: number;
-  }[];
-
-  // ✅ Reference: FK only (ID)
-  category_id: string;
-
-  // ❌ FORBIDDEN: Actor IDs (from auth context)
-  // reddit_member_id: string;  ❌ From JWT token
-
-  // ❌ FORBIDDEN: System fields
-  // id: string;  ❌ Auto-generated
-  // created_at: string;  ❌ System-managed
-}
-```
-
-### 6.4. Update (IEntity.IUpdate) - Partial Update DTO
-
-Used for: `PUT/PATCH /entities/:id`
-
-```typescript
-interface IRedditArticle.IUpdate {
-  // Optional business fields
-  title?: string;
-  content?: string;
-  category_id?: string;
-
-  // ❌ NO Composition - use separate APIs
-  // images?: IRedditArticleImage[];  ❌ Use PUT /articles/:id/images
-  // files?: IRedditArticleFile[];    ❌ Use PUT /articles/:id/files
-
-  // ❌ FORBIDDEN: Ownership change
-  // reddit_member_id?: string;  ❌ Owner cannot be changed
-
-  // ❌ FORBIDDEN: System fields
-  // created_at?: string;  ❌
-  // updated_at?: string;  ❌
-}
-```
-
-### 6.5. Detail with Relations (IEntity.IWithX) - Optional Composition
-
-Used for: `GET /entities/:id?include=comments` (opt-in detail expansion)
-
-```typescript
-// Base entity
-interface IRedditArticle {
-  id: string;
-  title: string;
-  comment_count: number;
-}
-
-// Optional detail variants
-interface IRedditArticle.IWithComments {
-  // ...IRedditArticle fields
-
-  // Top N comments
-  recent_comments: IRedditComment.ISummary[];  // Top 10
-}
-
-interface IRedditArticle.IWithFullDetails {
-  // ...IRedditArticle fields
-
-  images: IRedditArticleImage[];
-  files: IRedditArticleFile[];
-  recent_comments: IRedditComment.ISummary[];  // Top 10
-  related_articles: IRedditArticle.ISummary[];  // Top 5
-}
-```
-
----
-
-## Rule 7: Common Anti-Patterns to Avoid
-
-### 7.1. ❌ Actor Entity with Collections
-
-```typescript
-// ❌ WRONG: User containing all their actions
-interface IUser {
-  id: string;
-  name: string;
-
-  // ❌ Performance bomb - could be 10,000 articles
-  articles: IArticle[];
-
-  // ❌ Performance bomb - could be 50,000 comments
-  comments: IComment[];
-
-  // ❌ Performance bomb - could be 100,000 likes
-  likes: ILike[];
-}
-
-// ✅ CORRECT: User with stats only
-interface IUser {
-  id: string;
-  name: string;
-  // Clean and simple
-}
-
-interface IUser.IWithStats {
-  id: string;
-  name: string;
-
-  // Counts only
-  article_count: number;
-  comment_count: number;
-  like_count: number;
-}
-
-// ✅ CORRECT: Separate APIs
-// GET /users/:id/articles
-// GET /users/:id/comments
-// GET /users/:id/likes
-```
-
-### 7.2. ❌ Category Entity with Items
-
-```typescript
-// ❌ WRONG: Category containing all articles
-interface ICategory {
-  id: string;
-  name: string;
-
-  // ❌ Could be 50,000 articles in this category
-  articles: IArticle[];
-}
-
-// ✅ CORRECT: Category without items
-interface ICategory {
-  id: string;
-  name: string;
-  parent_id?: string;
-  description?: string;
-}
-
-// ✅ CORRECT: Separate API
-// GET /categories/:id/articles?page=1&limit=20
-```
-
-### 7.3. ❌ Bidirectional Full Composition
-
-```typescript
-// ❌ WRONG: Both directions have full objects
-interface IOrder {
-  customer: ICustomer;  // Full object
-}
-
-interface ICustomer {
-  orders: IOrder[];  // Full objects - CIRCULAR!
-}
-
-// ✅ CORRECT: Asymmetric reference
-interface IOrder {
-  customer: ICustomer.ISummary;  // Summary
-}
-
-interface ICustomer {
-  id: string;
-  name: string;
-  // No orders array
-}
-
-// ✅ CORRECT: Reverse via API
-// GET /customers/:id/orders
-```
-
-### 7.4. ❌ Deep Nesting (> 2 levels)
-
-```typescript
-// ❌ WRONG: Too many levels
-interface IArticle {
-  author: IUser {
-    profile: IUserProfile {
-      avatar: IFile {
-        storage: IStorage {
-          provider: IStorageProvider {
-            config: IProviderConfig {  // 6 levels deep!
-              ...
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-// ✅ CORRECT: Maximum 2 levels
-interface IArticle {
-  author: IUser.ISummary {  // Level 1
-    id: string;
-    name: string;
-    avatar_url: string;  // Flattened, not nested
-  }
-}
-```
-
-### 7.5. ❌ Including Massive Text Fields in Summary
-
-```typescript
-// ❌ WRONG: Full content in list view
-interface IArticle.ISummary {
-  id: string;
-  title: string;
-  content: string;  // ❌ Could be 50KB of text
-}
-
-// ✅ CORRECT: Truncated or excluded
-interface IArticle.ISummary {
-  id: string;
-  title: string;
-  content_preview: string;  // First 200 chars
-  // or exclude content entirely
-}
-```
-
----
-
-## Decision Tree Flowchart
-
-```
-START: Analyzing relationship from Parent to Child
-
-┌─────────────────────────────────────────┐
-│ 1. Check table names                    │
-│    Child is "{Parent}_*" pattern?       │
-└─────────────┬───────────────────────────┘
-              │
-         YES  │  NO
-              ├────────────────┐
-              │                │
-         Composition       ┌───▼────────────────────────────┐
-              │            │ 2. Check relationship type     │
-              │            │    Is this an Actor field?     │
-              │            │    (*_id, author_id, user_id)  │
-              │            └───┬────────────────────────────┘
-              │                │
-              │           YES  │  NO
-              │                ├──────────┐
-              │                │          │
-              │        Reference      ┌───▼─────────────────────┐
-              │        (Summary)      │ 3. Check semantics      │
-              │                       │    Category/Tag/Lookup? │
-              │                       └───┬─────────────────────┘
-              │                           │
-              │                      YES  │  NO
-              │                           ├─────────┐
-              │                           │         │
-              │                   Reference     ┌───▼──────────────────┐
-              │                   (ID+name)     │ 4. Cascade delete?   │
-              │                                 │    Parent→Child?     │
-              │                                 └───┬──────────────────┘
-              │                                     │
-              │                                YES  │  NO
-              │                                     ├────────┐
-              │                                     │        │
-              ├─────────────────────────────────────┘   Reference
-              │
-         ┌────▼─────────────────────┐
-         │ 5. Check array size      │
-         │    Expected # of items?  │
-         └────┬─────────────────────┘
-              │
-      ┌───────┼────────┬────────────┐
-      │       │        │            │
-    < 100   100-1K   1K-10K      > 10K
-      │       │        │            │
-   Full    Count +   Count       Count
-   Array   Top N     Only        Only
-```
-
----
-
-## Practical Examples
-
-### Example 1: Reddit System
-
-```typescript
-// ✅ Correct Design
-
-interface IRedditArticle {
-  id: string;
-  title: string;
-  content: string;
-
-  // Composition: Table name pattern match (reddit_article_*)
-  files: IRedditArticleFile[];      // reddit_article_files
-  images: IRedditArticleImage[];    // reddit_article_images
-  // snapshots: Separate API (audit/history data)
-
-  // Reference: Actor (Summary object includes id)
-  author: IRedditMember.ISummary {
-    id: string;  // No need for separate reddit_member_id
-    nickname: string;
-    avatar_url: string;
-    level: number;
-  };
-
-  // Reference: Category
-  category: IRedditCategory {
-    id: string;  // No need for separate category_id
-    name: string;
-    parent_id?: string;
-  };
-
-  // Large collections: Count only
-  comment_count: number;
-  like_count: number;
-  view_count: number;
-}
-
-interface IRedditMember {
-  id: string;
-  nickname: string;
-  email: string;
-  avatar_url: string;
-  level: number;
-  created_at: string;
-
-  // ✅ Clean - no reverse collections
-}
-
-interface IRedditCategory {
-  id: string;
-  name: string;
-  description?: string;
-  parent_id?: string;
-
-  // ✅ Clean - no reverse collections
-}
-
-// Reverse queries: Separate APIs
-// GET /members/:id/articles → IPageIRedditArticle.ISummary
-// GET /categories/:id/articles → IPageIRedditArticle.ISummary
-```
-
-### Example 2: BBS System
-
-```typescript
-// ✅ Correct Design
-
-interface IBbsArticle {
-  id: string;
-  title: string;
-  content: string;
-
-  // Composition: Ownership (bbs_article_*)
-  files: IBbsArticleFile[];
-  // snapshots: Separate API (audit/history data)
-
-  // Composition: Small collection (many-to-many)
-  tags: IBbsTag[] {  // Typically < 10 tags
-    id: string;
-    name: string;
-  }[];
-
-  // Reference: Actor
+  // Reference: Different scope (actor)
   author: IBbsMember.ISummary {
-    id: string;  // No need for separate author_id
+    id: string;
     nickname: string;
     avatar_url: string;
   };
 
-  // Composition: Comments (with limit)
-  recent_comments: IBbsComment.ISummary[];  // Top 5
-  comment_count: number;  // Total
-
-  // Reference: Category
+  // Reference: Different scope (category)
   category: IBbsCategory {
-    id: string;  // No need for separate category_id
+    id: string;
     name: string;
+  };
+
+  // Different scope: Count only (large collection)
+  comment_count: number;
+  like_count: number;
+}
+
+// =====================
+// Scope: bbs_article_comments (SEPARATE ROOT)
+// =====================
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  created_at: string;
+
+  // Reference: Different scope (actor)
+  author: IBbsMember.ISummary {
+    id: string;
+    nickname: string;
+  };
+
+  // Reference: Parent scope (ID only in default)
+  article_id: string;
+}
+
+// IInvert: For comment-centric views
+interface IBbsArticleComment.IInvert {
+  id: string;
+  content: string;
+  created_at: string;
+
+  author: IBbsMember.ISummary {
+    id: string;
+    nickname: string;
+  };
+
+  article: IBbsArticle.ISummary {  // ✅ Parent context
+    id: string;
+    title: string;
+    // NO comments array!
   };
 }
 
-interface IBbsArticle.ISummary {
-  id: string;
-  title: string;
-
-  // ✅ Summary: All flattened, NO nested objects for performance
-  author_name: string;
-  author_avatar_url: string;
-
-  category_name: string;
-
-  // Counts
-  comment_count: number;
-  like_count: number;
-
-  created_at: string;
-}
-
-interface IBbsMember {
-  id: string;
-  nickname: string;
-  email: string;
-
-  // ✅ No articles, comments, etc.
-}
+// Usage:
+// GET /articles/:id → IBbsArticle { comments: IBbsArticleComment[] }
+// GET /members/:id/comments → IPageIBbsArticleComment.IInvert
 ```
 
-### Example 3: Shopping System
+### Example 2: Shopping System - Orders
 
 ```typescript
-// ✅ Correct Design
-
+// =====================
+// Scope: shopping_orders
+// =====================
 interface IShoppingOrder {
   id: string;
   order_number: string;
   status: string;
+  created_at: string;
 
-  // Composition: Essential components (shopping_order_items)
-  items: IShoppingOrderItem[] {
+  // Composition: Same scope (order's components)
+  goods: IShoppingOrderGoods[] {
     id: string;
-    product: IShoppingProduct.ISummary {
-      id: string;  // No need for separate product_id
-      name: string;
-      thumbnail_url: string;
-      price: number;
-    };
     quantity: number;
     price: number;
-    subtotal: number;
+
+    // Reference: Different scope (cart commodity lookup)
+    commodity: IShoppingCartCommodity.ISummary {
+      id: string;
+      name: string;
+
+      // Composition: Stocks belong to commodity
+      stocks: IShoppingCartCommodityStock[] {
+        id: string;
+        inventory_id: string;
+        quantity: number;
+      }[];
+    };
   }[];
 
-  // Composition: Payment info (shopping_order_payments)
+  deliveries: IShoppingOrderDelivery[] {
+    id: string;
+    address: string;
+    status: string;
+    tracking_number: string;
+  }[];
+
   payments: IShoppingOrderPayment[] {
     id: string;
     method: string;
     amount: number;
-    status: string;
-    paid_at?: string;
+    paid_at: string;
   }[];
 
-  // Reference: Customer (Actor - who placed the order)
+  // Reference: Different scope (actor)
   customer: IShoppingCustomer.ISummary {
-    id: string;  // No need for separate customer_id
+    id: string;
     name: string;
     email: string;
   };
 
-  // Reference: Shipping address
-  shipping_address: IShoppingAddress {
-    id: string;  // No need for separate shipping_address_id
-    street: string;
-    city: string;
-    postal_code: string;
-  };
-
-  // Aggregates
   total_amount: number;
+}
+
+// Summary: No composition
+interface IShoppingOrder.ISummary {
+  id: string;
+  order_number: string;
+  status: string;
+
+  // Denormalized
+  customer_name: string;
+  total_amount: number;
+  goods_count: number;
+
   created_at: string;
 }
+```
 
-interface IShoppingCustomer {
+### Example 3: Shopping System - Sales (Deep Hierarchy)
+
+```typescript
+// =====================
+// Scope: shopping_sales
+// =====================
+interface IShoppingSale {
   id: string;
   name: string;
-  email: string;
+  description: string;
+  created_at: string;
 
-  // ✅ No orders array
+  // Reference: Different scope (actor)
+  seller: IShoppingSeller.ISummary {
+    id: string;
+    name: string;
+    company: string;
+  };
+
+  // Composition: Same scope (sale's units - Depth 1)
+  units: IShoppingSaleUnit[] {
+    id: string;
+    name: string;
+    price: number;
+
+    // Composition: Unit's options (Depth 2)
+    options: IShoppingSaleUnitOption[] {
+      id: string;
+      name: string;
+      type: string;
+
+      // Composition: Option's candidates (Depth 3)
+      candidates: IShoppingSaleUnitOptionCandidate[] {
+        id: string;
+        value: string;
+        price_delta: number;
+      }[];
+    }[];
+
+    // Composition: Unit's stocks (Depth 2)
+    stocks: IShoppingSaleUnitStock[] {
+      id: string;
+      warehouse_id: string;
+      quantity: number;
+      reserved: number;
+    }[];
+  }[];
 }
 
-// Reverse query
-// GET /customers/:id/orders → IPageIShoppingOrder.ISummary
+// When loading individual unit (avoids deep nesting)
+interface IShoppingSaleUnit {
+  id: string;
+  sale_id: string;
+  name: string;
+  price: number;
+
+  // Depth 2: Include children when unit is loaded
+  options: IShoppingSaleUnitOption[] {
+    id: string;
+    name: string;
+    type: string;
+
+    candidates: IShoppingSaleUnitOptionCandidate[] {
+      id: string;
+      value: string;
+      price_delta: number;
+    }[];
+  }[];
+
+  stocks: IShoppingSaleUnitStock[] {
+    id: string;
+    warehouse_id: string;
+    quantity: number;
+    reserved: number;
+  }[];
+}
+```
+
+### Example 4: Hierarchy Chain
+
+```typescript
+// =====================
+// Chain: articles → snapshots → snapshot_images/files
+// =====================
+
+// Depth 0: Root
+interface IBbsArticle {
+  id: string;
+  title: string;
+
+  snapshots: IBbsArticleSnapshot[];  // ✅ Depth 1
+
+  // Or: Depth 1 via separate API
+  // GET /articles/:id/snapshots
+}
+
+// Depth 1: Loaded when needed
+interface IBbsArticleSnapshot {
+  id: string;
+  article_id: string;
+  content: string;
+  created_at: string;
+  reason: string;
+
+  // Depth 2: When snapshot is loaded, include its children
+  images: IBbsArticleSnapshotImage[] {
+    id: string;
+    url: string;
+  }[];
+
+  files: IBbsArticleSnapshotFile[] {
+    id: string;
+    url: string;
+    name: string;
+  }[];
+}
+
+// =====================
+// Separate chain: comments → comment_snapshots → comment_snapshot_images/files
+// =====================
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+
+  // Depth 2: Separate API
+  // GET /comments/:id/snapshots
+}
+
+interface IBbsArticleCommentSnapshot {
+  id: string;
+  comment_id: string;
+  content: string;
+
+  images: IBbsArticleCommentSnapshotImage[] {
+    id: string;
+    url: string;
+  }[];
+
+  files: IBbsArticleCommentSnapshotFile[] {
+    id: string;
+    url: string;
+  }[];
+}
 ```
 
 ---
 
-## Summary Checklist
+## Critical Rules Summary
 
-When designing a DTO with relationships, verify:
+### The 6 Essential Rules
 
-### ✅ Composition Checklist
-- [ ] **CRITICAL**: Child has FK pointing TO parent (not reversed)
-- [ ] Child table name follows `{parent}_*` pattern
-- [ ] Parent does NOT have FK to child (would indicate lookup/metadata)
-- [ ] Represents ownership (cascade delete applies)
-- [ ] Array size is reasonable (< 100 items typically)
-- [ ] Children cannot exist independently
-- [ ] Depth is ≤ 2 levels
-- [ ] Not an actor/category/lookup reference
-- [ ] Verified in Prisma schema (not just assumed from name)
+1. **Table Name Hierarchy First**
+   - Follow naming pattern: `parent_child_grandchild`
+   - Same chain = Composition candidate
+   - Different chains = Reference
 
-### ✅ Child → Parent Back-Reference Checklist
-- [ ] **CRITICAL**: If parent composes children, children must NOT include full parent
-- [ ] Child (default) uses `parent_id: string` (ID only - BEST for parent-centric views)
-- [ ] Child.IInvert uses `parent: IParent.ISummary` (for child-centric views)
-- [ ] IInvert variant is created when child needs parent context (user's comments, search results, etc.)
-- [ ] Summary variant for parent does NOT include any composition arrays
-- [ ] Verified no circular reference (Parent → Child → Parent → ♾️)
+2. **Scope Boundaries Matter**
+   - Independent concepts = Separate scopes
+   - `article_comments` is NOT part of `articles` scope
+   - Cross-scope = Always Reference
+   - **CRITICAL: Same scope ≠ Auto-composition** (analyze usage & size!)
 
-### ✅ Recursive Tree Structure Checklist
-- [ ] **CRITICAL**: NEVER include both `parent` object AND `children` array in same type
-- [ ] Default type has `children` array + `parent_id` only (top-down navigation)
-- [ ] IInvert type has `parent` chain + NO `children` (bottom-up navigation/breadcrumb)
-- [ ] Children depth limited to 1-2 levels max
-- [ ] Parent chain can be unlimited (typically 5-10 levels)
-- [ ] Verified for: categories, folders, org charts, menu trees, comment threads
+3. **FK Direction Validates**
+   - Child → Parent FK = Composition ✅
+   - Parent → Child FK = Reference (lookup) ❌
 
-### ✅ Reference Checklist
-- [ ] Different domain or independent entity
-- [ ] Is an actor field (author, creator, modifier - avoid reverse collections)
-- [ ] Is a category/classification field
-- [ ] Is a lookup to master data
-- [ ] Reverse direction would cause explosion
-- [ ] Used Summary variant, not full entity
-- [ ] Summary object includes `id` field (no need for separate `*_id` field)
-- [ ] In Summary DTOs, denormalized to flat primitives (no nested objects)
+4. **Actor/Category = Always Reference**
+   - Users, Members, Customers, Sellers = Actors
+   - Categories, Tags, Statuses = Classifications
+   - Never compose reverse direction (Member with articles, Seller with sales)
+   - Large collections (100+) = Count + separate API
 
-### ✅ Reverse Direction Checklist
-- [ ] Actor entities do NOT contain action arrays
-- [ ] Category entities do NOT contain item arrays
-- [ ] Reverse queries use separate APIs
-- [ ] Statistics use separate DTO variants (IEntity.IWithStats)
+5. **Size Limits Override Composition**
+   - Even same scope: 100+ items = Separate API
+   - Reverse relationships are especially dangerous
+   - Count field + pagination endpoint instead
+   - Example: seller.sales_count (NOT seller.sales[])
 
-### ❌ Anti-Pattern Checklist
-- [ ] NO bidirectional full composition
-- [ ] NO depth > 2 levels
-- [ ] NO large arrays (> 1000 items) in main DTO
-- [ ] NO actor entities with collections
-- [ ] NO category entities with items
-- [ ] NO circular references
+6. **IInvert for Back-References**
+   - Child needs parent context = Use IInvert
+   - Recursive trees = Default (children) vs IInvert (parent chain)
+   - Never both directions in same type
+
+---
+
+## Common Mistakes
+
+### ❌ Mistake 1: Comments as Composition
+
+```typescript
+// ❌ WRONG: Treating comments as same scope
+interface IBbsArticle {
+  comments: IBbsArticleComment[];  // Different scope!
+}
+```
+
+**Why wrong:** Comments are independent entities with their own lifecycle.
+
+**Fix:** Count + separate API or IInvert
+
+```typescript
+// ✅ CORRECT
+interface IBbsArticle {
+  comment_count: number;
+}
+
+// GET /articles/:id/comments → IPageIBbsArticleComment
+```
+
+### ❌ Mistake 2: Actor Collections (Reverse Direction Explosion)
+
+```typescript
+// ❌ WRONG: User with articles array
+interface IBbsMember {
+  articles: IBbsArticle[];  // Could be 100+ articles!
+}
+
+// ❌ WRONG: Seller with sales array
+interface IShoppingSeller {
+  sales: IShoppingSale[];  // Could be 1000+ sales!
+}
+```
+
+**Why wrong:**
+- Reverse direction creates massive arrays
+- Performance catastrophe (loading 1000+ nested objects)
+- Different domains (Seller ≠ Sales scope)
+- Needs pagination
+
+**Fix:** Count + separate API
+
+```typescript
+// ✅ CORRECT
+interface IBbsMember {
+  id: string;
+  nickname: string;
+  articles_count: number;  // ✅ Count only
+}
+
+interface IShoppingSeller {
+  id: string;
+  name: string;
+  sales_count: number;  // ✅ Count only
+}
+
+// GET /members/:id/articles → IPage<IBbsArticle.ISummary>
+// GET /sellers/:id/sales → IPage<IShoppingSale.ISummary>
+```
+
+### ❌ Mistake 3: Circular References
+
+```typescript
+// ❌ WRONG: Both directions with full objects
+interface IBbsArticle {
+  comments: IBbsArticleComment[];
+}
+
+interface IBbsArticleComment {
+  article: IBbsArticle;  // Infinite loop!
+}
+```
+
+**Fix:** Use IInvert
+
+```typescript
+// ✅ CORRECT
+interface IBbsArticleComment.IInvert {
+  article: IBbsArticle.ISummary {  // No comments!
+    id: string;
+    title: string;
+  };
+}
+```
+
+### ❌ Mistake 4: Ignoring Scope Boundaries
+
+```typescript
+// ❌ WRONG: Mixing scopes
+interface IBbsArticle {
+  images: IBbsArticleImage[];              // ✅ Same scope
+  comments: IBbsArticleComment[];          // ❌ Different scope
+  comment_images: IBbsArticleCommentImage[]; // ❌❌ Wrong scope entirely!
+}
+```
+
+**Fix:** Respect hierarchy
+
+```typescript
+// ✅ CORRECT
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // Same scope only
+}
+
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // Snapshot's own scope
+  files: IBbsArticleSnapshotFile[];
+}
+
+interface IBbsArticleComment {
+  // Comment's own scope (comment_snapshots)
+}
+```
+
+### ❌ Mistake 5: Same Scope = Auto-Composition (Ignoring Size & Usage)
+
+```typescript
+// ❌ WRONG: Same scope but wrong decision
+interface IBbsArticle {
+  snapshots: IBbsArticleSnapshot[];  // Could be 100+ audit records!
+}
+
+interface IShoppingSale {
+  reviews: IShoppingSaleReview[];  // Could be 1000+ reviews!
+}
+```
+
+**Why wrong:**
+- Same hierarchy/scope doesn't mean unlimited composition
+- Must analyze: Expected size? Usage pattern? Business concept?
+- Snapshots = audit trail (rarely viewed, potentially large)
+- Reviews = user feedback (separate feature, large volume)
+
+**Fix:** Analyze business concept and size
+
+```typescript
+// ✅ CORRECT: Same scope but separate API
+interface IBbsArticle {
+  id: string;
+  title: string;
+
+  snapshots_count: number;  // ✅ Count only
+  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+}
+
+interface IShoppingSale {
+  id: string;
+  name: string;
+
+  reviews_count: number;  // ✅ Count only
+  average_rating: number; // ✅ Denormalized summary
+  // GET /sales/:id/reviews → IPage<IShoppingSaleReview>
+}
+```
+
+**Key insight:** Same scope requires careful analysis:
+1. **Core vs Auxiliary**: Images (core) vs Snapshots (audit)
+2. **Size expectations**: 5-10 items vs 100+ items
+3. **Usage patterns**: Always shown vs separate tab/page
+4. **Performance impact**: Acceptable query time?
+
+---
+
+## Checklist
+
+### Before Creating DTOs
+
+- [ ] **Identify root tables** (main entities: articles, orders, members)
+- [ ] **Map hierarchy chains** (article → article_images, snapshot → snapshot_images/files)
+- [ ] **Identify scope boundaries** (comments is separate from articles)
+- [ ] **List actors** (author, creator, customer, seller)
+- [ ] **List categories** (category, tags, status)
+
+### For Each DTO
+
+- [ ] **Check table name pattern** (`parent_child_*` = same scope)
+- [ ] **Verify independence** (can it exist/operate alone?)
+- [ ] **Validate FK direction** (child → parent = composition signal)
+- [ ] **Analyze business concept** (core data vs auxiliary data like audit/history)
+- [ ] **Check usage pattern** (always loaded together vs separate feature)
+- [ ] **Estimate array size** (< 20 = composition, > 100 = separate API)
+- [ ] **Performance check** (loading children acceptable in main query?)
+- [ ] **No reverse collections** (User should NOT have articles array)
+
+### For Back-References
+
+- [ ] **Child default: ID only** (article_id, not article object)
+- [ ] **Child.IInvert: Parent Summary** (without grandchildren)
+- [ ] **No circular refs** (both directions = disaster)
+
+### For Recursive Trees
+
+- [ ] **Default: children array** (top-down navigation)
+- [ ] **IInvert: parent chain** (bottom-up breadcrumb)
+- [ ] **Never both** (parent object AND children array)
 
 ---
 
 ## Integration with INTERFACE_SCHEMA.md
 
-This document should be referenced in the main `INTERFACE_SCHEMA.md` as:
+This document provides **detailed decision rules** for composition and reference strategies. The main INTERFACE_SCHEMA.md should reference this with a brief summary:
 
 ```markdown
-### 4.X. Composition and Reference Strategy
+### X.X Composition and Reference Strategy
 
-For detailed rules on when to use Composition (embedding full objects/arrays) versus Reference (using IDs or Summary objects), see the comprehensive guide in `INTERFACE_SCHEMA_COMPOSITION.md`.
+When designing DTOs with relationships, follow these rules:
+
+1. **Start with table name hierarchy** - `parent_child_*` pattern indicates same scope
+2. **Respect scope boundaries** - Independent concepts (comments, orders) are separate scopes
+3. **Analyze business concept & size** - Core data vs auxiliary data, expected record count
+4. **Validate with FK direction** - Child→Parent FK confirms composition signal
+5. **Use IInvert for back-references** - When child needs parent context
+
+For detailed rules and examples, see INTERFACE_SCHEMA_COMPOSITION.md.
 
 **Quick Reference:**
-- **Composition**: Child table name is `{parent}_*`, ownership relationship, cascade delete
-- **Reference**: Actor fields, categories, different domains, independent entities
-- **Reverse Direction**: NEVER include reverse collections in Actor/Category entities
-
-Apply these rules to prevent infinite recursion, performance issues, and circular dependencies.
+- Same scope + Core data + Small size (<20) = Composition
+- Same scope + Auxiliary data + Large size (100+) = Separate API
+- Different scope or Actor/Category = Reference
+- Comments/Orders are separate scopes (not composition)
+- Never compose reverse direction (User with articles array)
+- Snapshots/Reviews/Audit trails = Usually separate API even if same scope
 ```
 
 ---
 
 ## Conclusion
 
-Proper Composition vs Reference decisions are **critical** for:
+**The hierarchy in table names is your primary guide.** Start there, validate with domain concepts and FK direction, then carefully analyze business usage and size.
 
-1. **Performance**: Preventing data explosion and N+1 query problems
-2. **Type Safety**: Avoiding circular type dependencies
-3. **Maintainability**: Clear ownership and relationship semantics
-4. **API Design**: Intuitive and predictable endpoint behavior
+**Core workflow:**
+1. Identify table name hierarchy chains
+2. Detect scope boundaries (independent concepts)
+3. **Analyze business concept** (core vs auxiliary data)
+4. **Check expected size & usage** (always loaded vs separate feature)
+5. Validate with FK direction
+6. Apply size limits and performance considerations
+7. Use IInvert for reverse perspectives
 
-**Golden Rules:**
-1. **FK Direction is THE strongest signal**:
-   - Child → Parent FK + `{parent}_*` naming → ✅ Composition
-   - Parent → Child FK → ✅ Reference (even if name looks like composition)
-2. **Table name alone is NOT enough**: Always check FK direction in Prisma schema
-3. **Metadata/Lookup tables are References**: If parent has FK to child, it's lookup (not composition)
-4. **Parent → Child composition is safe, Child → Parent is NOT**:
-   - ✅ Article can have `comments: IComment[]`
-   - ❌ Comment must NOT have `article: IArticle` (use ID or `IArticle.ISummary` or `IComment.IInvert`)
-5. **Recursive structures require IInvert**:
-   - ✅ Default: `children[]` + `parent_id` (top-down, depth limit 1-2)
-   - ✅ IInvert: `parent` chain + NO children (bottom-up, unlimited depth)
-   - ❌ NEVER both directions in same type
-6. **One direction gets composition, reverse gets separate API**: Prevent infinite recursion
-7. **Actor entities never contain action collections**: User should NOT have `articles[]`
-8. **Depth limit of 2 levels maximum**: Prevent deep nesting (except IInvert parent chains)
-9. **Reference objects include ID**: No need for separate `*_id` field when using Summary objects
-10. **Summary DTOs are flat**: Denormalize references to primitives for performance
-11. **When in doubt, use Reference**: Safer default choice
+**Critical insight:** Same scope does NOT mean automatic composition. You must:
+- Understand the business concept (core data vs audit/history)
+- Estimate typical record counts (5 items vs 500 items)
+- Analyze usage patterns (always shown vs rarely accessed)
+- Consider performance impact (query time, payload size)
 
-**Key Design Patterns:**
-
-✅ **Main Entity (IEntity)**:
-- Composition for owned children (`{parent}_*` tables)
-- Reference as Summary objects (author, category)
-- Count only for large collections (comments, likes)
-
-✅ **Summary Entity (IEntity.ISummary)**:
-- NO nested objects (not even Summary)
-- Denormalize reference fields to flat primitives
-- Example: `author_name: string` instead of `author: IUser.ISummary`
-
-✅ **Create DTO (IEntity.ICreate)**:
-- Composition for children that can be created together
-- Foreign keys (IDs) for references
-- NEVER accept actor IDs (from auth context)
-
-These rules ensure your DTOs are practical, performant, and maintainable.
+This approach ensures DTOs are **practical, performant, and maintainable** while preventing infinite recursion, circular dependencies, and performance catastrophes.
