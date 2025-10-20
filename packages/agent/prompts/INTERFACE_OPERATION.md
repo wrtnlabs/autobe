@@ -337,14 +337,15 @@ Follow these patterns based on the endpoint method:
   - Response: Main entity type (e.g., `IUser`)
   - Name: `"at"`
 
-- **Child Entity with Parent Context**: `GET /children/{id}/invert`
-  - Returns child entity with parent context (no grandchildren to prevent circular references)
+- **Inverted Composition Retrieval**: `GET /children/{id}/invert`
+  - Returns child entity with full parent composition (reversed composition direction)
   - Response: Invert type (e.g., `IBbsArticleComment.IInvert`)
   - Name: `"invert"`
+  - **Composition reversal**: Child contains complete parent object, excluding parent's children arrays to prevent circular references
   - **Example use cases**:
-    - Comment with article title: `GET /comments/{id}/invert` → `IBbsArticleComment.IInvert`
-    - Review with product name: `GET /reviews/{id}/invert` → `IShoppingSaleReview.IInvert`
-    - Category with parent breadcrumb: `GET /categories/{id}/invert` → `IShoppingCategory.IInvert`
+    - `GET /comments/{id}/invert` → `IBbsArticleComment.IInvert { article: IBbsArticle }` (article without comments array)
+    - `GET /reviews/{id}/invert` → `IShoppingSaleReview.IInvert { sale: IShoppingSale }` (sale without reviews array)
+    - `GET /units/{id}/invert` → `IShoppingSaleUnit.IInvert { sale: IShoppingSale }` (sale without units array)
 
 #### PATCH Operations
 - **Complex Collection Search**: `PATCH /entities`
@@ -428,15 +429,63 @@ For example, if the service prefix is "shopping":
   - Example: `IShoppingSale`, `IShoppingOrder`
 - `I{ServicePrefix}{Entity}.ISummary`: Simplified entity for lists
   - Example: `IShoppingSale.ISummary`, `IShoppingOrder.ISummary`
-- `I{ServicePrefix}{Entity}.IInvert`: Child entity with parent context
-  - Used when displaying child entity that needs parent information
-  - Example: `IBbsArticleComment.IInvert` (comment with article context)
-  - **When to use**: GET operations on child entities where parent context is needed
-  - **Key characteristic**: Includes parent's summary without grandchildren to prevent circular references
-  - Common use cases:
-    - Comment view showing article title
-    - Review view showing product name
-    - Category view with parent breadcrumb
+- `I{ServicePrefix}{Entity}.IInvert`: Inverted composition structure
+  - **Core concept**: Reverses the composition direction from parent→child to child→parent
+  - **Key characteristic**: Child includes complete parent object, but parent's children arrays are excluded to prevent circular references
+  - **When to use**: GET operations on child entities that need full parent composition context
+  - **Endpoint pattern**: `GET /children/{id}/invert`
+
+  **Example - Category with Parent:**
+  ```typescript
+  // Normal: Parent contains children array
+  interface IShoppingCategory {
+    id: string;
+    name: string;
+    description: string;
+    children: IShoppingCategory[];  // ✅ Has children array
+  }
+
+  // Inverted: Child contains parent object (without grandchildren)
+  namespace IShoppingCategory {
+    export interface IInvert {
+      id: string;
+      name: string;
+      description: string;
+      parent: {  // ✅ Full parent object
+        id: string;
+        name: string;
+        description: string;
+        // ❌ children array excluded to prevent circular reference
+      };
+    }
+  }
+  ```
+
+  **Example - Article Comment:**
+  ```typescript
+  // Normal: Article contains comments
+  interface IBbsArticle {
+    id: string;
+    title: string;
+    content: string;
+    comments: IBbsArticleComment[];  // ✅ Has comments array
+  }
+
+  // Inverted: Comment contains article (without comments)
+  namespace IBbsArticleComment {
+    export interface IInvert {
+      id: string;
+      content: string;
+      created_at: string;
+      article: {  // ✅ Full article object
+        id: string;
+        title: string;
+        content: string;
+        // ❌ comments array excluded to prevent circular reference
+      };
+    }
+  }
+  ```
 - `IPageI{ServicePrefix}{Entity}`: Paginated collection of main entities
   - Example: `IPageIShoppingSale`, `IPageIShoppingOrder`
 - `IPageI{ServicePrefix}{Entity}.ISummary`: Paginated collection of summary entities
