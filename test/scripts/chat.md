@@ -30,7 +30,7 @@
 
 **계층적 권한 체계**: 내부 관리자(`wrtn_moderators`) → 기업(`wrtn_enterprises`) → 팀(`wrtn_enterprise_teams`) → 직원(`wrtn_enterprise_employees`)의 4단계 계층 구조로, 각 계층마다 명확한 권한과 책임이 정의된다.
 
-**이중 역할 시스템**: 기업 전체 직책(owner/manager/member/observer)과 팀 내 역할(chief/manager/member)이 분리되어, 한 직원이 여러 팀에서 다른 역할을 수행할 수 있다.
+**단일 직책 시스템**: 기업 전체 직책(master/manager/member)으로 통합 관리되며, 팀 컴패니언은 별도의 역할 필드 없이 직원의 직책으로 권한이 결정된다.
 
 **완벽한 감사 추적**: 모든 인사 변동, 권한 변경, 데이터 접근이 appointments와 audit log에 기록되어 언제 누가 무엇을 했는지 추적 가능하다.
 
@@ -72,25 +72,19 @@ Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한�
 - **대응 테이블**: `wrtn_moderators`
 - **AutoBeAnalyzeRole**: `moderator`
 - **포함되는 역할들**:
-  - `admin`: 시스템 최고 관리자
+  - `master`: 시스템 최고 관리자
   - `manager`: 시스템 관리자
-  - `viewer`: 읽기 전용 관찰자
-- **핵심 이해**: 위 3개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
+- **핵심 이해**: 위 2개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
 
-#### 2.2.2. Employee Actor  
+#### 2.2.2. Employee Actor
 - **정의**: 기업 고객사의 직원으로서 AI 서비스를 사용하는 주체
 - **대응 테이블**: `wrtn_enterprise_employees`
 - **AutoBeAnalyzeRole**: `employee`
 - **포함되는 직책들**:
-  - `owner`: 기업 전체 최고 권한자
+  - `master`: 기업 전체 최고 권한자
   - `manager`: 기업 관리자
   - `member`: 일반 직원
-  - `observer`: 관찰자
-- **팀 내 역할** (`wrtn_enterprise_team_companions.role`):
-  - `chief`: 팀 리더
-  - `manager`: 팀 관리자
-  - `member`: 팀원
-- **핵심 이해**: 위 모든 직책과 역할은 **하나의 Actor** 안에서의 세부 구분일 뿐
+- **핵심 이해**: 위 모든 직책은 **하나의 Actor** 안에서의 세부 구분일 뿐
 
 ### 2.3. Actor 분류 시 절대 금지 사항
 
@@ -98,13 +92,9 @@ Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한�
 ```typescript
 // ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
 enum AutoBeAnalyzeRole {
-    admin = "admin",
-    moderator = "moderator", 
-    viewer = "viewer",
-    owner = "owner",
+    master = "master",
     manager = "manager",
-    member = "member",
-    chief = "chief"
+    member = "member"
 }
 ```
 
@@ -159,11 +149,10 @@ if (actor === AutoBeAnalyzeRole.moderator) {
 switch(actor) {
     case AutoBeAnalyzeRole.moderator:
         // 전체 시스템 통계 접근 가능
-        // role === 'viewer'면 읽기만 가능
         break;
     case AutoBeAnalyzeRole.employee:
         // 소속 기업 통계만 접근
-        // title === 'owner'면 기업 전체, 아니면 팀 단위
+        // title === 'master'면 기업 전체, 아니면 제한적 접근
         break;
 }
 ```
@@ -288,9 +277,8 @@ model wrtn_moderators {
   name String
   password_hashed String
 
-  // - administrator: can appoint and invite administrator and manager
-  // - manager: can appoint and invite member
-  // - member: just viewing statistics
+  // - master: can appoint and invite master and manager
+  // - manager: can appoint and invite manager
   // - null: no role, so can't do anything
   role String?
   created_at DateTime
@@ -363,19 +351,18 @@ model wrtn_moderator_emails {
 
 내부 관리자는 엔터프라이즈 기업을 관리하는 역할을 해. 서포터의 일종이라 볼 수 있다.
 
-다만 이들의 역할 (`wrtn_moderators.role`) 은 다음과 같이 세 가지로 세분화되어있다. 그리고 이 중 administrator 와 manager 는 엔터프라이즈를 개설하고 철폐하는 등의 엔터프라이즈사들에 대한 직접적인 관리가 가능하며, member 는 오로지 단순 통계 및 레코드 열람 등만이 가능하다.
+다만 이들의 역할 (`wrtn_moderators.role`) 은 다음과 같이 두 가지로 세분화되어있다. 이들 모두 엔터프라이즈를 개설하고 철폐하는 등의 엔터프라이즈사들에 대한 직접적인 관리가 가능하다.
 
-- `administrator`: administrator, manager, member 모두를 임명하고 권한 변경할 수 있다.
-- `moderator`: manager, member를 임명하고 권한 변경할 수 있다.
-- `member`: 통계 및 단순 레코드 열람만 할 수 있다.
+- `master`: master와 manager 모두를 임명하고 권한 변경할 수 있다.
+- `manager`: manager를 임명하고 권한 변경할 수 있다.
 
-> **중요**: `wrtn_moderators.role`은 위의 3가지 값(administrator/manager/member/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
+> **중요**: `wrtn_moderators.role`은 위의 2가지 값(master/manager/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
 
 `wrtn_moderators`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
-또한 `wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
+또한 `wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, master 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
 
-이외에 administrator 나 manager 가 기존의 관리자를 탈퇴 처리하면, `wrtn_moderators.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_moderator_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 관리자이며, 이 때 변경되는 역할은 `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 이 된다. 만일 관리자 당사자 스스로가 탈퇴한 것이라면, `wrtn_moderator_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
+이외에 master 나 manager 가 기존의 관리자를 탈퇴 처리하면, `wrtn_moderators.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_moderator_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 관리자이며, 이 때 변경되는 역할은 `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 이 된다. 만일 관리자 당사자 스스로가 탈퇴한 것이라면, `wrtn_moderator_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
 
 > ### 추적을 위한 세션 관리
 > 
@@ -425,10 +412,9 @@ model wrtn_enterprise_employees {
   password String
   name String
 
-  // - owner
+  // - master
   // - manager
   // - member
-  // - observer
   // - null: 아무 직책도 없어 그 무엇도 할 수 없는 상태
   title String?
   created_at DateTime
@@ -499,16 +485,18 @@ model wrtn_enterprise_teams {
   @@index([parent_id])
 }
 
-// This table handles all team companion roles through the role field
 model wrtn_enterprise_team_companions {
   id String @id @uuid
   wrtn_enterprise_team_id String @uuid
   wrtn_enterprise_employee_id String @uuid
+
+  // - member: 팀에 소속되어 있는 상태
+  // - null: 팀에서 배제된 상태 (deleted_at이 null이면서 role이 null이면 배제됨)
   role String?
   created_at DateTime
   updated_at DateTime
   deleted_at DateTime?
-  
+
   @@unique([wrtn_enterprise_team_id, wrtn_enterprise_employee_id])
   @@index([wrtn_enterprise_employee_id])
 }
@@ -518,7 +506,7 @@ model wrtn_enterprise_team_companion_appointments {
   wrtn_enterprise_team_employee_id String @uuid
   wrtn_enterprise_team_appointer_id String @uuid
   wrtn_enterprise_team_appointer_session_id String @uuid
-  role String?
+  role String? // member := 팀에 임명, null := 팀에서 배제
   created_at DateTime
 
   @@index([wrtn_enterprise_team_employee_id, created_at])
@@ -545,28 +533,27 @@ model wrtn_enterprise_team_companion_invitations {
 
 ### 4.1. Corporation
 
-`wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_moderators` 중 그 역할이 administrator 또는 manager 만 할 수 있으며, 동시에 최초의 owner 직원을 임명하게 된다.
+`wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_moderators` 중 그 역할이 master 또는 manager 만 할 수 있으며, 동시에 최초의 master 직원을 임명하게 된다.
 
 ### 4.2. Employee
 
-`wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_moderators` 에 의해 최초로 임명된 owner 직원에 이해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 네 가지로 구분된다.
+`wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_moderators` 에 의해 최초로 임명된 master 직원에 의해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 세 가지로 구분된다.
 
-이 중 owner 는 기업 내 모든 권한을 가지며 다른 owner, manager, member, observer 를 임명할 수 있다. manager 는 member 와 observer 만 임명할 수 있으며, member 는 일반 사용자로써 AI 서비스를 이용할 수 있되 임명 권한은 없다. observer 는 오직 통계와 사용 내역 열람만 가능하다.
+이 중 master 는 기업 내 모든 권한을 가지며 다른 master, manager, member 를 임명할 수 있다. manager 는 member 만 임명할 수 있으며, member 는 일반 사용자로써 AI 서비스를 이용할 수 있되 임명 권한은 없다.
 
-- `owner`: owner, manager, member, observer 모두를 임명할 수 있다
-- `manager`: member, observer 를 임명할 수 있다  
+- `master`: master, manager, member 모두를 임명할 수 있다
+- `manager`: member 를 임명할 수 있다
 - `member`: AI 서비스 이용 가능, 임명 권한 없음
-- `observer`: 통계 및 사용 내역 열람만 가능
 
-> **중요**: `wrtn_enterprise_employees.title`은 위의 4가지 값(owner/manager/member/observer/null)만 가진다. 이 title 값으로 모든 권한을 관리한다.
+> **중요**: `wrtn_enterprise_employees.title`은 위의 3가지 값(master/manager/member/null)만 가진다. 이 title 값으로 모든 권한을 관리한다.
 
-직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
+직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 master 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 master 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
-직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. owner 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 와 observer 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
+직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. master 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
 
-다만 최초 owner 의 경우 `wrtn_moderators` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 owner 를 지정했음을 의미한다.
+다만 최초 master 의 경우 `wrtn_moderators` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 master 를 지정했음을 의미한다.
 
-직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 owner 또는 manager 가 직원을 해고하는 경우이다. owner 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 와 observer 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
+직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 master 또는 manager 가 직원을 해고하는 경우이다. master 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
 
 두 번째는 직원 본인이 스스로 사직하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_employees.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_employee_appointments` 레코드가 생성되지만, `wrtn_enterprise_appointer_id` 는 자기 자신의 ID가 되며, `title` 은 역시 `null` 이 된다. 이를 통해 자진 퇴사와 해고를 구분할 수 있다.
 
@@ -588,27 +575,21 @@ model wrtn_enterprise_team_companion_invitations {
 
 ### 4.3. Team
 
-`wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 는 owner 또는 manager 직책을 가진 직원만이 만들 수 있으며, 팀 생성자는 동시에 해당 팀의 최초 chief 를 임명한다. 팀 삭제는 owner 또는 manager 직책을 가진 직원이 할 수 있으며, `wrtn_enterprise_teams.deleted_at` 에 그 시각이 기록된다.
+`wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 는 master 또는 manager 직책을 가진 직원만이 만들 수 있으며, 팀 생성자는 동시에 해당 팀의 최초 구성원으로 추가된다 (`role` = `member`). 팀 삭제는 master 또는 manager 직책을 가진 직원이 할 수 있으며, `wrtn_enterprise_teams.deleted_at` 에 그 시각이 기록된다.
 
-그리고 `wrtn_enterprise_team_companions` 는 팀 구성원이다. 한 직원은 여러 팀에 동시에 소속될 수 있으며, 각 팀에서의 역할 (`wrtn_enterprise_team_companions.role`) 은 다음과 같다.
+`wrtn_enterprise_team_companions` 는 팀 구성원이다. 한 직원은 여러 팀에 동시에 소속될 수 있다. `role` 필드는 `member` 또는 `null` 값만 가지며, `member`는 팀에 소속되어 있는 상태, `null`은 팀에서 배제된 상태를 나타낸다.
 
-- `chief`: 팀장, chief 와 manager, member 를 팀에 임명할 수 있다
-- `manager`: 매니저, member 만 팀에 임명할 수 있다
-- `member`: 팀원, 임명 권한 없음
-
-> **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 이 role 값으로 팀 내 권한을 관리한다.
+> **중요**: `wrtn_enterprise_team_companions.role`은 오직 2가지 값(member/null)만 가진다. 팀장 등의 별도 역할은 없으며, 팀원 관리(초대/배제)는 오직 `wrtn_enterprise_employees.title`이 master 또는 manager인 직원만 할 수 있다.
 
 ### 4.4. Companion
 
-팀 구성원의 임명은 팀 내 역할에 따라 권한이 다르다. chief 는 다른 chief, manager, member 를 모두 팀에 임명할 수 있고, manager 는 member 만 임명할 수 있다. member 는 임명 권한이 없다. 모든 임명 이력은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_appointer_id` 는 임명한 팀 구성원의 companion ID 이다. 
+팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. master 또는 manager 직책을 가진 직원만이 다른 직원을 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 (`role` = `member`) 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다 (`role` = `member`). 팀원 초대장도 `expired_at` 시점에 만료되며, 만료된 초대장으로는 팀에 가입할 수 없다.
 
-팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. chief 와 manager 만이 다른 직원을 자신의 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다. 팀원 초대장도 `expired_at` 시점에 만료되며, 만료된 초대장으로는 팀에 가입할 수 없다.
+팀 구성원의 `role` 변경은 오직 master 또는 manager 직책을 가진 직원만이 할 수 있다. `role`을 `null`로 변경하면 해당 직원은 팀에서 배제된다 (팀 소속은 유지하되 팀원 자격을 박탈). 모든 role 변경은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_companions.updated_at` 이 갱신된다.
 
-팀 구성원의 역할도 변경될 수 있으며, `null` 로 설정하여 팀 내 모든 권한을 박탈할 수도 있다. chief 는 다른 모든 팀원의 역할을 변경하거나 `null` 로 만들 수 있고, manager 는 member 의 역할만 변경할 수 있다. 역할이 `null` 이 되면 해당 직원은 팀 소속은 유지하되 팀 내에서 어떠한 권한도 행사할 수 없게 된다. 모든 역할 변경은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_companions.updated_at` 이 갱신된다.
+팀 구성원의 완전한 제거는 두 가지 경우로 나뉜다. 첫 번째는 master 또는 manager 직책을 가진 직원이 팀원을 강제 제거하는 경우이다. 제거 처리 시 `wrtn_enterprise_team_companions.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_team_companion_appointments` 레코드가 새로 생성된다 (`role` = `null`). 이 때 임명자는 제거를 집행한 그 직원의 companion ID이다.
 
-팀 구성원의 해촉도 두 가지 경우로 나뉜다. 첫 번째는 chief 또는 manager 가 팀원을 강제 해촉하는 경우이다. chief 는 모든 역할의 팀원을 해촉할 수 있으며, manager 는 member 만 해촉할 수 있다. 해촉 처리 시 `wrtn_enterprise_team_companions.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_team_companion_appointments` 레코드가 새로 생성된다. 이 때 임명자는 해촉을 집행한 그 팀원이며, `role` 은 `null` 이 되어 더 이상 팀 내 역할이 없음을 나타낸다.
-
-두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만, `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 되며, `role` 은 역시 `null` 이 된다. 이를 통해 자진 탈퇴와 강제 해촉을 구분할 수 있다.
+두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만 (`role` = `null`), `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 된다. 이를 통해 자진 탈퇴와 강제 제거를 구분할 수 있다.
 
 ## 5. AI Chatbot
 
@@ -955,7 +936,7 @@ model wrtn_enterprise_employee_personas {
 
 또한 해당 팀에 단 하나의 `wrtn_enterprise_team_procedures` 레코드도 없다면, 이 때는 해당 팀이 그 어떠한 프로시저도 사용할 수 없는게 아니라, `wrtn_enterprise_procedures` 설정을 따라가는 것으로 한다.
 
-이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_moderators` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 관리자 이상 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
+이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_moderators` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 master 또는 manager 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
 
 ```prisma
 model wrtn_enterprise_procedures {
@@ -1051,17 +1032,14 @@ model wrtn_attachment_files {
 - 직원 관리 범위 내 상세 정보
 - 비용 정보는 조회만 가능 (수정 불가)
 
-**팀 책임자 (chief/manager)**
-- 자신이 관리하는 팀과 하위 팀의 통계
+**팀 관리자 (master/manager 직책을 가진 직원)**
+- 자신이 속한 팀의 통계
 - 팀원들의 사용량과 생산성 지표
 - 다른 팀 데이터는 완전 차단
 
 **일반 직원 (member)**
 - 본인의 사용 내역과 통계만 조회
 - 팀이나 전사 통계는 접근 불가
-
-**관찰자 (observer)**
-- 제한된 요약 통계만 조회 가능
 
 ### 9.2. 수집해야 할 핵심 지표
 
@@ -1155,18 +1133,18 @@ model wrtn_attachment_files {
 - 설정 변경 - 각 설정 도메인별 히스토리
 - 데이터 접근 (특히 타인 데이터) - 각 도메인별 접근 기록
 
-감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, owner는 자사 전체를, chief는 자기 팀의 로그만 볼 수 있다.
+감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, master는 자사 전체를, manager는 자신의 팀과 관리 범위 내의 로그만 볼 수 있다.
 
 ### 접근 권한 요약
 
-| 데이터 범위 | 내부 관리자 | owner | manager | chief | member | observer |
-|----------|-----------|--------|----------|--------|---------|-----------|
-| 시스템 전체 | 집계만 | - | - | - | - | - |
-| 기업 전체 | 집계만 | 전체 | 전체 | - | - | 요약만 |
-| 팀별 | - | 전체 | 전체 | 자기팀 | - | - |
-| 개인별 | - | 전체 | 관리범위 | 팀원만 | 본인만 | - |
-| 비용/청구 | 전체 | 전체 | 조회만 | - | - | - |
-| 감사 로그 | 시스템 | 전사 | 전사 | 자기팀 | - | - |
+| 데이터 범위 | 내부 관리자 | master (기업) | manager (기업) | member (기업) |
+|----------|-----------|--------------|---------------|--------------|
+| 시스템 전체 | 집계만 | - | - | - |
+| 기업 전체 | 집계만 | 전체 | 전체 | - |
+| 팀별 | - | 전체 | 자신의 팀만 | - |
+| 개인별 | - | 전체 | 관리범위 | 본인만 |
+| 비용/청구 | 전체 | 전체 | 조회만 | - |
+| 감사 로그 | 시스템 | 전사 | 자신의 팀만 | - |
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
