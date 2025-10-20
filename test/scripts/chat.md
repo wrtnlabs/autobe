@@ -443,14 +443,14 @@ model wrtn_enterprise_employees {
 // for audit tracing about individual events
 model wrtn_enterprise_employee_sessions {
   id String @id @uuid
-  wrtn_enterprise_id String @uuid
+  wrtn_enterprise_employee_id String @uuid
   href String
   referrer String
   ip String
   created_at DateTime
   expired_at DateTime?
 
-  @@index([wrtn_enterprise_id, created_at])
+  @@index([wrtn_enterprise_employee_id, created_at])
 }
 
 model wrtn_enterprise_employee_appointments {

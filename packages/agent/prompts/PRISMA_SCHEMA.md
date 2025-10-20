@@ -402,6 +402,69 @@ bbs_article_comments: {
 }
 ```
 
+## SESSION TABLE PATTERN (for authenticated actors)
+
+When an actor requires login/authentication (e.g., users, administrators, customers), create a dedicated session table for that actor type. Do not use a single polymorphic session table; instead, create one table per actor class.
+
+CRITICAL: Follow the exact column set defined here. Do not add, remove, or rename any fields beyond this specification.
+
+### Naming and Placement
+- Table name: `{domain?}_{actor_base}_sessions` (snake_case; the last token `sessions` is plural). Avoid duplicate domain prefixes.
+  - Examples: `user_sessions`, `administrator_sessions`, `shopping_customer_sessions`
+- Component: Identity/Actors component (`schema-02-actors.prisma`, namespace `Actors`).
+- Relationship: Many sessions per actor. Foreign key must reference the corresponding actor table (e.g., `user_id` → `users.id`).
+
+### Stance
+- Default stance: `"subsidiary"`
+  - Rationale: Sessions are used for audit tracing of actions and are managed through identity flows.
+
+### Required Fields (EXACT SET)
+- Primary key
+  - `id: uuid` — Primary key
+- Foreign key to actor
+  - `{actor_table}_id: uuid` — FK to the specific actor (e.g., `user_id` → `users.id`)
+    - Relation name: camelCase of actor, e.g., `user`, `administrator`, `customer`
+    - Not unique (an actor can have multiple concurrent sessions)
+- Connection context
+  - `href: string` — Connection URL
+  - `referrer: string` — Referrer URL
+  - `ip: string` — IP address
+- Temporal
+  - `created_at: datetime` — Session creation time
+  - `expired_at: datetime?` — Session end time (nullable)
+
+NO OTHER FIELDS ARE ALLOWED for session tables. Do not add token hashes, device info, user agent, updated_at, or deleted_at.
+
+### Index Strategy (EXACT)
+- Composite index: `[{actor_table}_id, created_at]`
+- Do not create other indexes on session tables.
+
+### Example Prisma Schema Definitions
+
+#### Example: Domain-Neutral Session Table
+
+The following Prisma model demonstrates the required structure for a session table associated with an authenticated actor. All field names, types, and indexes must match this pattern exactly. Do not add, remove, or rename any fields.
+
+```prisma
+model user_sessions {
+  id        String   @id @uuid
+  user_id   String   @uuid
+  href      String   // Connection URL
+  referrer  String   // Referrer URL
+  ip        String   // IP address
+  created_at DateTime
+  expired_at DateTime?
+
+  @@index([user_id, created_at])
+}
+```
+
+**Implementation Notes:**
+- The above model is a template for any actor-specific session table (e.g., `user_sessions`, `administrator_sessions`, `customer_sessions`).
+- Table and field names must use snake_case.
+- The composite index on `[actor_id, created_at]` is required for efficient session queries.
+- No additional fields, indexes, or constraints are permitted.
+
 ## AST STRUCTURE REQUIREMENTS
 
 ### Field Classification

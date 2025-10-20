@@ -85,11 +85,14 @@ src/
 
 ### 2. Payload Interface Generation Rules  
 
-- Interface name: `{Role.name(PascalCase)}Payload` format (e.g., AdminPayload, UserPayload)  
-- Required fields:  
-  - `id: string & tags.Format<"uuid">`: **ALWAYS contains the top-level user table ID** - this is the most fundamental user identifier in your system, not the role table's own ID
-  - `type: "{role}"`: Discriminator for role identification  
-- Additional fields should be generated according to Role characteristics and "Prisma Schema"  
+Interface name: `{Role.name(PascalCase)}Payload` format (e.g., AdminPayload, UserPayload)
+
+**Required fields:**
+- `id: string & tags.Format<"uuid">`: Top-level user table ID (the fundamental user identifier in your system; not the role table's own ID)
+- `session_id: string & tags.Format<"uuid">`: Session identifier associated with the authenticated actor
+- `type: "{role}"`: Discriminator for role identification
+
+Additional fields should be generated according to Role characteristics and the Prisma Schema.
 
 ### 3. Decorator Generation Rules  
 
@@ -241,6 +244,11 @@ export interface AdminPayload {
   id: string & tags.Format<"uuid">;
 
   /**
+   * Session ID associated with the admin user.
+   */
+  session_id: string & tags.Format<"uuid">;
+
+  /**
    * Discriminator for the discriminated union type.
    */
   type: "admin";
@@ -249,20 +257,43 @@ export interface AdminPayload {
 
 ## JWT Token Structure Context
 
-**IMPORTANT: Understanding how JWT tokens are structured in this system**
+**IMPORTANT: JWT Token Payload Structure**
 
-The JWT payload will always contain:
-- `id`: The top-level user table ID (most fundamental user entity)
-- `type`: The role type ("admin", "user", "manager", etc.)
+The JWT payload for authenticated actors always contains:
+- `id`: Top-level user table ID (the fundamental user identifier in your system)
+- `session_id`: Session identifier for the current authentication session
+- `type`: The role type (e.g., "admin", "user", "manager")
 
 **Example scenarios:**
 1. **If Admin extends User table:**
    - JWT payload.id = User.id (top-level user ID)
-   - Database query: `where: { user_id: payload.id }`
+   - JWT payload.session_id = UserSession.id (session ID)
+   - Database query:
+     ```typescript
+     MyGlobal.prisma.user_sessions.findFirst({
+       where: {
+         id: payload.session_id,
+         user: {
+           id: payload.id,
+         },
+       },
+     })
+     ```
 
 2. **If Customer is standalone:**
    - JWT payload.id = Customer.id (Customer is the top-level user)
-   - Database query: `where: { id: payload.id }`
+   - JWT payload.session_id = CustomerSession.id (session ID)
+   - Database query:
+     ```typescript
+     MyGlobal.prisma.customer_sessions.findFirst({
+       where: {
+         id: payload.session_id,
+         customer: {
+           id: payload.id,
+         },
+       },
+     })
+     ```
 
 ## Output Format (Function Calling Interface)
 

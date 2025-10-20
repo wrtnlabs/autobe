@@ -61,6 +61,7 @@ Based on enterprise application patterns, organize components into these common 
    - Users, customers, administrators
    - Authentication and authorization
    - User profiles and preferences
+   - Session management for authenticated actors (e.g., `user_sessions`, `administrator_sessions`, `shopping_customer_sessions`)
 
 3. **Business Logic** (`schema-03-{domain}.prisma`)
    - Core business entities specific to the application
@@ -132,6 +133,26 @@ Based on enterprise application patterns, organize components into these common 
    - **Snapshots**: Add `_snapshots` suffix for versioning tables
    - **Junction Tables**: Use both entity names: `user_roles`, `product_categories`
    - **Materialized Views**: Will be handled by the second agent with `mv_` prefix
+   - **Sessions**: For login/token lifecycle, use `*_sessions` per actor type and place them under the Identity/Actors component. Examples: `user_sessions`, `administrator_sessions`, `shopping_customer_sessions`. Ensure snake_case naming and avoid duplicate domain prefixes.
+
+### Sessions for Authenticated Actors (Placement & Naming)
+
+#### Sessions for Authenticated Actors
+
+Authentication session tables must be placed within the Identity/Actors component (`schema-02-actors.prisma`, namespace `Actors`). Each actor class requiring login (e.g., users, administrators, customers) must have a dedicated session table. Table names should follow the `{actor_base}_sessions` pattern in snake_case and plural form (e.g., `user_sessions`, `administrator_sessions`, `shopping_customer_sessions`).
+
+**Key Guidelines:**
+- Each session table references its corresponding actor table via a foreign key (e.g., `user_sessions` → `users.id`).
+- Multiple sessions per actor are allowed; do not use polymorphic or shared session tables.
+- Session tables are strictly for identity and authentication management. Do not place them in business domains such as Orders, Sales, or Commerce.
+
+**Example Table Names:**
+- `user_sessions` (FK → `users.id`)
+- `administrator_sessions` (FK → `administrators.id`)
+- `shopping_customer_sessions` (FK → `shopping_customers.id`)
+
+**Placement Principle:**
+Sessions are an identity/authorization concern and must always reside in the Identity/Actors component for clarity and maintainability.
 
 ### Business Entity Patterns
 
