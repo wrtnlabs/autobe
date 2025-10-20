@@ -116,9 +116,9 @@ This checklist ensures security is built-in from the start, not added as an afte
     - MUST follow the fixed structure with `pagination` and `data` properties
     - Additional properties like `search` or `sort` can be added as needed
 
-### 4.2. Composition and Reference Strategy
+### 4.2. DTO Relationship Strategy
 
-When designing DTOs with relationships, follow the hierarchy-first approach:
+When designing relationships between DTOs, follow the hierarchy-first approach to determine the appropriate relationship type:
 
 #### 4.2.1. Core Principle
 
@@ -130,7 +130,7 @@ DTOs are built by:
 3. Validating with FK direction
 4. Applying actor/category reference rules
 
-**Critical:** Hierarchy indicates ownership and composition direction. Different scopes always use reference. Same scope uses composition unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
+**Critical:** Hierarchy indicates ownership and relationship direction. Different scopes always use **weak relationships** (reference). Same scope uses **strong relationships** (aggregation) unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
 
 #### 4.2.2. Table Name Hierarchy (Primary Signal)
 
@@ -143,7 +143,7 @@ Root Table:     bbs_articles
        └─ Level 2: bbs_article_snapshot_files
 ```
 
-**Key Insight**: Each level adds one more segment to the name. Hierarchy signals ownership but NOT automatic composition in parent.
+**Key Insight**: Each level adds one more segment to the name. Hierarchy signals ownership but NOT automatic strong relationship in parent.
 
 ```typescript
 // ✅ CORRECT: Analyze usage & size first
@@ -154,8 +154,8 @@ interface IBbsArticle {
 
 // When loading snapshots directly
 interface IBbsArticleSnapshot {
-  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: compose when snapshot loaded
-  files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: compose when snapshot loaded
+  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: strong relationship when snapshot loaded
+  files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: strong relationship when snapshot loaded
 }
 ```
 
@@ -166,29 +166,29 @@ A **scope** is an independent conceptual entity with its own lifecycle and hiera
 **Critical question:** "Is this a different event or created by a different actor?"
 
 ```typescript
-// Different Event/Actor = Separate Scope = Reference
+// Different Event/Actor = Separate Scope = Weak Relationship
 bbs_article_comments
   - Created by readers (different actor from article author)
   - Different event: "commenting" vs "writing article"
-  → SEPARATE SCOPE → Reference
+  → SEPARATE SCOPE → Weak Relationship (Reference)
 
-// Same Event/Actor = Same Scope = Composition
+// Same Event/Actor = Same Scope = Strong Relationship
 bbs_article_snapshots
   - Created by article author (same actor)
   - Same event: "editing article" creates snapshot
-  → SAME SCOPE → Composition
+  → SAME SCOPE → Strong Relationship (Aggregation)
 ```
 
-#### 4.2.4. Actor & Category References
+#### 4.2.4. Actor & Category Relationships
 
 **Actors** create or modify entities. They are ALWAYS from different scopes.
 
-**Rule:** Actor → Entity (reference), but NEVER Entity array in Actor
+**Rule:** Actor → Entity (weak relationship), but NEVER Entity array in Actor
 
 ```typescript
-// ✅ CORRECT: Actor as Reference
+// ✅ CORRECT: Actor as Weak Relationship
 interface IBbsArticle {
-  author: IBbsMember.ISummary;  // Reference only
+  author: IBbsMember.ISummary;  // Weak relationship only
 }
 
 // ❌ WRONG: Reverse direction
@@ -234,20 +234,20 @@ interface IBbsArticleComment.IInvert {
    │
    ├─ Same hierarchy chain? (parent_child_*)
    │  └─ YES → Check if conceptually independent
-   │     ├─ Independent? (comments, orders) → Reference
-   │     └─ Dependent? → Check FK → Composition
+   │     ├─ Independent? (comments, orders) → Weak Relationship
+   │     └─ Dependent? → Check FK → Strong Relationship
    │
    └─ Different hierarchy? (members, sellers)
-      └─ Reference
+      └─ Weak Relationship
 ```
 
 | Pattern | Example | Rule | Result |
 |---------|---------|------|--------|
-| `parent_*` data | `snapshot_images` | Same scope | ✅ Composition |
-| `parent_*` concept | `article_comments` | Different scope | ❌ Reference |
-| Actor | `author`, `creator` | Different scope | ❌ Reference |
+| `parent_*` data | `snapshot_images` | Same scope | ✅ Strong Relationship |
+| `parent_*` concept | `article_comments` | Different scope | ❌ Weak Relationship |
+| Actor | `author`, `creator` | Different scope | ❌ Weak Relationship |
 | Actor reverse | `seller.sales[]` | Reverse direction | ❌ Forbidden |
-| Category | `category`, `tags` | Different scope | ❌ Reference |
+| Category | `category`, `tags` | Different scope | ❌ Weak Relationship |
 
 ### 4.3. Schema Definition Requirements
 
@@ -257,7 +257,10 @@ interface IBbsArticleComment.IInvert {
   - These timestamps vary by table - verify each one exists before including
 - **Type Accuracy**: Map Prisma types to appropriate OpenAPI types and formats
 - **Required Fields**: Accurately mark required fields based on Prisma schema constraints
-- **Relationships**: Properly handle entity relationships (references to other entities)
+- **Relationships**: Properly handle entity relationships based on hierarchy and scope:
+  - Strong relationships (aggregation) for same-scope entities
+  - Weak relationships (reference) for cross-scope entities
+  - ID relationships for Create/Update DTOs
 - **Enumerations**: Define all enum types referenced in entity schemas
 - **Detailed Documentation**: 
   - Schema descriptions must reference related Prisma schema table comments
@@ -490,23 +493,23 @@ interface IUser.IRequest {
 }
 ```
 
-**Post Entity with Composition Example**:
+**Post Entity with Relationship Example**:
 ```typescript
-// ✅ CORRECT: Main entity with proper composition
+// ✅ CORRECT: Main entity with proper relationships
 interface IBbsArticle {
   id: string;
   title: string;
   content: string;
   created_at: string;
   
-  // Same scope composition
+  // Strong relationship (same scope aggregation)
   snapshots: IBbsArticleSnapshot[];
   
-  // Different scope references
+  // Weak relationships (different scope references)
   author: IBbsMember.ISummary;
   category: IBbsCategory;
   
-  // Different scope counts
+  // Counts for different scope entities
   comments_count: number;
   likes_count: number;
 }
@@ -515,7 +518,7 @@ interface IBbsArticle {
 interface IBbsArticle.ICreate {
   title: string;
   content: string;
-  category_id: string;  // OK - selecting category
+  category_id: string;  // ID relationship - selecting category
   tags?: string[];      // OK - business data
   // author_id is FORBIDDEN - comes from auth
 }
@@ -1055,21 +1058,21 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
    - **Step 1**: Map table name hierarchies
    - **Step 2**: Identify scope boundaries (different events/actors)
    - **Step 3**: Validate FK directions
-   - **Step 4**: Mark actors and categories for reference only
+   - **Step 4**: Classify relationships (strong/weak/ID)
    - **Step 5**: Plan IInvert types for reverse perspectives
 
 3. **Security-First Schema Development**:
    - **Step 1**: Remove all authentication fields from request types
    - **Step 2**: Remove all sensitive fields from response types
    - **Step 3**: Block ownership changes in update types
-   - **Step 4**: Apply composition rules based on scope analysis
+   - **Step 4**: Apply relationship rules based on scope analysis
    - **Step 5**: Then proceed with business logic implementation
    - Document all security decisions made
 
 4. **Schema Development**:
    - Systematically define schema definitions for each entity and its variants
    - Apply security filters BEFORE adding business fields
-   - Apply composition vs reference rules consistently
+   - Apply relationship classification rules consistently
    - Document all definitions and properties thoroughly
 
 5. **Verification**:
@@ -1111,12 +1114,12 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Exposing internal system fields** - Fields like salt, internal_notes should never be exposed
 - **Missing authentication boundaries** - Every request type must be checked for actor ID fields
 
-### 12.2. Composition Mistakes (CRITICAL)
-- **Comments as Composition** - Treating comments as same scope when they're independent
+### 12.2. Relationship Mistakes (CRITICAL)
+- **Comments as Strong Relationship** - Treating comments as same scope when they're independent
 - **Actor Collections** - Including articles[] in Member or sales[] in Seller (reverse direction)
 - **Circular References** - Both directions with full objects causing infinite loops
 - **Ignoring Scope Boundaries** - Mixing entities from different scopes
-- **Summary with Composition** - Including nested arrays in ISummary types
+- **Summary with Nested Arrays** - Including strong relationships in ISummary types
 
 ### 12.3. Completeness Mistakes
 - **Forgetting join/junction tables** - Many-to-many relationships need schema definitions too
@@ -1179,11 +1182,11 @@ Before completing the schema generation, verify ALL of the following items:
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly
 
-### ✅ Composition and Reference Rules
+### ✅ Relationship Rules
 - [ ] **Table hierarchy analyzed** - All parent_child_* patterns identified
 - [ ] **Scope boundaries identified** - Different events/actors marked as separate scopes
-- [ ] **FK directions validated** - Child→Parent = composition, Parent→Child = reference
-- [ ] **No reverse collections** - Actor types have no entity arrays
+- [ ] **FK directions validated** - Child→Parent = strong relationship, Parent→Child = weak
+- [ ] **No reverse relationships** - Actor types have no entity arrays
 - [ ] **IInvert types planned** - For child entities needing parent context
 - [ ] **No circular references** - Parent and child never both have full objects
 
@@ -1203,7 +1206,7 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **Main entity type defined** - `IEntity` with all non-sensitive fields
 - [ ] **Create DTO minimal** - Only required business fields, no system fields
 - [ ] **Update DTO all optional** - Every field optional, no ownership changes allowed
-- [ ] **Summary DTO optimized** - Only essential fields for list views, no compositions
+- [ ] **Summary DTO optimized** - Only essential fields for list views, no strong relationships
 - [ ] **Request DTO secure** - No direct user IDs, proper pagination limits
 - [ ] **IInvert DTO appropriate** - Used only when child needs parent context
 
