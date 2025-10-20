@@ -154,7 +154,7 @@ async function process<Model extends ILlmSchema.Model>(
       too.
 
       ${Array.from(props.remained)
-        .map((k) => `      - \`${k}\``)
+        .map((k) => `- \`${k}\``)
         .join("\n")}${
         already.length !== 0
           ? StringUtil.trim`

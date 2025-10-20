@@ -13,31 +13,25 @@ export const transformInterfaceSchemaHistories = (props: {
   instruction: string;
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => [
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-  },
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_COMPOSITION,
-  },
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_COMPOSITION,
-  },
-  ...transformInterfaceAssetHistories(props.state),
-  {
-    type: "assistantMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: StringUtil.trim`
+> => {
+  const schemas: Set<string> = new Set();
+  for (const op of props.operations) {
+    if (op.requestBody) schemas.add(op.requestBody.typeName);
+    if (op.responseBody) schemas.add(op.responseBody.typeName);
+  }
+  return [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+    },
+    ...transformInterfaceAssetHistories(props.state),
+    {
+      type: "assistantMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
       ## API Design Instructions
 
       The following API-specific instructions were extracted from
@@ -62,6 +56,17 @@ export const transformInterfaceSchemaHistories = (props: {
       \`\`\`json
       ${JSON.stringify(props.operations)}
       \`\`\`
+
+      ## Schemas
+
+      Here is the list of request/response bodies' type names from
+      OpenAPI operations. Reference them when creating DTO schema components.
+
+      ${Array.from(schemas)
+        .map((k) => `- \`${k}\``)
+        .join("\n")}
+
     `,
-  },
-];
+    },
+  ];
+};

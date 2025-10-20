@@ -116,7 +116,140 @@ This checklist ensures security is built-in from the start, not added as an afte
     - MUST follow the fixed structure with `pagination` and `data` properties
     - Additional properties like `search` or `sort` can be added as needed
 
-### 4.2. Schema Definition Requirements
+### 4.2. Composition and Reference Strategy
+
+When designing DTOs with relationships, follow the hierarchy-first approach:
+
+#### 4.2.1. Core Principle
+
+**Start from table names, then analyze scope boundaries and conceptual independence.**
+
+DTOs are built by:
+1. Following the natural hierarchy in table names
+2. Respecting scope boundaries (independent concepts = separate scopes)
+3. Validating with FK direction
+4. Applying actor/category reference rules
+
+**Critical:** Hierarchy indicates ownership and composition direction. Different scopes always use reference. Same scope uses composition unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
+
+#### 4.2.2. Table Name Hierarchy (Primary Signal)
+
+Table names reveal ownership hierarchy through naming patterns:
+
+```
+Root Table:     bbs_articles
+  └─ Level 1:   bbs_article_snapshots
+       └─ Level 2: bbs_article_snapshot_images
+       └─ Level 2: bbs_article_snapshot_files
+```
+
+**Key Insight**: Each level adds one more segment to the name. Hierarchy signals ownership but NOT automatic composition in parent.
+
+```typescript
+// ✅ CORRECT: Analyze usage & size first
+interface IBbsArticle {
+  snapshots_count: number;  // Audit data, separate API
+  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+}
+
+// When loading snapshots directly
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: compose when snapshot loaded
+  files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: compose when snapshot loaded
+}
+```
+
+#### 4.2.3. Scope Boundary Detection
+
+A **scope** is an independent conceptual entity with its own lifecycle and hierarchy.
+
+**Critical question:** "Is this a different event or created by a different actor?"
+
+```typescript
+// Different Event/Actor = Separate Scope = Reference
+bbs_article_comments
+  - Created by readers (different actor from article author)
+  - Different event: "commenting" vs "writing article"
+  → SEPARATE SCOPE → Reference
+
+// Same Event/Actor = Same Scope = Composition
+bbs_article_snapshots
+  - Created by article author (same actor)
+  - Same event: "editing article" creates snapshot
+  → SAME SCOPE → Composition
+```
+
+#### 4.2.4. Actor & Category References
+
+**Actors** create or modify entities. They are ALWAYS from different scopes.
+
+**Rule:** Actor → Entity (reference), but NEVER Entity array in Actor
+
+```typescript
+// ✅ CORRECT: Actor as Reference
+interface IBbsArticle {
+  author: IBbsMember.ISummary;  // Reference only
+}
+
+// ❌ WRONG: Reverse direction
+interface IBbsMember {
+  articles: IBbsArticle[];  // FORBIDDEN - violates single direction
+}
+
+// Use separate API instead:
+// GET /members/:id/articles → IPage<IBbsArticle.ISummary>
+```
+
+#### 4.2.5. IInvert Pattern
+
+**IInvert** = Entity from reverse perspective, includes parent context
+
+```typescript
+// Default: No parent object (article detail page)
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  article_id: string;  // ID only
+  author: IBbsMember.ISummary;
+}
+
+// Inverted: Includes parent context (user's comments list)
+interface IBbsArticleComment.IInvert {
+  id: string;
+  content: string;
+  author: IBbsMember.ISummary;
+  
+  article: IBbsArticle.ISummary {  // Parent context
+    id: string;
+    title: string;
+    // CRITICAL: No comments array!
+  };
+}
+```
+
+#### 4.2.6. Quick Decision Guide
+
+```
+1. START with table names
+   │
+   ├─ Same hierarchy chain? (parent_child_*)
+   │  └─ YES → Check if conceptually independent
+   │     ├─ Independent? (comments, orders) → Reference
+   │     └─ Dependent? → Check FK → Composition
+   │
+   └─ Different hierarchy? (members, sellers)
+      └─ Reference
+```
+
+| Pattern | Example | Rule | Result |
+|---------|---------|------|--------|
+| `parent_*` data | `snapshot_images` | Same scope | ✅ Composition |
+| `parent_*` concept | `article_comments` | Different scope | ❌ Reference |
+| Actor | `author`, `creator` | Different scope | ❌ Reference |
+| Actor reverse | `seller.sales[]` | Reverse direction | ❌ Forbidden |
+| Category | `category`, `tags` | Different scope | ❌ Reference |
+
+### 4.3. Schema Definition Requirements
 
 - **Completeness**: Include ALL properties from the Prisma schema for each entity
   - **Existence Verification**: Only include properties that actually exist in the Prisma schema
@@ -182,7 +315,7 @@ This checklist ensures security is built-in from the start, not added as an afte
     - If `"x-autobe-prisma-schema": "User"`, then `created_at` is ONLY valid if the Prisma `User` model has `created_at`
     - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked Prisma model
 
-### 4.3. 🔴 CRITICAL Security and Integrity Requirements by DTO Type
+### 4.4. 🔴 CRITICAL Security and Integrity Requirements by DTO Type
 
 This section provides comprehensive guidelines for each DTO type to ensure security, data integrity, and proper system behavior. Each DTO type serves a specific purpose and has distinct restrictions on what properties should or should not be included.
 
@@ -245,6 +378,7 @@ This section provides comprehensive guidelines for each DTO type to ensure secur
 - **Heavy Relations**: Full nested objects (use IDs or counts instead)
 - **Audit Details**: `created_by`, `updated_by` (unless specifically needed)
 - **Internal Flags**: Debug information, soft delete flags
+- **Composition**: Never include nested arrays in Summary DTOs
 
 **Required Properties**:
 - `id` - Essential for identification
@@ -309,16 +443,6 @@ This section provides comprehensive guidelines for each DTO type to ensure secur
 
 **User Entity - Complete DTO Set**:
 ```typescript
-// ❌ WRONG: Main entity exposing sensitive data
-interface IUser {
-  id: string;
-  email: string;
-  hashed_password: string;  // FORBIDDEN in response
-  salt: string;             // FORBIDDEN in response
-  refresh_token: string;    // FORBIDDEN in response
-  created_by: string;       // OK to include for audit
-}
-
 // ✅ CORRECT: Main entity for responses
 interface IUser {
   id: string;
@@ -335,7 +459,7 @@ interface IUser {
 interface IUser.ICreate {
   email: string;
   name: string;
-  password: string;  // Plain text only - never hashed_password (backend handles hashing)
+  password: string;  // Plain text only - never hashed_password
   // id, created_at, created_by are auto-generated
 }
 
@@ -366,38 +490,44 @@ interface IUser.IRequest {
 }
 ```
 
-**Post Entity - Ownership Example**:
+**Post Entity with Composition Example**:
 ```typescript
-// ❌ WRONG: Create accepting author_id
-interface IPost.ICreate {
+// ✅ CORRECT: Main entity with proper composition
+interface IBbsArticle {
+  id: string;
   title: string;
   content: string;
-  author_id: string;  // FORBIDDEN - comes from auth
+  created_at: string;
+  
+  // Same scope composition
+  snapshots: IBbsArticleSnapshot[];
+  
+  // Different scope references
+  author: IBbsMember.ISummary;
+  category: IBbsCategory;
+  
+  // Different scope counts
+  comments_count: number;
+  likes_count: number;
 }
 
 // ✅ CORRECT: Create without author_id
-interface IPost.ICreate {
+interface IBbsArticle.ICreate {
   title: string;
   content: string;
   category_id: string;  // OK - selecting category
   tags?: string[];      // OK - business data
-}
-
-// ❌ WRONG: Update allowing ownership change
-interface IPost.IUpdate {
-  title?: string;
-  content?: string;
-  author_id?: string;  // FORBIDDEN - ownership immutable
-  created_at?: string; // FORBIDDEN - system managed
+  // author_id is FORBIDDEN - comes from auth
 }
 
 // ✅ CORRECT: Update with only mutable fields
-interface IPost.IUpdate {
+interface IBbsArticle.IUpdate {
   title?: string;
   content?: string;
   category_id?: string;
   tags?: string[];
   status?: 'draft' | 'published';
+  // author_id is FORBIDDEN - ownership immutable
 }
 ```
 
@@ -418,7 +548,7 @@ interface IPost.IUpdate {
 
 **Remember**: The authenticated user information is provided by the decorator at the controller level and passed to the provider function - it should NEVER come from client input.
 
-### 4.4. Standard Type Definitions
+### 4.5. Standard Type Definitions
 
 For paginated results, use the standard `IPage<T>` interface:
 
@@ -495,7 +625,7 @@ export namespace IPage {
 }
 ```
 
-### 4.5. IPage Type Implementation
+### 4.6. IPage Type Implementation
 
 **Fixed Structure for ALL IPage Types**
 
@@ -534,7 +664,7 @@ All IPage types MUST follow this exact structure:
 4. The `data` property is ALWAYS an array type
 5. The array items reference the type indicated in the IPage name
 
-### 4.6. JSON Schema Type Restrictions
+### 4.7. JSON Schema Type Restrictions
 
 **CRITICAL: Type Field Must Be a Single String**
 
@@ -593,7 +723,6 @@ The `type` field in any JSON Schema object is a discriminator that MUST contain 
 
 The type field serves as a discriminator in the JSON Schema type system and MUST always be a single string value. If you need to express nullable types or unions, you MUST use the `oneOf` structure instead of array notation in the type field.
 
-
 ## 5. Implementation Strategy
 
 ### 5.1. Comprehensive Entity Identification
@@ -626,7 +755,7 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
 
 2. **For Relationship Handling**:
    - Identify all relationships from the ERD and Prisma schema
-   - Define appropriate property types for relationships (IDs, nested objects, arrays)
+   - Apply composition vs reference rules based on table hierarchy and scope
    - Document relationship constraints and cardinality
    - **IMPORTANT**: For "belongs to" relationships, never accept the owner ID in requests
 
@@ -649,6 +778,7 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
      - **SHOULD include**: Key fields for list display (status, date, category)
      - **NEVER include**: Large text fields (content, description)
      - **NEVER include**: Any sensitive or internal fields
+     - **NEVER include**: Composition arrays (no nested arrays)
      - Include only safe, public-facing properties
    - Define `.IRequest` types with search/filter/sort parameters
      - **MUST include**: Standard pagination parameters (page, limit)
@@ -656,6 +786,10 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
      - **SHOULD include**: Common filters (search, status, dateRange)
      - May include filters like "my_posts_only" but not direct "user_id" parameters
      - **Consider**: Different request types for different access levels
+   - Create `.IInvert` types when child needs parent context
+     - **Use when**: Child is primary focus (user's comments)
+     - **Include**: Parent Summary without grandchildren
+     - **Never**: Both parent and children arrays in same type
 
 4. **Security Checklist for Each Type**:
    - ✓ No password or hash fields in any response type
@@ -677,6 +811,11 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
 3. **Variant Type Verification**:
    - Confirm necessary variant types exist based on API operations
    - Ensure variant types have appropriate property subsets and constraints
+
+4. **Relationship Verification**:
+   - Check composition follows table hierarchy and scope rules
+   - Verify no reverse direction compositions exist
+   - Ensure IInvert types are used appropriately
 
 ## 6. Documentation Quality Requirements
 
@@ -753,7 +892,6 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 ## 8. Output Format (Function Calling Interface)
 
-
 You must return a structured output following the `IAutoBeInterfaceSchemaApplication.IProps` interface:
 
 ### TypeScript Interface
@@ -791,6 +929,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
       // ...more properties
       // SECURITY: Never include password, hashed_password, salt, or other sensitive fields in response types
       // CRITICAL: Only include created_at, updated_at if they ACTUALLY EXIST in the Prisma schema for this table
+      // Apply composition rules based on hierarchy and scope
     },
     required: [...],
     description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
@@ -834,11 +973,25 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     description: "...",
   },
   "IEntityName.ISummary": { 
+    // NO COMPOSITION in Summary types - only references
     type: "object",
     "x-autobe-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
     properties: {...},
     required: [...],
     description: "...",
+  },
+  "IEntityName.IInvert": { 
+    // Include parent context when child is primary focus
+    type: "object",
+    "x-autobe-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
+    properties: {
+      // ... entity properties
+      parent: {
+        $ref: "#/components/schemas/IParent.ISummary"  // Parent Summary without grandchildren
+      }
+    },
+    required: [...],
+    description: "..."
   },
   "IEntityName.IRequest": { 
     // No x-autobe-prisma-schema - this is for query parameters, not a direct table mapping
@@ -888,6 +1041,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **Array Type Notation Prohibited**: Using array notation in the `type` field (e.g., `["string", "null"]`) is a CRITICAL ERROR. The `type` field MUST always be a single string value. Use `oneOf` for unions and nullable types.
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
 - **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
+- **Reverse Direction Composition**: Including entity arrays in Actor types (e.g., Member.articles[]) is a CRITICAL ERROR.
 
 ## 10. Execution Process
 
@@ -895,26 +1049,37 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
    - Analyze all input data (API operations, Prisma schema, ERD)
    - Create a complete inventory of entities and their relationships
    - Complete the Pre-Execution Security Checklist (Section 3.1)
+   - Map table hierarchies and identify scope boundaries
 
-2. **Security-First Schema Development**:
+2. **Relationship Analysis**:
+   - **Step 1**: Map table name hierarchies
+   - **Step 2**: Identify scope boundaries (different events/actors)
+   - **Step 3**: Validate FK directions
+   - **Step 4**: Mark actors and categories for reference only
+   - **Step 5**: Plan IInvert types for reverse perspectives
+
+3. **Security-First Schema Development**:
    - **Step 1**: Remove all authentication fields from request types
    - **Step 2**: Remove all sensitive fields from response types
    - **Step 3**: Block ownership changes in update types
-   - **Step 4**: Then proceed with business logic implementation
+   - **Step 4**: Apply composition rules based on scope analysis
+   - **Step 5**: Then proceed with business logic implementation
    - Document all security decisions made
 
-3. **Schema Development**:
+4. **Schema Development**:
    - Systematically define schema definitions for each entity and its variants
    - Apply security filters BEFORE adding business fields
+   - Apply composition vs reference rules consistently
    - Document all definitions and properties thoroughly
 
-4. **Verification**:
+5. **Verification**:
    - Validate completeness against the Prisma schema
    - Verify consistency with API operations
-   - Ensure all relationships are properly handled
+   - Ensure all relationships follow composition/reference rules
+   - Check no reverse direction compositions exist
    - Double-check security boundaries are enforced
 
-5. **Output Generation**:
+6. **Output Generation**:
    - Produce the complete `schemas` record in the required format
    - Verify the output meets all quality and completeness requirements
    - Confirm no security violations in final output
@@ -946,7 +1111,14 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Exposing internal system fields** - Fields like salt, internal_notes should never be exposed
 - **Missing authentication boundaries** - Every request type must be checked for actor ID fields
 
-### 12.2. Completeness Mistakes
+### 12.2. Composition Mistakes (CRITICAL)
+- **Comments as Composition** - Treating comments as same scope when they're independent
+- **Actor Collections** - Including articles[] in Member or sales[] in Seller (reverse direction)
+- **Circular References** - Both directions with full objects causing infinite loops
+- **Ignoring Scope Boundaries** - Mixing entities from different scopes
+- **Summary with Composition** - Including nested arrays in ISummary types
+
+### 12.3. Completeness Mistakes
 - **Forgetting join/junction tables** - Many-to-many relationships need schema definitions too
 - **Missing enum definitions** - Every enum in Prisma must have a corresponding schema
 - **Incomplete variant coverage** - Some entities missing .IRequest or .ISummary types
@@ -955,25 +1127,25 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   - This is one of the MOST COMMON errors that breaks implementation
   - ALWAYS verify each timestamp field exists in the specific table before including it
 
-### 12.3. Implementation Compatibility Mistakes
+### 12.4. Implementation Compatibility Mistakes
 - **Schema-Operation Mismatch**: Schemas must enable implementation of what operations describe
 - If operation description says "returns list of X" → Create schema with array type field (e.g., IPageIEntity with data: array)
 - If operation description mentions pagination → Create paginated response schema
 - If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
 
-### 12.4. JSON Schema Mistakes
+### 12.5. JSON Schema Mistakes
 - **Using array notation in type field** - NEVER use `type: ["string", "null"]`. Always use single string value
 - **Wrong nullable expression** - Use `oneOf` for nullable types, not array notation
 - **Missing oneOf for unions** - All union types must use `oneOf` structure
 - **Inline union definitions** - Don't define unions inline, use named types with `oneOf`
 
-### 12.5. Consistency Mistakes
+### 12.6. Consistency Mistakes
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
 - **Mixed naming patterns** - Stick to IEntityName convention throughout
 - **Inconsistent required fields** - Required in Prisma should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
-### 12.6. Business Logic Mistakes
+### 12.7. Business Logic Mistakes
 - **Wrong cardinality in relationships** - One-to-many vs many-to-many confusion
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected
@@ -1007,6 +1179,14 @@ Before completing the schema generation, verify ALL of the following items:
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly
 
+### ✅ Composition and Reference Rules
+- [ ] **Table hierarchy analyzed** - All parent_child_* patterns identified
+- [ ] **Scope boundaries identified** - Different events/actors marked as separate scopes
+- [ ] **FK directions validated** - Child→Parent = composition, Parent→Child = reference
+- [ ] **No reverse collections** - Actor types have no entity arrays
+- [ ] **IInvert types planned** - For child entities needing parent context
+- [ ] **No circular references** - Parent and child never both have full objects
+
 ### ✅ Password and Authentication Security
 - [ ] **Request DTOs use plain `password`** - Never accept `hashed_password` or `password_hash` in requests
 - [ ] **Response DTOs exclude all passwords** - No `password`, `hashed_password`, `salt`, or `password_hash` fields
@@ -1023,8 +1203,9 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **Main entity type defined** - `IEntity` with all non-sensitive fields
 - [ ] **Create DTO minimal** - Only required business fields, no system fields
 - [ ] **Update DTO all optional** - Every field optional, no ownership changes allowed
-- [ ] **Summary DTO optimized** - Only essential fields for list views
+- [ ] **Summary DTO optimized** - Only essential fields for list views, no compositions
 - [ ] **Request DTO secure** - No direct user IDs, proper pagination limits
+- [ ] **IInvert DTO appropriate** - Used only when child needs parent context
 
 ### ✅ Schema Quality Standards
 - [ ] **No inline objects** - Every object type defined as named schema with $ref
@@ -1033,4 +1214,4 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **English descriptions only** - All descriptions in English
 - [ ] **Complete documentation** - Every schema and property has meaningful descriptions
 
-This checklist ensures security-first design, database consistency, and maintainable API schemas.
+This checklist ensures security-first design, database consistency, proper composition/reference relationships, and maintainable API schemas.
