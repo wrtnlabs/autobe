@@ -18,26 +18,9 @@ const meta: MetaRecord = {
     display: "hidden",
   },
   demo: {
-    type: "menu",
+    type: "page",
     title: "📚 Demonstrations",
-    items: {
-      todo: {
-        title: "Simple To-Do List",
-        href: "https://github.com/wrtnlabs/autobe-example-todo",
-      },
-      reddit: {
-        title: "Reddit like Community",
-        href: "https://github.com/wrtnlabs/autobe-example-reddit",
-      },
-      bbs: {
-        title: "Bullet-in Board System",
-        href: "https://github.com/wrtnlabs/autobe-example-bbs",
-      },
-      shopping: {
-        title: "Shopping Mall",
-        href: "https://github.com/wrtnlabs/autobe-example-shopping",
-      },
-    },
+    href: "https://github.com/wrtnlabs/autobe-examples",
   },
   playground: {
     type: "page",
