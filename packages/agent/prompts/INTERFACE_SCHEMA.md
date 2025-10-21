@@ -223,7 +223,584 @@ For EVERY Create/Update DTO, ask:
     - MUST follow the fixed structure with `pagination` and `data` properties
     - Additional properties like `search` or `sort` can be added as needed
 
-### 4.2. DTO Relationship Strategy
+### 4.2. 🔴 CRITICAL RULE: No Inline Object Types - Use Named DTOs with $ref
+
+#### The Single Most Important Schema Design Principle
+
+**ABSOLUTE MANDATE**: Every object type in your schemas MUST be defined as a named DTO and referenced using `$ref`. This is not a suggestion or best practice - it's a MANDATORY requirement that determines whether your API can be properly generated, documented, and maintained.
+
+#### Understanding Inline Object Types and Their Catastrophic Impact
+
+An **inline object type** occurs when you define an object's complete structure directly inside another schema's property, rather than creating a separate named type and referencing it. This creates unmaintainable, non-reusable code that breaks every modern API development workflow.
+
+##### The Problem Illustrated
+
+**❌ THE CARDINAL SIN - Inline Object Definition**:
+```json
+{
+  "IBbsArticle.ICreate": {
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "content": { "type": "string" },
+      "attachments": {
+        "type": "array",
+        "items": {
+          "type": "object",  // 💀 CRITICAL VIOLATION STARTS HERE
+          "properties": {    // 💀 DEFINING STRUCTURE INLINE
+            "id": { "type": "string" },
+            "url": { "type": "string" },
+            "name": { "type": "string" },
+            "size": { "type": "integer" },
+            "mime_type": { "type": "string" },
+            "uploaded_at": { "type": "string", "format": "date-time" }
+          },
+          "required": ["url", "name", "size"]
+        },
+        "description": "File attachments"
+      },
+      "metadata": {
+        "type": "object",  // 💀 ANOTHER VIOLATION
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "category": { "type": "string" },
+          "priority": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+```
+
+**Why This Destroys Your API**:
+1. **Code Generation Breaks**: NestJS, Spring Boot, FastAPI generators fail
+2. **TypeScript Types Lost**: No proper interfaces can be generated
+3. **Swagger Documentation Fails**: Can't properly document nested types
+4. **Validation Impossible**: JSON Schema validators can't handle unnamed types properly
+5. **Testing Blocked**: Mock data generators need named types
+6. **Zero Reusability**: Same structure must be copy-pasted everywhere
+
+**✅ THE ONLY CORRECT APPROACH**:
+```json
+{
+  "IBbsArticle.ICreate": {
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "content": { "type": "string" },
+      "attachments": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
+        },
+        "description": "File attachments for the article"
+      },
+      "metadata": {
+        "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
+      }
+    },
+    "required": ["title", "content"]
+  },
+  
+  "IBbsArticleAttachment.ICreate": {  // ✅ PROPERLY NAMED TYPE
+    "type": "object",
+    "properties": {
+      "url": { "type": "string", "format": "uri" },
+      "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+      "size": { "type": "integer", "minimum": 0 },
+      "mime_type": { 
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]{0,126}/[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]{0,126}$"
+      }
+    },
+    "required": ["url", "name", "size"],
+    "description": "File attachment information for article creation"
+  },
+  
+  "IBbsArticleMetadata": {  // ✅ PROPERLY NAMED TYPE
+    "type": "object",
+    "properties": {
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Article tags for categorization"
+      },
+      "category": { 
+        "type": "string",
+        "description": "Article category"
+      },
+      "priority": { 
+        "type": "string",
+        "enum": ["low", "medium", "high"],
+        "description": "Article priority level"
+      }
+    },
+    "description": "Article metadata information"
+  }
+}
+```
+
+#### Comprehensive Real-World Examples
+
+##### Example 1: E-Commerce Order with Deep Nesting
+
+**❌ CATASTROPHIC - Multiple Levels of Inline Objects**:
+```json
+{
+  "IShoppingOrder.ICreate": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",  // ❌ VIOLATION LEVEL 1
+          "properties": {
+            "product_id": { "type": "string" },
+            "quantity": { "type": "integer" },
+            "unit_price": { "type": "number" },
+            "selected_options": {
+              "type": "array",
+              "items": {
+                "type": "object",  // ❌ VIOLATION LEVEL 2
+                "properties": {
+                  "option_id": { "type": "string" },
+                  "option_name": { "type": "string" },
+                  "option_value": { "type": "string" },
+                  "price_adjustment": { "type": "number" }
+                }
+              }
+            },
+            "applied_coupons": {
+              "type": "array",
+              "items": {
+                "type": "object",  // ❌ VIOLATION LEVEL 2
+                "properties": {
+                  "coupon_code": { "type": "string" },
+                  "discount_amount": { "type": "number" },
+                  "discount_type": { "type": "string" }
+                }
+              }
+            },
+            "shipping_info": {
+              "type": "object",  // ❌ VIOLATION LEVEL 2
+              "properties": {
+                "method": { "type": "string" },
+                "address": {
+                  "type": "object",  // ❌ VIOLATION LEVEL 3!
+                  "properties": {
+                    "street": { "type": "string" },
+                    "city": { "type": "string" },
+                    "state": { "type": "string" },
+                    "postal_code": { "type": "string" },
+                    "country": { "type": "string" }
+                  }
+                },
+                "estimated_delivery": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "payment": {
+        "type": "object",  // ❌ VIOLATION LEVEL 1
+        "properties": {
+          "method": { "type": "string" },
+          "card_info": {
+            "type": "object",  // ❌ VIOLATION LEVEL 2
+            "properties": {
+              "last_four": { "type": "string" },
+              "brand": { "type": "string" },
+              "exp_month": { "type": "integer" },
+              "exp_year": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**✅ PROFESSIONAL - Every Object Has a Name and Purpose**:
+```json
+{
+  "IShoppingOrder.ICreate": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IOrderItem.ICreate"  // ✅ Named type
+        },
+        "minItems": 1,
+        "description": "Items to be ordered"
+      },
+      "payment": {
+        "$ref": "#/components/schemas/IPaymentInfo.ICreate"  // ✅ Named type
+      },
+      "shipping_address": {
+        "$ref": "#/components/schemas/IShippingAddress"  // ✅ Named type
+      }
+    },
+    "required": ["items", "payment", "shipping_address"]
+  },
+  
+  "IOrderItem.ICreate": {
+    "type": "object",
+    "properties": {
+      "product_id": { 
+        "type": "string", 
+        "format": "uuid",
+        "description": "Product identifier"
+      },
+      "quantity": { 
+        "type": "integer", 
+        "minimum": 1,
+        "description": "Quantity to order"
+      },
+      "unit_price": { 
+        "type": "number",
+        "minimum": 0,
+        "description": "Price per unit"
+      },
+      "selected_options": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IProductOption"  // ✅ Named type
+        },
+        "description": "Selected product customizations"
+      },
+      "applied_coupons": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IAppliedCoupon"  // ✅ Named type
+        },
+        "description": "Coupons applied to this item"
+      },
+      "shipping_info": {
+        "$ref": "#/components/schemas/IItemShippingInfo"  // ✅ Named type
+      }
+    },
+    "required": ["product_id", "quantity", "unit_price"]
+  },
+  
+  "IProductOption": {
+    "type": "object",
+    "properties": {
+      "option_id": { "type": "string", "format": "uuid" },
+      "option_name": { "type": "string" },
+      "option_value": { "type": "string" },
+      "price_adjustment": { "type": "number" }
+    },
+    "required": ["option_id", "option_value"]
+  },
+  
+  "IAppliedCoupon": {
+    "type": "object",
+    "properties": {
+      "coupon_code": { "type": "string", "pattern": "^[A-Z0-9]{4,20}$" },
+      "discount_amount": { "type": "number", "minimum": 0 },
+      "discount_type": { "type": "string", "enum": ["percentage", "fixed"] }
+    },
+    "required": ["coupon_code", "discount_amount", "discount_type"]
+  },
+  
+  "IItemShippingInfo": {
+    "type": "object",
+    "properties": {
+      "method": { 
+        "type": "string",
+        "enum": ["standard", "express", "overnight"]
+      },
+      "address": {
+        "$ref": "#/components/schemas/IAddress"  // ✅ Reusable address type
+      },
+      "estimated_delivery": { 
+        "type": "string", 
+        "format": "date"
+      }
+    },
+    "required": ["method", "address"]
+  },
+  
+  "IAddress": {  // ✅ Reusable across entire API
+    "type": "object",
+    "properties": {
+      "street": { "type": "string", "maxLength": 200 },
+      "city": { "type": "string", "maxLength": 100 },
+      "state": { "type": "string", "maxLength": 50 },
+      "postal_code": { "type": "string", "pattern": "^\\d{5}(-\\d{4})?$" },
+      "country": { "type": "string", "pattern": "^[A-Z]{2}$" }
+    },
+    "required": ["street", "city", "state", "postal_code", "country"]
+  },
+  
+  "IPaymentInfo.ICreate": {
+    "type": "object",
+    "properties": {
+      "method": { 
+        "type": "string",
+        "enum": ["credit_card", "debit_card", "paypal", "bank_transfer"]
+      },
+      "card_info": {
+        "$ref": "#/components/schemas/ICardInfo"  // ✅ Named type
+      }
+    },
+    "required": ["method"]
+  },
+  
+  "ICardInfo": {
+    "type": "object",
+    "properties": {
+      "last_four": { "type": "string", "pattern": "^\\d{4}$" },
+      "brand": { "type": "string", "enum": ["visa", "mastercard", "amex", "discover"] },
+      "exp_month": { "type": "integer", "minimum": 1, "maximum": 12 },
+      "exp_year": { "type": "integer", "minimum": 2024, "maximum": 2099 }
+    },
+    "required": ["last_four", "brand", "exp_month", "exp_year"]
+  },
+  
+  "IShippingAddress": {
+    "type": "object",
+    "allOf": [
+      { "$ref": "#/components/schemas/IAddress" },  // ✅ Extends base address
+      {
+        "type": "object",
+        "properties": {
+          "recipient_name": { "type": "string", "maxLength": 100 },
+          "phone_number": { "type": "string", "pattern": "^\\+?[1-9]\\d{1,14}$" },
+          "delivery_instructions": { "type": "string", "maxLength": 500 }
+        }
+      }
+    ],
+    "required": ["recipient_name", "phone_number"]
+  }
+}
+```
+
+##### Example 2: Social Media Post with Rich Content
+
+**❌ VIOLATION - "It's just a simple structure"**:
+```json
+{
+  "ISocialPost.ICreate": {
+    "type": "object",
+    "properties": {
+      "content": { "type": "string" },
+      "media": {
+        "type": "array",
+        "items": {
+          "type": "object",  // ❌ "It's just media info"
+          "properties": {
+            "type": { "type": "string" },
+            "url": { "type": "string" },
+            "thumbnail": { "type": "string" },
+            "duration": { "type": "integer" }
+          }
+        }
+      },
+      "mentions": {
+        "type": "array",
+        "items": {
+          "type": "object",  // ❌ "It's just user mentions"
+          "properties": {
+            "user_id": { "type": "string" },
+            "username": { "type": "string" },
+            "position": { "type": "integer" }
+          }
+        }
+      },
+      "location": {
+        "type": "object",  // ❌ "It's just location"
+        "properties": {
+          "name": { "type": "string" },
+          "coordinates": {
+            "type": "object",  // ❌ NESTED VIOLATION!
+            "properties": {
+              "latitude": { "type": "number" },
+              "longitude": { "type": "number" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**✅ CORRECT - Every Structure Gets Recognition**:
+```json
+{
+  "ISocialPost.ICreate": {
+    "type": "object",
+    "properties": {
+      "content": { 
+        "type": "string",
+        "maxLength": 5000
+      },
+      "media": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IPostMedia"  // ✅ Named
+        },
+        "maxItems": 10
+      },
+      "mentions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IUserMention"  // ✅ Named
+        }
+      },
+      "location": {
+        "$ref": "#/components/schemas/IPostLocation"  // ✅ Named
+      }
+    },
+    "required": ["content"]
+  },
+  
+  "IPostMedia": {
+    "type": "object",
+    "properties": {
+      "type": { 
+        "type": "string",
+        "enum": ["image", "video", "audio", "gif"]
+      },
+      "url": { 
+        "type": "string",
+        "format": "uri"
+      },
+      "thumbnail": { 
+        "type": "string",
+        "format": "uri"
+      },
+      "duration": { 
+        "type": "integer",
+        "minimum": 0,
+        "description": "Duration in seconds for video/audio"
+      }
+    },
+    "required": ["type", "url"]
+  },
+  
+  "IUserMention": {
+    "type": "object",
+    "properties": {
+      "user_id": { "type": "string", "format": "uuid" },
+      "username": { "type": "string", "pattern": "^@[a-zA-Z0-9_]{1,30}$" },
+      "position": { 
+        "type": "integer",
+        "minimum": 0,
+        "description": "Character position in content"
+      }
+    },
+    "required": ["user_id", "position"]
+  },
+  
+  "IPostLocation": {
+    "type": "object",
+    "properties": {
+      "name": { 
+        "type": "string",
+        "maxLength": 200
+      },
+      "coordinates": {
+        "$ref": "#/components/schemas/ICoordinates"  // ✅ Reusable
+      }
+    },
+    "required": ["name", "coordinates"]
+  },
+  
+  "ICoordinates": {  // ✅ Reusable across entire API
+    "type": "object",
+    "properties": {
+      "latitude": { 
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90
+      },
+      "longitude": { 
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180
+      }
+    },
+    "required": ["latitude", "longitude"]
+  }
+}
+```
+
+#### The Decision Matrix
+
+```
+Encountering any property definition
+│
+├─ Is it a primitive (string/number/boolean)?
+│  └─ ✅ Define inline
+│
+├─ Is it an array?
+│  ├─ Array of primitives?
+│  │  └─ ✅ Define inline
+│  └─ Array of objects?
+│     └─ 🔴 MUST create named type + $ref
+│
+└─ Is it an object?
+   ├─ Does a named type already exist?
+   │  └─ ✅ Use $ref to existing type
+   └─ New structure?
+      └─ 🔴 CREATE named type + use $ref
+```
+
+#### Naming Conventions for Extracted Types
+
+1. **Entity Components**: `I{Entity}{Component}`
+   - `IUserProfile`, `IUserSettings`, `IArticleAttachment`
+
+2. **Operation Variants**: `I{Entity}{Component}.{Operation}`
+   - `IUserProfile.ICreate`, `IAttachment.IUpdate`
+
+3. **Shared Types**: `I{Concept}` (no entity prefix for reusable types)
+   - `IAddress`, `IMoney`, `ICoordinates`, `IDateRange`
+
+4. **Configuration**: `I{Entity}{Purpose}Settings/Config`
+   - `IUserNotificationSettings`, `ISystemConfig`
+
+5. **Metadata/Info**: `I{Entity}{Purpose}Info/Metadata`
+   - `IOrderShippingInfo`, `IArticleMetadata`
+
+#### Critical Validation Points
+
+Before ANY schema is accepted:
+
+- [ ] **ZERO** `"type": "object"` followed by `"properties"` inside other schemas
+- [ ] **ALL** object relationships use `$ref`
+- [ ] **EVERY** array of objects uses `items: { "$ref": "..." }`
+- [ ] **NO** property definitions beyond root level
+- [ ] **EVEN** 2-property objects have names
+- [ ] **ALL** reusable structures extracted (addresses, coordinates, etc.)
+
+#### This Rule Is The Foundation of Everything
+
+Without named types:
+- ❌ NestJS cannot generate DTOs
+- ❌ TypeScript has no interfaces
+- ❌ Swagger UI shows incomplete documentation
+- ❌ Frontend generators produce broken code
+- ❌ Unit tests cannot mock data properly
+- ❌ API versioning becomes impossible
+
+With named types:
+- ✅ Clean, reusable code generation
+- ✅ Type-safe development
+- ✅ Professional documentation
+- ✅ Automated testing
+- ✅ Easy maintenance and evolution
+
+**Remember: If it's an object, it gets a name. No exceptions. Ever.**
+
+### 4.3. DTO Relationship Strategy
 
 **IMPORTANT Context**: At this schema generation phase, you have:
 - ✅ Complete Prisma database schema with all tables and relationships
@@ -1702,7 +2279,9 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
    - Ensure IInvert types are used appropriately
    - **CRITICAL**: Verify EVERY DTO has relationships defined (no omissions)
 
-5. **🔴 FINAL RELATIONSHIP VALIDATION**:
+5. **🔴 FINAL VALIDATION CHECKLIST**:
+   
+   **A. Relationship Validation**:
    
    **MANDATORY CHECK - NO EXCEPTIONS**:
    - [ ] EVERY entity DTO has relationships analyzed and defined
@@ -1717,8 +2296,25 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
    - ❌ "Relationship might vary by use case" → Choose the most common case
    
    **Remember**: The review agent EXPECTS you to have defined all relationships. Missing relationships make their job harder and delay the entire process.
+   
+   **B. Named Type Validation**:
+   
+   **MANDATORY CHECK - ZERO TOLERANCE FOR INLINE OBJECTS**:
+   - [ ] ZERO inline object definitions in any property
+   - [ ] ALL object types defined as named schemas
+   - [ ] ALL relationships use $ref exclusively
+   - [ ] NO `properties` objects defined within other schemas
+   - [ ] Every array of objects uses `items: { $ref: "..." }`
+   
+   **Common Inline Object Violations to Fix**:
+   - ❌ Array items with inline object: `items: { type: "object", properties: {...} }`
+   - ❌ Single relationship with inline: `author: { type: "object", properties: {...} }`
+   - ❌ Nested configuration objects without $ref
+   - ❌ "Simple" objects defined inline (even 2-3 properties need named types)
+   
+   **The Named Type Rule**: If it's an object, it gets a name and a $ref. No exceptions.
 
-5. **Schema Structure Verification**:
+6. **Schema Structure Verification**:
    - **CRITICAL**: Verify ALL schemas are at the root level of the schemas object
    - **FORBIDDEN**: No schema should be defined inside another schema's properties
    - **CORRECT**: Each schema is a key-value pair at the top level, where the key is the schema name and value is the schema definition
@@ -1984,6 +2580,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **No Simplification**: "Simplifying complex entities or relationships" is NOT ACCEPTABLE.
 - **Ignore Capacity Limitations**: Processing only some entities due to their quantity is a SERIOUS ERROR.
 - **Relationship References Required**: Not using $ref for DTO relationships is a CRITICAL ERROR. ALL DTO relationships (single or array) MUST use $ref to reference named types in the schemas record. This is MANDATORY for proper API generation.
+- **Inline Object Types Prohibited**: Defining object structures inline instead of as named types is a CRITICAL ERROR. Every object type must be extracted to a named schema and referenced via $ref. This applies to ALL nested objects, regardless of complexity.
 - **Any Type Prohibited**: Using `any` type or `any[]` in schemas is a CRITICAL ERROR. Every type must be explicitly defined. For paginated results, use specific types like `{Entity}.ISummary[]` not `any[]`.
 - **Array Type Notation Prohibited**: Using array notation in the `type` field (e.g., `["string", "null"]`) is a CRITICAL ERROR. The `type` field MUST always be a single string value. Use `oneOf` for unions and nullable types.
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.

@@ -235,6 +235,297 @@ Before submitting:
 
 ### 5.2. Structural Requirements
 
+#### 🔴 ABSOLUTE PRIORITY #1: Inline Object Type Prohibition
+
+**THE MOST CRITICAL STRUCTURAL VIOLATION**: Inline object types destroy API generation, break documentation, and make testing impossible. This is your HIGHEST PRIORITY fix - before ANY other issues.
+
+##### Understanding the Catastrophic Impact
+
+When you find inline objects, you're looking at code that:
+- **Cannot be generated** by NestJS, Spring Boot, or any framework
+- **Cannot be typed** in TypeScript, Java, or any strongly-typed language  
+- **Cannot be documented** properly in Swagger or ReDoc
+- **Cannot be tested** with mock generators or validators
+- **Cannot be maintained** without copy-pasting changes everywhere
+
+##### Detection Guide - Find Every Violation
+
+**VIOLATION PATTERN #1: Array Items with Inline Objects**
+```json
+// 🔴 SCAN FOR THIS PATTERN - CRITICAL VIOLATION
+{
+  "IOrder": {
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",  // 💀 VIOLATION HERE!
+          "properties": {    // 💀 INLINE DEFINITION!
+            "product_id": { "type": "string" },
+            "quantity": { "type": "integer" },
+            "selected_variants": {
+              "type": "array",
+              "items": {
+                "type": "object",  // 💀 NESTED VIOLATION!
+                "properties": {
+                  "size": { "type": "string" },
+                  "color": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**✅ HOW TO FIX - Extract Everything**:
+```json
+{
+  "IOrder": {
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IOrderItem"  // ✅ FIXED
+        }
+      }
+    }
+  },
+  "IOrderItem": {  // ✅ NEW NAMED TYPE
+    "type": "object",
+    "properties": {
+      "product_id": { "type": "string", "format": "uuid" },
+      "quantity": { "type": "integer", "minimum": 1 },
+      "selected_variants": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IProductVariant"  // ✅ FIXED
+        }
+      }
+    },
+    "required": ["product_id", "quantity"]
+  },
+  "IProductVariant": {  // ✅ EXTRACTED NESTED TYPE
+    "type": "object",
+    "properties": {
+      "size": { 
+        "type": "string",
+        "enum": ["XS", "S", "M", "L", "XL", "XXL"]
+      },
+      "color": { "type": "string" }
+    },
+    "required": ["size", "color"]
+  }
+}
+```
+
+**VIOLATION PATTERN #2: Direct Property Objects**
+```json
+// 🔴 SCAN FOR THIS - Even "Simple" Objects
+{
+  "IArticle.ICreate": {
+    "properties": {
+      "metadata": {
+        "type": "object",  // 💀 VIOLATION!
+        "properties": {
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "priority": { "type": "string" }
+        }
+      },
+      "author_info": {
+        "type": "object",  // 💀 ANOTHER ONE!
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+```
+
+**✅ EVERY Object Gets a Name**:
+```json
+{
+  "IArticle.ICreate": {
+    "properties": {
+      "metadata": {
+        "$ref": "#/components/schemas/IArticleMetadata"  // ✅ NAMED
+      },
+      "author_info": {
+        "$ref": "#/components/schemas/IAuthorInfo"  // ✅ NAMED
+      }
+    }
+  },
+  "IArticleMetadata": {  // ✅ EXTRACTED
+    "type": "object",
+    "properties": {
+      "tags": { 
+        "type": "array", 
+        "items": { "type": "string" },
+        "maxItems": 10
+      },
+      "priority": { 
+        "type": "string",
+        "enum": ["low", "medium", "high", "urgent"]
+      }
+    }
+  },
+  "IAuthorInfo": {  // ✅ EXTRACTED
+    "type": "object",
+    "properties": {
+      "name": { "type": "string", "maxLength": 100 },
+      "email": { "type": "string", "format": "email" }
+    },
+    "required": ["name"]
+  }
+}
+```
+
+**VIOLATION PATTERN #3: Deep Nesting Hell**
+```json
+// 🔴 THE WORST CASE - Multiple Levels
+{
+  "IUserProfile": {
+    "properties": {
+      "preferences": {
+        "type": "object",  // 💀 LEVEL 1
+        "properties": {
+          "notifications": {
+            "type": "object",  // 💀 LEVEL 2
+            "properties": {
+              "email": {
+                "type": "object",  // 💀 LEVEL 3!
+                "properties": {
+                  "marketing": { "type": "boolean" },
+                  "updates": { "type": "boolean" }
+                }
+              },
+              "push": {
+                "type": "object",  // 💀 LEVEL 3!
+                "properties": {
+                  "alerts": { "type": "boolean" },
+                  "messages": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**✅ Hierarchical Extraction**:
+```json
+{
+  "IUserProfile": {
+    "properties": {
+      "preferences": {
+        "$ref": "#/components/schemas/IUserPreferences"
+      }
+    }
+  },
+  "IUserPreferences": {
+    "type": "object",
+    "properties": {
+      "notifications": {
+        "$ref": "#/components/schemas/INotificationSettings"
+      }
+    }
+  },
+  "INotificationSettings": {
+    "type": "object",
+    "properties": {
+      "email": {
+        "$ref": "#/components/schemas/IEmailNotificationSettings"
+      },
+      "push": {
+        "$ref": "#/components/schemas/IPushNotificationSettings"
+      }
+    }
+  },
+  "IEmailNotificationSettings": {
+    "type": "object",
+    "properties": {
+      "marketing": { "type": "boolean", "default": false },
+      "updates": { "type": "boolean", "default": true }
+    }
+  },
+  "IPushNotificationSettings": {
+    "type": "object",
+    "properties": {
+      "alerts": { "type": "boolean", "default": true },
+      "messages": { "type": "boolean", "default": true }
+    }
+  }
+}
+```
+
+##### Your Fix Procedure
+
+**1. SCAN Phase - Find All Violations**
+```javascript
+// Look for this in EVERY schema property:
+if (property.type === "object" && property.properties) {
+  // VIOLATION FOUND - MUST FIX
+}
+```
+
+**2. EXTRACT Phase - Create Named Types**
+- Determine appropriate name: `I{Entity}{Component}`
+- Create new schema entry
+- Copy the inline definition
+- Add description and required fields
+
+**3. REPLACE Phase - Use $ref**
+```json
+// Replace the entire inline object with:
+{ "$ref": "#/components/schemas/YourNewTypeName" }
+```
+
+**4. VERIFY Phase - Ensure Zero Inline Objects**
+- Re-scan all schemas
+- Confirm NO `type: "object"` with `properties` inside other schemas
+- Check arrays especially carefully
+
+##### Common Invalid Excuses
+
+**❌ "It's just 2 fields"** → Every object needs a name
+**❌ "Only used once"** → Named types enable future reuse
+**❌ "It's just config"** → Config deserves proper typing
+**❌ "Too simple to extract"** → Simplicity is no excuse
+**❌ "It's obvious what it is"** → Code generators need names
+
+##### The Business Impact
+
+**WITHOUT Named Types**:
+- 🚫 Backend team cannot generate DTOs
+- 🚫 Frontend team has no TypeScript types
+- 🚫 QA team cannot generate test data
+- 🚫 Documentation team has incomplete specs
+- 🚫 DevOps cannot validate API contracts
+
+**WITH Named Types**:
+- ✅ Automatic DTO generation
+- ✅ Full TypeScript support
+- ✅ Automated testing
+- ✅ Complete documentation
+- ✅ Contract validation
+
+##### Your Review Checklist
+
+- [ ] Scanned EVERY schema for inline objects
+- [ ] Found ALL `type: "object"` with `properties`
+- [ ] Extracted EVERY inline to named type
+- [ ] Replaced ALL with $ref
+- [ ] Verified ZERO inline objects remain
+- [ ] Documented ALL fixes in review
+
 **Named Types and $ref Requirements:**
 - EVERY **complex business entity** MUST be defined as a named type in the schemas record
 - **CRITICAL FOR RELATIONSHIPS**: ALL DTO relationships MUST use `$ref` references - this is MANDATORY
@@ -663,10 +954,11 @@ interface IBbsArticle {
 
 ### 6.2. Fix Priority Order and Required Actions
 
-1. **CRITICAL - MUST DELETE**: 
-   - Security violations: DELETE passwords in responses, actor IDs in requests
-   - Phantom timestamps: DELETE `created_at`, `updated_at`, `deleted_at` that don't exist in Prisma
-   - Non-existent fields: DELETE any property not in the Prisma schema
+1. **CRITICAL - HIGHEST PRIORITY**:
+   - **Inline Object Types**: EXTRACT to named schemas and use $ref - this is the #1 structural violation that blocks all code generation
+   - **Security violations**: DELETE passwords in responses, actor IDs in requests
+   - **Phantom timestamps**: DELETE `created_at`, `updated_at`, `deleted_at` that don't exist in Prisma
+   - **Non-existent fields**: DELETE any property not in the Prisma schema
 2. **HIGH - MUST FIX**: 
    - Naming convention violations (plural instead of singular)
    - Structural errors (missing $ref for relationships, array type notation)
