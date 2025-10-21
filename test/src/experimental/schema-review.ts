@@ -1,0 +1,46 @@
+import { CompressUtil } from "@autobe/filesystem";
+import {
+  AutoBeEventSnapshot,
+  AutoBeInterfaceSchemasReviewEvent,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import fs from "fs";
+
+import { TestGlobal } from "../TestGlobal";
+
+const load = async (): Promise<AutoBeInterfaceSchemasReviewEvent[]> => {
+  const snapshots: AutoBeEventSnapshot[] = JSON.parse(
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/openai/gpt-4.1/chat.interface.snapshots.json.gz`,
+      ),
+    ),
+  );
+  return snapshots
+    .map((s) => s.event)
+    .filter((e) => e.type === "interfaceSchemasReview");
+};
+
+const main = async (): Promise<void> => {
+  const reviews: AutoBeInterfaceSchemasReviewEvent[] = await load();
+  for (const r of reviews) {
+    const md: string = StringUtil.trim`
+      # Interface Schema Review
+      ## Review
+      
+      ${r.review}
+
+      ## Plan
+      
+      ${r.plan}
+
+      ## Changed Schemas
+      
+      \`\`\`json
+      ${JSON.stringify(r.schemas, null, 2)}
+      \`\`\`
+    `;
+    console.log(md + "\n\n\n");
+  }
+};
+main().catch(console.error);
