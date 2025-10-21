@@ -9,6 +9,9 @@ import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
 import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
 import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
 import { AutoBeInterfacePrerequisitesEvent } from "./AutoBeInterfacePrerequisitesEvent";
+import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
+import { AutoBeInterfaceSchemaRelationshipReviewEvent } from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
+import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
 import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
@@ -74,6 +77,9 @@ export type AutoBeEventSource =
   | AutoBeInterfaceOperationsReviewEvent["type"]
   | AutoBeInterfaceSchemasEvent["type"]
   | AutoBeInterfaceSchemasReviewEvent["type"]
+  | AutoBeInterfaceSchemaSecurityReviewEvent["type"]
+  | AutoBeInterfaceSchemaRelationshipReviewEvent["type"]
+  | AutoBeInterfaceSchemaContentReviewEvent["type"]
   | AutoBeInterfaceComplementEvent["type"]
   | AutoBeInterfacePrerequisitesEvent["type"]
   // test

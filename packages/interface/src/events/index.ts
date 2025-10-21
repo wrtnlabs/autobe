@@ -41,6 +41,9 @@ export * from "./AutoBeInterfaceOperationsEvent";
 export * from "./AutoBeInterfaceOperationsReviewEvent";
 export * from "./AutoBeInterfaceSchemasEvent";
 export * from "./AutoBeInterfaceSchemasReviewEvent";
+export * from "./AutoBeInterfaceSchemaSecurityReviewEvent";
+export * from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
+export * from "./AutoBeInterfaceSchemaContentReviewEvent";
 export * from "./AutoBeInterfaceStartEvent";
 
 // TEST

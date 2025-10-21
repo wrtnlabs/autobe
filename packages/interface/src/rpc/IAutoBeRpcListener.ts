@@ -10,6 +10,9 @@ import {
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
   AutoBeInterfaceOperationsReviewEvent,
+  AutoBeInterfaceSchemaContentReviewEvent,
+  AutoBeInterfaceSchemaRelationshipReviewEvent,
+  AutoBeInterfaceSchemaSecurityReviewEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceSchemasReviewEvent,
   AutoBeInterfaceStartEvent,
@@ -337,6 +340,18 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchemasReview?(
     event: AutoBeInterfaceSchemasReviewEvent,
+  ): Promise<void>;
+
+  interfaceSchemaSecurityReview?(
+    event: AutoBeInterfaceSchemaSecurityReviewEvent,
+  ): Promise<void>;
+
+  interfaceSchemaRelationshipReview?(
+    event: AutoBeInterfaceSchemaRelationshipReviewEvent,
+  ): Promise<void>;
+
+  interfaceSchemaContentReview?(
+    event: AutoBeInterfaceSchemaContentReviewEvent,
   ): Promise<void>;
 
   /**

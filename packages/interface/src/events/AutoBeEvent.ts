@@ -14,6 +14,9 @@ import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
 import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
 import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
 import { AutoBeInterfacePrerequisitesEvent } from "./AutoBeInterfacePrerequisitesEvent";
+import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
+import { AutoBeInterfaceSchemaRelationshipReviewEvent } from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
+import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
 import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
@@ -101,6 +104,9 @@ export type AutoBeEvent =
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemasEvent
   | AutoBeInterfaceSchemasReviewEvent
+  | AutoBeInterfaceSchemaSecurityReviewEvent
+  | AutoBeInterfaceSchemaRelationshipReviewEvent
+  | AutoBeInterfaceSchemaContentReviewEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBeInterfacePrerequisitesEvent
@@ -205,6 +211,9 @@ export namespace AutoBeEvent {
     interfaceOperationsReview: AutoBeInterfaceOperationsReviewEvent;
     interfaceSchemas: AutoBeInterfaceSchemasEvent;
     interfaceSchemasReview: AutoBeInterfaceSchemasReviewEvent;
+    interfaceSchemaSecurityReview: AutoBeInterfaceSchemaSecurityReviewEvent;
+    interfaceSchemaRelationshipReview: AutoBeInterfaceSchemaRelationshipReviewEvent;
+    interfaceSchemaContentReview: AutoBeInterfaceSchemaContentReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     interfacePrerequisites: AutoBeInterfacePrerequisitesEvent;
