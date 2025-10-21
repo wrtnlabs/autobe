@@ -694,6 +694,44 @@ AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, Ope
 
 단, 반복컨대 본 AI chatbot 은 웹소켓으로 구현된다. 따라서 AutoBE 가 만들어낼 Restful API 에서는 오직 `wrtn_chat_sessions` 레코드만 생성할 수 있고, 나머지 레코드들은 오직 읽기 API 로만 구현해야한다. 절대 나머지 엔티티들을 작성하고 편집하는 API 를 설계해서는 아니될 것이다.
 
+### 5.1. Chat Session 생성 API 요구사항
+
+**IWrtnChatSession.ICreate**
+
+채팅 세션을 생성할 때 페르소나 ID는 선택적으로 제공할 수 있다:
+
+```typescript
+export namespace IWrtnChatSession {
+  export interface ICreate {
+    vendor: string; // AI vendor model name
+    title?: string | null;
+    disclosure: "private" | "protected" | "public";
+    wrtn_enterprise_team_id?: string | null; // optional team ID
+    wrtn_enterprise_employee_persona_id?: string | null; // optional persona ID
+  }
+}
+```
+
+**페르소나 ID 처리 로직**:
+
+1. **페르소나 ID가 명시적으로 제공된 경우**: 
+   - 제공된 페르소나 ID를 검증하고 사용
+   - 유효하지 않은 ID인 경우 400 Bad Request 반환
+
+2. **페르소나 ID가 제공되지 않은 경우 (null 또는 undefined)**:
+   - 자동으로 해당 직원의 가장 최근 페르소나를 조회
+   - `GET /enterprise/employees/{employeeId}/personas/latest` 로직과 동일
+   - 페르소나가 존재하면 해당 ID를 사용하여 chat session 생성
+   - 페르소나가 존재하지 않으면 404 Not Found 반환
+
+3. **예외 처리**:
+   - 직원이 페르소나를 한 번도 설정하지 않았고, 페르소나 ID도 제공하지 않은 경우 → 404 Not Found
+   - 삭제된 페르소나 ID를 제공한 경우 → 400 Bad Request
+
+**중요**: 데이터베이스의 `wrtn_chat_sessions.wrtn_enterprise_employee_persona_id`는 NOT NULL이므로, 반드시 유효한 페르소나 ID가 있어야만 chat session을 생성할 수 있다.
+
+이를 통해 사용자는 매번 페르소나를 명시하지 않아도 자동으로 마지막 설정을 사용할 수 있으며, 필요시 다른 페르소나를 지정할 수도 있다.
+
 ### `IWrtnChatHistory`
 
 ```typescript
@@ -928,6 +966,19 @@ model wrtn_enterprise_employee_personas {
   @@index([wrtn_enterprise_employee_session_id])
 }
 ```
+
+#### 7.1.1. Persona API 요구사항
+
+**직원의 마지막 페르소나 조회**
+
+직원은 자신이 가장 최근에 설정한 페르소나를 조회할 수 있어야 한다. 이는 아직 삭제되지 않은 (`deleted_at`이 `null`인) 레코드 중에서 `created_at`이 가장 최신인 것을 찾아 반환한다.
+
+- **API Endpoint**: `GET /enterprise/employees/{employeeId}/personas/latest`
+- **Response**: 해당 직원의 가장 최근 페르소나 레코드
+- **Error**: 페르소나를 한 번도 설정하지 않은 경우 404 Not Found 반환
+- **권한**: 본인의 페르소나만 조회 가능
+
+이 API는 직원이 자신의 현재 페르소나 설정을 확인할 때나, 새 채팅 세션을 시작할 때 기본 페르소나를 가져오는 데 사용된다.
 
 ### 7.2. Enterprise Procedure
 각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
