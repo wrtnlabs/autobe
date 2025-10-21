@@ -182,17 +182,78 @@ When identifying and naming tables, you MUST follow strict database normalizatio
 
 When requirements mention: *"Customers can ask questions about products. Sellers can provide answers to these questions."*
 
-❌ **WRONG: Combined Table**
-```
-shopping_sale_questions
-```
-This would force you to add nullable fields for answer data (answer_title, answer_body), nullable seller FK (shopping_seller_id, shopping_seller_session_id), ambiguous timestamps, etc.
+❌ **THE CARDINAL SIN - Monolithic Table with Nullable Field Proliferation**:
+```prisma
+// ANTI-PATTERN: Combining question and answer into one table
+model shopping_sale_questions {
+  id                           String    @id @db.Uuid
+  shopping_sale_id             String    @db.Uuid
 
-✅ **CORRECT: Separate Entity Tables**
+  // Question fields
+  shopping_customer_id         String    @db.Uuid
+  shopping_customer_session_id String    @db.Uuid
+  title                        String
+  body                         String
+  created_at                   DateTime
+
+  // Answer fields - ALL NULLABLE! Red flag!
+  shopping_seller_id           String?   @db.Uuid  // ❌ Nullable FK
+  shopping_seller_session_id   String?   @db.Uuid  // ❌ Nullable FK
+  answer_title                 String?              // ❌ Nullable answer data
+  answer_body                  String?              // ❌ Nullable answer data
+  answered_at                  DateTime?            // ❌ Ambiguous timestamp
+
+  updated_at                   DateTime              // ❌ Question or answer update?
+  deleted_at                   DateTime?
+}
 ```
-shopping_sale_questions         // Question entity only
-shopping_sale_question_answers  // Answer entity with 1:1 FK to questions
+
+**Problems with this design:**
+- 🚫 **Semantic Confusion**: One table represents TWO distinct business concepts
+- 🚫 **Nullable Field Explosion**: Half the columns are nullable
+- 🚫 **Referential Integrity Violation**: Cannot enforce "answer requires seller"
+- 🚫 **Timestamp Ambiguity**: `updated_at` - did question or answer change?
+- 🚫 **Data Anomalies**: What if answer is deleted but question remains?
+- 🚫 **Storage Waste**: Every unanswered question wastes space for answer columns
+
+✅ **CORRECT: Separate Entity Tables**:
+```prisma
+// Question entity - clean and focused
+model shopping_sale_questions {
+  id                           String    @id @db.Uuid
+  shopping_sale_id             String    @db.Uuid
+  shopping_customer_id         String    @db.Uuid
+  shopping_customer_session_id String    @db.Uuid
+  title                        String
+  body                         String
+  created_at                   DateTime
+  updated_at                   DateTime
+  deleted_at                   DateTime?
+}
+
+// Answer entity - separate lifecycle
+model shopping_sale_question_answers {
+  id                           String    @id @db.Uuid
+  shopping_sale_question_id    String    @db.Uuid  // FK to question
+  shopping_seller_id           String    @db.Uuid  // ✅ Non-nullable - always has seller
+  shopping_seller_session_id   String    @db.Uuid  // ✅ Non-nullable
+  title                        String                // ✅ Non-nullable answer data
+  body                         String                // ✅ Non-nullable answer data
+  created_at                   DateTime              // ✅ Clear: answer creation time
+  updated_at                   DateTime              // ✅ Clear: answer modification time
+  deleted_at                   DateTime?
+
+  @@unique([shopping_sale_question_id])  // 1:1 constraint
+}
 ```
+
+**Benefits of separation:**
+- ✅ **Zero Nullable Business Fields**: All core fields are non-nullable
+- ✅ **Clear Ownership**: Question by customer, answer by seller
+- ✅ **Independent Timestamps**: Separate creation/modification tracking
+- ✅ **Referential Integrity**: Database enforces seller existence
+- ✅ **Storage Efficiency**: No wasted space for unanswered questions
+- ✅ **3NF Compliance**: Each entity has single responsibility
 
 **When to use this pattern:**
 - Question-Answer systems
@@ -215,18 +276,82 @@ shopping_sale_question_answers  // Answer entity with 1:1 FK to questions
 
 When requirements mention: *"Customers can report issues with delivered goods. Sellers can also report issues with orders."*
 
-❌ **WRONG: Single Table (would force nullable FKs)**
-```
-shopping_order_good_issues
-```
-This would need nullable shopping_customer_id, nullable shopping_customer_session_id, nullable shopping_seller_id, nullable shopping_seller_session_id, etc.
+❌ **THE CARDINAL SIN - Single Table with Multiple Nullable Actor FKs**:
+```prisma
+// ANTI-PATTERN: Multiple nullable foreign keys for different actors
+model shopping_order_good_issues {
+  id                           String    @id @db.Uuid
 
-✅ **CORRECT: Main Entity + Subtype Entity Tables**
+  // Customer actor fields - nullable
+  shopping_customer_id         String?   @db.Uuid  // ❌ Nullable FK
+  shopping_customer_session_id String?   @db.Uuid  // ❌ Nullable FK
+
+  // Seller actor fields - nullable
+  shopping_seller_id           String?   @db.Uuid  // ❌ Nullable FK
+  shopping_seller_session_id   String?   @db.Uuid  // ❌ Nullable FK
+
+  // Shared issue data
+  title                        String
+  body                         String
+  created_at                   DateTime
+  updated_at                   DateTime
+  deleted_at                   DateTime?
+}
 ```
-shopping_order_good_issues               // Main entity with shared fields
-shopping_order_good_issue_of_customers   // Customer-specific ownership (1:1 with main)
-shopping_order_good_issue_of_sellers     // Seller-specific ownership (1:1 with main)
+
+**Problems with this design:**
+- 🚫 **No Referential Integrity**: Cannot enforce "exactly one actor" at database level
+- 🚫 **Invalid States Possible**: Zero actors, multiple actors, contradictory combinations
+- 🚫 **3NF Violation**: Session IDs depend on which actor, not issue ID
+- 🚫 **Complex Application Logic**: Must validate actor exclusivity in code
+- 🚫 **Query Complexity**: Difficult to filter "issues by customer" vs "issues by seller"
+- 🚫 **Extensibility Problem**: Adding new actor type requires schema migration
+
+✅ **CORRECT: Main Entity + Subtype Entity Tables**:
+```prisma
+// Main entity - shared attributes only
+model shopping_order_good_issues {
+  id         String    @id @db.Uuid
+  actor_type String    // ✅ Quick filter: "customer" | "seller"
+  title      String    // ✅ Shared field
+  body       String    // ✅ Shared field
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@index([actor_type])  // Indexed for query performance
+}
+
+// Customer-specific ownership - clean and focused
+model shopping_order_good_issue_of_customers {
+  id                           String   @id @db.Uuid
+  shopping_order_good_issue_id String   @db.Uuid  // FK to main entity
+  shopping_customer_id         String   @db.Uuid  // ✅ Non-nullable customer
+  shopping_customer_session_id String   @db.Uuid  // ✅ Non-nullable session
+  created_at                   DateTime           // ✅ Customer-specific timestamp
+
+  @@unique([shopping_order_good_issue_id])  // Enforces 1:1 relationship
+}
+
+// Seller-specific ownership - clean and focused
+model shopping_order_good_issue_of_sellers {
+  id                           String   @id @db.Uuid
+  shopping_order_good_issue_id String   @db.Uuid  // FK to main entity
+  shopping_seller_id           String   @db.Uuid  // ✅ Non-nullable seller
+  shopping_seller_session_id   String   @db.Uuid  // ✅ Non-nullable session
+  created_at                   DateTime           // ✅ Seller-specific timestamp
+
+  @@unique([shopping_order_good_issue_id])  // Enforces 1:1 relationship
+}
 ```
+
+**Benefits of subtype pattern:**
+- ✅ **Database-Level Integrity**: `@@unique` enforces exactly one subtype per issue
+- ✅ **Zero Nullable Actor Fields**: All actor FKs are non-nullable
+- ✅ **3NF Compliance**: Actor-specific fields properly normalized
+- ✅ **Extensible**: Add `shopping_order_good_issue_of_admins` without touching existing tables
+- ✅ **Clear Queries**: `JOIN issue_of_customers` for customer issues
+- ✅ **Type Safety**: Impossible to have invalid actor combinations
 
 **Table Naming Pattern:**
 - **Main entity**: Use singular business concept name (e.g., `shopping_order_good_issues`)
