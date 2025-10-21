@@ -402,6 +402,221 @@ bbs_article_comments: {
 }
 ```
 
+### 🔗 ONE-TO-ONE RELATIONSHIP NORMALIZATION
+
+**CRITICAL PRINCIPLE:** When modeling 1:1 relationships (such as Question-Answer pairs), **NEVER use nullable fields to combine both entities into a single table**. This violates fundamental normalization principles and creates data integrity issues.
+
+#### Why Nullable Fields Are Wrong
+
+The anti-pattern of using nullable fields for dependent entities fundamentally violates database normalization because:
+
+1. **Semantic Integrity**: Questions and Answers are conceptually distinct entities with different lifecycles, owners, and timestamps
+2. **Partial Dependencies**: Answer-related fields (answerTitle, answerBody, seller information) are dependent on the existence of an answer, not the question's primary key
+3. **Anomalies**:
+   - **Update Anomaly**: Modifying answer data requires updating the question row
+   - **Insertion Anomaly**: Cannot create an answer without having a pre-existing question row
+   - **Deletion Anomaly**: Removing answer data leaves orphaned nullable columns
+4. **Type Safety**: Nullable fields create ambiguous states where it's unclear if an answer exists or is just incomplete
+5. **Business Logic Complexity**: Application code must constantly check nullable field combinations to determine entity state
+
+#### ❌ WRONG: Monolithic Table with Nullable Fields
+
+```prisma
+// ANTI-PATTERN: Mixing question and answer into one table
+model shopping_sale_questions {
+  id                           String    @id @db.Uuid
+  shopping_sale_id             String    @db.Uuid
+  shopping_customer_id         String    @db.Uuid  // Question creator
+  shopping_customer_session_id String    @db.Uuid
+  shopping_seller_id           String?   @db.Uuid  // ❌ Nullable - answer creator
+  shopping_seller_session_id   String?   @db.Uuid  // ❌ Nullable
+  title                        String                // Question title
+  body                         String                // Question body
+  answer_title                 String?               // ❌ Nullable - answer data
+  answer_body                  String?               // ❌ Nullable - answer data
+  created_at                   DateTime              // Question creation time
+  updated_at                   DateTime              // Ambiguous - question or answer?
+  deleted_at                   DateTime?
+}
+```
+
+**Problems with this design:**
+- Violates 3NF: answer fields depend on answer existence, not question ID
+- Cannot independently manage answer lifecycle (creation, modification, deletion)
+- Cannot track when answer was created vs when question was created
+- Difficult to query "unanswered questions" (must check multiple nullable fields)
+- Cannot enforce referential integrity on conditional foreign keys
+- Wastes storage space for every unanswered question
+
+#### ✅ CORRECT: Separate Tables with 1:1 Relationship
+
+```prisma
+// Question entity - independent lifecycle
+model shopping_sale_questions {
+  id                           String    @id @db.Uuid
+  shopping_sale_id             String    @db.Uuid
+  shopping_customer_id         String    @db.Uuid
+  shopping_customer_session_id String    @db.Uuid
+  title                        String
+  body                         String
+  created_at                   DateTime
+  updated_at                   DateTime
+  deleted_at                   DateTime?
+}
+
+// Answer entity - 1:1 relationship with question
+model shopping_sale_question_answers {
+  id                           String    @id @db.Uuid
+  shopping_sale_question_id    String    @db.Uuid  // FK to question
+  shopping_seller_id           String    @db.Uuid  // Non-nullable - always has seller
+  shopping_seller_session_id   String    @db.Uuid  // Non-nullable
+  title                        String                // Answer-specific fields
+  body                         String
+  created_at                   DateTime              // Answer creation time
+  updated_at                   DateTime              // Answer modification time
+  deleted_at                   DateTime?
+
+  @@unique([shopping_sale_question_id])  // 1:1 constraint
+}
+```
+
+**Benefits of this design:**
+- ✅ Each entity has clear responsibility and lifecycle
+- ✅ Non-nullable fields enforce data integrity
+- ✅ Independent timestamps for questions and answers
+- ✅ Simple queries for unanswered questions (LEFT JOIN returns null)
+- ✅ Proper referential integrity constraints
+- ✅ Follows 3NF normalization principles
+- ✅ Each entity can be independently versioned/modified
+
+**When to use this pattern:**
+- Question-Answer systems
+- Request-Response pairs
+- Order-Invoice relationships
+- Application-Approval workflows
+- Any entity that has an optional 1:1 dependent entity with distinct attributes
+
+### 👥 COMPATIBLE ACTOR PATTERN (Polymorphic Entity Ownership)
+
+**CRITICAL PRINCIPLE:** When multiple actor types can create the same entity type, **NEVER use multiple nullable foreign keys**. Instead, use a **main entity + subtype entities pattern** to maintain referential integrity and normalization.
+
+#### Why Multiple Nullable Foreign Keys Are Wrong
+
+The anti-pattern of using nullable foreign keys for multiple possible actors violates normalization because:
+
+1. **Referential Integrity**: Cannot enforce that exactly one actor FK is non-null at database level
+2. **Partial Dependencies**: Actor-specific fields depend on which actor created the entity, not the entity's primary key
+3. **Data Integrity**: Allows invalid states (zero actors, multiple actors, or incorrect actor combinations)
+4. **Query Complexity**: Must check multiple nullable fields to determine entity ownership
+5. **Type Safety**: Cannot represent "exactly one of N actors" constraint in schema
+6. **Business Logic Leakage**: Database cannot enforce mutual exclusivity of actor types
+
+#### ❌ WRONG: Multiple Nullable Foreign Keys
+
+```prisma
+// ANTI-PATTERN: Nullable FK for each possible actor type
+model shopping_order_good_issues {
+  id                           String    @id @db.Uuid
+  shopping_customer_id         String?   @db.Uuid  // ❌ Nullable - customer creator
+  shopping_customer_session_id String?   @db.Uuid  // ❌ Nullable
+  shopping_seller_id           String?   @db.Uuid  // ❌ Nullable - seller creator
+  shopping_seller_session_id   String?   @db.Uuid  // ❌ Nullable
+  title                        String
+  body                         String
+  created_at                   DateTime
+  // ...
+}
+```
+
+**Problems with this design:**
+- Cannot enforce that exactly one actor type created the issue
+- Allows invalid states: zero actors, both customer and seller, etc.
+- Violates 3NF: session IDs depend on which actor type, not issue ID
+- Complex application logic to validate actor consistency
+- Difficult to query "issues by actor type"
+- Cannot add actor-specific metadata without more nullable fields
+
+#### ✅ CORRECT: Main Entity + Actor Subtype Entities
+
+```prisma
+// Main entity - contains shared attributes
+model shopping_order_good_issues {
+  id         String    @id @db.Uuid
+  actor_type String    // Actor type identifier (e.g., "customer", "seller")
+  title      String    // Shared fields common to all issues
+  body       String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@index([actor_type])  // Index for filtering by actor type
+}
+
+// Customer-created issues - subtype entity
+model shopping_order_good_issue_of_customers {
+  id                           String   @id @db.Uuid
+  shopping_order_good_issue_id String   @db.Uuid  // FK to main entity
+  shopping_customer_id         String   @db.Uuid  // Non-nullable customer
+  shopping_customer_session_id String   @db.Uuid  // Non-nullable session
+  created_at                   DateTime           // Customer-specific creation time
+
+  @@unique([shopping_order_good_issue_id])  // 1:1 with main entity
+}
+
+// Seller-created issues - subtype entity
+model shopping_order_good_issue_of_sellers {
+  id                           String   @id @db.Uuid
+  shopping_order_good_issue_id String   @db.Uuid  // FK to main entity
+  shopping_seller_id           String   @db.Uuid  // Non-nullable seller
+  shopping_seller_session_id   String   @db.Uuid  // Non-nullable session
+  created_at                   DateTime           // Seller-specific creation time
+
+  @@unique([shopping_order_good_issue_id])  // 1:1 with main entity
+}
+```
+
+**Benefits of this design:**
+- ✅ Referential integrity: Each subtype enforces its actor FK constraints
+- ✅ Type safety: Impossible to have invalid actor combinations
+- ✅ Follows 3NF: Actor-specific fields properly normalized
+- ✅ Extensible: Easy to add new actor types without schema migration
+- ✅ Clear queries: `JOIN` to specific subtype table for actor filtering
+- ✅ Actor-specific metadata: Each subtype can have unique fields
+- ✅ Database-level constraints: `@@unique` ensures exactly one subtype per issue
+
+**Implementation Pattern:**
+
+```prisma
+// 1. Create main entity with shared business attributes
+model main_entity {
+  id         String   @id @db.Uuid
+  actor_type String   // Actor type identifier for quick filtering
+  // ... shared fields common to all actors
+  created_at DateTime
+
+  @@index([actor_type])  // Index for efficient actor type queries
+}
+
+// 2. Create subtype entity for each possible actor
+model main_entity_of_{actor_type} {
+  id                   String   @id @db.Uuid
+  main_entity_id       String   @db.Uuid  // FK to main entity
+  {actor_type}_id      String   @db.Uuid  // FK to specific actor
+  {actor_type}_session_id String @db.Uuid  // Actor session
+  // ... actor-specific fields
+  created_at           DateTime
+
+  @@unique([main_entity_id])  // Ensures 1:1 relationship
+}
+```
+
+**When to use this pattern:**
+- Issues/Tickets created by different user types (customers, sellers, admins)
+- Reviews/Ratings submitted by different actor types
+- Messages/Communications from multiple sender types
+- Approvals/Actions performed by different authority levels
+- Any entity with polymorphic ownership where different actor types have different contextual data
+
 ## SESSION TABLE PATTERN (for authenticated actors)
 
 When an actor requires login/authentication (e.g., users, administrators, customers), create a dedicated session table for that actor type. Do not use a single polymorphic session table; instead, create one table per actor class.
