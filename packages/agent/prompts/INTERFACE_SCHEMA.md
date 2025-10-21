@@ -655,529 +655,554 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 ## 4. DTO Relationship Strategy
 
-**IMPORTANT Context**: At this schema generation phase, you have:
-- ✅ Complete Prisma database schema with all tables and relationships
-- ✅ API operations with request/response body DTO **type names only** (not their definitions)
-- ❌ NO actual DTO definitions yet - you are creating them for the first time
+### 4.1. Theoretical Foundation
 
-This means you must **analyze the complete Prisma database schema in detail** to define relationships. Your relationship definitions may not be 100% accurate, but that's expected and acceptable:
-- **Be confident**: The INTERFACE_SCHEMA_REVIEW agent will refine relationships later
-- **Study thoroughly**: Examine all Prisma model definitions, fields, relations, and comments in detail
-- **Use all available information**: Table structures, foreign keys, field types, constraints, and documentation
-- **Don't skip relationships**: Even if uncertain, define relationships based on your thorough analysis
-- **Trust the process**: Your initial definitions will be validated and corrected in the review phase
+**Core Principle**: DTOs model data relationships based on three fundamental concepts:
 
-**🔴 MANDATORY RELATIONSHIP DEFINITION**: You MUST define relationships for EVERY DTO, even when uncertain. This is NOT optional:
+#### 4.1.1. Data Lifecycle Theory
 
-1. **No Skipping**: NEVER omit relationships because you're unsure
-2. **Make Decisions**: Use your thorough Prisma schema analysis to make the best decision
-3. **Trust the Process**: The review agent will validate and correct if needed
-4. **Better Wrong Than Missing**: A potentially incorrect relationship is better than no relationship
+**Definition**: Data entities have distinct lifecycles that determine their relationships.
 
-When you encounter uncertainty:
-- ✅ DO: Analyze Prisma schema thoroughly and make a decision
-- ❌ DON'T: Skip the relationship or leave it undefined
-- ❌ DON'T: Add comments like "relationship unclear" or "needs review"
-- ✅ DO: Define it based on your best analysis - corrections come later
+**Three Lifecycle Patterns**:
 
-### 4.1. Core Principle
+1. **Composite Lifecycle**: Child cannot exist without parent
+   - Created together with parent
+   - Deleted when parent is deleted
+   - Example:
+     - `IBbsArticle` and `IBbsArticleFile`
+     - `IShoppingSale` and `IShoppingSaleUnit` and `IShoppingSaleUnitStock`
+     - `IShoppingOrder` and `IShoppingOrderItem`
 
-**Start from table names, then analyze scope boundaries and conceptual independence.**
+2. **Independent Lifecycle**: Exists independently
+   - Created separately from referencing entity
+   - Survives deletion of referencing entity
+   - Example: 
+     - `IBbsArticle` and `IBbsMember` (author)
+     - `IBbsArticle` and `IBbsCategory`
+     - `IShoppingSale` and `IShoppingSeller`
 
-DTOs establish relationships by:
-1. Following the natural hierarchy in table names
-2. Respecting scope boundaries (independent concepts = separate scopes)
-3. Validating with FK direction
-4. Applying actor/category reference rules
+3. **Event-Driven Lifecycle**: Created by external events
+   - Generated after parent exists
+   - Represents actions or history
+   - Example: 
+     - `IBbsArticle` and `IBbsArticleComment`
+     - `IShoppingSale` and `IShoppingSaleReview`
 
-**The Three Relationship Types:**
+#### 4.1.2. Transaction Boundary Principle
 
-**Strong Relationship (Aggregation)**
-- Full object inclusion in parent DTO
-- Same scope, same event/actor
-- Child lifecycle depends on parent
-- Examples: `order.items[]`, `article.snapshots[]`
+**Definition**: A transaction boundary encompasses data that must be atomically committed together.
 
-**Weak Relationship (Reference)**
-- Summary or ID-only inclusion
-- Different scope or different actor
-- Independent lifecycle
-- Examples: `article.author`, `order.customer`
-
-**ID Relationship**
-- ID field only, no object
-- Minimal coupling
-- Used in Create/Update DTOs
-- Examples: `category_id`, `parent_id`
-
-### 4.2. Table Name Hierarchy (Primary Signal)
-
-Table names reveal ownership hierarchy through naming patterns:
-
-```
-Root Table:     bbs_articles
-  └─ Level 1:   bbs_article_snapshots
-       └─ Level 2: bbs_article_snapshot_images
-       └─ Level 2: bbs_article_snapshot_files
-```
-
-**Key Insight**: Each level adds one more segment to the name.
-
-**Hierarchy Signals Ownership (Not Automatic Strong Relationship):**
+**Rule**: Only data within the same transaction boundary should have strong relationships.
 
 ```typescript
-// Hierarchy chain: bbs_articles → bbs_article_snapshots → bbs_article_snapshot_*
-interface IBbsArticleSnapshot {
-  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: strong relationship when snapshot loaded
-  files: IBbsArticleSnapshotFile[];    // ✅ Depth 2: strong relationship when snapshot loaded
-}
+// Single Transaction: Order placement
+const transaction = {
+  order: { /* order data */ },
+  orderItems: [ /* items data */ ],  // ✅ Same transaction
+  payment: { /* payment data */ }     // ✅ Same transaction
+  // reviews: []  // ❌ Different transaction (future event)
+};
 ```
 
-**⚠️ IMPORTANT: Hierarchy ≠ Automatic Strong Relationship in Parent**
+#### 4.1.3. Relationship Independence Principle
 
+**Definition**: Relationships should be determined by conceptual boundaries, not technical constraints.
+
+**Rule**: Whether data belongs together depends on its conceptual relationship and lifecycle, not on anticipated volume or performance concerns.
+
+### 4.2. The Three Relationship Types
+
+#### 4.2.1. Composition (Strong Relationship)
+
+**Definition**: Parent owns children; children are integral parts of the parent.
+
+**Characteristics**:
+- Created in the same transaction
+- Deleted with parent (CASCADE DELETE)
+- Meaningless without parent context
+- Always fetched together
+
+**Implementation**:
 ```typescript
-// ❌ WRONG: Auto-aggregation based on hierarchy alone
-interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // ❌ Could be 100+ audit records!
-}
-
-// ✅ CORRECT: Analyze usage & size first
-interface IBbsArticle {
-  snapshots_count: number;  // ✅ Audit data, separate API
-  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
-}
-```
-
-**❌ Do NOT create strong relationships across hierarchy roots:**
-```typescript
-interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // ✅ Same hierarchy
-  comments: IBbsArticleComment[];     // ❌ Different hierarchy root!
-}
-```
-
-**Why?** `bbs_article_comments` is its own hierarchy root, not a child of `bbs_articles`.
-
-### 4.3. Scope Boundary Detection
-
-A **scope** is an independent conceptual entity with its own lifecycle and hierarchy.
-
-**What is a Scope?**
-
-```
-Scope A: bbs_articles
-  └─ bbs_article_snapshots
-      ├─ bbs_article_snapshot_images
-      └─ bbs_article_snapshot_files
-
-Scope B: bbs_article_comments (SEPARATE ROOT)
-  └─ bbs_article_comment_snapshots
-      ├─ bbs_article_comment_snapshot_images
-      └─ bbs_article_comment_snapshot_files
-
-Scope C: shopping_orders
-  ├─ shopping_order_goods (strong relationship)
-  ├─ shopping_order_deliveries
-  ├─ shopping_order_payments
-  └─ shopping_customer (weak relationship)
-
-Scope D: shopping_sales
-  ├─ shopping_sellers (weak relationship)
-  └─ shopping_sale_units (strong relationship)
-      ├─ shopping_sale_unit_options (strong relationship)
-      │   └─ shopping_sale_unit_option_candidates (strong relationship)
-      └─ shopping_sale_unit_stocks (strong relationship)
-```
-
-**Identifying Scope Boundaries**
-
-**Critical question:** "Is this a different event or created by a different actor?"
-
-```typescript
-// ✅ Different Event/Actor = Separate Scope
-bbs_article_comments
-  - Created by readers (different actor from article author)
-  - Different event: "commenting" vs "writing article"
-  - Can exist as "user's comments list"
-  → SEPARATE SCOPE → Weak Relationship
-
-shopping_sale_questions
-  - Created by potential buyers (different actor from seller)
-  - Different event: "asking question" vs "registering sale"
-  - Has its own lifecycle
-  → SEPARATE SCOPE → Weak Relationship
-
-shopping_sale_reviews
-  - Created by customers (different actor from seller)
-  - Different event: "writing review" vs "registering sale"
-  - Independent feature (product reviews page)
-  → SEPARATE SCOPE → Weak Relationship
-
-// ❌ Same Event/Actor = Same Scope
-bbs_article_snapshots
-  - Created by article author (same actor)
-  - Same event: "editing article" creates snapshot
-  - Part of article's version history
-  → SAME SCOPE → Strong Relationship
-
-shopping_sale_units
-  - Created by seller (same actor as sale)
-  - Same event: "registering sale" includes units
-  - Cannot exist without sale
-  → SAME SCOPE → Strong Relationship
-```
-
-### 4.4. Domain Independence Test
-
-**The Three Questions**
-
-Before deciding Strong vs Weak Relationship, ask:
-
-1. **Table Name:** Does child extend parent's name? (`parent_*`)
-2. **Event/Actor:** Is this created by the same actor in the same event?
-3. **Operations:** Can child be queried/managed independently?
-
-**Decision Matrix**
-
-| Question | Answer | Signal |
-|----------|--------|---------|
-| Name pattern | `bbs_article_snapshot_images` | ✅ Strong relationship candidate |
-| Event/Actor | Same event (editing), same actor | ✅ Part of snapshot |
-| Operations | Only via parent | ✅ **Strong Relationship** |
-
-| Question | Answer | Signal |
-|----------|--------|---------|
-| Name pattern | `bbs_article_comments` | 🤔 Looks like strong relationship |
-| Event/Actor | Different event (commenting), different actor (readers) | ❌ Separate scope |
-| Operations | User's comments, search, etc. | ❌ **Weak Relationship** |
-
-| Question | Answer | Signal |
-|----------|--------|---------|
-| Name pattern | `shopping_sale_reviews` | 🤔 Looks like strong relationship |
-| Event/Actor | Different event (reviewing), different actor (customers) | ❌ Separate scope |
-| Operations | Product reviews page, rating aggregation | ❌ **Weak Relationship** |
-
-**Examples**
-
-```typescript
-// ✅ STRONG RELATIONSHIP: Same event/actor
-bbs_articles → bbs_article_snapshots (author edits article)
-bbs_article_snapshots → bbs_article_snapshot_images (part of edit)
-shopping_orders → shopping_order_goods (customer places order)
-shopping_sales → shopping_sale_units (seller registers sale)
-
-// ✅ WEAK RELATIONSHIP: Different event/actor
-bbs_articles → bbs_article_comments (readers comment - different event)
-shopping_sales → shopping_sale_reviews (customers review - different event)
-shopping_sales → shopping_sale_questions (buyers ask - different event)
-bbs_articles → bbs_members (author - different scope)
-shopping_orders → shopping_customers (customer - different scope)
-```
-
-### 4.5. FK Direction Validation
-
-**Purpose**: FK direction confirms ownership, but **table name hierarchy comes first**.
-
-**Validation Rules**
-
-```typescript
-// Step 1: Check table name hierarchy
-bbs_article_snapshots → bbs_article_snapshot_images
-  → Name suggests strong relationship ✅
-
-// Step 2: Validate with FK direction
-model BbsArticleSnapshotImage {
-  snapshot_id String  // ✅ Child → Parent FK (confirms strong relationship)
-  snapshot    BbsArticleSnapshot @relation(...)
-}
-
-// Step 3: Check cascade
-ON DELETE CASCADE  // ✅ Confirms ownership
-```
-
-**Conflict Resolution**: When table name and FK conflict, FK direction wins (e.g., lookup tables).
-
-### 4.6. Relationship Depth Limits
-
-**Rules by Entity Type**
-
-**Main Entity (IEntity):**
-- Depth 1: Always include (e.g., `snapshots`)
-- Depth 2+: Case by case (usually separate API)
-
-```typescript
-interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // ✅ Depth 1
-
-  // Or: Snapshots via separate API (audit/history)
-  // GET /articles/:id/snapshots
-}
-
-interface IBbsArticleSnapshot {
-  images: IBbsArticleSnapshotImage[];  // ✅ Depth 2: If snapshots are loaded, include their children
-  files: IBbsArticleSnapshotFile[];
-}
-```
-
-**Summary Entity (IEntity.ISummary):**
-- No strong relationships at all (performance)
-
-```typescript
-interface IBbsArticle.ISummary {
-  id: string;
-  title: string;
-  author_name: string;  // Denormalized
-  file_count: number;   // Count, not array
-}
-```
-
-### 4.7. Reverse Relationships (CRITICAL)
-
-**NEVER create reverse direction relationships - Actor/Parent entities must NOT have child entity arrays.**
-
-```typescript
-// ❌ WRONG: Reverse relationship
-interface IShoppingSeller {
-  sales: IShoppingSale[];  // ❌ Reverse direction!
-}
-
-interface IBbsMember {
-  articles: IBbsArticle[];  // ❌ Reverse direction!
-}
-
-// ✅ CORRECT: Forward direction only
 interface IShoppingSale {
-  seller: IShoppingSeller.ISummary;  // ✅ Child → Parent reference
+  // Composition: Units are part of the sale definition
+  units: IShoppingSaleUnit[];  // ✅ Created when sale is registered
 }
 
-interface IBbsArticle {
-  author: IBbsMember.ISummary;  // ✅ Child → Parent reference
+interface IShoppingOrder {
+  // Composition: Order items define what's being ordered
+  items: IShoppingOrderItem[];  // ✅ Created with order
+  payment: IShoppingOrderPayment;  // ✅ Payment info is part of order
 }
 ```
 
-**Why reverse is forbidden:**
-- Violates single direction principle
-- Different scopes (Seller scope ≠ Sales scope)
-- Actor pattern: Users/Sellers/Members are actors, not containers
-- Use separate API: `GET /sellers/:id/sales`
+**Decision Criteria**:
+1. Would the parent be incomplete without this data? → YES
+2. Is it created in the same transaction? → YES
+3. Does it have independent business meaning? → NO
 
-### 4.8. Actor & Category Relationships
+#### 4.2.2. Association (Reference Relationship)
 
-**Actors** create or modify entities. They are ALWAYS from different scopes.
+**Definition**: Independent entities that provide context or classification.
 
-**Rule:** Actor → Entity (weak relationship), but NEVER Entity array in Actor
+**Characteristics**:
+- Pre-exists before parent
+- Survives parent deletion
+- Referenced by many entities
+- Has independent business value
 
+**Implementation**:
 ```typescript
-// ✅ CORRECT: Actor as Weak Relationship
 interface IBbsArticle {
-  author: IBbsMember.ISummary;  // Weak relationship only
+  // Associations: Independent entities providing context
+  author: IBbsMember.ISummary;     // ✅ Member exists independently
+  category: IBbsCategory;          // ✅ Category is reusable
 }
 
-// ❌ WRONG: Reverse direction
+interface IShoppingSale {
+  // Associations: Independent entities
+  seller: IShoppingSeller.ISummary;  // ✅ Seller manages many sales
+  section: IShoppingSection;         // ✅ Classification system
+}
+```
+
+**Decision Criteria**:
+1. Does it exist before the parent? → YES
+2. Is it referenced by multiple entities? → YES
+3. Does it survive parent deletion? → YES
+
+#### 4.2.3. Aggregation (Weak Relationship)
+
+**Definition**: Related data generated through events or actions, fetched separately.
+
+**Characteristics**:
+- Created after parent exists
+- Different actor or event
+- Can grow unbounded
+- Often requires pagination
+
+**Implementation**:
+```typescript
+interface IBbsArticle {
+  // Event-driven data NOT included
+  // ❌ NOT comments: IComment[]
+  // ❌ NOT likes: ILike[]
+  // Access via: GET /articles/:id/comments
+}
+
+interface IShoppingSale {
+  // Customer-generated content NOT included
+  // ❌ NOT reviews: IReview[]
+  // ❌ NOT questions: IQuestion[]
+  // Access via: GET /sales/:id/reviews
+}
+```
+
+**Decision Criteria**:
+1. Created after parent? → YES
+2. Different actor creates it? → YES
+3. Can grow unbounded? → YES
+
+### 4.3. Practical Decision Framework
+
+#### 4.3.1. The Decision Tree
+
+```
+For each foreign key or related table:
+│
+├─ Q1: Is it created in the same transaction as parent?
+│  ├─ NO → Continue to Q2
+│  └─ YES → Q1a: Would parent be incomplete without it?
+│           ├─ NO → Continue to Q2
+│           └─ YES → COMPOSITION (include as array/object)
+│
+├─ Q2: Does it represent an independent entity (user, category, etc.)?
+│  ├─ NO → Continue to Q3
+│  └─ YES → ASSOCIATION (include as object reference)
+│
+└─ Q3: Is it event-driven data created after parent?
+   ├─ NO → ID only (edge case)
+   └─ YES → AGGREGATION (separate API endpoint)
+```
+
+#### 4.3.2. Relationship Classification Rules
+
+**Composition Example**:
+```typescript
+interface IShoppingOrder {
+  // Created together in one transaction
+  items: IShoppingOrderItem[];     // Order defines what's being purchased
+  payment: IShoppingOrderPayment;  // Payment details are part of order
+  shipping: IShoppingShippingInfo;         // Shipping info defined with order
+}
+```
+
+**Association Example**:
+```typescript
+interface IBbsArticle {
+  // Independent entities that provide context
+  author: IBbsMember.ISummary;  // Member exists independently
+  category: IBbsCategory;       // Category is reusable
+  // These are NOT included as arrays or counts
+}
+```
+
+**Aggregation Example (Separate API)**:
+```typescript
+interface IShoppingSale {
+  // Event-driven data from different actors
+  // Reviews are created later by customers
+  // Questions are asked by potential buyers
+  // These relationships are accessed via:
+  // GET /sales/:id/reviews
+  // GET /sales/:id/questions
+  
+  // The main DTO only contains the sale's own data
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;
+  units: IShoppingSaleUnit[];
+}
+```
+
+#### 4.3.3. Actor-Based Rules
+
+**Actors** are entities that perform actions (users, members, customers, employees).
+
+**Forward Reference Rule**: Entities reference their actors as objects
+```typescript
+interface IBbsArticle {
+  author: IBbsMember.ISummary;  // ✅ Who created this
+}
+
+interface IShoppingSaleReview {
+  customer: IShoppingCustomer.ISummary;  // ✅ Who wrote this
+}
+```
+
+**Reverse Reference Rule**: Actors NEVER contain entity arrays
+```typescript
+// ❌ FORBIDDEN
 interface IBbsMember {
-  articles: IBbsArticle[];  // FORBIDDEN - violates single direction
+  articles: IBbsArticle[];  // ❌ Would include everything user wrote
+  comments: IBbsArticleComment[];     // ❌ Unbounded growth
 }
 
-// Use separate API instead:
-// GET /members/:id/articles → IPage<IBbsArticle.ISummary>
+// ✅ CORRECT - Use separate APIs
+// GET /members/:id/articles
+// GET /members/:id/comments
 ```
 
-### 4.9. IInvert Pattern
+**Actor Context Rule**: Actors can reference their organizational context
+```typescript
+interface IShoppingSeller {
+  company: IShoppingCompany;  // ✅ Seller's organization
+  // But NOT: sales: IShoppingSale[]  // ❌ That's reverse reference
+}
 
-**IInvert** = Entity from reverse perspective, includes parent context
+interface IEnterpriseEmployee {
+  enterprise: IEnterprise.ISummary;  // ✅ Company info
+  department: IEnterpriseDepartment.ISummary;  // ✅ Department info
+  teams: IEnterpriseTeam.ISummary[];  // ✅ Employee's team memberships
+  // But NOT: tasks: IEnterpriseTask[]  // ❌ Event-driven data
+}
+```
+
+### 4.4. Foreign Key Transformation Strategy
+
+**Principle**: Foreign keys in Response DTOs should be transformed to objects for better API usability.
+
+#### 4.4.1. Classification of Foreign Keys
+
+**Two Categories**:
+
+1. **Hierarchical Parent FK**: Points to direct parent in a composition hierarchy
+   - Keep as ID to prevent circular references
+   - Example: `article_id` in `bbs_article_comments`
+
+2. **Contextual Reference FK**: Points to independent entity providing context
+   - Transform to object reference
+   - Examples: `author_id`, `category_id`, `seller_id`
+
+#### 4.4.2. Transformation Rules
 
 ```typescript
-// Default: No parent object (article detail page)
+// Decision Matrix for FK xxx_id:
+// 1. Is XXX the direct parent that contains this entity in an array?
+//    YES → Keep as ID (hierarchical parent)
+//    NO → Continue
+// 
+// 2. Is XXX an independent entity (actor, category, status)?
+//    YES → Transform to object (contextual reference)
+
+// ✅ CORRECT: Response DTOs
+interface IBbsArticle {
+  // Contextual references → Objects
+  author: IBbsMember.ISummary;      // author_id → object
+  category: IBbsCategory;           // category_id → object
+  // No raw FKs exposed
+}
+
+interface IBbsArticleComment {
+  // Hierarchical parent → ID
+  article_id: string;               // Article contains comments[]
+  // Contextual reference → Object
+  author: IBbsMember.ISummary;      // commenter_id → object
+}
+
+interface IShoppingSaleReview {
+  // Hierarchical parent → ID
+  sale_id: string;                  // If sale might have reviews[]
+  // Contextual references → Objects
+  customer: IShoppingCustomer.ISummary;  // customer_id → object
+}
+
+// ✅ CORRECT: Request DTOs
+interface IBbsArticle.ICreate {
+  // Only accept IDs for references
+  category_id: string;             // Client selects category
+  // author_id is FORBIDDEN (from JWT)
+}
+```
+
+### 4.5. Special Patterns and Edge Cases
+
+
+#### 4.5.1. Many-to-Many Relationships
+
+**Rule**: Handle based on the conceptual relationship.
+
+```typescript
+// User → Roles (part of user identity)
+interface IUser {
+  roles: IRole[];  // ✅ Roles define user's permissions
+}
+
+// Product → Categories (classification)
+interface IProduct {
+  categories: ICategory[];  // ✅ Product's classifications
+  primary_category: ICategory;  // ✅ Main classification
+}
+
+// Team → Members (different actor relationship)
+interface ITeam {
+  owner: IUser.ISummary;  // ✅ Team's owner
+  // Members are accessed via: GET /teams/:id/members
+  // Because members are independent actors
+}
+```
+
+#### 4.5.2. Recursive/Self-Reference
+
+**Rule**: Include immediate parent, separate API for children.
+
+```typescript
+interface ICategory {
+  id: string;
+  name: string;
+  
+  // Direct parent reference
+  parent: ICategory.ISummary;  // ✅ Direct parent
+  // Children accessed via: GET /categories/:id/children
+}
+
+interface IEmployee {
+  id: string;
+  name: string;
+  
+  // Direct manager reference
+  manager: IEmployee.ISummary;  // ✅ Direct manager
+  // Team accessed via: GET /employees/:id/reports
+}
+```
+
+
+### 4.6. The IInvert Pattern
+
+**Purpose**: Provide parent context when viewing child entities independently.
+
+**When to Use**:
+- Listing child entities across different parents
+- Search results needing parent context  
+- User's activity views ("My comments", "My reviews")
+
+```typescript
+// Default view (within parent context)
 interface IBbsArticleComment {
   id: string;
   content: string;
-  article_id: string;  // ID only
   author: IBbsMember.ISummary;
+  article_id: string;  // Just ID, parent context assumed
+  created_at: string;
 }
 
-// Inverted: Includes parent context (user's comments list)
+// Inverted view (independent context)
 interface IBbsArticleComment.IInvert {
   id: string;
   content: string;
   author: IBbsMember.ISummary;
+  created_at: string;
+  
+  // Parent context included
+  article: IBbsArticle.ISummary;  // Full parent summary
+  // CRITICAL: No comments[] in the article summary!
+}
 
-  article: IBbsArticle.ISummary {  // Parent context
-    id: string;
-    title: string;
-    // CRITICAL: No comments array!
-  };
+// Use case: "My recent comments across all articles"
+// GET /members/:id/comments → IPage<IBbsArticleComment.IInvert>
+```
+
+**Key Rules for IInvert**:
+1. Include full parent context as object
+2. Parent object must NOT contain children arrays (prevent circular reference)
+3. Use when child needs to stand alone with context
+
+### 4.7. Complete Examples
+
+#### 4.7.1. BBS System Example
+
+```typescript
+// Main Article DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  
+  // Associations (contextual references)
+  author: IBbsMember.ISummary;     // FK transformed
+  category: IBbsCategory;           // FK transformed
+  
+  // Compositions (same transaction)
+  attachments: IBbsArticleAttachment[];  // Part of article submission
+  
+  // Event-driven data accessed via separate APIs:
+  // GET /articles/:id/comments
+  // GET /articles/:id/likes
+}
+
+// Comment DTO (child entity)
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  
+  // Hierarchical parent
+  article_id: string;               // Keep as ID
+  
+  // Association
+  author: IBbsMember.ISummary;      // FK transformed
+}
+
+// Inverted Comment (for user's comment list)
+interface IBbsArticleComment.IInvert {
+  id: string;
+  content: string;
+  author: IBbsMember.ISummary;
+  
+  // Parent context
+  article: IBbsArticle.ISummary;
+  // CRITICAL: No comments array in article summary!
+}
+
+// Create DTO
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  category_id: string;             // Reference as ID
+  attachment_ids?: string[];        // Optional attachments
+  // author_id FORBIDDEN (from JWT)
 }
 ```
 
-### 4.10. Quick Decision Guide
+#### 4.7.2. E-Commerce Example
 
-```
-1. START with table names
-   │
-   ├─ Same hierarchy chain? (parent_child_*)
-   │  └─ YES → Check if conceptually independent
-   │     ├─ Independent? (comments, orders) → Weak Relationship
-   │     └─ Dependent? → Check FK → Strong Relationship
-   │
-   └─ Different hierarchy? (members, sellers)
-      └─ Weak Relationship
-```
+```typescript
+// Sale DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  
+  // Associations (contextual references)
+  seller: IShoppingSeller.ISummary;   // FK transformed
+  section: IShoppingSection;          // FK transformed
+  categories: IShoppingCategory[];    // FK array transformed
+  
+  // Compositions (same transaction)
+  units: IShoppingSaleUnit[];         // Created with sale
+  shipping_options: IShippingOption[];  // Part of sale definition
+  
+  // Event-driven relationships accessed via:
+  // GET /sales/:id/reviews
+  // GET /sales/:id/questions
+  // GET /sales/:id/orders
+}
 
-| Pattern | Example | Rule | Result |
-|---------|---------|------|--------|
-| `parent_*` data | `snapshot_images` | Same scope | ✅ Strong Relationship |
-| `parent_*` concept | `article_comments` | Different scope | ❌ Weak Relationship |
-| Actor | `author`, `creator` | Different scope | ❌ Weak Relationship |
-| Actor reverse | `seller.sales[]` | Reverse direction | ❌ Forbidden |
-| Category | `category`, `tags` | Different scope | ❌ Weak Relationship |
-| Lookup | `article_statuses` | Reversed FK | ❌ Weak Relationship |
-| Recursive | `parent_id` | Self-reference | 🔄 Use IInvert |
+// Review DTO
+interface IShoppingSaleReview {
+  id: string;
+  rating: number;
+  content: string;
+  
+  // Hierarchical parent
+  sale_id: string;                   // Parent reference
+  
+  // Associations
+  customer: IShoppingCustomer.ISummary;  // Who wrote
+  
+  // Compositions (part of review submission)
+  images: IReviewImage[];             // Uploaded with review
+}
 
-### 4.11. Complete Relationship Examples
+// Review with context (for customer's review list)
+interface IShoppingSaleReview.IInvert {
+  id: string;
+  rating: number;
+  content: string;
+  customer: IShoppingCustomer.ISummary;
+  images: IReviewImage[];
+  
+  // Parent context
+  sale: IShoppingSale.ISummary;
+  // NO reviews array in sale summary!
+}
 
-**Example 1: BBS System (JSON Schema Format)**
-
-```json
-// CRITICAL: This shows the COMPLETE schemas object structure.
-// ALL schemas are defined at the SAME LEVEL - NEVER nested inside each other!
-{
-  // =====================
-  // Scope: bbs_articles
-  // =====================
-  "IBbsArticle": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "title": { "type": "string" },
-      "content": { "type": "string" },
-      "created_at": { "type": "string", "format": "date-time" },
-
-      // Strong relationship: Same scope (article's snapshots)
-      "snapshots": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref
-        }
-      },
-
-      // Weak relationship: Different scope (actor)
-      "author": {
-        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
-      },
-
-      // Weak relationship: Different scope (category)
-      "category": {
-        "$ref": "#/components/schemas/IBbsCategory"  // ✅ USE $ref
-      },
-
-      // Different scope: Count only (large collection)
-      "comment_count": { "type": "integer" },
-      "like_count": { "type": "integer" }
-    },
-    "required": ["id", "title", "content", "author"]
-  },
-
-  // =====================
-  // Referenced Schemas - SAME LEVEL as IBbsArticle!
-  // =====================
-  "IBbsMember.ISummary": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "nickname": { "type": "string" },
-      "avatar_url": { "type": "string" }
-    },
-    "required": ["id", "nickname"]
-  },
-
-  "IBbsCategory": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
-      "code": { "type": "string" }
-    },
-    "required": ["id", "name", "code"]
-  },
-
-  "IBbsArticleSnapshot": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "content": { "type": "string" },
-      "created_at": { "type": "string", "format": "date-time" },
-      // Nested children when snapshot is loaded
-      "images": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/IBbsArticleSnapshotImage"
-        }
-      },
-      "files": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/IBbsArticleSnapshotFile"
-        }
-      }
-    },
-    "required": ["id", "content", "created_at"]
-  },
-
-  // =====================
-  // Scope: bbs_article_comments (SEPARATE ROOT)
-  // =====================
-  "IBbsArticleComment": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "content": { "type": "string" },
-      "created_at": { "type": "string", "format": "date-time" },
-
-      // Weak relationship: Different scope (actor)
-      "author": {
-        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
-      },
-
-      // ID relationship: Parent scope (ID only in default)
-      "article_id": { "type": "string" }
-    },
-    "required": ["id", "content", "author", "article_id"]
-  },
-
-  // IInvert: For comment-centric views
-  "IBbsArticleComment.IInvert": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "content": { "type": "string" },
-      "created_at": { "type": "string", "format": "date-time" },
-
-      "author": {
-        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
-      },
-
-      // ✅ Parent context with $ref
-      "article": {
-        "$ref": "#/components/schemas/IBbsArticle.ISummary"  // NO comments array in Summary!
-      }
-    },
-    "required": ["id", "content", "author", "article"]
-  },
-
-  "IBbsArticle.ISummary": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "title": { "type": "string" },
-      "author_name": { "type": "string" },  // Denormalized
-      "created_at": { "type": "string", "format": "date-time" }
-    },
-    "required": ["id", "title", "author_name"]
-  }
+// Order DTO
+interface IShoppingOrder {
+  id: string;
+  
+  // Associations
+  customer: IShoppingCustomer.ISummary;  // Who ordered
+  
+  // Compositions (same transaction)
+  items: IShoppingOrderItem[];          // What was ordered
+  payment: IShoppingOrderPayment;       // Payment info
+  shipping: IShippingInfo;              // Shipping details
 }
 ```
 
-**Example 2: Shopping System - Deep Hierarchy**
+### 4.8. Summary: Relationship Decision Checklist
+
+Use this checklist for every relationship decision:
+
+#### Step 1: Identify Relationship Type
+- [ ] **Same transaction?** → Consider Composition
+- [ ] **Independent entity?** → Consider Association
+- [ ] **Event-driven?** → Consider Aggregation
+
+#### Step 2: Transform Foreign Keys
+- [ ] **Hierarchical parent FK?** → Keep as ID
+- [ ] **Contextual reference FK?** → Transform to object
+
+#### Step 3: Check Special Cases
+- [ ] **Actor entity?** → No reverse arrays
+- [ ] **Many-to-many?** → Check conceptual relationship
+- [ ] **Needs IInvert?** → Add parent context
+
+
+### 4.9. Complete Relationship Examples
+
+**Example 1: Shopping System**
 
 ```typescript
 // =====================
@@ -1189,12 +1214,10 @@ interface IShoppingSale {
   description: string;
   created_at: string;
 
-  // Weak relationship: Different scope (actor)
-  seller: IShoppingSeller.ISummary {
-    id: string;
-    name: string;
-    company: string;
-  };
+  // Associated references: Transform FKs to objects
+  seller: IShoppingSeller.ISummary;     // seller_id → object
+  section: IShoppingSection;            // section_id → object
+  categories: IShoppingCategory[];      // category_ids → objects
 
   // Strong relationship: Same event/actor (seller registers sale with units)
   units: IShoppingSaleUnit[] {
@@ -1225,12 +1248,50 @@ interface IShoppingSale {
     }[];
   }[];
 
-  // Different event/actor: Separate API
-  reviews_count: number;  // ✅ Customers write reviews (different event)
-  questions_count: number;  // ✅ Buyers ask questions (different event)
-  average_rating: number;  // ✅ Denormalized from reviews
+  // Event-driven relationships (different actors) accessed via:
   // GET /sales/:id/reviews → IPage<IShoppingSaleReview>
   // GET /sales/:id/questions → IPage<IShoppingSaleQuestion>
+}
+
+// =====================
+// Scope: shopping_sale_reviews
+// =====================
+interface IShoppingSaleReview {
+  id: string;
+  content: string;
+  rating: number;
+  
+  // Direct parent: Keep as ID
+  sale_id: string;
+  
+  // Associated reference: Actor who wrote review
+  customer: IShoppingCustomer.ISummary;  // customer_id → object
+  
+  // Composition: Review can have answers
+  answers: IShoppingSaleReviewAnswer[];
+}
+
+interface IShoppingSaleReviewAnswer {
+  id: string;
+  content: string;
+  
+  // Direct parent: Keep as ID
+  review_id: string;
+  
+  // Associated reference: Actor who answered
+  seller: IShoppingSeller.ISummary;  // seller_id → object
+}
+
+// IInvert: When review needs sale context
+interface IShoppingSaleReview.IInvert {
+  id: string;
+  content: string;
+  rating: number;
+  customer: IShoppingCustomer.ISummary;
+  
+  // Parent context
+  sale: IShoppingSale.ISummary;
+  // NO reviews array in sale summary!
 }
 ```
 
@@ -1252,7 +1313,6 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
 
 **Required Considerations**:
 - Include all public-facing fields from the database
-- Include computed/virtual fields that enhance user experience
 - Apply field-level permissions based on user role
 - Consider separate DTOs for different user roles (IUser vs IUserAdmin)
 
@@ -1269,8 +1329,7 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
   - Example: `IBbsArticle.ICreate` must NOT include `bbs_member_id` or `bbs_member_session_id`
   - These fields are populated by the backend from the authenticated user's context
 - **Timestamps**: `created_at`, `updated_at`, `deleted_at` (system-managed)
-- **Computed Fields**: `*_count`, `total_*`, `average_*` (calculated by system)
-- **Version Control**: `version`, `revision`, `sequence_number`
+- **Computed Fields**: Any calculated or derived values
 - **Audit Fields**: `ip_address`, `user_agent` (captured by middleware)
 
 **Special Considerations**:
@@ -1627,6 +1686,19 @@ interface IBbsArticle.IUpdate {
      - Review field types, nullability, and constraints
      - Read table and field comments/documentation
      - Identify table naming patterns (parent_child relationships)
+   
+   - **Apply Foreign Key Transformation Strategy**:
+     - **Step 1**: Identify all foreign keys in each entity
+     - **Step 2**: Classify each FK:
+       - Direct Parent (Has relationship inverse) → Keep as ID
+       - Associated Reference (Actor/Category/Organization) → Transform to object
+     - **Step 3**: For Response DTOs (IEntity, ISummary):
+       - Transform ALL associated reference FKs to objects
+       - Keep direct parent FKs as IDs (prevent circular references)
+     - **Step 4**: For Request DTOs (ICreate, IUpdate):
+       - Actor FKs are FORBIDDEN (from JWT/session)
+       - Other FKs remain as IDs
+   
    - Apply relationship strategy based on table hierarchy and scope:
      - Strong relationships: Full nested objects or arrays (same scope)
      - Weak relationships: Summary objects or counts (different scope)

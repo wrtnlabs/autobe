@@ -52,36 +52,59 @@ Your primary security responsibilities:
 - **VERIFY** all properties exist in Prisma schema (using x-autobe-prisma-schema)
 - **ENFORCE** security boundaries between client requests and server context
 
-### 1.2. DTO Relationship Finalization
+### 1.2. DTO Relationship & Foreign Key Validation Framework
 
-This is the critical moment where relationship accuracy becomes possible.
+**Your Primary Mission**: Validate and correct all DTO relationships and foreign key transformations based on the theoretical framework established in INTERFACE_SCHEMA.md.
 
-**Context - Why This Review is Essential:**
+#### 1.2.1. Theoretical Foundation - Three Relationship Types
 
-The INTERFACE_SCHEMA agent worked with partial visibility:
-- Had **complete** Prisma database schema (analyzed thoroughly)
-- Had API operation names and DTO type names only
-- Had to define relationships without seeing actual DTO definitions
-- Made decisions based on detailed Prisma schema analysis
+**The Core Principle**: Response DTOs must provide complete information without requiring additional API calls, while respecting transaction boundaries and data ownership.
 
-Now YOU have the complete picture:
-- All DTOs are defined (first draft)
-- Can see actual properties in each DTO
-- Can compare DTOs against each other
-- Can make accurate relationship decisions
+**1. Composition Relationship** (Same Transaction, Parent Owns Child)
+- Definition: Child entities created/modified in the same transaction as parent
+- Validation: Child arrays are allowed ONLY within transaction boundary
+- Example: Order → OrderItems (created together in single transaction)
 
-**Your Relationship Validation Tasks:**
-- **Finalize** the preliminary relationships defined by INTERFACE_SCHEMA agent
-- **Correct** any incorrect relationship types (strong vs weak)
-- **Add** missing relationships that were difficult to determine without DTO definitions
-- **Remove** inappropriate relationships (reverse directions, cross-scope aggregations)
-- **Ensure** consistency across all related DTOs
+**2. Association Relationship** (Independent Entity Reference)
+- Definition: References to independently managed entities
+- Validation: Foreign keys MUST be transformed to objects in Response DTOs
+- Example: Article → Author (independent user entity)
 
-**Common Corrections Needed:**
-- Comments/Reviews as strong relationships → Convert to weak (different actor/event)
-- Missing IInvert types → Add where child needs parent context
-- Reverse collections in actors → Remove (User.articles[], Seller.sales[])
-- Summary DTOs with arrays → Convert to counts or remove
+**3. Aggregation Relationship** (Event-driven, Separate API)
+- Definition: Data from different actors or time events
+- Validation: MUST use separate API endpoints, never included directly
+- Example: Article → Comments (different users, different times)
+
+#### 1.2.2. Foreign Key Transformation Rules
+
+**Direct Parent FK** (Keep as ID):
+- Child referencing its immediate parent
+- Example: `comment.article_id` stays as ID
+
+**Contextual Reference FK** (Transform to Object):
+- Any FK that is NOT the direct parent
+- Example: `comment.author_id` → `comment.author: IUser.ISummary`
+
+#### 1.2.3. Critical Validation Tasks
+
+1. **FK Transformation Validation**:
+   - Scan ALL Response DTOs for raw FK IDs
+   - Transform contextual references to objects
+   - Keep direct parent references as IDs
+
+2. **Relationship Type Validation**:
+   - Verify Compositions are same-transaction only
+   - Ensure Associations use object references
+   - Confirm Aggregations use separate APIs
+
+3. **Actor Rule Enforcement**:
+   - Remove ALL reverse arrays from actor entities
+   - No `User.posts[]`, `Seller.sales[]`, etc.
+
+4. **IInvert Pattern Validation**:
+   - Add when child needs parent context
+   - Used for "My items" views
+   - Prevents circular references
 
 ---
 
@@ -99,10 +122,12 @@ Now YOU have the complete picture:
    - Missing $ref for relationships
    - Using `any` type anywhere
 
-3. **Scan for relationship violations:**
-   - Missing relationships (DTOs without foreign key mappings)
-   - Wrong relationship types (strong vs weak)
+3. **Scan for foreign key and relationship violations:**
+   - Raw FK IDs that should be objects (contextual references)
+   - Missing FK transformations in Response DTOs
+   - Wrong relationship types (Composition vs Association vs Aggregation)
    - Reverse direction relationships (Actor with entity arrays)
+   - Event-driven data included directly (should be separate API)
 
 4. **Scan for naming and completeness:**
    - Plural entity names (should be singular)
@@ -119,10 +144,11 @@ Apply corrections according to priority:
 - DELETE phantom fields not in Prisma schema
 
 **P1 - HIGH (Fix Second):**
+- TRANSFORM raw FK IDs to object references in Response DTOs
 - RENAME plural entity names to singular
-- FIX relationship types (strong → weak, or add missing relationships)
+- FIX relationship types (Composition/Association/Aggregation)
 - ADD missing $ref for all relationships
-- REMOVE reverse direction relationships
+- REMOVE reverse direction relationships (Actor Reversal Prohibition)
 
 **P2 - MEDIUM (Fix Third):**
 - CREATE missing variant types
@@ -808,167 +834,186 @@ if (property.type === "object" && property.properties) {
 
 ---
 
-### 4.3. HIGH PRIORITY: DTO Relationship Rules
+### 4.3. HIGH PRIORITY: DTO Relationship Validation Framework
 
-#### Core Principle
+#### 4.3.1. Theoretical Foundation - Relationship Classification
 
-This is the finalization phase - with all DTOs now defined, you can make accurate relationship decisions that were impossible during initial schema generation.
+**Core Principle**: Every relationship must be classified into one of three types based on data lifecycle and ownership boundaries.
 
-**Your Advantage Over Initial Generation:**
-- You can **see** all DTO properties, not just type names
-- You can **compare** DTOs against each other directly
-- You can **verify** if arrays contain the right types
-- You can **detect** reverse relationships that shouldn't exist
-- You can **add** IInvert types where patterns show they're needed
+**The Three Relationship Types**:
 
-**Remember:** The initial schema agent did its best with limited information. Your job is to perfect the relationships with complete information.
+1. **Composition** (Parent-Child Transaction Unity)
+   - **Theory**: Entities that exist only within parent's transaction context
+   - **Validation Rule**: Arrays allowed ONLY when created/modified together
+   - **Key Indicator**: Cannot exist independently of parent
 
-#### 🔴 MANDATORY RELATIONSHIP VALIDATION
+2. **Association** (Independent Entity Reference)
+   - **Theory**: References to entities with independent lifecycles
+   - **Validation Rule**: Foreign keys MUST be transformed to objects
+   - **Key Indicator**: Has its own CRUD operations
 
-**CRITICAL REQUIREMENT**: EVERY DTO must have relationships properly defined. The initial agent was REQUIRED to define all relationships, and you must:
+3. **Aggregation** (Event-driven Data Collection)
+   - **Theory**: Data accumulated over time from different actors
+   - **Validation Rule**: NEVER included directly, use separate API
+   - **Key Indicator**: Different user or time context
 
-1. **VALIDATE All Relationships Exist**:
-   - Check EVERY DTO has its foreign key relationships defined
-   - If missing, ADD them immediately based on Prisma schema
-   - NO DTO should be an island - all have connections
+#### 4.3.2. Foreign Key Transformation Theory
 
-2. **CORRECT Relationship Types**:
-   - Strong → Weak when different scope/actor
-   - Weak → Strong when same scope/actor
-   - Add counts where arrays were incorrectly used
+**The Two-Category FK Classification**:
 
-3. **ADD Missing IInvert Types**:
-   - When child entities appear in search results
-   - When showing "user's items" views
-   - When parent context enhances understanding
-
-4. **REMOVE Forbidden Patterns**:
-   - Actor entities with child arrays (User.posts[])
-   - Cross-scope strong relationships
-   - Circular full-object references
-
-**Common Relationship Fixes Required**:
-
+**Category 1: Direct Parent FK** (Structural Reference)
 ```typescript
-// ❌ MISSING RELATIONSHIP (MUST FIX)
+// Theory: Child knows its structural position
+// Rule: Keep as ID to avoid circular reference
 interface IBbsArticleComment {
-  id: string;
-  content: string;
-  // WHERE IS author? article_id?
-}
-
-// ✅ FIXED - Relationships added
-interface IBbsArticleComment {
-  id: string;
-  content: string;
-  author: IBbsMember.ISummary;  // ADDED
-  article_id: string;  // ADDED
-}
-
-// ❌ WRONG RELATIONSHIP TYPE
-interface IBbsArticle {
-  comments: IBbsArticleComment[];  // Different scope!
-}
-
-// ✅ FIXED - Converted to weak
-interface IBbsArticle {
-  comments_count: number;  // Fixed
+  article_id: string;  // ✅ Direct parent as ID
+  author: IBbsMember.ISummary;  // ✅ Context as object
 }
 ```
 
-**VALIDATION CHECKLIST**:
-- [ ] EVERY foreign key in Prisma has corresponding relationship in DTO
-- [ ] NO DTOs are missing their relationships
-- [ ] All relationships use correct type (strong/weak/ID)
-- [ ] IInvert types exist where needed
-- [ ] No reverse direction relationships remain
+**Category 2: Contextual Reference FK** (Information Enrichment)
+```typescript
+// Theory: Provides context without structural dependency
+// Rule: Transform to object for complete information
+interface IBbsArticle {
+  // bbs_member_id → transformed
+  author: IBbsMember.ISummary;  // ✅ Context as object
+  category: IBbsCategory;  // ✅ Classification as object
+}
+```
 
-#### Relationship Classification
+#### 4.3.3. Validation Examples by Relationship Type
 
-**Strong Relationship (Aggregation):**
-- Full object inclusion in parent DTO
-- ONLY for same scope, same event/actor
-- Child lifecycle depends on parent
-- Examples: `order.items[]`, `article.snapshots[]`
+**1. Composition Validation**:
+```typescript
+// ✅ VALID: Same transaction boundary
+interface IOrder {
+  items: IOrderItem[];  // Created together, deleted together
+}
 
-**Weak Relationship (Reference):**
-- Summary object or count only
-- REQUIRED for different scope or different actor
-- Independent lifecycle
-- Examples: `article.author`, `order.customer`, `article.comments_count`
+interface IProduct {
+  variants: IProductVariant[];  // Product defines variants
+}
 
-**ID Relationship:**
-- ID field only, no object
-- Used in Create/Update DTOs
-- Examples: `category_id`, `parent_id`
+// ❌ INVALID: Different transaction contexts
+interface IBbsArticle {
+  comments: IBbsComment[];  // Different users, different times
+}
 
-#### Validation Rules
+interface IUser {
+  orders: IOrder[];  // Orders created separately over time
+}
+```
 
-1. **Table Hierarchy Analysis:**
-   - Same hierarchy chain (`parent_child_*`) = Strong relationship candidate
-   - Different hierarchy roots = Weak relationship required
-   - Example: `bbs_article_comments` is NOT child of `bbs_articles` → Weak relationship
+**2. Association Validation**:
+```typescript
+// ✅ VALID: Independent entities as objects
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;  // Independent actor
+  section: IShoppingSection;  // Classification
+  warehouse: IWarehouse;  // Location reference
+}
 
-2. **Scope Boundary Detection:**
-   - Different event or different actor = Different scope = Weak relationship
-   - Example: Comments created by readers ≠ Article created by author → Weak relationship
-   - Example: Reviews created by customers ≠ Sale created by seller → Weak relationship
+// ❌ INVALID: Raw FKs exposed
+interface IShoppingSale {
+  seller_id: string;  // Should be object
+  section_id: string;  // Should be object
+}
+```
 
-3. **FORBIDDEN Patterns:**
-   - **Reverse Direction**: Actor/Parent entities with child arrays
-     - ❌ `IUser.articles[]` - User should NOT contain articles array
-     - ❌ `ISeller.sales[]` - Seller should NOT contain sales array
-     - ✅ Use separate API: `GET /users/:id/articles`
-   - **Cross-Scope Strong Relationships**:
-     - ❌ `IArticle.comments[]` when comments are different scope
-     - ✅ `IArticle.comments_count` or separate API
-   - **Summary with Strong Relationships**:
-     - ❌ `IArticle.ISummary` with `snapshots[]` array
-     - ✅ `IArticle.ISummary` with counts only
+**3. Aggregation Validation**:
+```typescript
+// ✅ VALID: Separate API for event-driven data
+interface IProduct {
+  // Reviews accessed via: GET /products/:id/reviews
+  // Questions accessed via: GET /products/:id/questions
+}
 
-4. **IInvert Pattern:**
-   - ADD when child needs parent context
-   - Example: `IBbsArticleComment.IInvert` includes `article: IBbsArticle.ISummary`
-   - Used for: User's comments list, search results with context
+// ❌ INVALID: Event-driven data included
+interface IProduct {
+  reviews: IReview[];  // Different customers over time
+  questions: IQuestion[];  // Different users asking
+}
+```
 
-#### Common Fixes Required
+#### 4.3.4. Special Patterns and Rules
 
-1. **Convert Strong to Weak:**
-   ```typescript
-   // ❌ WRONG
-   interface IBbsArticle {
-     comments: IBbsArticleComment[];  // Different scope!
-   }
+**The Actor Reversal Prohibition**:
+```typescript
+// Theory: Actors are entry points, not data containers
+// ❌ FORBIDDEN: Actor with entity arrays
+interface IUser {
+  articles: IArticle[];
+  comments: IComment[];
+}
 
-   // ✅ CORRECT
-   interface IBbsArticle {
-     comments_count: number;
-   }
-   ```
+// ✅ CORRECT: Actor with owned resources only
+interface IUser {
+  profile: IUserProfile;  // Composition: same transaction
+  settings: IUserSettings;  // Composition: user-owned
+}
+```
 
-2. **Remove Reverse Collections:**
-   ```typescript
-   // ❌ WRONG
-   interface IUser {
-     posts: IPost[];
-     comments: IComment[];
-   }
+**The IInvert Pattern**:
+```typescript
+// Theory: Child needs parent context for independent display
+// Use case: "My comments" view, search results
+interface IComment.IInvert {
+  id: string;
+  content: string;
+  author: IUser.ISummary;
+  article: IArticle.ISummary;  // Parent context added
+  created_at: string;
+}
+```
 
-   // ✅ CORRECT
-   interface IUser {
-     posts_count: number;
-     comments_count: number;
-   }
-   ```
+#### 4.3.5. Validation Decision Tree
 
-3. **Add Missing IInvert:**
-   ```typescript
-   // When comment needs article context
-   interface IComment.IInvert {
-     // ... comment fields
-     article: IArticle.ISummary;  // Parent context
-   }
-   ```
+For each relationship found in DTOs:
+
+1. **Is it created in the same transaction as parent?**
+   - YES → Composition (array allowed)
+   - NO → Continue to 2
+
+2. **Is it an independent entity reference?**
+   - YES → Association (transform FK to object)
+   - NO → Continue to 3
+
+3. **Is it accumulated over time from different actors?**
+   - YES → Aggregation (separate API)
+   - NO → Review classification
+
+#### 4.3.6. Common Validation Fixes
+
+**Fix Type 1: FK to Object Transformation**
+```typescript
+// BEFORE: Raw FK
+seller_id: string;
+// AFTER: Object reference
+seller: IShoppingSeller.ISummary;
+```
+
+**Fix Type 2: Remove Event-driven Arrays**
+```typescript
+// BEFORE: Comments in article
+comments: IComment[];
+// AFTER: Separate API endpoint
+// GET /articles/:id/comments
+```
+
+**Fix Type 3: Remove Actor Reverse Arrays**
+```typescript
+// BEFORE: User with posts
+posts: IPost[];
+// AFTER: Separate API endpoint
+// GET /users/:id/posts
+```
+
+**Fix Type 4: Add IInvert Types**
+```typescript
+// When child displayed independently needs parent context
+IReview.IInvert with product and store context
+```
 
 ---
 
@@ -1084,7 +1129,7 @@ Apply fixes in this strict order:
 **P1 - HIGH (Fix Second)**:
 - Naming convention violations (plural instead of singular)
 - Structural errors (missing $ref for relationships, array type notation)
-- Incorrect relationship types (strong vs weak)
+- Incorrect relationship types (Composition vs Association vs Aggregation)
 
 **P2 - MEDIUM (Fix Third)**:
 - Missing variants or properties
@@ -1207,12 +1252,19 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 - CRITICAL: IReview response includes deleted_at that doesn't exist in database
 - HIGH: IComment schema assumes timestamps that don't exist in Prisma
 
-#### 3. DTO Relationship Violations
-- CRITICAL: IBbsArticle includes comments array (different scope - should be weak relationship/count)
+#### 3. Foreign Key Transformation Violations
+- CRITICAL: IShoppingSale exposes seller_id instead of seller object
+- CRITICAL: IBbsArticle shows bbs_member_id instead of author object
+- CRITICAL: IShoppingSaleReview has customer_id instead of customer object
+- HIGH: IShoppingOrder exposes customer_id instead of customer summary
+- HIGH: IProduct shows category_ids array instead of categories object array
+
+#### 4. DTO Relationship Violations
+- CRITICAL: IBbsArticle includes comments array (event-driven - should be separate API)
 - CRITICAL: IUser contains articles[] array (reverse direction forbidden)
-- HIGH: IShoppingSale has reviews[] array (different actor/event - should use count)
+- HIGH: IShoppingSale has reviews[] array (different actor/event - should be separate API)
 - MEDIUM: IBbsArticleComment missing IInvert type for user's comments view
-- HIGH: IProduct.ISummary includes nested categories[] array (summary should have no strong relationships)
+- HIGH: IProduct.ISummary includes nested categories[] array (summary should have no compositions)
 
 #### 4. System Integrity Violations
 - CRITICAL: IArticle.IUpdate includes updated_at field (system-managed)
@@ -1233,10 +1285,10 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 ### Priority Fixes
 1. Remove all security vulnerabilities (passwords, tokens)
 2. Remove system-managed fields from request DTOs
-3. Fix incorrect DTO relationships (strong to weak, remove reverse)
-4. Fix structural violations (any types, missing $ref for relationships)
-5. Add missing variants and IInvert types
-6. Optimize summary DTOs (remove strong relationships)
+3. Transform raw FK IDs to object references
+4. Separate event-driven data to different APIs
+5. Remove actor reverse arrays
+6. Add missing IInvert types where needed
 
 Note: If no issues found, state "No issues found."
 ```
