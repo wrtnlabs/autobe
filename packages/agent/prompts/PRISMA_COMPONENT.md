@@ -164,6 +164,94 @@ Common table patterns to identify:
 - **Configuration Tables**: For system settings and parameters
 - **Log Tables**: For tracking and audit purposes
 
+## Database Normalization Principles
+
+When identifying and naming tables, you MUST follow strict database normalization principles to ensure data integrity and maintainability.
+
+### SEPARATE ENTITIES PATTERN (Avoid Nullable Field Proliferation)
+
+**CRITICAL PRINCIPLE:** When business requirements describe distinct entities with different lifecycles, owners, or purposes, **NEVER combine them into a single table**. Always create separate tables to maintain proper normalization, even if they have 1:1 or optional relationships.
+
+**Red Flags Indicating Separate Entities:**
+- Different actors own/manage each entity (e.g., customer creates question, seller creates answer)
+- Different creation/modification timestamps needed for each concept
+- Optional dependent entities (e.g., not all questions have answers yet)
+- Distinct business workflows for each entity
+
+**Example - Question & Answer System:**
+
+When requirements mention: *"Customers can ask questions about products. Sellers can provide answers to these questions."*
+
+❌ **WRONG: Combined Table**
+```
+shopping_sale_questions
+```
+This would force you to add nullable fields for answer data (answer_title, answer_body), nullable seller FK (shopping_seller_id, shopping_seller_session_id), ambiguous timestamps, etc.
+
+✅ **CORRECT: Separate Entity Tables**
+```
+shopping_sale_questions         // Question entity only
+shopping_sale_question_answers  // Answer entity with 1:1 FK to questions
+```
+
+**When to use this pattern:**
+- Question-Answer systems
+- Request-Response/Approval workflows
+- Order-Invoice relationships
+- Application-Approval processes
+- Post-Comment relationships where comments have significantly different attributes
+- Any scenario where combining entities would create numerous nullable fields
+
+### POLYMORPHIC OWNERSHIP PATTERN (Multiple Actor Types)
+
+**CRITICAL PRINCIPLE:** When business requirements indicate that multiple actor types can create or own the same type of entity, design a **main entity + subtype entities pattern** using clear table naming conventions.
+
+**Red Flags Indicating Polymorphic Ownership:**
+- Requirements mention multiple actors creating the same entity type (e.g., "customers can report issues, sellers can report issues")
+- Same entity type but different ownership contexts
+- Need to track which actor type created/owns each instance
+
+**Example - Issues Reported by Different Actors:**
+
+When requirements mention: *"Customers can report issues with delivered goods. Sellers can also report issues with orders."*
+
+❌ **WRONG: Single Table (would force nullable FKs)**
+```
+shopping_order_good_issues
+```
+This would need nullable shopping_customer_id, nullable shopping_customer_session_id, nullable shopping_seller_id, nullable shopping_seller_session_id, etc.
+
+✅ **CORRECT: Main Entity + Subtype Entity Tables**
+```
+shopping_order_good_issues               // Main entity with shared fields
+shopping_order_good_issue_of_customers   // Customer-specific ownership (1:1 with main)
+shopping_order_good_issue_of_sellers     // Seller-specific ownership (1:1 with main)
+```
+
+**Table Naming Pattern:**
+- **Main entity**: Use singular business concept name (e.g., `shopping_order_good_issues`)
+- **Subtype entities**: Use `{main_entity}_of_{actor_type_plural}` pattern (e.g., `shopping_order_good_issue_of_customers`, `shopping_order_good_issue_of_sellers`)
+- Always use snake_case and plural forms
+
+**When to use this pattern:**
+- Issues/Tickets created by different user types
+- Reviews/Ratings submitted by different actor types
+- Messages/Communications from multiple sender types
+- Reports/Submissions from different authority levels
+- Any entity where requirements explicitly state multiple actor types can create the same type of record
+
+### Normalization Validation Checklist
+
+Before finalizing table names, verify:
+
+- [ ] **Distinct entities are separated**: No combining different business concepts into one table
+- [ ] **Optional relationships use separate tables**: When entity A optionally relates to entity B with distinct lifecycle
+- [ ] **Polymorphic ownership uses subtype pattern**: Main entity + `entity_of_{actor}` tables for multi-actor scenarios
+- [ ] **Each table has single responsibility**: One clear business concept per table
+- [ ] **Naming follows patterns**:
+  - Separate entities: `questions` + `question_answers`
+  - Polymorphic: `issues` + `issue_of_customers` + `issue_of_sellers`
+
 ## Function Calling Requirements
 
 ### Output Structure
@@ -304,6 +392,9 @@ Before generating the function call, ensure:
 - [ ] Top-level thinking, review, and decision fields are comprehensive
 - [ ] Each component has detailed thinking, review, and rationale fields
 - [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
+- [ ] **NORMALIZATION COMPLIANCE**: 1:1 relationships use separate tables, not nullable fields
+- [ ] **POLYMORPHIC PATTERNS**: Multi-actor ownership uses main entity + subtype entities pattern
+- [ ] **ACTOR TYPE FIELDS**: Main entities in polymorphic patterns include `actor_type` field
 
 Your output will serve as the foundation for the complete Prisma schema generation, so accuracy and completeness are critical.
 
