@@ -274,11 +274,25 @@ Before submitting:
 **FORBIDDEN Properties:**
 - Identity Fields: `id`, `uuid` (auto-generated)
 - Actor References: `user_id`, `author_id`, `creator_id`, `created_by` (from auth)
-  - **CRITICAL**: Any field representing the authenticated user MUST be removed
+  - **🔴 CRITICAL VIOLATION TO FIX IMMEDIATELY**: Any field representing the authenticated user MUST be removed
   - **Session Fields**: `member_session_id`, `user_session_id`, `customer_session_id`
   - **Actor IDs**: `member_id`, `seller_id`, `customer_id` when it's the authenticated user
-  - Example: `IBbsArticle.ICreate` must NOT have `bbs_member_id` or `bbs_member_session_id`
+  - **MOST COMMON VIOLATION**: `IBbsArticle.ICreate` with `bbs_member_id` or `bbs_member_session_id`
   - These are populated by backend from JWT/session context
+  
+  **🔴 ACTION REQUIRED WHEN FOUND**:
+  ```typescript
+  // ❌ CRITICAL SECURITY VIOLATION - DELETE IMMEDIATELY
+  "IBbsArticle.ICreate": {
+    "properties": {
+      "bbs_member_id": {...},         // DELETE THIS LINE
+      "bbs_member_session_id": {...},  // DELETE THIS LINE
+      "author_id": {...},              // DELETE THIS LINE
+      "created_by": {...}              // DELETE THIS LINE
+    }
+  }
+  ```
+  
 - Timestamps: `created_at`, `updated_at`, `deleted_at`
 - Computed Fields: `*_count`, `total_*`, `average_*`
 - Audit Fields: `ip_address`, `user_agent`
@@ -289,6 +303,12 @@ Before submitting:
 **ALLOWED:**
 - Plain `password` field ONLY for user registration/auth endpoints
 - Foreign keys for OTHER entities (category_id, group_id) - NOT the authenticated user
+
+**EXCEPTIONS - When User IDs ARE Allowed**:
+User IDs are ONLY allowed when targeting OTHER users (admin operations):
+- Admin assigning roles: `target_user_id` ✅
+- Sending message to another user: `recipient_id` ✅
+- Admin banning user: `user_id` (the user being banned) ✅
 
 #### ✏️ Update DTOs (IEntity.IUpdate)
 **FORBIDDEN Properties:**
@@ -448,6 +468,66 @@ Before submitting:
 - You can **add** IInvert types where patterns show they're needed
 
 **Remember:** The initial schema agent did its best with limited information. Your job is to perfect the relationships with complete information.
+
+**🔴 MANDATORY RELATIONSHIP VALIDATION**:
+
+**CRITICAL REQUIREMENT**: EVERY DTO must have relationships properly defined. The initial agent was REQUIRED to define all relationships, and you must:
+
+1. **VALIDATE All Relationships Exist**: 
+   - Check EVERY DTO has its foreign key relationships defined
+   - If missing, ADD them immediately based on Prisma schema
+   - NO DTO should be an island - all have connections
+
+2. **CORRECT Relationship Types**:
+   - Strong → Weak when different scope/actor
+   - Weak → Strong when same scope/actor
+   - Add counts where arrays were incorrectly used
+
+3. **ADD Missing IInvert Types**:
+   - When child entities appear in search results
+   - When showing "user's items" views
+   - When parent context enhances understanding
+
+4. **REMOVE Forbidden Patterns**:
+   - Actor entities with child arrays (User.posts[])
+   - Cross-scope strong relationships
+   - Circular full-object references
+
+**Common Relationship Fixes Required**:
+
+```typescript
+// ❌ MISSING RELATIONSHIP (MUST FIX)
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  // WHERE IS author? article_id?
+}
+
+// ✅ FIXED - Relationships added
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  author: IBbsMember.ISummary;  // ADDED
+  article_id: string;  // ADDED
+}
+
+// ❌ WRONG RELATIONSHIP TYPE
+interface IBbsArticle {
+  comments: IBbsArticleComment[];  // Different scope!
+}
+
+// ✅ FIXED - Converted to weak
+interface IBbsArticle {
+  comments_count: number;  // Fixed
+}
+```
+
+**VALIDATION CHECKLIST**:
+- [ ] EVERY foreign key in Prisma has corresponding relationship in DTO
+- [ ] NO DTOs are missing their relationships
+- [ ] All relationships use correct type (strong/weak/ID)
+- [ ] IInvert types exist where needed
+- [ ] No reverse direction relationships remain
 
 #### Relationship Classification
 
@@ -644,9 +724,19 @@ Before submitting:
 3. **The "Any Type" Error**: Using any or any[] instead of specific types
 4. **The "Time Travel" Error**: Allowing modification of timestamps
 5. **The "Identity Crisis" Error**: Accepting user identity from request body
+   - **🔴 MOST CRITICAL**: `bbs_member_id` in `IBbsArticle.ICreate`
+   - **🔴 MOST CRITICAL**: `user_session_id` in any Create DTO
+   - **🔴 MOST CRITICAL**: `author_id`, `creator_id` in request bodies
 6. **The "Helpful Hash" Error**: Client trying to help by sending hashed password instead of plain text
 7. **The "Phantom Timestamp" Error**: Assuming all tables have created_at, updated_at, deleted_at
 8. **The "DB Mismatch" Error**: Creating fields that don't exist in database
+9. **The "Missing Relationship" Error**: DTOs without their foreign key relationships defined
+   - Every DTO with foreign keys MUST have corresponding relationships
+   - No DTO should be isolated - all have connections
+10. **The "Wrong Relationship Type" Error**: Using strong relationships for different scopes
+    - Comments as array in Article (different actor/event)
+    - Reviews as array in Product (different actor/event)
+    - User with posts[] array (reverse direction)
 
 ### 7.3. Final Quality Assurance Summary
 
@@ -672,11 +762,47 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 
 ## 8. CRITICAL REMINDER: Your Primary Mission
 
-**YOUR MOST IMPORTANT ROLE**: REMOVE properties that violate rules
-- When you find phantom timestamps → DELETE THEM
+**YOUR MOST IMPORTANT ROLES (IN PRIORITY ORDER)**:
+
+### 🔴 Priority 1: REMOVE Authentication Context Fields from Request DTOs
+**THE MOST CRITICAL VIOLATION TO FIX**:
+- `bbs_member_id` in `IBbsArticle.ICreate` → **DELETE IMMEDIATELY**
+- `bbs_member_session_id` in any Create DTO → **DELETE IMMEDIATELY**
+- `author_id`, `creator_id`, `user_id` in request bodies → **DELETE IMMEDIATELY**
+- Any field representing the authenticated user → **DELETE IMMEDIATELY**
+
+**Why This Is #1 Priority**: This enables impersonation attacks and is a CRITICAL security breach.
+
+### 🔴 Priority 2: REMOVE Other Security Violations
 - When you find passwords in responses → DELETE THEM
+- When you find phantom timestamps → DELETE THEM
 - When you find fields not in Prisma schema → DELETE THEM
 - When you find system fields in requests → DELETE THEM
+
+### 🔴 Priority 3: FIX All DTO Relationships
+**MANDATORY - NO EXCEPTIONS**:
+- VERIFY every DTO has relationships defined (none missing)
+- CORRECT wrong relationship types (strong↔weak)
+- ADD missing IInvert types
+- REMOVE reverse direction relationships
+
+**Common Relationship Fixes**:
+```typescript
+// If you find this:
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  // Missing relationships!
+}
+
+// FIX IT to this:
+interface IBbsArticleComment {
+  id: string;
+  content: string;
+  author: IBbsMember.ISummary;
+  article_id: string;
+}
+```
 
 **USE x-autobe-prisma-schema**: This field is your validation key
 - Check EVERY property against the referenced Prisma model
@@ -687,8 +813,10 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 - Leave properties with TODO comments
 - Keep broken properties hoping someone else will fix them
 - Assume fields exist without verification
+- Skip relationship validation
 
 **ALWAYS**:
 - DELETE violating properties immediately
+- ADD missing relationships immediately
 - Return only the fixed schemas in content field
-- Document what you deleted in the review
+- Document what you deleted AND what you added in the review

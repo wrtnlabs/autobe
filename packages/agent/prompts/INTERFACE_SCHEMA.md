@@ -101,6 +101,107 @@ Before generating any schemas, you MUST complete this checklist:
 
 This checklist ensures security is built-in from the start, not added as an afterthought.
 
+### 3.2. 🔴 CRITICAL: Authentication Context Fields in Request DTOs
+
+**ABSOLUTE PROHIBITION**: Request body DTOs (Create/Update) must NEVER contain fields that represent the authenticated user. This is one of the MOST CRITICAL security requirements.
+
+#### Why This Is Critical
+
+1. **Security Breach Risk**: Allowing clients to specify their own identity enables impersonation attacks
+2. **Data Integrity**: User identity must come from verified JWT/session tokens, not client input
+3. **Audit Trail Corruption**: Falsified user IDs destroy accountability and compliance
+4. **Authorization Bypass**: Clients could claim to be administrators or other privileged users
+
+#### Forbidden Fields in ALL Request DTOs
+
+**NEVER accept these in Create/Update DTOs**:
+
+```typescript
+// ❌ CATASTROPHIC SECURITY VIOLATION
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  bbs_member_id: string;         // ❌ FORBIDDEN - from auth context
+  bbs_member_session_id: string; // ❌ FORBIDDEN - from auth context
+  author_id: string;              // ❌ FORBIDDEN - from auth context
+  created_by: string;             // ❌ FORBIDDEN - from auth context
+}
+
+// ✅ CORRECT - No authentication fields
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  category_id: string;  // ✅ OK - selecting a category
+  tags: string[];       // ✅ OK - business data
+}
+```
+
+#### Common Patterns to FORBID
+
+1. **Direct User IDs**: `user_id`, `member_id`, `customer_id`, `seller_id` when referring to authenticated user
+2. **Session References**: `session_id`, `member_session_id`, `user_session_id`
+3. **Author/Creator Fields**: `author_id`, `creator_id`, `created_by`, `owner_id`
+4. **Modifier Fields**: `updated_by`, `modified_by`, `last_updated_by`
+5. **Any Variant**: `userId`, `user`, `authorId`, `createdBy`, etc.
+
+#### Exceptions: When User IDs ARE Allowed
+
+User IDs are ONLY allowed in request bodies for operations targeting OTHER users:
+
+```typescript
+// ✅ ALLOWED - Admin assigning role to ANOTHER user
+interface IAdminAssignRole {
+  target_user_id: string;  // ✅ OK - targeting different user
+  role: string;
+}
+
+// ✅ ALLOWED - Sending message to ANOTHER user
+interface ISendMessage {
+  recipient_id: string;    // ✅ OK - different user
+  message: string;
+}
+
+// ✅ ALLOWED - Admin banning ANOTHER user
+interface IBanUser {
+  user_id: string;         // ✅ OK - different user
+  reason: string;
+}
+```
+
+#### Implementation Pattern
+
+**Backend Controller**:
+```typescript
+@Post('/articles')
+@UseGuards(AuthGuard)
+async createArticle(
+  @Body() dto: IBbsArticle.ICreate,  // No author_id in DTO
+  @CurrentUser() user: IUser          // From JWT/session
+) {
+  return this.service.create({
+    ...dto,
+    author_id: user.id,  // ✅ Backend adds from auth context
+    created_by: user.id
+  });
+}
+```
+
+#### Validation During Schema Generation
+
+For EVERY Create/Update DTO, ask:
+1. Does this field identify the current authenticated user? → **REMOVE IT**
+2. Could a client use this to impersonate someone? → **REMOVE IT**
+3. Is this targeting a different user (admin operation)? → **KEEP IT**
+
+#### Final Checklist for Request DTOs
+
+**Before finalizing any Create/Update DTO**:
+- [ ] NO fields that identify the authenticated user
+- [ ] NO session IDs or tokens
+- [ ] NO created_by/updated_by fields
+- [ ] Foreign keys for OTHER entities are properly included
+- [ ] Admin operations targeting other users are clearly distinguished
+
 ## 4. Schema Design Principles
 
 ### 4.1. Type Naming Conventions
@@ -152,6 +253,19 @@ DTOs establish relationships by:
 2. Respecting scope boundaries (independent concepts = separate scopes)
 3. Validating with FK direction
 4. Applying actor/category reference rules
+
+**🔴 MANDATORY RELATIONSHIP DEFINITION**: You MUST define relationships for EVERY DTO, even when uncertain. This is NOT optional:
+
+1. **No Skipping**: NEVER omit relationships because you're unsure
+2. **Make Decisions**: Use your thorough Prisma schema analysis to make the best decision
+3. **Trust the Process**: The review agent will validate and correct if needed
+4. **Better Wrong Than Missing**: A potentially incorrect relationship is better than no relationship
+
+When you encounter uncertainty:
+- ✅ DO: Analyze Prisma schema thoroughly and make a decision
+- ❌ DON'T: Skip the relationship or leave it undefined
+- ❌ DON'T: Add comments like "relationship unclear" or "needs review"
+- ✅ DO: Define it based on your best analysis - corrections come later
 
 **Critical:** Hierarchy indicates ownership and relationship direction. Different scopes always use **weak relationships** (reference). Same scope uses **strong relationships** (aggregation) unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
 
@@ -1586,6 +1700,23 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
    - Check composition follows table hierarchy and scope rules
    - Verify no reverse direction compositions exist
    - Ensure IInvert types are used appropriately
+   - **CRITICAL**: Verify EVERY DTO has relationships defined (no omissions)
+
+5. **🔴 FINAL RELATIONSHIP VALIDATION**:
+   
+   **MANDATORY CHECK - NO EXCEPTIONS**:
+   - [ ] EVERY entity DTO has relationships analyzed and defined
+   - [ ] NO relationships skipped due to uncertainty
+   - [ ] ALL foreign keys in Prisma have corresponding relationships in DTOs
+   - [ ] Decisions made for EVERY relationship, even if potentially incorrect
+   
+   **Common Excuses That Are NOT Acceptable**:
+   - ❌ "Relationship unclear from available information" → Analyze Prisma and decide
+   - ❌ "Need more context to determine relationship" → Use what you have
+   - ❌ "Leaving for review agent to determine" → Your job is to define it first
+   - ❌ "Relationship might vary by use case" → Choose the most common case
+   
+   **Remember**: The review agent EXPECTS you to have defined all relationships. Missing relationships make their job harder and delay the entire process.
 
 5. **Schema Structure Verification**:
    - **CRITICAL**: Verify ALL schemas are at the root level of the schemas object

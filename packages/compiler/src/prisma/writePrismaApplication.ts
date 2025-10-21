@@ -256,7 +256,9 @@ function writeConstraint(props: {
 }): string {
   // spellchecker:ignore-next-line
   const name: string = `${props.model.name}_${props.foreign.name}_rela`;
-  return [
+  const tooMuchLong: boolean =
+    props.dbms === "postgres" && name.length > MAX_IDENTIFIER_LENGTH;
+  const body: string = [
     props.foreign.relation.name,
     `${props.foreign.relation.targetModel}${props.foreign.nullable ? "?" : ""}`,
     `@relation(${[
@@ -266,11 +268,15 @@ function writeConstraint(props: {
       `fields: [${props.foreign.name}]`,
       `references: [id]`,
       `onDelete: Cascade`,
-      ...(props.dbms === "sqlite" || name.length <= MAX_IDENTIFIER_LENGTH
-        ? []
-        : [`map: "${shortName(name)}"`]),
+      ...(tooMuchLong ? [`map: "${shortName(name)}"`] : []),
     ].join(", ")})`,
   ].join(" ");
+  return tooMuchLong
+    ? StringUtil.trim`
+        // spellchecker: ignore-next-line
+        ${body}
+      `
+    : body;
 }
 
 function writeForeignIndex(props: {
@@ -280,7 +286,10 @@ function writeForeignIndex(props: {
   const name: string = `${props.model.name}_${props.field.name}_fkey`;
   const prefix: string = `@@${props.field.unique === true ? "unique" : "index"}([${props.field.name}]`;
   if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
-  return `${prefix}, map: "${shortName(name)}")`;
+  return StringUtil.trim`
+    // spellchecker: ignore-next-line
+    ${prefix}, map: "${shortName(name)}")
+  `;
 }
 
 function writeUniqueIndex(props: {
@@ -290,7 +299,10 @@ function writeUniqueIndex(props: {
   const name: string = `${props.model.name}_${props.unique.fieldNames.join("_")}_key`;
   const prefix: string = `@@unique([${props.unique.fieldNames.join(", ")}]`;
   if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
-  return `${prefix}, map: "${shortName(name)}")`;
+  return StringUtil.trim`
+    // spellchecker: ignore-next-line
+    ${prefix}, map: "${shortName(name)}")
+  `;
 }
 
 function writePlainIndex(props: {
@@ -300,7 +312,10 @@ function writePlainIndex(props: {
   const name: string = `${props.model.name}_${props.plain.fieldNames.join("_")}_idx`;
   const prefix: string = `@@index([${props.plain.fieldNames.join(", ")}]`;
   if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
-  return `${prefix}, map: "${shortName(name)}")`;
+  return StringUtil.trim`
+    // spellchecker: ignore-next-line
+    ${prefix}, map: "${shortName(name)}")
+  `;
 }
 
 function writeGinIndex(props: {
@@ -310,7 +325,10 @@ function writeGinIndex(props: {
   const name: string = `${props.model.name}_${props.gin.fieldName}_idx`;
   const prefix: string = `@@index([${props.gin.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin`;
   if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
-  return `${prefix}, map: "${shortName(name)}")`;
+  return StringUtil.trim`
+    // spellchecker: ignore-next-line
+    ${prefix}, map: "${shortName(name)}")
+  `;
 }
 
 /* -----------------------------------------------------------
