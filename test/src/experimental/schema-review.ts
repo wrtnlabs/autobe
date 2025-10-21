@@ -24,6 +24,7 @@ const load = async (): Promise<AutoBeInterfaceSchemasReviewEvent[]> => {
 const main = async (): Promise<void> => {
   const reviews: AutoBeInterfaceSchemasReviewEvent[] = await load();
   for (const r of reviews) {
+    if (Object.keys(r.content).length === 0) continue;
     const md: string = StringUtil.trim`
       # Interface Schema Review
       ## Review
@@ -34,10 +35,16 @@ const main = async (): Promise<void> => {
       
       ${r.plan}
 
+      ## Input
+
+      \`\`\`json
+      ${JSON.stringify(r.schemas, null, 2)}
+      \`\`\`
+
       ## Changed Schemas
       
       \`\`\`json
-      ${JSON.stringify(r.schemas, null, 2)}
+      ${JSON.stringify(r.content, null, 2)}
       \`\`\`
     `;
     console.log(md + "\n\n\n");

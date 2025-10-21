@@ -3,3 +3,5 @@ assets/logs/
 repositories/
 results/
 benchmark-logs/
+
+*.log.md
