@@ -107,12 +107,144 @@ makeGroups({
 - Schema file `bbs.prisma` → Group name: "BBS"  
 - Table prefix `user_management_` → Group name: "UserManagement"
 
+### Beyond Schema-Based Groups: Analytics and Computed Operations
+
+**IMPORTANT INSIGHT**: While most groups should derive from Prisma schema structure, some functional areas emerge from business requirements that transcend individual tables.
+
+**Cross-Cutting Functional Groups**:
+
+These groups organize operations that don't map to single schema entities but serve critical business needs:
+
+**1. Analytics & Statistics Groups**:
+- **When to Create**: Requirements need aggregated insights across multiple entities
+- **Naming Pattern**: "Analytics", "Statistics", "Insights", "Metrics"
+- **Examples**:
+  - **Group "Analytics"**: Sales analytics, customer behavior patterns, revenue insights
+  - **Group "Statistics"**: Usage statistics, performance metrics, trend analysis
+  - **Group "Reports"**: Business intelligence reports, executive dashboards
+- **Key Indicator**: Requirements mention "analyze", "trends", "insights", "over time", or "patterns"
+
+**2. Dashboard & Overview Groups**:
+- **When to Create**: Requirements need consolidated views from multiple domains
+- **Naming Pattern**: "Dashboard", "Overview", "Summary"
+- **Examples**:
+  - **Group "Dashboard"**: Admin dashboard, seller dashboard, user overview
+  - **Group "Overview"**: System health overview, business summary, KPI overview
+- **Key Indicator**: Requirements say "at a glance", "dashboard", "overview", or "summary view"
+
+**3. Search & Discovery Groups**:
+- **When to Create**: Requirements need unified search across heterogeneous entities
+- **Naming Pattern**: "Search", "Discovery", "Find"
+- **Examples**:
+  - **Group "Search"**: Global search, unified search, cross-entity search
+  - **Group "Discovery"**: Content discovery, recommendation engines
+- **Key Indicator**: Requirements mention "search everything", "find across", or "unified search"
+
+**4. Integration & External Systems Groups**:
+- **When to Create**: Requirements involve external APIs or third-party integrations
+- **Naming Pattern**: "Integration", "External", "Sync", "Webhook"
+- **Examples**:
+  - **Group "Integration"**: Payment gateway integration, shipping provider APIs
+  - **Group "Webhooks"**: External event notifications, callback endpoints
+  - **Group "Sync"**: Data synchronization with external systems
+- **Key Indicator**: Requirements mention "integrate with", "external API", or "third-party"
+
+**Decision Framework: Schema-Based vs Functional Groups**:
+
+```
+For each potential group, ask:
+
+1. Does this map to a clear Prisma schema namespace/file/prefix?
+   YES → Create schema-based group (e.g., "Shopping", "BBS")
+   NO → Continue to question 2
+
+2. Does this represent operations across multiple schema areas?
+   YES → Continue to question 3
+   NO → Map to closest schema-based group
+
+3. Do requirements explicitly need these cross-cutting operations?
+   YES → Create functional group (e.g., "Analytics", "Dashboard")
+   NO → Don't create - may be premature
+
+4. Would users recognize this as a distinct functional area?
+   YES → Create functional group with clear description
+   NO → Merge into related schema-based group
+```
+
+**Examples of When to Create Functional Groups**:
+
+**Scenario 1: E-commerce with Analytics Requirements**
+```
+Requirements:
+- "System SHALL provide sales analytics by product category over time"
+- "Admin SHALL view customer purchase pattern analysis"
+- "Reports SHALL show revenue trends and forecasts"
+
+Prisma Schema:
+- shopping_orders (Shopping group)
+- shopping_products (Shopping group)
+- shopping_customers (Shopping group)
+
+Groups Created:
+✅ "Shopping" - Standard CRUD for orders, products, customers
+✅ "Analytics" - Sales analytics, customer patterns, revenue trends
+   (These operations JOIN multiple Shopping tables but serve distinct analytical purpose)
+```
+
+**Scenario 2: BBS with Search Requirements**
+```
+Requirements:
+- "Users SHALL search across articles, comments, and categories simultaneously"
+- "Search SHALL return unified results with highlighting"
+
+Prisma Schema:
+- bbs_articles (BBS group)
+- bbs_article_comments (BBS group)
+- bbs_categories (BBS group)
+
+Groups Created:
+✅ "BBS" - Standard CRUD for articles, comments, categories
+✅ "Search" - Unified search across all BBS entities
+   (Search operations UNION across multiple tables, distinct from individual entity queries)
+```
+
+**Scenario 3: Admin Dashboard Requirements**
+```
+Requirements:
+- "Admin dashboard SHALL show: active users, today's orders, system health, revenue"
+- "Dashboard SHALL aggregate data from all modules"
+
+Prisma Schema:
+- Multiple schemas: users, shopping_orders, bbs_articles, system_logs
+
+Groups Created:
+✅ "Users" - User management
+✅ "Shopping" - Shopping operations
+✅ "BBS" - BBS operations
+✅ "Dashboard" - Admin overview aggregating all domains
+   (Dashboard operations pull from ALL groups, distinct functional area)
+```
+
 ### When to Create New Groups
 
-Create new groups ONLY when existing Prisma schema structure cannot cover all requirements:
-- Cross-cutting concerns spanning multiple schema areas
-- System-level operations not mapped to specific entities
-- Integration functionality not represented in schema
+Create new groups in these scenarios:
+
+**Schema-Based Groups** (Primary approach):
+- Prisma schema has clear namespaces, file separation, or table prefixes
+- Entities naturally cluster around business domains
+- Most groups should be schema-based
+
+**Functional Groups** (Secondary approach):
+- Cross-cutting concerns spanning multiple schema areas (analytics, dashboards)
+- Requirements explicitly need aggregated/computed operations
+- System-level operations not mapped to specific entities (webhooks, integrations)
+- Unified functionality across heterogeneous entities (global search)
+
+**DO NOT Create Groups For**:
+- ❌ Single operations (use existing group instead)
+- ❌ "Nice to have" features without clear requirements
+- ❌ Speculative analytics without business need
+- ❌ Premature organization (combine with related group first)
 
 ### Group Description Requirements
 

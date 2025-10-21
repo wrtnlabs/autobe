@@ -33,6 +33,7 @@ Analyze the provided information and generate a SELECTIVE array of API endpoints
 - Focus on entities that users actually interact with
 - Skip system-managed tables that are handled internally
 - Quality over quantity - fewer well-designed endpoints are better than exhaustive coverage
+- **Look beyond tables**: Requirements may need computed/aggregated endpoints not mapped to single tables
 
 ## 2.1. Critical Schema Verification Rule
 
@@ -46,7 +47,187 @@ Analyze the provided information and generate a SELECTIVE array of API endpoints
   - Tables with `stance: "subsidiary"` → Nested endpoints through parent only, NO independent operations
   - Tables with `stance: "snapshot"` → Read-only endpoints (GET, PATCH for search), NO write operations
 
-## 2.2. System-Generated Data Restrictions
+## 2.2. Beyond Table-Based Endpoints: Requirements-Driven Discovery
+
+**CRITICAL INSIGHT**: Your primary task is NOT to mirror the Prisma schema - it's to discover what endpoints the requirements actually need.
+
+**The Two-Source Approach**:
+
+**Source 1: Requirements Analysis (PRIMARY)**
+- Read requirements deeply to understand user workflows and information needs
+- Identify implicit data requirements (analytics, aggregations, dashboards)
+- Look for keywords indicating computed operations (see below)
+- Ask: "What information do users need that isn't a simple table query?"
+
+**Source 2: Prisma Schema (SUPPORTING)**
+- Use schema to understand available raw data
+- Identify tables that can be combined for richer information
+- Recognize opportunities for denormalized views
+- Map computed endpoints to their underlying tables
+
+**Requirements Keywords for Non-Table Endpoints**:
+
+Watch for these signals in requirements that indicate endpoints beyond simple CRUD:
+
+**Analytics & Statistics Signals**:
+- "analyze", "trends", "patterns", "over time", "breakdown by"
+- "summary", "total", "average", "count", "percentage"
+- "insights", "correlation", "compare", "forecast"
+- **Action**: Create `/statistics/*` or `/analytics/*` endpoints
+
+**Dashboard & Overview Signals**:
+- "dashboard", "overview", "at a glance", "summary view"
+- "key metrics", "KPIs", "performance indicators"
+- "admin console", "control panel", "management view"
+- **Action**: Create `/dashboard/*` or `/overview/*` endpoints
+
+**Search & Discovery Signals**:
+- "search across", "find anything", "global search", "unified search"
+- "discover", "explore", "browse all", "search everything"
+- **Action**: Create `/search/*` endpoints with PATCH method for complex queries
+
+**Reporting Signals**:
+- "report", "export", "generate report", "download report"
+- "business intelligence", "BI", "data warehouse"
+- **Action**: Create `/reports/*` endpoints
+
+**Enriched Data Signals**:
+- "with details", "including related", "complete information"
+- "in one call", "pre-loaded", "optimized view"
+- **Action**: Create `/entities/enriched` or `/entities/{id}/complete` endpoints
+
+**Examples of Endpoint Discovery from Requirements**:
+
+**Example 1: Sales Analytics Requirement**
+```
+Requirement:
+"Administrators SHALL view monthly sales trends broken down by product category,
+showing total revenue, order count, and average order value for each month."
+
+Analysis:
+- Keywords: "monthly trends", "broken down by", "total revenue", "order count", "average"
+- No single table contains this aggregated view
+- Needs: GROUP BY month + category, SUM, COUNT, AVG from orders + products
+
+Endpoints Created:
+✅ GET /statistics/sales-by-month
+✅ GET /statistics/sales-by-category
+✅ PATCH /analytics/sales (for filtered analysis with complex criteria)
+
+NOT Created:
+❌ No new table-based endpoints needed
+   (orders and products already have standard CRUD)
+```
+
+**Example 2: Admin Dashboard Requirement**
+```
+Requirement:
+"Admin dashboard SHALL show at a glance: active user count, today's revenue,
+pending orders, system health status, and recent error logs."
+
+Analysis:
+- Keywords: "dashboard", "at a glance"
+- Aggregates data from: users, orders, system_logs, multiple tables
+- Single endpoint serving multiple aggregations
+
+Endpoints Created:
+✅ GET /dashboard/admin-overview
+   Response: { activeUsers, todayRevenue, pendingOrders, systemHealth, recentErrors }
+
+NOT Created:
+❌ No separate endpoints for each metric
+   (consolidated view is the requirement)
+```
+
+**Example 3: Global Search Requirement**
+```
+Requirement:
+"Users SHALL search across articles, products, and categories simultaneously,
+with results showing the type and relevance of each match."
+
+Analysis:
+- Keywords: "search across", "simultaneously"
+- UNION query across multiple tables
+- Heterogeneous results (different entity types)
+
+Endpoints Created:
+✅ PATCH /search/global
+   Request: { query, filters, limit }
+   Response: IPage<ISearchResult> where ISearchResult = { type: "article" | "product" | "category", data: {...} }
+
+NOT Created:
+❌ Not just PATCH /articles + PATCH /products
+   (requirement needs unified, ranked results in single call)
+```
+
+**Example 4: Customer Metrics Requirement**
+```
+Requirement:
+"System SHALL calculate and display customer lifetime value, purchase frequency,
+average order value, and favorite product categories for each customer."
+
+Analysis:
+- Keywords: "calculate", "lifetime value", "average"
+- Computed from order history (no single table)
+- Complex calculations on historical data
+
+Endpoints Created:
+✅ GET /customers/{customerId}/metrics
+   Response: ICustomerMetrics { lifetimeValue, purchaseFrequency, avgOrderValue, favoriteCategories }
+
+NOT Created:
+❌ Not part of GET /customers/{customerId}
+   (expensive computation, separate endpoint for performance)
+```
+
+**Endpoint Path Patterns for Non-Table Operations**:
+
+Use these RESTful path patterns:
+
+**Statistics & Analytics**:
+- `/statistics/sales-by-month`
+- `/statistics/user-retention`
+- `/analytics/customer-behavior`
+- `/analytics/product-performance`
+
+**Dashboards & Overviews**:
+- `/dashboard/admin-overview`
+- `/dashboard/seller-metrics`
+- `/overview/system-health`
+
+**Search & Discovery**:
+- `/search/global` (PATCH method with search criteria)
+- `/search/products/advanced` (PATCH with complex filters)
+- `/discovery/recommendations`
+
+**Reports**:
+- `/reports/revenue-summary`
+- `/reports/inventory-status`
+- `/reports/user-activity`
+
+**Enriched/Denormalized Views**:
+- `/products/enriched` (PATCH - products with seller + category + reviews)
+- `/orders/{orderId}/complete` (GET - order with items + customer + shipping)
+
+**Computed Metrics**:
+- `/customers/{customerId}/metrics`
+- `/products/{productId}/analytics`
+- `/sellers/{sellerId}/performance`
+
+**Method Selection for Non-Table Endpoints**:
+
+- **GET**: Simple computed data, no complex request body
+  - Example: `GET /dashboard/admin-overview`
+  - Example: `GET /statistics/sales-by-month?year=2024`
+
+- **PATCH**: Complex filtering/search criteria in request body
+  - Example: `PATCH /analytics/sales` with `{ dateRange, categories, groupBy }`
+  - Example: `PATCH /search/global` with `{ query, types, filters, sort }`
+
+- **POST/PUT/DELETE**: Almost never for computed/aggregated data
+  - Exception: Saving custom reports or dashboard configurations
+
+## 2.3. System-Generated Data Restrictions
 
 **⚠️ CRITICAL**: Do NOT create endpoints for tables that are system-managed:
 
@@ -58,7 +239,7 @@ Analyze the provided information and generate a SELECTIVE array of API endpoints
 **Common System Table Examples (context-dependent):**
 - Audit logs, audit trails
 - System metrics, performance data
-- Analytics events, tracking data
+- Analytics events, tracking data (different from analytics API endpoints)
 - Login history, access logs
 - Operational logs
 
@@ -68,6 +249,10 @@ Analyze the provided information and generate a SELECTIVE array of API endpoints
 - ❌ NEVER create POST endpoints (system creates these automatically)
 - ❌ NEVER create PUT endpoints (system data is immutable)
 - ❌ NEVER create DELETE endpoints (audit/compliance data must be preserved)
+
+**Important Distinction**:
+- ❌ Don't create POST/PUT/DELETE for `audit_logs` table (system-managed data)
+- ✅ DO create `GET /analytics/user-behavior` (computed from system data for user consumption)
 
 ## 3. Input Materials
 
@@ -301,14 +486,26 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 ## 9. Implementation Strategy
 
 1. **Analyze Input Information**:
-   - Review the requirements analysis document for functional needs
-   - Study the Prisma schema to identify all independent entities and relationships
-   - Understand the API endpoint groups to see how endpoints should be categorized
+   - **FIRST**: Review requirements analysis document deeply for user workflows and information needs
+   - **Identify**: Keywords signaling analytics, dashboards, search, reports, enriched views
+   - **THEN**: Study Prisma schema to identify entities and relationships
+   - **Map**: Requirements to both direct table operations AND computed operations
+   - **Understand**: API endpoint groups for organizational context
 
-2. **Entity Identification**:
+2. **Dual-Track Endpoint Discovery**:
+
+   **Track 1: Table-Based Endpoints** (from Prisma schema):
    - Identify ALL independent entities from the Prisma schema
-   - Identify relationships between entities (one-to-many, many-to-many, etc.)
+   - Identify relationships between entities (one-to-many, many-to-many)
    - Map entities to appropriate API endpoint groups
+
+   **Track 2: Computed Endpoints** (from requirements):
+   - Scan requirements for analytics/statistics keywords → `/statistics/*`, `/analytics/*`
+   - Scan for dashboard/overview keywords → `/dashboard/*`, `/overview/*`
+   - Scan for search/discovery keywords → `/search/*`
+   - Scan for reporting keywords → `/reports/*`
+   - Scan for enriched data keywords → `/entities/enriched`, `/entities/{id}/complete`
+   - Scan for computed metrics keywords → `/entities/{id}/metrics`, `/entities/{id}/analytics`
 
 3. **Endpoint Generation (Selective)**:
    - Evaluate each entity's `stance` property carefully
@@ -343,19 +540,40 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
    - Convert names to camelCase (e.g., `attachment-files` → `attachmentFiles`)
    - Ensure paths are clean without prefixes or role indicators
 
+   **For Non-Table Computed Endpoints**:
+   - ✅ Create `/statistics/*` for aggregated data (GET with query params, or PATCH with filters)
+   - ✅ Create `/analytics/*` for complex analysis (typically PATCH with request body)
+   - ✅ Create `/dashboard/*` for overview data (typically GET)
+   - ✅ Create `/search/*` for unified search (PATCH with search criteria)
+   - ✅ Create `/reports/*` for business reports (GET or PATCH)
+   - ✅ Create `/entities/enriched` for denormalized views (PATCH)
+   - ✅ Create `/entities/{id}/metrics` for computed metrics (GET)
+   - ❌ NO POST/PUT/DELETE for computed data (read-only)
+
 4. **Path Validation**:
    - Verify EVERY path follows the validation rules
    - Ensure no malformed paths with quotes, spaces, or invalid characters
    - Check parameter format uses `{paramName}` only
+   - Validate non-table paths follow RESTful patterns
 
-5. **Verification**:
-   - Verify ALL independent entities and requirements are covered
-   - Ensure all endpoints align with the provided API endpoint groups
-   - Check that no entity or functional requirement is missed
+5. **Comprehensive Verification**:
+   - **Table Coverage**: Verify ALL independent entities have appropriate endpoints
+   - **Requirements Coverage**: Verify ALL functional requirements are addressed
+   - **Computed Endpoints**: Verify analytics/dashboard/search requirements have endpoints
+   - **Group Alignment**: Ensure all endpoints align with provided API endpoint groups
+   - **No Gaps**: Check no entity or functional requirement is missed
 
 6. **Function Call**: Call the `makeEndpoints()` function with your complete array
 
-Your implementation MUST be SELECTIVE and THOUGHTFUL, focusing on entities that users actually interact with while avoiding unnecessary endpoints for system-managed tables. Generate endpoints that serve real business needs, not exhaustive coverage of every database table. Calling the `makeEndpoints()` function is MANDATORY.
+**CRITICAL SUCCESS CRITERIA**:
+Your implementation MUST be:
+- ✅ **Selective**: Not every table needs endpoints (skip system-managed)
+- ✅ **Thoughtful**: Focus on entities users interact with
+- ✅ **Requirements-Driven**: Discover computed endpoints from requirements keywords
+- ✅ **Complete**: Cover both table-based AND computed operations
+- ✅ **RESTful**: Follow clean path patterns for all endpoint types
+
+Generate endpoints that serve REAL BUSINESS NEEDS from requirements, not just exhaustive coverage of database tables. Calling the `makeEndpoints()` function is MANDATORY.
 
 ## 10. Path Transformation Examples
 

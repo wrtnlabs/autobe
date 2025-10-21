@@ -69,12 +69,148 @@ Analyze the provided information and generate complete API operations that trans
 - **Avoid Over-Engineering**: Not every table requires full CRUD operations
 - **System vs User Data**: Distinguish between what users manage vs what the system manages
 - **Business Logic Focus**: Operations should reflect business workflows, not database structure
+- **Beyond Tables**: Operations can transcend single table boundaries through SQL composition
 
 **Ask Before Creating Each Operation**:
 - Does a user actually perform this action?
 - Is this data user-managed or system-managed?
 - Will this operation ever be called from the UI/client?
 - Is this operation redundant with another operation?
+
+### 2.2.1. Operations Beyond Database Tables
+
+**CRITICAL INSIGHT**: Not all valuable operations map directly to single Prisma tables. Many essential business operations emerge from SQL composition, aggregation, and multi-table analysis.
+
+**The Requirements-First Principle**:
+- **PRIMARY SOURCE**: Analyze requirements deeply for implicit data needs
+- **SECONDARY SOURCE**: Map Prisma tables to support these needs
+- **DO NOT**: Limit operations to only what tables directly represent
+
+**Categories of Non-Table Operations**:
+
+**1. Statistical Aggregations** (GROUP BY, COUNT, SUM, AVG, percentiles):
+- **Business Need**: "Show me monthly sales trends"
+- **Implementation**: `SELECT DATE_TRUNC('month', created_at), SUM(amount) FROM orders GROUP BY 1`
+- **No Prisma Table**: This data doesn't exist as rows - it's computed on demand
+- **Operation**: `GET /statistics/sales-by-month` → `ISalesMonthlyStatistics`
+- **When to Create**: Requirements mention trends, patterns, summaries, or "over time"
+
+**2. Multi-Table Analytics** (Complex JOINs and computations):
+- **Business Need**: "Analyze customer purchase patterns with product categories"
+- **Implementation**: JOIN orders + order_items + products + categories with aggregations
+- **No Single Table**: Result combines data from 4+ tables
+- **Operation**: `GET /analytics/customer-purchase-patterns` → `ICustomerPurchaseAnalytics`
+- **When to Create**: Requirements say "analyze", "insights", "patterns", or "correlation"
+
+**3. Dashboard/Overview Endpoints** (Multiple aggregations in one response):
+- **Business Need**: "Admin dashboard showing key metrics"
+- **Implementation**: Multiple parallel queries aggregated into single response
+- **No Table**: Each metric comes from different source
+- **Operation**: `GET /dashboard/admin-overview` → `IAdminDashboard`
+- **Response Contains**: `{ userCount, todayRevenue, pendingOrders, systemHealth, ... }`
+- **When to Create**: Requirements mention "dashboard", "overview", "summary", or "at a glance"
+
+**4. Denormalized Views** (Pre-joined data for performance):
+- **Business Need**: "Product list with seller info and category hierarchy"
+- **Implementation**: Products LEFT JOIN sellers LEFT JOIN categories (nested)
+- **No Table**: Denormalized combination for efficient display
+- **Operation**: `PATCH /products/enriched` → `IPage<IProductEnriched>`
+- **When to Create**: Requirements emphasize performance or need "all info in one call"
+
+**5. Search Across Entities** (Global/unified search):
+- **Business Need**: "Search everything - products, articles, and categories"
+- **Implementation**: UNION queries across multiple tables
+- **No Single Table**: Combines heterogeneous data
+- **Operation**: `PATCH /search/global` → `IPage<ISearchResult>`
+- **Response Contains**: `{ type: "product" | "article" | "category", data: {...} }`
+- **When to Create**: Requirements say "search everything" or "unified search"
+
+**6. Computed Business Metrics** (Derived calculations):
+- **Business Need**: "Customer lifetime value and purchase frequency"
+- **Implementation**: Complex calculations across order history
+- **No Table**: Metrics computed from raw transaction data
+- **Operation**: `GET /customers/{customerId}/metrics` → `ICustomerMetrics`
+- **When to Create**: Requirements need calculated KPIs or business intelligence
+
+**How to Identify These Opportunities**:
+
+**Requirements Analysis Keywords**:
+- **Aggregation Signals**: "total", "average", "count", "summary", "over time", "trends"
+- **Analytics Signals**: "insights", "patterns", "analyze", "correlation", "breakdown"
+- **Dashboard Signals**: "overview", "at a glance", "key metrics", "summary view"
+- **Performance Signals**: "in one call", "all information", "pre-loaded", "optimized"
+- **Search Signals**: "search all", "find anything", "global search", "across everything"
+
+**Deep Requirements Mining**:
+```
+WRONG Approach:
+1. Read Prisma schema
+2. Generate CRUD for each table
+3. Done
+
+CORRECT Approach:
+1. Read requirements thoroughly
+2. Identify user workflows and information needs
+3. Ask: "What derived data would users want?"
+4. Map to Prisma tables (single or multiple)
+5. Generate operations (CRUD + computed operations)
+```
+
+**Implementation Specification Pattern**:
+
+For non-table operations, your `specification` field must clearly document:
+
+```typescript
+{
+  specification: `This operation computes monthly sales statistics by aggregating
+  data from the Orders table using GROUP BY month. It does NOT map to a single
+  Prisma table - instead it executes:
+
+  SELECT
+    DATE_TRUNC('month', created_at) as month,
+    COUNT(*) as order_count,
+    SUM(total_amount) as revenue,
+    AVG(total_amount) as average_order_value
+  FROM orders
+  WHERE status = 'completed'
+  GROUP BY month
+  ORDER BY month DESC
+
+  This statistical aggregation serves the business need for sales trend analysis.`,
+
+  path: "/statistics/sales-by-month",
+  method: "get",
+  // ... rest of operation
+}
+```
+
+**Response Type Naming Convention**:
+
+Non-table operations use descriptive DTO names reflecting their purpose:
+
+- ❌ WRONG: `IOrder` (implies direct table mapping)
+- ✅ CORRECT: `ISalesMonthlyStatistics` (describes computed data)
+- ✅ CORRECT: `IAdminDashboard` (describes aggregated view)
+- ✅ CORRECT: `ICustomerPurchaseAnalytics` (describes analytical result)
+- ✅ CORRECT: `IProductEnriched` (describes denormalized combination)
+- ✅ CORRECT: `ISearchResult` (describes heterogeneous search results)
+
+**When NOT to Create Non-Table Operations**:
+
+- ❌ Don't create operations for system-generated data (logs, metrics captured automatically)
+- ❌ Don't create operations that duplicate existing table-based queries
+- ❌ Don't create "nice to have" statistics without clear requirements
+- ❌ Don't create premature optimizations (denormalized views) without performance needs
+
+**Validation Checklist for Non-Table Operations**:
+
+Before creating a non-table operation, verify:
+- [ ] Requirements explicitly or implicitly need this aggregated/computed data
+- [ ] No existing operation provides this information adequately
+- [ ] The operation serves a real user workflow or dashboard need
+- [ ] You can clearly specify the SQL logic or data combination strategy
+- [ ] You've chosen an appropriate descriptive DTO name
+- [ ] The operation is READ-ONLY (GET or PATCH for search) - no POST/PUT/DELETE for computed data
 
 ### 2.3. System-Generated Data: Critical Restrictions
 
