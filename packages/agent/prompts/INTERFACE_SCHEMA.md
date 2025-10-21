@@ -87,6 +87,7 @@ Your specific tasks are:
 6. **Document Thoroughly**: Provide comprehensive descriptions for all schema definitions
 7. **Validate Consistency**: Ensure schema definitions align with API operations
 8. **Use Named References Only**: ALL relationships between DTOs MUST use $ref references - define each DTO as a named type in the schemas record and reference it using $ref
+9. **CRITICAL - No Nested Schema Definitions**: NEVER define schemas inside other schemas. ALL schemas MUST be defined at the root level of the schemas object. Each schema is a sibling, not a child of another schema
 
 ### 3.1. Pre-Execution Security Checklist
 
@@ -547,81 +548,144 @@ interface IBbsArticleComment.IInvert {
 **Example 1: BBS System (JSON Schema Format)**
 
 ```json
-// =====================
-// Scope: bbs_articles
-// =====================
-"IBbsArticle": {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "title": { "type": "string" },
-    "content": { "type": "string" },
-    "created_at": { "type": "string", "format": "date-time" },
-    
-    // Strong relationship: Same scope (article's snapshots)
-    "snapshots": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref
+// CRITICAL: This shows the COMPLETE schemas object structure.
+// ALL schemas are defined at the SAME LEVEL - NEVER nested inside each other!
+{
+  // =====================
+  // Scope: bbs_articles
+  // =====================
+  "IBbsArticle": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "content": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      
+      // Strong relationship: Same scope (article's snapshots)
+      "snapshots": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref
+        }
+      },
+      
+      // Weak relationship: Different scope (actor)
+      "author": {
+        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+      },
+      
+      // Weak relationship: Different scope (category)
+      "category": {
+        "$ref": "#/components/schemas/IBbsCategory"  // ✅ USE $ref
+      },
+
+      // Different scope: Count only (large collection)
+      "comment_count": { "type": "integer" },
+      "like_count": { "type": "integer" }
+    },
+    "required": ["id", "title", "content", "author"]
+  },
+
+  // =====================
+  // Referenced Schemas - SAME LEVEL as IBbsArticle!
+  // =====================
+  "IBbsMember.ISummary": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "nickname": { "type": "string" },
+      "avatar_url": { "type": "string" }
+    },
+    "required": ["id", "nickname"]
+  },
+
+  "IBbsCategory": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "code": { "type": "string" }
+    },
+    "required": ["id", "name", "code"]
+  },
+
+  "IBbsArticleSnapshot": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "content": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      // Nested children when snapshot is loaded
+      "images": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IBbsArticleSnapshotImage"
+        }
+      },
+      "files": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IBbsArticleSnapshotFile"
+        }
       }
     },
-    
-    // Weak relationship: Different scope (actor)
-    "author": {
-      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
-    },
-    
-    // Weak relationship: Different scope (category)
-    "category": {
-      "$ref": "#/components/schemas/IBbsCategory"  // ✅ USE $ref
-    },
-
-    // Different scope: Count only (large collection)
-    "comment_count": { "type": "integer" },
-    "like_count": { "type": "integer" }
+    "required": ["id", "content", "created_at"]
   },
-  "required": ["id", "title", "content", "author"]
-}
 
-// =====================
-// Scope: bbs_article_comments (SEPARATE ROOT)
-// =====================
-"IBbsArticleComment": {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "content": { "type": "string" },
-    "created_at": { "type": "string", "format": "date-time" },
-    
-    // Weak relationship: Different scope (actor)
-    "author": {
-      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+  // =====================
+  // Scope: bbs_article_comments (SEPARATE ROOT)
+  // =====================
+  "IBbsArticleComment": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "content": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      
+      // Weak relationship: Different scope (actor)
+      "author": {
+        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+      },
+      
+      // ID relationship: Parent scope (ID only in default)
+      "article_id": { "type": "string" }
     },
-    
-    // ID relationship: Parent scope (ID only in default)
-    "article_id": { "type": "string" }
+    "required": ["id", "content", "author", "article_id"]
   },
-  "required": ["id", "content", "author", "article_id"]
-}
 
-// IInvert: For comment-centric views
-"IBbsArticleComment.IInvert": {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "content": { "type": "string" },
-    "created_at": { "type": "string", "format": "date-time" },
-    
-    "author": {
-      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+  // IInvert: For comment-centric views
+  "IBbsArticleComment.IInvert": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "content": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      
+      "author": {
+        "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+      },
+      
+      // ✅ Parent context with $ref
+      "article": {
+        "$ref": "#/components/schemas/IBbsArticle.ISummary"  // NO comments array in Summary!
+      }
     },
-    
-    // ✅ Parent context with $ref
-    "article": {
-      "$ref": "#/components/schemas/IBbsArticle.ISummary"  // NO comments array in Summary!
-    }
+    "required": ["id", "content", "author", "article"]
   },
-  "required": ["id", "content", "author", "article"]
+
+  "IBbsArticle.ISummary": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "author_name": { "type": "string" },  // Denormalized
+      "created_at": { "type": "string", "format": "date-time" }
+    },
+    "required": ["id", "title", "author_name"]
+  }
+  
+  // ... more schemas at same level ...
 }
 
 // Usage:
@@ -632,65 +696,114 @@ interface IBbsArticleComment.IInvert {
 **Example 2: Shopping System - Orders (JSON Schema Format)**
 
 ```json
-// =====================
-// Scope: shopping_orders
-// =====================
-"IShoppingOrder": {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "order_number": { "type": "string" },
-    "status": { "type": "string" },
-    "created_at": { "type": "string", "format": "date-time" },
-    
-    // Strong relationship: Same scope (order's components)
-    "goods": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/IShoppingOrderGoods"  // ✅ USE $ref
-      }
+// CRITICAL: Complete schemas object - ALL schemas at SAME LEVEL
+{
+  // =====================
+  // Scope: shopping_orders
+  // =====================
+  "IShoppingOrder": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "order_number": { "type": "string" },
+      "status": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      
+      // Strong relationship: Same scope (order's components)
+      "goods": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IShoppingOrderGoods"  // ✅ USE $ref
+        }
+      },
+      
+      "deliveries": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IShoppingOrderDelivery"  // ✅ USE $ref
+        }
+      },
+      
+      "payments": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IShoppingOrderPayment"  // ✅ USE $ref
+        }
+      },
+      
+      // Weak relationship: Different scope (actor)
+      "customer": {
+        "$ref": "#/components/schemas/IShoppingCustomer.ISummary"  // ✅ USE $ref
+      },
+      
+      "total_amount": { "type": "number" }
     },
-    
-    "deliveries": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/IShoppingOrderDelivery"  // ✅ USE $ref
-      }
-    },
-    
-    "payments": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/IShoppingOrderPayment"  // ✅ USE $ref
-      }
-    },
-    
-    // Weak relationship: Different scope (actor)
-    "customer": {
-      "$ref": "#/components/schemas/IShoppingCustomer.ISummary"  // ✅ USE $ref
-    },
-    
-    "total_amount": { "type": "number" }
+    "required": ["id", "order_number", "status", "customer", "total_amount"]
   },
-  "required": ["id", "order_number", "status", "customer", "total_amount"]
-}
 
-// Summary: No strong relationships
-"IShoppingOrder.ISummary": {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "order_number": { "type": "string" },
-    "status": { "type": "string" },
-    
-    // Denormalized fields - no relationships
-    "customer_name": { "type": "string" },
-    "total_amount": { "type": "number" },
-    "goods_count": { "type": "integer" },
-    
-    "created_at": { "type": "string", "format": "date-time" }
+  // Summary: No strong relationships - SAME LEVEL as IShoppingOrder!
+  "IShoppingOrder.ISummary": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "order_number": { "type": "string" },
+      "status": { "type": "string" },
+      
+      // Denormalized fields - no relationships
+      "customer_name": { "type": "string" },
+      "total_amount": { "type": "number" },
+      "goods_count": { "type": "integer" },
+      
+      "created_at": { "type": "string", "format": "date-time" }
+    },
+    "required": ["id", "order_number", "status", "customer_name", "total_amount"]
   },
-  "required": ["id", "order_number", "status", "customer_name", "total_amount"]
+
+  // Referenced schemas - ALL AT SAME LEVEL
+  "IShoppingCustomer.ISummary": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "email": { "type": "string" }
+    },
+    "required": ["id", "name"]
+  },
+
+  "IShoppingOrderGoods": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "product_name": { "type": "string" },
+      "quantity": { "type": "integer" },
+      "price": { "type": "number" }
+    },
+    "required": ["id", "product_name", "quantity", "price"]
+  },
+
+  "IShoppingOrderDelivery": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "address": { "type": "string" },
+      "status": { "type": "string" },
+      "tracking_number": { "type": "string" }
+    },
+    "required": ["id", "address", "status"]
+  },
+
+  "IShoppingOrderPayment": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "method": { "type": "string" },
+      "amount": { "type": "number" },
+      "status": { "type": "string" }
+    },
+    "required": ["id", "method", "amount", "status"]
+  }
+  
+  // ... more schemas at same level ...
 }
 ```
 
@@ -1474,6 +1587,34 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
    - Verify no reverse direction compositions exist
    - Ensure IInvert types are used appropriately
 
+5. **Schema Structure Verification**:
+   - **CRITICAL**: Verify ALL schemas are at the root level of the schemas object
+   - **FORBIDDEN**: No schema should be defined inside another schema's properties
+   - **CORRECT**: Each schema is a key-value pair at the top level, where the key is the schema name and value is the schema definition
+   - **Example of WRONG structure**:
+     ```json
+     {
+       "IArticle": {
+         "type": "object",
+         "properties": {...},
+         "IAuthor.ISummary": {...}  // ❌ WRONG: Nested inside IArticle
+       }
+     }
+     ```
+   - **Example of CORRECT structure**:
+     ```json
+     {
+       "IArticle": {
+         "type": "object",
+         "properties": {...}
+       },
+       "IAuthor.ISummary": {  // ✅ CORRECT: At root level
+         "type": "object",
+         "properties": {...}
+       }
+     }
+     ```
+
 ## 6. Documentation Quality Requirements
 
 ### 6.1. **Schema Type Descriptions**
@@ -1717,6 +1858,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
 - **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
 - **Reverse Direction Composition**: Including entity arrays in Actor types (e.g., Member.articles[]) is a CRITICAL ERROR.
+- **Nested Schema Definitions**: Defining schemas inside other schemas is a CRITICAL ERROR. ALL schemas MUST be at the root level of the schemas object.
 
 ## 10. Execution Process
 
@@ -1815,6 +1957,17 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Wrong nullable expression** - Use `oneOf` for nullable types, not array notation
 - **Missing oneOf for unions** - All union types must use `oneOf` structure
 - **Inline union definitions** - Don't define unions inline, use named types with `oneOf`
+- **Nested Schema Definitions** - MOST CRITICAL: Defining schemas inside other schemas like:
+  ```json
+  {
+    "IArticle": {
+      "type": "object",
+      "properties": {...},
+      "IAuthor.ISummary": {...}  // ❌ CATASTROPHIC ERROR!
+    }
+  }
+  ```
+  ALL schemas MUST be siblings at root level, NEVER nested inside each other
 
 ### 12.6. Consistency Mistakes
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
