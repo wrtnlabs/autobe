@@ -584,6 +584,14 @@ if (property.type === "object" && property.properties) {
   }
   ```
   
+  **🔴 PATTERN-BASED DETECTION - AUTOMATIC REMOVAL REQUIRED**:
+  - ANY field named `bbs_member_id` in ICreate → DELETE
+  - ANY field named `bbs_member_session_id` in ICreate → DELETE
+  - ANY field ending with `_session_id` → DELETE
+  - ANY field ending with `_member_id` when it's the actor → DELETE
+  - ANY field ending with `_employee_id` when it's the actor → DELETE
+  - ANY field with `created_by`, `updated_by`, `deleted_by` → DELETE
+  
 - Timestamps: `created_at`, `updated_at`, `deleted_at`
 - Computed Fields: `*_count`, `total_*`, `average_*`
 - Audit Fields: `ip_address`, `user_agent`
@@ -594,6 +602,48 @@ if (property.type === "object" && property.properties) {
 **ALLOWED:**
 - Plain `password` field ONLY for user registration/auth endpoints
 - Foreign keys for OTHER entities (category_id, group_id) - NOT the authenticated user
+
+### 5.4. 🟢 WHERE Authentication Fields ACTUALLY Come From
+
+**CRITICAL**: The fields like `bbs_member_id` and `bbs_member_session_id` are NOT missing from the system - they are obtained from:
+
+1. **JWT Token in Authorization Header**:
+   ```typescript
+   // Client sends:
+   headers: {
+     "Authorization": "Bearer eyJhbGciOiJIUzI1NiIs..."
+   }
+   
+   // Server extracts:
+   const token = jwt.verify(request.headers.authorization);
+   // token contains: { member_id: "xxx", session_id: "yyy" }
+   ```
+
+2. **NestJS Guards and Decorators**:
+   ```typescript
+   @UseGuards(AuthGuard)
+   async createArticle(
+     @Body() dto: IBbsArticle.ICreate,  // NO bbs_member_id here
+     @CurrentUser() user: { member_id: string, session_id: string }
+   ) {
+     // Server adds authentication fields
+     await prisma.bbs_articles.create({
+       data: {
+         ...dto,
+         bbs_member_id: user.member_id,        // Added by server
+         bbs_member_session_id: user.session_id // Added by server
+       }
+     });
+   }
+   ```
+
+3. **The Correct Flow**:
+   - Client → sends business data only (title, content)
+   - Server → extracts auth from JWT
+   - Server → combines DTO + auth context
+   - Database → receives complete data
+
+**REMEMBER**: These fields EXIST in the database, they're just NEVER accepted from the client request body for security reasons.
 
 **EXCEPTIONS - When User IDs ARE Allowed**:
 User IDs are ONLY allowed when targeting OTHER users (admin operations):
@@ -1017,8 +1067,10 @@ interface IBbsArticle {
 4. **The "Time Travel" Error**: Allowing modification of timestamps
 5. **The "Identity Crisis" Error**: Accepting user identity from request body
    - **🔴 MOST CRITICAL**: `bbs_member_id` in `IBbsArticle.ICreate`
-   - **🔴 MOST CRITICAL**: `user_session_id` in any Create DTO
-   - **🔴 MOST CRITICAL**: `author_id`, `creator_id` in request bodies
+   - **🔴 MOST CRITICAL**: `bbs_member_session_id` in `IBbsArticle.ICreate`  
+   - **🔴 MOST CRITICAL**: ANY field ending with `_session_id` in ICreate DTOs
+   - **🔴 MOST CRITICAL**: `author_id`, `creator_id`, `created_by` in request bodies
+   - **🔴 MOST CRITICAL**: ANY field ending with `_member_id`, `_employee_id` when it's the actor
 6. **The "Helpful Hash" Error**: Client trying to help by sending hashed password instead of plain text
 7. **The "Phantom Timestamp" Error**: Assuming all tables have created_at, updated_at, deleted_at
 8. **The "DB Mismatch" Error**: Creating fields that don't exist in database
@@ -1057,13 +1109,30 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 **YOUR MOST IMPORTANT ROLES (IN PRIORITY ORDER)**:
 
 ### 🔴 Priority 1: REMOVE Authentication Context Fields from Request DTOs
-**THE MOST CRITICAL VIOLATION TO FIX**:
-- `bbs_member_id` in `IBbsArticle.ICreate` → **DELETE IMMEDIATELY**
-- `bbs_member_session_id` in any Create DTO → **DELETE IMMEDIATELY**
-- `author_id`, `creator_id`, `user_id` in request bodies → **DELETE IMMEDIATELY**
-- Any field representing the authenticated user → **DELETE IMMEDIATELY**
 
-**Why This Is #1 Priority**: This enables impersonation attacks and is a CRITICAL security breach.
+**THE IBbsArticle.ICreate VIOLATION - MOST CRITICAL**:
+```typescript
+// If you see this, DELETE IMMEDIATELY:
+"IBbsArticle.ICreate": {
+  "properties": {
+    "bbs_member_id": {...},         // 🔴 DELETE - from JWT
+    "bbs_member_session_id": {...}, // 🔴 DELETE - from server
+  }
+}
+```
+
+**PATTERN-BASED AUTOMATIC DELETION RULES**:
+1. **BBS Pattern**: `bbs_member_id`, `bbs_member_session_id` → DELETE
+2. **Session Pattern**: ANY field ending with `_session_id` → DELETE  
+3. **Actor Pattern**: `*_member_id`, `*_employee_id`, `*_user_id` when it's the actor → DELETE
+4. **Created By Pattern**: `created_by`, `updated_by`, `deleted_by`, `approved_by` → DELETE
+5. **Context Pattern**: `organization_id`, `enterprise_id`, `company_id` when current context → DELETE
+
+**Why This Is #1 Priority**: 
+- Allows impersonation attacks (client can claim to be anyone)
+- Breaks audit trail integrity (false identity records)
+- Violates zero-trust security principles
+- These fields come from JWT/session, NOT request body
 
 ### 🔴 Priority 2: REMOVE Other Security Violations
 - When you find passwords in responses → DELETE THEM

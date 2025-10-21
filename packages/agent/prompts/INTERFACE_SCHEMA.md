@@ -105,6 +105,19 @@ This checklist ensures security is built-in from the start, not added as an afte
 
 **ABSOLUTE PROHIBITION**: Request body DTOs (Create/Update) must NEVER contain fields that represent the authenticated user. This is one of the MOST CRITICAL security requirements.
 
+#### The IBbsArticle.ICreate Problem
+
+The most common and critical violation is:
+```typescript
+// ❌ THIS MUST NEVER HAPPEN
+interface IBbsArticle.ICreate {
+  bbs_member_id: string;         // ❌ CRITICAL VIOLATION
+  bbs_member_session_id: string; // ❌ CRITICAL VIOLATION
+}
+```
+
+These fields MUST be removed because they represent the authenticated user's identity, which should ONLY come from the JWT/session token in the HTTP headers.
+
 #### Why This Is Critical
 
 1. **Security Breach Risk**: Allowing clients to specify their own identity enables impersonation attacks
@@ -136,13 +149,67 @@ interface IBbsArticle.ICreate {
 }
 ```
 
-#### Common Patterns to FORBID
+#### Detection Patterns - Fields to AUTOMATICALLY REMOVE
 
-1. **Direct User IDs**: `user_id`, `member_id`, `customer_id`, `seller_id` when referring to authenticated user
-2. **Session References**: `session_id`, `member_session_id`, `user_session_id`
-3. **Author/Creator Fields**: `author_id`, `creator_id`, `created_by`, `owner_id`
-4. **Modifier Fields**: `updated_by`, `modified_by`, `last_updated_by`
-5. **Any Variant**: `userId`, `user`, `authorId`, `createdBy`, etc.
+**PATTERN-BASED DETECTION RULES**:
+
+1. **BBS Context Pattern**: 
+   - `bbs_member_id` → REMOVE (authenticated user from JWT)
+   - `bbs_member_session_id` → REMOVE (session from server)
+   - `bbs_*_author_id` → REMOVE (author from JWT)
+
+2. **Session Pattern** (ends with `_session_id`):
+   - `*_session_id` → REMOVE (all sessions are server-managed)
+   - `member_session_id`, `user_session_id`, `employee_session_id` → REMOVE
+
+3. **Actor Pattern** (when referring to current user):
+   - `*_member_id` when it's the actor → REMOVE
+   - `*_employee_id` when it's the actor → REMOVE
+   - `*_user_id` when it's the actor → REMOVE
+   - `author_id`, `creator_id`, `owner_id` → REMOVE
+
+4. **Action Pattern** (past participles with `_by`):
+   - `created_by`, `updated_by`, `deleted_by` → REMOVE
+   - `approved_by`, `rejected_by`, `modified_by` → REMOVE
+
+5. **Organization Context Pattern**:
+   - `organization_id`, `company_id`, `enterprise_id` when current context → REMOVE
+   - `tenant_id`, `workspace_id` when current context → REMOVE
+
+### 3.3. 🟢 WHERE Authentication Information SHOULD Come From
+
+**CRITICAL UNDERSTANDING**: Authentication context fields are NOT missing - they come from different sources:
+
+#### 1. JWT/Session Token (HTTP Headers)
+```typescript
+// Backend extracts from headers
+const token = request.headers.authorization; // "Bearer eyJhbG..."
+const decoded = jwt.verify(token);
+// decoded contains: { user_id, member_id, session_id, organization_id, etc. }
+```
+
+#### 2. Server-Side Context
+```typescript
+// NestJS example with guards
+@UseGuards(AuthGuard)
+async createArticle(
+  @Body() dto: IBbsArticle.ICreate,  // NO bbs_member_id field
+  @CurrentUser() user: IUser          // Injected from JWT
+) {
+  return this.service.create({
+    ...dto,
+    bbs_member_id: user.id,           // Added server-side
+    bbs_member_session_id: user.session_id  // Added server-side
+  });
+}
+```
+
+#### 3. The Correct Pattern
+- **Client sends**: Business data only (title, content, etc.)
+- **Server adds**: Authentication context (user_id, session_id, etc.)
+- **Database receives**: Complete data with verified identity
+
+**REMEMBER**: The fields like `bbs_member_id` and `bbs_member_session_id` EXIST in the database and ARE USED - they're just not accepted from the client request body.
 
 #### Exceptions: When User IDs ARE Allowed
 
