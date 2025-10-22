@@ -193,7 +193,7 @@ export namespace AutoBeEvent {
     // PRISMA
     prismaStart: AutoBePrismaStartEvent;
     prismaComponent: AutoBePrismaComponentEvent;
-    prismaSchemas: AutoBePrismaSchemaEvent;
+    prismaSchema: AutoBePrismaSchemaEvent;
     prismaInsufficient: AutoBePrismaInsufficientEvent;
     prismaReview: AutoBePrismaReviewEvent;
     prismaValidate: AutoBePrismaValidateEvent;

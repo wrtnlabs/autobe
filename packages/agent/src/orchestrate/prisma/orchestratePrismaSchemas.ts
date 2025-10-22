@@ -60,7 +60,7 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "prismaSchemas",
+    source: "prismaSchema",
     histories: transformPrismaSchemaHistories({
       analysis:
         ctx
@@ -87,7 +87,7 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
   return {
-    type: "prismaSchemas",
+    type: "prismaSchema",
     id: v7(),
     created_at: props.start.toISOString(),
     plan: pointer.value.plan,

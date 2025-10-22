@@ -179,7 +179,7 @@ export interface IAutoBeRpcListener {
    * client applications to track incremental progress and show which business
    * areas have been fully designed.
    */
-  prismaSchemas?(event: AutoBePrismaSchemaEvent): Promise<void>;
+  prismaSchema?(event: AutoBePrismaSchemaEvent): Promise<void>;
 
   /**
    * Optional handler for database schema insufficient model creation events.

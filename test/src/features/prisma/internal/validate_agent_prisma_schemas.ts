@@ -29,7 +29,7 @@ export const validate_agent_prisma_schemas = async (
   const time: Date = new Date();
   const elapsed = () =>
     (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
-  agent.on("prismaSchemas", (event) => {
+  agent.on("prismaSchema", (event) => {
     console.log(
       `  - prisma schemas (${event.file.filename}, ${event.completed} of ${event.total}):`,
       elapsed(),

@@ -54,7 +54,7 @@ export const archive_prisma = async (
 
   const schemas: AutoBePrismaSchemaEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
-  agent.on("prismaSchemas", (event) => {
+  agent.on("prismaSchema", (event) => {
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {

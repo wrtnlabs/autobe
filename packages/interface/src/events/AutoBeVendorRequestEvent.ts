@@ -25,7 +25,7 @@ export interface AutoBeVendorRequestEvent
    * The origin point that triggered this AI request.
    *
    * Identifies which specific agent operation initiated this AI request, such
-   * as "analyzeWrite", "prismaSchemas", or "testCorrect". This source tracking
+   * as "analyzeWrite", "prismaSchema", or "testCorrect". This source tracking
    * enables precise attribution of AI usage to specific workflow steps,
    * facilitating cost allocation and performance analysis per operation.
    */

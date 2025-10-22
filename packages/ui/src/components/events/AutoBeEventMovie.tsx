@@ -60,7 +60,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "analyzeWrite":
     case "analyzeReview":
     case "interfaceEndpoint":
-    case "prismaSchemas":
+    case "prismaSchema":
     case "prismaReview":
     case "interfaceOperation":
     case "interfaceOperationReview":

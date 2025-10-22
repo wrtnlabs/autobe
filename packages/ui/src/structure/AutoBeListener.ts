@@ -58,14 +58,14 @@ export class AutoBeListener {
 
       // PRISMA
       prismaStart: async (event) => {
-        this.dict_.delete("prismaSchemas");
+        this.dict_.delete("prismaSchema");
         this.dict_.delete("prismaReview");
         this.insert(event);
       },
       prismaComponent: async (event) => {
         this.insert(event);
       },
-      prismaSchemas: async (event) => {
+      prismaSchema: async (event) => {
         this.accumulate(event);
       },
       prismaInsufficient: async (event) => {
@@ -81,7 +81,7 @@ export class AutoBeListener {
         this.insert(event);
       },
       prismaComplete: async (event) => {
-        this.dict_.delete("prismaSchemas");
+        this.dict_.delete("prismaSchema");
         this.dict_.delete("prismaReview");
         this.state_.setPrisma(event);
         this.insert(event);

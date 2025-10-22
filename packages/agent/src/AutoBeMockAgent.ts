@@ -175,7 +175,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   // PRISMA
   prismaStart: 1_000,
   prismaComponent: 1_000,
-  prismaSchemas: 500,
+  prismaSchema: 500,
   prismaInsufficient: 1_000,
   prismaReview: 500,
   prismaValidate: 2_000,
