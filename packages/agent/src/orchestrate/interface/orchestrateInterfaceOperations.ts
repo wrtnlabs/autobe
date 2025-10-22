@@ -146,14 +146,14 @@ async function process<Model extends ILlmSchema.Model>(
                 prerequisites: [],
               },
             ];
-          return op.authorizationActors.map((role) => ({
+          return op.authorizationActors.map((actor) => ({
             ...op,
             path:
               "/" +
-              [prefix, role, ...op.path.split("/")]
+              [prefix, actor, ...op.path.split("/")]
                 .filter((it) => it !== "")
                 .join("/"),
-            authorizationActor: role,
+            authorizationActor: actor,
             authorizationType: null,
             prerequisites: [],
           }));

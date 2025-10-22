@@ -179,8 +179,8 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
             Authorization implementation validation completed.
             <br />
             <br />
-            <strong>Role:</strong> {event.authorization.role.name}(
-            {event.authorization.role.description})
+            <strong>Role:</strong> {event.authorization.actor.name}(
+            {event.authorization.actor.description})
             <br />
             <strong>Status:</strong> {isAuthSuccess ? "Success" : "Failed"}
             {!isAuthSuccess && (
