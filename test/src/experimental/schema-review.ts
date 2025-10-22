@@ -1,53 +1,53 @@
-import { CompressUtil } from "@autobe/filesystem";
-import {
-  AutoBeEventSnapshot,
-  AutoBeInterfaceSchemaReviewEvent,
-} from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
-import fs from "fs";
+// import { CompressUtil } from "@autobe/filesystem";
+// import {
+//   AutoBeEventSnapshot,
+//   AutoBeInterfaceSchemaReviewEvent,
+// } from "@autobe/interface";
+// import { StringUtil } from "@autobe/utils";
+// import fs from "fs";
 
-import { TestGlobal } from "../TestGlobal";
+// import { TestGlobal } from "../TestGlobal";
 
-const load = async (): Promise<AutoBeInterfaceSchemaReviewEvent[]> => {
-  const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-    await CompressUtil.gunzip(
-      await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/openai/gpt-4.1/chat.interface.snapshots.json.gz`,
-      ),
-    ),
-  );
-  return snapshots
-    .map((s) => s.event)
-    .filter((e) => e.type === "interfaceSchemaReview");
-};
+// const load = async (): Promise<AutoBeInterfaceSchemaReviewEvent[]> => {
+//   const snapshots: AutoBeEventSnapshot[] = JSON.parse(
+//     await CompressUtil.gunzip(
+//       await fs.promises.readFile(
+//         `${TestGlobal.ROOT}/assets/histories/openai/gpt-4.1/chat.interface.snapshots.json.gz`,
+//       ),
+//     ),
+//   );
+//   return snapshots
+//     .map((s) => s.event)
+//     .filter((e) => e.type === "interfaceSchemaReview");
+// };
 
-const main = async (): Promise<void> => {
-  const reviews: AutoBeInterfaceSchemaReviewEvent[] = await load();
-  for (const r of reviews) {
-    if (Object.keys(r.content).length === 0) continue;
-    const md: string = StringUtil.trim`
-      # Interface Schema Review
-      ## Review
-      
-      ${r.review}
+// const main = async (): Promise<void> => {
+//   const reviews: AutoBeInterfaceSchemaReviewEvent[] = await load();
+//   for (const r of reviews) {
+//     if (Object.keys(r.content).length === 0) continue;
+//     const md: string = StringUtil.trim`
+//       # Interface Schema Review
+//       ## Review
 
-      ## Plan
-      
-      ${r.plan}
+//       ${r.review}
 
-      ## Input
+//       ## Plan
 
-      \`\`\`json
-      ${JSON.stringify(r.schemas, null, 2)}
-      \`\`\`
+//       ${r.plan}
 
-      ## Changed Schemas
-      
-      \`\`\`json
-      ${JSON.stringify(r.content, null, 2)}
-      \`\`\`
-    `;
-    console.log(md + "\n\n\n");
-  }
-};
-main().catch(console.error);
+//       ## Input
+
+//       \`\`\`json
+//       ${JSON.stringify(r.schemas, null, 2)}
+//       \`\`\`
+
+//       ## Changed Schemas
+
+//       \`\`\`json
+//       ${JSON.stringify(r.content, null, 2)}
+//       \`\`\`
+//     `;
+//     console.log(md + "\n\n\n");
+//   }
+// };
+// main().catch(console.error);

@@ -1,34 +1,33 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import fs from "fs";
-import path from "path";
 import { v7 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceSchemaRelationshipReviewHistories = (
+export const transformInterfaceSchemaRelationReviewHistories = (
   state: AutoBeState,
   operations: AutoBeOpenApi.IOperation[],
   schemaDescriptive: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  // Read the INTERFACE_SCHEMA_RELATIONSHIP_REVIEW.md prompt
-  const relationshipReviewPrompt = fs.readFileSync(
-    path.join(__dirname, "../../../../prompts/INTERFACE_SCHEMA_RELATIONSHIP_REVIEW.md"),
-    "utf-8",
-  );
-
   return [
     {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: relationshipReviewPrompt,
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
     },
     ...transformInterfaceAssetHistories(state),
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+    },
     {
       type: "assistantMessage",
       id: v7(),

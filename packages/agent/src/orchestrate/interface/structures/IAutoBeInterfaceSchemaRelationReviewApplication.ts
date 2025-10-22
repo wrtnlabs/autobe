@@ -1,6 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceSchemaRelationshipReviewApplication {
+export interface IAutoBeInterfaceSchemaRelationReviewApplication {
   /**
    * Reviews and validates DTO relationships and structural patterns in OpenAPI
    * schemas.
@@ -22,11 +22,11 @@ export interface IAutoBeInterfaceSchemaRelationshipReviewApplication {
    *   applied, and modified schemas
    */
   review: (
-    props: IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps,
+    props: IAutoBeInterfaceSchemaRelationReviewApplication.IProps,
   ) => void;
 }
 
-export namespace IAutoBeInterfaceSchemaRelationshipReviewApplication {
+export namespace IAutoBeInterfaceSchemaRelationReviewApplication {
   /**
    * Output structure for the relationship review function.
    *

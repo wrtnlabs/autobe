@@ -16,8 +16,7 @@ import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationR
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
-import { AutoBeInterfaceSchemaRelationshipReviewEvent } from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
-import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
+import { AutoBeInterfaceSchemaRelationReviewEvent } from "./AutoBeInterfaceSchemaRelationReviewEvent";
 import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
@@ -103,9 +102,8 @@ export type AutoBeEvent =
   | AutoBeInterfaceOperationEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
-  | AutoBeInterfaceSchemaReviewEvent
   | AutoBeInterfaceSchemaSecurityReviewEvent
-  | AutoBeInterfaceSchemaRelationshipReviewEvent
+  | AutoBeInterfaceSchemaRelationReviewEvent
   | AutoBeInterfaceSchemaContentReviewEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
@@ -210,9 +208,8 @@ export namespace AutoBeEvent {
     interfaceOperation: AutoBeInterfaceOperationEvent;
     interfaceOperationReview: AutoBeInterfaceOperationReviewEvent;
     interfaceSchema: AutoBeInterfaceSchemaEvent;
-    interfaceSchemaReview: AutoBeInterfaceSchemaReviewEvent;
     interfaceSchemaSecurityReview: AutoBeInterfaceSchemaSecurityReviewEvent;
-    interfaceSchemaRelationshipReview: AutoBeInterfaceSchemaRelationshipReviewEvent;
+    interfaceSchemaRelationReview: AutoBeInterfaceSchemaRelationReviewEvent;
     interfaceSchemaContentReview: AutoBeInterfaceSchemaContentReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;

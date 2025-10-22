@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeInterfaceSchemaRelationshipReviewEvent,
+  AutoBeInterfaceSchemaRelationReviewEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -15,14 +15,14 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaRelationshipReviewHistories } from "./histories/transformInterfaceSchemaRelationshipReviewHistories";
-import { IAutoBeInterfaceSchemaRelationshipReviewApplication } from "./structures/IAutoBeInterfaceSchemaRelationshipReviewApplication";
+import { transformInterfaceSchemaRelationReviewHistories } from "./histories/transformInterfaceSchemaRelationReviewHistories";
+import { IAutoBeInterfaceSchemaRelationReviewApplication } from "./structures/IAutoBeInterfaceSchemaRelationReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export async function orchestrateInterfaceSchemaRelationshipReview<
+export async function orchestrateInterfaceSchemaRelationReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -77,19 +77,19 @@ export async function step<Model extends ILlmSchema.Model>(
   promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   try {
-    const pointer: IPointer<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaRelationReviewApplication.IProps | null> =
       {
         value: null,
       };
     const { tokenUsage } = await ctx.conversate({
-      source: "interfaceSchemaRelationshipReview",
+      source: "interfaceSchemaRelationReview",
       controller: createController({
         model: ctx.model,
         pointer,
         operations,
         schemas,
       }),
-      histories: transformInterfaceSchemaRelationshipReviewHistories(
+      histories: transformInterfaceSchemaRelationReviewHistories(
         ctx.state(),
         operations,
         schemas,
@@ -110,7 +110,7 @@ export async function step<Model extends ILlmSchema.Model>(
     ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
     ctx.dispatch({
-      type: "interfaceSchemaRelationshipReview",
+      type: "interfaceSchemaRelationReview",
       id: v7(),
       schemas: schemas,
       review: pointer.value.think.review,
@@ -121,7 +121,7 @@ export async function step<Model extends ILlmSchema.Model>(
       total: progress.total,
       completed: ++progress.completed,
       created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaRelationshipReviewEvent);
+    } satisfies AutoBeInterfaceSchemaRelationReviewEvent);
     return content;
   } catch {
     ++progress.completed;
@@ -131,7 +131,7 @@ export async function step<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  pointer: IPointer<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps | null>;
+  pointer: IPointer<IAutoBeInterfaceSchemaRelationReviewApplication.IProps | null>;
   operations: AutoBeOpenApi.IOperation[];
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 }): IAgenticaController.IClass<Model> {
@@ -139,11 +139,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps> => {
+  ): IValidation<IAutoBeInterfaceSchemaRelationReviewApplication.IProps> => {
     JsonSchemaFactory.fixPage("content", next);
 
-    const result: IValidation<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps>(next);
+    const result: IValidation<IAutoBeInterfaceSchemaRelationReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaRelationReviewApplication.IProps>(
+        next,
+      );
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -177,19 +179,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       review: (input) => {
         props.pointer.value = input;
       },
-    } satisfies IAutoBeInterfaceSchemaRelationshipReviewApplication,
+    } satisfies IAutoBeInterfaceSchemaRelationReviewApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceSchemaRelationshipReviewApplication, "chatgpt">({
+    typia.llm.application<
+      IAutoBeInterfaceSchemaRelationReviewApplication,
+      "chatgpt"
+    >({
       validate: {
         review: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceSchemaRelationshipReviewApplication, "claude">({
+    typia.llm.application<
+      IAutoBeInterfaceSchemaRelationReviewApplication,
+      "claude"
+    >({
       validate: {
         review: validate,
       },
@@ -198,7 +206,7 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceSchemaRelationshipReviewApplication.IProps>;
+) => IValidation<IAutoBeInterfaceSchemaRelationReviewApplication.IProps>;
 
 export interface IProgress {
   total: number;

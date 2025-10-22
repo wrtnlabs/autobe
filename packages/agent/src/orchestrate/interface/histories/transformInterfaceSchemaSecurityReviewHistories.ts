@@ -1,10 +1,9 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import fs from "fs";
-import path from "path";
 import { v7 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
@@ -15,20 +14,20 @@ export const transformInterfaceSchemaSecurityReviewHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  // Read the INTERFACE_SCHEMA_SECURITY_REVIEW.md prompt
-  const securityReviewPrompt = fs.readFileSync(
-    path.join(__dirname, "../../../../prompts/INTERFACE_SCHEMA_SECURITY_REVIEW.md"),
-    "utf-8",
-  );
-
   return [
     {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: securityReviewPrompt,
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
     },
     ...transformInterfaceAssetHistories(state),
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+    },
     {
       type: "assistantMessage",
       id: v7(),

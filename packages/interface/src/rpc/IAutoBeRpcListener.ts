@@ -12,8 +12,7 @@ import {
   AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceSchemaContentReviewEvent,
   AutoBeInterfaceSchemaEvent,
-  AutoBeInterfaceSchemaRelationshipReviewEvent,
-  AutoBeInterfaceSchemaReviewEvent,
+  AutoBeInterfaceSchemaRelationReviewEvent,
   AutoBeInterfaceSchemaSecurityReviewEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
@@ -330,24 +329,12 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchema?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
-  /**
-   * Optional handler for API schema review and enhancement events.
-   *
-   * Called when the Interface agent reviews and improves the generated OpenAPI
-   * schemas, enabling client applications to show the quality assurance process
-   * where schemas are validated for completeness, security compliance, and type
-   * safety before being integrated into the final API specification.
-   */
-  interfaceSchemaReview?(
-    event: AutoBeInterfaceSchemaReviewEvent,
-  ): Promise<void>;
-
   interfaceSchemaSecurityReview?(
     event: AutoBeInterfaceSchemaSecurityReviewEvent,
   ): Promise<void>;
 
-  interfaceSchemaRelationshipReview?(
-    event: AutoBeInterfaceSchemaRelationshipReviewEvent,
+  interfaceSchemaRelationReview?(
+    event: AutoBeInterfaceSchemaRelationReviewEvent,
   ): Promise<void>;
 
   interfaceSchemaContentReview?(

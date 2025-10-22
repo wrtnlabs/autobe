@@ -25,8 +25,10 @@ import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
+import { orchestrateInterfaceSchemaContentReview } from "./orchestrateInterfaceSchemaContentReview";
+import { orchestrateInterfaceSchemaRelationReview } from "./orchestrateInterfaceSchemaRelationReview";
+import { orchestrateInterfaceSchemaSecurityReview } from "./orchestrateInterfaceSchemaSecurityReview";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
-import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 
 export const orchestrateInterface =
@@ -128,7 +130,17 @@ export const orchestrateInterface =
 
     Object.assign(
       document.components.schemas,
-      await orchestrateInterfaceSchemasReview(
+      await orchestrateInterfaceSchemaSecurityReview(
+        ctx,
+        operations,
+        document.components.schemas,
+      ),
+      await orchestrateInterfaceSchemaRelationReview(
+        ctx,
+        operations,
+        document.components.schemas,
+      ),
+      await orchestrateInterfaceSchemaContentReview(
         ctx,
         operations,
         document.components.schemas,
