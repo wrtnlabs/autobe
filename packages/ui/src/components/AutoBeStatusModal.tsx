@@ -121,8 +121,8 @@ const PROGRESS_STEPS = [
     getResults: (state: AutoBeListenerState) => {
       if (!state.analyze) return null;
       const fileCount = Object.keys(state.analyze.files).length;
-      const roleCount = state.analyze.roles.length;
-      return `${fileCount} analysis files, ${roleCount} user roles`;
+      const roleCount = state.analyze.actors.length;
+      return `${fileCount} analysis files, ${roleCount} actors`;
     },
   },
   {
