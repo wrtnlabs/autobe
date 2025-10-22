@@ -118,9 +118,11 @@ export const orchestrateInterface =
       },
     };
 
+    const assign = (
+      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+    ) => Object.assign(document.components.schemas, schemas);
     const complement = async () =>
-      Object.assign(
-        document.components.schemas,
+      assign(
         await orchestrateInterfaceComplement(ctx, {
           instruction: props.instruction,
           document,
@@ -128,24 +130,12 @@ export const orchestrateInterface =
       );
     await complement();
 
-    Object.assign(
-      document.components.schemas,
-      await orchestrateInterfaceSchemaSecurityReview(
-        ctx,
-        operations,
-        document.components.schemas,
-      ),
-      await orchestrateInterfaceSchemaRelationReview(
-        ctx,
-        operations,
-        document.components.schemas,
-      ),
-      await orchestrateInterfaceSchemaContentReview(
-        ctx,
-        operations,
-        document.components.schemas,
-      ),
-    );
+    for (const orchestrate of [
+      orchestrateInterfaceSchemaSecurityReview,
+      orchestrateInterfaceSchemaRelationReview,
+      orchestrateInterfaceSchemaContentReview,
+    ])
+      assign(await orchestrate(ctx, document));
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
     JsonSchemaFactory.finalize({

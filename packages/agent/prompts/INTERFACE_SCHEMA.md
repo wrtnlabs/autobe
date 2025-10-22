@@ -224,6 +224,69 @@ interface IBanUser {
 }
 ```
 
+#### 2.1.5. Path Parameter Duplication Prevention
+
+**ABSOLUTE RULE**: Path parameters MUST NOT be duplicated in request bodies. Values in the URL path are authoritative.
+
+**Why This Matters**:
+1. **Consistency**: Prevents conflicting values between path and body
+2. **API Clarity**: Single source of truth for each parameter
+3. **Security**: Reduces attack surface by eliminating redundant inputs
+4. **Maintainability**: Simpler validation logic and error handling
+
+**Common Violations and Corrections**:
+
+```typescript
+// ❌ WRONG: article_id duplicated in both path and body
+PUT /articles/:article_id
+Body: IBbsArticle.IUpdate {
+  article_id: "art-456",  // ❌ DUPLICATES path parameter
+  title: "Updated Title",
+  content: "Updated content"
+}
+
+// ✅ CORRECT: article_id only in path
+PUT /articles/:article_id
+Body: IBbsArticle.IUpdate {
+  title: "Updated Title",
+  content: "Updated content"
+  // article_id obtained from path parameter
+}
+
+// ❌ WRONG: Multiple path parameters duplicated
+DELETE /users/:user_id/posts/:post_id
+Body: {
+  user_id: "usr-123",    // ❌ DUPLICATES path
+  post_id: "pst-456"     // ❌ DUPLICATES path
+}
+
+// ✅ CORRECT: No duplication
+DELETE /users/:user_id/posts/:post_id
+// No body needed - all info in path
+```
+
+**Implementation Pattern**:
+```typescript
+// Server-side: Path parameters are separate from body
+@Put(':article_id')
+async update(
+  @Param('article_id') articleId: string,  // From path
+  @Body() dto: IBbsArticle.IUpdate         // No article_id field
+) {
+  return this.service.update(articleId, dto);
+}
+```
+
+**Detection Rules**:
+1. Check all path parameters in the operation (e.g., `:id`, `:article_id`, `:user_id`)
+2. Ensure NONE of these parameter names appear in the corresponding request body schema
+3. This applies to ALL HTTP methods with path parameters (GET, PUT, PATCH, DELETE)
+
+**Special Cases**:
+- **Batch operations**: When updating multiple items, IDs go in the body (no path params)
+- **Search/filter**: Query parameters for filtering by ID are acceptable
+- **Relationship updates**: Foreign key IDs in body are OK if not in path
+
 ### 2.2. Database-Schema Consistency Principle
 
 **CRITICAL RULE**: Interface schemas must be implementable with the existing Prisma database schema.

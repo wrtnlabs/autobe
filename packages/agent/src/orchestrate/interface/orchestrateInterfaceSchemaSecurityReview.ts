@@ -15,7 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaSecurityReviewHistories } from "./histories/transformInterfaceSchemaSecurityReviewHistories";
+import { transformInterfaceSchemaReviewHistories } from "./histories/transformInterfaceSchemaReviewHistories";
 import { IAutoBeInterfaceSchemaSecurityReviewApplication } from "./structures/IAutoBeInterfaceSchemaSecurityReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
@@ -26,10 +26,13 @@ export async function orchestrateInterfaceSchemaSecurityReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+  document: AutoBeOpenApi.IDocument,
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const schemas = document.components.schemas as Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive
+  >;
   const a = Object.entries(schemas).map(([key, schema]) => {
     return { [key]: schema };
   });
@@ -48,11 +51,11 @@ export async function orchestrateInterfaceSchemaSecurityReview<
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
+        await divideAndConquer(ctx, document, it, progress, promptCacheKey);
       return row;
     }),
   )) {
-    JsonSchemaNamingConvention.schemas(operations, x, y);
+    JsonSchemaNamingConvention.schemas(document.operations, x, y);
     Object.assign(x, y);
   }
   return x;
@@ -60,18 +63,18 @@ export async function orchestrateInterfaceSchemaSecurityReview<
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
+  document: AutoBeOpenApi.IDocument,
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[],
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const schema = schemas.reduce((acc, cur) => Object.assign(acc, cur), {});
-  return step(ctx, operations, schema, progress, promptCacheKey);
+  return step(ctx, document, schema, progress, promptCacheKey);
 }
 
 export async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
+  document: AutoBeOpenApi.IDocument,
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
@@ -86,12 +89,12 @@ export async function step<Model extends ILlmSchema.Model>(
       controller: createController({
         model: ctx.model,
         pointer,
-        operations,
+        operations: document.operations,
         schemas,
       }),
-      histories: transformInterfaceSchemaSecurityReviewHistories(
+      histories: transformInterfaceSchemaReviewHistories(
         ctx.state(),
-        operations,
+        document,
         schemas,
       ),
       enforceFunctionCall: true,
@@ -143,7 +146,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
     JsonSchemaFactory.fixPage("content", next);
 
     const result: IValidation<IAutoBeInterfaceSchemaSecurityReviewApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaSecurityReviewApplication.IProps>(next);
+      typia.validate<IAutoBeInterfaceSchemaSecurityReviewApplication.IProps>(
+        next,
+      );
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -183,13 +188,19 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceSchemaSecurityReviewApplication, "chatgpt">({
+    typia.llm.application<
+      IAutoBeInterfaceSchemaSecurityReviewApplication,
+      "chatgpt"
+    >({
       validate: {
         review: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceSchemaSecurityReviewApplication, "claude">({
+    typia.llm.application<
+      IAutoBeInterfaceSchemaSecurityReviewApplication,
+      "claude"
+    >({
       validate: {
         review: validate,
       },
