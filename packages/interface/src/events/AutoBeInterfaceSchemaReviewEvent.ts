@@ -42,8 +42,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeInterfaceSchemasReviewEvent
-  extends AutoBeEventBase<"interfaceSchemasReview">,
+export interface AutoBeInterfaceSchemaReviewEvent
+  extends AutoBeEventBase<"interfaceSchemaReview">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {
   /**

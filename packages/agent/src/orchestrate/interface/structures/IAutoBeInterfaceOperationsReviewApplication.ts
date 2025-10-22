@@ -18,8 +18,8 @@ export interface IAutoBeInterfaceOperationsReviewApplication {
    * process containing review findings and improvement plans, plus the final
    * production-ready operations with all critical issues resolved.
    *
-   * @param input Properties containing the thinking process (review & plan)
-   *   and the enhanced operations content
+   * @param input Properties containing the thinking process (review & plan) and
+   *   the enhanced operations content
    */
   reviewOperations(
     input: IAutoBeInterfaceOperationsReviewApplication.IProps,
@@ -32,7 +32,7 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
    *
    * Contains both the input operations to be reviewed and the outputs generated
    * by the Interface Operations Review Agent, which will be published as part
-   * of the AutoBeInterfaceOperationsReviewEvent.
+   * of the AutoBeInterfaceOperationReviewEvent.
    */
   export interface IProps {
     /**
@@ -70,10 +70,10 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
   /**
    * Structured thinking process for comprehensive API operation review.
    *
-   * Combines analytical review findings with actionable improvement planning
-   * to guide the systematic enhancement of API operations. This thinking
-   * structure ensures all aspects of API quality are evaluated and addressed
-   * before producing the final operations.
+   * Combines analytical review findings with actionable improvement planning to
+   * guide the systematic enhancement of API operations. This thinking structure
+   * ensures all aspects of API quality are evaluated and addressed before
+   * producing the final operations.
    */
   export interface IThink {
     /**

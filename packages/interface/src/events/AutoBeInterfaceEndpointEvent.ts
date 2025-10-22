@@ -21,7 +21,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointsEvent
-  extends AutoBeEventBase<"interfaceEndpoints">,
+  extends AutoBeEventBase<"interfaceEndpoint">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {
   /**

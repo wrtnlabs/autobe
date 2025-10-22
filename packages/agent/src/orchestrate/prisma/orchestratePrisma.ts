@@ -2,13 +2,13 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBePrisma,
   AutoBePrismaCompleteEvent,
-  AutoBePrismaComponentsEvent,
+  AutoBePrismaComponentEvent,
   AutoBePrismaHistory,
   AutoBePrismaReviewEvent,
   IAutoBeCompiler,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
-import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -44,12 +44,12 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   });
 
   // COMPONENTS
-  const componentEvent: AutoBePrismaComponentsEvent =
+  const componentEvent: AutoBePrismaComponentEvent =
     await orchestratePrismaComponents(ctx, props.instruction);
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
-  const schemaEvents: AutoBePrismaSchemasEvent[] =
+  const schemaEvents: AutoBePrismaSchemaEvent[] =
     await orchestratePrismaSchemas(
       ctx,
       props.instruction,

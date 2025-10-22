@@ -1,5 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
+import { AutoBePrismaComponentEvent } from "@autobe/interface/src/events/AutoBePrismaComponentEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -16,14 +16,14 @@ export async function orchestratePrismaComponents<
   ctx: AutoBeContext<Model>,
   instruction: string,
   message: string = "Design database from the given requirement analysis documents.",
-): Promise<AutoBePrismaComponentsEvent> {
+): Promise<AutoBePrismaComponentEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
     value: null,
   };
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const { tokenUsage } = await ctx.conversate({
-    source: "prismaComponents",
+    source: "prismaComponent",
     histories: transformPrismaComponentsHistories(ctx.state(), {
       prefix,
       instruction,
@@ -40,7 +40,7 @@ export async function orchestratePrismaComponents<
   if (pointer.value === null)
     throw new Error("Failed to extract files and tables."); // unreachable
   return {
-    type: "prismaComponents",
+    type: "prismaComponent",
     id: v7(),
     created_at: start.toISOString(),
     thinking: pointer.value.thinking,

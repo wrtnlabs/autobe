@@ -1,6 +1,6 @@
 import {
   AutoBeInterfaceComplementEvent,
-  AutoBeInterfaceOperationsReviewEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -14,7 +14,7 @@ import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 export type ValidateEvent =
   | AutoBePrismaInsufficientEvent
   | AutoBePrismaValidateEvent
-  | AutoBeInterfaceOperationsReviewEvent
+  | AutoBeInterfaceOperationReviewEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeTestValidateEvent
   | AutoBeRealizeValidateEvent
@@ -46,7 +46,7 @@ export const ValidateEventGroup = (props: IValidateEventGroupProps) => {
       case "testValidate":
       case "realizeAuthorizationValidate":
         return event.result.type !== "success";
-      case "interfaceOperationsReview":
+      case "interfaceOperationReview":
       case "interfaceComplement":
         return false;
       default:

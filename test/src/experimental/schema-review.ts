@@ -1,14 +1,14 @@
 import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
-  AutoBeInterfaceSchemasReviewEvent,
+  AutoBeInterfaceSchemaReviewEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
 
-const load = async (): Promise<AutoBeInterfaceSchemasReviewEvent[]> => {
+const load = async (): Promise<AutoBeInterfaceSchemaReviewEvent[]> => {
   const snapshots: AutoBeEventSnapshot[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
@@ -18,11 +18,11 @@ const load = async (): Promise<AutoBeInterfaceSchemasReviewEvent[]> => {
   );
   return snapshots
     .map((s) => s.event)
-    .filter((e) => e.type === "interfaceSchemasReview");
+    .filter((e) => e.type === "interfaceSchemaReview");
 };
 
 const main = async (): Promise<void> => {
-  const reviews: AutoBeInterfaceSchemasReviewEvent[] = await load();
+  const reviews: AutoBeInterfaceSchemaReviewEvent[] = await load();
   for (const r of reviews) {
     if (Object.keys(r.content).length === 0) continue;
     const md: string = StringUtil.trim`

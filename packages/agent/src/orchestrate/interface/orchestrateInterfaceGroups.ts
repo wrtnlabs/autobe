@@ -1,5 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeInterfaceGroupsEvent } from "@autobe/interface";
+import { AutoBeInterfaceGroupEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -18,13 +18,13 @@ export async function orchestrateInterfaceGroups<
     instruction: string;
     message?: string;
   },
-): Promise<AutoBeInterfaceGroupsEvent> {
+): Promise<AutoBeInterfaceGroupEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceGroups",
+    source: "interfaceGroup",
     histories: transformInterfaceGroupHistories({
       state: ctx.state(),
       instruction: props.instruction,
@@ -40,13 +40,13 @@ export async function orchestrateInterfaceGroups<
   });
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {
-    type: "interfaceGroups",
+    type: "interfaceGroup",
     id: v7(),
     created_at: start.toISOString(),
     groups: pointer.value.groups,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
-  } satisfies AutoBeInterfaceGroupsEvent;
+  } satisfies AutoBeInterfaceGroupEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

@@ -141,7 +141,7 @@ export namespace AutoBePrisma {
    * models, relationships, and indexes.
    *
    * @see IFile For the actual schema file structure generated from components
-   * @see AutoBePrismaComponentsEvent For the event that delivers component
+   * @see AutoBePrismaComponentEvent For the event that delivers component
    * organization results
    */
   export interface IComponent {

@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeInterfaceOperationsReviewEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBeOpenApi,
   AutoBePrisma,
   AutoBeProgressEventBase,
@@ -29,7 +29,7 @@ export async function orchestrateInterfaceOperationsReview<
         value: null,
       };
     const { tokenUsage } = await ctx.conversate({
-      source: "interfaceOperationsReview",
+      source: "interfaceOperationReview",
       histories: transformInterfaceOperationsReviewHistories(ctx, operations),
       controller: createReviewController({
         model: ctx.model,
@@ -54,7 +54,7 @@ export async function orchestrateInterfaceOperationsReview<
     );
 
     ctx.dispatch({
-      type: "interfaceOperationsReview",
+      type: "interfaceOperationReview",
       id: v7(),
       operations: content,
       review: pointer.value.think.review,
@@ -65,7 +65,7 @@ export async function orchestrateInterfaceOperationsReview<
       step: ctx.state().analyze?.step ?? 0,
       total: progress.total,
       completed: ++progress.completed,
-    } satisfies AutoBeInterfaceOperationsReviewEvent);
+    } satisfies AutoBeInterfaceOperationReviewEvent);
     return content;
   } catch {
     ++progress.completed;

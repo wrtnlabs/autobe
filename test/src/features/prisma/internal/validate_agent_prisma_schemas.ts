@@ -1,7 +1,7 @@
 import { orchestratePrismaSchemas } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchemas";
 import {
-  AutoBePrismaComponentsEvent,
-  AutoBePrismaSchemasEvent,
+  AutoBePrismaComponentEvent,
+  AutoBePrismaSchemaEvent,
 } from "@autobe/interface";
 import fs from "fs";
 
@@ -19,7 +19,7 @@ export const validate_agent_prisma_schemas = async (
 
   const { agent } = await prepare_agent_prisma(factory, project);
   const model: string = TestGlobal.vendorModel;
-  const components: AutoBePrismaComponentsEvent = JSON.parse(
+  const components: AutoBePrismaComponentEvent = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.prisma.components.json`,
       "utf8",
@@ -44,7 +44,7 @@ export const validate_agent_prisma_schemas = async (
     console.log("    - actual:", event.actual.map((m) => m.name).join(", "));
   });
 
-  const result: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
+  const result: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchemas(
     agent.getContext(),
     "Design database without violation of normalization and integrity rules.",
     components.components,

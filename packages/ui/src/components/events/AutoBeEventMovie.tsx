@@ -52,22 +52,22 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       return <AutoBeStartEventMovie event={back} />;
     // SCENARIO EVENTS
     case "analyzeScenario":
-    case "prismaComponents":
-    case "interfaceGroups":
+    case "prismaComponent":
+    case "interfaceGroup":
     case "realizeTestReset":
       return <AutoBeScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
     case "analyzeReview":
-    case "interfaceEndpoints":
+    case "interfaceEndpoint":
     case "prismaSchemas":
     case "prismaReview":
-    case "interfaceOperations":
-    case "interfaceOperationsReview":
+    case "interfaceOperation":
+    case "interfaceOperationReview":
     case "interfaceAuthorization":
-    case "interfaceSchemas":
-    case "interfaceSchemasReview":
-    case "interfacePrerequisites":
+    case "interfaceSchema":
+    case "interfaceSchemaReview":
+    case "interfacePrerequisite":
     case "testWrite":
     case "testScenarios":
     case "testScenariosReview":
@@ -118,7 +118,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     }
     // DISCARD
-    case "interfaceEndpointsReview":
+    case "interfaceEndpointReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":
     case "vendorRequest":

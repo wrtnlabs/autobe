@@ -24,23 +24,23 @@ export * from "./AutoBeAnalyzeWriteEvent";
 
 // PRISMA
 export * from "./AutoBePrismaCompleteEvent";
-export * from "./AutoBePrismaComponentsEvent";
+export * from "./AutoBePrismaComponentEvent";
 export * from "./AutoBePrismaCorrectEvent";
 export * from "./AutoBePrismaInsufficientEvent";
 export * from "./AutoBePrismaReviewEvent";
-export * from "./AutoBePrismaSchemasEvent";
+export * from "./AutoBePrismaSchemaEvent";
 export * from "./AutoBePrismaStartEvent";
 export * from "./AutoBePrismaValidateEvent";
 
 // INTERFACE
 export * from "./AutoBeInterfaceComplementEvent";
 export * from "./AutoBeInterfaceCompleteEvent";
-export * from "./AutoBeInterfaceEndpointsEvent";
-export * from "./AutoBeInterfaceGroupsEvent";
-export * from "./AutoBeInterfaceOperationsEvent";
-export * from "./AutoBeInterfaceOperationsReviewEvent";
-export * from "./AutoBeInterfaceSchemasEvent";
-export * from "./AutoBeInterfaceSchemasReviewEvent";
+export * from "./AutoBeInterfaceEndpointEvent";
+export * from "./AutoBeInterfaceGroupEvent";
+export * from "./AutoBeInterfaceOperationEvent";
+export * from "./AutoBeInterfaceOperationReviewEvent";
+export * from "./AutoBeInterfaceSchemaEvent";
+export * from "./AutoBeInterfaceSchemaReviewEvent";
 export * from "./AutoBeInterfaceSchemaSecurityReviewEvent";
 export * from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
 export * from "./AutoBeInterfaceSchemaContentReviewEvent";

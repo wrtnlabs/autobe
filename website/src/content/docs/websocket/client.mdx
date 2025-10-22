@@ -82,4 +82,4 @@ Looking at the `IAutoBeRpcListener` interface provided from client to server for
 
 The other optional functions, they are not mandatory, but recommended to implement. They are used to track the progress of the server's work, so that you can show the progress to the user.
 
-For example, when the `@autobe` server is on the `prisma` phase, the progress would be started from the `prismaStart` function, and then `prismaComponents`, `prismaSchemas`, `prismaComplete` functions would be called in order. During the `prisma` phase, if validation or compilation errors are occurred, the `prismaValidate` or `prismaCorrect` function would be called.
+For example, when the `@autobe` server is on the `prisma` phase, the progress would be started from the `prismaStart` function, and then `prismaComponent`, `prismaSchemas`, `prismaComplete` functions would be called in order. During the `prisma` phase, if validation or compilation errors are occurred, the `prismaValidate` or `prismaCorrect` function would be called.

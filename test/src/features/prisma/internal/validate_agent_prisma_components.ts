@@ -1,7 +1,7 @@
 import { orchestratePrismaComponents } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaComponent";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBePrismaComponentsEvent,
+  AutoBePrismaComponentEvent,
 } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
@@ -17,12 +17,12 @@ export const validate_agent_prisma_components = async (
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
-  const result: AutoBePrismaComponentsEvent | AutoBeAssistantMessageHistory =
+  const result: AutoBePrismaComponentEvent | AutoBeAssistantMessageHistory =
     await orchestratePrismaComponents(
       agent.getContext(),
       "Design database without violation of normalization and integrity rules.",
     );
-  if (result.type !== "prismaComponents")
+  if (result.type !== "prismaComponent")
     throw new Error("Failed to orchestrate prisma components");
   else if (TestGlobal.archive)
     await TestHistory.save({

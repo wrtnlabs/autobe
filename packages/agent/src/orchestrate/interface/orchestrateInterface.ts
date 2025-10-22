@@ -2,7 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceCompleteEvent,
-  AutoBeInterfaceGroupsEvent,
+  AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
@@ -57,7 +57,7 @@ export const orchestrateInterface =
     });
 
     // ENDPOINTS
-    const init: AutoBeInterfaceGroupsEvent = await orchestrateInterfaceGroups(
+    const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroups(
       ctx,
       {
         instruction: props.instruction,

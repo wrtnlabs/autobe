@@ -10,7 +10,7 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -52,7 +52,7 @@ export const archive_prisma = async (
     } catch {}
   });
 
-  const schemas: AutoBePrismaSchemasEvent[] = [];
+  const schemas: AutoBePrismaSchemaEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
     schemas.push(event);

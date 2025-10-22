@@ -3,21 +3,21 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
-import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
-import { AutoBeInterfaceEndpointsReviewEvent } from "./AutoBeInterfaceEndpointsReviewEvent";
-import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
-import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
-import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
-import { AutoBeInterfacePrerequisitesEvent } from "./AutoBeInterfacePrerequisitesEvent";
+import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointEvent";
+import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
+import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
+import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
+import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
+import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
+import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRelationshipReviewEvent } from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
+import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
-import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
-import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
-import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
+import { AutoBePrismaComponentEvent } from "./AutoBePrismaComponentEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
 import { AutoBePrismaReviewEvent } from "./AutoBePrismaReviewEvent";
-import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
+import { AutoBePrismaSchemaEvent } from "./AutoBePrismaSchemaEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
@@ -64,24 +64,24 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeWriteEvent["type"]
   | AutoBeAnalyzeReviewEvent["type"]
   // prisma
-  | AutoBePrismaComponentsEvent["type"]
-  | AutoBePrismaSchemasEvent["type"]
+  | AutoBePrismaComponentEvent["type"]
+  | AutoBePrismaSchemaEvent["type"]
   | AutoBePrismaReviewEvent["type"]
   | AutoBePrismaCorrectEvent["type"]
   // interface
   | AutoBeInterfaceAuthorizationEvent["type"]
-  | AutoBeInterfaceGroupsEvent["type"]
+  | AutoBeInterfaceGroupEvent["type"]
   | AutoBeInterfaceEndpointsEvent["type"]
-  | AutoBeInterfaceEndpointsReviewEvent["type"]
-  | AutoBeInterfaceOperationsEvent["type"]
-  | AutoBeInterfaceOperationsReviewEvent["type"]
-  | AutoBeInterfaceSchemasEvent["type"]
-  | AutoBeInterfaceSchemasReviewEvent["type"]
+  | AutoBeInterfaceEndpointReviewEvent["type"]
+  | AutoBeInterfaceOperationEvent["type"]
+  | AutoBeInterfaceOperationReviewEvent["type"]
+  | AutoBeInterfaceSchemaEvent["type"]
+  | AutoBeInterfaceSchemaReviewEvent["type"]
   | AutoBeInterfaceSchemaSecurityReviewEvent["type"]
   | AutoBeInterfaceSchemaRelationshipReviewEvent["type"]
   | AutoBeInterfaceSchemaContentReviewEvent["type"]
   | AutoBeInterfaceComplementEvent["type"]
-  | AutoBeInterfacePrerequisitesEvent["type"]
+  | AutoBeInterfacePrerequisiteEvent["type"]
   // test
   | AutoBeTestScenariosEvent["type"]
   | AutoBeTestScenariosReviewEvent["type"]

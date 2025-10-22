@@ -72,7 +72,7 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceEndpoints",
+    source: "interfaceEndpoint",
     histories: transformInterfaceEndpointHistories({
       state: ctx.state(),
       group: props.group,
@@ -93,7 +93,7 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
 
   const event: AutoBeInterfaceEndpointsEvent = {
-    type: "interfaceEndpoints",
+    type: "interfaceEndpoint",
     id: v7(),
     endpoints: new HashSet(
       pointer.value,

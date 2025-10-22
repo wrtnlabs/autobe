@@ -26,8 +26,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeInterfaceGroupsEvent
-  extends AutoBeEventBase<"interfaceGroups">,
+export interface AutoBeInterfaceGroupEvent
+  extends AutoBeEventBase<"interfaceGroup">,
     AutoBeTokenUsageEventBase {
   /**
    * Array of API endpoint groups organized by Prisma schema structure.

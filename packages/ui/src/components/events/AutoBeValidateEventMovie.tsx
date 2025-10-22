@@ -1,6 +1,6 @@
 import {
   AutoBeInterfaceComplementEvent,
-  AutoBeInterfaceOperationsReviewEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -15,7 +15,7 @@ export interface IAutoBeValidateEventMovieProps {
   event:
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
-    | AutoBeInterfaceOperationsReviewEvent
+    | AutoBeInterfaceOperationReviewEvent
     | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent
@@ -247,7 +247,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
         isSuccess: false,
         step: undefined, // prismaInsufficient doesn't have step
       };
-    case "interfaceOperationsReview":
+    case "interfaceOperationReview":
       return {
         title: "Interface Operations Review",
         description: (

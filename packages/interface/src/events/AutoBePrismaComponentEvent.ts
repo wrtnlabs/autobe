@@ -18,8 +18,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaComponentsEvent
-  extends AutoBeEventBase<"prismaComponents">,
+export interface AutoBePrismaComponentEvent
+  extends AutoBeEventBase<"prismaComponent">,
     AutoBeTokenUsageEventBase {
   /**
    * Initial thoughts on namespace classification criteria.

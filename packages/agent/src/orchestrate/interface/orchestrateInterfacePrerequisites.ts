@@ -108,7 +108,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 
   try {
     const { tokenUsage } = await ctx.conversate({
-      source: "interfacePrerequisites",
+      source: "interfacePrerequisite",
       controller: createController({
         model: ctx.model,
         document: props.document,
@@ -131,7 +131,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 
     props.progress.completed += pointer.value.length;
     ctx.dispatch({
-      type: "interfacePrerequisites",
+      type: "interfacePrerequisite",
       id: v7(),
       created_at: new Date().toISOString(),
       tokenUsage,

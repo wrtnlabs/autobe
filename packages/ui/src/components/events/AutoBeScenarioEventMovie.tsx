@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeScenarioEvent,
-  AutoBeInterfaceGroupsEvent,
-  AutoBePrismaComponentsEvent,
+  AutoBeInterfaceGroupEvent,
+  AutoBePrismaComponentEvent,
   AutoBeRealizeTestResetEvent,
 } from "@autobe/interface";
 import { JSX } from "react";
@@ -11,8 +11,8 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
-    | AutoBePrismaComponentsEvent
-    | AutoBeInterfaceGroupsEvent
+    | AutoBePrismaComponentEvent
+    | AutoBeInterfaceGroupEvent
     | AutoBeRealizeTestResetEvent;
 }
 export const AutoBeScenarioEventMovie = (
@@ -49,7 +49,7 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
           </>
         ),
       };
-    case "prismaComponents":
+    case "prismaComponent":
       return {
         title: "Prisma Components",
         description: (
@@ -71,7 +71,7 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
           </>
         ),
       };
-    case "interfaceGroups":
+    case "interfaceGroup":
       return {
         title: "Interface Endpoint Groups",
         description: (

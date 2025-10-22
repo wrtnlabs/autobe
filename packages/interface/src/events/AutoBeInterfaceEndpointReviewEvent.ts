@@ -20,8 +20,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeInterfaceEndpointsReviewEvent
-  extends AutoBeEventBase<"interfaceEndpointsReview">,
+export interface AutoBeInterfaceEndpointReviewEvent
+  extends AutoBeEventBase<"interfaceEndpointReview">,
     AutoBeTokenUsageEventBase {
   /**
    * Original API endpoints submitted for review.

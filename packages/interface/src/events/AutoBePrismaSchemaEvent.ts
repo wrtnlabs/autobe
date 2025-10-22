@@ -22,7 +22,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaSchemasEvent
+export interface AutoBePrismaSchemaEvent
   extends AutoBeEventBase<"prismaSchemas">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {

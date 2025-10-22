@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
-import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -17,7 +17,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   instruction: string,
   componentList: AutoBePrisma.IComponent[],
-): Promise<AutoBePrismaSchemasEvent[]> {
+): Promise<AutoBePrismaSchemaEvent[]> {
   const start: Date = new Date();
   const total: number = componentList
     .map((c) => c.tables.length)
@@ -29,7 +29,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         .filter((y) => component !== y)
         .map((c) => c.tables)
         .flat();
-      const event: AutoBePrismaSchemasEvent = await process(ctx, {
+      const event: AutoBePrismaSchemaEvent = await process(ctx, {
         instruction,
         component,
         otherTables,
@@ -55,7 +55,7 @@ async function process<Model extends ILlmSchema.Model>(
     completed: IPointer<number>;
     promptCacheKey: string;
   },
-): Promise<AutoBePrismaSchemasEvent> {
+): Promise<AutoBePrismaSchemaEvent> {
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
   };
@@ -101,7 +101,7 @@ async function process<Model extends ILlmSchema.Model>(
     completed: (props.completed.value += props.component.tables.length),
     total: props.total,
     step: ctx.state().analyze?.step ?? 0,
-  } satisfies AutoBePrismaSchemasEvent;
+  } satisfies AutoBePrismaSchemaEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(

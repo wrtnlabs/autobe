@@ -20,8 +20,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeInterfaceOperationsEvent
-  extends AutoBeEventBase<"interfaceOperations">,
+export interface AutoBeInterfaceOperationEvent
+  extends AutoBeEventBase<"interfaceOperation">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {
   /**

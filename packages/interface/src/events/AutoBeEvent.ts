@@ -8,26 +8,26 @@ import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
-import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
-import { AutoBeInterfaceEndpointsReviewEvent } from "./AutoBeInterfaceEndpointsReviewEvent";
-import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
-import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
-import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
-import { AutoBeInterfacePrerequisitesEvent } from "./AutoBeInterfacePrerequisitesEvent";
+import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointEvent";
+import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
+import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
+import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
+import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
+import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
+import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRelationshipReviewEvent } from "./AutoBeInterfaceSchemaRelationshipReviewEvent";
+import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
-import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
-import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
-import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
+import { AutoBePrismaComponentEvent } from "./AutoBePrismaComponentEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
 import { AutoBePrismaInsufficientEvent } from "./AutoBePrismaInsufficientEvent";
 import { AutoBePrismaReviewEvent } from "./AutoBePrismaReviewEvent";
-import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
+import { AutoBePrismaSchemaEvent } from "./AutoBePrismaSchemaEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
@@ -96,24 +96,24 @@ export type AutoBeEvent =
   | AutoBeAnalyzeCompleteEvent
   // INTERFACE
   | AutoBeInterfaceStartEvent
-  | AutoBeInterfaceGroupsEvent
+  | AutoBeInterfaceGroupEvent
   | AutoBeInterfaceEndpointsEvent
-  | AutoBeInterfaceEndpointsReviewEvent
-  | AutoBeInterfaceOperationsReviewEvent
-  | AutoBeInterfaceOperationsEvent
+  | AutoBeInterfaceEndpointReviewEvent
+  | AutoBeInterfaceOperationReviewEvent
+  | AutoBeInterfaceOperationEvent
   | AutoBeInterfaceAuthorizationEvent
-  | AutoBeInterfaceSchemasEvent
-  | AutoBeInterfaceSchemasReviewEvent
+  | AutoBeInterfaceSchemaEvent
+  | AutoBeInterfaceSchemaReviewEvent
   | AutoBeInterfaceSchemaSecurityReviewEvent
   | AutoBeInterfaceSchemaRelationshipReviewEvent
   | AutoBeInterfaceSchemaContentReviewEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
-  | AutoBeInterfacePrerequisitesEvent
+  | AutoBeInterfacePrerequisiteEvent
   // PRISMA
   | AutoBePrismaStartEvent
-  | AutoBePrismaComponentsEvent
-  | AutoBePrismaSchemasEvent
+  | AutoBePrismaComponentEvent
+  | AutoBePrismaSchemaEvent
   | AutoBePrismaInsufficientEvent
   | AutoBePrismaReviewEvent
   | AutoBePrismaValidateEvent
@@ -194,8 +194,8 @@ export namespace AutoBeEvent {
     analyzeComplete: AutoBeAnalyzeCompleteEvent;
     // PRISMA
     prismaStart: AutoBePrismaStartEvent;
-    prismaComponents: AutoBePrismaComponentsEvent;
-    prismaSchemas: AutoBePrismaSchemasEvent;
+    prismaComponent: AutoBePrismaComponentEvent;
+    prismaSchemas: AutoBePrismaSchemaEvent;
     prismaInsufficient: AutoBePrismaInsufficientEvent;
     prismaReview: AutoBePrismaReviewEvent;
     prismaValidate: AutoBePrismaValidateEvent;
@@ -203,20 +203,20 @@ export namespace AutoBeEvent {
     prismaComplete: AutoBePrismaCompleteEvent;
     // INTERFACE
     interfaceStart: AutoBeInterfaceStartEvent;
-    interfaceGroups: AutoBeInterfaceGroupsEvent;
+    interfaceGroup: AutoBeInterfaceGroupEvent;
     interfaceAuthorization: AutoBeInterfaceAuthorizationEvent;
-    interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
-    interfaceEndpointsReview: AutoBeInterfaceEndpointsReviewEvent;
-    interfaceOperations: AutoBeInterfaceOperationsEvent;
-    interfaceOperationsReview: AutoBeInterfaceOperationsReviewEvent;
-    interfaceSchemas: AutoBeInterfaceSchemasEvent;
-    interfaceSchemasReview: AutoBeInterfaceSchemasReviewEvent;
+    interfaceEndpoint: AutoBeInterfaceEndpointsEvent;
+    interfaceEndpointReview: AutoBeInterfaceEndpointReviewEvent;
+    interfaceOperation: AutoBeInterfaceOperationEvent;
+    interfaceOperationReview: AutoBeInterfaceOperationReviewEvent;
+    interfaceSchema: AutoBeInterfaceSchemaEvent;
+    interfaceSchemaReview: AutoBeInterfaceSchemaReviewEvent;
     interfaceSchemaSecurityReview: AutoBeInterfaceSchemaSecurityReviewEvent;
     interfaceSchemaRelationshipReview: AutoBeInterfaceSchemaRelationshipReviewEvent;
     interfaceSchemaContentReview: AutoBeInterfaceSchemaContentReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
-    interfacePrerequisites: AutoBeInterfacePrerequisitesEvent;
+    interfacePrerequisite: AutoBeInterfacePrerequisiteEvent;
     // TEST
     testStart: AutoBeTestStartEvent;
     testScenarios: AutoBeTestScenariosEvent;

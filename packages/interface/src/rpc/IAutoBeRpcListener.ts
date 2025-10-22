@@ -8,20 +8,20 @@ import {
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointsEvent,
-  AutoBeInterfaceOperationsEvent,
-  AutoBeInterfaceOperationsReviewEvent,
+  AutoBeInterfaceOperationEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceSchemaContentReviewEvent,
+  AutoBeInterfaceSchemaEvent,
   AutoBeInterfaceSchemaRelationshipReviewEvent,
+  AutoBeInterfaceSchemaReviewEvent,
   AutoBeInterfaceSchemaSecurityReviewEvent,
-  AutoBeInterfaceSchemasEvent,
-  AutoBeInterfaceSchemasReviewEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
-  AutoBePrismaComponentsEvent,
+  AutoBePrismaComponentEvent,
   AutoBePrismaCorrectEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaReviewEvent,
-  AutoBePrismaSchemasEvent,
+  AutoBePrismaSchemaEvent,
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationCorrectEvent,
@@ -46,9 +46,9 @@ import {
   AutoBeUserMessageEvent,
 } from "../events";
 import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
-import { AutoBeInterfaceEndpointsReviewEvent } from "../events/AutoBeInterfaceEndpointsReviewEvent";
-import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
-import { AutoBeInterfacePrerequisitesEvent } from "../events/AutoBeInterfacePrerequisitesEvent";
+import { AutoBeInterfaceEndpointReviewEvent } from "../events/AutoBeInterfaceEndpointReviewEvent";
+import { AutoBeInterfaceGroupEvent } from "../events/AutoBeInterfaceGroupEvent";
+import { AutoBeInterfacePrerequisiteEvent } from "../events/AutoBeInterfacePrerequisiteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
 
@@ -171,7 +171,7 @@ export interface IAutoBeRpcListener {
    * domain, allowing client applications to display the structural planning of
    * the database architecture and show progress scope.
    */
-  prismaComponents?(event: AutoBePrismaComponentsEvent): Promise<void>;
+  prismaComponent?(event: AutoBePrismaComponentEvent): Promise<void>;
 
   /**
    * Optional handler for database schema creation progress events.
@@ -180,7 +180,7 @@ export interface IAutoBeRpcListener {
    * client applications to track incremental progress and show which business
    * areas have been fully designed.
    */
-  prismaSchemas?(event: AutoBePrismaSchemasEvent): Promise<void>;
+  prismaSchemas?(event: AutoBePrismaSchemaEvent): Promise<void>;
 
   /**
    * Optional handler for database schema insufficient model creation events.
@@ -269,7 +269,7 @@ export interface IAutoBeRpcListener {
    *
    * @param event The event containing the created interface groups.
    */
-  interfaceGroups?(event: AutoBeInterfaceGroupsEvent): Promise<void>;
+  interfaceGroup?(event: AutoBeInterfaceGroupEvent): Promise<void>;
 
   /**
    * Optional handler for API endpoint creation events.
@@ -278,7 +278,7 @@ export interface IAutoBeRpcListener {
    * client applications to show the API surface area scope and architectural
    * foundation being built.
    */
-  interfaceEndpoints?(event: AutoBeInterfaceEndpointsEvent): Promise<void>;
+  interfaceEndpoint?(event: AutoBeInterfaceEndpointsEvent): Promise<void>;
 
   /**
    * Optional handler for API endpoint review events.
@@ -286,8 +286,8 @@ export interface IAutoBeRpcListener {
    * Called when the Interface agent reviews API endpoints, enabling client
    * applications to show the review process and any identified issues.
    */
-  interfaceEndpointsReview?(
-    event: AutoBeInterfaceEndpointsReviewEvent,
+  interfaceEndpointReview?(
+    event: AutoBeInterfaceEndpointReviewEvent,
   ): Promise<void>;
 
   /**
@@ -297,7 +297,7 @@ export interface IAutoBeRpcListener {
    * enabling client applications to track progress and show how API
    * functionality is being systematically developed.
    */
-  interfaceOperations?(event: AutoBeInterfaceOperationsEvent): Promise<void>;
+  interfaceOperation?(event: AutoBeInterfaceOperationEvent): Promise<void>;
 
   /**
    * Optional handler for API operation review events.
@@ -305,8 +305,8 @@ export interface IAutoBeRpcListener {
    * Called when the Interface agent reviews API operations, enabling client
    * applications to show the review process and any identified issues.
    */
-  interfaceOperationsReview?(
-    event: AutoBeInterfaceOperationsReviewEvent,
+  interfaceOperationReview?(
+    event: AutoBeInterfaceOperationReviewEvent,
   ): Promise<void>;
 
   /**
@@ -328,7 +328,7 @@ export interface IAutoBeRpcListener {
    * applications to show progress in type definition and data structure
    * development for the API specification.
    */
-  interfaceSchemas?(event: AutoBeInterfaceSchemasEvent): Promise<void>;
+  interfaceSchema?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
   /**
    * Optional handler for API schema review and enhancement events.
@@ -338,8 +338,8 @@ export interface IAutoBeRpcListener {
    * where schemas are validated for completeness, security compliance, and type
    * safety before being integrated into the final API specification.
    */
-  interfaceSchemasReview?(
-    event: AutoBeInterfaceSchemasReviewEvent,
+  interfaceSchemaReview?(
+    event: AutoBeInterfaceSchemaReviewEvent,
   ): Promise<void>;
 
   interfaceSchemaSecurityReview?(
@@ -380,8 +380,8 @@ export interface IAutoBeRpcListener {
    * enabling client applications to show the progress of prerequisite creation
    * and track which operations are being analyzed.
    */
-  interfacePrerequisites?(
-    event: AutoBeInterfacePrerequisitesEvent,
+  interfacePrerequisite?(
+    event: AutoBeInterfacePrerequisiteEvent,
   ): Promise<void>;
 
   /* -----------------------------------------------------------

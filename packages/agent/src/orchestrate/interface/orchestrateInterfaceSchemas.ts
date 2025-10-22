@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeInterfaceSchemasEvent,
+  AutoBeInterfaceSchemaEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -129,7 +129,7 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceSchemas",
+    source: "interfaceSchema",
     histories: transformInterfaceSchemaHistories({
       state: ctx.state(),
       operations: props.operations,
@@ -176,7 +176,7 @@ async function process<Model extends ILlmSchema.Model>(
     }) as AutoBeOpenApi.IComponents
   ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   ctx.dispatch({
-    type: "interfaceSchemas",
+    type: "interfaceSchema",
     id: v7(),
     schemas,
     tokenUsage,
@@ -186,7 +186,7 @@ async function process<Model extends ILlmSchema.Model>(
     ).length),
     step: ctx.state().prisma?.step ?? 0,
     created_at: new Date().toISOString(),
-  } satisfies AutoBeInterfaceSchemasEvent);
+  } satisfies AutoBeInterfaceSchemaEvent);
   return schemas;
 }
 

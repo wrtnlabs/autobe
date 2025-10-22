@@ -23,7 +23,7 @@ export async function orchestrateInterfaceEndpointsReview<
     };
 
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceEndpointsReview",
+    source: "interfaceEndpointReview",
     histories: transformInterfaceEndpointsReviewHistories(
       ctx.state(),
       endpoints,
@@ -46,7 +46,7 @@ export async function orchestrateInterfaceEndpointsReview<
 
   ctx.dispatch({
     id: v7(),
-    type: "interfaceEndpointsReview",
+    type: "interfaceEndpointReview",
     endpoints,
     content: response,
     created_at: new Date().toISOString(),

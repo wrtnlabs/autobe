@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceOperationEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -120,7 +120,7 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceOperations",
+    source: "interfaceOperation",
     histories: transformInterfaceOperationHistories({
       state: ctx.state(),
       endpoints: props.endpoints.toJSON(),
@@ -178,14 +178,14 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
 
   ctx.dispatch({
-    type: "interfaceOperations",
+    type: "interfaceOperation",
     id: v7(),
     operations: pointer.value,
     tokenUsage,
     ...props.progress,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
-  } satisfies AutoBeInterfaceOperationsEvent);
+  } satisfies AutoBeInterfaceOperationEvent);
   return pointer.value;
 }
 

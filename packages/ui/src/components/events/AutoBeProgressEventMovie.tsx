@@ -59,17 +59,17 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Prisma Review",
           description: "Reviewing the Prisma schemas",
         };
-      case "interfaceEndpoints":
+      case "interfaceEndpoint":
         return {
           title: "Interface Endpoints",
           description: "Collecting API endpoints",
         };
-      case "interfaceOperations":
+      case "interfaceOperation":
         return {
           title: "Interface Operations",
           description: "Designing API operations",
         };
-      case "interfaceOperationsReview":
+      case "interfaceOperationReview":
         return {
           title: "Interface Operations Review",
           description: "Reviewing API operations",
@@ -79,17 +79,17 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Authorization",
           description: "Designing API authorization operations",
         };
-      case "interfaceSchemas":
+      case "interfaceSchema":
         return {
           title: "Interface Schemas",
           description: "Designing API type schemas",
         };
-      case "interfaceSchemasReview":
+      case "interfaceSchemaReview":
         return {
           title: "Interface Schemas Review",
           description: "Reviewing API type schemas",
         };
-      case "interfacePrerequisites":
+      case "interfacePrerequisite":
         return {
           title: "Interface Prerequisites",
           description: "Defining API prerequisites",
