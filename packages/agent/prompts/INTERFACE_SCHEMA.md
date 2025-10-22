@@ -1069,7 +1069,413 @@ interface IEnterpriseEmployee {
 | **Aggregation** | Not included (counts only) | Not applicable | Not applicable |
 | **Actor Relations** | Never included from auth | Never accept IDs | Never allow changes |
 
-#### 4.4.2. Response DTOs (Read Operations)
+#### 4.4.2. The Atomic Operation Principle
+
+**FUNDAMENTAL RULE**: DTOs must enable complete operations in a single API call.
+
+##### The Single-Call Mandate
+
+**Core Philosophy**: Users should NEVER need multiple API calls to complete a logically atomic operation.
+
+**Why This Matters**:
+
+1. **User Experience**: Multiple sequential API calls create poor UX and brittle client code
+2. **Data Consistency**: Single transaction ensures all-or-nothing semantics
+3. **Network Efficiency**: Reduces round trips and latency
+4. **Error Handling**: Single failure point instead of partial state cleanup
+5. **Business Logic Integrity**: Complete business transaction in one atomic unit
+
+**Anti-Pattern Examples** (What we MUST prevent):
+
+```typescript
+// ❌ CATASTROPHIC DESIGN - Multiple API calls required
+// Creating a blog post the WRONG way:
+POST /articles               // Call 1: Create article
+{ title: "...", content: "..." }
+→ Returns: { id: "art-123" }
+
+POST /articles/art-123/files // Call 2: Upload file 1
+{ file: "image1.jpg" }
+
+POST /articles/art-123/files // Call 3: Upload file 2
+{ file: "image2.jpg" }
+
+POST /articles/art-123/tags  // Call 4: Add tags
+{ tags: ["tech", "ai"] }
+
+// Problems:
+// - 4 network round trips
+// - Article exists with incomplete data between calls
+// - Any failure leaves orphaned/incomplete data
+// - Complex client-side orchestration required
+// - Race conditions possible
+
+// ❌ SHOPPING DISASTER - Creating a product sale
+POST /sales                  // Call 1: Create sale
+{ name: "Laptop", price: 1000 }
+→ Returns: { id: "sale-456" }
+
+POST /sales/sale-456/units   // Call 2: Create unit 1
+{ name: "16GB RAM", price: 1200 }
+→ Returns: { id: "unit-1" }
+
+POST /sales/sale-456/units   // Call 3: Create unit 2
+{ name: "32GB RAM", price: 1500 }
+→ Returns: { id: "unit-2" }
+
+POST /units/unit-1/options   // Call 4: Add option to unit 1
+{ name: "Color", type: "select" }
+→ Returns: { id: "opt-1" }
+
+POST /options/opt-1/candidates // Call 5: Add candidate
+{ value: "Silver", price_delta: 0 }
+
+POST /options/opt-1/candidates // Call 6: Add candidate
+{ value: "Black", price_delta: 0 }
+
+POST /units/unit-1/stocks    // Call 7: Set stock for unit 1
+{ warehouse_id: "wh-1", quantity: 50 }
+
+POST /units/unit-2/stocks    // Call 8: Set stock for unit 2
+{ warehouse_id: "wh-1", quantity: 30 }
+
+// This is INSANE! 8 API calls to register one product!
+// Sale exists incomplete during the entire process
+// If any call fails, rollback is nightmarish
+```
+
+**✅ THE CORRECT APPROACH - Single Atomic Call**:
+
+```typescript
+// ✅ ATOMIC ARTICLE CREATION
+POST /articles
+{
+  title: "My Article",
+  content: "Article content here...",
+  category_id: "cat-123",           // Reference existing category
+
+  // Composition: Files created atomically with article
+  files: [
+    {
+      filename: "image1.jpg",
+      url: "https://cdn.../image1.jpg",
+      size: 524288,
+      mimetype: "image/jpeg"
+    },
+    {
+      filename: "image2.jpg",
+      url: "https://cdn.../image2.jpg",
+      size: 786432,
+      mimetype: "image/jpeg"
+    }
+  ],
+
+  // Tags as part of article creation
+  tags: ["tech", "ai", "innovation"]
+}
+
+// Result: Complete article with ALL components in ONE call
+// Single transaction, single failure point, clean rollback
+
+// ✅ ATOMIC SALE CREATION
+POST /sales
+{
+  name: "Premium Laptop",
+  description: "High-performance laptop",
+  section_id: "electronics",        // Reference existing section
+  category_ids: ["laptops", "computers"], // Reference categories
+
+  // Deep nested composition - ALL created together
+  units: [
+    {
+      name: "16GB RAM Model",
+      price: 1200,
+      sku: "LAP-16GB",
+
+      // Nested options (Depth 2)
+      options: [
+        {
+          name: "Color",
+          type: "select",
+          required: true,
+
+          // Nested candidates (Depth 3)
+          candidates: [
+            { value: "Silver", price_delta: 0 },
+            { value: "Space Gray", price_delta: 0 },
+            { value: "Gold", price_delta: 50 }
+          ]
+        },
+        {
+          name: "Storage",
+          type: "select",
+          required: true,
+          candidates: [
+            { value: "512GB SSD", price_delta: 0 },
+            { value: "1TB SSD", price_delta: 200 }
+          ]
+        }
+      ],
+
+      // Stock allocation (Depth 2)
+      stocks: [
+        { warehouse_id: "wh-seoul", quantity: 50 },
+        { warehouse_id: "wh-busan", quantity: 30 }
+      ]
+    },
+    {
+      name: "32GB RAM Model",
+      price: 1500,
+      sku: "LAP-32GB",
+      options: [
+        {
+          name: "Color",
+          type: "select",
+          required: true,
+          candidates: [
+            { value: "Silver", price_delta: 0 },
+            { value: "Space Gray", price_delta: 0 }
+          ]
+        }
+      ],
+      stocks: [
+        { warehouse_id: "wh-seoul", quantity: 20 },
+        { warehouse_id: "wh-busan", quantity: 15 }
+      ]
+    }
+  ],
+
+  images: [
+    { url: "https://cdn.../main.jpg", is_primary: true, order: 1 },
+    { url: "https://cdn.../side.jpg", is_primary: false, order: 2 }
+  ]
+}
+
+// Result: Complete product with ALL variants, options, stock in ONE call!
+// Single database transaction
+// All-or-nothing: either everything succeeds or nothing is created
+```
+
+##### Theoretical Foundation
+
+**Transaction Cohesion Principle**: Data that forms a single business transaction MUST be creatable in a single API call.
+
+**Definition of Transaction Cohesion**:
+- Data created by the **same actor** at the **same moment** for the **same business purpose** belongs together
+- The entity would be **incomplete or invalid** without all its components
+- All components share the **same lifecycle** and are **conceptually inseparable**
+
+**Decision Framework**:
+
+```
+Q: Should this data be nested in the Create DTO or accessed via separate endpoint?
+
+├─ Q1: Is it created by the SAME ACTOR at the SAME TIME?
+│  ├─ NO → Separate endpoint (different transaction context)
+│  └─ YES → Continue to Q2
+│
+├─ Q2: Would the parent entity be INCOMPLETE without this data?
+│  ├─ NO → Consider separate endpoint (optional enhancement)
+│  └─ YES → Continue to Q3
+│
+├─ Q3: Does this data DEFINE the parent's core structure?
+│  ├─ NO → Consider separate endpoint
+│  └─ YES → MUST be nested in Create DTO (composition)
+│
+└─ RESULT: Include as nested ICreate object/array
+```
+
+**Application Examples**:
+
+```typescript
+// Shopping Sale Creation
+// Q1: Same actor (seller) at same time? YES
+// Q2: Sale incomplete without units? YES (can't sell nothing)
+// Q3: Units define what's being sold? YES
+// → MUST nest units in IShoppingSale.ICreate
+
+// Q1: Units created at same time? YES
+// Q2: Unit incomplete without options? YES (defines variants)
+// Q3: Options define the SKU structure? YES
+// → MUST nest options in IShoppingSaleUnit.ICreate
+
+// Q1: Options created at same time? YES
+// Q2: Option incomplete without candidates? YES (select needs choices)
+// Q3: Candidates define the option's choices? YES
+// → MUST nest candidates in IShoppingSaleUnitOption.ICreate
+
+// Article Comments
+// Q1: Comments by same actor as article? NO (different users)
+// Q2: Article incomplete without comments? NO
+// Q3: Comments define article structure? NO
+// → Separate endpoint: POST /articles/:id/comments
+```
+
+##### Read-Write Symmetry Principle
+
+**CRITICAL RULE**: The completeness principle applies to BOTH Read and Create operations.
+
+**Read DTOs (Response)**:
+- Must provide **complete information** without requiring additional API calls
+- Transform all **contextual FKs to full objects**
+- Include all **compositional relations** as nested arrays/objects
+- User can render complete UI from single GET request
+
+**Create DTOs (Request)**:
+- Must accept **complete data** for atomic creation
+- Accept **nested ICreate objects** for compositions
+- Accept **ID references** for associations (existing entities)
+- User can create complete entity with single POST request
+
+**Symmetry Example**:
+
+```typescript
+// If your Read DTO has this structure:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;  // Complete seller info
+  section: IShoppingSection;          // Complete section info
+  units: IShoppingSaleUnit[] {        // Complete unit array
+    id: string;
+    name: string;
+    options: IShoppingSaleUnitOption[]; // Complete options
+    stocks: IShoppingSaleUnitStock[];   // Complete stocks
+  };
+}
+
+// Then your Create DTO MUST support equivalent creation:
+interface IShoppingSale.ICreate {
+  name: string;
+  section_id: string;                // Reference existing (ID)
+  units: IShoppingSaleUnit.ICreate[] { // Create nested (objects)
+    name: string;
+    options: IShoppingSaleUnitOption.ICreate[];
+    stocks: IShoppingSaleUnitStock.ICreate[];
+  };
+  // seller_id from JWT (auth context)
+}
+
+// ❌ VIOLATION: Read shows units but Create requires separate calls
+interface IShoppingSale.ICreate {
+  name: string;
+  section_id: string;
+  // units ??? <- WHERE ARE THE UNITS?
+  // This forces: POST /sales, then POST /sales/:id/units
+  // This is UNACCEPTABLE
+}
+```
+
+##### Depth Limits and Practical Boundaries
+
+**Rule**: No artificial depth limits for business-necessary nesting.
+
+**Common Depths by Domain**:
+
+1. **Depth 1** (Simple composition):
+   ```typescript
+   IArticle.ICreate {
+     files: IArticleFile.ICreate[];  // 1 level
+   }
+   ```
+
+2. **Depth 2** (Moderate composition):
+   ```typescript
+   IOrder.ICreate {
+     items: IOrderItem.ICreate[] {    // Level 1
+       selected_options: ISelectedOption.ICreate[]; // Level 2
+     };
+   }
+   ```
+
+3. **Depth 3+** (Complex composition):
+   ```typescript
+   ISale.ICreate {
+     units: ISaleUnit.ICreate[] {     // Level 1
+       options: IUnitOption.ICreate[] { // Level 2
+         candidates: IOptionCandidate.ICreate[]; // Level 3
+       };
+     };
+   }
+   ```
+
+**No Arbitrary Limits**: If business logic requires 4 or 5 levels, support it. Don't artificially restrict based on "complexity concerns."
+
+##### Common Violations and Corrections
+
+**Violation 1: Split Composition**
+```typescript
+// ❌ WRONG
+interface IArticle.ICreate {
+  title: string;
+  content: string;
+  // No files field
+}
+// Requires: POST /articles/:id/files after creation
+
+// ✅ CORRECT
+interface IArticle.ICreate {
+  title: string;
+  content: string;
+  files: IArticleFile.ICreate[]; // Atomic
+}
+```
+
+**Violation 2: Shallow Nesting**
+```typescript
+// ❌ WRONG - Units separated
+interface ISale.ICreate {
+  name: string;
+  units: string[]; // Just IDs? Requires pre-creation?
+}
+
+// ✅ CORRECT - Deep nesting
+interface ISale.ICreate {
+  name: string;
+  units: ISaleUnit.ICreate[] {
+    name: string;
+    options: IUnitOption.ICreate[];
+    stocks: IStock.ICreate[];
+  };
+}
+```
+
+**Violation 3: Reference Confusion**
+```typescript
+// ❌ WRONG - Mixing compositions and references incorrectly
+interface IOrder.ICreate {
+  customer_id: string;        // ❌ Should be from JWT
+  items: string[];            // ❌ Should be nested objects
+  payment_method_id: string;  // ✅ OK - selecting saved method
+}
+
+// ✅ CORRECT
+interface IOrder.ICreate {
+  // customer_id from JWT (auth)
+  items: IOrderItem.ICreate[] { // Nested composition
+    sale_id: string;            // Reference to existing sale
+    quantity: number;
+  };
+  payment_method_id?: string;   // Optional saved method
+  payment?: IPayment.ICreate;   // Or create new payment
+}
+```
+
+##### Implementation Checklist
+
+Before finalizing ANY Create DTO:
+
+- [ ] **Composition Check**: All compositional data nested in Create DTO?
+- [ ] **Single-Call Test**: Can user create complete entity in one POST?
+- [ ] **Association Check**: References to existing entities use ID fields?
+- [ ] **Depth Validation**: Nesting depth matches business complexity?
+- [ ] **Symmetry Check**: Create DTO matches Read DTO structure?
+- [ ] **Actor Exclusion**: No actor IDs (come from JWT)?
+- [ ] **Transaction Boundary**: All data in single DB transaction?
+
+**If ANY check fails, the DTO design is incomplete.**
+
+#### 4.4.3. Response DTOs (Read Operations)
 
 **Rule**: Transform ALL contextual FKs to objects for complete information.
 
@@ -1117,7 +1523,7 @@ interface IShoppingSale {
 }
 ```
 
-#### 4.4.3. Create DTOs (Request Operations)
+#### 4.4.4. Create DTOs (Request Operations)
 
 **Rule**: Use IDs for references, nested objects for compositions.
 
@@ -1202,7 +1608,7 @@ interface IShoppingOrder.ICreate {
 }
 ```
 
-#### 4.4.4. Update DTOs (Request Operations)
+#### 4.4.5. Update DTOs (Request Operations)
 
 **Rule**: Only allow updating non-structural relations.
 
@@ -2208,7 +2614,25 @@ interface IBbsArticle.IUpdate {
 
 ### 6.5. Final Validation Checklist
 
-**A. Relation Validation - MANDATORY, NO EXCEPTIONS**:
+**A. Atomic Operation Validation - CRITICAL FOR API USABILITY**:
+
+- [ ] ALL Create DTOs enable complete entity creation in single API call
+- [ ] Compositional relations fully nested (no split operations required)
+- [ ] Nesting depth matches business domain complexity (no artificial limits)
+- [ ] Read-Write symmetry maintained (Create DTO structure mirrors Read DTO)
+- [ ] No cases where multiple API calls needed for single business operation
+- [ ] Association references use ID fields, compositions use nested ICreate objects
+
+**Common Atomic Operation Violations to Fix**:
+- ❌ Article Create missing `files[]` array (forces POST /articles/:id/files)
+- ❌ Sale Create missing `units[]` array (forces POST /sales/:id/units)
+- ❌ Order Create with `items: string[]` instead of `items: IOrderItem.ICreate[]`
+- ❌ Shallow nesting when business requires 2-3 levels deep
+- ❌ Composition arrays missing when Read DTO shows them
+
+**Remember**: Users should NEVER need multiple API calls for a single logical operation. If creating a blog post with files requires 2+ calls, the DTO design is wrong.
+
+**B. Relation Validation - MANDATORY, NO EXCEPTIONS**:
 
 - [ ] EVERY entity DTO has relations analyzed and defined
 - [ ] NO relations skipped due to uncertainty
@@ -2223,7 +2647,7 @@ interface IBbsArticle.IUpdate {
 
 **Remember**: The review agent EXPECTS you to have defined all relations. Missing relations make their job harder and delay the entire process.
 
-**B. Named Type Validation - ZERO TOLERANCE FOR INLINE OBJECTS**:
+**C. Named Type Validation - ZERO TOLERANCE FOR INLINE OBJECTS**:
 
 - [ ] ZERO inline object definitions in any property
 - [ ] ALL object types defined as named schemas
@@ -2239,20 +2663,20 @@ interface IBbsArticle.IUpdate {
 
 **The Named Type Rule**: If it's an object, it gets a name and a $ref. No exceptions.
 
-**C. Schema Structure Verification**:
+**D. Schema Structure Verification**:
 
 - [ ] ALL schemas are at the root level of the schemas object
 - [ ] NO schema is defined inside another schema's properties
 - [ ] Each schema is a key-value pair at the top level
 
-**D. Database Consistency Verification**:
+**E. Database Consistency Verification**:
 
 - [ ] Every property exists in Prisma schema - no assumptions
 - [ ] Timestamp fields verified individually per table
 - [ ] No phantom fields that would require database changes
 - [ ] x-autobe-prisma-schema linkage added for all applicable types
 
-**E. Security Verification**:
+**F. Security Verification**:
 
 - [ ] Request DTOs exclude all authentication context fields
 - [ ] Response DTOs exclude all sensitive data (passwords, tokens)

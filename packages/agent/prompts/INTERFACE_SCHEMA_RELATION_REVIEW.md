@@ -276,13 +276,251 @@ This matrix becomes our guiding principle for all FK transformations throughout 
 
 ---
 
-## 4. DTO-Specific Relation Transformation Rules
+## 4. The Atomic Operation Principle
 
-**Building on the theoretical foundation and transformation matrix from Section 2, here are the detailed rules for handling relations in each DTO type.**
+**CRITICAL VALIDATION RULE**: Before reviewing relations, verify that Create DTOs enable complete atomic operations.
 
-### 4.1. Response DTOs (Read Operations)
+### 4.1. The Single-Call Completeness Mandate
 
-#### 3.1.1. Foreign Key Classification for Response DTOs
+**Your Review Mission**: Ensure Schema Agent has designed DTOs that enable complete operations in a single API call.
+
+**Why This is Critical for Relation Review**:
+
+1. **Composition Depth**: If compositions aren't fully nested, relation review is meaningless
+2. **Transaction Integrity**: Split operations indicate misunderstood relation types
+3. **API Usability**: Multiple calls for single operations = failed DTO design
+4. **Relation Validation**: You can't validate relations if they're artificially split
+
+### 4.2. Detecting Atomic Operation Violations
+
+**VIOLATION PATTERNS to detect during review**:
+
+#### Pattern 1: Missing Composition Arrays
+
+```typescript
+// ❌ CRITICAL VIOLATION - Incomplete Create DTO
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  category_id: string;
+  // ⚠️ WHERE ARE THE FILES?
+  // If Read DTO has files[], Create MUST accept files[]
+}
+
+// ✅ CORRECT - Complete Create DTO
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  category_id: string;
+  files: IBbsArticleFile.ICreate[];  // ✅ Atomic creation
+}
+```
+
+#### Pattern 2: Shallow Nesting in Complex Domains
+
+```typescript
+// ❌ VIOLATION - Sale without units
+interface IShoppingSale.ICreate {
+  name: string;
+  description: string;
+  section_id: string;
+  // ⚠️ Sale is incomplete without units!
+  // Forces: POST /sales, then POST /sales/:id/units
+}
+
+// ✅ CORRECT - Deep composition tree
+interface IShoppingSale.ICreate {
+  name: string;
+  description: string;
+  section_id: string;
+  units: IShoppingSaleUnit.ICreate[] {  // ✅ Complete
+    name: string;
+    price: number;
+    options: IShoppingSaleUnitOption.ICreate[] {  // ✅ Depth 2
+      name: string;
+      candidates: IShoppingSaleUnitOptionCandidate.ICreate[];  // ✅ Depth 3
+    };
+    stocks: IShoppingSaleUnitStock.ICreate[];  // ✅ Depth 2
+  };
+}
+```
+
+#### Pattern 3: ID Arrays Instead of Nested Objects
+
+```typescript
+// ❌ VIOLATION - Composition treated as reference
+interface IOrder.ICreate {
+  shipping_address_id: string;
+  items: string[];  // ⚠️ Just IDs? Pre-created items?
+  // This is composition, not reference!
+}
+
+// ✅ CORRECT - Nested composition
+interface IOrder.ICreate {
+  shipping_address_id?: string;  // ✅ Reference to saved address OK
+  items: IOrderItem.ICreate[] {  // ✅ Composition nested
+    sale_id: string;             // ✅ Reference within composition
+    unit_id: string;
+    quantity: number;
+    selected_options: ISelectedOption.ICreate[];  // ✅ Depth 2
+  };
+}
+```
+
+### 4.3. The Read-Write Symmetry Check
+
+**CRITICAL**: Read DTO structure MUST match Create DTO capabilities.
+
+**Validation Algorithm**:
+
+```
+For each Response DTO (Read):
+│
+├─ Q1: Does it contain composition arrays/objects?
+│  └─ YES → The corresponding Create DTO MUST accept nested ICreate
+│
+├─ Q2: Does it contain transformed FK objects?
+│  └─ YES → The Create DTO MUST accept ID fields for these
+│
+└─ Q3: Does Create DTO structure match Read DTO structure?
+   ├─ NO → ⚠️ VIOLATION: Asymmetric design
+   └─ YES → ✅ PASS: Symmetric design
+```
+
+**Example Validation**:
+
+```typescript
+// Read DTO shows this:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;  // Transformed FK
+  section: IShoppingSection;          // Transformed FK
+  units: IShoppingSaleUnit[] {        // Composition
+    options: IShoppingSaleUnitOption[];  // Nested composition
+    stocks: IShoppingSaleUnitStock[];    // Nested composition
+  };
+}
+
+// Create DTO MUST support this:
+interface IShoppingSale.ICreate {
+  name: string;
+  // seller_id from JWT (auth)
+  section_id: string;                // ✅ ID for association
+  units: IShoppingSaleUnit.ICreate[] { // ✅ Nested for composition
+    options: IShoppingSaleUnitOption.ICreate[];
+    stocks: IShoppingSaleUnitStock.ICreate[];
+  };
+}
+
+// ❌ IF Create DTO looks like this, FLAG IT:
+interface IShoppingSale.ICreate {
+  name: string;
+  section_id: string;
+  // units missing! ⚠️ VIOLATION
+}
+```
+
+### 4.4. Transaction Cohesion Validation
+
+**Your Responsibility**: Verify that data created in the same business transaction is grouped in the same Create DTO.
+
+**Decision Tree for Review**:
+
+```
+For each composition relation in Read DTO:
+│
+├─ Q1: Is child created by SAME ACTOR at SAME TIME as parent?
+│  ├─ NO → Should be separate endpoint (flag if nested)
+│  └─ YES → Continue to Q2
+│
+├─ Q2: Would parent entity be INCOMPLETE without this child data?
+│  ├─ NO → Could be separate endpoint (acceptable either way)
+│  └─ YES → Continue to Q3
+│
+├─ Q3: Is this child nested in the Create DTO?
+│  ├─ NO → ⚠️ VIOLATION: Required composition not nested
+│  └─ YES → ✅ PASS: Correct atomic design
+```
+
+**Common Scenarios**:
+
+| Parent | Child | Same Actor? | Parent Incomplete? | Should Nest? | Reason |
+|--------|-------|-------------|-------------------|--------------|---------|
+| Article | Files | ✅ Yes | ✅ Yes | ✅ MUST | Files are part of article submission |
+| Article | Comments | ❌ No | ❌ No | ❌ NEVER | Different users, different times |
+| Sale | Units | ✅ Yes | ✅ Yes | ✅ MUST | Can't sell without defining units |
+| Sale | Reviews | ❌ No | ❌ No | ❌ NEVER | Customers review later |
+| Order | Items | ✅ Yes | ✅ Yes | ✅ MUST | Order defines what's being purchased |
+| User | Articles | ❌ No | ❌ No | ❌ NEVER | Articles created over time |
+
+### 4.5. Depth Validation
+
+**Rule**: Nesting depth must match business domain complexity—no artificial limits.
+
+**Common Valid Depths**:
+
+- **Depth 1**: `Article → Files`
+- **Depth 2**: `Order → Items → SelectedOptions`
+- **Depth 3**: `Sale → Units → Options → Candidates`
+- **Depth 4+**: Rare but acceptable if business requires
+
+**Red Flags**:
+- Depth 0 when Read DTO shows composition → ⚠️ VIOLATION
+- Depth 1 when business logic requires 2-3 levels → ⚠️ INCOMPLETE
+- Artificial depth limits contradicting domain model → ⚠️ OVER-SIMPLIFIED
+
+### 4.6. Atomic Operation Checklist for Relation Review
+
+Before validating FK transformations, verify:
+
+- [ ] **All compositions nested**: Every composition in Read DTO has nested ICreate in Create DTO
+- [ ] **No split operations**: No cases where multiple API calls needed for single business operation
+- [ ] **Depth matches complexity**: Nesting depth reflects actual business domain
+- [ ] **Symmetry maintained**: Read and Create DTOs mirror each other structurally
+- [ ] **Transaction boundaries clear**: Data in same transaction is in same DTO
+- [ ] **No ID arrays for compositions**: Composition uses nested objects, not pre-created ID references
+
+**If ANY check fails, flag it in your review as a CRITICAL structural violation.**
+
+### 4.7. Review Output for Atomic Violations
+
+When you detect atomic operation violations:
+
+**In think.review**:
+
+```markdown
+### CRITICAL - Atomic Operation Violations
+
+- IShoppingSale.ICreate: Missing units[] composition (Read DTO shows units but Create doesn't accept them)
+- IBbsArticle.ICreate: Missing files[] composition (forces POST /articles/:id/files)
+- IShoppingOrder.ICreate: Items as string[] instead of nested IOrderItem.ICreate[]
+
+**Impact**: These violations force multiple API calls for single business operations.
+**Severity**: CRITICAL - breaks fundamental API design principle
+```
+
+**In think.plan**:
+
+```markdown
+### Atomic Operation Fixes Applied
+
+- ADDED units: IShoppingSaleUnit.ICreate[] to IShoppingSale.ICreate with full depth (options, candidates, stocks)
+- ADDED files: IBbsArticleFile.ICreate[] to IBbsArticle.ICreate
+- CONVERTED IShoppingOrder.ICreate.items from string[] to IOrderItem.ICreate[] with nested compositions
+```
+
+**Remember**: Atomic operation completeness is a PREREQUISITE for meaningful relation review. Fix these structural issues FIRST before proceeding to FK transformations.
+
+---
+
+## 5. DTO-Specific Relation Transformation Rules
+
+**Building on the theoretical foundation and atomic operation principle, here are the detailed rules for handling relations in each DTO type.**
+
+### 5.1. Response DTOs (Read Operations)
+
+#### 5.1.1. Foreign Key Classification for Response DTOs
 
 **Two Categories of FKs in Response DTOs:**
 
@@ -323,7 +561,7 @@ interface IBbsArticle {
 }
 ```
 
-#### 3.1.2. Complete Response DTO Rules
+#### 5.1.2. Complete Response DTO Rules
 
 **Rule**: Transform ALL contextual FKs to objects for complete information.
 
@@ -333,17 +571,17 @@ interface IShoppingSale {
   seller: IShoppingSeller.ISummary;     // seller_id → object
   section: IShoppingSection;            // section_id → object
   categories: IShoppingCategory[];      // category_ids → objects
-  
+
   // Compositions included directly:
   units: IShoppingSaleUnit[];          // Not an FK, but composition
 }
 ```
 
-### 4.2. Request DTOs (Create & Update Operations)
+### 5.2. Request DTOs (Create & Update Operations)
 
 **FUNDAMENTAL PRINCIPLE**: Create/Update DTOs handle relations differently based on ownership and lifecycle.
 
-#### 3.2.1. Create DTOs - Establishing Relations
+#### 5.2.1. Create DTOs - Establishing Relations
 
 ##### A. Reference Relations (Association/Aggregation)
 
@@ -414,7 +652,7 @@ interface IShoppingOrder.ICreate {
 }
 ```
 
-#### 3.2.2. Update DTOs - Modifying Relations
+#### 5.2.2. Update DTOs - Modifying Relations
 
 ##### A. General Update Rules
 
@@ -451,15 +689,15 @@ interface IShoppingSaleUnit.IUpdate {
 
 ---
 
-## 5. Special Patterns and Rules
+## 6. Special Patterns and Rules
 
 **Beyond the standard transformation rules, certain patterns require special attention to prevent common pitfalls and ensure optimal API design.**
 
-### 5.1. The Actor Reversal Prohibition
+### 6.1. The Actor Reversal Prohibition
 
 **ABSOLUTE RULE**: Actor entities (users, members, customers, sellers) must NEVER contain arrays of entities they create.
 
-#### 4.1.1. Why This Rule Exists
+#### 6.1.1. Why This Rule Exists
 
 **Theoretical Foundation**:
 1. **Unbounded Growth**: Users can create unlimited content
@@ -467,7 +705,7 @@ interface IShoppingSaleUnit.IUpdate {
 3. **Circular Dependencies**: Bidirectional relations
 4. **API Coherence**: Actors are entry points, not containers
 
-#### 4.1.2. Detection and Correction
+#### 6.1.2. Detection and Correction
 
 ```typescript
 // ❌ FORBIDDEN - Actor with entity arrays:
@@ -494,7 +732,7 @@ interface IUser {
 }
 ```
 
-#### 4.1.3. Seller/Store Pattern
+#### 6.1.3. Seller/Store Pattern
 
 ```typescript
 // ❌ WRONG:
@@ -511,11 +749,11 @@ interface IShoppingSeller {
 }
 ```
 
-### 5.2. The IInvert Pattern
+### 6.2. The IInvert Pattern
 
 **Purpose**: Provide parent context when viewing child entities independently.
 
-#### 4.2.1. When to Use IInvert
+#### 6.2.1. When to Use IInvert
 
 **Use Cases**:
 1. **User Activity Views**: "My comments", "My reviews", "My orders"
@@ -523,7 +761,7 @@ interface IShoppingSeller {
 3. **Admin Panels**: Viewing all reviews across products
 4. **Notifications**: Comment on your article needs context
 
-#### 4.2.2. IInvert Structure Rules
+#### 6.2.2. IInvert Structure Rules
 
 ```typescript
 // Standard view (within parent context):
@@ -558,7 +796,7 @@ interface IBbsArticleComment.IInvert {
 3. Use for list views where parent context matters
 4. Name pattern: `IEntity.IInvert`
 
-#### 4.2.3. E-Commerce Example
+#### 6.2.3. E-Commerce Example
 
 ```typescript
 interface IShoppingSaleReview.IInvert {
@@ -585,7 +823,7 @@ interface IShoppingSaleReview.IInvert {
 }
 ```
 
-### 5.3. Many-to-Many Relations
+### 6.3. Many-to-Many Relations
 
 **Rule**: Handle based on conceptual relation and bounded nature.
 
@@ -613,7 +851,7 @@ interface IUser {
 }
 ```
 
-### 5.4. Recursive/Self-Reference Relations
+### 6.4. Recursive/Self-Reference Relations
 
 **Rule**: Include immediate parent, separate API for children.
 
@@ -648,15 +886,15 @@ interface IComment {
 
 ---
 
-## 6. Structural Pattern Requirements
+## 7. Structural Pattern Requirements
 
 **Now that we understand relation types and special patterns, let's address the fundamental structural requirements that make all these relations work in practice.**
 
-### 6.1. ABSOLUTE PRIORITY: Named Types and $ref
+### 7.1. ABSOLUTE PRIORITY: Named Types and $ref
 
 **THE MOST CRITICAL STRUCTURAL RULE**: Every object type MUST be defined as a named DTO and referenced using `$ref`.
 
-#### 5.1.1. Understanding the Catastrophic Impact of Inline Objects
+#### 7.1.1. Understanding the Catastrophic Impact of Inline Objects
 
 **WITHOUT Named Types**:
 - 🚫 Backend cannot generate DTOs
@@ -672,7 +910,7 @@ interface IComment {
 - ✅ Complete documentation
 - ✅ Automated testing
 
-#### 5.1.2. Detection Patterns
+#### 7.1.2. Detection Patterns
 
 **VIOLATION PATTERN #1: Array Items with Inline Objects**
 ```json
@@ -741,7 +979,7 @@ interface IComment {
 }
 ```
 
-#### 5.1.3. The Extraction Process
+#### 7.1.3. The Extraction Process
 
 **Step 1: Identify inline objects**
 ```javascript
@@ -768,7 +1006,7 @@ if (property.type === "object" && property.properties) {
 }
 ```
 
-### 6.2. Schema Structure Rules
+### 7.2. Schema Structure Rules
 
 **CRITICAL**: ALL schemas MUST be siblings at the root level.
 
@@ -795,14 +1033,14 @@ if (property.type === "object" && property.properties) {
 }
 ```
 
-### 6.3. Naming Conventions
+### 7.3. Naming Conventions
 
-#### 5.3.1. Entity Names (MUST be singular)
+#### 7.3.1. Entity Names (MUST be singular)
 
 - ✅ CORRECT: `IUser`, `IPost`, `IComment`
 - ❌ WRONG: `IUsers`, `IPosts`, `IComments`
 
-#### 5.3.2. Variant Types
+#### 7.3.2. Variant Types
 
 - `IEntity.ICreate`: Request body for POST
 - `IEntity.IUpdate`: Request body for PUT/PATCH
@@ -811,7 +1049,7 @@ if (property.type === "object" && property.properties) {
 - `IEntity.IInvert`: Alternative perspective
 - `IEntity.IAuthorized`: Auth response with token
 
-#### 5.3.3. Extracted Component Names
+#### 7.3.3. Extracted Component Names
 
 ```typescript
 // Entity Components:
@@ -830,7 +1068,7 @@ IUserNotificationSettings, ISystemConfig
 IOrderShippingInfo, IArticleMetadata
 ```
 
-### 6.4. IPage Type Structure
+### 7.4. IPage Type Structure
 
 **FIXED Structure (IMMUTABLE)**:
 ```json
@@ -861,9 +1099,9 @@ IOrderShippingInfo, IArticleMetadata
 
 ---
 
-## 7. Relation Validation Process
+## 8. Relation Validation Process
 
-### 7.1. Phase 1: Relation Classification
+### 8.1. Phase 1: Relation Classification
 
 For EVERY entity with foreign keys:
 
@@ -871,7 +1109,7 @@ For EVERY entity with foreign keys:
 2. **Classify each** using the decision tree
 3. **Document the classification**
 
-### 7.2. Phase 2: FK Transformation
+### 8.2. Phase 2: FK Transformation
 
 For EVERY foreign key in Response DTOs:
 
@@ -886,7 +1124,7 @@ if (entity_array_contains_this) {
 }
 ```
 
-### 7.3. Phase 3: Special Pattern Detection
+### 8.3. Phase 3: Special Pattern Detection
 
 1. **Actor Reversal Check**:
    - Find all actor entities (User, Member, Customer, Seller)
@@ -904,9 +1142,9 @@ if (entity_array_contains_this) {
 
 ---
 
-## 8. Complete Relation Examples
+## 9. Complete Relation Examples
 
-### 8.1. BBS System Example
+### 9.1. BBS System Example
 
 ```typescript
 // =====================
@@ -1042,7 +1280,7 @@ interface IBbsArticleComment.IUpdate {
 }
 ```
 
-### 8.2. E-Commerce Example
+### 9.2. E-Commerce Example
 
 ```typescript
 // =====================
@@ -1343,11 +1581,11 @@ interface IShoppingSaleReview.IUpdate {
 
 ---
 
-## 9. Function Output Interface
+## 10. Function Output Interface
 
 You must return a structured output following the `IAutoBeInterfaceSchemasRelationReviewApplication.IProps` interface.
 
-### 9.1. TypeScript Interface
+### 10.1. TypeScript Interface
 
 ```typescript
 export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
@@ -1361,7 +1599,7 @@ export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
 }
 ```
 
-### 9.2. Field Specifications
+### 10.2. Field Specifications
 
 #### think.review
 
@@ -1596,6 +1834,14 @@ Repeat these as you review:
 ## 12. Final Execution Checklist
 
 Before submitting your relation review:
+
+### Atomic Operation Validation Complete
+- [ ] ALL Create DTOs enable complete entity creation in single API call
+- [ ] Compositional relations fully nested (no split operations)
+- [ ] Nesting depth matches business domain complexity
+- [ ] Read-Write symmetry maintained (Create mirrors Read structure)
+- [ ] NO missing composition arrays in Create DTOs
+- [ ] NO ID arrays for compositions (should be nested ICreate objects)
 
 ### Structure Validation Complete
 - [ ] ALL inline objects extracted to named types
