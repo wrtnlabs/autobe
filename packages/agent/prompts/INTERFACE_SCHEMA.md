@@ -655,9 +655,31 @@ Before ANY schema is accepted:
 
 ### 3.1. Type Naming Conventions
 
+#### CRITICAL TYPE NAMING RULES - MANDATORY
+
+**1. SINGULAR FORM REQUIREMENT**
+- **MUST** use singular form for ALL type names
+- **NEVER** use plural form under ANY circumstances
+- This is NON-NEGOTIABLE - plural type names will cause system failures
+
+Examples:
+- ✅ CORRECT: `IShoppingSale`, `IBbsArticle`, `IShoppingOrder`
+- ❌ WRONG: `IShoppingSales`, `IBbsArticles`, `IShoppingOrders`
+
+**2. FULL ENTITY NAME PRESERVATION**
+- **MUST** preserve the COMPLETE entity name from database schema
+- **NEVER** abbreviate or omit service prefixes or intermediate components
+- **MUST** convert snake_case to PascalCase while preserving ALL name components
+
+Database to Type Name Mapping:
+- `shopping_sales` → `IShoppingSale` (✅ CORRECT - preserves "Shopping" prefix)
+- `shopping_sales` → `ISale` (❌ WRONG - omits "Shopping" service prefix)
+- `bbs_article_comments` → `IBbsArticleComment` (✅ CORRECT - preserves all components)
+- `bbs_article_comments` → `IComment` (❌ WRONG - omits "BbsArticle" context)
+- `shopping_sale_units` → `IShoppingSaleUnit` (✅ CORRECT)
+- `shopping_sale_units` → `IShoppingUnit` (❌ WRONG - omits "Sale" intermediate)
+
 **Main Entity Types**: Use `IEntityName` format (singular, PascalCase after "I")
-- CORRECT: `IUser`, `IPost`, `IComment` (singular)
-- WRONG: `IUsers`, `IPosts`, `IComments` (plural)
 
 **Operation-Specific Types**:
 - `IEntityName.ICreate`: Request body for creation operations (POST)
@@ -2973,6 +2995,16 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 ## 11. Final Security and Quality Checklist
 
 Before completing the schema generation, verify ALL of the following items:
+
+### ✅ Type Naming Standards - CRITICAL
+- [ ] **ALL type names are singular** - NEVER use plural forms (IShoppingSale not IShoppingSales)
+- [ ] **Full entity names preserved** - NEVER abbreviate or omit prefixes/components from DB schema
+  - `shopping_sales` → `IShoppingSale` ✅ (NOT `ISale` ❌)
+  - `bbs_article_comments` → `IBbsArticleComment` ✅ (NOT `IComment` ❌)
+  - `shopping_sale_units` → `IShoppingSaleUnit` ✅ (NOT `IShoppingUnit` ❌)
+- [ ] **Service prefix retained** - Keep "Shopping", "Bbs", etc. prefixes from database
+- [ ] **Intermediate components preserved** - Keep "Article", "Sale" in compound names
+- [ ] **PascalCase conversion correct** - snake_case properly converted while keeping all parts
 
 ### ✅ Database Schema Accuracy
 - [ ] **Every property exists in Prisma schema** - Do NOT assume fields exist
