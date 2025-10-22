@@ -28,7 +28,7 @@ export interface AutoBeEventBase<Type extends string> {
    * checks.
    *
    * Examples: "analyzeWrite", "prismaSchemas", "interfaceOperation",
-   * "testScenarios"
+   * "testScenario"
    */
   type: Type;
 

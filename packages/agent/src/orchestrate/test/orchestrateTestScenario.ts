@@ -148,7 +148,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
 
   try {
     const { tokenUsage } = await ctx.conversate({
-      source: "testScenarios",
+      source: "testScenario",
       histories: transformTestScenarioHistories({
         state: ctx.state(),
         document: props.document,
@@ -182,7 +182,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       (props.progress.completed += pointer.value.length),
     );
     ctx.dispatch({
-      type: "testScenarios",
+      type: "testScenario",
       id: v7(),
       tokenUsage,
       scenarios: pointer.value

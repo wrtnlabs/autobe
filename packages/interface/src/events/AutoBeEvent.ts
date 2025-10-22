@@ -45,8 +45,8 @@ import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
 import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
-import { AutoBeTestScenariosEvent } from "./AutoBeTestScenariosEvent";
-import { AutoBeTestScenariosReviewEvent } from "./AutoBeTestScenariosReviewEvent";
+import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
+import { AutoBeTestScenarioReviewEvent } from "./AutoBeTestScenarioReviewEvent";
 import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
@@ -119,8 +119,8 @@ export type AutoBeEvent =
   | AutoBePrismaCompleteEvent
   // TEST
   | AutoBeTestStartEvent
-  | AutoBeTestScenariosEvent
-  | AutoBeTestScenariosReviewEvent
+  | AutoBeTestScenarioEvent
+  | AutoBeTestScenarioReviewEvent
   | AutoBeTestWriteEvent
   | AutoBeTestValidateEvent
   | AutoBeTestCorrectEvent
@@ -216,8 +216,8 @@ export namespace AutoBeEvent {
     interfacePrerequisite: AutoBeInterfacePrerequisiteEvent;
     // TEST
     testStart: AutoBeTestStartEvent;
-    testScenarios: AutoBeTestScenariosEvent;
-    testScenariosReview: AutoBeTestScenariosReviewEvent;
+    testScenario: AutoBeTestScenarioEvent;
+    testScenarioReview: AutoBeTestScenarioReviewEvent;
     testWrite: AutoBeTestWriteEvent;
     testValidate: AutoBeTestValidateEvent;
     testCorrect: AutoBeTestCorrectEvent;

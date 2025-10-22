@@ -152,16 +152,16 @@ export class AutoBeListener {
 
       // TEST
       testStart: async (event) => {
-        this.dict_.delete("testScenarios");
+        this.dict_.delete("testScenario");
         this.dict_.delete("testWrite");
         this.dict_.delete("testValidate");
         this.dict_.delete("testCorrect");
         this.insert(event);
       },
-      testScenarios: async (event) => {
+      testScenario: async (event) => {
         this.accumulate(event);
       },
-      testScenariosReview: async (event) => {
+      testScenarioReview: async (event) => {
         this.accumulate(event);
       },
       testWrite: async (event) => {
@@ -174,7 +174,7 @@ export class AutoBeListener {
         this.accumulate(event);
       },
       testComplete: async (event) => {
-        this.dict_.delete("testScenarios");
+        this.dict_.delete("testScenario");
         this.dict_.delete("testWrite");
         this.dict_.delete("testValidate");
         this.dict_.delete("testCorrect");

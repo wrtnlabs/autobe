@@ -22,8 +22,8 @@ import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizati
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
 import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
-import { AutoBeTestScenariosEvent } from "./AutoBeTestScenariosEvent";
-import { AutoBeTestScenariosReviewEvent } from "./AutoBeTestScenariosReviewEvent";
+import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
+import { AutoBeTestScenarioReviewEvent } from "./AutoBeTestScenarioReviewEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
 
 /**
@@ -81,8 +81,8 @@ export type AutoBeEventSource =
   | AutoBeInterfaceComplementEvent["type"]
   | AutoBeInterfacePrerequisiteEvent["type"]
   // test
-  | AutoBeTestScenariosEvent["type"]
-  | AutoBeTestScenariosReviewEvent["type"]
+  | AutoBeTestScenarioEvent["type"]
+  | AutoBeTestScenarioReviewEvent["type"]
   | AutoBeTestWriteEvent["type"]
   | AutoBeTestCorrectEvent["type"]
   // realize

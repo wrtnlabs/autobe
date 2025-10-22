@@ -105,12 +105,12 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Prerequisites",
           description: "Defining API prerequisites",
         };
-      case "testScenarios":
+      case "testScenario":
         return {
           title: "Test Scenarios",
           description: "Planning E2E test scenarios",
         };
-      case "testScenariosReview":
+      case "testScenarioReview":
         return {
           title: "Test Scenarios Review",
           description: "Reviewing E2E test scenarios",

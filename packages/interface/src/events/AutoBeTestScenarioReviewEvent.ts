@@ -18,8 +18,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * @author Michael
  */
-export interface AutoBeTestScenariosReviewEvent
-  extends AutoBeEventBase<"testScenariosReview">,
+export interface AutoBeTestScenarioReviewEvent
+  extends AutoBeEventBase<"testScenarioReview">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {
   /**

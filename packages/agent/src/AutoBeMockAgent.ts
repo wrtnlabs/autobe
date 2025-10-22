@@ -198,8 +198,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   interfacePrerequisite: 400,
   // TEST
   testStart: 1_000,
-  testScenarios: 40,
-  testScenariosReview: 40,
+  testScenario: 40,
+  testScenarioReview: 40,
   testWrite: 40,
   testValidate: 100,
   testCorrect: 100,
