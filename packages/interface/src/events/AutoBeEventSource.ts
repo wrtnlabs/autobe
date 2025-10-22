@@ -3,7 +3,7 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
-import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointEvent";
+import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
 import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
 import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
@@ -70,7 +70,7 @@ export type AutoBeEventSource =
   // interface
   | AutoBeInterfaceAuthorizationEvent["type"]
   | AutoBeInterfaceGroupEvent["type"]
-  | AutoBeInterfaceEndpointsEvent["type"]
+  | AutoBeInterfaceEndpointEvent["type"]
   | AutoBeInterfaceEndpointReviewEvent["type"]
   | AutoBeInterfaceOperationEvent["type"]
   | AutoBeInterfaceOperationReviewEvent["type"]

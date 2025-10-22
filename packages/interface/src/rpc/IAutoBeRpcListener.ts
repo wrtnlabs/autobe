@@ -7,7 +7,7 @@ import {
   AutoBeAssistantMessageEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
-  AutoBeInterfaceEndpointsEvent,
+  AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceOperationEvent,
   AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceSchemaContentReviewEvent,
@@ -277,7 +277,7 @@ export interface IAutoBeRpcListener {
    * client applications to show the API surface area scope and architectural
    * foundation being built.
    */
-  interfaceEndpoint?(event: AutoBeInterfaceEndpointsEvent): Promise<void>;
+  interfaceEndpoint?(event: AutoBeInterfaceEndpointEvent): Promise<void>;
 
   /**
    * Optional handler for API endpoint review events.

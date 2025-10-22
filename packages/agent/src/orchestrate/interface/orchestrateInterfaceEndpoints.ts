@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeInterfaceEndpointsEvent,
+  AutoBeInterfaceEndpointEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -92,7 +92,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
 
-  const event: AutoBeInterfaceEndpointsEvent = {
+  const event: AutoBeInterfaceEndpointEvent = {
     type: "interfaceEndpoint",
     id: v7(),
     endpoints: new HashSet(
