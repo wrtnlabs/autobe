@@ -176,7 +176,7 @@ export namespace AutoBeHackathonSessionReporter {
 
           Name | Kind | Description
           -----|------|--------------
-          ${h.roles.map((r) => `${r.name} | ${r.kind} | ${r.description} `).join("\n")}
+          ${h.actors.map((r) => `${r.name} | ${r.kind} | ${r.description} `).join("\n")}
 
           ### Documents
 

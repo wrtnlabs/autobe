@@ -24,23 +24,23 @@ export async function orchestrateInterfaceAuthorizations<
   ctx: AutoBeContext<Model>,
   instruction: string,
 ): Promise<AutoBeInterfaceAuthorization[]> {
-  const roles: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
-    total: roles.length,
+    total: actors.length,
     completed: 0,
   };
   const authorizations: AutoBeInterfaceAuthorization[] =
     await executeCachedBatch(
-      roles.map((role) => async (promptCacheKey) => {
+      actors.map((a) => async (promptCacheKey) => {
         const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
-          actor: role,
+          actor: a,
           progress,
           promptCacheKey,
           instruction,
         });
         ctx.dispatch(event);
         return {
-          name: role.name,
+          name: a.name,
           operations: event.operations,
         };
       }),

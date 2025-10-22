@@ -36,9 +36,9 @@ export async function orchestrateRealizeAuthorization<
     created_at: new Date().toISOString(),
   });
 
-  const roles: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
-    total: roles.length,
+    total: actors.length,
     completed: 0,
   };
   const templateFiles = await (
@@ -47,11 +47,11 @@ export async function orchestrateRealizeAuthorization<
     dbms: "sqlite",
   });
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
-    roles.map(
-      (role) => (promptCacheKey) =>
+    actors.map(
+      (a) => (promptCacheKey) =>
         process(
           ctx,
-          role,
+          a,
           InternalFileSystem.DEFAULT.map((el) => ({
             [el]: templateFiles[el],
           })).reduce((acc, cur) => Object.assign(acc, cur), {}),
