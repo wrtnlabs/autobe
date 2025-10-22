@@ -29,7 +29,7 @@ export const test_compiler_realize_controller = async (
     ],
     authorizations: [
       {
-        role: {
+        actor: {
           name: "customer",
           description: "Authorized customer role",
           kind: "member",
@@ -109,7 +109,7 @@ const document: AutoBeOpenApi.IDocument = {
         typeName: "IShoppingSale",
         description: "Created shopping sale.",
       },
-      authorizationRole: "customer",
+      authorizationActor: "customer",
     },
   ],
   components: {

@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
+import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
@@ -25,7 +25,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  *
  * - Supports multi-document analysis scenarios (minimum 1 document required)
  * - Maintains context between documents through the step tracking
- * - Defines user roles that will be used for authentication/authorization
+ * - Defines user actors that will be used for authentication/authorization
  * - Uses prefix for consistent naming and organization of generated documents
  *
  * Typical usage flow:
@@ -63,16 +63,16 @@ export interface AutoBeAnalyzeScenarioEvent
   prefix: string;
 
   /**
-   * Array of user roles that will interact with the backend system.
+   * Array of user actors that will interact with the backend system.
    *
-   * These roles define the different types of authenticated users who will
+   * These actors define the different types of authenticated users who will
    * access the system, each with their own permissions and capabilities. The
-   * roles specified here directly influence:
+   * actors specified here directly influence:
    *
-   * - Prisma schema generation (user models and role relationships)
+   * - Prisma schema generation (user models and actor relationships)
    * - API endpoint authorization decorators
    * - Test scenario generation for different permission levels
-   * - Business logic for role-based access control
+   * - Business logic for actor-based access control
    *
    * Common patterns:
    *
@@ -81,11 +81,11 @@ export interface AutoBeAnalyzeScenarioEvent
    * - Enterprise: ["employee", "manager", "hr", "admin", "auditor"]
    * - Educational: ["student", "teacher", "parent", "admin"]
    *
-   * Each role should have a clear, distinct purpose and non-overlapping
+   * Each actor should have a clear, distinct purpose and non-overlapping
    * responsibilities to ensure clean authorization logic in the generated
    * code.
    */
-  roles: AutoBeAnalyzeRole[];
+  actors: AutoBeAnalyzeActor[];
 
   /**
    * Language for document content. When specified by the user, this takes

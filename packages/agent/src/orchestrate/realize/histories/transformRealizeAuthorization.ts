@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeAnalyzeRole } from "@autobe/interface";
+import { AutoBeAnalyzeActor } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -11,7 +11,7 @@ export const transformRealizeAuthorizationHistories = <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  role: AutoBeAnalyzeRole,
+  actor: AutoBeAnalyzeActor,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -27,9 +27,10 @@ export const transformRealizeAuthorizationHistories = <
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: StringUtil.trim`
-        ## Role
+        ## Actor
+        
         \`\`\`json
-        ${JSON.stringify(role)}
+        ${JSON.stringify(actor)}
         \`\`\`
 
         ## Prisma Schema
@@ -42,9 +43,9 @@ export const transformRealizeAuthorizationHistories = <
 
         Please follow this naming convention for the authorization components:
 
-        - Provider Name: ${role.name}Authorize (e.g. ${role.name}Authorize)
-        - Decorator Name: ${role.name.charAt(0).toUpperCase() + role.name.slice(1)}Auth (e.g. ${role.name.charAt(0).toUpperCase() + role.name.slice(1)}Auth)
-        - Payload Name: ${role.name.charAt(0).toUpperCase() + role.name.slice(1)}Payload (e.g. ${role.name.charAt(0).toUpperCase() + role.name.slice(1)}Payload)
+        - Provider Name: ${actor.name}Authorize (e.g. ${actor.name}Authorize)
+        - Decorator Name: ${actor.name.charAt(0).toUpperCase() + actor.name.slice(1)}Auth (e.g. ${actor.name.charAt(0).toUpperCase() + actor.name.slice(1)}Auth)
+        - Payload Name: ${actor.name.charAt(0).toUpperCase() + actor.name.slice(1)}Payload (e.g. ${actor.name.charAt(0).toUpperCase() + actor.name.slice(1)}Payload)
       `,
     },
   ];

@@ -57,7 +57,7 @@ export const transformRealizeAuthorizationCorrectHistories = <
             name: auth.payload.name,
             content: auth.payload.content,
           },
-        } satisfies Omit<AutoBeRealizeAuthorization, "role">)}
+        } satisfies Omit<AutoBeRealizeAuthorization, "actor">)}
         \`\`\`
 
         ## Prisma Schema
@@ -86,9 +86,9 @@ export const transformRealizeAuthorizationCorrectHistories = <
 
         Please follow this naming convention for the authorization components:
 
-        - Provider Name: ${auth.role.name.toLowerCase()}Authorize (e.g. ${auth.role.name.toLowerCase()}Authorize)
-        - Decorator Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth)
-        - Payload Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload)
+        - Provider Name: ${auth.actor.name.toLowerCase()}Authorize (e.g. ${auth.actor.name.toLowerCase()}Authorize)
+        - Decorator Name: ${auth.actor.name.charAt(0).toUpperCase() + auth.actor.name.slice(1).toLowerCase()}Auth (e.g. ${auth.actor.name.charAt(0).toUpperCase() + auth.actor.name.slice(1).toLowerCase()}Auth)
+        - Payload Name: ${auth.actor.name.charAt(0).toUpperCase() + auth.actor.name.slice(1).toLowerCase()}Payload (e.g. ${auth.actor.name.charAt(0).toUpperCase() + auth.actor.name.slice(1).toLowerCase()}Payload)
       `,
     },
   ];

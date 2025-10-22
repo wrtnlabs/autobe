@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeRole,
+  AutoBeAnalyzeActor,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeAuthorizationWriteEvent,
@@ -36,7 +36,7 @@ export async function orchestrateRealizeAuthorization<
     created_at: new Date().toISOString(),
   });
 
-  const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
+  const roles: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
     total: roles.length,
     completed: 0,
@@ -71,7 +71,7 @@ export async function orchestrateRealizeAuthorization<
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  role: AutoBeAnalyzeRole,
+  actor: AutoBeAnalyzeActor,
   templateFiles: Record<string, string>,
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
@@ -82,7 +82,7 @@ async function process<Model extends ILlmSchema.Model>(
     };
   const { tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationWrite",
-    histories: transformRealizeAuthorizationHistories(ctx, role),
+    histories: transformRealizeAuthorizationHistories(ctx, actor),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -97,7 +97,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const authorization: AutoBeRealizeAuthorization = {
-    role,
+    actor: actor,
     decorator: {
       location: AuthorizationFileSystem.decoratorPath(
         pointer.value.decorator.name,

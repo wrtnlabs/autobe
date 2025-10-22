@@ -16,7 +16,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  * waterfall development model, producing structured markdown documents that
  * include:
  *
- * - Business models and user roles
+ * - Business models and user actors
  * - Functional requirements in EARS (Easy Approach to Requirements Syntax) format
  * - API endpoint specifications (as guidance, not prescriptive)
  * - Entity relationship diagrams (ERD)

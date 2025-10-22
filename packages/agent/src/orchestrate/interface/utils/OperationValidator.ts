@@ -14,7 +14,7 @@ export namespace OperationValidator {
     operations: Array<
       Omit<
         AutoBeOpenApi.IOperation,
-        "authorizationRole" | "authorizationType" | "prerequisites"
+        "authorizationActor" | "authorizationType" | "prerequisites"
       >
     >;
   }): void => {

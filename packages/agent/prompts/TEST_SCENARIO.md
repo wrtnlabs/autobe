@@ -22,7 +22,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **REQUIRED ACTIONS:**
 - ✅ Execute the function immediately
 - ✅ Generate test scenarios directly through the function call
-- ✅ Include proper authentication setup based on authorizationRole
+- ✅ Include proper authentication setup based on authorizationActor
 - ✅ Follow realistic user workflows with correct dependencies
 
 **ABSOLUTE PROHIBITIONS:**
@@ -45,19 +45,19 @@ Generate test scenarios that transform simple endpoint definitions into comprehe
 
 ### 2.1. Critical Authorization Verification Rule
 
-**🔴 CRITICAL PRINCIPLE**: You MUST check the authorizationRole for EVERY operation involved in your test scenario.
+**🔴 CRITICAL PRINCIPLE**: You MUST check the authorizationActor for EVERY operation involved in your test scenario.
 
 **MANDATORY VERIFICATION PROCESS**:
-1. **Target Operation**: Look up its authorizationRole in "API Operations"
-2. **Every Prerequisite**: Look up EACH prerequisite's authorizationRole in "API Operations"
-3. **Additional Dependencies**: Check authorizationRole for any operations you add
+1. **Target Operation**: Look up its authorizationActor in "API Operations"
+2. **Every Prerequisite**: Look up EACH prerequisite's authorizationActor in "API Operations"
+3. **Additional Dependencies**: Check authorizationActor for any operations you add
 
 **Authorization Rules**:
-- `authorizationRole: null` → NO authentication needed for this operation
-- `authorizationRole: "roleX"` → MUST add authentication for roleX before this operation
+- `authorizationActor: null` → NO authentication needed for this operation
+- `authorizationActor: "roleX"` → MUST add authentication for roleX before this operation
 - Authentication must PRECEDE any operation that requires it
 
-**⚠️ WARNING**: The prerequisites array only provides endpoints. You MUST look up each endpoint in "API Operations" to find its authorizationRole. Never assume an operation is public without verification.
+**⚠️ WARNING**: The prerequisites array only provides endpoints. You MUST look up each endpoint in "API Operations" to find its authorizationActor. Never assume an operation is public without verification.
 
 ### 2.2. Test Scenario Design Philosophy
 
@@ -197,7 +197,7 @@ You will receive the following materials to guide your scenario generation:
 
 ### 3.2. API Operations
 **Purpose**: Complete catalog of available API endpoints
-- **Critical Field**: `authorizationRole` for each operation
+- **Critical Field**: `authorizationActor` for each operation
 - Use to verify authentication requirements
 - Reference for available endpoints
 - Source of truth for operation details
@@ -209,7 +209,7 @@ You will receive the following materials to guide your scenario generation:
     {
       "method": "post",
       "path": "/articles",
-      "authorizationRole": "member",  // ← MUST CHECK THIS
+      "authorizationActor": "member",  // ← MUST CHECK THIS
       "name": "createArticle",
       // ... other fields
     }
@@ -228,14 +228,14 @@ You will receive the following materials to guide your scenario generation:
 {
   "method": "put",
   "path": "/articles/{id}/comments/{cid}",
-  "authorizationRole": "member",
+  "authorizationActor": "member",
   "prerequisites": [  // ← Pre-calculated dependencies
     {
       "endpoint": { "method": "post", "path": "/articles" },
       "purpose": "Create article to hold comments"
     }
   ],
-  "authorizationRoles": [  // ← Available auth operations
+  "authorizationActors": [  // ← Available auth operations
     {
       "name": "member",
       "join": { "method": "post", "path": "/auth/member/join" },
@@ -307,12 +307,12 @@ You will receive the following materials to guide your scenario generation:
 
 1. **Extract target operation details**:
    - Find in "Included in Test Plan"
-   - Note its authorizationRole
+   - Note its authorizationActor
    - Extract prerequisites array
 
-2. **Look up EACH operation's authorizationRole**:
+2. **Look up EACH operation's authorizationActor**:
 ```
-Operation                    | authorizationRole | Auth Needed?
+Operation                    | authorizationActor | Auth Needed?
 ---------------------------|-------------------|-------------
 PUT /articles/{id}/comments/{cid} | "member"    | Yes
 POST /articles             | "member"          | Yes  
@@ -320,7 +320,7 @@ POST /articles/{id}/comments | "member"        | Yes
 ```
 
 3. **Identify unique roles needing authentication**:
-   - List all non-null authorizationRoles
+   - List all non-null authorizationActors
    - These roles MUST have authentication added
 
 ### 4.3. Step 3: Build Dependencies with Authentication
@@ -381,7 +381,7 @@ dependencies = [
 ## 5. Common Anti-Patterns and Solutions
 
 ### 5.1. ❌ ANTI-PATTERN: Missing Authentication Check
-**Problem**: Not checking prerequisite authorizationRoles
+**Problem**: Not checking prerequisite authorizationActors
 ```json
 // Wrong - Didn't check if POST /resources needs auth
 {
@@ -391,7 +391,7 @@ dependencies = [
 }
 ```
 
-**✅ SOLUTION**: Always check authorizationRole
+**✅ SOLUTION**: Always check authorizationActor
 ```json
 // Correct - Checked and added required auth
 {
@@ -471,7 +471,7 @@ dependencies = [
 ### 6.1. Should I Add Authentication?
 
 Ask for EACH operation (target + prerequisites):
-1. **What is the authorizationRole?**
+1. **What is the authorizationActor?**
    - null → No auth needed for this operation
    - "roleX" → Must add auth for roleX
 
@@ -493,7 +493,7 @@ Ask for each prerequisite:
    - Testing read? → Need create first
 
 2. **Does it need authentication?**
-   - Check its authorizationRole
+   - Check its authorizationActor
    - Add auth if needed
 
 3. **Is it already in dependencies?**
@@ -571,7 +571,7 @@ export namespace IAutoBeTestScenarioApplication {
 {
   "method": "get",
   "path": "/banners/{id}",
-  "authorizationRole": null,  // Public
+  "authorizationActor": null,  // Public
   "prerequisites": [
     {
       "endpoint": { "method": "post", "path": "/communities" },
@@ -585,7 +585,7 @@ export namespace IAutoBeTestScenarioApplication {
 }
 ```
 
-**Step 1**: Check each authorizationRole
+**Step 1**: Check each authorizationActor
 - GET /banners/{id}: null (public)
 - POST /communities: "member" (needs auth)
 - POST /communities/{id}/banners: "member" (needs auth)
@@ -626,7 +626,7 @@ export namespace IAutoBeTestScenarioApplication {
 {
   "method": "patch",
   "path": "/orders/{id}/status",
-  "authorizationRole": "staff",
+  "authorizationActor": "staff",
   "prerequisites": [
     {
       "endpoint": { "method": "post", "path": "/products" },
@@ -686,8 +686,8 @@ export namespace IAutoBeTestScenarioApplication {
 - [ ] ✅ Identified special cases (auth operations)
 
 ### 9.2. Authorization & User Context Checklist
-- [ ] ✅ Checked target operation authorizationRole
-- [ ] ✅ Checked EVERY prerequisite authorizationRole
+- [ ] ✅ Checked target operation authorizationActor
+- [ ] ✅ Checked EVERY prerequisite authorizationActor
 - [ ] ✅ Listed all unique roles needing authentication
 - [ ] ✅ Chose user context type: new (join) or existing (login)
 - [ ] ✅ Verified NO mixing of join and login in same scenario
@@ -713,7 +713,7 @@ export namespace IAutoBeTestScenarioApplication {
 🚨 **MUST use function calling** - Never provide plain text responses
 
 📋 **Key Success Factors**:
-1. **ALWAYS** check authorizationRole for EVERY operation
+1. **ALWAYS** check authorizationActor for EVERY operation
 2. **ALWAYS** use join for new user contexts (99% of cases)
 3. **NEVER** mix join and login in the same scenario
 4. **NEVER** use login unless testing login operation itself
@@ -728,7 +728,7 @@ export namespace IAutoBeTestScenarioApplication {
 
 ### For Regular Operations:
 ```
-1. Check authorizationRoles (target + prerequisites)
+1. Check authorizationActors (target + prerequisites)
 2. List required auth roles
 3. Use NEW user context (join) - This is 99% of cases!
 4. Build dependencies: join auth → prerequisites

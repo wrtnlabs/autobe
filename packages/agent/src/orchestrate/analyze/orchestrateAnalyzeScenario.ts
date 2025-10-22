@@ -35,8 +35,8 @@ export const orchestrateAnalyzeScenario = async <
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
     message: StringUtil.trim`
-      Design a complete list of documents and user roles for this project.
-      Define user roles that can authenticate via API and create appropriate documentation files.
+      Design a complete list of documents and user actors for this project.
+      Define user actors that can authenticate via API and create appropriate documentation files.
       You must respect the number of documents specified by the user.
       Note that the user's locale is in ${ctx.locale}.
     `,
@@ -57,7 +57,7 @@ export const orchestrateAnalyzeScenario = async <
     id: v7(),
     prefix: pointer.value.prefix,
     language: pointer.value.language,
-    roles: pointer.value.roles,
+    actors: pointer.value.actors,
     files: pointer.value.files,
     tokenUsage,
     step: (ctx.state().analyze?.step ?? -1) + 1,

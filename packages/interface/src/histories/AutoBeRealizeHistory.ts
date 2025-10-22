@@ -26,14 +26,14 @@ import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated authentication and authorization decorators for role-based access
+   * Generated authentication and authorization decorators for actor-based access
    * control.
    *
    * Contains the complete set of NestJS parameter decorators that provide
    * automatic authentication and authorization functionality for different user
-   * roles. Each decorator includes its implementation code, associated provider
+   * actors. Each decorator includes its implementation code, associated provider
    * functions, and payload type definitions that enable seamless integration of
-   * role-based security into Controller methods.
+   * actor-based security into Controller methods.
    *
    * These decorators eliminate the need for manual authentication logic in
    * Controllers by automatically validating JWT tokens, checking user roles,

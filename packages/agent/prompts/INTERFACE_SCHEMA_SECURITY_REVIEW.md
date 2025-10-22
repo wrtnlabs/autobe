@@ -49,12 +49,12 @@ You will receive the following materials to guide your security review:
 ### API Operations (Filtered for Target Schemas)
 - **FILTERED**: Only operations that **directly reference** the schemas under review as `requestBody.typeName` or `responseBody.typeName`
 - These are the specific operations where the reviewed schemas will be used
-- **Actor Information**: For operations with `authorizationRole`, you can identify which user type (actor) will execute this operation
-  - The `authorizationRole` field indicates the authenticated user type (e.g., "customer", "seller", "admin", "member")
-  - When `authorizationRole` is present, this operation requires authentication and the actor's identity is available from the JWT token
+- **Actor Information**: For operations with `authorizationActor`, you can identify which user type (actor) will execute this operation
+  - The `authorizationActor` field indicates the authenticated user type (e.g., "customer", "seller", "admin", "member")
+  - When `authorizationActor` is present, this operation requires authentication and the actor's identity is available from the JWT token
   - **SECURITY CRITICAL**: Actor identity fields (like `customer_id`, `seller_id`, `bbs_member_id`) MUST be DELETED from request body schemas when the actor is the current authenticated user
   - The backend automatically injects the authenticated actor's ID from the JWT token - clients CANNOT provide it
-  - Example: For `POST /articles` with `authorizationRole: "member"` using schema `IBbsArticle.ICreate`, you MUST DELETE `bbs_member_id` from the schema
+  - Example: For `POST /articles` with `authorizationActor: "member"` using schema `IBbsArticle.ICreate`, you MUST DELETE `bbs_member_id` from the schema
 - Authentication requirements for these specific operations
 - Operation security patterns (public, authenticated, role-specific)
 
@@ -301,26 +301,26 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 **THE MOST CRITICAL SECURITY VIOLATION**: Request DTOs accepting authentication context.
 
-#### 5.1.1. Using operation.authorizationRole to Detect Actor Fields
+#### 5.1.1. Using operation.authorizationActor to Detect Actor Fields
 
-**MANDATORY FIRST STEP**: Before reviewing any request body schema, you MUST check the `operation.authorizationRole` field of operations using that schema.
+**MANDATORY FIRST STEP**: Before reviewing any request body schema, you MUST check the `operation.authorizationActor` field of operations using that schema.
 
 **Detection Algorithm**:
 
 1. **For each request body schema** you're reviewing (e.g., `IBbsArticle.ICreate`):
    - Find all operations where `operation.requestBody.typeName` matches this schema
-   - Check if any of these operations have `operation.authorizationRole` set
+   - Check if any of these operations have `operation.authorizationActor` set
 
-2. **If `operation.authorizationRole` is present** (e.g., "member", "seller", "customer"):
+2. **If `operation.authorizationActor` is present** (e.g., "member", "seller", "customer"):
    - This role identifies the **authenticated actor** performing the operation
    - The backend will automatically inject the actor's identity from the JWT token
    - You MUST identify and DELETE all fields representing this actor from the request schema
 
 3. **Construct the actor ID field pattern**:
-   - `authorizationRole: "member"` → Fields like `*_member_id`, `bbs_member_id` represent the actor
-   - `authorizationRole: "seller"` → Fields like `*_seller_id`, `shopping_seller_id` represent the actor
-   - `authorizationRole: "customer"` → Fields like `*_customer_id`, `shopping_customer_id` represent the actor
-   - `authorizationRole: "admin"` → Fields like `*_admin_id` represent the actor
+   - `authorizationActor: "member"` → Fields like `*_member_id`, `bbs_member_id` represent the actor
+   - `authorizationActor: "seller"` → Fields like `*_seller_id`, `shopping_seller_id` represent the actor
+   - `authorizationActor: "customer"` → Fields like `*_customer_id`, `shopping_customer_id` represent the actor
+   - `authorizationActor: "admin"` → Fields like `*_admin_id` represent the actor
 
 4. **DELETE these actor fields** from the request body schema immediately
 
@@ -331,12 +331,12 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 // Step 2: Find operation using this schema
 {
   path: "POST /articles",
-  authorizationRole: "member",  // ← CRITICAL: Member is the actor!
+  authorizationActor: "member",  // ← CRITICAL: Member is the actor!
   requestBody: { typeName: "IBbsArticle.ICreate" }
 }
 
 // Step 3: Identify actor pattern
-// authorizationRole: "member" → *_member_id fields represent current actor
+// authorizationActor: "member" → *_member_id fields represent current actor
 
 // Step 4: Review the schema
 {
@@ -371,7 +371,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 // Operation using schema
 {
   path: "POST /sales",
-  authorizationRole: "seller",  // ← Seller is the actor!
+  authorizationActor: "seller",  // ← Seller is the actor!
   requestBody: { typeName: "IShoppingSale.ICreate" }
 }
 
@@ -388,7 +388,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 }
 ```
 
-**When authorizationRole is null**:
+**When authorizationActor is null**:
 - No authentication required (public endpoint)
 - No actor ID injection occurs
 - Still apply other security rules (system fields, passwords, etc.)
@@ -398,7 +398,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 **Automatic Deletion Required**:
 ```typescript
-// If you see ANY of these in request DTOs with authorizationRole="member":
+// If you see ANY of these in request DTOs with authorizationActor="member":
 "bbs_member_id"         // 🔴 DELETE IMMEDIATELY
 "bbs_member_session_id" // 🔴 DELETE IMMEDIATELY
 "bbs_*_author_id"       // 🔴 DELETE IMMEDIATELY
@@ -426,16 +426,16 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 **Security Impact**: Session IDs are server-managed tokens that track authenticated sessions. Client control = session hijacking.
 
-#### 5.1.4. Actor Pattern (Using operation.authorizationRole)
+#### 5.1.4. Actor Pattern (Using operation.authorizationActor)
 
-**Detection Rule**: Use `operation.authorizationRole` to identify actor fields
+**Detection Rule**: Use `operation.authorizationActor` to identify actor fields
 
 ```typescript
-// Check operation.authorizationRole first!
-// authorizationRole: "member" → DELETE *_member_id fields
-// authorizationRole: "seller" → DELETE *_seller_id fields
-// authorizationRole: "customer" → DELETE *_customer_id fields
-// authorizationRole: "employee" → DELETE *_employee_id fields
+// Check operation.authorizationActor first!
+// authorizationActor: "member" → DELETE *_member_id fields
+// authorizationActor: "seller" → DELETE *_seller_id fields
+// authorizationActor: "customer" → DELETE *_customer_id fields
+// authorizationActor: "employee" → DELETE *_employee_id fields
 
 // Also always DELETE:
 "author_id"      // The author is the current user
@@ -446,14 +446,14 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 **How to Identify "Current User" vs "Target User"**:
 ```typescript
 // ❌ CURRENT USER (DELETE):
-// Operation: { authorizationRole: "member" }
+// Operation: { authorizationActor: "member" }
 interface IBbsArticle.ICreate {
   author_id: string;  // WHO is creating = current member
   bbs_member_id: string;  // Current actor → DELETE
 }
 
 // ✅ TARGET USER (ALLOWED):
-// Operation: { authorizationRole: "admin" }
+// Operation: { authorizationActor: "admin" }
 interface IAdminBanUser {
   target_user_id: string;  // WHO to ban = different user (OK!)
 }

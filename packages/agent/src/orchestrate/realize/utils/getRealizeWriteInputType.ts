@@ -36,9 +36,9 @@ export function getRealizeWriteInputType(
   const functionParameterFields: string[] = [];
 
   // Add authentication field (user/admin/member) if endpoint requires auth
-  const hasAuthentication = authorization && operation.authorizationRole;
+  const hasAuthentication = authorization && operation.authorizationActor;
   if (hasAuthentication) {
-    const authFieldName = operation.authorizationRole;
+    const authFieldName = operation.authorizationActor;
     const authFieldType = authorization.payload.name;
     functionParameterFields.push(`${authFieldName}: ${authFieldType};`);
   }

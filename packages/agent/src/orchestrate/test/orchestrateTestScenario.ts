@@ -24,7 +24,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
-import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestScenarioAuthorizationRole";
+import { IAutoBeTestScenarioAuthorizationActor } from "./structures/IAutoBeTestScenarioAuthorizationActor";
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -257,16 +257,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
     });
 
     // Authentication Correction
-    const entireRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
+    const entireRoles: Map<string, IAutoBeTestScenarioAuthorizationActor> =
       new Map();
     for (const authorization of props.authorizations) {
       for (const op of authorization.operations) {
         if (op.authorizationType === null) continue;
-        const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
+        const value: IAutoBeTestScenarioAuthorizationActor = MapUtil.take(
           entireRoles,
-          authorization.role,
+          authorization.name,
           () => ({
-            name: authorization.role,
+            name: authorization.name,
             join: null,
             login: null,
           }),
@@ -283,14 +283,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
         group.endpoint,
       );
       group.scenarios.forEach((scenario) => {
-        // gathere authorization roles
-        const localRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
+        // gather authorization actors
+        const localRoles: Map<string, IAutoBeTestScenarioAuthorizationActor> =
           new Map();
         const add = (operation: AutoBeOpenApi.IOperation) => {
-          const role: string | null = operation.authorizationRole;
-          if (role === null) return;
-          MapUtil.take(localRoles, role, () => ({
-            name: role,
+          const actor: string | null = operation.authorizationActor;
+          if (actor === null) return;
+          MapUtil.take(localRoles, actor, () => ({
+            name: actor,
             join: null,
             login: null,
           }));
@@ -304,14 +304,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
           add(depOperation);
         });
 
-        // Single role case - add join operation
+        // Single actor case - add join operation
         if (localRoles.size === 1) {
-          const role: IAutoBeTestScenarioAuthorizationRole = localRoles
+          const actor: IAutoBeTestScenarioAuthorizationActor = localRoles
             .values()
             .next().value!;
-          if (role.join === null) {
+          if (actor.join === null) {
             const joinOperation: AutoBeOpenApi.IOperation | null =
-              entireRoles.get(role.name)?.join ?? null;
+              entireRoles.get(actor.name)?.join ?? null;
             if (joinOperation === null) throw new Error("Unreachable code");
 
             scenario.dependencies.push({
@@ -320,16 +320,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
                 path: joinOperation.path,
               },
               purpose: StringUtil.trim`
-                Essential authentication prerequisite: 
-                This join operation (${joinOperation.method} ${joinOperation.path}) must be executed before any operations requiring '${role.name}' role authorization. 
-                It establishes the necessary user account and authentication context for the '${role.name}' role, enabling subsequent API calls that depend on this specific authorization level. 
+                Essential authentication prerequisite:
+                This join operation (${joinOperation.method} ${joinOperation.path}) must be executed before any operations requiring '${actor.name}' actor authorization.
+                It establishes the necessary user account and authentication context for the '${actor.name}' actor, enabling subsequent API calls that depend on this specific authorization level.
                 Without this join operation, the main scenario endpoint and its dependencies will fail due to insufficient authentication credentials.
               `,
             });
           }
         }
 
-        // Multiple roles case - add both join and login operations
+        // Multiple actors case - add both join and login operations
         if (localRoles.size > 1) {
           for (const role of localRoles.values()) {
             if (role.join === null) {
@@ -343,11 +343,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
                   method: joinOperation.method,
                 },
                 purpose: StringUtil.trim`
-                  Multi-actor authentication setup: 
-                  This join operation (${joinOperation.method} ${joinOperation.path}) is required to establish a '${role.name}' role user account in the system. 
-                  This scenario involves multiple authorization roles, requiring separate user accounts for each role to properly test cross-role interactions and authorization boundaries. 
+                  Multi-actor authentication setup:
+                  This join operation (${joinOperation.method} ${joinOperation.path}) is required to establish a '${role.name}' actor user account in the system.
+                  This scenario involves multiple authorization actors, requiring separate user accounts for each actor to properly test cross-actor interactions and authorization boundaries.
                   The join operation creates the foundational user identity that will be used throughout the test scenario for '${role.name}' specific operations.
-                  This join operation is required for the '${role.name}' role authentication.
+                  This join operation is required for the '${role.name}' actor authentication.
                 `,
               });
             }
@@ -362,11 +362,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
                   method: loginOperation.method,
                 },
                 purpose: StringUtil.trim`
-                  Role switching authentication: 
-                  This login operation (${loginOperation.method} ${loginOperation.path}) enables dynamic user role switching during test execution for the '${role.name}' role. 
-                  In scenarios with multiple actors, the test agent needs to authenticate as different users to simulate real-world multi-user interactions. 
-                  This login operation ensures proper session management and authorization context switching, allowing the test to validate permissions, access controls, and business logic that span across different user roles within a single test scenario.
-                  This login operation may be required for user role swapping between multiple actors.
+                  Actor switching authentication:
+                  This login operation (${loginOperation.method} ${loginOperation.path}) enables dynamic user actor switching during test execution for the '${role.name}' actor.
+                  In scenarios with multiple actors, the test agent needs to authenticate as different users to simulate real-world multi-user interactions.
+                  This login operation ensures proper session management and authorization context switching, allowing the test to validate permissions, access controls, and business logic that span across different user actors within a single test scenario.
+                  This login operation may be required for user actor swapping between multiple actors.
                 `,
               });
             }

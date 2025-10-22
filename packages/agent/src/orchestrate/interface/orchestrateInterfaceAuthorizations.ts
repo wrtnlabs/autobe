@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeRole,
+  AutoBeAnalyzeActor,
   AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -24,7 +24,7 @@ export async function orchestrateInterfaceAuthorizations<
   ctx: AutoBeContext<Model>,
   instruction: string,
 ): Promise<AutoBeInterfaceAuthorization[]> {
-  const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
+  const roles: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
     total: roles.length,
     completed: 0,
@@ -33,14 +33,14 @@ export async function orchestrateInterfaceAuthorizations<
     await executeCachedBatch(
       roles.map((role) => async (promptCacheKey) => {
         const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
-          role,
+          actor: role,
           progress,
           promptCacheKey,
           instruction,
         });
         ctx.dispatch(event);
         return {
-          role: role.name,
+          name: role.name,
           operations: event.operations,
         };
       }),
@@ -53,7 +53,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
-    role: AutoBeAnalyzeRole;
+    actor: AutoBeAnalyzeActor;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -67,11 +67,11 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformInterfaceAuthorizationsHistories({
       state: ctx.state(),
       instruction: props.instruction,
-      role: props.role,
+      actor: props.actor,
     }),
     controller: createController({
       model: ctx.model,
-      role: props.role,
+      actor: props.actor,
       build: (next) => {
         pointer.value = next;
       },
@@ -97,7 +97,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  role: AutoBeAnalyzeRole;
+  actor: AutoBeAnalyzeActor;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -110,7 +110,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     // remove login operation for guest role
-    if (props.role.kind === "guest") {
+    if (props.actor.kind === "guest") {
       result.data.operations = result.data.operations.filter(
         (op) => op.authorizationType !== "login",
       );
@@ -118,9 +118,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     const errors: IValidation.IError[] = [];
     result.data.operations.forEach((op, i) => {
-      // validate authorizationRole
-      if (op.authorizationRole !== null) {
-        op.authorizationRole = props.role.name;
+      // validate authorizationActor
+      if (op.authorizationActor !== null) {
+        op.authorizationActor = props.actor.name;
       }
 
       // validate responseBody.typeName -> must be ~.IAuthorized
@@ -165,7 +165,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         .filter((v) => v !== null),
     );
     for (const type of typia.misc.literals<AuthorizationType>())
-      if (props.role.kind === "guest" && type === "login") continue;
+      if (props.actor.kind === "guest" && type === "login") continue;
       else if (authorizationTypes.has(type) === false)
         errors.push({
           path: "$input.operations[].authorizationType",
@@ -176,10 +176,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
           value: `No authorizationType "${type}" found in any operation`,
           description: StringUtil.trim`
           There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
-          for the "${props.role}" role's authorization activity; "${type}".
+          for the "${props.actor}" role's authorization activity; "${type}".
 
           However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}"
-          value, so that the "${props.role}" cannot perform the authorization ${type} activity.
+          value, so that the "${props.actor}" cannot perform the authorization ${type} activity.
 
           Please make that operation at the next function calling. You have to do it.
         `,

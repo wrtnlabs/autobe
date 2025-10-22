@@ -1291,9 +1291,9 @@ export async function put__public_resources_$resourceId(
 
 > 🔐 **CRITICAL Authentication Rules**:
 > - **NO authentication**: Do not include any authentication field in props
-> - **WITH authentication**: Include the role-specific field (admin, user, member, etc.) with the corresponding Payload type
+> - **WITH authentication**: Include the actor-specific field (admin, user, member, etc.) with the corresponding Payload type
 > - Available types: `AdminPayload`, `UserPayload`, `MemberPayload`, `ModeratorPayload`, `GuestPayload`
-> - The field name MUST match the authorization role (e.g., `admin: AdminPayload`, not `payload: AdminPayload`)
+> - The field name MUST match the authorization actor (e.g., `admin: AdminPayload`, not `payload: AdminPayload`)
 
 ---
 

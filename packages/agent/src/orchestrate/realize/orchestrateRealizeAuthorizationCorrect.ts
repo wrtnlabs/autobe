@@ -29,13 +29,13 @@ export async function orchestrateRealizeAuthorizationCorrect<
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const providerContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
-      authorization.role.name,
+      authorization.actor.name,
       authorization.provider.content,
     ),
   );
   const decoratorContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
-      authorization.role.name,
+      authorization.actor.name,
       authorization.decorator.content,
     ),
   );
@@ -116,7 +116,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
         pointer.value.payload.content,
       ),
     },
-    role: authorization.role,
+    actor: authorization.actor,
   };
 
   ctx.dispatch({

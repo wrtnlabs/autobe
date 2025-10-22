@@ -61,7 +61,7 @@ export const validate_agent_realize_authorization_correct = async (
 
   const authorizations: AutoBeRealizeAuthorization[] = [
     {
-      role: {
+      actor: {
         name: "moderator",
         description: "Authorized moderator role",
         kind: "member",
@@ -86,7 +86,7 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: {
+      actor: {
         name: "admin",
         description: "Authorized admin role",
         kind: "admin",
@@ -111,7 +111,7 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: {
+      actor: {
         name: "guest",
         description: "Authorized guest role",
         kind: "guest",
@@ -136,7 +136,7 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: {
+      actor: {
         name: "member",
         description: "Authorized member role",
         kind: "member",

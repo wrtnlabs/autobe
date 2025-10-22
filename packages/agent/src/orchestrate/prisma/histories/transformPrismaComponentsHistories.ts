@@ -65,19 +65,19 @@ export const transformPrismaComponentsHistories = (
         - \`mv_shopping_daily_stats\`
         
         ${
-          state.analyze.roles.length > 0
+          state.analyze.actors.length > 0
             ? StringUtil.trim`
-                ## User Role Handling
-                
-                The Requirement Analysis Report contains the following user roles: ${state.analyze.roles.join(", ")}
-                
-                **Do not normalize** user roles into a single table.
-                Instead, create separate tables for each distinct role mentioned in the requirements.
-                
-                Create separate tables for each role:
-                
-                ${state.analyze.roles
-                  .map((role) => `- ${props.prefix}_${role.name.toLowerCase()}`)
+                ## User Actor Handling
+
+                The Requirement Analysis Report contains the following user actors: ${state.analyze.actors.join(", ")}
+
+                **Do not normalize** user actors into a single table.
+                Instead, create separate tables for each distinct actor mentioned in the requirements.
+
+                Create separate tables for each actor:
+
+                ${state.analyze.actors
+                  .map((actor) => `- ${props.prefix}_${actor.name.toLowerCase()}`)
                   .join("\n")}
               `
             : ""

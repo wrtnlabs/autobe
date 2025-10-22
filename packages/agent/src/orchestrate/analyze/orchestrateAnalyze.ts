@@ -89,7 +89,7 @@ export const orchestrateAnalyze = async <Model extends ILlmSchema.Model>(
   return ctx.dispatch({
     type: "analyzeComplete",
     id: v7(),
-    roles: scenario.roles,
+    actors: scenario.actors,
     prefix: scenario.prefix,
     files: newFiles,
     step,

@@ -34,7 +34,7 @@ export function generateRealizeScenario<Model extends ILlmSchema.Model>(
   authorizations: AutoBeRealizeAuthorization[],
 ): IAutoBeRealizeScenarioResult {
   const authorization = authorizations.find(
-    (el) => el.role.name === operation.authorizationRole,
+    (el) => el.actor.name === operation.authorizationActor,
   );
 
   const testFiles: AutoBeTestFile[] =

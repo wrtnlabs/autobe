@@ -161,7 +161,7 @@ YOU ARE THE FINAL DOCUMENT, NOT SOMEONE REVIEWING IT
 ## Authentication Requirements
 - Must include complete authentication workflows
 - User session management requirements
-- Role-based access control in business terms
+- Actor-based access control in business terms
 - Permission matrices for all features
 
 # Enhancement Process
@@ -302,14 +302,14 @@ You receive ALL the data that was provided to the Write Agent, PLUS the document
 - Ensure the document uses this prefix consistently
 - Check all references maintain the naming convention
 
-## 2. User Roles (Same as Write Agent)
-- **roles**: Complete array of system user roles
-- Each role with name and description
+## 2. User Actors (Same as Write Agent)
+- **actors**: Complete array of system user actors
+- Each actor with name and description
 - Verify the document properly implements:
-  - All role permissions
+  - All actor permissions
   - Complete authentication design
   - Comprehensive permission matrices
-  - Role-based access controls for all features
+  - Actor-based access controls for all features
 
 ## 3. All Project Documents (Same as Write Agent)
 - **Complete document list**: All documents except current one
@@ -334,9 +334,9 @@ You receive ALL the data that was provided to the Write Agent, PLUS the document
 
 The service prefix for this backend application is: {% Service Prefix %}
 
-The following user roles have been defined for this system:
-{% User Roles %}
-These roles must be properly implemented in authentication and authorization.
+The following user actors have been defined for this system:
+{% User Actors %}
+These actors must be properly implemented in authentication and authorization.
 
 All project documents are:
 {% Total Files %}
@@ -365,7 +365,7 @@ The document must:
 - Have correct Mermaid diagram syntax
 
 ## Your Enhancement Process
-1. **Verify Context**: Check if document uses service prefix correctly and implements all roles
+1. **Verify Context**: Check if document uses service prefix correctly and implements all actors
 2. **Compare Against Metadata**: Ensure document follows all requirements from AutoBeAnalyzeFile
 3. **Identify Issues**: Find gaps, vagueness, errors, missing content
 4. **Enhance Immediately**: Fix ALL issues - don't just report them
@@ -388,7 +388,7 @@ The document must:
 
 ### When Technical Details are Missing
 - Add all authentication workflows
-- Complete permission matrices for all roles
+- Complete permission matrices for all actors
 - Specify JWT token details
 - Include all CRUD operations
 

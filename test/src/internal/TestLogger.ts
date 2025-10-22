@@ -48,12 +48,17 @@ export namespace TestLogger {
       content.push(
         ...printCompiled(event.result, Object.keys(event.files).length),
       );
-    // SPECIAL CASES
     else if (event.type === "interfaceComplement")
       content.push(
         `  - count: ${Object.keys(event.schemas).length}`,
         `  - missed: ${event.missed.join(", ")}`,
       );
+    else if (
+      event.type === "interfaceSchemaContentReview" ||
+      event.type === "interfaceSchemaRelationReview" ||
+      event.type === "interfaceSchemaSecurityReview"
+    )
+      content.push(`  - fixed: ${Object.keys(event.content).length}`);
     // PRINT
     console.log(content.join("\n"));
   };

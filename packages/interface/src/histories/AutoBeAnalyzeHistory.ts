@@ -1,8 +1,8 @@
 import { tags } from "typia";
 
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeAnalyzeActor } from "./contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "./contents/AutoBeAnalyzeFile";
-import { AutoBeAnalyzeRole } from "./contents/AutoBeAnalyzeRole";
 
 /**
  * History record generated when the Analyze agent and user have completed all
@@ -78,12 +78,12 @@ export interface AutoBeAnalyzeHistory
   completed_at: string & tags.Format<"date-time">;
 
   /**
-   * List of roles identified during the requirements analysis process.
+   * List of actors identified during the requirements analysis process.
    *
-   * Contains the various user roles, personas, or stakeholder types that were
+   * Contains the various user actors, personas, or stakeholder types that were
    * identified and analyzed during the requirements gathering phase. These
-   * roles help define different user perspectives, access levels, and
+   * actors help define different user perspectives, access levels, and
    * functional requirements needed for the system being developed.
    */
-  roles: AutoBeAnalyzeRole[];
+  actors: AutoBeAnalyzeActor[];
 }

@@ -62,7 +62,7 @@ Focus on the "what" and "why", not the "how". All technical implementation decis
 - Use natural language to describe requirements
 - Focus on business logic and user needs
 - Describe workflows and processes conceptually
-- Explain user roles and permissions in business terms
+- Explain user actors and permissions in business terms
 - Define success criteria from a business perspective
 
 ### Documents MUST NOT:
@@ -94,7 +94,7 @@ These documents establish WHY the service exists and MUST be created first:
 These define WHAT the system does from a business perspective:
 
 - **Service Operation Overview**: How the service works in natural language, main user journeys
-- **User Roles & Personas**: Different user types, their needs, permission levels in business terms. Each role must specify its kind (guest/member/admin) to establish the permission hierarchy
+- **User Actors & Personas**: Different user types, their needs, permission levels in business terms. Each actor must specify its kind (guest/member/admin) to establish the permission hierarchy
 - **Primary User Scenarios**: Most common success paths, step-by-step interactions
 - **Secondary & Special Scenarios**: Alternative flows, edge cases, bulk operations
 - **Exception Handling**: Error situations from user perspective, recovery processes
@@ -123,7 +123,7 @@ These explain HOW the system operates in its environment:
 - **Consolidate requirements**: Merge performance + security + compliance into "Non-functional Requirements"
 
 #### Content Expansion Guidelines (for larger page counts):
-- **Split complex topics**: Separate each user role into individual persona documents
+- **Split complex topics**: Separate each user actor into individual persona documents
 - **Detail scenarios**: Create separate documents for each major user journey
 - **Elaborate business rules**: Dedicate documents to specific rule categories
 
@@ -177,31 +177,319 @@ Do **not** forget to include the Table of Contents when calculating the total nu
 
 ## Specific Property Notations
 - **IAutoBeAnalyzeScenarioApplication.IProps.prefix**: Use camelCase notation (e.g., `shopping`, `userManagement`, `contentPortal`)
-- **AutoBeAnalyzeRole.name**: Use camelCase notation
-- **AutoBeAnalyzeRole.kind**: Categorize roles into permission hierarchy levels:
+- **AutoBeAnalyzeActor.name**: Use camelCase notation
+- **AutoBeAnalyzeActor.kind**: Categorize actors into permission hierarchy levels:
   - **"guest"**: Unauthenticated or minimal permission users who can only access public resources and basic functions like registration/login
   - **"member"**: Authenticated standard users who can access personal resources and participate in core application features
   - **"admin"**: System administrators with elevated permissions who can manage users, access administrative functions, and modify system settings
 
-# User Role Definition Guidelines
+# User Actor Definition Guidelines
 
 ## CRITICAL: Understanding name vs kind
 
-The role `name` and `kind` serve different purposes:
+The actor `name` and `kind` serve different purposes:
 
-- **name**: Domain-specific business role identifier
-  - Must reflect the actual role in your business domain
+- **name**: Domain-specific business actor identifier
+  - Must reflect the actual actor in your business domain
   - Should be specific to your service context
 
 - **kind**: Permission level classification
   - Limited to three values: "guest", "member", or "admin"
   - Determines the base security level and access patterns
-  - Multiple different roles can share the same kind
+  - Multiple different actors can share the same kind
 
-## Correct Role Definition Process
+## Correct Actor Definition Process
 
-1. **Identify business roles**: Define roles based on your specific domain
-2. **Assign appropriate kind**: Map each role to its permission level
+1. **Identify business actors**: Define actors based on your specific domain
+2. **Assign appropriate kind**: Map each actor to its permission level
+
+# ⚠️ CRITICAL: Actor vs Attribute Distinction
+
+## Understanding What Constitutes a True Actor
+
+This is one of the most critical decisions in requirements analysis. Misidentifying table attributes or organizational properties as actors will fundamentally break the system architecture.
+
+### Core Principle: Architectural Necessity
+
+**Actors are defined by architectural necessity, not organizational hierarchy.**
+
+An actor represents a fundamentally different user type that requires:
+- **Separate database table** with distinct authentication schema
+- **Different authentication flow** (registration, login, session management)
+- **Distinct data model** with actor-specific fields and relationships
+- **Separate authorization logic** throughout the application
+
+If you can implement something as a simple column in a table, it's NOT an actor — it's an attribute.
+
+### The Architectural Test
+
+Ask yourself these questions to determine if something is truly an actor:
+
+1. **Table Structure Test**: Would these users require completely different table structures?
+   - ✅ YES → Different actors
+   - ❌ NO → Same actor with different attributes
+
+2. **Authentication Flow Test**: Do these users authenticate through fundamentally different flows?
+   - ✅ YES → Different actors
+   - ❌ NO → Same actor with different permissions
+
+3. **Data Model Test**: Do these users have fundamentally different data that cannot be expressed through nullable fields or enum values?
+   - ✅ YES → Different actors
+   - ❌ NO → Same actor with attribute variations
+
+4. **Business Logic Test**: Does the core business logic completely change based on which user type is acting?
+   - ✅ YES → Different actors
+   - ❌ NO → Same actor with conditional logic
+
+### ✅ TRUE ACTORS: Examples
+
+#### Example 1: E-Commerce Platform
+```typescript
+// These are TRUE ACTORS - fundamentally different user types
+actors: [
+  { name: "customer", kind: "member" },
+  { name: "seller", kind: "member" },
+  { name: "admin", kind: "admin" }
+]
+```
+
+**Why these are actors:**
+- **Customer table**: Contains shipping addresses, payment methods, order history
+- **Seller table**: Contains bank accounts, business registration, product inventory
+- **Admin table**: Contains access permissions, audit logs, administrative settings
+- Each has **completely different database schemas**
+- Each has **different authentication requirements** and flows
+- Each interacts with **different sets of API endpoints**
+
+#### Example 2: BBS (Bulletin Board System)
+```typescript
+// These are TRUE ACTORS - different authentication and capabilities
+actors: [
+  { name: "citizen", kind: "member" },
+  { name: "moderator", kind: "admin" }
+]
+```
+
+**Why these are actors:**
+- **Citizen table**: Basic profile, voting history, participation records
+- **Moderator table**: Administrative credentials, moderation history, elevated permissions
+- Different authentication scopes and JWT token structures
+- Moderators can access administrative endpoints citizens cannot
+
+### ❌ NOT ACTORS: Common Mistakes
+
+#### Mistake 1: Organizational Hierarchy as Actors
+
+**WRONG** ❌:
+```typescript
+// DO NOT DO THIS - These are attributes, not actors
+actors: [
+  { name: "enterpriseOwner", kind: "admin" },
+  { name: "enterpriseManager", kind: "member" },
+  { name: "enterpriseMember", kind: "member" },
+  { name: "enterpriseObserver", kind: "guest" }
+]
+```
+
+**WHY THIS IS WRONG:**
+These are all the same actor type (enterprise employees) with different **titles/roles within the organization**. They all:
+- Share the **same authentication table** (`enterprise_employees`)
+- Have the **same authentication flow** (employee login)
+- Use the **same data model** with a `title` column: `enum('owner', 'manager', 'member', 'observer')`
+- Differ only in **permission levels**, which is just a table attribute
+
+**CORRECT** ✅:
+```typescript
+// These are part of ONE actor with a title attribute
+actors: [
+  { name: "enterpriseEmployee", kind: "member" }
+]
+
+// In Prisma schema (generated later):
+model enterprise_employees {
+  id       String @id
+  email    String @unique
+  password String
+  title    EnterpriseEmployeeTitle  // owner | manager | member | observer
+  // ... other employee fields
+}
+```
+
+**Permission logic** is handled through the `title` attribute:
+```typescript
+// Business logic handles title-based permissions
+if (employee.title === 'owner') {
+  // Can delete the enterprise
+}
+if (['owner', 'manager'].includes(employee.title)) {
+  // Can invite new members
+}
+```
+
+#### Mistake 2: Relational Attributes as Actors
+
+**WRONG** ❌:
+```typescript
+// DO NOT DO THIS - These are relationship attributes
+actors: [
+  { name: "teamLeader", kind: "admin" },
+  { name: "teamMember", kind: "member" }
+]
+```
+
+**WHY THIS IS WRONG:**
+The same employee can be a leader in one team and a member in another team. This is a **many-to-many relationship attribute**, not an actor type:
+
+```typescript
+// This is a relationship, not an actor
+model enterprise_employee_team_companions {
+  employee_id String
+  team_id     String
+  role        String  // 'leader' or 'member' - contextual to the team
+
+  @@id([employee_id, team_id])
+}
+```
+
+**CORRECT** ✅:
+```typescript
+// Use ONE actor for all enterprise employees
+actors: [
+  { name: "enterpriseEmployee", kind: "member" }
+]
+
+// Team leadership is a relationship property, not an actor type
+```
+
+#### Mistake 3: Permission Levels as Actors
+
+**WRONG** ❌:
+```typescript
+// DO NOT DO THIS - Permission levels are not actors
+actors: [
+  { name: "readOnlyUser", kind: "member" },
+  { name: "readWriteUser", kind: "member" },
+  { name: "fullAccessUser", kind: "admin" }
+]
+```
+
+**WHY THIS IS WRONG:**
+These are permission scopes, not different user types. Use a single actor with permission attributes:
+
+**CORRECT** ✅:
+```typescript
+actors: [
+  { name: "user", kind: "member" }
+]
+
+// Permissions handled via attribute:
+model users {
+  id              String
+  permission_level String  // 'read_only' | 'read_write' | 'full_access'
+}
+```
+
+### Decision Framework: Is This an Actor?
+
+Use this step-by-step framework when uncertain:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Question 1: Can this be a column in an existing table?  │
+├─────────────────────────────────────────────────────────┤
+│ YES → It's an ATTRIBUTE, not an actor                   │
+│ NO  → Continue to Question 2                            │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ Question 2: Do they authenticate the same way?          │
+├─────────────────────────────────────────────────────────┤
+│ YES → Probably the SAME ACTOR with different attributes │
+│ NO  → Continue to Question 3                            │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ Question 3: Do they need completely different tables?   │
+├─────────────────────────────────────────────────────────┤
+│ NO  → It's an ATTRIBUTE, not an actor                   │
+│ YES → This is likely a TRUE ACTOR                       │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ Final Check: Would table schemas be radically different?│
+├─────────────────────────────────────────────────────────┤
+│ NO  → It's an ATTRIBUTE                                 │
+│ YES → It's a TRUE ACTOR                                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Real-World Scenario: Enterprise Management System
+
+Let's apply the framework to a complex real-world scenario:
+
+**Scenario**: An enterprise management system where:
+- Companies can register on the platform
+- Each company has employees with different titles (owner, manager, member, observer)
+- Employees can be part of multiple teams
+- Each team has leaders and regular members
+- Some employees can also be customers of other companies
+
+**Analysis**:
+
+1. **Company Admin/Employee** — ONE ACTOR
+   - All employees authenticate through the same enterprise employee table
+   - Differences in `owner/manager/member/observer` are handled via `title` attribute
+   - Team leadership is a relationship attribute in the junction table
+
+2. **Customer** — SEPARATE ACTOR
+   - Different authentication table (customer accounts)
+   - Different data model (shipping addresses, payment methods)
+   - Different authentication flow (customer registration vs employee invitation)
+
+**CORRECT** ✅:
+```typescript
+actors: [
+  { name: "enterpriseEmployee", kind: "member" },
+  { name: "customer", kind: "member" }
+]
+```
+
+**WRONG** ❌:
+```typescript
+// DO NOT separate organizational hierarchy into actors
+actors: [
+  { name: "enterpriseOwner", kind: "admin" },
+  { name: "enterpriseManager", kind: "member" },
+  { name: "enterpriseMember", kind: "member" },
+  { name: "teamLeader", kind: "admin" },
+  { name: "teamMember", kind: "member" },
+  { name: "customer", kind: "member" }
+]
+```
+
+### Verification Checklist
+
+Before finalizing your actor list, verify each actor against this checklist:
+
+- [ ] **Separate Table**: This actor requires a distinct database table with unique fields
+- [ ] **Different Auth Flow**: This actor has a fundamentally different registration/login process
+- [ ] **Distinct Data Model**: This actor stores completely different types of data
+- [ ] **Cannot Be Attribute**: This cannot be represented as a simple column (enum, boolean, string)
+- [ ] **Not Organizational**: This is not just a title, rank, or permission level within same organization
+- [ ] **Not Relational**: This is not a contextual attribute in a many-to-many relationship
+- [ ] **Business Justification**: There is a clear business reason why these users must be architecturally separated
+
+If any actor fails this checklist, reconsider whether it's truly an actor or just an attribute of an existing actor.
+
+### Summary: The Golden Rule
+
+**"If tables would be designed very differently, it's an actor. If it's just a table attribute, it's not an actor."**
+
+When in doubt:
+- **Default to fewer actors** with rich attribute sets
+- **Only create separate actors** when architectural necessity demands it
+- **Remember**: Organizational hierarchy ≠ System actors
+- **Think**: Would a senior developer design separate tables for these, or use one table with attributes?
 
 # File Metadata Requirements
 

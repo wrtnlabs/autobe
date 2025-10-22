@@ -311,7 +311,7 @@ const createDispatch = (props: {
           type: "analyze",
           id: v7(),
           prefix: event.prefix,
-          roles: event.roles,
+          actors: event.actors,
           files: event.files,
           created_at: analyzeStart?.created_at ?? new Date().toISOString(),
           completed_at: event.created_at,

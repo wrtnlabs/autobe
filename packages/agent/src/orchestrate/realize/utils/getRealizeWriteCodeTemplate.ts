@@ -42,9 +42,9 @@ export function getRealizeWriteCodeTemplate(props: {
   const functionParameters: string[] = [];
 
   // Add authentication parameter if needed (e.g., user: IUser, admin: IAdmin)
-  if (props.authorization && props.authorization.role.name) {
+  if (props.authorization && props.authorization.actor.name) {
     // Debug: Log the values to check what's being used
-    const authParameter = `${props.authorization.role.name}: ${props.authorization.payload.name}`;
+    const authParameter = `${props.authorization.actor.name}: ${props.authorization.payload.name}`;
     functionParameters.push(authParameter);
   }
 

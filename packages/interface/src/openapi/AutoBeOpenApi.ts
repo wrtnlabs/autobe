@@ -446,36 +446,36 @@ export namespace AutoBeOpenApi {
     responseBody: AutoBeOpenApi.IResponseBody | null;
 
     /**
-     * Authorization role required to access this API operation.
+     * Authorization actor required to access this API operation.
      *
-     * This field specifies which user role is allowed to access this endpoint.
-     * The role name must correspond exactly to the actual roles defined in your
+     * This field specifies which user actor is allowed to access this endpoint.
+     * The actor name must correspond exactly to the actual actors defined in your
      * system's Prisma schema.
      *
      * ## Naming Convention
      *
-     * Role names MUST use camelCase.
+     * Actor names MUST use camelCase.
      *
-     * ## Role-Based Path Convention
+     * ## Actor-Based Path Convention
      *
-     * When authorizationRole is specified, it should align with the path
+     * When authorizationActor is specified, it should align with the path
      * structure:
      *
-     * - If authorizationRole is "admin" → path might be "/admin/resources/{id}"
-     * - If authorizationRole is "seller" → path might be "/seller/products"
+     * - If authorizationActor is "admin" → path might be "/admin/resources/{id}"
+     * - If authorizationActor is "seller" → path might be "/seller/products"
      * - Special case: For user's own resources, use path prefix "/my/" regardless
-     *   of role
+     *   of actor
      *
      * ## Important Guidelines
      *
      * - Set to `null` for public endpoints that require no authentication
-     * - Set to specific role string for role-restricted endpoints
-     * - The role name MUST match exactly with the user type/role defined in the
+     * - Set to specific actor string for actor-restricted endpoints
+     * - The actor name MUST match exactly with the user type/actor defined in the
      *   database
-     * - This role will be used by the Realize Agent to generate appropriate
+     * - This actor will be used by the Realize Agent to generate appropriate
      *   decorator and authorization logic in the provider functions
      * - The controller will apply the corresponding authentication decorator
-     *   based on this role
+     *   based on this actor
      *
      * ## Examples
      *
@@ -489,7 +489,7 @@ export namespace AutoBeOpenApi {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRole: (string & CamelCasePattern & tags.MinLength<1>) | null;
+    authorizationActor: (string & CamelCasePattern & tags.MinLength<1>) | null;
 
     /**
      * Functional name of the API endpoint.
@@ -627,7 +627,7 @@ export namespace AutoBeOpenApi {
      * ## CRITICAL WARNING: Authentication Prerequisites
      *
      * **NEVER include authentication-related operations as prerequisites!**
-     * Authentication is handled separately through the `authorizationRole`
+     * Authentication is handled separately through the `authorizationActor`
      * field and should NOT be part of the prerequisite chain. Do NOT add
      * prerequisites for:
      *
@@ -766,43 +766,43 @@ export namespace AutoBeOpenApi {
      *
      * Specifies which user types are permitted to access this API.
      *
-     * This is not a permission level or access control role. Instead, it
+     * This is not a permission level or access control actor. Instead, it
      * describes **who** the user is — their type within the service's domain
      * model. It must correspond 1:1 with how the user is represented in the
      * database.
      *
      * MUST use camelCase naming convention.
      *
-     * ⚠️ Important: Each `role` must **exactly match a table name defined in
+     * ⚠️ Important: Each `actor` must **exactly match a table name defined in
      * the database schema**. This is not merely a convention or example — it is
      * a strict requirement.
      *
-     * A valid role must meet the following criteria:
+     * A valid actor must meet the following criteria:
      *
      * - It must uniquely map to a user group at the database level, represented
      *   by a dedicated table.
-     * - It must not overlap semantically with other roles — for instance, both
+     * - It must not overlap semantically with other actors — for instance, both
      *   `admin` and `administrator` must not exist to describe the same type.
      *
      * Therefore, if a user type cannot be clearly and uniquely distinguished in
-     * the database, It **cannot** be used as a valid `role` here.
+     * the database, It **cannot** be used as a valid `actor` here.
      */
     name: string & CamelCasePattern;
 
     /**
-     * Detailed description of the authorization role
+     * Detailed description of the authorization actor
      *
      * Provides a comprehensive explanation of:
      *
-     * - The purpose and scope of this authorization role
-     * - Which types of users are granted this role
-     * - What capabilities and permissions this role enables
-     * - Any constraints or limitations associated with the role
-     * - How this role relates to the underlying database schema
-     * - Examples of typical use cases for this role
+     * - The purpose and scope of this authorization actor
+     * - Which types of users are granted this actor
+     * - What capabilities and permissions this actor enables
+     * - Any constraints or limitations associated with the actor
+     * - How this actor relates to the underlying database schema
+     * - Examples of typical use cases for this actor
      *
      * This description should be detailed enough for both API consumers to
-     * understand the role's purpose and for the system to properly enforce
+     * understand the actor's purpose and for the system to properly enforce
      * access controls.
      *
      * > MUST be written in English. Never use other languages.
@@ -1654,7 +1654,7 @@ export namespace AutoBeOpenApi {
    * - Permission checks
    * - User authorization verification
    *
-   * Authentication is handled separately via the `authorizationRole` field on
+   * Authentication is handled separately via the `authorizationActor` field on
    * the operation itself. Mixing authentication with business prerequisites
    * creates confusion and incorrect test scenarios.
    *

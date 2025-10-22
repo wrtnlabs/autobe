@@ -40,7 +40,7 @@ export const archive_analyze = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
   agent.on("analyzeScenario", (e) => {
-    console.log(e.roles);
+    console.log(e.actors);
   });
 
   // GENERATE REPORT

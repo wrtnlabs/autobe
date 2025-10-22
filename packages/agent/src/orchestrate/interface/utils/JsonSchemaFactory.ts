@@ -220,7 +220,7 @@ namespace IPage {
  * refresh tokens along with their expiration information.
  *
  * This token structure is automatically included in API schemas when the system
- * detects authorization roles in the requirements analysis phase. It provides a
+ * detects authorization actors in the requirements analysis phase. It provides a
  * standard format for JWT-based authentication across the generated backend
  * applications.
  */

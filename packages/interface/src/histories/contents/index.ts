@@ -4,7 +4,7 @@ export * from "./AutoBeUserMessageFileContent";
 export * from "./AutoBeUserMessageImageContent";
 export * from "./AutoBeUserMessageTextContent";
 
-export * from "./AutoBeAnalyzeRole";
+export * from "./AutoBeAnalyzeActor";
 
 export * from "./AutoBeInterfaceAuthorization";
 

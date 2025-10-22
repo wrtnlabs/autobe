@@ -59,7 +59,7 @@ export namespace AutoBeOpenApi {
     
     // REQUIRED authorization fields (MUST be present in every operation):
     authorizationType: "login" | "join" | "refresh" | null;
-    authorizationRole: (string & CamelPattern & MinLength<1>) | null;
+    authorizationActor: (string & CamelPattern & MinLength<1>) | null;
   }
 }
 ```
@@ -104,7 +104,7 @@ EVERY operation in the array MUST include:
 - [ ] `requestBody` - REQUIRED: Can be null or object with `description` and `typeName`
 - [ ] `responseBody` - REQUIRED: Can be null or object with `description` and `typeName`
 - [ ] `authorizationType` - REQUIRED: Must be `"login"`, `"join"`, `"refresh"`, or `null`
-- [ ] `authorizationRole` - REQUIRED: Must be camelCase string or `null`
+- [ ] `authorizationActor` - REQUIRED: Must be camelCase string or `null`
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
 
 **CRITICAL RULES FOR requestBody/responseBody:**
@@ -130,7 +130,7 @@ EVERY operation in the array MUST include:
     typeName: "IPageIProduct"                        // REQUIRED if body exists
   },                                                  // REQUIRED
   authorizationType: null,                           // REQUIRED
-  authorizationRole: null,                           // REQUIRED
+  authorizationActor: null,                           // REQUIRED
   name: "index"                                       // REQUIRED
 }
 
@@ -164,7 +164,7 @@ You will receive:
 ### 4.1. Security Review
 - [ ] **Password Exposure**: NO password fields in response types
 - [ ] **Sensitive Data**: NO exposure of sensitive fields (tokens, secrets, internal IDs)
-- [ ] **Authorization Bypass**: Operations must have appropriate authorization roles
+- [ ] **Authorization Bypass**: Operations must have appropriate authorization actors
 - [ ] **Data Leakage**: Verify no unintended data exposure through nested relations
 - [ ] **Input Validation**: Dangerous operations have appropriate authorization (admin for bulk deletes)
 
@@ -187,9 +187,9 @@ You will receive:
 **CRITICAL WARNING**: Excessive operation generation can severely impact system performance and complexity!
 
 **Volume Calculation Check**:
-- Calculate total generated operations = (Number of operations) × (Average authorizationRoles.length)
+- Calculate total generated operations = (Number of operations) × (Average authorizationActors.length)
 - Flag if total exceeds reasonable business needs
-- Example: 105 operations with 3 roles each = 315 actual generated operations
+- Example: 105 operations with 3 actors each = 315 actual generated operations
 
 **Over-Engineering Detection**:
 - [ ] **Unnecessary CRUD**: NOT every table requires full CRUD operations
@@ -228,7 +228,7 @@ You will receive:
    - "THE system SHALL automatically [record/log/track]..." → System-generated
    - "THE system SHALL capture..." → System-generated
    - "When [user action], THE system SHALL log..." → System-generated
-   - "[Role] SHALL create/manage [entity]..." → User-managed (needs API)
+   - "[Actor] SHALL create/manage [entity]..." → User-managed (needs API)
 
 2. **Context-Based Analysis** (not pattern matching):
    - Don't rely on table names alone
@@ -388,7 +388,7 @@ When you find system-generated data manipulation:
 - [ ] Filtering logic makes sense for the operation
 
 ### 5.4. Operation Volume Control Checklist
-- [ ] **Total Operation Count**: Calculate (operations × avg roles) and flag if excessive
+- [ ] **Total Operation Count**: Calculate (operations × avg actors) and flag if excessive
 - [ ] **Business Justification**: Each operation serves actual user workflows
 - [ ] **Table Assessment**: Core business entities get full CRUD, auxiliary tables don't
 - [ ] **Over-Engineering Prevention**: No operations for system-managed data
@@ -427,7 +427,7 @@ When you find system-generated data manipulation:
 - Missing parameters
 
 ### 6.4. Minor Issues (Nice to Fix)
-- Suboptimal authorization roles
+- Suboptimal authorization actors
 - Description improvements (multi-paragraph format, security considerations, etc.)
 - Additional validation suggestions
 - Documentation enhancements
@@ -455,7 +455,7 @@ The `think.review` field should contain a comprehensive analysis formatted as fo
 - Total Operations Reviewed: [number]
 - **Operations Removed**: [number] (System-generated data manipulation, architectural violations)
 - **Final Operation Count**: [number] (After removal of invalid operations)
-- **Total Generated Operations** (operations × avg roles): [number]
+- **Total Generated Operations** (operations × avg actors): [number]
 - **Operation Volume Assessment**: [EXCESSIVE/REASONABLE/LEAN]
 - Security Issues: [number] (Critical: [n], Major: [n])
 - Logic Issues: [number] (Critical: [n], Major: [n])
@@ -599,7 +599,7 @@ Verify these patterns:
 - User's own data: ["user"] with ownership checks
 - Admin operations: ["admin"]
 - Bulk operations: ["admin"] required
-- Financial operations: Specific roles like ["accountant", "admin"]
+- Financial operations: Specific actors like ["accountant", "admin"]
 
 ## 11. Review Process
 
@@ -621,7 +621,7 @@ Verify these patterns:
 
 ### 12.2. Warning Conditions
 - Potentially excessive data exposure
-- Suboptimal authorization roles
+- Suboptimal authorization actors
 - Minor schema mismatches
 - Documentation quality issues
 
@@ -707,7 +707,7 @@ Here's an example of how to review an operation:
   
   responseBody: null
   // MISSING: authorizationType field
-  // MISSING: authorizationRole field
+  // MISSING: authorizationActor field
 }
 ```
 
@@ -715,7 +715,7 @@ Here's an example of how to review an operation:
 
 **Issue 1: MISSING REQUIRED FIELDS**
 - **authorizationType**: Field is undefined, must be set to `null` for non-auth operations
-- **authorizationRole**: Field is undefined, should be `"admin"` for delete operations
+- **authorizationActor**: Field is undefined, should be `"admin"` for delete operations
 
 **Issue 2: CRITICAL SCHEMA VIOLATION**
 - Examined Customer model in provided schema
@@ -743,7 +743,7 @@ Here's an example of how to review an operation:
   responseBody: null,                  // REQUIRED (can be null)
   
   authorizationType: null,             // ADDED: Required field
-  authorizationRole: "admin",          // ADDED: Required field
+  authorizationActor: "admin",          // ADDED: Required field
   
   name: "erase"                        // ADDED: Required field
 }

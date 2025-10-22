@@ -125,7 +125,9 @@ const correct = async <Model extends ILlmSchema.Model>(
       )!;
       const operation: AutoBeOpenApi.IOperation = scenario.operation;
       const authorization: AutoBeRealizeAuthorization | undefined =
-        authorizations.find((a) => a.role.name === operation.authorizationRole);
+        authorizations.find(
+          (a) => a.actor.name === operation.authorizationActor,
+        );
 
       const pointer: IPointer<
         IAutoBeCommonCorrectCastingApplication.IProps | false | null

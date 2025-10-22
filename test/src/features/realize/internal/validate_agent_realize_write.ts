@@ -62,7 +62,7 @@ export const validate_agent_realize_write = async (
   const writes: (AutoBeRealizeWriteEvent | null)[] = await executeCachedBatch(
     scenarios.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
-        (a) => a.role.name === scenario.decoratorEvent?.role.name,
+        (a) => a.actor.name === scenario.decoratorEvent?.actor.name,
       );
       try {
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
@@ -89,7 +89,7 @@ export const validate_agent_realize_write = async (
   const retried = await executeCachedBatch(
     rejected.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
-        (a) => a.role.name === scenario.decoratorEvent?.role.name,
+        (a) => a.actor.name === scenario.decoratorEvent?.actor.name,
       );
       try {
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(

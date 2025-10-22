@@ -106,7 +106,7 @@ export namespace AutoBePlaygroundReplayComputer {
         "analyze",
         () => true,
         (h) => ({
-          actors: h.roles.length,
+          actors: h.actors.length,
           documents: h.files.length,
         }),
       ),

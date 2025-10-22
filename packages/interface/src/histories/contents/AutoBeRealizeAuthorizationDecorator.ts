@@ -1,14 +1,14 @@
 import { PascalCasePattern } from "../../typings/PascalCasePattern";
 
 /**
- * Authorization decorator implementation for role-based access control.
+ * Authorization decorator implementation for actor-based access control.
  *
  * This interface represents a custom TypeScript decorator that can be applied
  * to NestJS controllers, routes, or methods to enforce authorization policies.
  * The decorator integrates with NestJS's guard system and metadata reflection
- * to protect endpoints based on user roles and permissions.
+ * to protect endpoints based on user actors and permissions.
  *
- * Generated decorators are role-specific and include domain-specific names like
+ * Generated decorators are actor-specific and include domain-specific names like
  *
  * @author Michael
  * @ShoppingCustomerAuth(), @BbsModeratorAuth(), @AdminAuth(), or other custom

@@ -1,20 +1,20 @@
-import { AutoBeAnalyzeRole, CamelCasePattern } from "@autobe/interface";
+import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { tags } from "typia";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
-   * Compose project structure with roles and files.
+   * Compose project structure with actors and files.
    *
-   * Design a list of roles and initial documents that you need to create for
-   * that requirement. Roles define team member responsibilities, while files
+   * Design a list of actors and initial documents that you need to create for
+   * that requirement. Actors define user types and their responsibilities, while files
    * define the documentation structure. These are managed separately. If you
    * determine from the conversation that the user's requirements have not been
    * fully gathered, you must stop the analysis and continue collecting the
    * remaining requirements. In this case, you do not need to generate any files
-   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
+   * or actors. Simply pass an empty array to `input.files` and `input.actors`.
    *
-   * @param input Prefix, roles, and files
+   * @param input Prefix, actors, and files
    * @returns
    */
   compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void;
@@ -33,8 +33,8 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      */
     prefix: string & CamelCasePattern;
 
-    /** Roles to be assigned for the project */
-    roles: AutoBeAnalyzeRole[];
+    /** Actors to be assigned for the project */
+    actors: AutoBeAnalyzeActor[];
 
     /**
      * Language for document content. When specified by the user, this takes
@@ -63,7 +63,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - User journey mapping and use case scenarios
      * - Business rules and workflow definitions
      * - Service overview and business model description
-     * - User roles and permission requirements (described in natural language)
+     * - User actors and permission requirements (described in natural language)
      * - Business logic and validation rules
      * - DO NOT: Include database schemas, ERD, or API specifications
      * - DO: Write all requirements in natural language for clarity

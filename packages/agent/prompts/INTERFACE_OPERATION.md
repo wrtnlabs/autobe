@@ -9,7 +9,7 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeInterfaceOperationApplication.IOperation.authorizationRoles**: Use camelCase notation
+- **IAutoBeInterfaceOperationApplication.IOperation.authorizationActors**: Use camelCase notation
 - **IAutoBeInterfaceOperation.name**: Use camelCase notation (must not be TypeScript/JavaScript reserved word)
 
 ## 1. Overview
@@ -59,10 +59,10 @@ Analyze the provided information and generate complete API operations that trans
 
 **CRITICAL**: Focus on creating operations that serve actual user needs, not comprehensive coverage of every database table.
 
-**Role Multiplication Awareness**:
-- Remember: Each role in authorizationRoles creates a separate endpoint
-- Total generated endpoints = operations × roles
-- Be intentional about which roles truly need separate endpoints
+**Actor Multiplication Awareness**:
+- Remember: Each actor in authorizationActors creates a separate endpoint
+- Total generated endpoints = operations × actors
+- Be intentional about which actors truly need separate endpoints
 
 **Design Principles**:
 - **User-Centric**: Create operations users actually need to perform
@@ -316,7 +316,7 @@ You will receive the following materials to guide your operation generation:
 ### Requirements Analysis Report
 - Complete business requirements documentation
 - Functional specifications and workflows
-- User roles and permissions
+- User actors and permissions
 
 ### Prisma Schema Information
 - Database schema with all tables and fields
@@ -365,7 +365,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     operations: IOperation[];  // Array of API operations
   }
   
-  // Each operation extends AutoBeOpenApi.IOperation but with authorizationRoles instead
+  // Each operation extends AutoBeOpenApi.IOperation but with authorizationActors instead
   interface IOperation {
     specification: string;      // REQUIRED: Detailed API specification
     path: string;              // REQUIRED: Resource path
@@ -375,7 +375,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     parameters?: Array<...>;   // Path/query parameters if needed
     requestBody?: {...};       // Request body for POST/PUT/PATCH
     responseBody?: {...};      // Response body definition
-    authorizationRoles: string[];  // REQUIRED: Array of roles (can be empty [])
+    authorizationActors: string[];  // REQUIRED: Array of actors (can be empty [])
     name: string;              // REQUIRED: Operation name (index, at, search, create, update, erase)
   }
 }
@@ -400,7 +400,7 @@ You MUST call the `makeOperations()` function with your results.
 - [ ] `method` - REQUIRED string: HTTP method
 - [ ] `summary` - REQUIRED string: One-sentence summary
 - [ ] `description` - REQUIRED string: Multi-paragraph description
-- [ ] `authorizationRoles` - REQUIRED array: Role array (can be empty [])
+- [ ] `authorizationActors` - REQUIRED array: Actor array (can be empty [])
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
 
 **FAILURE TO INCLUDE ANY OF THESE FIELDS WILL CAUSE VALIDATION ERRORS**
@@ -421,7 +421,7 @@ makeOperations({
         description: "Response description",
         typeName: "IPageIResource"  // REQUIRED if responseBody exists
       },
-      authorizationRoles: [],                                         // REQUIRED (can be empty array)
+      authorizationActors: [],                                         // REQUIRED (can be empty array)
       name: "index"                                                   // REQUIRED
     },
     // ONLY include operations that pass validation
@@ -678,33 +678,33 @@ Each operation must have a globally unique accessor within the API. The accessor
 **Global Uniqueness:**
 Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
 
-### 6.7. Authorization Roles
+### 6.7. Authorization Actors
 
-The `authorizationRoles` field must specify which user roles can access the endpoint:
+The `authorizationActors` field must specify which user actors can access the endpoint:
 
 - **Public Endpoints**: `[]` (empty array) - No authentication required
 - **Authenticated User Endpoints**: `["user"]` - Any authenticated user
-- **Role-Specific Endpoints**: `["admin"]`, `["moderator"]`, `["seller"]`, etc.
-- **Multi-Role Endpoints**: `["admin", "moderator"]` - Multiple roles allowed
+- **Actor-Specific Endpoints**: `["admin"]`, `["moderator"]`, `["seller"]`, etc.
+- **Multi-Actor Endpoints**: `["admin", "moderator"]` - Multiple actors allowed
 
-**CRITICAL Naming Convention**: All role names MUST use camelCase:
+**CRITICAL Naming Convention**: All actor names MUST use camelCase:
 - Valid: `user`, `admin`, `moderator`, `seller`, `buyer`, `contentCreator`
 - Invalid: `content_creator` (snake_case), `ContentCreator` (PascalCase), `content-creator` (kebab-case)
 
-**Role Assignment Guidelines**:
+**Actor Assignment Guidelines**:
 - **Read Operations** (GET): Often public or require basic authentication
 - **Create Operations** (POST): Usually require authentication to track creator
 - **Update Operations** (PUT): Require ownership verification or special permissions
 - **Delete Operations** (DELETE): Require ownership verification or administrative permissions
 - **Search Operations** (PATCH): Depends on data sensitivity
 
-Use actual role names from the Prisma schema. Common patterns:
+Use actual actor names from the Prisma schema. Common patterns:
 - User's own data: `["user"]` (with additional ownership checks in implementation)
 - Administrative functions: `["admin"]` or `["administrator"]`
 - Content moderation: `["moderator"]`
-- Business-specific roles: `["seller"]`, `["buyer"]`, etc.
+- Business-specific actors: `["seller"]`, `["buyer"]`, etc.
 
-**Important**: Role names must exactly match table names in the Prisma schema and must follow camelCase convention.
+**Important**: Actor names must exactly match table names in the Prisma schema and must follow camelCase convention.
 
 ## 7. Critical Requirements
 
@@ -718,7 +718,7 @@ Use actual role names from the Prisma schema. Common patterns:
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
 - **Proper Type References**: All requestBody and responseBody typeName fields must reference valid component types
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
-- **Appropriate Authorization**: Assign realistic authorization roles based on operation type and data sensitivity
+- **Appropriate Authorization**: Assign realistic authorization actors based on operation type and data sensitivity
 
 ## 8. Implementation Strategy
 
@@ -741,12 +741,12 @@ Use actual role names from the Prisma schema. Common patterns:
    - Write comprehensive multi-paragraph descriptions incorporating schema comments
    - Define accurate parameters matching path structure
    - Assign appropriate request/response body types using service prefix naming
-   - Set realistic authorization roles
+   - Set realistic authorization actors
 
 4. **Validation**:
    - Ensure all path parameters are defined
    - Verify all type references are valid
-   - Check that authorization roles are realistic
+   - Check that authorization actors are realistic
    - Confirm descriptions are detailed and informative
 
 5. **Function Call**: Call the `makeOperations()` function with the filtered array (may be smaller than input endpoints)
@@ -769,7 +769,7 @@ Use actual role names from the Prisma schema. Common patterns:
 ### 9.3. Technical Accuracy
 - Path parameters match endpoint path exactly
 - Request/response types follow naming conventions
-- Authorization roles reflect realistic access patterns
+- Authorization actors reflect realistic access patterns
 - HTTP methods align with operation semantics
 
 ## 10. Example Operation - ALL FIELDS ARE MANDATORY
@@ -805,7 +805,7 @@ This operation integrates with the Customer table as defined in the Prisma schem
     typeName: "IPageIShoppingCustomer.ISummary"  // If responseBody exists, typeName is REQUIRED
   },
   
-  authorizationRoles: ["admin"],  // REQUIRED - Can be empty array []
+  authorizationActors: ["admin"],  // REQUIRED - Can be empty array []
   name: "search"                   // REQUIRED - Must be one of: index/at/search/create/update/erase
 }
 ```

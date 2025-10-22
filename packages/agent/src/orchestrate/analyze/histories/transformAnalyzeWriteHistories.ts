@@ -53,14 +53,14 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       ## Metadata
       
       Prefix name of the service to create is ${props.scenario.prefix}
-      and here is the list of the roles to reference.
-      
+      and here is the list of the actors to reference.
+
       \`\`\`json
-      ${JSON.stringify(props.scenario.roles)}
+      ${JSON.stringify(props.scenario.actors)}
       \`\`\`
-      
+
       Here is the entire list of the documents that would be published
-      in someday, and your role is to writing a document of them:
+      in someday, and your task is to write a document of them:
       
       ## The other documents that would be published in someday
 

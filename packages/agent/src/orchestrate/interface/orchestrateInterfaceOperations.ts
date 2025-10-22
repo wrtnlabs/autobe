@@ -128,11 +128,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     controller: createController({
       model: ctx.model,
-      roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
+      roles: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
       build: (operations) => {
         pointer.value ??= [];
         const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
-          if (op.authorizationRoles.length === 0)
+          if (op.authorizationActors.length === 0)
             return [
               {
                 ...op,
@@ -141,19 +141,19 @@ async function process<Model extends ILlmSchema.Model>(
                   [prefix, ...op.path.split("/")]
                     .filter((it) => it !== "")
                     .join("/"),
-                authorizationRole: null,
+                authorizationActor: null,
                 authorizationType: null,
                 prerequisites: [],
               },
             ];
-          return op.authorizationRoles.map((role) => ({
+          return op.authorizationActors.map((role) => ({
             ...op,
             path:
               "/" +
               [prefix, role, ...op.path.split("/")]
                 .filter((it) => it !== "")
                 .join("/"),
-            authorizationRole: role,
+            authorizationActor: role,
             authorizationType: null,
             prerequisites: [],
           }));
@@ -163,10 +163,10 @@ async function process<Model extends ILlmSchema.Model>(
         props.progress.total += operations
           .map((op) =>
             props.endpoints.has({ path: op.path, method: op.method })
-              ? op.authorizationRoles.length === 0
+              ? op.authorizationActors.length === 0
                 ? 0
-                : op.authorizationRoles.length - 1
-              : op.authorizationRoles.length,
+                : op.authorizationActors.length - 1
+              : op.authorizationActors.length,
           )
           .reduce((a, b) => a + b, 0);
       },
@@ -216,12 +216,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     operations.forEach((op, i) => {
       // validate roles
-      if (props.roles.length === 0) op.authorizationRoles = [];
-      else if (op.authorizationRoles.length !== 0 && props.roles.length !== 0)
-        op.authorizationRoles.forEach((role, j) => {
+      if (props.roles.length === 0) op.authorizationActors = [];
+      else if (op.authorizationActors.length !== 0 && props.roles.length !== 0)
+        op.authorizationActors.forEach((role, j) => {
           if (props.roles.includes(role) === true) return;
           errors.push({
-            path: `$input.operations[${i}].authorizationRoles[${j}]`,
+            path: `$input.operations[${i}].authorizationActors[${j}]`,
             expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
             description: StringUtil.trim`
               Role "${role}" is not defined in the roles list.

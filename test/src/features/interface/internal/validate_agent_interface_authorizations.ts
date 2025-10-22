@@ -1,7 +1,7 @@
 import { orchestrateInterfaceAuthorizations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAnalyzeRole,
+  AutoBeAnalyzeActor,
   AutoBeInterfaceAuthorization,
 } from "@autobe/interface";
 
@@ -20,15 +20,13 @@ export const validate_agent_interface_authorizations = async (
   const { agent } = await prepare_agent_interface(factory, project);
   const model: string = TestGlobal.vendorModel;
 
-  const roles: AutoBeAnalyzeRole[] =
-    agent.getContext().state().analyze?.roles ?? [];
-
+  const actors: AutoBeAnalyzeActor[] =
+    agent.getContext().state().analyze?.actors ?? [];
   const authorizations: AutoBeInterfaceAuthorization[] =
     await orchestrateInterfaceAuthorizations(
       agent.getContext(),
       "Design API specs carefully considering the security.",
     );
-
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/authorizations`,
     files: {
@@ -42,6 +40,6 @@ export const validate_agent_interface_authorizations = async (
         JSON.stringify(authorizations),
     });
 
-  if (roles.length > 0 && authorizations.length === 0)
+  if (actors.length > 0 && authorizations.length === 0)
     throw new Error("No authorization operations generated.");
 };

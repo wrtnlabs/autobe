@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
+import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
 export const transformTestScenarioHistories = (props: {
@@ -19,17 +19,19 @@ export const transformTestScenarioHistories = (props: {
 > => {
   const authorizations: AutoBeInterfaceAuthorization[] =
     props.state.interface?.authorizations ?? [];
-  const authorizationRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
-    new Map();
+  const authorizationActors: Map<
+    string,
+    IAutoBeTestScenarioAuthorizationActor
+  > = new Map();
 
   for (const authorization of authorizations) {
     for (const op of authorization.operations) {
       if (op.authorizationType === null) continue;
-      const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
-        authorizationRoles,
-        authorization.role,
+      const value: IAutoBeTestScenarioAuthorizationActor = MapUtil.take(
+        authorizationActors,
+        authorization.name,
         () => ({
-          name: authorization.role,
+          name: authorization.name,
           join: null,
           login: null,
         }),
@@ -100,9 +102,9 @@ export const transformTestScenarioHistories = (props: {
               document: props.document,
               endpoint: el,
             }),
-            authorizationRoles: Array.from(authorizationRoles.values()).filter(
-              (role) => role.name === el.authorizationRole,
-            ),
+            authorizationActors: Array.from(
+              authorizationActors.values(),
+            ).filter((actor) => actor.name === el.authorizationActor),
           })),
         )}
         \`\`\`

@@ -33,7 +33,7 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * Example plan structure:
      *
      * - Service overview with business model
-     * - User roles and authentication requirements
+     * - User actors and authentication requirements
      * - Functional requirements with EARS format
      * - Non-functional requirements
      * - Business requirements in natural language

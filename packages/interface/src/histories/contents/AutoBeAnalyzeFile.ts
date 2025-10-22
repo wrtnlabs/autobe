@@ -28,7 +28,7 @@
  * @since 0.1.0
  * @see IAutoBeAnalyzeWriteApplication - The application interface that uses this structure
  * @see AutoBeAnalyzeScenarioEvent - Event structure for multi-document scenarios
- * @see AutoBeAnalyzeRole - User role definitions used in authentication planning
+ * @see AutoBeAnalyzeActor - User actor definitions used in authentication planning
  */
 export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
   /**

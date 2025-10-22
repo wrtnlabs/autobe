@@ -37,12 +37,12 @@ export const writeRealizeControllers = async (
         if (func === undefined || operate === undefined) return method; // unreachable
 
         const auth: AutoBeRealizeAuthorization | undefined =
-          operate.authorizationRole
+          operate.authorizationActor
             ? props.authorizations.find(
-                (d) => d.role.name === operate.authorizationRole,
+                (d) => d.actor.name === operate.authorizationActor,
               )
             : undefined;
-        if (operate.authorizationRole && auth === undefined) return method; // unreachable
+        if (operate.authorizationActor && auth === undefined) return method; // unreachable
 
         ctx.importer.external({
           type: "instance",
@@ -54,7 +54,7 @@ export const writeRealizeControllers = async (
         });
 
         const inputArguments: string[] = [
-          ...(operate.authorizationRole ? [operate.authorizationRole] : []),
+          ...(operate.authorizationActor ? [operate.authorizationActor] : []),
           ...ctx.route.parameters.map((p) => p.name),
           ...(ctx.route.query ? [ctx.route.query.name] : []),
           ...(ctx.route.body ? [ctx.route.body.name] : []),
@@ -139,7 +139,7 @@ export const writeRealizeControllers = async (
                     ),
                   ],
                   undefined,
-                  auth.role.name,
+                  auth.actor.name,
                   undefined,
                   ts.factory.createTypeReferenceNode(
                     ctx.importer.external({

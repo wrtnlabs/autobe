@@ -111,7 +111,7 @@ This is the primary output containing:
 ## 3. Your Mission
 
 Review the generated test scenarios with focus on:
-1. **User Context (Authentication) Correctness**: Verify proper authentication based on authorizationRole
+1. **User Context (Authentication) Correctness**: Verify proper authentication based on authorizationActor
 2. **Dependencies Completeness**: Ensure all prerequisites are included
 3. **Execution Order**: Confirm correct operation sequencing
 4. **Remove Validation Error Scenarios**: Eliminate framework-level validation tests
@@ -120,7 +120,7 @@ Review the generated test scenarios with focus on:
 
 You will receive:
 1. **Instructions**: E2E-test-specific requirements from user conversations
-2. **Available API Operations for Reference**: Complete list of all API operations with their authorizationRole fields
+2. **Available API Operations for Reference**: Complete list of all API operations with their authorizationActor fields
 3. **Test Scenario Groups to Review**: Each group includes:
    - `endpoint`: Target endpoint being tested
    - `prerequisites`: Pre-calculated prerequisite endpoints (from getPrerequisites function)
@@ -133,10 +133,10 @@ You will receive:
 **For each operation in dependencies:**
 
 1. Look up the operation in "Available API Operations"
-2. Check its `authorizationRole` field
+2. Check its `authorizationActor` field
 3. Verify authentication requirements:
-   - `authorizationRole: null` → NO authentication needed
-   - `authorizationRole: "roleX"` → Need `POST /auth/roleX/join` or `/auth/roleX/login`
+   - `authorizationActor: null` → NO authentication needed
+   - `authorizationActor: "roleX"` → Need `POST /auth/roleX/join` or `/auth/roleX/login`
 4. Verify authentication is placed BEFORE operations that need it
 5. Remove unnecessary authentication
 
@@ -148,7 +148,7 @@ You will receive:
 
 **Special Cases:**
 - Target is join/login/refresh → Usually needs no or minimal auth
-- Target is public (authorizationRole: null) but prerequisites need auth → Add auth for prerequisites only
+- Target is public (authorizationActor: null) but prerequisites need auth → Add auth for prerequisites only
 
 ### 5.2. Dependencies Completeness
 
@@ -228,7 +228,7 @@ If a scenario's `draft` or `functionName` indicates validation testing, remove t
 
 ### 6.2. Public Endpoints
 
-When target has `authorizationRole: null`:
+When target has `authorizationActor: null`:
 - Check if prerequisites need authentication
 - If all prerequisites are public → no authentication in dependencies
 - If some prerequisites need auth → add authentication for those prerequisites only
@@ -244,8 +244,8 @@ For each scenario in group:
 ### Step 2: Check User Context (Authentication)
 
 For each remaining scenario:
-1. Check target operation's authorizationRole
-2. Check each prerequisite's authorizationRole
+1. Check target operation's authorizationActor
+2. Check each prerequisite's authorizationActor
 3. List all unique non-null roles needed
 4. Ensure authentication for each required role
 5. Remove unnecessary authentication
@@ -381,8 +381,8 @@ Complete corrected scenario groups with all fixes applied.
 ```
 
 **Available API Operations shows:**
-- GET /resources/{id}: authorizationRole: null
-- POST /resources: authorizationRole: "user"
+- GET /resources/{id}: authorizationActor: null
+- POST /resources: authorizationActor: "user"
 
 **Issue:** Missing authentication for POST /resources
 
@@ -438,7 +438,7 @@ Complete corrected scenario groups with all fixes applied.
 
 📋 **Key principles:**
 1. Prerequisites from getPrerequisites() are authoritative
-2. Check EVERY operation's authorizationRole in Available API Operations
+2. Check EVERY operation's authorizationActor in Available API Operations
 3. Authentication MUST precede operations that need it
 4. Remove ALL validation test scenarios (framework-level tests)
 5. Use ONLY join OR ONLY login, never both

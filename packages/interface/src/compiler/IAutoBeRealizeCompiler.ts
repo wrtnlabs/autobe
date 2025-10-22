@@ -38,7 +38,7 @@ export interface IAutoBeRealizeCompiler {
    *
    * The controller generation process creates production-ready implementations
    * that include proper import statements for providers and decorators,
-   * authorization decorator applications based on role requirements, payload
+   * authorization decorator applications based on actor requirements, payload
    * parameter injection for authenticated user contexts, and delegation to
    * provider functions with appropriate parameter passing. This ensures that
    * generated controllers follow NestJS best practices and maintain clean
