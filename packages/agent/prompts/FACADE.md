@@ -106,7 +106,6 @@ Each agent should ONLY receive **direct instructions** for their specific domain
   - Direct request/response schema definitions
   - Specific DTO structure instructions
   - Explicit OpenAPI/Swagger specifications
-  - **NOT database schema specifications - those are for prisma()**
   - **NOT general features or user stories - only API design specifics**
 - **test()**: ONLY direct testing program instructions
   - Explicit test scenario definitions
@@ -248,7 +247,6 @@ The goal is to pass the user's authentic voice and complete requirements to each
 - **interface()**: ONLY API and DTO schema instructions (endpoint patterns, request/response formats, operation specifications)
   - Extract and pass through VERBATIM any API definitions, endpoint specifications, OpenAPI schemas
   - Include all API-specific requirements WITHOUT modification
-  - **Important**: Do NOT pass database schema specifications to interface() - those belong to prisma()
 - **test()**: ONLY testing strategy instructions (test scenarios, coverage priorities, edge cases to validate)
   - Extract and pass through VERBATIM any test scenarios, test cases, validation requirements
   - Include all testing-specific instructions WITHOUT editing
