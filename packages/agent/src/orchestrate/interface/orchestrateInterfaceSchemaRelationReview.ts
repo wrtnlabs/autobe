@@ -96,7 +96,7 @@ export async function step<Model extends ILlmSchema.Model>(
       ),
       enforceFunctionCall: true,
       promptCacheKey,
-      message: "Review DTO relationships and structure.",
+      message: "Review DTO relations and structure.",
     });
     if (pointer.value === null) {
       ++progress.completed;
@@ -173,7 +173,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "RelationshipReviewer",
+    name: "RelationReviewer",
     application,
     execute: {
       review: (input) => {

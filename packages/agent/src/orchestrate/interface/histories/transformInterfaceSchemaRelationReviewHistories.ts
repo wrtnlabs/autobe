@@ -48,20 +48,20 @@ export const transformInterfaceSchemaRelationReviewHistories = (
       type: "assistantMessage",
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
-        Here are the schemas that need relationship and structural review:
+        Here are the schemas that need relation and structural review:
 
         \`\`\`json
         ${JSON.stringify(schemaDescriptive)}
         \`\`\`
 
-        Please review these schemas for relationship and structure issues:
+        Please review these schemas for relation and structure issues:
         1. Inline object types that should be extracted to named types with $ref
         2. Foreign key transformations (raw IDs vs object references)
-        3. Relationship classifications (Composition vs Association vs Aggregation)
+        3. Relation classifications (Composition vs Association vs Aggregation)
         4. Actor reversal violations (User.articles[], Seller.sales[])
         5. Missing IInvert types for alternative perspectives
 
-        Fix ALL relationship and structural issues and return only the modified schemas in the content field.
+        Fix ALL relation and structural issues and return only the modified schemas in the content field.
       `,
     },
   ];
