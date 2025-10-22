@@ -150,7 +150,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
             For authentication operations (login, join, refresh), the response body type name must follow the convention "I{RoleName}.IAuthorized".
 
             This standardized naming convention ensures consistency across all authentication endpoints and clearly identifies authorization response types.
-            The Role name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).
+            The actor name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).
           `,
         });
     });

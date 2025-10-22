@@ -83,7 +83,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
 
   export interface IDecorator {
     /**
-     * The name of the Decorator to be generated in {Role}Auth format (e.g.,
+     * The name of the Decorator to be generated in {Actor}Auth format (e.g.,
      * AdminAuth, UserAuth). This decorator will be used as a parameter
      * decorator in Controller methods to automatically authenticate and
      * authorize users for the specific role, injecting the authenticated user
@@ -106,7 +106,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
 
   export interface IPayloadType {
     /**
-     * The name of the Payload type to be generated in {Role}Payload format
+     * The name of the Payload type to be generated in {Actor}Payload format
      * (e.g., AdminPayload, UserPayload). This type defines the structure of the
      * authenticated user data that will be injected into Controller methods
      * when using the decorator.
@@ -116,7 +116,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
     name: string & PascalCasePattern;
 
     /**
-     * Complete TypeScript code for the Payload type interface in {Role}Payload
+     * Complete TypeScript code for the Payload type interface in {Actor}Payload
      * format (e.g., AdminPayload, UserPayload). Must include: id field with
      * UUID format validation, type field as role discriminator, and proper
      * typia tags for validation. This interface defines the structure of the

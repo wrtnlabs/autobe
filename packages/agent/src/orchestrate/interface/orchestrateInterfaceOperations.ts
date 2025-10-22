@@ -128,7 +128,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     controller: createController({
       model: ctx.model,
-      roles: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
+      actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
       build: (operations) => {
         pointer.value ??= [];
         const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
@@ -191,7 +191,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  roles: string[];
+  actors: string[];
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
   ) => void;
@@ -216,21 +216,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     operations.forEach((op, i) => {
       // validate roles
-      if (props.roles.length === 0) op.authorizationActors = [];
-      else if (op.authorizationActors.length !== 0 && props.roles.length !== 0)
-        op.authorizationActors.forEach((role, j) => {
-          if (props.roles.includes(role) === true) return;
+      if (props.actors.length === 0) op.authorizationActors = [];
+      else if (op.authorizationActors.length !== 0 && props.actors.length !== 0)
+        op.authorizationActors.forEach((actor, j) => {
+          if (props.actors.includes(actor) === true) return;
           errors.push({
             path: `$input.operations[${i}].authorizationActors[${j}]`,
-            expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
+            expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
             description: StringUtil.trim`
-              Role "${role}" is not defined in the roles list.
+              Actor "${actor}" is not defined in the roles list.
 
               Please select one of them below, or do not define (\`null\`):  
 
-              ${props.roles.map((role) => `- ${role}`).join("\n")}
+              ${props.actors.map((role) => `- ${role}`).join("\n")}
             `,
-            value: role,
+            value: actor,
           });
         });
     });

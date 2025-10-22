@@ -1430,7 +1430,7 @@ model wrtn_ai_model_pricings {
 
 ## 12. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
-### Actor Role 검증
+### Actor 검증
 - [ ] `AutoBeAnalyzeRole`을 정확히 2개(`moderator`, `employee`)만 정의했는가?
 - [ ] role/title/position별로 별도의 actor를 만들지 않았는가?
 - [ ] API 설계 시 2개의 actor 기준으로만 분리했는가?

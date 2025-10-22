@@ -587,12 +587,12 @@ export namespace AutoBeTest {
    *
    * - Different business logic paths are needed (not just validation)
    * - Complex conditional workflows that can't be expressed as simple predicates
-   * - Role-based or feature-flag dependent test scenarios
+   * - Actor-based or feature-flag dependent test scenarios
    * - Multi-step conditional operations where predicates are insufficient
    *
    * Business scenarios requiring conditional logic:
    *
-   * - Role-based test flows (premium vs regular customers)
+   * - Actor-based test flows (premium vs regular customers)
    * - Feature availability testing with different user journeys
    * - Optional business process steps based on entity state
    * - Complex workflow branching that involves multiple operations per branch
