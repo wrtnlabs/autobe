@@ -657,7 +657,7 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 ### 4.1. Theoretical Foundation
 
-**Core Principle**: DTOs model data relations based on three fundamental concepts:
+**Core Principle**: DTOs model data relations based on three fundamental concepts, but the representation of these relations varies significantly across Read, Create, and Update DTOs.
 
 #### 4.1.1. Data Lifecycle Theory
 
@@ -908,60 +908,217 @@ interface IEnterpriseEmployee {
 }
 ```
 
-### 4.4. Foreign Key Transformation Strategy
+### 4.4. DTO-Specific Foreign Key Transformation Strategy
 
-**Principle**: Foreign keys in Response DTOs should be transformed to objects for better API usability.
+**FUNDAMENTAL TRUTH**: The same relation is expressed differently based on DTO type (Read, Create, Update).
 
-#### 4.4.1. Classification of Foreign Keys
+#### 4.4.1. The Transformation Matrix
 
-**Two Categories**:
+| Relation Type | Read DTO (Response) | Create DTO (Request) | Update DTO (Request) |
+|--------------|-------------------|-------------------|-------------------|
+| **Composition** | Full nested objects/arrays | Nested ICreate objects | Separate endpoints or full replacement |
+| **Association** | Transformed to full objects | Reference via ID fields | Changeable references via IDs |
+| **Aggregation** | Not included (counts only) | Not applicable | Not applicable |
+| **Actor Relations** | Never included from auth | Never accept IDs | Never allow changes |
 
-1. **Hierarchical Parent FK**: Points to direct parent in a composition hierarchy
-   - Keep as ID to prevent circular references
-   - Example: `article_id` in `bbs_article_comments`
+#### 4.4.2. Response DTOs (Read Operations)
 
-2. **Contextual Reference FK**: Points to independent entity providing context
-   - Transform to object reference
+**Rule**: Transform ALL contextual FKs to objects for complete information.
+
+**Two Categories of FKs in Response DTOs**:
+
+1. **Hierarchical Parent FK**: Keep as ID to prevent circular references
+   - Direct parent in a composition hierarchy
+   - Example: `article_id` in comment when article contains comments[]
+
+2. **Contextual Reference FK**: Transform to object
+   - Any FK providing context or additional information
    - Examples: `author_id`, `category_id`, `seller_id`
 
-#### 4.4.2. Transformation Rules
-
 ```typescript
-// Decision Matrix for FK xxx_id:
-// 1. Is XXX the direct parent that contains this entity in an array?
-//    YES → Keep as ID (hierarchical parent)
-//    NO → Continue
-// 
-// 2. Is XXX an independent entity (actor, category, status)?
-//    YES → Transform to object (contextual reference)
-
-// ✅ CORRECT: Response DTOs
+// ✅ CORRECT: Response DTOs with transformed FKs
 interface IBbsArticle {
-  // Contextual references → Objects
-  author: IBbsMember.ISummary;      // author_id → object
+  // Associations → Full objects
+  author: IBbsMember.ISummary;      // bbs_member_id → object
   category: IBbsCategory;           // category_id → object
-  // No raw FKs exposed
+  
+  // Compositions → Full arrays
+  attachments: IBbsArticleAttachment[];  // Created with article
+  
+  // Aggregations → Not included (counts only)
+  comments_count: number;           // GET /articles/:id/comments
+  likes_count: number;              // GET /articles/:id/likes
 }
 
 interface IBbsArticleComment {
-  // Hierarchical parent → ID
-  article_id: string;               // Article contains comments[]
-  // Contextual reference → Object
+  // Hierarchical parent → Keep as ID
+  article_id: string;               // Parent contains this
+  
+  // Association → Transform to object
   author: IBbsMember.ISummary;      // commenter_id → object
 }
 
-interface IShoppingSaleReview {
-  // Hierarchical parent → ID
-  sale_id: string;                  // If sale might have reviews[]
-  // Contextual references → Objects
-  customer: IShoppingCustomer.ISummary;  // customer_id → object
+interface IShoppingSale {
+  // All associations transformed
+  seller: IShoppingSeller.ISummary;     // seller_id → object
+  section: IShoppingSection;            // section_id → object
+  categories: IShoppingCategory[];      // category_ids → objects
+  
+  // Compositions included
+  units: IShoppingSaleUnit[];           // Deep composition tree
+}
+```
+
+#### 4.4.3. Create DTOs (Request Operations)
+
+**Rule**: Use IDs for references, nested objects for compositions.
+
+**Two Patterns for Relations in Create DTOs**:
+
+1. **Reference Relations (Association/Aggregation)**: Use ID fields
+   - Selecting existing entities
+   - Example: `category_id`, `section_id`
+
+2. **Composition Relations**: Use nested ICreate objects
+   - Creating entities together in same transaction
+   - Example: `attachments`, `units`, `items`
+
+```typescript
+// ✅ CORRECT: Create DTOs with proper relation handling
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  
+  // REFERENCE relations → IDs
+  category_id: string;              // Select existing category
+  parent_id?: string;               // Select parent (if reply)
+  
+  // COMPOSITION relations → Nested objects
+  attachments?: IBbsArticleAttachment.ICreate[] {
+    filename: string;
+    filesize: number;
+    mimetype: string;
+    url: string;
+  };
+  
+  // ❌ NEVER include actor IDs
+  // author_id - handled by auth context
 }
 
-// ✅ CORRECT: Request DTOs
-interface IBbsArticle.ICreate {
-  // Only accept IDs for references
-  category_id: string;             // Client selects category
-  // author_id is FORBIDDEN (from JWT)
+interface IShoppingSale.ICreate {
+  name: string;
+  description: string;
+  
+  // REFERENCE relations → IDs
+  section_id: string;               // Select section
+  category_ids: string[];           // Select categories
+  
+  // COMPOSITION relations → Deep nested creation
+  units: IShoppingSaleUnit.ICreate[] {
+    name: string;
+    price: number;
+    
+    options: IShoppingSaleUnitOption.ICreate[] {
+      name: string;
+      type: string;
+      candidates: IShoppingSaleUnitOptionCandidate.ICreate[];
+    };
+    
+    stocks: IShoppingSaleUnitStock.ICreate[] {
+      quantity: number;
+      warehouse_id: string;         // Reference within composition
+    };
+  };
+  
+  // ❌ NO seller_id (auth handles this)
+}
+
+interface IShoppingOrder.ICreate {
+  // REFERENCE relations (optional saved data)
+  shipping_address_id?: string;     // Use saved address
+  payment_method_id?: string;       // Use saved payment
+  
+  // COMPOSITION relations
+  items: IShoppingOrderItem.ICreate[] {
+    sale_id: string;                // Reference to sale
+    unit_id: string;                // Reference to unit
+    quantity: number;
+    selected_options: ISelectedOption.ICreate[];
+  };
+  
+  // Alternative compositions (when not using saved)
+  shipping?: IShippingInfo.ICreate;
+  payment?: IShoppingOrderPayment.ICreate;
+  
+  // ❌ NO customer_id (auth handles this)
+}
+```
+
+#### 4.4.4. Update DTOs (Request Operations)
+
+**Rule**: Only allow updating non-structural relations.
+
+**Three Categories in Update DTOs**:
+
+1. **Changeable References**: Can be updated
+   - Classifications, categories, sections
+   - Example: `category_id`, `section_id`
+
+2. **Immutable Relations**: Cannot be changed
+   - Ownership (author_id, seller_id, customer_id)
+   - Structural relations (parent_id, article_id)
+
+3. **Complex Updates**: Use separate endpoints
+   - Compositions often managed separately
+   - Example: PUT /sales/:id/units/:unitId
+
+```typescript
+// ✅ CORRECT: Update DTOs with proper restrictions
+interface IBbsArticle.IUpdate {
+  title?: string;
+  content?: string;
+  
+  // Changeable references
+  category_id?: string;             // Can change category
+  
+  // ❌ CANNOT change ownership
+  // author_id - immutable
+  
+  // Compositions managed separately
+  // POST /articles/:id/attachments
+  // DELETE /articles/:id/attachments/:attachmentId
+}
+
+interface IShoppingSale.IUpdate {
+  name?: string;
+  description?: string;
+  price?: number;
+  
+  // Changeable references
+  section_id?: string;              // Can move sections
+  category_ids?: string[];          // Can recategorize
+  
+  // ❌ CANNOT change ownership
+  // seller_id - immutable
+  
+  // Complex updates via separate endpoints
+  // PUT /sales/:id/units/:unitId
+  // POST /sales/:id/units
+  // DELETE /sales/:id/units/:unitId
+}
+
+interface IShoppingOrder.IUpdate {
+  // Very limited updates after creation
+  shipping_memo?: string;           // Delivery notes
+  
+  // ❌ CANNOT change structural data
+  // items - order items immutable
+  // payment - payment immutable
+  // customer_id - ownership immutable
+  
+  // Status changes via separate endpoints
+  // POST /orders/:id/cancel
+  // POST /orders/:id/confirm
 }
 ```
 
@@ -1107,9 +1264,33 @@ interface IBbsArticleComment.IInvert {
 interface IBbsArticle.ICreate {
   title: string;
   content: string;
-  category_id: string;             // Reference as ID
-  attachment_ids?: string[];        // Optional attachments
-  // author_id FORBIDDEN (from JWT)
+  
+  // REFERENCE relations → IDs
+  category_id: string;             // Select existing category
+  parent_id?: string;              // Reply to another article
+  
+  // COMPOSITION relations → Nested objects
+  attachments?: IBbsArticleAttachment.ICreate[] {
+    filename: string;
+    filesize: number;
+    mimetype: string;
+    url: string;
+  };
+  
+  // ❌ author_id FORBIDDEN (from JWT)
+}
+
+// Update DTO
+interface IBbsArticle.IUpdate {
+  title?: string;
+  content?: string;
+  
+  // Changeable references
+  category_id?: string;            // Can recategorize
+  
+  // ❌ CANNOT change
+  // author_id - ownership immutable
+  // parent_id - structural relation immutable
 }
 ```
 
@@ -1179,9 +1360,89 @@ interface IShoppingOrder {
   payment: IShoppingOrderPayment;       // Payment info
   shipping: IShippingInfo;              // Shipping details
 }
+
+// Sale Create DTO
+interface IShoppingSale.ICreate {
+  name: string;
+  description: string;
+  price: number;
+  
+  // REFERENCE relations → IDs
+  section_id: string;                // Select section
+  category_ids: string[];            // Select categories
+  
+  // COMPOSITION relations → Deep nested creation
+  units: IShoppingSaleUnit.ICreate[] {
+    name: string;
+    price: number;
+    
+    options: IShoppingSaleUnitOption.ICreate[] {
+      name: string;
+      type: string;
+      candidates: IShoppingSaleUnitOptionCandidate.ICreate[];
+    };
+    
+    stocks: IShoppingSaleUnitStock.ICreate[] {
+      quantity: number;
+      warehouse_id: string;
+    };
+  };
+  
+  // ❌ seller_id FORBIDDEN (from JWT)
+}
+
+// Order Create DTO  
+interface IShoppingOrder.ICreate {
+  // REFERENCE relations (optional)
+  shipping_address_id?: string;     // Use saved address
+  payment_method_id?: string;       // Use saved payment method
+  
+  // COMPOSITION relations
+  items: IShoppingOrderItem.ICreate[] {
+    sale_id: string;                // Reference to sale
+    unit_id: string;                // Reference to unit
+    quantity: number;
+    selected_options: ISelectedOption.ICreate[];
+  };
+  
+  // Alternative compositions
+  shipping?: IShippingInfo.ICreate;
+  payment?: IShoppingOrderPayment.ICreate;
+  
+  // ❌ customer_id FORBIDDEN (from JWT)
+}
+
+// Sale Update DTO
+interface IShoppingSale.IUpdate {
+  name?: string;
+  description?: string;
+  price?: number;
+  
+  // Changeable references
+  section_id?: string;              // Can move sections
+  category_ids?: string[];          // Can recategorize
+  
+  // ❌ CANNOT change ownership
+  // seller_id - immutable
+  
+  // Units managed separately via:
+  // PUT /sales/:id/units/:unitId
+}
+
+// Order Update DTO
+interface IShoppingOrder.IUpdate {
+  // Very limited after creation
+  shipping_memo?: string;
+  
+  // ❌ CANNOT change structural data
+  // items, payment, customer_id - all immutable
+  
+  // Status via separate endpoints:
+  // POST /orders/:id/cancel
+}
 ```
 
-### 4.8. Summary: Relation Decision Checklist
+### 4.8. Summary: Relation Decision Checklist by DTO Type
 
 Use this checklist for every relation decision:
 
@@ -1190,14 +1451,32 @@ Use this checklist for every relation decision:
 - [ ] **Independent entity?** → Consider Association
 - [ ] **Event-driven?** → Consider Aggregation
 
-#### Step 2: Transform Foreign Keys
+#### Step 2: Apply DTO-Specific Rules
+
+##### For Response DTOs (Read)
+- [ ] **Composition?** → Include as full nested object/array
+- [ ] **Association?** → Transform FK to full object
+- [ ] **Aggregation?** → Exclude (provide counts only)
 - [ ] **Hierarchical parent FK?** → Keep as ID
 - [ ] **Contextual reference FK?** → Transform to object
 
-#### Step 3: Check Special Cases
-- [ ] **Actor entity?** → No reverse arrays
-- [ ] **Many-to-many?** → Check conceptual relation
-- [ ] **Needs IInvert?** → Add parent context
+##### For Create DTOs (Request)
+- [ ] **Composition?** → Accept nested ICreate objects
+- [ ] **Association?** → Accept ID fields for references
+- [ ] **Actor fields?** → EXCLUDE (use JWT auth)
+- [ ] **System fields?** → EXCLUDE (id, created_at, etc.)
+
+##### For Update DTOs (Request)
+- [ ] **Changeable reference?** → Accept ID field
+- [ ] **Ownership relation?** → EXCLUDE (immutable)
+- [ ] **Structural relation?** → EXCLUDE (immutable)
+- [ ] **Complex composition?** → Use separate endpoints
+
+#### Step 3: Consider Special Cases
+- [ ] **Is it an actor?** → Never include reverse references
+- [ ] **Many-to-many?** → Based on conceptual ownership
+- [ ] **Self-reference?** → Include parent, separate API for children
+- [ ] **Needs IInvert?** → Create when child needs parent context
 
 
 ### 4.9. Complete Relation Examples
