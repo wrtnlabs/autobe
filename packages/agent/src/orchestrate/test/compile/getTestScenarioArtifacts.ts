@@ -57,7 +57,7 @@ function filterDocument(
       ),
   );
   const components: AutoBeOpenApi.IComponents = {
-    authorization: document.components.authorization,
+    authorizations: document.components.authorizations,
     schemas: {},
   };
   const visit = (typeName: string) => {

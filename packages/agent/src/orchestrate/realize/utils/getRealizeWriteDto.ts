@@ -37,7 +37,7 @@ function filterDocument(
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
   const components: AutoBeOpenApi.IComponents = {
-    authorization: document.components.authorization,
+    authorizations: document.components.authorizations,
     schemas: {},
   };
 

@@ -139,7 +139,7 @@ const document: AutoBeOpenApi.IDocument = {
         },
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
     },
-    authorization: [
+    authorizations: [
       {
         name: "customer",
         description: "Customer Authorization",

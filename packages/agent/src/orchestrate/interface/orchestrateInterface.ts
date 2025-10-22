@@ -109,7 +109,7 @@ export const orchestrateInterface =
     const document: AutoBeOpenApi.IDocument = {
       operations,
       components: {
-        authorization: ctx.state().analyze?.actors ?? [],
+        authorizations: ctx.state().analyze?.actors ?? [],
         schemas: await orchestrateInterfaceSchemas(ctx, {
           instruction: props.instruction,
           operations,

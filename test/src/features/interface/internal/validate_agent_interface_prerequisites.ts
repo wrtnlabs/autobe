@@ -52,7 +52,7 @@ export const validate_agent_interface_prerequisites = async (
     operations,
     components: {
       schemas,
-      authorization: agent.getContext().state().analyze?.actors ?? [],
+      authorizations: agent.getContext().state().analyze?.actors ?? [],
     },
   };
 

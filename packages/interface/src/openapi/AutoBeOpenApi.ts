@@ -449,8 +449,8 @@ export namespace AutoBeOpenApi {
      * Authorization actor required to access this API operation.
      *
      * This field specifies which user actor is allowed to access this endpoint.
-     * The actor name must correspond exactly to the actual actors defined in your
-     * system's Prisma schema.
+     * The actor name must correspond exactly to the actual actors defined in
+     * your system's Prisma schema.
      *
      * ## Naming Convention
      *
@@ -1079,7 +1079,7 @@ export namespace AutoBeOpenApi {
     schemas: Record<string, IJsonSchemaDescriptive>;
 
     /** Whether includes `Authorization` header or not. */
-    authorization: IAuthorization[];
+    authorizations: IAuthorization[];
   }
 
   /**
