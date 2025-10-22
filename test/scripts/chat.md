@@ -694,6 +694,44 @@ AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, Ope
 
 단, 반복컨대 본 AI chatbot 은 웹소켓으로 구현된다. 따라서 AutoBE 가 만들어낼 Restful API 에서는 오직 `wrtn_chat_sessions` 레코드만 생성할 수 있고, 나머지 레코드들은 오직 읽기 API 로만 구현해야한다. 절대 나머지 엔티티들을 작성하고 편집하는 API 를 설계해서는 아니될 것이다.
 
+### 5.1. Chat Session 생성 API 요구사항
+
+**IWrtnChatSession.ICreate**
+
+채팅 세션을 생성할 때 페르소나 ID는 선택적으로 제공할 수 있다:
+
+```typescript
+export namespace IWrtnChatSession {
+  export interface ICreate {
+    vendor: string; // AI vendor model name
+    title?: string | null;
+    disclosure: "private" | "protected" | "public";
+    wrtn_enterprise_team_id?: string | null; // optional team ID
+    wrtn_enterprise_employee_persona_id?: string | null; // optional persona ID
+  }
+}
+```
+
+**페르소나 ID 처리 로직**:
+
+1. **페르소나 ID가 명시적으로 제공된 경우**: 
+   - 제공된 페르소나 ID를 검증하고 사용
+   - 유효하지 않은 ID인 경우 400 Bad Request 반환
+
+2. **페르소나 ID가 제공되지 않은 경우 (null 또는 undefined)**:
+   - 자동으로 해당 직원의 가장 최근 페르소나를 조회
+   - `GET /enterprise/employees/{employeeId}/personas/latest` 로직과 동일
+   - 페르소나가 존재하면 해당 ID를 사용하여 chat session 생성
+   - 페르소나가 존재하지 않으면 404 Not Found 반환
+
+3. **예외 처리**:
+   - 직원이 페르소나를 한 번도 설정하지 않았고, 페르소나 ID도 제공하지 않은 경우 → 404 Not Found
+   - 삭제된 페르소나 ID를 제공한 경우 → 400 Bad Request
+
+**중요**: 데이터베이스의 `wrtn_chat_sessions.wrtn_enterprise_employee_persona_id`는 NOT NULL이므로, 반드시 유효한 페르소나 ID가 있어야만 chat session을 생성할 수 있다.
+
+이를 통해 사용자는 매번 페르소나를 명시하지 않아도 자동으로 마지막 설정을 사용할 수 있으며, 필요시 다른 페르소나를 지정할 수도 있다.
+
 ### `IWrtnChatHistory`
 
 ```typescript
@@ -929,6 +967,19 @@ model wrtn_enterprise_employee_personas {
 }
 ```
 
+#### 7.1.1. Persona API 요구사항
+
+**직원의 마지막 페르소나 조회**
+
+직원은 자신이 가장 최근에 설정한 페르소나를 조회할 수 있어야 한다. 이는 아직 삭제되지 않은 (`deleted_at`이 `null`인) 레코드 중에서 `created_at`이 가장 최신인 것을 찾아 반환한다.
+
+- **API Endpoint**: `GET /enterprise/employees/{employeeId}/personas/latest`
+- **Response**: 해당 직원의 가장 최근 페르소나 레코드
+- **Error**: 페르소나를 한 번도 설정하지 않은 경우 404 Not Found 반환
+- **권한**: 본인의 페르소나만 조회 가능
+
+이 API는 직원이 자신의 현재 페르소나 설정을 확인할 때나, 새 채팅 세션을 시작할 때 기본 페르소나를 가져오는 데 사용된다.
+
 ### 7.2. Enterprise Procedure
 각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
 
@@ -1028,8 +1079,9 @@ model wrtn_attachment_files {
 - 비용 및 예산 관리
 
 **기업 관리자 (manager)**
-- 전사 레벨 통계 조회
-- 직원 관리 범위 내 상세 정보
+- 자사 전체의 모든 통계
+- 전 직원의 사용량과 활동 내역
+- 팀별, 개인별 상세 분석
 - 비용 정보는 조회만 가능 (수정 불가)
 
 **팀 관리자 (master/manager 직책을 가진 직원)**
@@ -1041,40 +1093,141 @@ model wrtn_attachment_files {
 - 본인의 사용 내역과 통계만 조회
 - 팀이나 전사 통계는 접근 불가
 
-### 9.2. 수집해야 할 핵심 지표
+### 9.2. AI Model 비용 관리
 
-**사용량 메트릭**
-- 토큰 사용량 (입력/출력/캐시/추론 별도 집계)
-- 세션 수와 평균 지속 시간
-- 프로시저 실행 횟수와 성공률
-- 파일 업로드 수와 총 용량
+AI 모델별 비용을 관리하기 위한 테이블 설계:
 
-**비용 추적**
-- 모델별 토큰 단가 적용한 실제 비용
-- 스토리지 비용
-- 예산 대비 사용률
-- 청구 주기별 누적 비용
+```prisma
+model wrtn_ai_model_pricings {
+  id String @id @uuid
+  wrtn_moderator_id String @uuid // 가격을 설정한 관리자
+  wrtn_moderator_session_id String @uuid // for audit tracing
+  code String // "openai/gpt-4o", "anthropic/claude-3-opus" 등
+  name String // 화면 표시용 이름
+  
+  // 토큰당 단가 (USD 기준, 1,000,000 토큰당)
+  input_token_price Float // 입력 토큰 단가
+  output_token_price Float // 출력 토큰 단가
+  cache_token_price Float? // 캐시 토큰 단가 (지원시)
+  reasoning_token_price Float? // 추론 토큰 단가 (지원시)
+  
+  opened_at DateTime
+  closed_at DateTime?
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+  
+  @@unique([code, opened_at])
+  @@index([name])
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_moderator_session_id])
+}
+```
 
-**활동 분석**
-- 일별/주별/월별 사용 추이
-- 시간대별 사용 패턴
-- 가장 많이 사용하는 모델과 프로시저
-- 팀별 기여도와 협업 지수
+이 테이블을 통해:
+- AI 모델별로 서로 다른 토큰 단가를 관리
+- 시간에 따른 가격 변동 이력 추적
+- 특정 시점의 사용량에 대한 정확한 비용 계산 가능
+
+### 9.3. Chat Session 통계 지표
+
+**기본 메트릭**
+- **토큰 사용량**: 입력/출력/캐시/추론 토큰을 각각 별도 집계
+- **비용**: 토큰 사용량 × 모델별 단가로 계산된 실제 비용
+- **세션 수**: 생성된 채팅 세션의 총 개수
+- **연결 시간**: 각 세션의 총 연결 시간 (connected_at ~ disconnected_at)
+
+**집계 차원**
+- **AI 모델별**: vendor 필드 기준으로 그룹핑 (예: openai/gpt-4o, anthropic/claude-3)
+- **주기별**: 일일/주간/월간 단위로 집계
+- **날짜 범위**: 사용자가 지정한 시작일~종료일 범위 내 데이터 조회
+- **조직별**: 법인/팀/개인 단위로 그룹핑
+
+**권한별 조회 범위**
+- **wrtn_moderators (master/manager)**: 모든 기업의 집계 통계 조회 가능
+- **wrtn_enterprise_employees (master)**: 자사 전체의 법인/팀/개인별 통계 조회 가능
+- **wrtn_enterprise_employees (manager)**: 자사 전체의 법인/팀별 통계 조회 가능 (개인별은 본인만)
+- **wrtn_enterprise_employees (member)**: 본인 개인 통계만 조회 가능
+
+**통계 조회 요구사항**
+- AI 모델별로 그룹핑하여 통계를 볼 수 있어야 한다
+- 일일/주간/월간/연간 단위로 집계할 수 있어야 한다  
+- 날짜 범위를 지정하여 조회할 수 있어야 한다
+- 법인/팀/개인 단위로 그룹핑하여 조회할 수 있어야 한다
+- 권한에 따라 조회 가능한 범위가 제한되어야 한다
+
+### 9.4. Procedure Session 통계 지표
+
+**기본 메트릭**
+- **토큰 사용량**: 각 프로시저별 입력/출력/캐시/추론 토큰 집계
+- **비용**: 토큰 사용량 × 모델별 단가로 계산된 실제 비용
+- **실행 횟수**: 각 프로시저의 총 실행 횟수
+- **성공률**: success=true인 비율
+- **평균 실행 시간**: started_at ~ completed_at 평균
+
+**집계 차원**
+- **프로시저별**: wrtn_procedure_id 기준으로 각 프로시저별 통계
+- **AI 모델별**: 각 프로시저가 사용한 AI 모델별로 세분화
+- **주기별**: 일일/주간/월간 단위로 집계
+- **날짜 범위**: 사용자가 지정한 범위 내 데이터
+- **조직별**: 법인/팀/개인 단위로 그룹핑
+
+**권한별 조회 범위**
+- Chat Session과 동일한 권한 체계 적용
+- 추가로 프로시저 사용 권한이 있는 것만 조회 가능
+
+**통계 조회 요구사항**
+- 각 프로시저 종류별로 통계를 구분하여 볼 수 있어야 한다
+- AI 모델별로 구분하여 조회할 수 있어야 한다
+- 일일/주간/월간/연간 단위로 집계할 수 있어야 한다
+- 법인/팀/개인 단위로 그룹핑하여 조회할 수 있어야 한다
+- 실행 횟수, 성공률, 토큰 사용량, 비용 등의 지표를 확인할 수 있어야 한다
+
+### 9.5. 종합 대시보드 구성
+
+**실시간 모니터링**
+- 현재 활성 세션 수 (채팅/프로시저)
+- 실시간 토큰 사용량 및 비용 누적
+- 최근 1시간/24시간 추이 그래프
+
+**비용 분석**
+- 월 누적 비용 및 예산 대비 사용률
+- AI 모델별 비용 비중
+- 팀별/개인별 비용 순위
+- 비용 예측 (현재 사용 추세 기반)
+
+**사용 패턴 분석**
+- 시간대별 사용량 히트맵
+- 요일별 사용 패턴
+- 가장 많이 사용하는 AI 모델 TOP 5
+- 가장 많이 실행하는 프로시저 TOP 10
 
 **성능 지표**
-- API 응답 시간
-- 동시 접속자 수
-- 시스템 에러율
-- 세션당 평균 토큰 사용량
+- 평균 응답 시간
+- 에러율 및 실패 원인 분석
+- 세션당 평균 대화 턴 수
+- 프로시저 성공률 추이
 
-### 9.3. 실시간 대시보드
+### 9.6. 통계 조회 요구사항 요약
 
-대시보드는 사용자 역할에 따라 다른 레이아웃을 제공해야 한다:
+**Chat Session 통계가 제공해야 할 정보**
+- 토큰 사용량 (입력/출력/캐시/추론별)
+- 비용 (토큰 사용량 × 모델별 단가)
+- 세션 수
+- 대화 시간 (연결 시간)
+- AI 모델별/주기별/날짜 범위별/조직별로 조회 가능
 
-- **시스템 대시보드**: 전체 서비스 상태 모니터링
-- **경영진 대시보드**: 비용과 ROI 중심
-- **팀 대시보드**: 생산성과 협업 중심  
-- **개인 대시보드**: 본인 사용 패턴 분석
+**Procedure Session 통계가 제공해야 할 정보**
+- 각 프로시저별 토큰 사용량과 비용
+- 실행 횟수와 성공률
+- 평균 실행 시간
+- 프로시저 종류별/AI 모델별/주기별/조직별로 조회 가능
+
+**권한별 접근 제한**
+- wrtn_moderators: 전체 기업의 집계 통계
+- enterprise employees (master): 자사 전체 통계
+- enterprise employees (manager): 자사 법인/팀 통계
+- enterprise employees (member): 본인 개인 통계만
 
 ### 9.4. 감사 추적 (Audit Trail)
 
