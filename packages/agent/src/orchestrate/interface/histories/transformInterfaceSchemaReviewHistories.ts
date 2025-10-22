@@ -3,55 +3,38 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceSchemaReviewHistories = (
-  state: AutoBeState,
-  document: AutoBeOpenApi.IDocument,
-  schema: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-): Array<
+export const transformInterfaceSchemaReviewHistories = (props: {
+  state: AutoBeState;
+  systemPrompt: string;
+  operations: AutoBeOpenApi.IOperation[];
+  everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const operations = document.operations.filter(
-    (op) =>
-      (op.requestBody && !!schema[op.requestBody.typeName]) ||
-      (op.responseBody && !!schema[op.responseBody.typeName]),
-  );
   return [
     {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+      text: props.systemPrompt,
     },
-    ...transformInterfaceAssetHistories(state),
+    ...transformInterfaceAssetHistories(props.state),
     {
       type: "assistantMessage",
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
-        ## Operations
+        ## Schemas (Complete Set for Reference)
 
-        The Schema Agent has generated schemas for the following 
-        API operations. These operations define what endpoints exist 
-        and what request/response types they use:
-
-        \`\`\`json
-        ${JSON.stringify(document.operations)}
-        \`\`\`
-
-        All schema types referenced in these operations (in requestBody 
-        and responses) must exist in the schemas.
-
-        ## Schemas
-
-        Here is the COMPLETE set of all schemas in the system for 
+        Here is the COMPLETE set of all schemas in the system for
         reference context:
 
         \`\`\`json
-        ${JSON.stringify(document.components.schemas)}
+        ${JSON.stringify(props.everySchemas)}
         \`\`\`
       `,
     },
@@ -61,25 +44,28 @@ export const transformInterfaceSchemaReviewHistories = (
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
         ## Schemas Needing Review
+
         From the complete schema set above, here are the SPECIFIC schemas that need review:
 
         \`\`\`json
-        ${JSON.stringify(schema)}
+        ${JSON.stringify(props.reviewSchemas)}
         \`\`\`
 
-        IMPORTANT: Only these ${Object.keys(schema).length} schemas 
-        need review and potential modification. The other schemas in 
+        IMPORTANT: Only these ${Object.keys(props.reviewSchemas).length} schemas
+        need review and potential modification. The other schemas in
         the full set are provided for reference only.
 
-        ## Operations
-        Here are the API operations that utilize these specific schemas.
-        They at least reference one of the schemas needing review in 
-        their request or response bodies.
+        ## Operations (Filtered for Target Schemas)
 
-        Reference these operations to understand how the schemas are used:
+        Here are the API operations that directly use the schemas under review.
+        These operations reference at least one of the target schemas via
+        requestBody.typeName or responseBody.typeName.
+
+        This FILTERED list helps you understand the exact usage context for
+        the schemas you're reviewing:
 
         \`\`\`json
-        ${JSON.stringify(operations)}
+        ${JSON.stringify(props.operations)}
         \`\`\`
       `,
     },

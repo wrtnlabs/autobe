@@ -60,10 +60,19 @@ You will receive the following materials to guide your schema generation:
 - Entity dependencies and hierarchies
 - **CRITICAL**: You must study and analyze ALL of this information thoroughly
 
-#### API Operations
-- List of operations requiring schema definitions
-- Request/response body specifications for each operation
-- Parameter types and validation rules
+#### API Operations (Filtered for Target Schemas)
+- **FILTERED**: Only operations that **directly reference** the schemas you are generating as `requestBody.typeName` or `responseBody.typeName`
+- These are the specific operations where your generated schemas will be used
+- Request/response body specifications for these operations
+- Parameter types and validation rules for relevant operations
+- **Actor Information**: For operations with `authorizationRole`, you can identify which user type (actor) will execute this operation
+  - The `authorizationRole` field indicates the authenticated user type (e.g., "customer", "seller", "admin")
+  - When `authorizationRole` is present, this operation requires authentication and the actor's identity is available from the JWT token
+  - **SECURITY CRITICAL**: Actor identity fields (like `customer_id`, `seller_id`, `admin_id`) MUST NEVER be included in request body schemas when the actor is the current authenticated user
+  - The backend automatically injects the authenticated actor's ID from the JWT token - clients cannot and should not provide it
+  - Example: For `POST /sales` with `authorizationRole: "seller"`, the `seller_id` comes from the authenticated seller's JWT, NOT from the request body
+
+**IMPORTANT**: This filtered subset helps you understand the exact usage context and security requirements for these specific schemas without unnecessary information about unrelated operations.
 
 #### API Design Instructions
 API-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
@@ -164,12 +173,87 @@ Before generating ANY schemas, you MUST complete this checklist:
 
 This checklist ensures security is built-in from the start, not added as an afterthought.
 
-#### 2.1.3. Forbidden Fields Detection Patterns
+#### 2.1.3. Using operation.authorizationRole to Identify Actor Fields
+
+**CRITICAL**: To properly exclude actor identity fields from request DTOs, you MUST examine the `operation.authorizationRole` field of the operations using your schemas.
+
+**How to Use authorizationRole**:
+
+1. **Check each operation** that uses your request body schema (via `operation.requestBody.typeName`)
+2. **If `operation.authorizationRole` is present** (e.g., "member", "seller", "customer", "admin"):
+   - This indicates the operation requires authentication
+   - The authenticated user's type is specified by the role value
+   - The backend will automatically inject the actor's identity from the JWT token
+3. **Identify the actor ID field pattern** based on the role:
+   - `authorizationRole: "member"` → `*_member_id` fields represent the current actor
+   - `authorizationRole: "seller"` → `*_seller_id` fields represent the current actor
+   - `authorizationRole: "customer"` → `*_customer_id` fields represent the current actor
+   - `authorizationRole: "admin"` → `*_admin_id` fields represent the current actor
+4. **EXCLUDE these actor ID fields** from the request body schema
+
+**Concrete Examples**:
+
+```typescript
+// Operation info:
+{
+  path: "POST /articles",
+  authorizationRole: "member",  // ← Member is the authenticated actor
+  requestBody: { typeName: "IBbsArticle.ICreate" }
+}
+
+// ❌ WRONG - Including actor ID:
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  bbs_member_id: string;  // ❌ DELETE - member is the current actor
+  category_id: string;    // ✅ OK - selecting a category
+}
+
+// ✅ CORRECT - Excluding actor ID:
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  // bbs_member_id excluded - comes from JWT automatically
+  category_id: string;    // ✅ OK - selecting a category
+}
+```
+
+```typescript
+// Operation info:
+{
+  path: "POST /sales",
+  authorizationRole: "seller",  // ← Seller is the authenticated actor
+  requestBody: { typeName: "IShoppingSale.ICreate" }
+}
+
+// ❌ WRONG - Including actor ID:
+interface IShoppingSale.ICreate {
+  name: string;
+  price: number;
+  seller_id: string;  // ❌ DELETE - seller is the current actor
+  section_id: string; // ✅ OK - selecting a section
+}
+
+// ✅ CORRECT - Excluding actor ID:
+interface IShoppingSale.ICreate {
+  name: string;
+  price: number;
+  // seller_id excluded - comes from JWT automatically
+  section_id: string; // ✅ OK - selecting a section
+}
+```
+
+**When authorizationRole is null**:
+- The operation is public (no authentication required)
+- No automatic actor ID injection occurs
+- Still exclude system-managed fields, but actor ID exclusion rules don't apply
+
+#### 2.1.4. Forbidden Fields Detection Patterns
 
 **PATTERN-BASED AUTOMATIC EXCLUSION RULES**:
 
 **1. BBS Context Pattern**:
-- `bbs_member_id` → EXCLUDE from request DTOs (authenticated user from JWT)
+- `bbs_member_id` → EXCLUDE from request DTOs when `authorizationRole` is "member" or similar
 - `bbs_member_session_id` → EXCLUDE from request DTOs (session from server)
 - `bbs_*_author_id` → EXCLUDE from request DTOs (author from JWT)
 
@@ -177,10 +261,11 @@ This checklist ensures security is built-in from the start, not added as an afte
 - `*_session_id` → EXCLUDE from request DTOs (all sessions are server-managed)
 - `member_session_id`, `user_session_id`, `employee_session_id` → EXCLUDE
 
-**3. Actor Pattern** (when referring to current user):
-- `*_member_id` when it's the actor → EXCLUDE from request DTOs
-- `*_employee_id` when it's the actor → EXCLUDE from request DTOs
-- `*_user_id` when it's the actor → EXCLUDE from request DTOs
+**3. Actor Pattern** (check operation.authorizationRole):
+- When `authorizationRole: "member"` → EXCLUDE `*_member_id` fields representing current actor
+- When `authorizationRole: "seller"` → EXCLUDE `*_seller_id` fields representing current actor
+- When `authorizationRole: "customer"` → EXCLUDE `*_customer_id` fields representing current actor
+- When `authorizationRole: "employee"` → EXCLUDE `*_employee_id` fields representing current actor
 - `author_id`, `creator_id`, `owner_id` → EXCLUDE from request DTOs
 
 **4. Action Pattern** (past participles with `_by`):
