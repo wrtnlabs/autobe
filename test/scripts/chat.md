@@ -745,11 +745,31 @@ model wrtn_chat_session_histories {
   wrtn_chat_session_connection_id String @uuid
   type String // Discriminator type
   data String // JSON value, encrypted
-  token_usage String? // JSON value
   created_at DateTime
 
   @@index([wrtn_chat_session_id, created_at])
   @@index([wrtn_chat_session_connection_id])
+}
+
+// Token usage for individual chat history entries (1:1 relationship)
+model wrtn_chat_session_history_token_usages {
+  id String @id @uuid
+  wrtn_chat_session_history_id String @uuid
+  
+  // Total tokens
+  total Int
+  
+  // Input token breakdown
+  input_total Int
+  input_cached Int
+  
+  // Output token breakdown  
+  output_total Int
+  output_reasoning Int
+  output_accepted_prediction Int
+  output_rejected_prediction Int
+  
+  @@unique([wrtn_chat_session_history_id])
 }
 
 // File attachments for chat history entries
@@ -768,19 +788,37 @@ model wrtn_chat_session_aggregates {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
   history_count Int
-  token_usage String // JSON value
 
   @@unique([wrtn_chat_session_id])
+}
+
+// Token usage aggregates for chat sessions (1:1 relationship)
+model wrtn_chat_session_aggregate_token_usages {
+  id String @id @uuid
+  wrtn_chat_session_aggregate_id String @uuid
+  
+  // Total tokens
+  total Int
+  
+  // Input token breakdown
+  input_total Int
+  input_cached Int
+  
+  // Output token breakdown  
+  output_total Int
+  output_reasoning Int
+  output_accepted_prediction Int
+  output_rejected_prediction Int
+  
+  @@unique([wrtn_chat_session_aggregate_id])
 }
 ```
 
 AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, OpenAI GPT 등의 AI 모델과 자연어로 대화할 수 있는 서비스이다.
 
-> **중요**: 이 섹션의 모든 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드들은 반드시 JSON으로 유지해야 한다:
+> **중요**: 이 섹션의 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드는 반드시 JSON으로 유지해야 한다:
 >
-> - `wrtn_chat_session_histories.data` - JSON value, encrypted
-> - `wrtn_chat_session_histories.token_usage` - JSON value
-> - `wrtn_chat_session_aggregates.token_usage` - JSON value
+> - `wrtn_chat_session_histories.data` - JSON value, encrypted (채팅 메시지 내용)
 >
 > 추가 필드를 달아도 된다는 것은 새로운 컬럼을 추가할 수 있다는 의미이지, 기존 JSON 필드를 분해하라는 의미가 절대 아니다.
 
@@ -901,6 +939,14 @@ export interface IWrtnChatFunctionCallHistory {
 
 토큰 사용량 타입은 이렇게 정의한다.
 
+이 DTO는 정규화된 토큰 사용량 테이블들의 데이터를 표현한다:
+- `wrtn_chat_session_history_token_usages` - 개별 채팅 히스토리의 토큰 사용량
+- `wrtn_chat_session_aggregate_token_usages` - 채팅 세션 전체의 누적 토큰 사용량  
+- `wrtn_procedure_session_history_token_usages` - 개별 프로시저 히스토리의 토큰 사용량
+- `wrtn_procedure_session_aggregate_token_usages` - 프로시저 세션 전체의 누적 토큰 사용량
+
+토큰을 소비하지 않는 히스토리 엔트리(예: 사용자 메시지, 시스템 이벤트 등)의 경우, 대응하는 토큰 사용량 레코드가 존재하지 않을 수 있다. 이 경우 API 레벨에서 모든 값을 0으로 채워서 반환한다.
+
 물론 이 또한 AutoBE가 상세한 설명을 보충하여 (JSON schema 상 `description`) DTO 정의해야함.
 
 ```typescript
@@ -995,7 +1041,6 @@ model wrtn_procedure_session_histories {
   arguments String    // JSON value, encrypted
   success Boolean?    // Whether returned or exception thrown
   value String?       // JSON value of return or exception, encrypted
-  token_usage String? // JSON value
   created_at DateTime
   completed DateTime?
   
@@ -1003,24 +1048,64 @@ model wrtn_procedure_session_histories {
   @@index([wrtn_procedure_session_connection_id])
 }
 
+// Token usage for individual procedure history entries (1:1 relationship)
+model wrtn_procedure_session_history_token_usages {
+  id String @id @uuid
+  wrtn_procedure_session_history_id String @uuid
+  
+  // Total tokens
+  total Int
+  
+  // Input token breakdown
+  input_total Int
+  input_cached Int
+  
+  // Output token breakdown  
+  output_total Int
+  output_reasoning Int
+  output_accepted_prediction Int
+  output_rejected_prediction Int
+  
+  @@unique([wrtn_procedure_session_history_id])
+}
+
 // Aggregated metrics for procedure sessions
 model wrtn_procedure_session_aggregates {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
   history_count Int
-  token_usage String // JSON value, total aggregation
   
   @@unique([wrtn_procedure_session_id])
+}
+
+// Token usage aggregates for procedure sessions (1:1 relationship)
+model wrtn_procedure_session_aggregate_token_usages {
+  id String @id @uuid
+  wrtn_procedure_session_aggregate_id String @uuid
+  
+  // Total tokens
+  total Int
+  
+  // Input token breakdown
+  input_total Int
+  input_cached Int
+  
+  // Output token breakdown  
+  output_total Int
+  output_reasoning Int
+  output_accepted_prediction Int
+  output_rejected_prediction Int
+  
+  @@unique([wrtn_procedure_session_aggregate_id])
 }
 ```
 
 함수 형태의 AI 서비스.
 
-**중요**: 이 섹션의 모든 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드들은 반드시 JSON으로 유지해야 한다:
+**중요**: 이 섹션의 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드들은 반드시 JSON으로 유지해야 한다:
 - `wrtn_procedure_session_histories.arguments` - JSON value, encrypted
 - `wrtn_procedure_session_histories.value` - JSON value, encrypted
-- `wrtn_procedure_session_histories.token_usage` - JSON value
-- `wrtn_procedure_session_aggregates.token_usage` - JSON value
+
 추가 필드를 달아도 된다는 것은 새로운 컬럼을 추가할 수 있다는 의미이지, 기존 JSON 필드를 분해하라는 의미가 절대 아니다.
 
 뤼튼 엔터프라이즈에서 말하는 AI Procedure 란, 위 [4. AI Chatbot](#4-ai-chatbot) 과 같은 챗봇의 형태가 아닌, 지정된 형태의 인풋을 받아서 약속된 형태의 아웃풋을 반환하는 함수형 서비스이다. 문자 그대로 함수(프로시저) 형태의 AI 서비스로써, Stable Diffusion 으로 이미지를 생성하는게 AI Procedure 의 가장 대표적인 사례이다.
@@ -1037,9 +1122,11 @@ Connect to | Session | Session
 Histories  | 1       | N
 Progress   | None    | Streaming
 
-참고로 `wrtn_procedure_session_histories` 의 경우에는 `success`, `value`, `token_usage`, `completed_at` 컬럼들이 모두 NULLABLE 한데, 이것은 해당 프로시저의 작업이 아직 끝나지 않아서 그러한 것이다. 즉, 프로시저가 모든 작업을 마치거든, 이 값들이 공실히 남아있지 않고 모두 채워지게 되는 것.
+참고로 `wrtn_procedure_session_histories` 의 경우에는 `success`, `value`, `completed` 컬럼들이 모두 NULLABLE 한데, 이것은 해당 프로시저의 작업이 아직 끝나지 않아서 그러한 것이다. 즉, 프로시저가 모든 작업을 마치면, 이 값들이 공란으로 남아있지 않고 모두 채워지게 되는 것.
 
-이외에 `wrtn_procedure_session_aggregates` 테이블에는 각 `wrtn_procedure_session_histories` 가 완료될 때마다의 `token_usage` 총 사용량이 누적되어 기록되어야 한다. `token_usage` 에 기록되는 JSON value type 은 `IWrtnTokenUsage` 로써 앞서의 [4. AI Chatbot](#4-ai-chatbot) 때와 같다.
+이외에 `wrtn_procedure_session_aggregate_token_usages` 테이블에는 각 `wrtn_procedure_session_histories` 가 완료될 때마다의 총 토큰 사용량이 누적되어 기록되어야 한다. 
+
+토큰을 소비하지 않는 히스토리 엔트리의 경우, 해당하는 token_usages 테이블 레코드가 존재하지 않을 수 있다. 이 경우 API 레벨에서는 `IWrtnTokenUsage` 인터페이스의 모든 속성값을 0으로 채워서 반환한다.
 
 ## 7. Configurations
 ### 7.1. Persona
@@ -1631,9 +1718,9 @@ model wrtn_ai_model_pricings {
 - [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
 
 ### 12.7. JSON 필드 관련
-- [ ] `token_usage` 필드들을 JSON으로 유지했는가?
-- [ ] `data`, `arguments`, `value` 등 JSON 필드를 분해하지 않았는가?
+- [ ] `data`, `arguments`, `value`, `memory` 등 JSON 필드를 분해하지 않았는가?
 - [ ] JSON 필드를 정규화하여 별도 테이블로 만들지 않았는가?
+- [ ] 토큰 사용량은 별도의 1:1 관계 테이블로 올바르게 정규화했는가?
 
 ### 12.8. 통계 및 집계 관련
 - [ ] 비정규화된 통계 테이블을 만들지 않았는가?
