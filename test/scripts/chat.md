@@ -297,6 +297,35 @@ export interface IWrtnChatSession {
   title: string | null;
   created_at: string & tags.Format<"date-time">;
 }
+
+export interface IWrtnEnterpriseEmployee {
+  // FK 참조관계 및 has 관계 맵핑
+  enterprise: IWrtnEnterprise.ISummary;
+  companions: IWrtnEnterpriseTeamCompanion.ISummary[];
+
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  approved_at: string & tags.Format<"date-time"> | null;
+}
+export interface IWrtnEnterpriseEmployeeAppointment {
+  id: string & tags.Format<"uuid">;
+  employee: IWrtnEnterpriseEmployee.ISummary; // 임명된 사람
+  appointer: IWrtnEnterpriseEmployee.ISummary; // 임명한 사람
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+}
+export interface IWrtnEnterpriseEmployeeInvitation {
+  id: string & tags.Format<"uuid">;
+  employee: IWrtnEnterpriseEmployee.ISummary; // 초대한 사람
+  email: string & tags.Format<"email">; // 초대받은 이메일
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+  expired_at: string & tags.Format<"date-time"> | null;
+}
 ```
 
 **JWT 인증 컨텍스트 보안 원칙**
