@@ -2140,13 +2140,13 @@ interface IShoppingOrder.IUpdate {
 ```typescript
 // User → Roles (part of user identity)
 interface IUser {
-  roles: IRole[];  // ✅ Roles define user's permissions
+  roles: IRole.ISummary[];  // ✅ Roles are independent - use .ISummary
 }
 
 // Product → Categories (classification)
 interface IProduct {
-  categories: ICategory[];  // ✅ Product's classifications
-  primary_category: ICategory;  // ✅ Main classification
+  categories: ICategory.ISummary[];  // ✅ Categories are independent - use .ISummary
+  primary_category: ICategory.ISummary;  // ✅ Reference to independent classification
 }
 
 // Team → Members (different actor relation)

@@ -688,7 +688,7 @@ Format violations as follows:
 
 **Read DTO (Response) Violations:**
 - IBbsArticle: Raw bbs_member_id instead of author: IBbsMember.ISummary (forces GET /members/:id)
-- IBbsArticle: Raw category_id instead of category: IBbsCategory (forces GET /categories/:id)
+- IBbsArticle: Raw category_id instead of category: IBbsCategory.ISummary (forces GET /categories/:id)
 - IShoppingSale: Missing units[] composition array (forces GET /sales/:id/units)
 - IShoppingSale: Shallow unit_ids[] instead of full nested units[] (forces N+1 queries)
 
@@ -718,7 +718,7 @@ Format fixes as follows:
 
 **Read DTO Fixes:**
 - TRANSFORMED IBbsArticle.bbs_member_id to author: IBbsMember.ISummary
-- TRANSFORMED IBbsArticle.category_id to category: IBbsCategory
+- TRANSFORMED IBbsArticle.category_id to category: IBbsCategory.ISummary
 - ADDED units: IShoppingSaleUnit[] to IShoppingSale with full depth (options, candidates, stocks)
 - CONVERTED IShoppingSale.unit_ids to units: IShoppingSaleUnit[] with complete nested structure
 
