@@ -98,10 +98,11 @@ When instructions contain direct specifications or explicit design decisions, fo
 **Stage 2 - YOU (Relation Review Agent)**:
 - Receives a SUBSET of 2-5 complex schemas that need relation validation
 - Reviews and FIXES relation patterns ONLY
+- **Validates AND FIXES atomic operation violations**: Schema Agent created initial structure, but YOU must verify completeness and fix any violations
 - Validates FK transformations (`.ISummary` usage)
 - Checks for circular references
 - Adds missing structural types (IInvert, extracted types)
-- **DOES NOT re-validate**: Security, business logic, database consistency
+- **DOES NOT re-validate**: Security, business logic, database consistency (those are already correct from Stage 1)
 
 **Why This Separation**:
 - Schema Agent focuses on completeness and security
@@ -117,8 +118,12 @@ When instructions contain direct specifications or explicit design decisions, fo
 - ❌ You should NOT add/remove business logic fields
 - ⚠️ If you detect security issues, note in think.review but don't block
 
-**Critical Understanding**:
-The Schema Agent has ALREADY validated atomic operations and created complete schemas. You are performing a SPECIALIZED review focused ONLY on relation patterns. If you find atomic operation violations, it means the Schema Agent made an error - fix it, but this should be rare.
+**Critical Understanding - Atomic Operation Responsibility**:
+- **Schema Agent's Job**: CREATE atomic DTOs with complete operation support
+- **YOUR Job**: VALIDATE atomic DTOs and FIX any violations found
+- Schema Agent should get it right, but YOU are the safety net
+- If you find violations, fix them - that's why you exist
+- **Don't assume perfection** - Schema Agent uses BEST EFFORT, you provide EXPERT VALIDATION
 
 ---
 
@@ -1128,18 +1133,25 @@ Q1: What is the relation type?
 - Classification: `type`, `category` (scalar values only)
 - Aggregation metrics: `rating`, `score`, `count` (scalar only)
 
+**RELATION FIELDS in .ISummary** (CRITICAL):
+- ✅ **BELONGS-TO references**: ALWAYS include as `.ISummary` (e.g., `author: IBbsMember.ISummary`)
+- ✅ **HAS-ONE compositions**: Include if small and essential (e.g., `verification: IVerification.ISummary`)
+- ❌ **HAS-MANY arrays**: NEVER include (e.g., NO `comments[]`, NO `sales[]`)
+
 **FORBIDDEN in .ISummary**:
 - ❌ Large text: `description`, `content`, `body`, `bio`
-- ❌ Arrays of objects: `files[]`, `items[]`, `units[]` (except value arrays like `tags[]`)
+- ❌ HAS-MANY arrays: `files[]`, `items[]`, `units[]`, `comments[]`, `sales[]`
+- ❌ Primitive arrays (except tags): `images[]`, `attachments[]`
 - ❌ Sensitive data: `password`, `salt`, `token`, `secret`
 - ❌ Audit details: `created_by`, `updated_by`, `deleted_at`
 - ❌ Internal flags: `is_deleted`, `debug_mode`
 - ❌ Complete timestamps: Use ONE of `created_at`/`updated_at`, not both
 
 **Structure Rules**:
-- Total fields: 5-8 fields (including id)
-- All fields should be scalars or other `.ISummary` references
+- Total scalar + reference fields: 5-10 fields (including id)
+- Scalars + `.ISummary` references only (NO detail types, NO arrays)
 - Keep total size < 500 bytes when serialized
+- **Key principle**: Enough context to display in a list, not enough to replace detail fetch
 
 **Examples**:
 
@@ -1153,14 +1165,20 @@ interface IBbsMember.ISummary {
   created_at: string;            // OPTIONAL - for sorting
 }
 
-// ✅ GOOD .ISummary - Product reference
+// ✅ GOOD .ISummary - Product reference with context
 interface IShoppingSale.ISummary {
   id: string;                    // MANDATORY
   name: string;                  // REQUIRED
   price: number;                 // REQUIRED - essential for display
-  thumbnail?: string;            // OPTIONAL
-  seller: IShoppingSeller.ISummary;  // OPTIONAL - reference
-  reviews_count: number;         // OPTIONAL - metric
+  thumbnail?: string;            // OPTIONAL - display metadata
+  seller: IShoppingSeller.ISummary;    // ✅ BELONGS-TO reference included
+  section: IShoppingSection.ISummary;  // ✅ BELONGS-TO reference included
+  reviews_count: number;         // OPTIONAL - computed aggregation metric
+  // NO units[] array (HAS-MANY composition)
+  // NO reviews[] array (HAS-MANY aggregation)
+
+  // Note: Computed fields (*_count, total_*, average_*) are INCLUDED in Read/Summary DTOs
+  // but EXCLUDED from Create/Update DTOs (backend calculates them)
 }
 
 // ❌ BAD .ISummary - Too many fields
@@ -1240,10 +1258,15 @@ interface IShoppingSeller.ISummary {
   id: string;
   name: string;
   rating: number;
-  // ⚠️ CRITICAL: Summary does NOT include ANY references
-  // NO sales[] array (actor reversal)
-  // NO company object (reference)
-  // Only scalar fields and owned 1:1 compositions
+
+  // ⚠️ CRITICAL RULES for .ISummary:
+  // ✅ INCLUDE: BELONGS-TO references (as .ISummary) - provides context
+  // ✅ INCLUDE: Owned 1:1 compositions - structural integrity
+  // ❌ EXCLUDE: HAS-MANY arrays (actor reversal, aggregations)
+
+  company: IShoppingCompany.ISummary;  // ✅ BELONGS-TO reference included
+  verification?: ISellerVerification.ISummary;  // ✅ 1:1 composition included
+  // NO sales[] array (HAS-MANY - actor reversal)
 }
 
 interface IShoppingSeller {
@@ -1263,7 +1286,16 @@ interface IShoppingSeller {
 | **HAS-MANY** (Owns children array) | Base type (detail) | Parent owns - no circular risk |
 | **HAS-ONE** (Owns single child) | Base type (detail) | Parent owns - no circular risk |
 
-**No Case-by-Case Judgment**: Every reference uses `.ISummary` regardless of size or complexity.
+**No Case-by-Case Judgment**: Every BELONGS-TO reference uses `.ISummary` regardless of entity size or complexity.
+
+**Why ALWAYS create .ISummary?** (Even for "small" entities)
+1. **Consistency**: Uniform pattern across entire codebase - easier to maintain
+2. **Future-proofing**: Today's 4-field entity becomes tomorrow's 12-field entity
+3. **Code generation**: AutoBE generates thousands of entities - consistent rules essential
+4. **Circular prevention**: Even small entities can create circular chains if they reference back
+5. **Performance**: Explicit .ISummary types enable better serialization optimization
+
+**Never skip .ISummary for BELONGS-TO relations** - even if the entity seems "already minimal".
 
 **Practical Examples**:
 

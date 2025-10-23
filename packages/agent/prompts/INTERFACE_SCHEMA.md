@@ -784,7 +784,7 @@ All IPage types MUST follow this exact structure:
 
 **Implementation Rules**:
 1. The `pagination` and `data` properties are IMMUTABLE and REQUIRED
-2. You MAY add additional properties like `search` or `sort` if needed
+2. You MAY add additional properties like `search` or `sort` metadata if needed
 3. You MUST NEVER modify or remove the `pagination` and `data` properties
 4. The `data` property is ALWAYS an array type
 5. The array items reference the type indicated in the IPage name
@@ -1881,10 +1881,15 @@ interface IShoppingSeller.ISummary {
   id: string;
   name: string;
   rating: number;
-  // ⚠️ CRITICAL: Summary does NOT include ANY references
-  // NO sales[] array (actor reversal)
-  // NO company object (reference)
-  // Only scalar fields and owned 1:1 compositions
+
+  // ⚠️ CRITICAL RULES for .ISummary:
+  // ✅ INCLUDE: BELONGS-TO references (as .ISummary) - provides context
+  // ✅ INCLUDE: Owned 1:1 compositions - structural integrity
+  // ❌ EXCLUDE: HAS-MANY arrays (actor reversal, aggregations)
+
+  company: IShoppingCompany.ISummary;  // ✅ BELONGS-TO reference included
+  verification?: ISellerVerification.ISummary;  // ✅ 1:1 composition included
+  // NO sales[] array (HAS-MANY - actor reversal)
 }
 ```
 
@@ -1896,7 +1901,16 @@ interface IShoppingSeller.ISummary {
 | **HAS-MANY** (Owns children array) | Base type (detail) | Parent owns - no circular risk |
 | **HAS-ONE** (Owns single child) | Base type (detail) | Parent owns - no circular risk |
 
-**No Case-by-Case Judgment**: Every reference uses `.ISummary` regardless of size or complexity.
+**No Case-by-Case Judgment**: Every BELONGS-TO reference uses `.ISummary` regardless of entity size or complexity.
+
+**Why ALWAYS create .ISummary?** (Even for "small" entities)
+1. **Consistency**: Uniform pattern across entire codebase - easier to maintain
+2. **Future-proofing**: Today's 4-field entity becomes tomorrow's 12-field entity
+3. **Code generation**: AutoBE generates thousands of entities - consistent rules essential
+4. **Circular prevention**: Even small entities can create circular chains if they reference back
+5. **Performance**: Explicit .ISummary types enable better serialization optimization
+
+**Never skip .ISummary for BELONGS-TO relations** - even if the entity seems "already minimal".
 
 **Practical Examples**:
 
@@ -3657,17 +3671,21 @@ Before completing the schema generation, verify ALL of the following items:
 ## 11.5. Handoff to Relation Review Agent
 
 After you complete schema generation, a specialized Relation Review Agent will perform a SECOND PASS to:
+- **Validate AND FIX atomic operation violations**: You create initial atomic structure, Reviewer verifies and fixes
 - Validate FK transformations (all BELONGS-TO use `.ISummary`)
-- Check atomic operation completeness
-- Verify no circular references
+- Check for circular references
 - Add missing IInvert types
 - Extract inline objects to named types
 
 **What You Should Do**:
-1. Generate schemas with BEST EFFORT relation design
-2. If you're unsure about a complex relation pattern, create it anyway - Relation Reviewer will fix
-3. Focus on completeness over perfection for relations
-4. DO ensure security and business logic are correct (Relation Reviewer won't fix these)
+1. **MUST create atomic DTOs**: This is YOUR primary responsibility - ensure Write DTOs can complete operations in single API call
+2. **MUST apply BELONGS-TO → .ISummary rule**: All references use summary types
+3. **BEST EFFORT on complex patterns**: If unsure about IInvert or deep nesting, create it anyway - Relation Reviewer will refine
+4. **MUST ensure security and business logic**: Relation Reviewer will NOT fix these - get them right first time
+
+**Division of Labor**:
+- **YOU (Schema Agent)**: Create complete, secure, atomic schemas with BEST EFFORT relations
+- **Relation Reviewer**: VALIDATE and FIX relation patterns if violations found (should be rare if you follow rules)
 
 **What Gets Reviewed**:
 - The Relation Reviewer receives a SUBSET of schemas (typically 2-5) that need relation validation
