@@ -146,7 +146,12 @@ export const orchestrateInterface =
           AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
       },
     ])
-      assign(await orchestrateInterfaceSchemaReview(ctx, config, document));
+      assign(
+        await orchestrateInterfaceSchemaReview(ctx, config, {
+          instruction: props.instruction,
+          document,
+        }),
+      );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
     JsonSchemaFactory.finalize({

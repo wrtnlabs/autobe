@@ -9,6 +9,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 export const transformInterfaceSchemaReviewHistories = (props: {
   state: AutoBeState;
   systemPrompt: string;
+  instruction: string;
   operations: AutoBeOpenApi.IOperation[];
   everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -28,6 +29,22 @@ export const transformInterfaceSchemaReviewHistories = (props: {
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted from
+        the user's requirements. These focus on API interface design aspects
+        relevant to the review task.
+
+        Follow these instructions when reviewing and fixing schemas.
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+
+        When instructions contain direct specifications or explicit design decisions,
+        follow them precisely even if you believe you have better alternatives.
+
+        ${props.instruction}
+
         ## Schemas (Complete Set for Reference)
 
         Here is the COMPLETE set of all schemas in the system for

@@ -31,10 +31,13 @@ export async function orchestrateInterfaceSchemaReview<
 >(
   ctx: AutoBeContext<Model>,
   config: IConfig,
-  document: AutoBeOpenApi.IDocument,
+  props: {
+    document: AutoBeOpenApi.IDocument;
+    instruction: string;
+  },
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const typeNames: string[] = Object.keys(document.components.schemas);
+  const typeNames: string[] = Object.keys(props.document.components.schemas);
   const matrix: string[][] = divideArray({
     array: typeNames,
     capacity,
@@ -47,18 +50,20 @@ export async function orchestrateInterfaceSchemaReview<
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
-      const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
-        (op) =>
-          (op.requestBody && it.includes(op.requestBody.typeName)) ||
-          (op.responseBody && it.includes(op.responseBody.typeName)),
-      );
+      const operations: AutoBeOpenApi.IOperation[] =
+        props.document.operations.filter(
+          (op) =>
+            (op.requestBody && it.includes(op.requestBody.typeName)) ||
+            (op.responseBody && it.includes(op.responseBody.typeName)),
+        );
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await divideAndConquer(ctx, config, {
+          instruction: props.instruction,
           operations,
-          everySchemas: document.components.schemas,
+          everySchemas: props.document.components.schemas,
           reviewSchemas: it.reduce(
             (acc, cur) => {
-              acc[cur] = document.components.schemas[cur];
+              acc[cur] = props.document.components.schemas[cur];
               return acc;
             },
             {} as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
@@ -69,7 +74,7 @@ export async function orchestrateInterfaceSchemaReview<
       return row;
     }),
   )) {
-    JsonSchemaNamingConvention.schemas(document.operations, x, y);
+    JsonSchemaNamingConvention.schemas(props.document.operations, x, y);
     Object.assign(x, y);
   }
   return x;
@@ -79,6 +84,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   config: IConfig,
   props: {
+    instruction: string;
     operations: AutoBeOpenApi.IOperation[];
     everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -100,6 +106,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       histories: transformInterfaceSchemaReviewHistories({
         state: ctx.state(),
         systemPrompt: config.systemPrompt,
+        instruction: props.instruction,
         operations: props.operations,
         everySchemas: props.everySchemas,
         reviewSchemas: props.reviewSchemas,

@@ -1333,21 +1333,364 @@ Q: Should this data be nested in the Create DTO or accessed via separate endpoin
 // → Separate endpoint: POST /articles/:id/comments
 ```
 
+##### The Atomic Operation Principle for Read DTOs
+
+**FUNDAMENTAL RULE**: Read DTOs must enable complete information retrieval in a single API call. This is the READ side of the atomic operation principle.
+
+**Core Philosophy**: Users should NEVER need multiple API calls to retrieve all necessary information to understand and display an entity.
+
+**Why This Matters**:
+
+1. **User Experience**: Multiple GET calls to render a single view create poor UX and N+1 query problems
+2. **Network Efficiency**: Reduces round trips and latency for data retrieval
+3. **Data Consistency**: Single snapshot ensures temporal consistency across related data
+4. **Developer Experience**: Complete data structures eliminate guesswork about what to fetch next
+5. **Performance**: Backend can optimize joins vs multiple client-side requests
+
+**Anti-Pattern Examples** (What we MUST prevent):
+
+```typescript
+// ❌ CATASTROPHIC DESIGN - Multiple API calls to display article
+GET /articles/123           // Call 1: Get article
+→ Returns: {
+  id: "123",
+  title: "My Article",
+  bbs_member_id: "user-456",    // ❌ Just an ID
+  category_id: "cat-789"        // ❌ Just an ID
+}
+
+GET /members/user-456       // Call 2: Get author info
+→ Returns: { name: "John Doe", avatar: "..." }
+
+GET /categories/cat-789     // Call 3: Get category info
+→ Returns: { name: "Technology", slug: "tech" }
+
+GET /articles/123/files     // Call 4: Get attachments
+→ Returns: [{ url: "...", name: "..." }]
+
+// Problems:
+// - 4 network round trips to display ONE article
+// - N+1 query problem for lists
+// - Temporal inconsistencies (data changes between calls)
+// - Complex client-side state management
+// - Poor performance on high-latency networks
+
+// ❌ SHOPPING DISASTER - Multiple calls to display sale
+GET /sales/456              // Call 1: Get sale
+→ Returns: {
+  id: "456",
+  name: "Laptop",
+  seller_id: "seller-123",      // ❌ Just an ID
+  section_id: "electronics"     // ❌ Just an ID
+}
+
+GET /sellers/seller-123     // Call 2: Get seller
+GET /sections/electronics   // Call 3: Get section
+GET /sales/456/units        // Call 4: Get units
+GET /sales/456/images       // Call 5: Get images
+
+// This is INSANE! 5 API calls to display one product!
+```
+
+**✅ THE CORRECT APPROACH - Complete Information in Single Call**:
+
+```typescript
+// ✅ ATOMIC ARTICLE READ
+GET /articles/123
+→ Returns: {
+  id: "123",
+  title: "My Article",
+  content: "...",
+  created_at: "2024-01-15T10:00:00Z",
+
+  // COMPOSITION: Full nested objects
+  author: {                        // ✅ Complete author info
+    id: "user-456",
+    name: "John Doe",
+    avatar: "https://cdn.../avatar.jpg",
+    reputation: 1250
+  },
+
+  category: {                      // ✅ Complete category info
+    id: "cat-789",
+    name: "Technology",
+    slug: "tech",
+    icon: "💻"
+  },
+
+  // COMPOSITION: Nested arrays
+  files: [                         // ✅ All attachments included
+    {
+      id: "file-1",
+      url: "https://cdn.../doc.pdf",
+      name: "specification.pdf",
+      size: 524288,
+      mimetype: "application/pdf"
+    },
+    {
+      id: "file-2",
+      url: "https://cdn.../image.jpg",
+      name: "diagram.jpg",
+      size: 786432,
+      mimetype: "image/jpeg"
+    }
+  ],
+
+  // AGGREGATION: Counts only (not full arrays)
+  comments_count: 42,              // ✅ Use GET /articles/123/comments for list
+  likes_count: 128                 // ✅ Use GET /articles/123/likes for list
+}
+
+// Result: Complete article with ALL necessary info in ONE call
+// Client can immediately render the full article view
+// No cascading requests, no N+1 problems
+
+// ✅ ATOMIC SALE READ
+GET /sales/456
+→ Returns: {
+  id: "456",
+  name: "Premium Laptop",
+  description: "High-performance laptop",
+  price: 1200,
+  created_at: "2024-01-15T10:00:00Z",
+
+  // ASSOCIATION: Complete seller info
+  seller: {                        // ✅ All seller context
+    id: "seller-123",
+    name: "TechStore Inc.",
+    rating: 4.8,
+    total_sales: 5420,
+    verified: true
+  },
+
+  section: {                       // ✅ Complete section info
+    id: "electronics",
+    name: "Electronics",
+    path: ["Home", "Electronics"]
+  },
+
+  // COMPOSITION: Deep nested structure with ALL data
+  units: [                         // ✅ Complete unit array
+    {
+      id: "unit-1",
+      name: "16GB RAM Model",
+      price: 1200,
+      sku: "LAP-16GB",
+
+      // Nested composition (Depth 2)
+      options: [                   // ✅ All options included
+        {
+          id: "opt-1",
+          name: "Color",
+          type: "select",
+          required: true,
+
+          // Nested composition (Depth 3)
+          candidates: [            // ✅ All choices included
+            { id: "cand-1", value: "Silver", price_delta: 0 },
+            { id: "cand-2", value: "Space Gray", price_delta: 0 },
+            { id: "cand-3", value: "Gold", price_delta: 50 }
+          ]
+        },
+        {
+          id: "opt-2",
+          name: "Storage",
+          type: "select",
+          required: true,
+          candidates: [
+            { id: "cand-4", value: "512GB SSD", price_delta: 0 },
+            { id: "cand-5", value: "1TB SSD", price_delta: 200 }
+          ]
+        }
+      ],
+
+      stocks: [                    // ✅ Stock info included
+        {
+          id: "stock-1",
+          quantity: 50,
+          warehouse: {             // ✅ Warehouse context
+            id: "wh-seoul",
+            name: "Seoul Warehouse",
+            location: "Seoul, Korea"
+          }
+        },
+        {
+          id: "stock-2",
+          quantity: 30,
+          warehouse: {
+            id: "wh-busan",
+            name: "Busan Warehouse",
+            location: "Busan, Korea"
+          }
+        }
+      ]
+    },
+    {
+      id: "unit-2",
+      name: "32GB RAM Model",
+      price: 1500,
+      sku: "LAP-32GB",
+      options: [...],              // ✅ Complete options
+      stocks: [...]                // ✅ Complete stocks
+    }
+  ],
+
+  images: [                        // ✅ All product images
+    { id: "img-1", url: "https://cdn.../main.jpg", is_primary: true, order: 1 },
+    { id: "img-2", url: "https://cdn.../side.jpg", is_primary: false, order: 2 }
+  ],
+
+  // AGGREGATION: Counts only
+  reviews_count: 324,              // GET /sales/456/reviews for list
+  questions_count: 18              // GET /sales/456/questions for list
+}
+
+// Result: Complete product with ALL structural data in ONE call!
+// Client can render full product page immediately
+// All variants, options, stock info available without additional calls
+```
+
+**Read DTO Atomic Operation Decision Framework**:
+
+```
+Q: Should this related data be included in the Read DTO?
+
+├─ Q1: Is it COMPOSITION (created with parent)?
+│  ├─ YES → Q1a: Is it BOUNDED (reasonable size)?
+│  │         ├─ YES → INCLUDE as nested objects/arrays
+│  │         └─ NO → Consider pagination, but generally include
+│  └─ NO → Continue to Q2
+
+├─ Q2: Is it ASSOCIATION (independent entity providing context)?
+│  ├─ YES → TRANSFORM FK to full object
+│  └─ NO → Continue to Q3
+
+└─ Q3: Is it AGGREGATION (event-driven, different actor)?
+   ├─ YES → Q3a: Is list UNBOUNDED (comments, reviews)?
+   │         ├─ YES → EXCLUDE, provide count only
+   │         └─ NO → Could include, but evaluate if needed
+   └─ NO → Special case, evaluate individually
+```
+
+**Application Examples**:
+
+```typescript
+// Article Files
+// Q1: Composition? YES (uploaded with article)
+// Q1a: Bounded? YES (typically 1-20 files)
+// → INCLUDE as files: IArticleFile[]
+
+// Article Author
+// Q2: Association? YES (member exists independently)
+// → INCLUDE as author: IBbsMember.ISummary (transformed FK)
+
+// Article Comments
+// Q3: Aggregation? YES (written later by different users)
+// Q3a: Unbounded? YES (could have thousands)
+// → EXCLUDE, provide comments_count, separate API: GET /articles/:id/comments
+
+// Sale Units
+// Q1: Composition? YES (define what's being sold)
+// Q1a: Bounded? YES (typically 1-50 variants)
+// → INCLUDE as units: ISaleUnit[] with deep nesting
+
+// Sale Reviews
+// Q3: Aggregation? YES (customer feedback over time)
+// Q3a: Unbounded? YES (hundreds to thousands)
+// → EXCLUDE, provide reviews_count, separate API: GET /sales/:id/reviews
+```
+
+**Read DTO Violation Patterns**:
+
+```typescript
+// ❌ VIOLATION 1: Raw FK IDs instead of objects
+interface IBbsArticle {
+  title: string;
+  bbs_member_id: string;     // ❌ Should be author: IBbsMember.ISummary
+  category_id: string;        // ❌ Should be category: IBbsCategory
+}
+// Forces client to make additional API calls for author and category info
+
+// ❌ VIOLATION 2: Missing compositional data
+interface IShoppingSale {
+  name: string;
+  seller: IShoppingSeller.ISummary;  // ✅ Good
+  // units ??? WHERE ARE THE UNITS?  // ❌ Missing composition
+}
+// Forces client to call GET /sales/:id/units separately
+// Sale is INCOMPLETE without its units
+
+// ❌ VIOLATION 3: Including unbounded aggregations
+interface IBbsArticle {
+  title: string;
+  author: IBbsMember.ISummary;
+  comments: IComment[];       // ❌ Could be thousands, breaks pagination
+  likes: ILike[];             // ❌ Could be millions, catastrophic
+}
+// Should use comments_count and separate endpoint
+
+// ✅ CORRECT: Complete atomic read
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  author: IBbsMember.ISummary;       // ✅ Association transformed
+  category: IBbsCategory;             // ✅ Association transformed
+  files: IBbsArticleFile[];           // ✅ Composition included
+  comments_count: number;             // ✅ Aggregation as count
+  likes_count: number;                // ✅ Aggregation as count
+}
+```
+
+**Depth Consistency with Create DTOs**:
+
+```typescript
+// Read DTO depth MUST match Create DTO depth
+
+// If Create DTO supports this depth:
+interface IShoppingSale.ICreate {
+  units: IShoppingSaleUnit.ICreate[] {          // Depth 1
+    options: IShoppingSaleUnitOption.ICreate[] { // Depth 2
+      candidates: IOptionCandidate.ICreate[];    // Depth 3
+    };
+    stocks: IStock.ICreate[];                    // Depth 2
+  };
+}
+
+// Then Read DTO MUST provide this depth:
+interface IShoppingSale {
+  units: IShoppingSaleUnit[] {                   // Depth 1
+    options: IShoppingSaleUnitOption[] {         // Depth 2
+      candidates: IOptionCandidate[];            // Depth 3
+    };
+    stocks: IStock[];                            // Depth 2
+  };
+}
+
+// ❌ VIOLATION: Read DTO provides less depth than Create DTO
+interface IShoppingSale {
+  unit_ids: string[];  // ❌ Just IDs, client needs GET /units/:id for each
+}
+// This breaks read-write symmetry and forces multiple calls
+```
+
 ##### Read-Write Symmetry Principle
 
-**CRITICAL RULE**: The completeness principle applies to BOTH Read and Create operations.
+**CRITICAL RULE**: The atomic operation principle applies symmetrically to BOTH Read and Create operations.
 
-**Read DTOs (Response)**:
+**Read DTOs (Response)** - Atomic Information Retrieval:
 - Must provide **complete information** without requiring additional API calls
-- Transform all **contextual FKs to full objects**
+- Transform all **contextual FKs to full objects** (associations)
 - Include all **compositional relations** as nested arrays/objects
 - User can render complete UI from single GET request
+- **This IS the atomic operation for READ**: One call, complete entity
 
-**Create DTOs (Request)**:
+**Create DTOs (Request)** - Atomic Entity Creation:
 - Must accept **complete data** for atomic creation
 - Accept **nested ICreate objects** for compositions
 - Accept **ID references** for associations (existing entities)
 - User can create complete entity with single POST request
+- **This IS the atomic operation for WRITE**: One call, complete creation
 
 **Symmetry Example**:
 
@@ -1485,7 +1828,17 @@ interface IOrder.ICreate {
 
 ##### Implementation Checklist
 
-Before finalizing ANY Create DTO:
+**Before finalizing ANY Read DTO (Response)**:
+
+- [ ] **FK Transformation Check**: All contextual FKs transformed to full objects (not raw IDs)?
+- [ ] **Composition Inclusion**: All bounded compositions included as nested arrays/objects?
+- [ ] **Aggregation Exclusion**: Unbounded aggregations excluded (counts only)?
+- [ ] **Single-Call Test**: Can client display complete entity from one GET?
+- [ ] **N+1 Prevention**: No scenarios requiring multiple follow-up calls per list item?
+- [ ] **Depth Validation**: Nesting depth matches business domain complexity?
+- [ ] **Symmetry Check**: Read DTO structure matches what Create DTO can produce?
+
+**Before finalizing ANY Create DTO (Request)**:
 
 - [ ] **Composition Check**: All compositional data nested in Create DTO?
 - [ ] **Single-Call Test**: Can user create complete entity in one POST?
@@ -1495,7 +1848,7 @@ Before finalizing ANY Create DTO:
 - [ ] **Actor Exclusion**: No actor IDs (come from JWT)?
 - [ ] **Transaction Boundary**: All data in single DB transaction?
 
-**If ANY check fails, the DTO design is incomplete.**
+**If ANY check fails for either DTO type, the design is incomplete and violates the atomic operation principle.**
 
 #### 4.4.3. Response DTOs (Read Operations)
 
@@ -2215,7 +2568,7 @@ interface IBbsArticle.ICreate {
 }
 ```
 
-### 5.3. Update DTOs (IEntity.IUpdate) - Request bodies for PUT/PATCH
+### 5.3. Update DTOs (IEntity.IUpdate) - Request bodies for PUT
 
 **Purpose**: Fields that can be modified after creation
 
@@ -2638,21 +2991,46 @@ interface IBbsArticle.IUpdate {
 
 **A. Atomic Operation Validation - CRITICAL FOR API USABILITY**:
 
+**Read DTO (Response) Atomic Checks**:
+- [ ] ALL Read DTOs provide complete information in single GET call
+- [ ] ALL contextual FKs transformed to full objects (not raw IDs)
+- [ ] ALL bounded compositions included as nested arrays/objects
+- [ ] Unbounded aggregations excluded (counts only, separate endpoints)
+- [ ] No scenarios requiring N+1 queries for list display
+- [ ] Nesting depth matches domain complexity (no artificial shallow limits)
+
+**Create DTO (Request) Atomic Checks**:
 - [ ] ALL Create DTOs enable complete entity creation in single API call
 - [ ] Compositional relations fully nested (no split operations required)
-- [ ] Nesting depth matches business domain complexity (no artificial limits)
-- [ ] Read-Write symmetry maintained (Create DTO structure mirrors Read DTO)
-- [ ] No cases where multiple API calls needed for single business operation
 - [ ] Association references use ID fields, compositions use nested ICreate objects
+- [ ] Nesting depth matches business domain complexity (no artificial limits)
+- [ ] No cases where multiple POST calls needed for single business operation
+
+**Read-Write Symmetry Checks**:
+- [ ] Read DTO structure matches Create DTO capabilities
+- [ ] Create DTO can produce what Read DTO returns
+- [ ] Same nesting depth in Read and Create for all compositions
+- [ ] Associations in Read map to ID fields in Create
 
 **Common Atomic Operation Violations to Fix**:
+
+*Read DTO Violations*:
+- ❌ Article Read has raw `bbs_member_id` instead of `author: IBbsMember.ISummary`
+- ❌ Sale Read missing `units[]` array (forces GET /sales/:id/units)
+- ❌ Sale Read has `unit_ids[]` instead of full nested `units[]` (N+1 problem)
+- ❌ Article Read includes unbounded `comments[]` array (should be count + separate API)
+
+*Create DTO Violations*:
 - ❌ Article Create missing `files[]` array (forces POST /articles/:id/files)
 - ❌ Sale Create missing `units[]` array (forces POST /sales/:id/units)
 - ❌ Order Create with `items: string[]` instead of `items: IOrderItem.ICreate[]`
 - ❌ Shallow nesting when business requires 2-3 levels deep
 - ❌ Composition arrays missing when Read DTO shows them
 
-**Remember**: Users should NEVER need multiple API calls for a single logical operation. If creating a blog post with files requires 2+ calls, the DTO design is wrong.
+**Remember**:
+- For READ: Users should NEVER need multiple GET calls to display a single entity
+- For WRITE: Users should NEVER need multiple POST calls for a single business operation
+- N+1 queries are a SYMPTOM of incomplete Read DTOs
 
 **B. Relation Validation - MANDATORY, NO EXCEPTIONS**:
 

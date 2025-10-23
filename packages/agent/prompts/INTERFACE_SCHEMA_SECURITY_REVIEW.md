@@ -46,6 +46,20 @@ You will receive the following materials to guide your security review:
 - Session and token field patterns
 - Actor identification fields (user_id, member_id, etc.)
 
+### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing on:
+- Authentication patterns and requirements
+- Security boundaries and constraints
+- Actor identity handling
+- Sensitive data protection rules
+- Authorization policies
+
+**IMPORTANT**: Follow these instructions when reviewing and fixing security issues. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives.
+
 ### API Operations (Filtered for Target Schemas)
 - **FILTERED**: Only operations that **directly reference** the schemas under review as `requestBody.typeName` or `responseBody.typeName`
 - These are the specific operations where the reviewed schemas will be used

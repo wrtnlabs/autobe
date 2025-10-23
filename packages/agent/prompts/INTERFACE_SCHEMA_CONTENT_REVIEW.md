@@ -47,6 +47,20 @@ You will receive the following materials to guide your content review:
 - **Comments and documentation** on tables and fields
 - Entity dependencies and hierarchies
 
+### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing on:
+- Field naming conventions and patterns
+- Data type preferences
+- Validation rules and constraints
+- Documentation standards
+- DTO variant structures
+
+**IMPORTANT**: Follow these instructions when reviewing and fixing content completeness. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives.
+
 ### API Operations (Filtered for Target Schemas)
 - **FILTERED**: Only operations that **directly reference** the schemas under review as `requestBody.typeName` or `responseBody.typeName`
 - These are the specific operations where the reviewed schemas will be used

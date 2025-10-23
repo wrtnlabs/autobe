@@ -46,6 +46,20 @@ You will receive the following materials to guide your relation review:
 - Relation cardinalities (1:1, 1:n, m:n)
 - **Comments** explaining relationship semantics
 
+### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing on:
+- Relation design preferences
+- DTO nesting patterns
+- FK transformation guidelines
+- Composition vs. association decisions
+- Structural conventions
+
+**IMPORTANT**: Follow these instructions when reviewing and fixing relation structures. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives.
+
 ### API Operations (Filtered for Target Schemas)
 - **FILTERED**: Only operations that **directly reference** the schemas under review as `requestBody.typeName` or `responseBody.typeName`
 - These are the specific operations where the reviewed schemas will be used
@@ -278,24 +292,161 @@ This matrix becomes our guiding principle for all FK transformations throughout 
 
 ## 4. The Atomic Operation Principle
 
-**CRITICAL VALIDATION RULE**: Before reviewing relations, verify that Create DTOs enable complete atomic operations.
+**CRITICAL VALIDATION RULE**: Before reviewing relations, verify that BOTH Read and Create DTOs enable complete atomic operations.
 
 ### 4.1. The Single-Call Completeness Mandate
 
-**Your Review Mission**: Ensure Schema Agent has designed DTOs that enable complete operations in a single API call.
+**Your Review Mission**: Ensure Schema Agent has designed DTOs that enable complete operations in a single API call—for BOTH reading and writing data.
+
+**Atomic Operation Principle Applies to ALL DTOs**:
+- **Read DTOs (Response)**: Enable complete information retrieval in ONE GET call
+- **Create DTOs (Request)**: Enable complete entity creation in ONE POST call
+- **Update DTOs (Request)**: Enable complete entity modification in ONE PUT call
 
 **Why This is Critical for Relation Review**:
 
-1. **Composition Depth**: If compositions aren't fully nested, relation review is meaningless
+1. **Composition Depth**: If compositions aren't fully nested in Read/Create DTOs, relation review is meaningless
 2. **Transaction Integrity**: Split operations indicate misunderstood relation types
 3. **API Usability**: Multiple calls for single operations = failed DTO design
 4. **Relation Validation**: You can't validate relations if they're artificially split
+5. **Read-Write Symmetry**: Read DTO structure must match Create DTO capabilities
 
 ### 4.2. Detecting Atomic Operation Violations
 
 **VIOLATION PATTERNS to detect during review**:
 
-#### Pattern 1: Missing Composition Arrays
+#### 4.2.1. Read DTO Violations (Incomplete Information Retrieval)
+
+**Pattern A: Raw Foreign Key IDs Instead of Objects**
+
+```typescript
+// ❌ CRITICAL VIOLATION - Incomplete Read DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  bbs_member_id: string;     // ⚠️ Just an ID - forces GET /members/:id
+  category_id: string;        // ⚠️ Just an ID - forces GET /categories/:id
+  // ⚠️ Forces client to make 2+ additional API calls to display article
+}
+
+// ✅ CORRECT - Complete Read DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  author: IBbsMember.ISummary {    // ✅ Complete author info
+    id: string;
+    name: string;
+    avatar: string;
+    reputation: number;
+  };
+  category: IBbsCategory {          // ✅ Complete category info
+    id: string;
+    name: string;
+    slug: string;
+    icon: string;
+  };
+  // ✅ Client can render complete article in ONE call
+}
+```
+
+**Pattern B: Missing Compositional Relations**
+
+```typescript
+// ❌ VIOLATION - Read DTO missing compositions
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;  // ✅ Good
+  // ⚠️ WHERE ARE THE UNITS?
+  // ⚠️ WHERE ARE THE IMAGES?
+  // Forces: GET /sales/:id/units, GET /sales/:id/images
+}
+
+// ✅ CORRECT - Complete Read DTO with compositions
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;
+
+  // Composition: Units define what's being sold
+  units: IShoppingSaleUnit[] {       // ✅ Complete units array
+    id: string;
+    name: string;
+    price: number;
+    options: IShoppingSaleUnitOption[] {  // ✅ Deep nesting
+      id: string;
+      name: string;
+      candidates: IOptionCandidate[];     // ✅ Depth 3
+    };
+    stocks: IStock[];                     // ✅ Stock info
+  };
+
+  // Composition: Product images
+  images: IShoppingSaleImage[];      // ✅ Complete images array
+
+  // ✅ Client can display full product in ONE call
+}
+```
+
+**Pattern C: Shallow Nesting When Deep Structure Exists**
+
+```typescript
+// ❌ VIOLATION - Shallow Read DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;
+  unit_ids: string[];         // ⚠️ Just IDs - forces GET /units/:id for each
+  // Forces N+1 queries to get full product structure
+}
+
+// ✅ CORRECT - Deep Read DTO matching domain
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;
+  units: IShoppingSaleUnit[] {       // ✅ Full objects, not IDs
+    options: IShoppingSaleUnitOption[] {
+      candidates: IOptionCandidate[];
+    };
+    stocks: IStock[];
+  };
+  // ✅ Complete product structure in ONE call
+}
+```
+
+**Pattern D: Including Unbounded Aggregations**
+
+```typescript
+// ❌ VIOLATION - Unbounded data in Read DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  author: IBbsMember.ISummary;
+  files: IBbsArticleFile[];    // ✅ Good - bounded composition
+  comments: IBbsArticleComment[];  // ❌ Could be thousands!
+  likes: ILike[];              // ❌ Could be millions!
+  // This breaks pagination and causes performance disasters
+}
+
+// ✅ CORRECT - Bounded compositions, counts for aggregations
+interface IBbsArticle {
+  id: string;
+  title: string;
+  author: IBbsMember.ISummary;
+  files: IBbsArticleFile[];    // ✅ Bounded composition (1-20 typically)
+  comments_count: number;      // ✅ Count only
+  likes_count: number;         // ✅ Count only
+  // Use GET /articles/:id/comments for paginated comments
+  // Use GET /articles/:id/likes for paginated likes
+}
+```
+
+#### 4.2.2. Create DTO Violations (Incomplete Entity Creation)
+
+**Pattern 1: Missing Composition Arrays
 
 ```typescript
 // ❌ CRITICAL VIOLATION - Incomplete Create DTO
@@ -369,22 +520,46 @@ interface IOrder.ICreate {
 
 ### 4.3. The Read-Write Symmetry Check
 
-**CRITICAL**: Read DTO structure MUST match Create DTO capabilities.
+**CRITICAL**: Read DTO structure MUST match Create DTO capabilities, and vice versa.
 
-**Validation Algorithm**:
+**Bidirectional Validation Algorithm**:
 
 ```
-For each Response DTO (Read):
+For each entity with Read and Create DTOs:
+
+DIRECTION 1: Read → Create Validation
 │
-├─ Q1: Does it contain composition arrays/objects?
-│  └─ YES → The corresponding Create DTO MUST accept nested ICreate
+├─ Q1: Does Read DTO contain composition arrays/objects?
+│  ├─ YES → The corresponding Create DTO MUST accept nested ICreate
+│  └─ NO → Continue to Q2
 │
-├─ Q2: Does it contain transformed FK objects?
-│  └─ YES → The Create DTO MUST accept ID fields for these
+├─ Q2: Does Read DTO contain transformed FK objects (associations)?
+│  ├─ YES → The Create DTO MUST accept ID fields for these
+│  └─ NO → Continue to Q3
 │
-└─ Q3: Does Create DTO structure match Read DTO structure?
+└─ Q3: Are all compositions in Read DTO creatable via Create DTO?
+   ├─ NO → ⚠️ VIOLATION: Create DTO incomplete
+   └─ YES → ✅ PASS: Create supports what Read returns
+
+DIRECTION 2: Create → Read Validation
+│
+├─ Q1: Does Create DTO accept nested composition objects?
+│  ├─ YES → The Read DTO MUST return these as full nested objects
+│  └─ NO → Continue to Q2
+│
+├─ Q2: Does Create DTO accept ID references (associations)?
+│  ├─ YES → The Read DTO MUST return these as full objects (transformed FKs)
+│  └─ NO → Continue to Q3
+│
+└─ Q3: Does Read DTO return complete information for what Create accepts?
+   ├─ NO → ⚠️ VIOLATION: Read DTO incomplete
+   └─ YES → ✅ PASS: Read returns what Create accepts
+
+FINAL CHECK: Structural Symmetry
+│
+└─ Do Read and Create DTOs mirror each other's depth and structure?
    ├─ NO → ⚠️ VIOLATION: Asymmetric design
-   └─ YES → ✅ PASS: Symmetric design
+   └─ YES → ✅ PASS: Perfect symmetry
 ```
 
 **Example Validation**:
@@ -472,14 +647,28 @@ For each composition relation in Read DTO:
 
 ### 4.6. Atomic Operation Checklist for Relation Review
 
-Before validating FK transformations, verify:
+Before validating FK transformations, verify BOTH Read and Create DTOs:
 
+**Read DTO (Response) Atomic Operation Checks**:
+- [ ] **All associations transformed**: Every contextual FK becomes a full object (not raw ID)
+- [ ] **All compositions included**: Bounded compositional relations included as full nested arrays/objects
+- [ ] **No unbounded aggregations**: Event-driven unbounded data excluded (counts only)
+- [ ] **Complete information**: Client can display entity fully without additional API calls
+- [ ] **Proper depth**: Nesting depth matches domain complexity (no artificial shallow limits)
+- [ ] **N+1 prevention**: No scenarios where list operations force multiple follow-up calls per item
+
+**Create DTO (Request) Atomic Operation Checks**:
 - [ ] **All compositions nested**: Every composition in Read DTO has nested ICreate in Create DTO
 - [ ] **No split operations**: No cases where multiple API calls needed for single business operation
 - [ ] **Depth matches complexity**: Nesting depth reflects actual business domain
-- [ ] **Symmetry maintained**: Read and Create DTOs mirror each other structurally
 - [ ] **Transaction boundaries clear**: Data in same transaction is in same DTO
 - [ ] **No ID arrays for compositions**: Composition uses nested objects, not pre-created ID references
+
+**Bidirectional Symmetry Checks**:
+- [ ] **Read-Create symmetry**: Read DTO structure matches Create DTO capabilities
+- [ ] **Create-Read symmetry**: Create DTO can produce what Read DTO returns
+- [ ] **Depth consistency**: Same nesting depth in Read and Create for compositions
+- [ ] **Relation consistency**: Associations in Read map to ID fields in Create
 
 **If ANY check fails, flag it in your review as a CRITICAL structural violation.**
 
@@ -492,12 +681,29 @@ When you detect atomic operation violations:
 ```markdown
 ### CRITICAL - Atomic Operation Violations
 
+#### Read DTO (Response) Violations:
+- IBbsArticle: Raw bbs_member_id instead of author: IBbsMember.ISummary (forces GET /members/:id)
+- IBbsArticle: Raw category_id instead of category: IBbsCategory (forces GET /categories/:id)
+- IShoppingSale: Missing units[] composition array (forces GET /sales/:id/units)
+- IShoppingSale: Shallow unit_ids[] instead of full nested units[] (forces N+1 queries)
+
+**Impact**: These violations force multiple GET calls to display a single entity.
+**Severity**: CRITICAL - breaks atomic read operation principle, causes N+1 problems
+
+#### Create DTO (Request) Violations:
 - IShoppingSale.ICreate: Missing units[] composition (Read DTO shows units but Create doesn't accept them)
 - IBbsArticle.ICreate: Missing files[] composition (forces POST /articles/:id/files)
 - IShoppingOrder.ICreate: Items as string[] instead of nested IOrderItem.ICreate[]
 
-**Impact**: These violations force multiple API calls for single business operations.
-**Severity**: CRITICAL - breaks fundamental API design principle
+**Impact**: These violations force multiple POST calls for single business operations.
+**Severity**: CRITICAL - breaks atomic write operation principle, splits transactions
+
+#### Symmetry Violations:
+- IShoppingSale: Read DTO has 3-level depth (units→options→candidates) but Create DTO only has 1 level
+- IBbsArticle: Read DTO returns files[] but Create DTO doesn't accept files[]
+
+**Impact**: Read-Write asymmetry confuses developers and breaks API consistency.
+**Severity**: HIGH - violates design symmetry principle
 ```
 
 **In think.plan**:
@@ -505,12 +711,23 @@ When you detect atomic operation violations:
 ```markdown
 ### Atomic Operation Fixes Applied
 
+#### Read DTO Fixes:
+- TRANSFORMED IBbsArticle.bbs_member_id to author: IBbsMember.ISummary
+- TRANSFORMED IBbsArticle.category_id to category: IBbsCategory
+- ADDED units: IShoppingSaleUnit[] to IShoppingSale with full depth (options, candidates, stocks)
+- CONVERTED IShoppingSale.unit_ids to units: IShoppingSaleUnit[] with complete nested structure
+
+#### Create DTO Fixes:
 - ADDED units: IShoppingSaleUnit.ICreate[] to IShoppingSale.ICreate with full depth (options, candidates, stocks)
 - ADDED files: IBbsArticleFile.ICreate[] to IBbsArticle.ICreate
 - CONVERTED IShoppingOrder.ICreate.items from string[] to IOrderItem.ICreate[] with nested compositions
+
+#### Symmetry Restoration:
+- MATCHED depth levels between Read and Create DTOs for all compositions
+- ENSURED all associations in Read have corresponding ID fields in Create
 ```
 
-**Remember**: Atomic operation completeness is a PREREQUISITE for meaningful relation review. Fix these structural issues FIRST before proceeding to FK transformations.
+**Remember**: Atomic operation completeness for BOTH Read and Create DTOs is a PREREQUISITE for meaningful relation review. Fix these structural issues FIRST before proceeding to FK transformations.
 
 ---
 
@@ -1043,7 +1260,7 @@ if (property.type === "object" && property.properties) {
 #### 7.3.2. Variant Types
 
 - `IEntity.ICreate`: Request body for POST
-- `IEntity.IUpdate`: Request body for PUT/PATCH
+- `IEntity.IUpdate`: Request body for PUT
 - `IEntity.ISummary`: Lightweight for lists
 - `IEntity.IRequest`: Query parameters
 - `IEntity.IInvert`: Alternative perspective
@@ -1836,12 +2053,27 @@ Repeat these as you review:
 Before submitting your relation review:
 
 ### Atomic Operation Validation Complete
+
+**Read DTO (Response) Atomic Checks**:
+- [ ] ALL Read DTOs provide complete information in single GET call
+- [ ] ALL contextual FKs transformed to full objects (not raw IDs)
+- [ ] ALL bounded compositions included as nested arrays/objects
+- [ ] NO unbounded aggregations (counts only, separate endpoints)
+- [ ] NO N+1 query scenarios for list display
+- [ ] Nesting depth matches domain complexity (no artificial shallow limits)
+
+**Create DTO (Request) Atomic Checks**:
 - [ ] ALL Create DTOs enable complete entity creation in single API call
 - [ ] Compositional relations fully nested (no split operations)
 - [ ] Nesting depth matches business domain complexity
-- [ ] Read-Write symmetry maintained (Create mirrors Read structure)
 - [ ] NO missing composition arrays in Create DTOs
 - [ ] NO ID arrays for compositions (should be nested ICreate objects)
+
+**Bidirectional Symmetry**:
+- [ ] Read-Write symmetry maintained (Create mirrors Read structure)
+- [ ] Create-Read symmetry maintained (Read returns what Create produces)
+- [ ] Same nesting depth in Read and Create for compositions
+- [ ] Associations in Read map to ID fields in Create
 
 ### Structure Validation Complete
 - [ ] ALL inline objects extracted to named types
