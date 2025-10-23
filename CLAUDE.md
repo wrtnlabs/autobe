@@ -1,106 +1,246 @@
-# AutoBE Project Context for Claude
+# AutoBE Project Context for Claude Code
 
-## 1. What is AutoBE?
+## What is AutoBE?
 
-AutoBE는 자연어 요구사항으로부터 운영 준비가 완료된 백엔드 애플리케이션을 자동 생성하는 AI 기반 노코드 시스템이다. 사용자는 채팅 인터페이스를 통해 자연어로 백엔드 요구사항을 설명하고, AutoBE는 완전한 TypeScript + NestJS + Prisma 기반의 백엔드 애플리케이션을 생성한다.
+AutoBE is an AI-powered no-code system that automatically generates production-ready backend applications from natural language requirements. Users describe their backend needs through a chat interface, and AutoBE generates a complete TypeScript + NestJS + Prisma application.
 
-**핵심 특징**:
-- 100% 컴파일 보장
-- 완전한 타입 안정성
-- 포괄적인 문서화 (ERD, OpenAPI, API docs)
-- 강력한 E2E 테스트
-- 클린 구현 로직
+**Core Capabilities**:
+- 100% compilation guarantee
+- Full type safety across the stack
+- Comprehensive documentation (ERD, OpenAPI, API docs)
+- Complete E2E test coverage
+- Clean, maintainable implementation code
 
-**생성되는 산출물**:
-요구사항 분석 보고서 → 데이터베이스 스키마 (Prisma) → API 명세 (OpenAPI) → E2E 테스트 → API 구현 → 타입 안전 SDK
+**Generated Outputs**:
+Requirements Analysis → Database Schema (Prisma) → API Specification (OpenAPI) → E2E Tests → API Implementation → Type-Safe SDK
 
-## 2. Core Concepts
+## Three Fundamental Concepts
 
-AutoBE를 이해하는 세 가지 핵심 개념:
+### 1. Waterfall + Spiral Pipeline
 
-**Waterfall + Spiral**: Requirements → Analyze → Prisma → Interface → Test → Realize의 5단계를 순차 진행하며, 각 단계는 40개 이상의 전문화된 AI 에이전트가 협업 처리한다.
+AutoBE follows a 5-phase waterfall with internal spiral loops:
 
-**Compiler-Driven Development**: AutoBE Prisma Compiler → AutoBE OpenAPI Compiler → TypeScript Compiler의 3단계 검증을 거쳐 100% 컴파일을 보장한다.
+**Requirements** → **Analyze** → **Prisma** → **Interface** → **Test** → **Realize**
 
-**Vibe Coding**: 대화가 곧 소프트웨어가 된다. 대화 → 요구사항 → AST → 코드 → 애플리케이션의 자동 변환 파이프라인.
+Each phase has 40+ specialized AI agents that collaborate. Failures trigger spiral loops that regenerate and correct until success.
 
-자세한 내용은 [아키텍처 문서](.ai/ARCHITECTURE.md)를 참조하라.
+### 2. Compiler-Driven Development
 
-## 3. Documentation Index
+Three-tier validation ensures 100% compilation:
 
-상세 문서는 주제별로 분리되어 있다. 작업 시 관련 문서를 반드시 참조하라.
+**AutoBE Prisma Compiler** → **AutoBE OpenAPI Compiler** → **TypeScript Compiler**
+
+Compiler diagnostics feed back to AI agents, creating self-healing loops that automatically correct errors.
+
+### 3. Vibe Coding
+
+Conversation becomes software through automatic transformation:
+
+**Conversation** → **Requirements** → **AST** → **Code** → **Application**
+
+The entire pipeline is event-driven, with 65+ event types tracking progress in real-time.
+
+## Documentation Index
+
+Detailed documentation is organized by topic. **Always consult relevant documents before making changes.**
 
 ### Architecture & Design
-- **[전체 아키텍처](.ai/ARCHITECTURE.md)** - Waterfall+Spiral, 3단계 컴파일러, Vibe Coding 상세
-- **[AST 설계](.ai/AST_DESIGN.md)** - 간소화된 AST 설계 철학
+- **[ARCHITECTURE.md](.ai/ARCHITECTURE.md)** - Overall system architecture, three paradigms, package structure
+- **[STATE_MACHINE.md](.ai/STATE_MACHINE.md)** - Step counter pattern, automatic state invalidation
+- **[AST_DESIGN.md](.ai/AST_DESIGN.md)** - Simplified AST philosophy for AI generation
 
 ### Agent System (`@autobe/agent`)
-- **[Agent 시스템](.ai/AGENT_SYSTEM.md)** - 에이전트 시스템 구조와 철학
-- **[Orchestration](.ai/AGENT_ORCHESTRATION.md)** - 계층적 오케스트레이션, 자기 치유 메커니즘
-- **[System Prompts](.ai/AGENT_SYSTEM_PROMPTS.md)** - 프롬프트 설계 및 편집 가이드 ⭐ 가장 중요!
-- **[Tools](.ai/AGENT_TOOLS.md)** - Function Calling 도구 설계
-- **[Histories](.ai/AGENT_HISTORIES.md)** - 컨텍스트 최적화와 Prompt Caching
+- **[AGENTICA_INTEGRATION.md](.ai/AGENTICA_INTEGRATION.md)** - MicroAgentica pattern, IPointer, function calling abstraction
+- **[FUNCTION_CALLING.md](.ai/FUNCTION_CALLING.md)** - Facade pattern, LLM autonomous decision making
+- **[AGENT_ORCHESTRATION.md](.ai/AGENT_ORCHESTRATION.md)** - Hierarchical orchestration, batch processing, self-healing loops
+- **[AGENT_SYSTEM_PROMPTS.md](.ai/AGENT_SYSTEM_PROMPTS.md)** - System prompt design and editing guide ⭐ **Most Important!**
+- **[AGENT_TOOLS.md](.ai/AGENT_TOOLS.md)** - Function calling tool definitions
+- **[AGENT_HISTORIES.md](.ai/AGENT_HISTORIES.md)** - Context optimization with prompt caching
 
 ### Compiler System (`@autobe/compiler`)
-- **[Compiler 시스템](.ai/COMPILER_SYSTEM.md)** - 컴파일러 철학과 3단계 검증 시스템
-
-### Frontend & UI (`@autobe/ui`, Website, Apps)
-- **[Frontend 시스템](.ai/FRONTEND_SYSTEM.md)** - UI 컴포넌트, 실시간 통신, 세션 관리, UX 원칙
+- **[COMPILER_SYSTEM.md](.ai/COMPILER_SYSTEM.md)** - Three-tier validation, diagnostic generation, feedback loops
 
 ### Type System & Communication
-- **[RPC 시스템](.ai/RPC_SYSTEM.md)** - WebSocket 기반 타입 안전 RPC 통신
+- **[TYPE_SYSTEM.md](.ai/TYPE_SYSTEM.md)** - @autobe/interface, discriminated unions, Typia, TGrid RPC
+- **[EVENT_SYSTEM.md](.ai/EVENT_SYSTEM.md)** - 65+ event types, type-safe mapper, WebSocket streaming
+- **[RPC_SYSTEM.md](.ai/RPC_SYSTEM.md)** - WebSocket-based type-safe RPC communication
 
-### Development & Best Practices
-- **[개발 가이드](.ai/DEVELOPMENT_GUIDE.md)** - 새 기능 추가, 디버깅, 코드 탐색
-- **[Best Practices](.ai/BEST_PRACTICES.md)** - System Prompt 편집, 성능 최적화, 문제 해결
+### Performance
+- **[OPTIMIZATION.md](.ai/OPTIMIZATION.md)** - Prompt caching, batch processing, concurrency control
 
-## 4. Quick Start for Claude Code
+### Frontend & UI (`@autobe/ui`, Website, Apps)
+- **[FRONTEND_SYSTEM.md](.ai/FRONTEND_SYSTEM.md)** - UI components, real-time communication, session management
 
-### 첫 작업 시작 전
-1. [아키텍처](.ai/ARCHITECTURE.md) 읽기 - 시스템 동작 원리 이해
-2. [Agent 시스템](.ai/AGENT_SYSTEM.md) 읽기 - 에이전트 구조 파악
-3. 작업 관련 패키지의 개요 문서 읽기
+### Development
+- **[DEVELOPMENT_GUIDE.md](.ai/DEVELOPMENT_GUIDE.md)** - Adding features, debugging, code navigation
+- **[BEST_PRACTICES.md](.ai/BEST_PRACTICES.md)** - System prompt editing, optimization, troubleshooting
 
-### System Prompt 편집 시 (가장 중요!)
-**절대 원칙**: 사용자의 지시사항은 절대적이다. Claude Code는 자신의 판단으로 사용자 명령을 수정, 축소, 생략해서는 안 된다.
+## Quick Start for Claude Code
 
-1. **[System Prompts 가이드](.ai/AGENT_SYSTEM_PROMPTS.md)** 정독
-2. 편집 대상 프롬프트 파일 완전히 읽고 이해
-3. 관련 Orchestrator, Tool, History 코드 참조
-4. 기존 스토리라인에 자연스럽게 통합하여 수정
+### First Time Working on AutoBE
+1. Read [ARCHITECTURE.md](.ai/ARCHITECTURE.md) - Understand system fundamentals
+2. Read [AGENTICA_INTEGRATION.md](.ai/AGENTICA_INTEGRATION.md) - Understand agent structure
+3. Read package-specific documentation for your work area
 
-### 새 기능 추가 시
-1. [개발 가이드](.ai/DEVELOPMENT_GUIDE.md) 참조
-2. 기존 유사 기능 분석
-3. 관련 문서들을 참조하며 구현
+### Editing System Prompts (Most Important!)
 
-### 디버깅 시
-1. [Best Practices](.ai/BEST_PRACTICES.md)의 디버깅 섹션 참조
-2. 이벤트 로그와 컴파일러 오류 분석
-3. 관련 Orchestrator와 System Prompt 검토
+**Absolute Rule**: User instructions are absolute. Claude Code must NEVER modify, reduce, or omit user commands based on its own judgment.
 
-## 5. Absolute Rules for Claude Code
+**Before Editing**:
+1. **Read [AGENT_SYSTEM_PROMPTS.md](.ai/AGENT_SYSTEM_PROMPTS.md)** completely
+2. Read the target prompt file fully
+3. Review related Orchestrator code (`packages/agent/src/orchestrate/`)
+4. Review related Tool definitions
+5. Review related History transformers
 
-### 사용자 명령의 절대성
-사용자의 지시사항은 절대적이다. 명령이 불명확하면 질문하되, 명확한 명령은 무조건 이행한다.
+**When Editing**:
+- Integrate naturally into existing storyline
+- Write clear, specific instructions
+- Include rich examples
+- Specify constraints explicitly
+- Use positive directives ("do X" not "don't do Y")
 
-### System Prompt 편집의 중요성
-System Prompt 편집은 AutoBE 개발에서 가장 중요하고 민감한 작업이다. 반드시 [System Prompts 가이드](.ai/AGENT_SYSTEM_PROMPTS.md)를 정독한 후 작업한다.
+**After Editing**:
+1. Run `pnpm run build:prompt`
+2. Fix any compilation errors
+3. Test in actual pipeline execution
+4. Verify generated code quality
 
-### 빌드 시스템 주의
-`packages/agent/src/constants/AutoBeSystemPromptConstant.ts`는 자동 생성 파일이다. 직접 편집하지 말고, `packages/agent/prompts/*.md` 원본을 편집한 후 `pnpm run build:prompt`를 실행한다.
+**Never**:
+- Edit `AutoBeSystemPromptConstant.ts` directly (auto-generated)
+- Commit prompt changes without testing
+- Ignore impact on other agents
+- Use inconsistent conventions
 
-## 6. Repository Information
+### Adding New Features
+1. Consult [DEVELOPMENT_GUIDE.md](.ai/DEVELOPMENT_GUIDE.md)
+2. Analyze similar existing features
+3. Reference relevant architecture documents
+4. Follow type-driven development workflow
 
-- Repository: https://github.com/wrtnlabs/autobe
-- Documentation: https://autobe.dev/docs/
-- Main Branch: `main`
-- License: AGPL 3.0
-- Discord: https://discord.gg/aMhRmzkqCx
+### Debugging Issues
+1. Check [BEST_PRACTICES.md](.ai/BEST_PRACTICES.md) debugging section
+2. Analyze event logs and compiler errors
+3. Review related Orchestrators and System Prompts
+4. Check state machine step counters
+
+## Absolute Rules for Claude Code
+
+### 1. User Command Supremacy
+User instructions are absolute. If unclear, ask questions. If clear, execute exactly as specified without modification.
+
+### 2. System Prompt Editing Sensitivity
+System prompt editing is the most critical and sensitive task in AutoBE development. **Always** read [AGENT_SYSTEM_PROMPTS.md](.ai/AGENT_SYSTEM_PROMPTS.md) completely before editing any prompt.
+
+### 3. Build System Awareness
+- `packages/agent/src/constants/AutoBeSystemPromptConstant.ts` is auto-generated
+- Edit source files in `packages/agent/prompts/*.md`
+- Run `pnpm run build:prompt` after changes
+- Never commit without testing
+
+### 4. Type Safety First
+- All types defined in `@autobe/interface`
+- Use discriminated unions with mapper pattern
+- Never use `any` type
+- Leverage Typia for runtime validation
+
+### 5. Event-Driven Architecture
+- All state changes emit events
+- 65+ event types cover entire pipeline
+- Events enable real-time progress tracking
+- Event history allows state reconstruction
+
+## Critical File Locations
+
+### Agent System
+- **Facade Functions**: `packages/agent/src/factory/createAutoBeApplication.ts:28-111`
+- **Context Factory**: `packages/agent/src/factory/createAutoBeContext.ts`
+- **Orchestrators**: `packages/agent/src/orchestrate/*/`
+- **System Prompts**: `packages/agent/prompts/*.md`
+- **History Transformers**: `packages/agent/src/orchestrate/*/histories/`
+
+### Compiler System
+- **Prisma Compiler**: `packages/compiler/src/prisma/AutoBePrismaCompiler.ts`
+- **OpenAPI Compiler**: `packages/compiler/src/interface/AutoBeInterfaceCompiler.ts`
+- **TypeScript Compiler**: `packages/compiler/src/AutoBeTypeScriptCompiler.ts`
+
+### Type System
+- **All Types**: `packages/interface/src/`
+- **Events**: `packages/interface/src/events/`
+- **Histories**: `packages/interface/src/histories/`
+- **OpenAPI AST**: `packages/interface/src/openapi/AutoBeOpenApi.ts`
+
+### RPC & Frontend
+- **RPC Service**: `packages/rpc/src/AutoBeRpcService.ts`
+- **UI Components**: `packages/ui/src/`
+- **Website**: `packages/website/`
+
+## Development Workflow
+
+### Type-Driven Development
+1. Define types in `@autobe/interface`
+2. Add to discriminated union and mapper
+3. Implement in other packages
+4. Types enforce correctness at compile time
+
+### Event-Driven Updates
+1. Emit events at key orchestration points
+2. Events automatically stream via RPC
+3. Frontend subscribes to relevant events
+4. State reconstructs from event history
+
+### Compiler-Driven Quality
+1. Generate code via LLM
+2. Validate with appropriate compiler
+3. Extract diagnostics on failure
+4. Pass to Correct orchestrator
+5. Regenerate with fixes
+6. Repeat until success
+
+## Common Tasks
+
+### Adding a New Event Type
+1. Define in `packages/interface/src/events/`
+2. Add to `AutoBeEvent` union
+3. Add to `AutoBeEvent.Mapper`
+4. Add to `IAutoBeRpcListener`
+5. Emit from orchestrator: `ctx.dispatch(event)`
+6. **No RPC code changes needed** - automatic forwarding!
+
+### Modifying System Prompt
+1. Read [AGENT_SYSTEM_PROMPTS.md](.ai/AGENT_SYSTEM_PROMPTS.md)
+2. Edit `packages/agent/prompts/*.md`
+3. Run `pnpm run build:prompt`
+4. Test with actual generation
+5. Verify output quality
+
+### Adding New Orchestrator
+1. Study existing orchestrators
+2. Follow hierarchical pattern
+3. Use `executeCachedBatch` for parallelization
+4. Emit events at key points
+5. Integrate compiler feedback loops
+6. Update state on completion
+
+## Performance Considerations
+
+- **Prompt Caching**: First task sequential (establish cache), rest parallel
+- **Batch Processing**: Use `executeCachedBatch` pattern everywhere
+- **Concurrency**: Semaphore limits compilations to 2
+- **Incremental Compilation**: Reuse prior TypeScript program
+- **Token Optimization**: History transformers curate minimal context
+
+## Repository Information
+
+- **Repository**: https://github.com/wrtnlabs/autobe
+- **Documentation**: https://autobe.dev/docs/
+- **Main Branch**: `main`
+- **License**: AGPL 3.0
+- **Discord**: https://discord.gg/aMhRmzkqCx
 
 ---
 
-**Last Updated**: 2025-10-23
-**Version**: 2.0.0
+**Version**: 2.1.0
+**Last Updated**: 2025-01-23
 
-이 문서는 Claude Code가 AutoBE 프로젝트를 이해하고 효과적으로 작업할 수 있도록 작성되었다. 각 주제별 상세 문서를 참조하여 깊이 있는 이해를 바탕으로 작업하라.
+This document provides Claude Code with essential context for understanding and contributing to AutoBE. For detailed technical information, always consult the specific documentation files listed above.

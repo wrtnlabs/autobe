@@ -2,240 +2,240 @@
 
 ## Frontend Philosophy
 
-AutoBE의 Frontend는 사용자와 AI 백엔드 생성 시스템 사이의 인터페이스이다. 단순한 채팅 UI가 아니라, 복잡한 백엔드 생성 프로세스를 직관적으로 시각화하고, 실시간 피드백을 제공하며, 사용자가 전체 과정을 이해하고 제어할 수 있도록 돕는 정교한 시스템이다.
+AutoBE's Frontend is the interface between users and the AI backend generation system. It's not just a simple chat UI, but a sophisticated system that intuitively visualizes the complex backend generation process, provides real-time feedback, and helps users understand and control the entire process.
 
-Frontend 설계의 핵심은 **투명성**이다. AI가 내부에서 무엇을 하고 있는지, 현재 어느 단계인지, 어떤 결정을 내렸는지 모두 사용자에게 보여준다. 블랙박스가 아니라 투명한 유리상자처럼, 모든 과정이 가시화된다.
+The core of Frontend design is **transparency**. It shows users what the AI is doing internally, which stage it's at, and what decisions it made. Not a black box, but a transparent glass box where every process is visible.
 
-Frontend는 **반응성**을 중시한다. WebSocket을 통해 Backend에서 발생하는 모든 이벤트를 실시간으로 수신하고, UI를 즉시 업데이트한다. 사용자는 "지금 무슨 일이 일어나고 있는지" 항상 알 수 있으며, 진행 상황을 정확히 파악할 수 있다.
+The Frontend emphasizes **reactivity**. It receives all events from the Backend via WebSocket in real-time and updates the UI immediately. Users always know "what's happening right now" and can accurately track progress.
 
-Frontend는 **타입 안전성**을 보장한다. `@autobe/interface`의 타입을 Frontend와 Backend가 공유하므로, API 계약이 코드 레벨에서 강제된다. 컴파일 타임에 모든 타입 불일치를 잡을 수 있으며, 런타임 오류가 최소화된다.
+The Frontend ensures **type safety**. Frontend and Backend share types from `@autobe/interface`, so API contracts are enforced at the code level. All type mismatches are caught at compile time, minimizing runtime errors.
 
 ## Package Structure
 
-AutoBE Frontend는 여러 패키지로 구성된다.
+AutoBE Frontend consists of multiple packages.
 
 ### @autobe/ui
 
-`@autobe/ui`는 재사용 가능한 React 컴포넌트 라이브러리이다. 채팅 인터페이스, 이벤트 시각화, 설정 모달 등 AutoBE의 핵심 UI 요소를 제공한다.
+`@autobe/ui` is a reusable React component library. It provides core UI elements of AutoBE such as chat interface, event visualization, and configuration modals.
 
-**컴포넌트 구조**: 계층적으로 설계되어 있다. 최상위 `AutoBeChatMain`은 전체 채팅 인터페이스를 관리하고, `AutoBeEventGroupMovie`는 이벤트 그룹을 렌더링하며, 개별 이벤트는 `AutoBeEventMovie`, `AutoBeProgressEventMovie`, `AutoBeScenarioEventMovie` 등이 처리한다.
+**Component Structure**: Hierarchically designed. Top-level `AutoBeChatMain` manages the entire chat interface, `AutoBeEventGroupMovie` renders event groups, and individual events are handled by `AutoBeEventMovie`, `AutoBeProgressEventMovie`, `AutoBeScenarioEventMovie`, etc.
 
-**Context 기반 상태 관리**: `AutoBeAgentContext`는 전체 애플리케이션 상태를 관리한다. WebSocket 연결, 이벤트 스트림, 세션 리스트를 Context를 통해 공유하여, prop drilling을 피하고 깔끔한 컴포넌트 구조를 유지한다.
+**Context-based State Management**: `AutoBeAgentContext` manages overall application state. WebSocket connection, event streams, and session lists are shared through Context, avoiding prop drilling and maintaining clean component structure.
 
-**이벤트 리스너**: `AutoBeListener` 클래스는 Backend에서 오는 모든 이벤트를 수신하고 처리한다. 각 이벤트 타입마다 전용 핸들러가 있으며, 이벤트를 적절한 그룹으로 분류하고, UI 업데이트를 트리거한다. 이벤트 누적, 그룹화, 완료 처리를 자동으로 수행한다.
+**Event Listener**: The `AutoBeListener` class receives and processes all events from Backend. Each event type has a dedicated handler that classifies events into appropriate groups and triggers UI updates. It automatically handles event accumulation, grouping, and completion processing.
 
-**Overlay Kit 통합**: 모달, 다이얼로그, 알림은 `overlay-kit`을 사용하여 관리한다. 선언적 방식으로 오버레이를 열고 닫을 수 있으며, 복잡한 상태 관리 없이도 깔끔한 UI 흐름을 구현할 수 있다.
+**Overlay Kit Integration**: Modals, dialogs, and notifications are managed using `overlay-kit`. Overlays can be opened and closed declaratively, implementing clean UI flow without complex state management.
 
-**타입 안전 이벤트 처리**: 모든 이벤트는 `@autobe/interface`의 타입으로 정의된다. `AutoBeEvent` union 타입은 모든 가능한 이벤트를 포함하며, TypeScript가 이벤트 핸들러의 타입 안정성을 보장한다. 잘못된 이벤트 타입을 처리하려 하면 컴파일 에러가 발생한다.
+**Type-Safe Event Handling**: All events are defined by types from `@autobe/interface`. The `AutoBeEvent` union type includes all possible events, and TypeScript guarantees type safety of event handlers. Attempting to handle wrong event types causes compilation errors.
 
 ### Website
 
-Website는 AutoBE의 공식 문서 사이트이자 랜딩 페이지이다. Next.js 기반으로 구축되었으며, Fumadocs를 사용하여 문서를 관리한다.
+The Website is AutoBE's official documentation site and landing page. Built with Next.js and uses Fumadocs for documentation management.
 
-**문서 구조**: MDX 형식으로 작성된 문서들이 `website/src/content/docs/`에 위치한다. 개념 설명, API 레퍼런스, 튜토리얼, 로드맵 등이 체계적으로 구성되어 있다. 각 문서는 메타데이터를 포함하며, 자동으로 사이드바와 네비게이션이 생성된다.
+**Documentation Structure**: Documents written in MDX format are located in `website/src/content/docs/`. Concepts, API references, tutorials, and roadmaps are systematically organized. Each document includes metadata, and sidebars and navigation are generated automatically.
 
-**인터랙티브 데모**: 실제 AutoBE 시스템을 웹사이트에서 직접 체험할 수 있다. `AutoBeDemoMovie` 컴포넌트는 `@autobe/ui`를 임베드하여, 사용자가 요구사항을 입력하고 백엔드 생성 과정을 실시간으로 볼 수 있게 한다.
+**Interactive Demo**: The actual AutoBE system can be experienced directly on the website. The `AutoBeDemoMovie` component embeds `@autobe/ui`, allowing users to enter requirements and watch the backend generation process in real-time.
 
-**Screenshot 자동 생성**: Puppeteer를 사용하여 문서의 스크린샷을 자동으로 생성한다. 코드 예시, 다이어그램, UI 스크린샷이 항상 최신 상태를 유지한다. `build/screenshot.js` 스크립트가 이를 담당한다.
+**Automatic Screenshot Generation**: Puppeteer automatically generates documentation screenshots. Code examples, diagrams, and UI screenshots always stay up-to-date. The `build/screenshot.js` script handles this.
 
-**TypeDoc 통합**: API 레퍼런스는 TypeDoc을 통해 자동 생성된다. `@autobe/interface`, `@autobe/agent`, `@autobe/compiler` 패키지의 TypeScript 주석에서 문서를 추출하고, 웹사이트에 통합한다.
+**TypeDoc Integration**: API reference is automatically generated through TypeDoc. Documentation is extracted from TypeScript comments in `@autobe/interface`, `@autobe/agent`, `@autobe/compiler` packages and integrated into the website.
 
 ### Apps
 
-AutoBE는 여러 애플리케이션 형태로 제공된다.
+AutoBE is provided in multiple application forms.
 
-**Playground**: `apps/playground-ui`와 `apps/playground-server`는 온라인 Playground이다. 사용자는 브라우저에서 직접 AutoBE를 사용하여 백엔드를 생성하고, StackBlitz 연동을 통해 생성된 프로젝트를 즉시 실행할 수 있다. 회원가입 없이도 체험 가능하며, 세션은 브라우저 로컬 스토리지에 저장된다.
+**Playground**: `apps/playground-ui` and `apps/playground-server` form the online Playground. Users can directly use AutoBE in the browser to generate backends and immediately run generated projects through StackBlitz integration. Trial is possible without signup, and sessions are stored in browser local storage.
 
-**VSCode Extension**: `apps/vscode-extension`은 VSCode에서 AutoBE를 사용할 수 있게 하는 확장이다. 에디터 내에서 직접 요구사항을 입력하고, 생성된 코드를 프로젝트에 통합할 수 있다. `webview-ui`는 VSCode 내부에 렌더링되는 React UI이며, `worker`는 WebSocket 통신을 담당하는 백그라운드 프로세스이다.
+**VSCode Extension**: `apps/vscode-extension` enables using AutoBE within VSCode. Requirements can be entered directly in the editor and generated code integrated into projects. `webview-ui` is the React UI rendered inside VSCode, and `worker` is the background process handling WebSocket communication.
 
-**Hackathon Platform**: `apps/hackathon-ui`, `apps/hackathon-server`, `apps/hackathon-api`는 AutoBE 해커톤 플랫폼이다. 참가자들이 AutoBE를 사용하여 프로젝트를 빠르게 구축하고, 제출할 수 있다. 팀 관리, 프로젝트 제출, 심사 기능을 제공한다.
+**Hackathon Platform**: `apps/hackathon-ui`, `apps/hackathon-server`, `apps/hackathon-api` form the AutoBE hackathon platform. Participants can quickly build projects using AutoBE and submit them. Provides team management, project submission, and judging features.
 
 ## UI/UX Design Principles
 
-AutoBE Frontend의 UI/UX는 명확한 원칙을 따른다.
+AutoBE Frontend's UI/UX follows clear principles.
 
 ### Progressive Disclosure
 
-모든 정보를 한 번에 보여주지 않는다. 중요한 정보부터 단계적으로 공개하며, 사용자가 원할 때 세부사항을 확장할 수 있도록 한다.
+Don't show all information at once. Disclose important information progressively, allowing users to expand details when desired.
 
-초기 화면은 간결하다. 채팅 입력 창과 간단한 안내만 표시된다. 사용자가 요구사항을 입력하면, 진행 상황이 나타나기 시작한다. Analyze 단계 완료 시 요약만 보여주고, 클릭하면 상세 분석 보고서가 펼쳐진다.
+Initial screen is concise. Only chat input and simple guidance are displayed. When users enter requirements, progress starts appearing. When Analyze stage completes, only a summary is shown; clicking expands the detailed analysis report.
 
-이벤트 그룹은 기본적으로 접혀있다. 진행 중인 단계만 자동으로 펼쳐지며, 완료된 단계는 접혀서 공간을 절약한다. 사용자는 언제든 클릭하여 이전 단계의 세부사항을 확인할 수 있다.
+Event groups are collapsed by default. Only the stage in progress is automatically expanded, and completed stages are collapsed to save space. Users can always click to view details of previous stages.
 
 ### Real-time Feedback
 
-Backend에서 발생하는 모든 이벤트를 실시간으로 UI에 반영한다. 사용자는 "AI가 지금 무엇을 하고 있는지" 항상 알 수 있다.
+All events from Backend are reflected in UI in real-time. Users always know "what the AI is doing now".
 
-진행률 바는 정확한 숫자를 보여준다. "15 / 40 API 생성 중"처럼 현재 진행 상황을 구체적으로 표시한다. 막연한 "처리 중..." 메시지가 아니라, 정확한 진행도를 제공한다.
+Progress bars show exact numbers. Displays current progress concretely like "15 / 40 APIs generating". Not vague "processing..." messages, but precise progress.
 
-에이전트 활동이 실시간으로 스트리밍된다. Realize Write 에이전트가 API를 생성할 때마다 새 카드가 나타나며, 코드 스니펫도 표시된다. 사용자는 AI가 작성한 코드를 즉시 확인할 수 있다.
+Agent activity streams in real-time. Each time Realize Write agent generates an API, a new card appears with code snippets. Users can immediately see the code the AI wrote.
 
-오류도 즉시 표시된다. 컴파일 오류 발생 시 어떤 파일에서 어떤 오류가 발생했는지 명확히 보여주고, Correct 에이전트가 어떻게 수정하는지도 표시한다. 자기 치유 프로세스가 투명하게 공개된다.
+Errors are displayed immediately. When compilation errors occur, clearly shows which file had which errors and how the Correct agent fixes them. The self-healing process is transparently exposed.
 
 ### Visual Hierarchy
 
-중요한 정보는 눈에 띄게, 덜 중요한 정보는 조용하게 표시한다. 시각적 계층을 명확히 하여 사용자가 핵심을 빠르게 파악하도록 한다.
+Important information is prominent, less important information is subdued. Clear visual hierarchy helps users quickly grasp essentials.
 
-단계별 진행은 가장 눈에 띈다. Analyze → Prisma → Interface → Test → Realize의 5단계가 명확히 구분되며, 현재 진행 중인 단계가 강조된다.
+Stage progress is most prominent. The 5 stages Analyze → Prisma → Interface → Test → Realize are clearly distinguished, with the current stage highlighted.
 
-성공과 실패는 색상으로 구분된다. 성공한 작업은 녹색, 진행 중은 파란색, 실패는 빨간색으로 표시된다. 사용자는 한눈에 상태를 파악할 수 있다.
+Success and failure are color-coded. Successful tasks are green, in-progress is blue, failures are red. Users can understand status at a glance.
 
-메타데이터는 작게 표시된다. 타임스탬프, 토큰 사용량, 재시도 횟수 같은 부가 정보는 작은 폰트로 표시하여 핵심 정보를 방해하지 않는다.
+Metadata is displayed small. Auxiliary information like timestamps, token usage, retry count is shown in small font to not obstruct core information.
 
 ### Responsive Design
 
-모바일, 태블릿, 데스크톱 모두에서 최적의 경험을 제공한다.
+Provides optimal experience on mobile, tablet, and desktop.
 
-데스크톱에서는 사이드바와 메인 영역이 나란히 배치된다. 왼쪽 사이드바에 세션 리스트, 오른쪽 메인 영역에 채팅과 이벤트가 표시된다. 넓은 화면을 활용하여 많은 정보를 동시에 볼 수 있다.
+On desktop, sidebar and main area are side by side. Left sidebar shows session list, right main area shows chat and events. Wide screen allows viewing much information simultaneously.
 
-모바일에서는 단일 컬럼 레이아웃을 사용한다. 사이드바는 햄버거 메뉴로 숨겨지고, 메인 영역이 전체 화면을 차지한다. 터치 제스처에 최적화되며, 스크롤과 탭이 자연스럽다.
+On mobile, uses single column layout. Sidebar is hidden in hamburger menu, main area occupies full screen. Optimized for touch gestures with natural scrolling and tapping.
 
-컴포넌트는 화면 크기에 따라 적응한다. 이벤트 카드는 작은 화면에서 더 컴팩트하게 표시되고, 코드 블록은 가로 스크롤을 사용한다. 모든 인터랙션이 터치와 마우스 모두에서 작동한다.
+Components adapt to screen size. Event cards display more compactly on small screens, code blocks use horizontal scrolling. All interactions work with both touch and mouse.
 
 ## Component Architecture
 
-Frontend 컴포넌트는 명확한 책임과 계층을 가진다.
+Frontend components have clear responsibilities and hierarchy.
 
 ### Container Components
 
-최상위 컴포넌트는 비즈니스 로직과 상태 관리를 담당한다.
+Top-level components handle business logic and state management.
 
-`AutoBeChatMain`은 전체 채팅 인터페이스의 컨테이너이다. WebSocket 연결 관리, 이벤트 수신, 메시지 전송을 담당한다. 하위 컴포넌트에게 필요한 데이터와 콜백을 전달하며, UI 로직은 위임한다.
+`AutoBeChatMain` is the container for the entire chat interface. Handles WebSocket connection management, event reception, and message sending. Passes necessary data and callbacks to child components, delegating UI logic.
 
-`AutoBeAgentContext`는 전역 상태를 제공한다. 현재 세션, 이벤트 그룹, 연결 상태를 관리한다. Provider 패턴을 사용하여 하위 컴포넌트가 Context를 통해 상태에 접근할 수 있게 한다.
+`AutoBeAgentContext` provides global state. Manages current session, event groups, and connection state. Uses Provider pattern so child components can access state through Context.
 
-`AutoBeAgentSessionList`는 세션 관리를 담당한다. 세션 목록 조회, 새 세션 생성, 세션 전환, 세션 삭제 기능을 제공한다. 로컬 스토리지와 동기화하여 세션을 영구 보존한다.
+`AutoBeAgentSessionList` handles session management. Provides session list retrieval, new session creation, session switching, and session deletion. Synchronizes with local storage for permanent session storage.
 
 ### Presentation Components
 
-Presentation 컴포넌트는 순수하게 UI 렌더링만 담당한다. Props를 받아서 화면에 그리고, 사용자 인터랙션을 콜백으로 전달한다.
+Presentation components purely handle UI rendering. Receive Props, render to screen, and pass user interactions to callbacks.
 
-`AutoBeEventGroupMovie`는 이벤트 그룹을 렌더링한다. 단계별로 그룹화된 이벤트를 받아서 접을 수 있는 카드로 표시한다. 진행 중인 그룹은 자동으로 펼쳐지고, 완료된 그룹은 접힌다.
+`AutoBeEventGroupMovie` renders event groups. Displays events grouped by stage as collapsible cards. In-progress groups automatically expand, completed groups collapse.
 
-`AutoBeEventMovie`는 개별 이벤트를 렌더링한다. 이벤트 타입에 따라 다른 아이콘과 레이아웃을 사용한다. Start 이벤트는 헤더로, Progress 이벤트는 진행률 바로, Complete 이벤트는 요약으로 표시된다.
+`AutoBeEventMovie` renders individual events. Uses different icons and layouts depending on event type. Start events as headers, Progress events as progress bars, Complete events as summaries.
 
-`AutoBeProgressEventMovie`는 진행률 이벤트를 전문적으로 렌더링한다. 숫자 카운터, 진행률 바, 백분율을 시각적으로 표시한다. 애니메이션을 적용하여 진행이 부드럽게 보인다.
+`AutoBeProgressEventMovie` specializes in rendering progress events. Visually displays numeric counter, progress bar, and percentage. Applies animation so progress appears smooth.
 
-`AutoBeScenarioEventMovie`는 시나리오 이벤트를 렌더링한다. 계획된 작업 목록을 보여주며, 각 항목이 체크리스트처럼 표시된다. 사용자는 AI가 무엇을 할 계획인지 미리 볼 수 있다.
+`AutoBeScenarioEventMovie` renders scenario events. Shows planned task list where each item displays like a checklist. Users can preview what the AI plans to do.
 
 ### Utility Components
 
-재사용 가능한 유틸리티 컴포넌트들이다.
+Reusable utility components.
 
-`Collapsible`은 접을 수 있는 섹션을 구현한다. 헤더를 클릭하면 내용이 펼쳐지거나 접힌다. 애니메이션도 포함되어 부드러운 전환을 제공한다.
+`Collapsible` implements collapsible sections. Clicking header expands or collapses content. Includes animation for smooth transitions.
 
-`ProgressBar`는 진행률 바를 렌더링한다. 퍼센티지를 받아서 시각적으로 표시하고, 색상과 애니메이션을 커스터마이징할 수 있다.
+`ProgressBar` renders progress bars. Receives percentage and displays visually, with customizable colors and animations.
 
-`EventCard`는 이벤트를 담는 카드 컴포넌트이다. 일관된 스타일과 레이아웃을 제공하며, 아이콘, 제목, 내용, 메타데이터를 배치한다.
+`EventCard` is a card component containing events. Provides consistent style and layout, arranging icon, title, content, and metadata.
 
-`ChatBubble`은 채팅 메시지를 렌더링한다. 사용자 메시지와 어시스턴트 메시지를 구분하여 표시하고, 마크다운 렌더링도 지원한다.
+`ChatBubble` renders chat messages. Distinguishes user messages from assistant messages and supports markdown rendering.
 
 ## Real-time Communication
 
-Frontend와 Backend는 WebSocket을 통해 실시간으로 통신한다.
+Frontend and Backend communicate in real-time through WebSocket.
 
 ### WebSocket Connection
 
-`@autobe/ui`는 TGrid를 사용하여 타입 안전한 WebSocket RPC를 구현한다. Backend의 `IAutoBeRpcListener` 인터페이스를 Frontend가 구현하고, TGrid가 자동으로 메서드 호출을 WebSocket 메시지로 변환한다.
+`@autobe/ui` implements type-safe WebSocket RPC using TGrid. Frontend implements Backend's `IAutoBeRpcListener` interface, and TGrid automatically converts method calls to WebSocket messages.
 
-연결 수명주기는 명확하다. 컴포넌트 마운트 시 WebSocket 연결을 시작하고, 언마운트 시 연결을 닫는다. 연결 실패 시 자동으로 재시도하며, 재연결 중임을 UI에 표시한다.
+Connection lifecycle is clear. WebSocket connection starts on component mount and closes on unmount. Automatically retries on connection failure and displays reconnection status in UI.
 
-연결 상태는 `connectionStatus`로 추적된다. `connecting`, `connected`, `disconnected`, `error` 상태를 가지며, UI가 이에 반응한다. 연결 중일 때는 스피너를, 연결 실패 시 오류 메시지를 표시한다.
+Connection status is tracked via `connectionStatus`. Has states `connecting`, `connected`, `disconnected`, `error`, and UI reacts to them. Shows spinner when connecting, error message on failure.
 
 ### Event Streaming
 
-Backend에서 발행되는 모든 이벤트는 WebSocket을 통해 Frontend로 스트리밍된다.
+All events published from Backend stream to Frontend via WebSocket.
 
-`AutoBeListener` 클래스가 모든 이벤트를 수신한다. 각 이벤트 타입마다 핸들러 메서드가 있으며, `IAutoBeRpcListener` 인터페이스를 구현한다. Backend가 `analyzeStart` 이벤트를 발행하면, Frontend의 `analyzeStart` 메서드가 자동으로 호출된다.
+The `AutoBeListener` class receives all events. Has handler methods for each event type and implements `IAutoBeRpcListener` interface. When Backend publishes an `analyzeStart` event, Frontend's `analyzeStart` method is automatically called.
 
-이벤트 누적은 스마트하게 처리된다. `analyzeWrite` 이벤트는 여러 번 발생하므로, 동일한 그룹에 누적된다. `accumulate` 메서드가 이를 처리하며, 이벤트 배열을 업데이트한다. UI는 새 이벤트가 추가될 때마다 리렌더링되어, 실시간 업데이트를 보여준다.
+Event accumulation is handled smartly. `analyzeWrite` events occur multiple times, so they accumulate in the same group. The `accumulate` method handles this, updating the event array. UI rerenders each time a new event is added, showing real-time updates.
 
-이벤트 그룹화는 자동으로 이루어진다. `analyzeStart`부터 `analyzeComplete`까지를 하나의 그룹으로 묶는다. `eventGrouper` 유틸리티가 이벤트 스트림을 분석하고, 논리적 그룹으로 나눈다. 각 그룹은 접을 수 있는 섹션으로 렌더링된다.
+Event grouping happens automatically. Groups from `analyzeStart` to `analyzeComplete` into one. The `eventGrouper` utility analyzes the event stream and divides into logical groups. Each group renders as a collapsible section.
 
 ### State Synchronization
 
-Frontend 상태는 Backend 이벤트에 따라 동기화된다.
+Frontend state synchronizes according to Backend events.
 
-`AutoBeListenerState` 클래스가 현재 상태를 추적한다. Analyze, Prisma, Interface, Test, Realize 각 단계의 완료 이벤트를 수신하면 상태를 업데이트한다. `state.analyze`, `state.prisma` 등의 필드에 최종 결과가 저장된다.
+The `AutoBeListenerState` class tracks current state. Updates state upon receiving completion events from Analyze, Prisma, Interface, Test, Realize stages. Final results are stored in fields like `state.analyze`, `state.prisma`.
 
-상태는 불변이다. 새 이벤트 수신 시 기존 상태를 수정하는 것이 아니라, 새로운 상태 객체를 생성한다. React의 불변성 원칙을 따르며, 상태 변경 추적이 용이하다.
+State is immutable. On receiving new events, doesn't modify existing state but creates a new state object. Follows React's immutability principle, making state change tracking easy.
 
-상태 변경은 즉시 UI에 반영된다. Context를 통해 구독하는 모든 컴포넌트가 리렌더링되며, 최신 상태를 표시한다. React의 반응성 덕분에 추가 로직 없이도 UI가 자동으로 업데이트된다.
+State changes immediately reflect in UI. All components subscribing through Context rerender and display latest state. Thanks to React's reactivity, UI automatically updates without additional logic.
 
 ## Session Management
 
-사용자의 작업은 세션으로 관리된다.
+User work is managed as sessions.
 
-세션은 하나의 백엔드 생성 프로젝트를 의미한다. 요구사항 입력부터 최종 코드 생성까지의 모든 이벤트와 상태가 세션에 저장된다. 사용자는 여러 세션을 동시에 관리할 수 있으며, 세션 간 전환이 자유롭다.
+A session represents one backend generation project. All events and state from requirements input to final code generation are stored in the session. Users can manage multiple sessions simultaneously and switch between them freely.
 
-세션 영속성은 브라우저 로컬 스토리지를 사용한다. 세션 메타데이터(ID, 제목, 생성 시간)와 이벤트 스트림이 JSON으로 직렬화되어 저장된다. 브라우저를 닫았다 다시 열어도 세션이 유지되며, 이전 작업을 이어갈 수 있다.
+Session persistence uses browser local storage. Session metadata (ID, title, creation time) and event stream are serialized to JSON and stored. Sessions persist even after closing and reopening the browser, allowing work continuation.
 
-세션 리스트는 사이드바에 표시된다. 최근 세션이 위에 오도록 정렬되며, 각 세션의 제목과 마지막 수정 시간을 보여준다. 클릭하면 해당 세션으로 전환되고, 모든 이벤트가 복원된다.
+Session list displays in sidebar. Sorted with recent sessions on top, showing each session's title and last modified time. Clicking switches to that session and restores all events.
 
-새 세션 생성은 간단하다. "New Session" 버튼을 클릭하면 빈 세션이 생성되고, 채팅 입력 창이 포커스된다. 기존 세션은 그대로 유지되며, 언제든 돌아갈 수 있다.
+Creating new sessions is simple. Clicking "New Session" button creates an empty session and focuses the chat input. Existing sessions remain intact and can be returned to anytime.
 
-세션 삭제도 지원한다. 세션을 삭제하면 로컬 스토리지에서 제거되며, 복구할 수 없다. 삭제 전 확인 다이얼로그를 표시하여 실수를 방지한다.
+Session deletion is supported. Deleting a session removes it from local storage and is unrecoverable. Displays confirmation dialog before deletion to prevent accidents.
 
 ## Configuration Management
 
-사용자 설정은 UI를 통해 관리된다.
+User settings are managed through UI.
 
-설정 모달은 `AutoBeConfigModal` 컴포넌트가 담당한다. API 키, 모델 선택, 고급 옵션 등을 입력할 수 있다. 필드는 동적으로 정의되며, 앱마다 다른 설정을 요구할 수 있다.
+The configuration modal is handled by `AutoBeConfigModal` component. Can input API key, model selection, advanced options, etc. Fields are dynamically defined and apps can require different settings.
 
-API 키는 암호화되어 저장된다. 세션 스토리지에 암호화된 형태로 보관되며, 브라우저 탭을 닫으면 자동으로 삭제된다. 보안을 위해 로컬 스토리지가 아닌 세션 스토리지를 사용한다.
+API keys are encrypted for storage. Stored encrypted in session storage and automatically deleted when closing browser tab. Uses session storage, not local storage, for security.
 
-설정 검증은 즉시 이루어진다. 필수 필드가 비어있으면 저장 버튼이 비활성화된다. API 키 형식도 검증하여, 잘못된 형식은 오류 메시지와 함께 거부된다.
+Configuration validation happens immediately. Save button is disabled if required fields are empty. API key format is also validated, rejecting wrong formats with error messages.
 
-설정은 앱마다 독립적이다. Playground의 설정과 VSCode Extension의 설정은 별도로 관리된다. 각 앱은 `configFields` prop을 통해 필요한 설정을 정의한다.
+Settings are independent per app. Playground settings and VSCode Extension settings are managed separately. Each app defines required settings through `configFields` prop.
 
 ## Error Handling
 
-Frontend는 다양한 오류 상황을 우아하게 처리한다.
+Frontend gracefully handles various error situations.
 
-WebSocket 연결 오류는 자동 재시도된다. Exponential backoff 전략을 사용하여 재시도 간격을 점진적으로 늘린다. 재연결 중임을 UI에 표시하고, 최종 실패 시 사용자에게 알린다.
+WebSocket connection errors are automatically retried. Uses exponential backoff strategy to progressively increase retry intervals. Displays reconnection status in UI and notifies user on final failure.
 
-Backend 오류는 명확히 표시된다. 컴파일 오류, LLM API 오류, 타임아웃 등 다양한 오류가 발생할 수 있다. 각 오류는 이벤트로 전송되며, UI에 오류 카드로 표시된다. 오류 메시지, 스택 트레이스, 재시도 가능 여부를 포함한다.
+Backend errors are clearly displayed. Various errors can occur: compilation errors, LLM API errors, timeouts, etc. Each error is sent as an event and displayed as error card in UI. Includes error message, stack trace, and retry availability.
 
-네트워크 오류는 감지되고 처리된다. WebSocket 연결이 끊어지면 즉시 감지하고, 재연결을 시도한다. 사용자에게 오프라인 상태임을 알리고, 연결이 복구되면 자동으로 재개한다.
+Network errors are detected and handled. Immediately detects when WebSocket connection breaks and attempts reconnection. Informs user of offline status and automatically resumes when connection recovers.
 
-사용자 입력 오류는 즉시 피드백된다. 빈 메시지 전송 시도, 잘못된 설정 입력 등은 즉시 검증되고, 명확한 오류 메시지와 함께 거부된다.
+User input errors receive immediate feedback. Attempts to send empty messages or wrong configuration inputs are immediately validated and rejected with clear error messages.
 
 ## Performance Optimization
 
-Frontend는 성능 최적화에 신경 쓴다.
+Frontend cares about performance optimization.
 
-컴포넌트는 메모이제이션된다. `React.memo`를 사용하여 불필요한 리렌더링을 방지한다. Props가 변경되지 않으면 리렌더링을 건너뛴다.
+Components are memoized. Uses `React.memo` to prevent unnecessary rerenders. Skips rerender if Props haven't changed.
 
-이벤트 처리는 배치된다. 짧은 시간에 여러 이벤트가 오면, 배치로 묶어서 한 번에 처리한다. React의 자동 배칭과 함께, UI 업데이트 빈도를 최적화한다.
+Event processing is batched. When multiple events arrive in short time, batches them for processing at once. Along with React's automatic batching, optimizes UI update frequency.
 
-가상 스크롤은 긴 이벤트 리스트에 적용된다. 수백 개의 이벤트가 있을 때, 화면에 보이는 것만 렌더링한다. 스크롤 성능이 향상되고, 메모리 사용량도 줄어든다.
+Virtual scrolling applies to long event lists. When hundreds of events exist, only renders what's visible on screen. Improves scroll performance and reduces memory usage.
 
-이미지와 아이콘은 최적화된다. SVG 아이콘을 사용하여 선명하고 가벼운 UI를 제공한다. 필요한 아이콘만 로드하여 번들 크기를 줄인다.
+Images and icons are optimized. Uses SVG icons for sharp, lightweight UI. Loads only needed icons to reduce bundle size.
 
-코드 스플리팅은 라우트 단위로 적용된다. 랜딩 페이지, 문서, Playground가 각각 별도 청크로 분리된다. 초기 로딩 시간이 단축되고, 필요한 코드만 로드된다.
+Code splitting applies at route level. Landing page, documentation, and Playground are separated into distinct chunks. Initial loading time is reduced, loading only needed code.
 
 ## Accessibility
 
-AutoBE Frontend는 접근성을 중시한다.
+AutoBE Frontend values accessibility.
 
-키보드 네비게이션은 완전히 지원된다. Tab 키로 모든 인터랙티브 요소에 접근할 수 있고, Enter/Space로 활성화할 수 있다. 포커스 표시도 명확하여, 현재 위치를 쉽게 파악할 수 있다.
+Keyboard navigation is fully supported. Can access all interactive elements with Tab key and activate with Enter/Space. Focus indicators are clear, making current position easy to identify.
 
-스크린 리더 지원은 ARIA 속성을 통해 구현된다. 버튼, 입력 필드, 상태 표시에 적절한 레이블과 역할을 지정한다. 스크린 리더 사용자도 모든 기능을 사용할 수 있다.
+Screen reader support is implemented through ARIA attributes. Assigns appropriate labels and roles to buttons, input fields, and status indicators. Screen reader users can use all features.
 
-색상 대비는 WCAG AA 기준을 충족한다. 텍스트와 배경의 대비가 충분하여, 저시력 사용자도 읽을 수 있다. 색상만으로 정보를 전달하지 않으며, 아이콘과 텍스트를 함께 사용한다.
+Color contrast meets WCAG AA standards. Sufficient contrast between text and background makes it readable for low-vision users. Doesn't convey information through color alone, using icons and text together.
 
-에러 메시지는 명확하고 구체적이다. "오류 발생"이 아니라, "API 키가 유효하지 않습니다. 설정에서 올바른 키를 입력해주세요" 같은 실행 가능한 피드백을 제공한다.
+Error messages are clear and specific. Not "Error occurred" but actionable feedback like "API key is invalid. Please enter a valid key in settings".
 
 ## Future Enhancements
 
-Frontend는 계속 발전한다.
+Frontend continues to evolve.
 
-다크 모드 지원이 계획되어 있다. 사용자 선호도에 따라 라이트/다크 테마를 전환할 수 있다. 시스템 설정과 동기화하여 자동으로 적용된다.
+Dark mode support is planned. Users can switch between light/dark themes according to preference. Syncs with system settings for automatic application.
 
-다국어 지원도 로드맵에 있다. 영어, 한국어, 일본어, 중국어 등 여러 언어를 지원하여 글로벌 사용자에게 친숙한 경험을 제공한다.
+Multilingual support is on the roadmap. Will support multiple languages including English, Korean, Japanese, Chinese to provide familiar experience for global users.
 
-오프라인 모드가 검토 중이다. Service Worker를 사용하여 오프라인에서도 기본 기능을 사용할 수 있게 한다. 생성된 프로젝트를 로컬에 저장하고, 연결이 복구되면 동기화한다.
+Offline mode is under consideration. Using Service Workers to enable basic features offline. Stores generated projects locally and syncs when connection recovers.
 
-AI 채팅 향상도 계획되어 있다. 자연어로 수정 요청, 기능 추가, 디버깅 지원 등을 대화형으로 수행할 수 있다. 더 직관적이고 강력한 인터페이스를 목표로 한다.
+AI chat enhancement is also planned. Supports modification requests, feature additions, debugging assistance conversationally in natural language. Aims for more intuitive and powerful interface.
 
-AutoBE Frontend는 단순한 UI가 아니라, 복잡한 AI 시스템을 사용자 친화적으로 만드는 중요한 계층이다. 투명성, 반응성, 타입 안전성을 통해 최고의 사용자 경험을 제공한다.
+AutoBE Frontend is not just UI, but a critical layer making complex AI systems user-friendly. Provides best user experience through transparency, reactivity, and type safety.

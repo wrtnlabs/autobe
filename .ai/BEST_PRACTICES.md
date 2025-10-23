@@ -2,200 +2,200 @@
 
 ## System Prompt Editing
 
-**가장 중요한 작업이자 가장 민감한 작업이다.**
+**This is the most important and sensitive task.**
 
-### 절대 원칙
-사용자의 지시사항은 절대적이다. 명령이 불명확하면 질문하되, 명확한 명령은 무조건 이행한다. Claude Code는 자신의 판단으로 사용자 명령을 수정, 축소, 생략해서는 안 된다.
+### Absolute Principle
+User instructions are absolute. If unclear, ask questions. If clear, execute unconditionally. Claude Code must never modify, reduce, or omit user commands based on its own judgment.
 
-### 수정 전 필수 작업
-1. [AGENT_SYSTEM_PROMPTS.md](AGENT_SYSTEM_PROMPTS.md) 정독
-2. 편집 대상 프롬프트 파일 완전히 읽고 이해
-3. 관련 Orchestrator 코드 읽기 (`packages/agent/src/orchestrate/`)
-4. 관련 Tool 정의 확인
-5. 관련 History Transformer 확인
+### Mandatory Tasks Before Editing
+1. Read [AGENT_SYSTEM_PROMPTS.md](AGENT_SYSTEM_PROMPTS.md) thoroughly
+2. Fully read and understand the target prompt file
+3. Read related Orchestrator code (`packages/agent/src/orchestrate/`)
+4. Check related Tool definitions
+5. Check related History Transformers
 
-### 수정 시 지침
-- 기존 스토리라인에 자연스럽게 통합
-- 명확하고 구체적인 지시 작성
-- 풍부한 예시 포함
-- 제약 조건 명시
-- 긍정적 지시 우선 ("하지 마라" < "하라")
+### Guidelines When Editing
+- Integrate naturally into existing storyline
+- Write clear and specific instructions
+- Include rich examples
+- Specify constraints
+- Prioritize positive directives ("do" over "don't")
 
-### 수정 후 검증
-1. `pnpm run build:prompt` 실행
-2. 컴파일 오류 해결
-3. 실제 파이프라인 실행하여 검증
-4. 생성된 코드 품질 확인
+### Verification After Editing
+1. Run `pnpm run build:prompt`
+2. Resolve compilation errors
+3. Validate by running actual pipeline
+4. Verify generated code quality
 
-### 절대 하지 말아야 할 것
-- `AutoBeSystemPromptConstant.ts`를 직접 편집 (자동 생성 파일임)
-- 테스트 없이 프롬프트 변경 커밋
-- 다른 에이전트에 미치는 영향 무시
-- 일관성 없는 컨벤션 사용
+### Things You Must Never Do
+- Edit `AutoBeSystemPromptConstant.ts` directly (it's auto-generated)
+- Commit prompt changes without testing
+- Ignore impact on other agents
+- Use inconsistent conventions
 
 ## Performance Optimization
 
-### Prompt Caching 극대화
-- 반복 사용 컨텍스트는 메시지 앞부분 배치
-- 요청별로 다른 내용은 뒷부분 배치
-- 메시지 순서를 일관되게 유지
-- 캐시 히트율 모니터링
+### Maximize Prompt Caching
+- Place repeatedly used context at beginning of messages
+- Place request-specific content at end
+- Maintain consistent message ordering
+- Monitor cache hit rates
 
-### 병렬 처리 활용
-- 독립적 작업은 병렬로 실행
-- `executeCachedBatch` 활용
-- 적절한 concurrency limit 설정
-- Rate limit 고려
+### Utilize Parallel Processing
+- Run independent tasks in parallel
+- Utilize `executeCachedBatch`
+- Set appropriate concurrency limits
+- Consider rate limits
 
-### 컨텍스트 최적화
-- 필요한 정보만 선택적 포함
-- 긴 내용은 요약
-- 중복 제거
-- 토큰 사용량 모니터링
+### Context Optimization
+- Selectively include only necessary information
+- Summarize lengthy content
+- Remove duplication
+- Monitor token usage
 
 ## Error Handling
 
-### 컴파일 오류 대응
-1. 오류 메시지 정확히 읽기
-2. 오류 발생 위치 파악
-3. 해당 코드를 생성한 에이전트 식별
-4. System Prompt 또는 History 개선
+### Responding to Compilation Errors
+1. Read error messages accurately
+2. Identify error location
+3. Identify agent that generated the code
+4. Improve System Prompt or History
 
-### LLM API 오류 대응
-- 재시도 로직 신뢰
-- Rate limit 모니터링
-- API 키와 할당량 확인
-- 로그 분석
+### Responding to LLM API Errors
+- Trust retry logic
+- Monitor rate limits
+- Check API keys and quotas
+- Analyze logs
 
-### 디버깅 전략
-- 이벤트 로그 추적
-- 컴파일러 진단 분석
-- History 내용 검증
-- System Prompt 명확성 확인
+### Debugging Strategy
+- Trace event logs
+- Analyze compiler diagnostics
+- Verify History content
+- Check System Prompt clarity
 
 ## Code Quality
 
-### 타입 안전성 유지
-- 모든 함수에 명시적 타입 선언
-- `any` 타입 절대 사용 금지
-- `@autobe/interface` 타입 활용
-- 컴파일 오류 즉시 해결
+### Maintain Type Safety
+- Declare explicit types for all functions
+- Absolutely prohibit `any` type
+- Utilize `@autobe/interface` types
+- Resolve compilation errors immediately
 
-### 일관성 유지
-- 네이밍 컨벤션 준수
-- 파일 구조 일관성
-- 코딩 스타일 통일
-- 문서와 코드 일치
+### Maintain Consistency
+- Follow naming conventions
+- File structure consistency
+- Unified coding style
+- Match documentation with code
 
-### 테스트 작성
-- 새 기능에 테스트 추가
-- 엣지 케이스 포함
-- 회귀 테스트 유지
-- 통합 테스트 주기적 실행
+### Write Tests
+- Add tests for new features
+- Include edge cases
+- Maintain regression tests
+- Run integration tests periodically
 
 ## Documentation
 
-### 문서 최신화
-- 코드 변경 시 문서도 업데이트
-- `.ai/` 폴더의 문서는 특히 중요
-- CLAUDE.md는 항상 최신 상태 유지
-- 예시와 링크 검증
+### Keep Documentation Current
+- Update documentation when code changes
+- Documents in `.ai/` folder are especially important
+- Always keep CLAUDE.md up-to-date
+- Verify examples and links
 
-### 문서 작성 스타일
-- 명확하고 간결하게
-- 구체적인 예시 포함
-- 서술형과 리스트의 균형
-- 한글로 작성 (코드와 기술 용어는 영어)
+### Documentation Writing Style
+- Clear and concise
+- Include specific examples
+- Balance narrative and lists
+- Write in Korean (code and technical terms in English)
 
 ## Git Workflow
 
-### 커밋 메시지
-- 명확하고 구체적으로
-- 변경 이유 설명
-- 관련 이슈 참조
-- 컨벤셔널 커밋 사용 권장
+### Commit Messages
+- Clear and specific
+- Explain reason for change
+- Reference related issues
+- Recommend using Conventional Commits
 
-### Pull Request
-- 충분한 설명 포함
-- 관련 문서 업데이트
-- 모든 테스트 통과 확인
-- 리뷰 피드백 적극 수용
+### Pull Requests
+- Include sufficient explanation
+- Update related documentation
+- Confirm all tests pass
+- Actively accept review feedback
 
-### 브랜치 전략
-- Feature 브랜치에서 작업
-- main은 항상 안정적 상태 유지
-- Hotfix는 신속히 진행
+### Branch Strategy
+- Work in Feature branches
+- main is always stable
+- Hotfixes proceed quickly
 
 ## Common Pitfalls
 
-### System Prompt 관련
-- 모호한 지시 → 명확하고 구체적으로
-- 예시 부족 → 풍부한 예시 포함
-- 제약 누락 → 필수 제약 명시
-- 컨텍스트 불일치 → History Transformer와 동기화
+### System Prompt Related
+- Ambiguous instructions → Make clear and specific
+- Lack of examples → Include rich examples
+- Missing constraints → Specify required constraints
+- Context mismatch → Synchronize with History Transformer
 
-### Performance 관련
-- 불필요한 컨텍스트 → 선택적 포함으로 최적화
-- 캐싱 미활용 → Prompt Caching 적극 활용
-- 순차 처리 → 가능한 병렬 처리
+### Performance Related
+- Unnecessary context → Optimize with selective inclusion
+- Not utilizing caching → Actively use Prompt Caching
+- Sequential processing → Parallel processing when possible
 
-### Code Quality 관련
-- any 타입 사용 → 명시적 타입 선언
-- 테스트 누락 → 필수 테스트 작성
-- 문서 부채 → 즉시 문서화
+### Code Quality Related
+- Using any type → Explicit type declarations
+- Missing tests → Write required tests
+- Documentation debt → Document immediately
 
 ## Monitoring and Analytics
 
-### 성능 지표 추적
-- LLM 호출 시간
-- 토큰 사용량
-- 캐시 히트율
-- 컴파일 성공률
+### Track Performance Metrics
+- LLM call time
+- Token usage
+- Cache hit rate
+- Compilation success rate
 
-### 품질 지표 추적
-- 생성 코드의 컴파일 성공률
-- 재시도 횟수
-- 사용자 만족도
-- 오류 발생 빈도
+### Track Quality Metrics
+- Compilation success rate of generated code
+- Retry count
+- User satisfaction
+- Error occurrence frequency
 
-### 지속적 개선
-- 지표 분석하여 병목 식별
-- A/B 테스트로 개선 효과 검증
-- 사용자 피드백 반영
-- 정기적 프롬프트 리뷰
+### Continuous Improvement
+- Identify bottlenecks by analyzing metrics
+- Verify improvement effects with A/B testing
+- Reflect user feedback
+- Regular prompt reviews
 
 ## Security
 
-### API 키 관리
-- 환경 변수로 관리
-- Git에 절대 커밋하지 않음
-- 주기적 로테이션
+### API Key Management
+- Manage with environment variables
+- Never commit to Git
+- Periodic rotation
 
-### 생성 코드 검증
-- 하드코딩된 비밀번호 금지
-- SQL Injection 방지
-- XSS 방지
-- 적절한 인증/인가
+### Validate Generated Code
+- Prohibit hardcoded passwords
+- Prevent SQL Injection
+- Prevent XSS
+- Appropriate authentication/authorization
 
 ## Collaboration
 
-### Discord 커뮤니티
-- 질문과 논의 환영
-- 경험 공유
-- 버그 리포트
-- 기능 제안
+### Discord Community
+- Welcome questions and discussions
+- Share experiences
+- Report bugs
+- Suggest features
 
 ### Code Review
-- 건설적 피드백
-- 코드 품질 중시
-- 학습 기회로 활용
+- Constructive feedback
+- Emphasize code quality
+- Use as learning opportunity
 
 ### Knowledge Sharing
-- 문서 작성
-- 블로그 포스트
-- 컨퍼런스 발표
-- 오픈소스 기여
+- Write documentation
+- Blog posts
+- Conference presentations
+- Open source contributions
 
 ---
 
-AutoBE는 지속적으로 진화하는 프로젝트이다. 이 Best Practices도 경험과 피드백을 바탕으로 계속 업데이트된다. 새로운 인사이트가 생기면 이 문서에 추가하여 모두가 혜택을 받을 수 있도록 한다.
+AutoBE is a continuously evolving project. These Best Practices are also continuously updated based on experience and feedback. Add new insights to this document so everyone can benefit.

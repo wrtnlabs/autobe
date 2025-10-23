@@ -2,268 +2,268 @@
 
 ## Critical Importance
 
-System Prompt 편집은 AutoBE 개발에서 **가장 중요하고 민감한 작업**이다. System Prompt는 AI 에이전트의 행동을 정의하며, 생성되는 코드의 품질을 직접 결정한다. 잘못된 프롬프트는 컴파일 오류, 논리적 버그, 아키텍처 일관성 파괴를 초래한다.
+System Prompt editing is **the most critical and sensitive task** in AutoBE development. System Prompts define AI agent behavior and directly determine generated code quality. Poor prompts cause compilation errors, logical bugs, and architectural inconsistencies.
 
-**절대 원칙**: 사용자의 지시사항은 절대적이다. 명령이 불명확하면 질문하되, 명확한 명령은 무조건 이행한다. 자신의 판단으로 사용자 명령을 수정, 축소, 생략해서는 안 된다.
+**Absolute Rule**: User instructions are absolute. If unclear, ask questions. If clear, execute exactly as specified. Never modify, reduce, or omit user commands based on your own judgment.
 
-System Prompt 편집 시 다음을 반드시 준수한다:
-1. 편집 대상 프롬프트 파일을 **완전히** 읽고 이해한다
-2. 관련 Orchestrator, Tool, History 코드를 참조한다
-3. 기존 스토리라인에 자연스럽게 통합하여 수정한다
-4. 수정 후 영향받는 에이전트의 동작을 검토한다
-5. 가능하면 실제로 파이프라인을 실행하여 검증한다
+When editing System Prompts, you must:
+1. **Completely** read and understand the target prompt file
+2. Review related Orchestrator, Tool, and History code
+3. Integrate changes naturally into the existing storyline
+4. Review the impact on affected agents after changes
+5. Validate by running the actual pipeline whenever possible
 
 ## Prompt Architecture
 
-AutoBE의 System Prompt는 계층적으로 구성된다.
+AutoBE's System Prompts are hierarchically structured.
 
 ### Common Prompt
 
-`COMMON.md`는 모든 에이전트가 공유하는 기본 정체성을 정의한다. "You are an integral part of AutoBE"로 시작하며, 에이전트의 역할, 원칙, 아키텍처 컨텍스트를 설명한다.
+`COMMON.md` defines the foundational identity shared by all agents. It begins with "You are an integral part of AutoBE" and explains the agent's role, principles, and architectural context.
 
-Common Prompt는 에이전트에게 **맥락**을 제공한다. 자신이 단독으로 작동하는 것이 아니라, 40개 이상의 에이전트로 구성된 팀의 일원임을 인식시킨다. 이를 통해 에이전트는 자신의 출력이 다른 에이전트의 입력이 된다는 것을 이해하고, 일관된 형식을 유지한다.
+The Common Prompt provides **context**. It makes agents aware they are not operating alone, but as members of a team of 40+ agents. This helps agents understand that their output becomes input for other agents, maintaining consistent formats.
 
-Common Prompt는 **원칙**을 강조한다. Production-First, Compiler-Driven, Single-Pass Excellence 같은 원칙을 명시하여, 에이전트가 높은 품질 기준을 유지하도록 한다. "한 번의 기회에 완벽한 결과를 내야 한다"는 메시지는 에이전트가 신중하게 작업하도록 유도한다.
+The Common Prompt emphasizes **principles**. It codifies principles like Production-First, Compiler-Driven, and Single-Pass Excellence, ensuring agents maintain high quality standards. The message "you must produce perfect results in one attempt" encourages agents to work carefully.
 
-Common Prompt는 **다국어 지원**을 처리한다. 사용자 로케일에 따라 메시지를 현지화하지만, 코드와 문서는 영어로 작성한다. 이를 통해 국제적 호환성과 산업 표준을 유지한다.
+The Common Prompt handles **multilingualization**. Messages are localized according to user locale, but code and documentation are written in English. This maintains international compatibility and industry standards.
 
 ### Stage-Specific Prompts
 
-각 파이프라인 단계는 전문 프롬프트를 가진다. `ANALYZE_WRITE.md`, `PRISMA_SCHEMA.md`, `INTERFACE_OPERATION.md`, `TEST_WRITE.md`, `REALIZE_WRITE.md` 등이 이에 해당한다.
+Each pipeline stage has specialized prompts: `ANALYZE_WRITE.md`, `PRISMA_SCHEMA.md`, `INTERFACE_OPERATION.md`, `TEST_WRITE.md`, `REALIZE_WRITE.md`, etc.
 
-Stage-Specific Prompt는 Common Prompt 위에 쌓인다. Common의 일반 원칙을 상속하고, 해당 단계의 특수한 요구사항을 추가한다. 예를 들어 `REALIZE_WRITE.md`는 "NestJS Controller를 생성하라", "Prisma를 사용하여 데이터베이스 접근하라" 같은 구체적 지시를 포함한다.
+Stage-Specific Prompts build upon the Common Prompt. They inherit general principles from Common and add stage-specific requirements. For example, `REALIZE_WRITE.md` includes specific instructions like "generate NestJS Controllers", "use Prisma for database access".
 
-Stage-Specific Prompt는 **예시**를 풍부하게 제공한다. 좋은 코드의 예시, 나쁜 코드의 예시, 엣지 케이스 처리 방법 등을 보여준다. LLM은 few-shot learning에 강하므로, 예시가 많을수록 출력 품질이 향상된다.
+Stage-Specific Prompts provide **rich examples**. They show examples of good code, bad code, and edge case handling. Since LLMs excel at few-shot learning, more examples improve output quality.
 
-Stage-Specific Prompt는 **컨벤션**을 명시한다. 네이밍 규칙(PascalCase, camelCase), 파일 구조, import 순서, 주석 스타일 등을 정확히 규정한다. 이를 통해 생성된 코드가 일관된 스타일을 유지한다.
+Stage-Specific Prompts codify **conventions**. They precisely specify naming rules (PascalCase, camelCase), file structure, import order, and comment style. This ensures generated code maintains consistent style.
 
 ### Review and Correction Prompts
 
-Review와 Correction 작업은 특별한 프롬프트를 사용한다. `ANALYZE_REVIEW.md`, `PRISMA_CORRECT.md`, `REALIZE_CORRECT.md` 등이 이에 해당한다.
+Review and Correction tasks use special prompts: `ANALYZE_REVIEW.md`, `PRISMA_CORRECT.md`, `REALIZE_CORRECT.md`, etc.
 
-Review Prompt는 **비판적 사고**를 요구한다. "단순히 승인하지 말고, 실제로 문제를 찾아라", "요구사항과 구현이 일치하는지 검증하라" 같은 지시를 포함한다. Review Agent가 rubber stamp가 되지 않도록 강조한다.
+Review Prompts demand **critical thinking**. They include instructions like "don't just approve - actually find problems", "verify that requirements match implementation". This prevents Review Agents from becoming rubber stamps.
 
-Correction Prompt는 **컴파일러 오류 해석**에 특화되어 있다. TypeScript 오류 메시지를 이해하고, 원인을 파악하며, 최소한의 변경으로 수정하는 방법을 안내한다. "전체를 다시 쓰지 말고, 오류 부분만 수정하라"는 원칙을 강조한다.
+Correction Prompts specialize in **compiler error interpretation**. They guide agents to understand TypeScript error messages, identify root causes, and fix with minimal changes. The principle is emphasized: "don't rewrite everything - fix only the error".
 
-Correction Prompt는 **학습**을 유도한다. 이전 오류와 동일한 실수를 반복하지 않도록, 오류 패턴을 분석하고 예방 방법을 적용한다. 컴파일러 피드백을 최대한 활용하여 정확한 수정을 한다.
+Correction Prompts encourage **learning**. They promote analyzing error patterns to avoid repeating the same mistakes, maximizing compiler feedback to make accurate corrections.
 
 ## Prompt Design Principles
 
-효과적인 System Prompt를 작성하려면 다음 원칙을 따른다.
+Effective System Prompts follow these principles.
 
 ### Clarity and Specificity
 
-프롬프트는 명확하고 구체적이어야 한다. 모호한 지시는 불일치한 출력을 낳는다. "좋은 코드를 작성하라" 대신 "NestJS Controller 클래스를 생성하고, @Controller() 데코레이터를 붙이며, 각 메서드는 @Get(), @Post() 등의 HTTP 메서드 데코레이터를 가져야 한다"처럼 구체적으로 작성한다.
+Prompts must be clear and specific. Ambiguous instructions produce inconsistent output. Instead of "write good code", say "generate a NestJS controller class with @Controller() decorator, where each method has HTTP method decorators like @Get(), @Post()".
 
-숫자와 제약을 명시한다. "간결한 설명"이 아니라 "200자 이내의 설명"으로 작성한다. "몇 개의 예시"가 아니라 "3-5개의 예시"로 작성한다. 명확한 제약은 LLM이 기대치를 정확히 이해하도록 돕는다.
+Specify numbers and constraints. Instead of "brief description", write "description under 200 characters". Instead of "some examples", write "3-5 examples". Clear constraints help the LLM understand expectations precisely.
 
-긍정적 지시를 우선한다. "X를 하지 마라" 대신 "Y를 하라"로 작성한다. 부정 명령은 LLM이 종종 놓치지만, 긍정 명령은 더 효과적이다. 예를 들어 "any 타입 사용하지 마라" 대신 "모든 변수와 파라미터에 명시적 타입을 지정하라"로 작성한다.
+Prioritize positive directives. Instead of "don't do X", say "do Y". Negative commands are often missed by LLMs, but positive commands are more effective. For example, instead of "don't use `any` type", say "specify explicit types for all variables and parameters".
 
 ### Contextual Awareness
 
-프롬프트는 에이전트가 받을 컨텍스트를 이해하고 설계되어야 한다. Realize Agent는 Prisma 스키마와 OpenAPI 문서를 받으므로, "제공된 Prisma 스키마를 참조하여"라는 표현을 사용한다. 존재하지 않는 컨텍스트를 참조하면 에이전트가 혼란스러워한다.
+Prompts must be designed with understanding of the context agents will receive. Since Realize Agents receive Prisma schema and OpenAPI documents, use expressions like "referring to the provided Prisma schema". Referencing non-existent context confuses agents.
 
-History Transformer와 협업한다. 프롬프트가 기대하는 컨텍스트 구조를 History Transformer가 제공하도록 설계한다. 예를 들어 프롬프트에 "Requirements Analysis Report" 섹션을 기대한다면, History Transformer가 해당 이름의 섹션을 생성해야 한다.
+Collaborate with History Transformers. Design prompts so History Transformers provide the context structure the prompt expects. If the prompt expects a "Requirements Analysis Report" section, the History Transformer must generate a section with that exact name.
 
-전후 관계를 설명한다. 현재 작업이 전체 파이프라인에서 어디에 위치하는지, 이전 단계에서 무엇이 완료되었는지, 현재 출력이 다음 단계에 어떻게 사용될지 설명한다. 이를 통해 에이전트는 자신의 역할을 정확히 이해한다.
+Explain before-and-after context. Describe where the current task sits in the overall pipeline, what was completed in previous stages, and how the current output will be used in next stages. This helps agents understand their role precisely.
 
 ### Example-Driven Learning
 
-좋은 예시는 천 마디 설명보다 낫다. 프롬프트에 풍부한 예시를 포함하여 LLM이 패턴을 학습하도록 한다.
+Good examples beat a thousand words of description. Include rich examples in prompts to help LLMs learn patterns.
 
-정상 케이스와 엣지 케이스를 모두 보여준다. 단순한 CRUD API 예시뿐만 아니라, 복잡한 관계, 조건부 로직, 예외 처리를 포함하는 예시를 제공한다. 에이전트는 다양한 시나리오를 학습하고, 유사한 상황에 적용한다.
+Show both normal cases and edge cases. Provide not just simple CRUD API examples, but also examples with complex relationships, conditional logic, and exception handling. Agents learn diverse scenarios and apply them to similar situations.
 
-Before/After 예시를 사용한다. "이렇게 하지 말고" (Before), "이렇게 하라" (After)를 나란히 보여준다. 잘못된 코드의 문제점과 올바른 코드의 장점을 명확히 대비한다.
+Use Before/After examples. Show "don't do this" (Before) and "do this" (After) side by side. Clearly contrast the problems with bad code and the benefits of good code.
 
-실제 프로덕션 코드를 참조한다. AutoBE 자체의 코드에서 좋은 예시를 찾아 프롬프트에 포함한다. 에이전트는 AutoBE의 코딩 스타일을 학습하고, 일관된 코드를 생성한다.
+Reference actual production code. Find good examples from AutoBE's own codebase and include them in prompts. Agents learn AutoBE's coding style and generate consistent code.
 
 ### Iterative Refinement
 
-프롬프트는 한 번에 완벽할 수 없다. 반복적으로 개선해야 한다.
+Prompts cannot be perfect on first try. They must be refined iteratively.
 
-사용자 피드백을 수집한다. 생성된 코드에 자주 나타나는 문제를 파악하고, 프롬프트를 업데이트하여 예방한다. 예를 들어 에이전트가 자주 `any` 타입을 사용하면, "절대로 any 타입을 사용하지 말고, 항상 명시적 타입을 지정하라"를 강조한다.
+Collect user feedback. Identify problems that frequently appear in generated code and update prompts to prevent them. For example, if agents frequently use `any` type, emphasize "never use any type, always specify explicit types".
 
-오류 로그를 분석한다. 컴파일 오류, Schema Validation 오류가 반복되면, 프롬프트에 해당 사항을 명시한다. "이전 버전에서 자주 발생한 오류"를 프롬프트에 추가하여, 에이전트가 동일한 실수를 피하도록 한다.
+Analyze error logs. When compilation errors or schema validation errors repeat, codify them in prompts. Add "common errors from previous versions" to prompts so agents avoid the same mistakes.
 
-A/B 테스트를 수행한다. 프롬프트 변경의 효과를 정량적으로 측정한다. 컴파일 성공률, 재시도 횟수, 사용자 만족도 등을 지표로 사용한다. 개선이 확인되면 변경을 적용하고, 악화되면 롤백한다.
+Perform A/B testing. Quantitatively measure the impact of prompt changes. Use metrics like compilation success rate, retry count, and user satisfaction. Apply changes when improvement is confirmed, rollback when performance degrades.
 
-버전 관리를 철저히 한다. 프롬프트 변경 시 커밋 메시지에 변경 이유와 기대 효과를 명시한다. 문제 발생 시 이전 버전으로 쉽게 롤백할 수 있다.
+Maintain rigorous version control. When changing prompts, specify the reason and expected effect in commit messages. This enables easy rollback to previous versions if problems occur.
 
 ## Prompt Components
 
-효과적인 System Prompt는 여러 컴포넌트로 구성된다.
+Effective System Prompts consist of multiple components.
 
 ### Identity and Role
 
-프롬프트는 에이전트의 정체성을 명확히 정의한다. "You are a Requirements Analysis Specialist", "You are a NestJS API Implementation Expert"처럼 역할을 선언한다. 에이전트는 자신이 전문가임을 인식하고, 해당 도메인의 best practice를 적용한다.
+Prompts clearly define agent identity. Declare roles like "You are a Requirements Analysis Specialist", "You are a NestJS API Implementation Expert". Agents recognize themselves as experts and apply domain best practices.
 
-책임 범위를 명시한다. 무엇을 해야 하고, 무엇을 하지 말아야 하는지 분명히 한다. "당신은 API 구현만 담당하며, 데이터베이스 스키마를 수정하지 않는다"처럼 경계를 그는다. 이를 통해 에이전트가 자신의 영역을 벗어나지 않도록 한다.
+Specify scope of responsibility. Clarify what to do and what not to do. Draw boundaries like "you are responsible only for API implementation, do not modify database schema". This prevents agents from overstepping their domain.
 
-전문성을 강조한다. "You are a world-class expert", "You have decades of experience"처럼 에이전트의 능력을 높게 설정한다. 연구에 따르면 LLM에게 전문가 역할을 부여하면 출력 품질이 향상된다.
+Emphasize expertise. Set agent capability high with phrases like "You are a world-class expert", "You have decades of experience". Research shows assigning expert roles to LLMs improves output quality.
 
 ### Task Description
 
-작업을 구체적으로 기술한다. "API 엔드포인트를 구현하라"가 아니라, "주어진 OpenAPI Operation을 NestJS Controller 메서드로 구현하고, Service 계층에서 비즈니스 로직을 처리하며, Prisma를 사용하여 데이터베이스 접근을 수행하라"처럼 상세히 작성한다.
+Describe tasks concretely. Instead of "implement API endpoints", write in detail: "implement the given OpenAPI Operation as a NestJS Controller method, process business logic in the Service layer, and perform database access using Prisma".
 
-단계를 나열한다. 복잡한 작업은 여러 단계로 분해하여 순서대로 나열한다. "1. OpenAPI Operation 분석, 2. DTO 타입 정의, 3. Controller 메서드 작성, 4. Service 로직 구현, 5. 컴파일 검증"처럼 프로세스를 안내한다.
+List steps. Break complex tasks into sequential steps. Guide the process like "1. Analyze OpenAPI Operation, 2. Define DTO types, 3. Write Controller method, 4. Implement Service logic, 5. Verify compilation".
 
-출력 형식을 명시한다. JSON 구조, 파일 경로, 네이밍 규칙 등을 정확히 규정한다. Function Calling 스키마와 일치하도록 작성하여, 에이전트가 올바른 형식으로 출력하도록 한다.
+Specify output format. Precisely define JSON structure, file paths, naming rules. Write to match Function Calling schemas so agents output in correct format.
 
 ### Constraints and Requirements
 
-제약 조건을 명시한다. "모든 타입은 명시적이어야 함", "any 타입 사용 금지", "모든 public 메서드는 JSDoc 주석 필수" 같은 규칙을 나열한다. 제약이 많을수록 출력 품질이 일관된다.
+Specify constraints. List rules like "all types must be explicit", "any type prohibited", "all public methods require JSDoc comments". More constraints mean more consistent output quality.
 
-필수 요구사항과 선택 요구사항을 구분한다. "MUST", "SHOULD", "MAY"를 사용하여 우선순위를 표시한다. 에이전트는 필수 요구사항을 먼저 만족시키고, 선택 사항은 가능하면 적용한다.
+Distinguish required vs. optional requirements. Use "MUST", "SHOULD", "MAY" to indicate priority. Agents satisfy required requirements first, then apply optional ones when possible.
 
-부정 명령도 필요시 사용한다. "절대로 하지 말아야 할 것"을 명시적으로 나열한다. "절대로 프로덕션 코드에 console.log를 남기지 마라", "절대로 하드코딩된 비밀번호를 포함하지 마라"처럼 치명적 실수를 예방한다.
+Use negative commands when necessary. Explicitly list "things you must never do". Prevent critical mistakes like "never leave console.log in production code", "never include hardcoded passwords".
 
 ### Examples and Templates
 
-코드 예시를 풍부하게 제공한다. 단순한 예시부터 복잡한 예시까지 다양하게 포함한다. 에이전트는 유사한 패턴을 찾아 적용한다.
+Provide rich code examples. Include diverse examples from simple to complex. Agents find similar patterns and apply them.
 
-템플릿을 제공한다. 반복되는 구조는 템플릿으로 추상화하고, 에이전트가 구체적 값을 채우도록 한다. 예를 들어 Controller 클래스 구조를 템플릿으로 제공하고, 에이전트가 메서드를 채운다.
+Provide templates. Abstract recurring structures as templates and have agents fill in concrete values. For example, provide Controller class structure as a template and have agents populate methods.
 
-안티패턴도 보여준다. "이렇게 하면 안 된다"는 예시를 포함하여, 에이전트가 피해야 할 패턴을 학습하도록 한다. 자주 발생하는 실수를 강조한다.
+Show anti-patterns. Include "don't do this" examples so agents learn patterns to avoid. Highlight frequently occurring mistakes.
 
 ### Context References
 
-에이전트가 참조할 컨텍스트를 명시한다. "아래 Prisma Schema를 참조하라", "제공된 Requirements Analysis Report를 기반으로 하라" 같은 지시를 포함한다.
+Specify context for agents to reference. Include instructions like "refer to the Prisma Schema below", "base on the provided Requirements Analysis Report".
 
-컨텍스트 구조를 설명한다. JSON 경로, 필드 의미, 값 범위를 명시한다. 에이전트가 컨텍스트를 올바르게 해석하도록 돕는다.
+Describe context structure. Specify JSON paths, field meanings, value ranges. Help agents interpret context correctly.
 
-컨텍스트 우선순위를 정한다. 여러 컨텍스트가 충돌하면 어떤 것을 우선할지 규정한다. 예를 들어 "OpenAPI 명세가 최종 진실이며, 불일치 시 OpenAPI를 따르라"처럼 명확히 한다.
+Establish context priority. When multiple contexts conflict, specify which takes precedence. For example, clearly state "OpenAPI specification is the source of truth, follow OpenAPI when there are discrepancies".
 
 ## Domain-Specific Guidelines
 
-각 도메인은 특별한 가이드라인을 필요로 한다.
+Each domain requires special guidelines.
 
 ### Requirements Analysis
 
-Analyze 에이전트는 자연어를 구조화된 문서로 변환한다. 모호한 요구사항을 명확히 하고, 누락된 부분을 추론하며, 일관된 형식으로 정리한다.
+Analyze agents transform natural language into structured documents. They clarify ambiguous requirements, infer missing parts, and organize into consistent format.
 
-프롬프트는 분석 프레임워크를 제공한다. 액터 식별, 유스케이스 정의, 기능 명세 작성의 순서를 안내한다. 각 단계에서 고려해야 할 질문을 제시한다.
+Prompts provide analysis framework. Guide the sequence of actor identification, use case definition, and feature specification. Present questions to consider at each step.
 
-도메인 지식을 인코딩한다. 일반적인 웹 애플리케이션 패턴, 인증/인가 메커니즘, CRUD 작업 등에 대한 best practice를 프롬프트에 포함한다. 에이전트는 이를 참조하여 전문적 분석을 수행한다.
+Encode domain knowledge. Include best practices for common web application patterns, authentication/authorization mechanisms, CRUD operations in prompts. Agents reference these to perform professional analysis.
 
 ### Database Schema Design
 
-Prisma 에이전트는 데이터 모델을 설계한다. 테이블 구조, 관계, 인덱스, 제약조건을 정의하며, 정규화와 성능을 고려한다.
+Prisma agents design data models. They define table structure, relationships, indexes, and constraints, considering normalization and performance.
 
-프롬프트는 데이터 모델링 원칙을 강조한다. 정규화 규칙, 관계 유형(1:1, 1:N, N:M), 인덱스 전략 등을 설명한다. 에이전트는 이를 바탕으로 최적화된 스키마를 생성한다.
+Prompts emphasize data modeling principles. Explain normalization rules, relationship types (1:1, 1:N, N:M), and index strategies. Agents generate optimized schemas based on these.
 
-Prisma 특화 지식을 제공한다. `@relation` 속성 사용법, `@@unique` 제약조건, `@@index` 정의 방법을 상세히 안내한다. Prisma Compiler가 기대하는 형식을 정확히 따르도록 한다.
+Provide Prisma-specific knowledge. Guide in detail on using `@relation` attributes, `@@unique` constraints, and `@@index` definitions. Ensure compliance with formats expected by Prisma Compiler.
 
-엣지 케이스를 다룬다. 자기 참조 관계, 순환 참조, 복합 외래 키 같은 복잡한 시나리오에 대한 가이드를 제공한다. 에이전트가 어려운 케이스도 올바르게 처리하도록 한다.
+Handle edge cases. Provide guidance for complex scenarios like self-referential relationships, circular references, and composite foreign keys. Enable agents to handle difficult cases correctly.
 
 ### API Specification
 
-Interface 에이전트는 OpenAPI 문서를 생성한다. 엔드포인트 경로, HTTP 메서드, 파라미터, 응답 스키마를 정의한다.
+Interface agents generate OpenAPI documents. They define endpoint paths, HTTP methods, parameters, and response schemas.
 
-프롬프트는 RESTful 원칙을 강조한다. 리소스 중심 설계, HTTP 메서드의 의미론적 사용, 상태 코드 선택 등을 안내한다. 에이전트는 REST best practice를 따르는 API를 설계한다.
+Prompts emphasize RESTful principles. Guide resource-centric design, semantic use of HTTP methods, and status code selection. Agents design APIs following REST best practices.
 
-OpenAPI 3.0 스펙을 상세히 설명한다. `paths`, `components/schemas`, `security`, `tags` 등의 구조를 명시한다. 에이전트가 유효한 OpenAPI 문서를 생성하도록 한다.
+Explain OpenAPI 3.0 spec in detail. Specify structures like `paths`, `components/schemas`, `security`, `tags`. Ensure agents generate valid OpenAPI documents.
 
-Prisma 스키마와의 정합성을 강조한다. API가 참조하는 모든 필드는 Prisma 스키마에 실제로 존재해야 한다. 존재하지 않는 필드를 참조하면 Realize 단계에서 오류가 발생한다.
+Emphasize alignment with Prisma schema. All fields referenced by APIs must actually exist in Prisma schema. Referencing non-existent fields causes errors in Realize stage.
 
 ### Test Generation
 
-Test 에이전트는 E2E 테스트 코드를 작성한다. Jest 기반의 테스트를 생성하며, API 엔드포인트를 실제로 호출하여 검증한다.
+Test agents write E2E test code. They generate Jest-based tests that actually call API endpoints for verification.
 
-프롬프트는 테스트 전략을 안내한다. Arrange-Act-Assert 패턴, Given-When-Then 구조를 설명한다. 각 테스트가 하나의 시나리오만 검증하도록 강조한다.
+Prompts guide test strategy. Explain Arrange-Act-Assert pattern and Given-When-Then structure. Emphasize that each test verifies only one scenario.
 
-테스트 데이터 생성 방법을 제공한다. 실제 데이터베이스에 테스트 데이터를 삽입하고, 테스트 후 정리하는 방법을 안내한다. 테스트 간의 독립성을 유지하도록 한다.
+Provide test data generation methods. Guide on inserting test data into actual database and cleaning up after tests. Maintain independence between tests.
 
-엣지 케이스 테스트를 강조한다. 정상 케이스뿐만 아니라, 잘못된 입력, 권한 부족, 리소스 부재 같은 예외 상황도 테스트하도록 요구한다.
+Emphasize edge case testing. Require testing not just normal cases, but also exceptional situations like invalid input, insufficient permissions, and missing resources.
 
 ### Implementation
 
-Realize 에이전트는 실제 API 구현 코드를 작성한다. NestJS Controller, Service, Repository를 생성하며, 비즈니스 로직을 구현한다.
+Realize agents write actual API implementation code. They generate NestJS Controller, Service, Repository and implement business logic.
 
-프롬프트는 NestJS 아키텍처를 설명한다. Controller-Service-Repository 계층 분리, 의존성 주입, 데코레이터 사용법을 안내한다. 에이전트는 NestJS best practice를 따른다.
+Prompts explain NestJS architecture. Guide Controller-Service-Repository layer separation, dependency injection, and decorator usage. Agents follow NestJS best practices.
 
-Prisma 사용법을 상세히 설명한다. `prisma.model.findUnique()`, `create()`, `update()`, `delete()` 메서드의 사용법을 예시와 함께 제공한다. 관계 데이터 로딩(`include`, `select`)도 다룬다.
+Explain Prisma usage in detail. Provide examples of using `prisma.model.findUnique()`, `create()`, `update()`, `delete()` methods. Cover relationship data loading (`include`, `select`).
 
-타입 안정성을 극대화한다. 모든 변수, 파라미터, 반환값에 명시적 타입을 지정하도록 요구한다. Prisma 생성 타입을 활용하여 데이터베이스와 코드 간의 타입 일관성을 보장한다.
+Maximize type safety. Require explicit types for all variables, parameters, and return values. Utilize Prisma-generated types to ensure type consistency between database and code.
 
-오류 처리를 필수로 한다. `try-catch` 블록 사용, 적절한 HTTP 예외 발생(`NotFoundException`, `BadRequestException`), 명확한 오류 메시지를 요구한다.
+Make error handling mandatory. Require `try-catch` blocks, appropriate HTTP exception throwing (`NotFoundException`, `BadRequestException`), and clear error messages.
 
 ## Prompt Maintenance
 
-프롬프트는 살아있는 문서이며, 지속적으로 유지보수해야 한다.
+Prompts are living documents requiring continuous maintenance.
 
 ### Version Control
 
-모든 프롬프트 변경은 Git으로 관리된다. 커밋 메시지에 변경 이유와 기대 효과를 명시한다. "Fix: Realize Agent가 자주 any 타입을 사용하는 문제 해결 - 명시적 타입 지정 강조 추가"처럼 구체적으로 작성한다.
+All prompt changes are managed with Git. Commit messages specify reason for change and expected effect. Write concretely like "Fix: Resolve issue where Realize Agent frequently uses any type - add emphasis on explicit type specification".
 
-프롬프트 버전과 에이전트 출력 품질을 연관시킨다. 특정 프롬프트 버전에서 생성된 코드의 컴파일 성공률, 재시도 횟수를 추적한다. 품질 저하가 발견되면 해당 커밋을 식별하고 문제를 파악한다.
+Correlate prompt versions with agent output quality. Track compilation success rate and retry count for code generated with specific prompt versions. When quality degradation is detected, identify the relevant commit and diagnose the problem.
 
 ### Testing
 
-프롬프트 변경 후 반드시 테스트한다. 실제 파이프라인을 실행하여 에이전트가 예상대로 동작하는지 검증한다. 여러 시나리오에서 테스트하여 회귀를 조기에 발견한다.
+Always test after prompt changes. Run actual pipeline to verify agents behave as expected. Test with multiple scenarios to detect regressions early.
 
-자동화된 프롬프트 테스트를 구축한다. 고정된 입력에 대해 에이전트 출력이 일관되는지 검증한다. 프롬프트 변경이 기존 기능을 깨지 않았는지 확인한다.
+Build automated prompt tests. Verify that agent output is consistent for fixed inputs. Confirm that prompt changes didn't break existing functionality.
 
 ### Documentation
 
-프롬프트 자체가 문서이지만, 메타 문서도 필요하다. 각 프롬프트의 목적, 사용 위치, 의존성을 별도로 기록한다. 새로운 개발자가 빠르게 이해할 수 있도록 한다.
+Prompts themselves are documentation, but meta-documentation is also needed. Record each prompt's purpose, usage location, and dependencies separately. Enable new developers to understand quickly.
 
-프롬프트 변경 히스토리를 유지한다. 언제, 왜, 무엇이 변경되었는지 시간순으로 기록한다. 프롬프트의 진화 과정을 이해하고, 향후 변경에 참고한다.
+Maintain prompt change history. Record chronologically when, why, and what changed. Understand prompt evolution process and reference for future changes.
 
 ### Performance Monitoring
 
-프롬프트의 효과를 정량적으로 측정한다. 컴파일 성공률, 평균 재시도 횟수, LLM 호출 시간, 토큰 사용량 등을 지표로 사용한다.
+Quantitatively measure prompt effectiveness. Use metrics like compilation success rate, average retry count, LLM call time, and token usage.
 
-A/B 테스트를 통해 프롬프트 변경의 영향을 측정한다. 동일한 입력에 대해 이전 프롬프트와 새 프롬프트의 출력을 비교한다. 개선이 확인되면 적용하고, 악화되면 롤백한다.
+Measure impact of prompt changes through A/B testing. Compare output of previous prompt vs. new prompt for identical input. Apply when improvement is confirmed, rollback when degraded.
 
-프롬프트 길이도 최적화한다. 너무 짧으면 지시가 불충분하고, 너무 길면 LLM이 핵심을 놓칠 수 있다. 최적의 길이를 실험을 통해 찾는다.
+Optimize prompt length. Too short means insufficient instructions, too long means LLM might miss the point. Find optimal length through experimentation.
 
 ## Common Pitfalls
 
-프롬프트 작성 시 흔한 실수와 해결 방법이다.
+Common mistakes when writing prompts and their solutions.
 
 ### Ambiguity
 
-모호한 지시는 불일치한 출력을 낳는다. "적절한", "필요한 경우", "가능하면" 같은 표현을 피한다. 명확한 기준과 제약을 제시한다.
+Ambiguous instructions produce inconsistent output. Avoid expressions like "appropriate", "if necessary", "when possible". Provide clear criteria and constraints.
 
-**Before**: "적절한 오류 처리를 추가하라"
-**After**: "모든 Prisma 호출을 try-catch로 감싸고, 오류 발생 시 적절한 NestJS HTTP 예외를 발생시켜라. 데이터 부재 시 NotFoundException, 잘못된 입력 시 BadRequestException을 사용하라"
+**Before**: "Add appropriate error handling"
+**After**: "Wrap all Prisma calls in try-catch blocks and throw appropriate NestJS HTTP exceptions on error. Use NotFoundException when data is missing, BadRequestException for invalid input"
 
 ### Over-Specification
 
-지나치게 상세한 지시도 문제이다. LLM의 창의성을 제한하고, 프롬프트가 불필요하게 길어진다. 본질적인 제약만 명시하고, 세부 사항은 LLM에게 맡긴다.
+Excessively detailed instructions are also problematic. They limit LLM creativity and make prompts unnecessarily long. Specify only essential constraints and leave details to the LLM.
 
-**Before**: "변수 이름은 camelCase를 사용하고, 첫 글자는 소문자, 두 번째 단어부터 첫 글자를 대문자로 하며, 의미 있는 이름을 사용하고..."
-**After**: "변수는 camelCase로 명명하며, 의미를 명확히 전달하는 이름을 사용하라"
+**Before**: "Variable names use camelCase with first letter lowercase, second word onwards capitalize first letter, use meaningful names and..."
+**After**: "Name variables in camelCase with names that clearly convey meaning"
 
 ### Inconsistency
 
-프롬프트 간의 불일치는 에이전트 간의 충돌을 낳는다. Prisma Agent가 snake_case를 사용하도록 하고, Realize Agent가 camelCase를 사용하도록 하면 문제가 발생한다. 전체 프롬프트의 일관성을 유지한다.
+Inconsistency between prompts creates conflicts between agents. Problems arise if Prisma Agent uses snake_case while Realize Agent uses camelCase. Maintain consistency across all prompts.
 
-공통 컨벤션을 `COMMON.md`에 정의하고, 모든 Stage-Specific Prompt가 이를 참조하도록 한다. 변경 시 한 곳만 수정하면 모든 에이전트에 반영된다.
+Define common conventions in `COMMON.md` and have all Stage-Specific Prompts reference it. Changes in one place reflect across all agents.
 
 ### Neglecting Context
 
-프롬프트가 기대하는 컨텍스트와 실제 제공되는 컨텍스트가 다르면 에이전트가 실패한다. 프롬프트 작성 시 History Transformer를 함께 검토하고, 제공되는 컨텍스트 구조를 정확히 파악한다.
+Agents fail when context expected by prompts differs from actual provided context. When writing prompts, review History Transformers together and accurately understand provided context structure.
 
-프롬프트에 "아래 Prisma Schema를 참조하라"고 쓰면, History Transformer가 "Prisma Schema"라는 제목의 섹션을 생성해야 한다. 일치하지 않으면 에이전트가 컨텍스트를 찾지 못한다.
+If prompt says "refer to the Prisma Schema below", History Transformer must generate a section titled "Prisma Schema". Agents can't find context when they don't match.
 
 ### Ignoring Feedback
 
-사용자 피드백과 오류 로그를 무시하면 프롬프트가 개선되지 않는다. 정기적으로 피드백을 수집하고, 반복되는 문제를 프롬프트 개선으로 해결한다.
+Prompts don't improve when user feedback and error logs are ignored. Regularly collect feedback and resolve recurring problems through prompt improvements.
 
-오류 로그를 분석하여 패턴을 찾는다. 특정 타입의 컴파일 오류가 자주 발생하면, 프롬프트에 예방 지시를 추가한다. "이전 버전에서 자주 발생한 오류" 섹션을 프롬프트에 포함한다.
+Analyze error logs to find patterns. When specific types of compilation errors occur frequently, add preventive instructions to prompts. Include "common errors from previous versions" section in prompts.
 
 ## Best Practices Summary
 
-효과적인 System Prompt를 위한 핵심 원칙:
+Core principles for effective System Prompts:
 
-1. **명확성**: 모호함을 제거하고, 구체적 기준을 제시한다
-2. **컨텍스트**: 에이전트가 받을 컨텍스트를 정확히 이해하고 참조한다
-3. **예시**: 풍부한 예시로 LLM이 패턴을 학습하도록 한다
-4. **제약**: 필수 요구사항과 금지 사항을 명시한다
-5. **일관성**: 모든 프롬프트가 동일한 컨벤션을 따르도록 한다
-6. **반복**: 피드백을 수집하고, 지속적으로 개선한다
-7. **테스트**: 변경 후 실제 파이프라인에서 검증한다
-8. **문서화**: 변경 이유와 효과를 기록한다
+1. **Clarity**: Eliminate ambiguity and provide concrete criteria
+2. **Context**: Accurately understand and reference context agents will receive
+3. **Examples**: Use rich examples to help LLM learn patterns
+4. **Constraints**: Specify required requirements and prohibitions
+5. **Consistency**: Ensure all prompts follow the same conventions
+6. **Iteration**: Collect feedback and continuously improve
+7. **Testing**: Validate in actual pipeline after changes
+8. **Documentation**: Record reasons for changes and effects
 
-프롬프트는 AutoBE의 두뇌이다. 좋은 프롬프트는 좋은 코드를 낳고, 나쁜 프롬프트는 나쁜 코드를 낳는다. 신중하게 설계하고, 지속적으로 개선하며, 항상 사용자 피드백에 귀 기울인다.
+Prompts are AutoBE's brain. Good prompts produce good code, bad prompts produce bad code. Design carefully, improve continuously, and always listen to user feedback.
