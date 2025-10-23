@@ -301,7 +301,7 @@ export interface IWrtnChatSession {
 export interface IWrtnEnterpriseEmployee {
   // FK 참조관계 및 has 관계 맵핑
   enterprise: IWrtnEnterprise.ISummary;
-  companions: IWrtnEnterpriseTeamCompanion.ISummary[];
+  companions: IWrtnEnterpriseTeamCompanion[];
 
   // 이후로 자유로이 나머지 속성들을 설계할 것...
   id: string & tags.Format<"uuid">;
@@ -311,6 +311,26 @@ export interface IWrtnEnterpriseEmployee {
   updated_at: string & tags.Format<"date-time">;
   approved_at: string & tags.Format<"date-time"> | null;
 }
+export namespace IWrtnEnterpriseEmployee {
+  export interface ISummary {
+    // FK 참조관계 및 has 관계 맵핑
+  enterprise: IWrtnEnterprise.ISummary;
+
+  // 여기만큼은 예외적으로 1: M has relationship 이지만
+  // 이렇게 소속 팀 정보를 전부 다 보여주어야 함
+  // 이게 은근 중요한 정보라 summary 차원에서도 필히 표기해야하여 그러하다
+  companions: IWrtnEnterpriseTeamCompanion[];
+
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  approved_at: string & tags.Format<"date-time"> | null;
+  }
+}
+
 export interface IWrtnEnterpriseEmployeeAppointment {
   id: string & tags.Format<"uuid">;
   employee: IWrtnEnterpriseEmployee.ISummary; // 임명된 사람
@@ -318,6 +338,7 @@ export interface IWrtnEnterpriseEmployeeAppointment {
   title: "master" | "manager" | "member" | null;
   created_at: string & tags.Format<"date-time">;
 }
+
 export interface IWrtnEnterpriseEmployeeInvitation {
   id: string & tags.Format<"uuid">;
   employee: IWrtnEnterpriseEmployee.ISummary; // 초대한 사람
