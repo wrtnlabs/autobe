@@ -1931,6 +1931,74 @@ interface IBbsArticle {
 
 #### 4.4.4. Response DTOs (Read Operations)
 
+**CRITICAL DISTINCTION**: Response DTOs come in TWO forms - Detail and Summary - each with different relation inclusion rules.
+
+##### 4.4.4.1. Understanding Detail vs Summary Response DTOs
+
+**Detail Response DTOs (Main Entity Type - `IEntity`)**:
+- **Purpose**: Complete entity representation for single-entity retrieval (GET /entities/:id)
+- **Use Case**: Displaying full entity detail page
+- **Relation Strategy**: Include BOTH belongs-to references AND has-many/has-one compositions
+
+**Summary Response DTOs (`IEntity.ISummary`)**:
+- **Purpose**: Lightweight representation for lists and embeddings (GET /entities)
+- **Use Case**: Displaying entity in list views or as reference in other entities
+- **Relation Strategy**: Include ONLY belongs-to references, EXCLUDE has-many compositions
+
+**Why This Distinction Matters**:
+- **Performance**: Summary DTOs are 3-10x smaller (5-15KB vs 50KB per entity)
+- **List Efficiency**: 20-item list = 100-300KB vs 1MB
+- **Both use `.ISummary` for references**: But Detail includes compositions, Summary excludes them
+
+**Example Comparison**:
+
+```typescript
+// Detail DTO - Complete entity with everything
+interface IShoppingSale {
+  id: string;
+  name: string;
+  description: string;  // Full description
+
+  // ✅ BELONGS-TO references - use .ISummary
+  seller: IShoppingSeller.ISummary;
+  section: IShoppingSection.ISummary;
+  categories: IShoppingCategory.ISummary[];
+
+  // ✅ HAS-MANY compositions - include full arrays
+  units: IShoppingSaleUnit[];
+  images: IShoppingSaleImage[];
+
+  // ✅ Aggregations - counts only
+  reviews_count: number;
+}
+
+// Summary DTO - Lightweight for lists
+interface IShoppingSale.ISummary {
+  id: string;
+  name: string;
+  price: number;
+  thumbnail?: string;  // Just one image
+
+  // ✅ BELONGS-TO references - use .ISummary (same as Detail)
+  seller: IShoppingSeller.ISummary;
+  section: IShoppingSection.ISummary;
+  primary_category?: IShoppingCategory.ISummary;
+
+  // ❌ HAS-MANY compositions - EXCLUDE for efficiency
+  // units: NO
+  // images: NO
+
+  // ✅ Aggregations - counts only
+  reviews_count: number;
+}
+```
+
+**The Universal `.ISummary` Rule Applies to BOTH**:
+- Detail DTOs: Use `.ISummary` for BELONGS-TO, include HAS-MANY compositions
+- Summary DTOs: Use `.ISummary` for BELONGS-TO, EXCLUDE HAS-MANY compositions
+
+##### 4.4.4.2. Foreign Key Transformation Rules for Response DTOs
+
 **Rule**: Transform ALL contextual FKs to objects for complete information.
 
 **Two Categories of FKs in Response DTOs**:
@@ -3583,6 +3651,34 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **English descriptions only** - All descriptions in English
 - [ ] **Complete documentation** - Every schema and property has meaningful descriptions
 - [ ] **All schemas at root level** - NO schemas nested inside other schemas
+
+---
+
+## 11.5. Handoff to Relation Review Agent
+
+After you complete schema generation, a specialized Relation Review Agent will perform a SECOND PASS to:
+- Validate FK transformations (all BELONGS-TO use `.ISummary`)
+- Check atomic operation completeness
+- Verify no circular references
+- Add missing IInvert types
+- Extract inline objects to named types
+
+**What You Should Do**:
+1. Generate schemas with BEST EFFORT relation design
+2. If you're unsure about a complex relation pattern, create it anyway - Relation Reviewer will fix
+3. Focus on completeness over perfection for relations
+4. DO ensure security and business logic are correct (Relation Reviewer won't fix these)
+
+**What Gets Reviewed**:
+- The Relation Reviewer receives a SUBSET of schemas (typically 2-5) that need relation validation
+- Selection criteria: Complex entities with multiple relations, compositions, or FK transformations
+- Simple entities (e.g., ICategory with just id/name) may skip relation review
+
+**What You're Still Responsible For**:
+- ✅ Security (actor fields, password protection, authorization)
+- ✅ Business logic (field validation, required fields, enums)
+- ✅ Database consistency (all fields exist in Prisma schema)
+- ⚠️ Relation patterns (best effort, will be reviewed)
 
 ---
 
