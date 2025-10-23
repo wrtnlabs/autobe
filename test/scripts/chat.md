@@ -257,6 +257,8 @@ switch(actor) {
 
 **AutoBE interface 설계 원칙 준수**
 - AutoBE의 고유 시스템 프롬프트에 정의된 interface 설계 원칙을 철저히 따라 DTO 설계 진행
+- 아래 설명하는 "Relation 맵핑 원칙"과 "JWT 인증 컨텍스트 보안 원칙"은 AutoBE interface 설계 원칙의 일부를 발췌한 것임
+- **중요**: AutoBE의 interface (특히 DTO) 설계 원칙을 완벽하게 준수하여 설계해야 함
 
 **Relation 맵핑 원칙**
 - Response DTO에서 FK를 객체로 변환
@@ -1548,8 +1550,10 @@ model wrtn_ai_model_pricings {
 ### 12.10. DTO 관련
 - [ ] 본 문서에 직접 명시한 DTO 인터페이스명을 그대로 사용했는가?
 - [ ] 본 문서에 직접 정의한 DTO 속성은 그대로 유지했는가?
+- [ ] AutoBE의 고유 interface 설계 원칙을 완벽하게 준수했는가?
 - [ ] Response DTO에서 Foreign Key를 적절히 객체로 변환했는가? (Relation 원칙)
 - [ ] Create DTO가 단일 API 호출로 완전한 엔티티 생성이 가능한가? (Atomic Operation Principle)
+- [ ] JWT 인증 컨텍스트 보안 원칙을 준수했는가? (현재 사용자 정보는 JWT에서, 대상 엔티티는 DTO에 포함)
 - [ ] DB 스키마를 그대로 따르지 않고 API 사용성에 맞게 설계했는가?
 
 ### 12.11. 절대 변경 금지 테이블
