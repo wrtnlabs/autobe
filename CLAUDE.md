@@ -1,267 +1,106 @@
 # AutoBE Project Context for Claude
 
-## Project Overview
-AutoBE is an AI-powered no-code agent that automatically generates complete backend applications using TypeScript, NestJS, and Prisma. The system follows a waterfall development model with compiler feedback validation to ensure 100% working code output.
+## 1. What is AutoBE?
 
-## Core Architecture
-The system consists of specialized agents working in sequence:
+AutoBE는 자연어 요구사항으로부터 운영 준비가 완료된 백엔드 애플리케이션을 자동 생성하는 AI 기반 노코드 시스템이다. 사용자는 채팅 인터페이스를 통해 자연어로 백엔드 요구사항을 설명하고, AutoBE는 완전한 TypeScript + NestJS + Prisma 기반의 백엔드 애플리케이션을 생성한다.
 
-### Functional Agents
-- **Analyze Agent**: Requirements analysis and specifications
-- **Prisma Agent**: Database schema design (ERD) with Postgres/SQLite support - structured 3-step process (plan → review → models)
-- **Interface Agent**: API design and OpenAPI specification generation
-- **Test Agent**: End-to-end test code generation with scenario planning
-- **Realize Agent**: Main program implementation and integration
+**핵심 특징**:
+- 100% 컴파일 보장
+- 완전한 타입 안정성
+- 포괄적인 문서화 (ERD, OpenAPI, API docs)
+- 강력한 E2E 테스트
+- 클린 구현 로직
 
-### Compiler Validation
-- Prisma Compiler: Validates database schemas
-- OpenAPI Validator: Validates API specifications  
-- TypeScript Compiler: Validates generated code quality
+**생성되는 산출물**:
+요구사항 분석 보고서 → 데이터베이스 스키마 (Prisma) → API 명세 (OpenAPI) → E2E 테스트 → API 구현 → 타입 안전 SDK
 
-## Project Structure
-```
-/autobe/
-   assets/                    # Compiler dependencies and repositories
-      compiler-dependencies/  # Node modules for compiler
-      repositories/           # Sample backend repositories (bbs, shopping)
-   deploy/                    # Deployment scripts
-      sync_dependencies.js    # Dependency synchronization
-      sync_readme.js          # README synchronization
-   internals/                 # Internal configurations and dependencies
-      compiler-dependencies/  # Compiler node modules
-      config/                 # Build configuration
-      dependencies/           # NestJS and test dependencies
-      filesystem/             # File system utilities
-      nestjs-dependencies/    # NestJS specific dependencies
-      repositories/           # Internal sample repositories
-      template/               # Project templates for agents
-      test-dependencies/      # Test-specific dependencies
-      website-examples/       # Example code for website
-   packages/                  # Core package modules (monorepo)
-      agent/                  # Core agent implementation
-      compiler/               # Compiler implementations
-      filesystem/             # File system utilities
-      interface/              # Interface definitions
-      playground-server/      # Playground backend server
-      playground-ui/          # Playground frontend UI
-      rpc/                    # RPC service implementation
-      utils/                  # Shared utilities
-      vscode-extension/       # VSCode extension (planned)
-   test/                      # Comprehensive test suite and results
-      assets/                 # Test assets and histories
-      benchmark-logs/         # Performance benchmark logs
-      results/                # Test execution results
-      scripts/                # Test scenario scripts
-      src/                    # Test source code
-   website/                   # Documentation website (Next.js)
-      articles/               # Blog articles and documentation
-      public/                 # Static assets
-      src/                    # Website source code
-   playground/                # Interactive demo environment
-   playground-result/         # Playground execution results
-   CLAUDE.md                  # This file
-```
+## 2. Core Concepts
 
-## Key Technologies
-- **Backend Stack**: TypeScript + NestJS + Prisma
-- **Database**: PostgreSQL (primary), SQLite (development)
-- **API**: OpenAPI/Swagger specification
-- **Testing**: Automated e2e test generation
-- **Validation**: Multi-layer compiler feedback
+AutoBE를 이해하는 세 가지 핵심 개념:
 
-## Package Architecture
+**Waterfall + Spiral**: Requirements → Analyze → Prisma → Interface → Test → Realize의 5단계를 순차 진행하며, 각 단계는 40개 이상의 전문화된 AI 에이전트가 협업 처리한다.
 
-### Core Packages (/packages/)
-- **@autobe/agent**: Core agent implementation with orchestration logic
-  - Analyze orchestration (requirements analysis)
-  - Prisma orchestration (database schema generation)  
-  - Interface orchestration (API design)
-  - Test orchestration (test code generation)
-  - Realize orchestration (implementation generation)
-- **@autobe/compiler**: Compiler implementations for validation
-  - Prisma compiler (schema validation)
-  - Interface compiler (OpenAPI validation)
-  - TypeScript compiler (code validation)
-  - Test compiler (test code validation)
-  - Realize compiler (implementation validation)
-- **@autobe/filesystem**: File system management utilities
-- **@autobe/interface**: Type definitions and interfaces
-- **@autobe/playground-server**: WebSocket-based playground backend
-- **@autobe/playground-ui**: React-based playground frontend  
-- **@autobe/rpc**: RPC service for agent communication
-- **@autobe/utils**: Shared utilities and helpers
+**Compiler-Driven Development**: AutoBE Prisma Compiler → AutoBE OpenAPI Compiler → TypeScript Compiler의 3단계 검증을 거쳐 100% 컴파일을 보장한다.
 
-## Development Phase
-Currently in **Beta Phase** (2025-06-01 to 2025-08-31) focusing on:
-- Test Agent refinement with compiler feedback
-- Realize Agent development with runtime validation
-- 100% autonomous backend development capability
-- Ecosystem integration preparation
+**Vibe Coding**: 대화가 곧 소프트웨어가 된다. 대화 → 요구사항 → AST → 코드 → 애플리케이션의 자동 변환 파이프라인.
 
-## Ecosystem Vision
-Part of WrtnLabs' no-code ecosystem:
-- **@autobe**: Backend application generation
-- **@agentica**: AI chatbot creation from swagger.json
-- **@autoview**: Frontend application generation from swagger.json
+자세한 내용은 [아키텍처 문서](.ai/ARCHITECTURE.md)를 참조하라.
 
-Mission: "Can you converse? Then you're a full-stack developer."
+## 3. Documentation Index
 
-## Example Use Cases
-1. **BBS (Bulletin Board System)**: Political/economic discussion platform
-2. **E-Commerce Platform**: Shopping mall with voice-driven interactions
-3. **Custom Business Applications**: Requirement-driven development
+상세 문서는 주제별로 분리되어 있다. 작업 시 관련 문서를 반드시 참조하라.
 
-## Key Features
-- **Waterfall Model**: Systematic phase-by-phase development
-- **Compiler Feedback**: Real-time validation and error correction
-- **Function Calling**: AI agent coordination and task distribution
-- **WebSocket Support**: Real-time communication protocols
-- **Schema-First Development**: Database-driven architecture
+### Architecture & Design
+- **[전체 아키텍처](.ai/ARCHITECTURE.md)** - Waterfall+Spiral, 3단계 컴파일러, Vibe Coding 상세
+- **[AST 설계](.ai/AST_DESIGN.md)** - 간소화된 AST 설계 철학
 
-## Testing & Validation
-- Automated test scenario generation
-- Compiler-validated code output
-- Benchmark performance testing
-- End-to-end integration testing
+### Agent System (`@autobe/agent`)
+- **[Agent 시스템](.ai/AGENT_SYSTEM.md)** - 에이전트 시스템 구조와 철학
+- **[Orchestration](.ai/AGENT_ORCHESTRATION.md)** - 계층적 오케스트레이션, 자기 치유 메커니즘
+- **[System Prompts](.ai/AGENT_SYSTEM_PROMPTS.md)** - 프롬프트 설계 및 편집 가이드 ⭐ 가장 중요!
+- **[Tools](.ai/AGENT_TOOLS.md)** - Function Calling 도구 설계
+- **[Histories](.ai/AGENT_HISTORIES.md)** - 컨텍스트 최적화와 Prompt Caching
 
-## Instructions for Claude
+### Compiler System (`@autobe/compiler`)
+- **[Compiler 시스템](.ai/COMPILER_SYSTEM.md)** - 컴파일러 철학과 3단계 검증 시스템
 
-### Communication Language
-- **Write all code, comments, and documentation in English**
-- **Communicate with the user in Korean (한국어)**
-- Maintain professional yet conversational tone in Korean
+### Frontend & UI (`@autobe/ui`, Website, Apps)
+- **[Frontend 시스템](.ai/FRONTEND_SYSTEM.md)** - UI 컴포넌트, 실시간 통신, 세션 관리, UX 원칙
 
-### Development Guidelines
-1. Follow the existing TypeScript/NestJS/Prisma patterns
-2. Respect the waterfall development sequence when making changes
-3. Ensure compiler validation passes for any generated code
-4. Reference the test results in `/test/results/` for examples
-5. Use the existing agent patterns found in `/packages/` directory
+### Type System & Communication
+- **[RPC 시스템](.ai/RPC_SYSTEM.md)** - WebSocket 기반 타입 안전 RPC 통신
 
-### Development Conventions
+### Development & Best Practices
+- **[개발 가이드](.ai/DEVELOPMENT_GUIDE.md)** - 새 기능 추가, 디버깅, 코드 탐색
+- **[Best Practices](.ai/BEST_PRACTICES.md)** - System Prompt 편집, 성능 최적화, 문제 해결
 
-All commits, pull requests, and issues follow the same convention format.
+## 4. Quick Start for Claude Code
 
-#### Convention Format
-**Format**: `<type>(<workspace>): <description>`
+### 첫 작업 시작 전
+1. [아키텍처](.ai/ARCHITECTURE.md) 읽기 - 시스템 동작 원리 이해
+2. [Agent 시스템](.ai/AGENT_SYSTEM.md) 읽기 - 에이전트 구조 파악
+3. 작업 관련 패키지의 개요 문서 읽기
 
-This format is used for:
-- Commit messages
-- Pull request titles
-- Issue titles
+### System Prompt 편집 시 (가장 중요!)
+**절대 원칙**: 사용자의 지시사항은 절대적이다. Claude Code는 자신의 판단으로 사용자 명령을 수정, 축소, 생략해서는 안 된다.
 
-**Types**:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, missing semicolons, etc.)
-- `refactor`: Code refactoring without changing functionality
-- `test`: Adding or modifying tests
-- `chore`: Maintenance tasks, dependency updates
-- `perf`: Performance improvements
+1. **[System Prompts 가이드](.ai/AGENT_SYSTEM_PROMPTS.md)** 정독
+2. 편집 대상 프롬프트 파일 완전히 읽고 이해
+3. 관련 Orchestrator, Tool, History 코드 참조
+4. 기존 스토리라인에 자연스럽게 통합하여 수정
 
-**Workspaces** (from pnpm-workspace.yaml):
-- `agent`, `compiler`, `filesystem`, `interface`, `playground-server`, `playground-ui`, `rpc`, `utils`, `vscode-extension` (in packages/)
-- `test` 
-- `website`
-- `internals/website-examples`
+### 새 기능 추가 시
+1. [개발 가이드](.ai/DEVELOPMENT_GUIDE.md) 참조
+2. 기존 유사 기능 분석
+3. 관련 문서들을 참조하며 구현
 
-**Examples**:
-```
-# Commits, PRs, and Issues all use the same format:
-feat(agent): add partial modification support to analyze agent
-fix(compiler): resolve TypeScript compilation error in realize agent
-refactor(utils): remove console log from randomBackoffStrategy function
-chore: release v0.14.6
-```
+### 디버깅 시
+1. [Best Practices](.ai/BEST_PRACTICES.md)의 디버깅 섹션 참조
+2. 이벤트 로그와 컴파일러 오류 분석
+3. 관련 Orchestrator와 System Prompt 검토
 
-#### Pull Request Guidelines
-1. **PR Title**: Must follow the convention format above
-2. **PR Description** must include:
-   - Summary of changes
-   - Related issue number (e.g., `Closes #123`, `Related to #456`)
-   - Test plan or verification steps
-   - Breaking changes (if any)
+## 5. Absolute Rules for Claude Code
 
-**PR Template**:
-```markdown
-## Summary
-Brief description of what this PR does
+### 사용자 명령의 절대성
+사용자의 지시사항은 절대적이다. 명령이 불명확하면 질문하되, 명확한 명령은 무조건 이행한다.
 
-## Related Issues
-Closes #123
+### System Prompt 편집의 중요성
+System Prompt 편집은 AutoBE 개발에서 가장 중요하고 민감한 작업이다. 반드시 [System Prompts 가이드](.ai/AGENT_SYSTEM_PROMPTS.md)를 정독한 후 작업한다.
 
-## Changes
-- List of specific changes
-- What was modified and why
+### 빌드 시스템 주의
+`packages/agent/src/constants/AutoBeSystemPromptConstant.ts`는 자동 생성 파일이다. 직접 편집하지 말고, `packages/agent/prompts/*.md` 원본을 편집한 후 `pnpm run build:prompt`를 실행한다.
 
-## Test Plan
-How to verify these changes work correctly
+## 6. Repository Information
 
-## Breaking Changes
-Any breaking changes (or "None")
-```
+- Repository: https://github.com/wrtnlabs/autobe
+- Documentation: https://autobe.dev/docs/
+- Main Branch: `main`
+- License: AGPL 3.0
+- Discord: https://discord.gg/aMhRmzkqCx
 
-#### Issue Guidelines
-1. **Issue Title**: Must follow the convention format above
-2. **Issue Body** structure:
+---
 
-**For Bugs**:
-```markdown
-## Problem Description
-What is broken and how it affects users
+**Last Updated**: 2025-10-23
+**Version**: 2.0.0
 
-## Steps to Reproduce
-1. Step one
-2. Step two
-3. Expected vs Actual behavior
-
-## Environment
-- Version: 
-- OS: 
-- Node version:
-```
-
-**For Features** (using EARS format):
-```markdown
-## Problem Statement
-Current limitations and why this feature is needed
-
-## Requirements (EARS Format)
-WHEN [trigger]
-THE SYSTEM SHALL [action]
-
-WHERE [condition]
-THE SYSTEM SHALL [behavior]
-
-## Proposed Solution
-How to implement this feature
-
-## Expected Benefits
-What improvements this brings
-```
-
-### Project Context Awareness
-- This is a production-ready no-code agent system
-- Code quality must be enterprise-grade
-- All generated code should follow the established patterns
-- Consider the multi-agent architecture when suggesting changes
-- Be aware of the compiler feedback loop integration
-
-### Claude's Responsibilities
-- **IMPORTANT**: When project structure changes, update this CLAUDE.md file immediately to reflect the new structure
-- Keep the Project Structure section accurate and up-to-date
-- Document any new packages, directories, or major architectural changes
-
-### Useful Commands
-- `pnpm build`: Build all packages
-- `pnpm playground`: Run interactive demo
-- `pnpm test`: Run test suite
-- Check `/test/scripts/` for specific testing scenarios
-
-### Repository Information
-- **License**: AGPL 3.0
-- **Maintainer**: Wrtn Technologies
-- **Repository**: https://github.com/wrtnlabs/autobe
-- **Documentation**: https://autobe.dev/docs/
-- **Main Branch**: main
+이 문서는 Claude Code가 AutoBE 프로젝트를 이해하고 효과적으로 작업할 수 있도록 작성되었다. 각 주제별 상세 문서를 참조하여 깊이 있는 이해를 바탕으로 작업하라.
