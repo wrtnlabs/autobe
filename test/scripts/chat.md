@@ -27,7 +27,7 @@
 
 뤼튼 엔터프라이즈는 기업 고객을 위한 B2B SaaS AI 서비스로, **AI Chatbot**과 **AI Procedure** 두 가지 핵심 기능을 제공한다.
 
-### 핵심 특징
+### 1.1. 핵심 특징
 
 **계층적 권한 체계**: 내부 관리자(`wrtn_moderators`) → 기업(`wrtn_enterprises`) → 팀(`wrtn_enterprise_teams`) → 직원(`wrtn_enterprise_employees`)의 4단계 계층 구조로, 각 계층마다 명확한 권한과 책임이 정의된다.
 
@@ -37,7 +37,7 @@
 
 **계층별 데이터 격리**: 각 사용자는 자신의 권한 범위 내에서만 데이터에 접근할 수 있으며, 상위 조직이나 타 부서의 정보는 완전히 차단된다.
 
-### 시스템 구성
+### 1.2. 시스템 구성
 
 1. **조직 관리**: 기업 등록, 직원 계정, 팀 구조, 권한 설정
 2. **AI 서비스**: 대화형 Chatbot, 함수형 Procedure 실행
@@ -46,7 +46,7 @@
 5. **통계 대시보드**: 권한별 맞춤형 통계, 실시간 모니터링
 6. **프로시저 제한**: 기업/팀 단위로 사용 가능한 AI 기능 제어
 
-### 보안과 프라이버시
+### 1.3. 보안과 프라이버시
 
 - 모든 대화 내용과 실행 결과는 암호화 저장
 - 초대장 시스템을 통한 안전한 사용자 온보딩  
@@ -121,7 +121,7 @@ enum AutoBeAnalyzeRole {
 - 요구사항 문서에서 Actor는 2개만 명시
 
 #### 2.4.2. API 설계 단계
-- 최상위 경로는 Actor별로 분리 (`/internal/*`, `/enterprise/*`)
+- 최상위 경로는 Actor별로 분리 (`/moderator/*`, `/enterprise/*`)
 - 인증/인가는 Actor 단위로 처리
 - Actor 내부의 role/title은 권한 체크 로직에서 처리
 
@@ -184,7 +184,7 @@ switch(actor) {
 > **최종 경고**: Actor를 2개 이상 만드는 것은 시스템 설계의 근본을 흔드는 치명적 실수다. 
 > Analyze Agent는 이 원칙을 생명처럼 지켜야 한다.
 
-### AutoBE 구현 지침
+### 2.8. AutoBE 구현 지침
 
 **두 가지 핵심 원칙의 균형**:
 1. **기존 테이블 보호**: 본 문서에 정의된 약 25개 테이블은 절대 수정 불가
@@ -227,39 +227,85 @@ switch(actor) {
 - **CRITICAL**: 각 섹션의 테이블들은 모두 동일한 namespace로 그룹핑해야 한다:
   - Section 3 (Moderator): 모든 `wrtn_moderator*` 테이블은 하나의 namespace
   - Section 4 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
-  - Section 5 (AI Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
-  - Section 6 (AI Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
+  - Section 5 (Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
+  - Section 6 (Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
   - Section 7 (Configurations): 모든 config 관련 테이블은 하나의 namespace
 
-**DTO 구현 원칙**:
-- **본 문서에서 직접 명시한 DTO 인터페이스와 속성**은 정확히 그대로 구현해야 한다
-  - 새로운 속성을 추가할 수 없다
-  - 오직 주석(description)만 추가하여 각 속성의 의미를 설명할 수 있다
-- **DB 스키마에 대한 지시사항은 DTO에 적용되지 않음** 
-  - DB 테이블 구조를 그대로 DTO로 만들지 말 것
-  - 본 문서에 직접 정의되지 않은 DTO는 다음 원칙에 따라 자율적으로 설계한다:
+### 2.9. DTO 구현 원칙
 
-    **1. Relation 원칙**: 
-    - 관계를 Composition, Association, Aggregation으로 분류하여 적절히 처리
-    - Response DTO에서 FK를 객체로 변환, Create DTO에서 관계 타입별로 적절히 구성
-    
-    **2. Atomic Operation Principle**: 
-    - Create DTO는 단일 API 호출로 완전한 엔티티 생성이 가능하도록 설계
-    - 관련 엔티티들이 함께 생성되어야 할 경우, 중첩된 객체 구조로 한 번에 처리
-    
-    **3. DB 스키마와 DTO의 차이점**:
-    - DB 스키마는 저장 구조 최적화에 초점, DTO는 API 사용성에 초점
-    - DB의 정규화된 구조를 그대로 노출하지 않고, 사용자 친화적으로 변환
-    - FK 관계, 조인된 데이터 등을 적절히 구성하여 제공
-    
+#### 2.9.1. 문서 명시 DTO와 자율 설계 DTO의 구분
 
-**추가 구현의 자유와 확장 의무 - 새로운 테이블과 기능을 적극 추가**:
+**본 문서에서 직접 명시한 DTO**:
+- 인터페이스명과 속성은 정확히 그대로 구현해야 한다
+- 새로운 속성을 추가할 수 없다
+- 오직 주석(description)만 추가하여 각 속성의 의미를 설명할 수 있다
+
+**본 문서에 정의되지 않은 DTO**:
+- 아래 원칙에 따라 자율적으로 설계한다
+- DB 스키마 지시사항은 DTO에 적용하지 않는다
+- API 사용성과 개발자 경험을 최우선으로 고려한다
+
+#### 2.9.2. DB 스키마와 DTO의 분리 원칙
+
+**DB 스키마에 대한 지시사항은 DTO에 적용되지 않음**
+- DB 테이블 구조를 그대로 DTO로 만들지 말 것
+- DB 스키마는 저장 구조 최적화에 초점, DTO는 API 사용성에 초점
+- DB의 정규화된 구조를 그대로 노출하지 않고, 사용자 친화적으로 변환
+- FK 관계, 조인된 데이터 등을 적절히 구성하여 제공
+
+#### 2.9.3. AutoBE의 DTO 설계 원칙
+
+**AutoBE interface 설계 원칙 준수**
+- AutoBE의 고유 시스템 프롬프트에 정의된 interface 설계 원칙을 철저히 따라 DTO 설계 진행
+
+**Relation 맵핑 원칙**
+- Response DTO에서 FK를 객체로 변환
+- Create DTO에서 관계 타입별로 적절히 구성 (Composition, Association, Aggregation)
+- Create DTO는 단일 API 호출로 완전한 엔티티 생성이 가능하도록 설계 (Atomic Operation Principle)
+- 관련 엔티티들이 함께 생성되어야 할 경우, 중첩된 객체 구조로 한 번에 처리
+
+```typescript
+//----
+// Relation 맵핑 예시
+//----
+// 아래 타입 정의는 참고사항이자 권유사항일 뿐이니 이 설계를 
+// 100% 따라야하는 것은 아니다. 다만 Read(Response) DTO 기준 
+// 맵핑을 어떻게 해야하는지 본 예제로부터 그 원리를 파악하여 
+// 도처에 응용하기 바란다
+export interface IWrtnChatSession {
+  // 이하 FK 참조 관계를 객체로 맵핑
+  employee: IWrtnEnterpriseEmployee.ISummary;
+  team: IWrtnEnterpriseTeam.ISummary | null;
+  persona: IWrtnPersona.ISummary;
+
+  // 이하 has 관계를 객체 내지 배열로 맵핑
+  token_usage: IWrtnTokenUsage | null;
+  connections: IWrtnChatSessionConnection[];
+  histories: IWrtnChatSessionHistory[];
+  
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  title: string | null;
+  created_at: string & tags.Format<"date-time">;
+}
+```
+
+**JWT 인증 컨텍스트 보안 원칙**
+- Create DTO에 **현재 인증된 사용자**의 actor_id나 actor_session_id를 포함하지 마라
+- 현재 사용자의 `wrtn_moderator_id`, `wrtn_moderator_session_id`, `wrtn_enterprise_employee_id`, `wrtn_enterprise_employee_session_id`는 JWT 토큰에서 자동 취득
+- 단, 대상 엔티티 지정이 필요한 경우 (예: 직원 임명 시 target_employee_id)는 반드시 포함해야 함
+- 클라이언트가 제공한 현재 사용자 identity를 신뢰하지 말고, 서버가 JWT에서 검증된 사용자 컨텍스트를 주입
+
+### 2.10. 추가 구현의 자유와 확장 의무
+
+**새로운 테이블과 기능을 적극 추가**:
 - 본 문서에 이미 정의된 테이블과 DTO는 절대 수정 불가하며, 정확히 그대로 구현해야 한다
 - **중요**: 본 문서는 **최소한의 핵심 테이블**만을 정의한 것이다. 완전한 엔터프라이즈 B2B SaaS 시스템이 되려면 훨씬 많은 테이블과 기능이 필요하다
 - **명령**: 본 문서의 테이블들은 단지 시작점일 뿐이다. AutoBE는 완전히 작동하는 엔터프라이즈 백엔드를 만들기 위해 필요한 모든 추가 테이블과 기능을 자율적으로 설계하고 구현해야 한다
 
-**B2B SaaS 필수 기능 발굴 의무**:
-AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 기능을 스스로 발굴하고 구현해야 한다:
+#### 2.10.1. B2B SaaS 필수 기능 발굴 의무
+
+**AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 기능을 스스로 발굴하고 구현해야 한다**:
 - AI 서비스 사용에 도움이 필요한 기업들을 위한 지원 시스템
 - 직원들이 AI를 효과적으로 활용할 수 있도록 돕는 기능들
 - 기업 고객의 성공을 위한 Customer Success 기능들
@@ -750,7 +796,7 @@ export namespace IWrtnChatSession {
 
 이를 통해 사용자는 매번 페르소나를 명시하지 않아도 자동으로 마지막 설정을 사용할 수 있으며, 필요시 다른 페르소나를 지정할 수도 있다.
 
-### `IWrtnChatHistory`
+### 5.2. `IWrtnChatHistory`
 
 ```typescript
 export type IWrtnChatHistory =
@@ -811,7 +857,7 @@ export interface IWrtnChatFunctionCallHistory {
 
 웹소켓에서 본격적으로 다루게 될 녀석들인데, AutoBE 는 이 타입 그대로 구현하되 각 타입마다 시의적절한 설명을 보충하여 사용할 것 (JSON schema 상 `description`).
 
-### `IWrtnTokenUsage`
+### 5.3. `IWrtnTokenUsage`
 
 토큰 사용량 타입은 이렇게 정의한다.
 
@@ -1070,7 +1116,7 @@ model wrtn_attachment_files {
 
 > **중요**: AutoBE가 설계하는 시스템에서 발생하는 **모든 파일 업로드와 첨부**는 반드시 이 `wrtn_attachment_files` 테이블을 통해 관리되어야 한다. 각 도메인별로 별도의 파일 테이블을 만들지 말고, 이 중앙 테이블을 참조하는 연결 테이블만 생성하라.
 
-### 파일 관리 원칙
+### 8.1. 파일 관리 원칙
 - 파일 업로드는 별도의 파일 업로드 API를 통해 먼저 수행
 - 업로드 완료 후 반환된 id를 채팅이나 프로시저에서 참조
 - 한 번 업로드된 파일은 여러 곳에서 재사용 가능
@@ -1247,7 +1293,7 @@ model wrtn_ai_model_pricings {
 - enterprise employees (manager): 자사 법인/팀 통계
 - enterprise employees (member): 본인 개인 통계만
 
-### 9.4. 감사 추적 (Audit Trail)
+### 9.8. 감사 추적 (Audit Trail)
 
 > **감사 추적 설계 원칙**:
 > 
@@ -1306,7 +1352,7 @@ model wrtn_ai_model_pricings {
 
 감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, master는 자사 전체를, manager는 자신의 팀과 관리 범위 내의 로그만 볼 수 있다.
 
-### 접근 권한 요약
+### 9.10. 접근 권한 요약
 
 | 데이터 범위 | 내부 관리자 | master (기업) | manager (기업) | member (기업) |
 |----------|-----------|--------------|---------------|--------------|
@@ -1319,7 +1365,7 @@ model wrtn_ai_model_pricings {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-### 9.5. 비정규화 및 집계 테이블 금지
+### 9.9. 비정규화 및 집계 테이블 금지
 
 > **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
 > 
@@ -1367,7 +1413,7 @@ model wrtn_ai_model_pricings {
 > 완전한 B2B SaaS 시스템을 위해서는 추가 기능과 테이블이 필수적이다.
 > AutoBE는 기존 테이블을 보호하면서, 새로운 영역에 대한 테이블을 적극 추가해야 한다.
 
-### 기존 영역과 신규 영역의 명확한 구분
+### 11.1. 기존 영역과 신규 영역의 명확한 구분
 
 **기존 영역 (추가 테이블 금지)**:
 - 내부 관리자 관리: `wrtn_moderators` 관련 테이블들이 담당
@@ -1381,7 +1427,7 @@ model wrtn_ai_model_pricings {
 - 본 문서에 정의되지 않은 모든 B2B SaaS 필수 기능
 - 아래는 예시이며, 이외에도 필요한 모든 영역에 테이블 추가 필요
 
-### 필수 추가 테이블 영역
+### 11.2. 필수 추가 테이블 영역
 
 다음 영역들은 B2B SaaS에 필수적이므로 반드시 새 테이블을 설계하라:
 
@@ -1411,7 +1457,7 @@ model wrtn_ai_model_pricings {
 
 **위 영역들은 필수이며, 이외에도 B2B SaaS에 필요한 모든 기능을 추가하라.**
 
-### 명확한 설계 지침
+### 11.3. 명확한 설계 지침
 
 **절대 규칙**:
 1. **기존 25개 테이블**: 수정, 컬럼 추가, 삭제 절대 금지
@@ -1424,7 +1470,7 @@ model wrtn_ai_model_pricings {
 - 감사 추적을 위한 created_at, updated_at 등 포함
 - 세션 기반 추적이 필요한 경우 적절한 세션 ID 참조
 
-### AutoBE의 의무와 권한
+### 11.4. AutoBE의 의무와 권한
 
 **의무**:
 - 본 문서의 25개 테이블을 정확히 구현
@@ -1448,72 +1494,72 @@ model wrtn_ai_model_pricings {
 
 ## 12. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
-### Actor 검증
+### 12.1. Actor 검증
 - [ ] `AutoBeAnalyzeRole`을 정확히 2개(`moderator`, `employee`)만 정의했는가?
 - [ ] role/title/position별로 별도의 actor를 만들지 않았는가?
 - [ ] API 설계 시 2개의 actor 기준으로만 분리했는가?
 
-### 시스템 완성도 검증
+### 12.2. 시스템 완성도 검증
 - [ ] 본 문서의 약 25개 테이블 외에 필요한 만큼 추가 테이블을 설계했는가?
 - [ ] 완전한 엔터프라이즈 B2B SaaS 시스템으로 작동 가능한가?
 
-### 세션 기반 감사 추적 검증
+### 12.3. 세션 기반 감사 추적 검증
 - [ ] 새로 설계하는 모든 테이블에서 사용자 행위 기록 시 세션 ID를 포함시켰는가?
 - [ ] 내부 관리자 작업 기록에 `wrtn_moderator_session_id`를 사용했는가?
 - [ ] 기업 직원 작업 기록에 `wrtn_enterprise_employee_session_id`를 사용했는가?
 - [ ] 모든 중요 행위에 대해 "누가 + 언제 + 어느 세션에서"를 추적 가능한가?
 
-### B2B SaaS 완성도 검증
+### 12.4. B2B SaaS 완성도 검증
 - [ ] 본 문서의 핵심 기능(AI Chatbot, Procedure) 외에 추가 기능을 발굴했는가?
 - [ ] 기업 고객이 실제로 필요로 할 기능들을 스스로 판단하여 추가했는가?
 - [ ] 단순히 테이블만 나열한 것이 아니라 실제 작동하는 시스템을 설계했는가?
 - [ ] 완전한 B2B SaaS 엔터프라이즈 시스템이라고 자신있게 말할 수 있는가?
 
-### 테이블 및 컬럼 관련
+### 12.5. 테이블 및 컬럼 관련
 - [ ] 본 문서에 정의된 모든 테이블명을 그대로 사용했는가?
 - [ ] 본 문서에 정의된 모든 컬럼명을 그대로 사용했는가?
 - [ ] 기존 테이블에 새로운 컬럼을 추가하지 않았는가?
 - [ ] 테이블명이나 컬럼명을 변경하지 않았는가?
 
-### 영역 중복 및 서브타입 검증
+### 12.6. 영역 중복 및 서브타입 검증
 - [ ] 본 문서에 이미 정의된 테이블의 영역과 겹치는 새 테이블을 만들지 않았는가?
 - [ ] wrtn_moderators의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_employees의 title별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_team_companions의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
 
-### JSON 필드 관련
+### 12.7. JSON 필드 관련
 - [ ] `token_usage` 필드들을 JSON으로 유지했는가?
 - [ ] `data`, `arguments`, `value` 등 JSON 필드를 분해하지 않았는가?
 - [ ] JSON 필드를 정규화하여 별도 테이블로 만들지 않았는가?
 
-### 통계 및 집계 관련
+### 12.8. 통계 및 집계 관련
 - [ ] 비정규화된 통계 테이블을 만들지 않았는가?
 - [ ] 일별/월별 집계 테이블을 생성하지 않았는가?
 - [ ] 모든 통계를 SQL 쿼리로 처리하도록 설계했는가?
 - [ ] 성능 최적화보다 정규화를 우선시했는가?
 
-### 결제 및 서비스 관련
+### 12.9. 결제 및 서비스 관련
 - [ ] 잔고 부족으로 서비스를 차단하는 로직을 만들지 않았는가?
 - [ ] 예산 초과 시에도 서비스가 계속되도록 설계했는가?
 - [ ] 후불제 정책을 반영한 설계를 했는가?
 - [ ] 사용량 추적과 서비스 제공을 분리했는가?
 
-### DTO 관련
+### 12.10. DTO 관련
 - [ ] 본 문서에 직접 명시한 DTO 인터페이스명을 그대로 사용했는가?
 - [ ] 본 문서에 직접 정의한 DTO 속성은 그대로 유지했는가?
 - [ ] Response DTO에서 Foreign Key를 적절히 객체로 변환했는가? (Relation 원칙)
 - [ ] Create DTO가 단일 API 호출로 완전한 엔티티 생성이 가능한가? (Atomic Operation Principle)
 - [ ] DB 스키마를 그대로 따르지 않고 API 사용성에 맞게 설계했는가?
 
-### 절대 변경 금지 테이블
+### 12.11. 절대 변경 금지 테이블
 - [ ] wrtn_chat_sessions 및 하위 테이블들을 수정하지 않았는가?
 - [ ] wrtn_procedure_sessions 및 하위 테이블들을 수정하지 않았는가?
 - [ ] 이들 테이블에 컬럼을 추가하거나 삭제하지 않았는가?
 - [ ] 이들 테이블의 이름을 변경하지 않았는가?
 
 
-### 최종 확인
+### 12.12. 최종 확인
 - [ ] AI의 주관적 판단을 배제하고 문서 지시사항만 따랐는가?
 - [ ] "더 나은 설계"라는 생각으로 변경을 시도하지 않았는가?
 - [ ] 모든 지시사항에 절대 복종했는가?
