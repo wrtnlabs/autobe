@@ -1242,16 +1242,20 @@ model wrtn_ai_model_pricings {
 - **연결 시간**: 각 세션의 총 연결 시간 (connected_at ~ disconnected_at)
 
 **집계 차원**
-- **AI 모델별**: vendor 필드 기준으로 그룹핑 (예: openai/gpt-4o, anthropic/claude-3)
+- **AI 모델별**: vendor 필드 기준으로 그룹핑 (예: `openai/gpt-5`, `anthropic/claude-sonnet-4.5`)
 - **주기별**: 일일/주간/월간 단위로 집계
 - **날짜 범위**: 사용자가 지정한 시작일~종료일 범위 내 데이터 조회
 - **조직별**: 법인/팀/개인 단위로 그룹핑
 
 **권한별 조회 범위**
-- **wrtn_moderators (master/manager)**: 모든 기업의 집계 통계 조회 가능
-- **wrtn_enterprise_employees (master)**: 자사 전체의 법인/팀/개인별 통계 조회 가능
-- **wrtn_enterprise_employees (manager)**: 자사 전체의 법인/팀별 통계 조회 가능 (개인별은 본인만)
-- **wrtn_enterprise_employees (member)**: 본인 개인 통계만 조회 가능
+
+| 권한 유형 | 조회 가능 범위 | 상세 내용 |
+|----------|--------------|----------|
+| **wrtn_moderators (master)** | 시스템 전체 | • 모든 기업/팀/직원의 집계 통계<br>• 개별 기업별 상세 통계<br>• 시스템 전체 사용량 추이 |
+| **wrtn_moderators (manager)** | 시스템 전체 | • 모든 기업/팀/직원의 집계 통계<br>• 개별 기업별 상세 통계<br>• 시스템 전체 사용량 추이 |
+| **wrtn_enterprise_employees (master)** | 자사 전체 | • 자사 법인 전체 통계<br>• 모든 팀별 상세 통계<br>• 모든 개인별 상세 통계 (CEO/CTO 포함 전 직원) |
+| **wrtn_enterprise_employees (manager)** | 제한적 범위 | • 자사 법인 전체 집계 통계<br>• 모든 팀별 집계 통계<br>• **개인별 통계**:<br>&nbsp;&nbsp;- 본인 통계: 상세 조회 가능<br>&nbsp;&nbsp;- master 외: 상세 조회 가능<br>&nbsp;&nbsp;- master 권한자: 조회 불가 |
+| **wrtn_enterprise_employees (member)** | 본인만 | • 본인의 개인 통계만 |
 
 **통계 조회 요구사항**
 - AI 모델별로 그룹핑하여 통계를 볼 수 있어야 한다
@@ -1259,6 +1263,23 @@ model wrtn_ai_model_pricings {
 - 날짜 범위를 지정하여 조회할 수 있어야 한다
 - 법인/팀/개인 단위로 그룹핑하여 조회할 수 있어야 한다
 - 권한에 따라 조회 가능한 범위가 제한되어야 한다
+
+**다차원 집계 옵션**
+
+| 집계 기준 | 설명 | 사용 예시 |
+|----------|------|----------|
+| **시간 기준** | | |
+| `daily` | 일별 집계 | 일일 사용량 추이 |
+| `weekly` | 주별 집계 | 주간 패턴 분석 |
+| `monthly` | 월별 집계 | 월간 비용 관리 |
+| `yearly` | 연별 집계 | 연간 성장 추이 |
+| **조직 기준** | | |
+| `system` | 시스템 전체 | 전체 현황 파악 |
+| `enterprise` | 기업별 | 기업 단위 분석 |
+| `team` | 팀별 | 팀 성과 비교 |
+| `employee` | 개인별 | 개인 사용량 추적 |
+| **모델 기준** | | |
+| `vendor` | AI 벤더 모델별 | AI 벤더 모델별 비용 분석 |
 
 ### 9.4. Procedure Session 통계 지표
 
@@ -1328,10 +1349,14 @@ model wrtn_ai_model_pricings {
 - 프로시저 종류별/AI 모델별/주기별/조직별로 조회 가능
 
 **권한별 접근 제한**
-- wrtn_moderators: 전체 기업의 집계 통계
-- enterprise employees (master): 자사 전체 통계
-- enterprise employees (manager): 자사 법인/팀 통계
-- enterprise employees (member): 본인 개인 통계만
+
+| 사용자 유형 | Chat Session 통계 | Procedure Session 통계 | 대시보드 | 감사 로그 |
+|-----------|-----------------|---------------------|----------|----------|
+| **내부 관리자 (master)** | • 시스템 전체<br>• 모든 기업별<br>• 모든 팀별<br>• 모든 개인별 | • 시스템 전체<br>• 모든 기업별<br>• 모든 프로시저별 | 시스템 전체 뷰 | 시스템 전체 |
+| **내부 관리자 (manager)** | • 시스템 전체<br>• 모든 기업별<br>• 모든 팀별 | • 시스템 전체<br>• 모든 기업별<br>• 모든 프로시저별 | 시스템 전체 뷰 | 시스템 전체 |
+| **기업 직원 (master)** | • 자사 전체<br>• 자사 모든 팀<br>• 자사 모든 개인<br>&nbsp;&nbsp;(전 직원 상세 조회) | • 자사 전체<br>• 자사 모든 팀<br>• 자사 모든 개인<br>• 자사 모든 프로시저 | 자사 전체 뷰<br>(모든 직원 포함) | 자사 전체<br>(모든 활동) |
+| **기업 직원 (manager)** | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 본인: ✓<br>&nbsp;&nbsp;- 같은 팀 멤버: ✓<br>&nbsp;&nbsp;- 다른 팀 manager: ✗<br>&nbsp;&nbsp;- master 권한자: ✗ | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 같은 팀 멤버만<br>&nbsp;&nbsp;- master/다른 manager 제외<br>• 자사 사용 프로시저 | 자사 집계 뷰<br>팀 상세 뷰<br>(자신의 팀만 개인 조회) | 자신의 팀만<br>(타 팀 제외) |
+| **기업 직원 (member)** | • 본인 통계만<br>• 소속 팀 집계<br>&nbsp;&nbsp;(개인 식별 불가) | • 본인 통계만<br>• 본인 사용 프로시저 | 개인 뷰만<br>(본인 데이터) | 본인 활동만 |
 
 ### 9.8. 감사 추적 (Audit Trail)
 
