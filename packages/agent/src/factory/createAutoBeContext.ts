@@ -40,6 +40,7 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
 import { TimedConversation } from "../utils/TimedConversation";
 import { consentFunctionCall } from "./consentFunctionCall";
+import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { supportMistral } from "./supportMistral";
 
@@ -100,6 +101,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             executor: {
               describe: null,
+            },
+            systemPrompt: {
+              common: () => getCommonPrompt(props.config),
             },
           },
           histories: next.histories,

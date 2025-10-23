@@ -16,6 +16,7 @@ import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { getCommonPrompt } from "./getCommonPrompt";
 import { supportMistral } from "./supportMistral";
 
 export const consentFunctionCall = async (props: {
@@ -36,6 +37,9 @@ export const consentFunctionCall = async (props: {
       retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
       executor: {
         describe: null,
+      },
+      systemPrompt: {
+        common: () => getCommonPrompt(props.config),
       },
     },
     histories: [
