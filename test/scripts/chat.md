@@ -1267,8 +1267,8 @@ model wrtn_ai_model_pricings {
 |----------|--------------|----------|
 | **wrtn_moderators (master)** | 시스템 전체 | • 모든 기업/팀/직원의 집계 통계<br>• 개별 기업별 상세 통계<br>• 시스템 전체 사용량 추이 |
 | **wrtn_moderators (manager)** | 시스템 전체 | • 모든 기업/팀/직원의 집계 통계<br>• 개별 기업별 상세 통계<br>• 시스템 전체 사용량 추이 |
-| **wrtn_enterprise_employees (master)** | 자사 전체 | • 자사 법인 전체 통계<br>• 모든 팀별 상세 통계<br>• 모든 개인별 상세 통계 (CEO/CTO 포함 전 직원) |
-| **wrtn_enterprise_employees (manager)** | 제한적 범위 | • 자사 법인 전체 집계 통계<br>• 모든 팀별 집계 통계<br>• **개인별 통계**:<br>&nbsp;&nbsp;- 본인 통계: 상세 조회 가능<br>&nbsp;&nbsp;- master 외: 상세 조회 가능<br>&nbsp;&nbsp;- master 권한자: 조회 불가 |
+| **wrtn_enterprise_employees (master)** | 자사 전체 | • 자사 법인 전체 통계<br>• 모든 팀별 상세 통계<br>• 모든 개인별 상세 통계 |
+| **wrtn_enterprise_employees (manager)** | 제한적 범위 | • 자사 법인 전체 집계 통계<br>• 모든 팀별 집계 통계<br>• **개인별 통계**:<br>&nbsp;&nbsp;- master 권한자: 조회 불가<br>&nbsp;&nbsp;- master 외: 상세 조회 가능<br>&nbsp;&nbsp;- 본인 통계: 상세 조회 가능 |
 | **wrtn_enterprise_employees (member)** | 본인만 | • 본인의 개인 통계만 |
 
 **통계 조회 요구사항**
