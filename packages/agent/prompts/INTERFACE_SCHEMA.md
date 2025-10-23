@@ -926,13 +926,13 @@ interface IShoppingOrder {
 interface IBbsArticle {
   // Associations: Independent entities providing context
   author: IBbsMember.ISummary;     // ✅ Member exists independently
-  category: IBbsCategory;          // ✅ Category is reusable
+  category: IBbsCategory.ISummary; // ✅ Category is reusable
 }
 
 interface IShoppingSale {
   // Associations: Independent entities
   seller: IShoppingSeller.ISummary;  // ✅ Seller manages many sales
-  section: IShoppingSection;         // ✅ Classification system
+  section: IShoppingSection.ISummary; // ✅ Classification system
 }
 ```
 
@@ -1011,8 +1011,8 @@ interface IShoppingOrder {
 ```typescript
 interface IBbsArticle {
   // Independent entities that provide context
-  author: IBbsMember.ISummary;  // Member exists independently
-  category: IBbsCategory;       // Category is reusable
+  author: IBbsMember.ISummary;    // Member exists independently
+  category: IBbsCategory.ISummary; // Category is reusable
   // These are NOT included as arrays or counts
 }
 ```
@@ -1634,8 +1634,8 @@ interface IBbsArticle {
   id: string;
   title: string;
   content: string;
-  author: IBbsMember.ISummary;       // ✅ Association transformed
-  category: IBbsCategory;             // ✅ Association transformed
+  author: IBbsMember.ISummary;        // ✅ Association transformed
+  category: IBbsCategory.ISummary;    // ✅ Association transformed
   files: IBbsArticleFile[];           // ✅ Composition included
   comments_count: number;             // ✅ Aggregation as count
   likes_count: number;                // ✅ Aggregation as count
@@ -1699,8 +1699,8 @@ interface IShoppingSale {
 interface IShoppingSale {
   id: string;
   name: string;
-  seller: IShoppingSeller.ISummary;  // Complete seller info
-  section: IShoppingSection;          // Complete section info
+  seller: IShoppingSeller.ISummary;   // Complete seller info
+  section: IShoppingSection.ISummary; // Complete section info
   units: IShoppingSaleUnit[] {        // Complete unit array
     id: string;
     name: string;
@@ -1850,7 +1850,86 @@ interface IOrder.ICreate {
 
 **If ANY check fails for either DTO type, the design is incomplete and violates the atomic operation principle.**
 
-#### 4.4.3. Response DTOs (Read Operations)
+#### 4.4.3. The Circular Reference Prevention Rule
+
+**THE GOLDEN RULE**: ALL reference relations (belongs-to) MUST use `.ISummary`, ALL composition relations (has-many/has-one) use detail types (base interface).
+
+**Why This Rule Exists**:
+
+Cross-references between entities can create infinite expansion chains if not properly contained:
+
+```typescript
+// ❌ CATASTROPHIC: Detail types in references
+interface IShoppingSale {
+  seller: IShoppingSeller;       // Detail type!
+  section: IShoppingSection;     // Detail type!
+  units: IShoppingSaleUnit[];
+}
+
+// These create infinite expansion chains:
+// Sale → Seller → Company → Seller → Company → ...
+// Sale → Section → Parent Section → Parent Section → ...
+
+// ✅ CORRECT: ALL references use .ISummary
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;    // ✅ Summary stops expansion
+  section: IShoppingSection.ISummary;  // ✅ Summary stops expansion
+  units: IShoppingSaleUnit[];          // ✅ Composition uses detail (owned)
+}
+
+interface IShoppingSeller.ISummary {
+  id: string;
+  name: string;
+  rating: number;
+  // ⚠️ CRITICAL: Summary does NOT include ANY references
+  // NO sales[] array (actor reversal)
+  // NO company object (reference)
+  // Only scalar fields and owned 1:1 compositions
+}
+```
+
+**Type Selection Matrix** (Simple and Universal):
+
+| Relation Type | Type to Use | Reason |
+|--------------|-------------|---------|
+| **BELONGS-TO** (Reference/Association) | `.ISummary` ALWAYS | Prevents circular expansion - no exceptions |
+| **HAS-MANY** (Owns children array) | Base type (detail) | Parent owns - no circular risk |
+| **HAS-ONE** (Owns single child) | Base type (detail) | Parent owns - no circular risk |
+
+**No Case-by-Case Judgment**: Every reference uses `.ISummary` regardless of size or complexity.
+
+**Practical Examples**:
+
+```typescript
+// E-Commerce Domain
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;       // ✅ Reference → .ISummary (always)
+  section: IShoppingSection.ISummary;     // ✅ Reference → .ISummary (always)
+  category: IShoppingCategory.ISummary;   // ✅ Reference → .ISummary (even if small!)
+  units: IShoppingSaleUnit[];             // ✅ Composition → Detail
+  warranty: IShoppingSaleWarranty;        // ✅ Composition → Detail
+}
+
+// BBS Domain
+interface IBbsArticle {
+  author: IBbsMember.ISummary;            // ✅ Reference → .ISummary (always)
+  category: IBbsCategory.ISummary;        // ✅ Reference → .ISummary (always)
+  files: IBbsArticleFile[];               // ✅ Composition → Detail
+}
+```
+
+**Universal Rule**: If it's a foreign key to an independent entity (BELONGS-TO), use `.ISummary`. No exceptions, no case-by-case judgment.
+
+**Why This Matters**:
+
+1. **Prevents ALL circular reference possibilities**
+2. **Consistent pattern** - no complex judgment needed
+3. **Future-proof** - reference entity can evolve without breaking
+4. **Performance** - Smaller payloads (3-5x reduction)
+5. **Caching** - Independent cache strategies for different entities
+6. **Client can fetch detailed reference via separate API if needed**
+
+#### 4.4.4. Response DTOs (Read Operations)
 
 **Rule**: Transform ALL contextual FKs to objects for complete information.
 
@@ -1867,13 +1946,13 @@ interface IOrder.ICreate {
 ```typescript
 // ✅ CORRECT: Response DTOs with transformed FKs
 interface IBbsArticle {
-  // Associations → Full objects
-  author: IBbsMember.ISummary;      // bbs_member_id → object
-  category: IBbsCategory;           // category_id → object
-  
+  // Associations → Full objects (.ISummary)
+  author: IBbsMember.ISummary;      // bbs_member_id → .ISummary
+  category: IBbsCategory.ISummary;  // category_id → .ISummary
+
   // Compositions → Full arrays
   attachments: IBbsArticleAttachment[];  // Created with article
-  
+
   // Aggregations → Not included (counts only)
   comments_count: number;           // GET /articles/:id/comments
   likes_count: number;              // GET /articles/:id/likes
@@ -1882,23 +1961,23 @@ interface IBbsArticle {
 interface IBbsArticleComment {
   // Hierarchical parent → Keep as ID
   article_id: string;               // Parent contains this
-  
+
   // Association → Transform to object
-  author: IBbsMember.ISummary;      // commenter_id → object
+  author: IBbsMember.ISummary;      // commenter_id → .ISummary
 }
 
 interface IShoppingSale {
-  // All associations transformed
-  seller: IShoppingSeller.ISummary;     // seller_id → object
-  section: IShoppingSection;            // section_id → object
-  categories: IShoppingCategory[];      // category_ids → objects
-  
+  // All associations transformed (.ISummary)
+  seller: IShoppingSeller.ISummary;     // seller_id → .ISummary
+  section: IShoppingSection.ISummary;   // section_id → .ISummary
+  categories: IShoppingCategory.ISummary[]; // category_ids → .ISummary[]
+
   // Compositions included
   units: IShoppingSaleUnit[];           // Deep composition tree
 }
 ```
 
-#### 4.4.4. Create DTOs (Request Operations)
+#### 4.4.5. Create DTOs (Request Operations)
 
 **Rule**: Use IDs for references, nested objects for compositions.
 
@@ -1983,7 +2062,7 @@ interface IShoppingOrder.ICreate {
 }
 ```
 
-#### 4.4.5. Update DTOs (Request Operations)
+#### 4.4.6. Update DTOs (Request Operations)
 
 **Rule**: Only allow updating non-structural relations.
 
@@ -2153,14 +2232,14 @@ interface IBbsArticle {
   id: string;
   title: string;
   content: string;
-  
+
   // Associations (contextual references)
-  author: IBbsMember.ISummary;     // FK transformed
-  category: IBbsCategory;           // FK transformed
-  
+  author: IBbsMember.ISummary;        // FK transformed
+  category: IBbsCategory.ISummary;    // FK transformed
+
   // Compositions (same transaction)
   attachments: IBbsArticleAttachment[];  // Part of article submission
-  
+
   // Event-driven data accessed via separate APIs:
   // GET /articles/:id/comments
   // GET /articles/:id/likes
@@ -2232,16 +2311,16 @@ interface IShoppingSale {
   name: string;
   description: string;
   price: number;
-  
+
   // Associations (contextual references)
-  seller: IShoppingSeller.ISummary;   // FK transformed
-  section: IShoppingSection;          // FK transformed
-  categories: IShoppingCategory[];    // FK array transformed
-  
+  seller: IShoppingSeller.ISummary;       // FK transformed
+  section: IShoppingSection.ISummary;     // FK transformed
+  categories: IShoppingCategory.ISummary[]; // FK array transformed
+
   // Compositions (same transaction)
   units: IShoppingSaleUnit[];         // Created with sale
   shipping_options: IShippingOption[];  // Part of sale definition
-  
+
   // Event-driven relations accessed via:
   // GET /sales/:id/reviews
   // GET /sales/:id/questions
@@ -2423,9 +2502,9 @@ interface IShoppingSale {
   created_at: string;
 
   // Associated references: Transform FKs to objects
-  seller: IShoppingSeller.ISummary;     // seller_id → object
-  section: IShoppingSection;            // section_id → object
-  categories: IShoppingCategory[];      // category_ids → objects
+  seller: IShoppingSeller.ISummary;       // seller_id → .ISummary
+  section: IShoppingSection.ISummary;     // section_id → .ISummary
+  categories: IShoppingCategory.ISummary[]; // category_ids → .ISummary[]
 
   // Strong relation: Same event/actor (seller registers sale with units)
   units: IShoppingSaleUnit[] {
@@ -2611,40 +2690,106 @@ interface IBbsArticle.IUpdate {
 
 ### 5.4. Summary DTOs (IEntity.ISummary) - Optimized for list views
 
-**Purpose**: Minimal data for efficient list rendering
+**Purpose**: Lightweight representation for lists, embeddings, and references.
 
-**FORBIDDEN Properties**:
-- **Large Text**: `content`, `description`, `body` (unless truncated)
-- **Sensitive Data**: Any passwords, tokens, or internal fields
-- **Heavy Relations**: Full nested objects (use IDs or counts instead)
-- **Audit Details**: `created_by`, `updated_by` (unless specifically needed)
-- **Internal Flags**: Debug information, soft delete flags
-- **Composition**: Never include nested arrays in Summary DTOs
+**CRITICAL DISTINCTION**: Response DTOs come in two forms with different relation inclusion rules:
 
-**Required Properties**:
-- `id` - Essential for identification
-- Primary display field (name, title, email)
-- Status/state indicators
-- Key dates (created_at) for sorting
-- Essential relations (category name, not full object)
+#### Detail Response DTOs (Default Type - IEntity)
+
+**Purpose**: Complete entity representation for single-entity retrieval (GET /entities/:id).
+
+**Relation Inclusion Rules**:
+- ✅ **BELONGS-TO (Association)**: Transform to `.ISummary` objects
+- ✅ **HAS-MANY (Composition)**: Include as nested arrays (full detail)
+- ✅ **HAS-ONE (Composition)**: Include as nested object (full detail)
+- ✅ **AGGREGATION**: Counts only, separate endpoints
 
 **Example**:
 ```typescript
-// ✅ CORRECT: Summary DTO
-interface IUser.ISummary {
+interface IShoppingSale {
   id: string;
   name: string;
-  avatar_url?: string;
-  // Minimal fields for list display
-}
+  description: string;  // Full description
+  price: number;
 
-interface IBbsArticle.ISummary {
-  id: string;
-  title: string;
-  author_name: string;  // Denormalized
-  file_count: number;   // Count, not array
+  // ✅ BELONGS-TO - ALL use .ISummary:
+  seller: IShoppingSeller.ISummary;
+  section: IShoppingSection.ISummary;
+  categories: IShoppingCategory.ISummary[];
+
+  // ✅ HAS-MANY - Full arrays:
+  units: IShoppingSaleUnit[];
+  images: IShoppingSaleImage[];
+
+  // ✅ HAS-ONE - Full object:
+  warranty: IShoppingSaleWarranty;
+
+  // ✅ AGGREGATION - Counts:
+  reviews_count: number;
 }
 ```
+
+#### Summary Response DTOs (IEntity.ISummary)
+
+**Purpose**: Efficient representation for lists and embeddings (GET /entities).
+
+**Relation Inclusion Rules for Summary**:
+- ✅ **BELONGS-TO relations (upward)**: INCLUDE - Transform to `.ISummary` objects
+- ❌ **HAS-MANY relations (downward)**: EXCLUDE - Separate API
+- ⚠️ **HAS-ONE relations (1:1 composition)**: CONDITIONAL (only if small and essential)
+- ✅ **AGGREGATIONS**: COUNTS ONLY (scalars)
+
+**Why These Rules**:
+1. **BELONGS-TO (upward)**: Users need context (who's the seller? what's the category?)
+2. **HAS-MANY (downward)**: Would make summaries too heavy for lists
+3. **HAS-ONE (conditional)**: Include only if small and essential for list display
+4. **AGGREGATIONS**: Scalar values are lightweight and useful
+
+**Example**:
+```typescript
+interface IShoppingSale.ISummary {
+  id: string;
+  name: string;
+  price: number;
+  thumbnail?: string;
+
+  // ✅ BELONGS-TO - INCLUDE for context (ALWAYS .ISummary):
+  seller: IShoppingSeller.ISummary;
+  section: IShoppingSection.ISummary;
+  primary_category?: IShoppingCategory.ISummary;
+
+  // ❌ HAS-MANY - EXCLUDE (too heavy):
+  // units: NO - detail only
+  // images: NO - using thumbnail instead
+
+  // ⚠️ HAS-ONE - EXCLUDE (not essential for list):
+  // warranty: NO - detail only
+
+  // ✅ AGGREGATIONS - Counts OK:
+  reviews_count: number;
+  rating_average: number;
+}
+```
+
+**FORBIDDEN Properties in Summary**:
+- Large text fields (`content`, `description`)
+- HAS-MANY composition arrays (`units[]`, `files[]`)
+- Non-essential HAS-ONE compositions
+- Sensitive data
+- Audit details
+
+**Required Properties in Summary**:
+- `id` - Essential for identification
+- Primary display field (name, title, email)
+- **BELONGS-TO references (ALWAYS .ISummary)** - Essential context
+- Status/state indicators
+- Key dates for sorting
+- Aggregation counts
+
+**Performance Impact**:
+- Detail DTO: ~50KB per entity (with all relations)
+- Summary DTO: ~5-15KB per entity (3-10x smaller)
+- For list of 20 items: 1MB vs 100-300KB
 
 ### 5.5. Search/Filter DTOs (IEntity.IRequest) - Query parameters
 
@@ -2748,6 +2893,7 @@ interface IBbsArticleComment.IInvert {
   article: IBbsArticle.ISummary {  // Parent context
     id: string;
     title: string;
+    category: IBbsCategory.ISummary;  // References use .ISummary
     // CRITICAL: No comments array!
   };
 }
@@ -2819,7 +2965,7 @@ interface IBbsArticle {
 
   // Weak relations (different scope references)
   author: IBbsMember.ISummary;
-  category: IBbsCategory;
+  category: IBbsCategory.ISummary;
 
   // Counts for different scope entities
   comments_count: number;
@@ -3398,12 +3544,16 @@ Before completing the schema generation, verify ALL of the following items:
   - Ensure the Prisma model name is spelled correctly
 
 ### ✅ Relation Rules
+- [ ] **ALL BELONGS-TO (reference) relations use `.ISummary`** - no exceptions
+- [ ] **ALL HAS-MANY/HAS-ONE (composition) relations use detail types** (base interface)
+- [ ] **Detail DTOs include both BELONGS-TO and HAS-MANY** relations
+- [ ] **Summary DTOs include BELONGS-TO only, exclude HAS-MANY** relations
+- [ ] **NO circular references** (all cross-references use `.ISummary`)
 - [ ] **Table hierarchy analyzed** - All parent_child_* patterns identified
 - [ ] **Scope boundaries identified** - Different events/actors marked as separate scopes
 - [ ] **FK directions validated** - Child→Parent = strong relation
 - [ ] **No reverse relations** - Actor types have no entity arrays
 - [ ] **IInvert types planned** - For child entities needing parent context
-- [ ] **No circular references** - Parent and child never both have full objects
 - [ ] **ALL relations defined** - EVERY DTO has relations (no omissions)
 
 ### ✅ Password and Authentication Security
