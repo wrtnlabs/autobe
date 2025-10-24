@@ -103,7 +103,22 @@ const token = {
 };
 ```
 
-**CRITICAL**: The refresh operation does NOT create a new session. It reuses the existing `session_id` from the decoded token. The session record itself remains unchanged; only the JWT tokens are rotated.
+#### Phase 3: Update Session Expiration
+After generating new tokens, update the session's `expired_at` timestamp:
+
+```typescript
+// Update session expiration time
+await MyGlobal.prisma.shopping_seller_sessions.update({
+  where: {
+    id: decoded.session_id,
+  },
+  data: {
+    expired_at: refreshExpires,  // Update to new refresh token expiration
+  },
+});
+```
+
+**CRITICAL**: The refresh operation does NOT create a new session. It reuses the existing `session_id` from the decoded token. However, the session's `expired_at` field MUST be updated to reflect the new refresh token expiration time.
 
 ### Database Schema Pattern
 
@@ -223,6 +238,16 @@ const access = {
   expired_at: toISOStringSafe(accessExpires),
   refreshable_until: toISOStringSafe(refreshExpires),
 };
+
+// Step 4: Update session expiration time
+await MyGlobal.prisma.shopping_seller_sessions.update({
+  where: {
+    id: decoded.session_id,
+  },
+  data: {
+    expired_at: refreshExpires,
+  },
+});
 ```
 
 ### Critical Rules for Token Refresh
@@ -326,10 +351,20 @@ export async function postAuthSellerRefresh(props: {
     refreshable_until: toISOStringSafe(refreshExpires),
   };
 
-  // 6. Return new tokens
+  // 6. Update session expiration time
+  await MyGlobal.prisma.shopping_seller_sessions.update({
+    where: {
+      id: decoded.session_id,
+    },
+    data: {
+      expired_at: refreshExpires,
+    },
+  });
+
+  // 7. Return new tokens
   return {
-    accessToken: newAccessToken,
-    refreshToken: newRefreshToken,
+    accessToken: token.access,
+    refreshToken: token.refresh,
   };
 }
 ```
