@@ -1611,6 +1611,19 @@ interface IBbsArticle {
 }
 // Forces client to make additional API calls for author and category info
 
+// ❌ VIOLATION 1.5: Redundant FK fields alongside reference objects
+interface IShoppingSale {
+  name: string;
+  shopping_seller_id: string;           // ❌ REDUNDANT - seller object contains this ID
+  seller: IShoppingSeller.ISummary;     // ✅ Correct object, but FK should be REMOVED
+  shopping_section_id: string;          // ❌ REDUNDANT - section object contains this ID
+  section: IShoppingSection.ISummary;   // ✅ Correct object, but FK should be REMOVED
+}
+// CRITICAL ERROR: When you transform FK to reference object, the original FK MUST be eliminated
+// The reference object CONTAINS the ID (seller.id), making the separate FK field pure redundancy
+// This creates: data duplication, client confusion, unclear semantics, maintenance burden
+// CORRECT: Remove ALL raw FK fields - keep ONLY the reference objects
+
 // ❌ VIOLATION 2: Missing compositional data
 interface IShoppingSale {
   name: string;
@@ -1634,12 +1647,14 @@ interface IBbsArticle {
   id: string;
   title: string;
   content: string;
-  author: IBbsMember.ISummary;        // ✅ Association transformed
-  category: IBbsCategory.ISummary;    // ✅ Association transformed
+  author: IBbsMember.ISummary;        // ✅ Association transformed (bbs_member_id REMOVED)
+  category: IBbsCategory.ISummary;    // ✅ Association transformed (category_id REMOVED)
   files: IBbsArticleFile[];           // ✅ Composition included
   comments_count: number;             // ✅ Aggregation as count
   likes_count: number;                // ✅ Aggregation as count
 }
+// Notice: NO raw FK fields (bbs_member_id, category_id) - they are ELIMINATED
+// The reference objects (author, category) contain the IDs, so separate FK fields are redundant
 ```
 
 **Depth Consistency with Create DTOs**:
@@ -2013,7 +2028,7 @@ interface IShoppingSale.ISummary {
 
 ##### 4.4.4.2. Foreign Key Transformation Rules for Response DTOs
 
-**Rule**: Transform ALL contextual FKs to objects for complete information.
+**Rule**: Transform ALL contextual FKs to objects for complete information. When transforming, the original FK field MUST be eliminated (atomic replacement, not addition).
 
 **Two Categories of FKs in Response DTOs**:
 
@@ -2021,16 +2036,19 @@ interface IShoppingSale.ISummary {
    - Direct parent in a composition hierarchy
    - Example: `article_id` in comment when article contains comments[]
 
-2. **Contextual Reference FK**: Transform to object
+2. **Contextual Reference FK**: Transform to object (and REMOVE original FK field)
    - Any FK providing context or additional information
    - Examples: `author_id`, `category_id`, `seller_id`
+   - **CRITICAL**: When you add `author: IBbsMember.ISummary`, you MUST remove `bbs_member_id: string`
+   - **WHY**: The reference object contains the ID (`author.id`), making the separate FK field pure redundancy
+   - **Transformation = Replacement**, not addition - never have both fields simultaneously
 
 ```typescript
-// ✅ CORRECT: Response DTOs with transformed FKs
+// ✅ CORRECT: Response DTOs with transformed FKs (original FK fields ELIMINATED)
 interface IBbsArticle {
   // Associations → Full objects (.ISummary)
-  author: IBbsMember.ISummary;      // bbs_member_id → .ISummary
-  category: IBbsCategory.ISummary;  // category_id → .ISummary
+  author: IBbsMember.ISummary;      // bbs_member_id REMOVED, replaced with object
+  category: IBbsCategory.ISummary;  // category_id REMOVED, replaced with object
 
   // Compositions → Full arrays
   attachments: IBbsArticleAttachment[];  // Created with article
@@ -2038,24 +2056,32 @@ interface IBbsArticle {
   // Aggregations → Not included (counts only)
   comments_count: number;           // GET /articles/:id/comments
   likes_count: number;              // GET /articles/:id/likes
+
+  // Notice: NO raw FK fields (bbs_member_id, category_id) exist
+  // The reference objects contain IDs: author.id, category.id
 }
 
 interface IBbsArticleComment {
-  // Hierarchical parent → Keep as ID
-  article_id: string;               // Parent contains this
+  // Hierarchical parent → Keep as ID (ONLY exception)
+  article_id: string;               // Parent contains this, prevents circular
 
   // Association → Transform to object
-  author: IBbsMember.ISummary;      // commenter_id → .ISummary
+  author: IBbsMember.ISummary;      // commenter_id REMOVED, replaced with object
+
+  // Notice: article_id kept ONLY because IBbsArticle.comments[] contains this
 }
 
 interface IShoppingSale {
-  // All associations transformed (.ISummary)
-  seller: IShoppingSeller.ISummary;     // seller_id → .ISummary
-  section: IShoppingSection.ISummary;   // section_id → .ISummary
-  categories: IShoppingCategory.ISummary[]; // category_ids → .ISummary[]
+  // All associations transformed (.ISummary), original FKs REMOVED
+  seller: IShoppingSeller.ISummary;     // shopping_seller_id REMOVED
+  section: IShoppingSection.ISummary;   // shopping_section_id REMOVED
+  categories: IShoppingCategory.ISummary[]; // category_ids REMOVED
 
   // Compositions included
   units: IShoppingSaleUnit[];           // Deep composition tree
+
+  // Notice: NO shopping_seller_id, NO shopping_section_id, NO category_ids
+  // Access via: seller.id, section.id, categories.map(c => c.id)
 }
 ```
 

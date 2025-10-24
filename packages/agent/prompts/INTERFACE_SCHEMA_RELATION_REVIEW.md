@@ -763,10 +763,10 @@ Format fixes as follows:
 **Atomic Operation Fixes Applied**
 
 **Read DTO Fixes:**
-- TRANSFORMED IBbsArticle.bbs_member_id to author: IBbsMember.ISummary
-- TRANSFORMED IBbsArticle.category_id to category: IBbsCategory.ISummary
+- TRANSFORMED IBbsArticle.bbs_member_id to author: IBbsMember.ISummary (FK field REMOVED)
+- TRANSFORMED IBbsArticle.category_id to category: IBbsCategory.ISummary (FK field REMOVED)
 - ADDED units: IShoppingSaleUnit[] to IShoppingSale with full depth (options, candidates, stocks)
-- CONVERTED IShoppingSale.unit_ids to units: IShoppingSaleUnit[] with complete nested structure
+- CONVERTED IShoppingSale.unit_ids to units: IShoppingSaleUnit[] with complete nested structure (ID array REMOVED)
 
 **Create DTO Fixes:**
 - ADDED units: IShoppingSaleUnit.ICreate[] to IShoppingSale.ICreate with full depth (options, candidates, stocks)
@@ -805,7 +805,7 @@ interface IBbsArticle {
 }
 
 interface IBbsArticleComment {
-  article_id: string;  // ✅ Keep as ID - parent contains this
+  bbs_article_id: string;  // ✅ Keep as ID - parent contains this
   // NOT: article: IBbsArticle - would create circular reference
 }
 ```
@@ -1356,6 +1356,230 @@ interface IChild {
 
 **Universal Rule**: If it's a foreign key to an independent entity (BELONGS-TO), use `.ISummary`. No exceptions, no case-by-case judgment.
 
+#### 5.1.3.5. The Foreign Key Elimination Principle
+
+**CRITICAL PRINCIPLE**: When you transform a foreign key field to a reference object, the original FK field becomes REDUNDANT and MUST be completely removed.
+
+**Why This Matters**:
+
+1. **Data Redundancy Violation**: Having both `shopping_seller_id: string` AND `seller: IShoppingSeller.ISummary` serves the exact same purpose - identifying the seller. This violates the principle of single source of truth.
+
+2. **API Consumer Confusion**: Clients see two fields pointing to the same entity and don't know which to use:
+   ```typescript
+   // ❌ WRONG - Redundant fields confuse consumers:
+   interface IShoppingSale {
+     shopping_seller_id: string;           // ID to seller
+     seller: IShoppingSeller.ISummary;     // Object containing seller
+   }
+   // Question: Should client use shopping_seller_id or seller.id? They're the same!
+   ```
+
+3. **Maintenance Burden**: Two fields require synchronization, increasing error risk and code complexity.
+
+4. **Type System Clarity**: TypeScript types should express intent clearly - mixed ID and object fields muddy the semantic meaning.
+
+**The Atomic Replacement Rule**:
+
+> **TRANSFORMATION IS REPLACEMENT, NOT ADDITION**
+>
+> When you transform `shopping_seller_id: string` → `seller: IShoppingSeller.ISummary`, this is an ATOMIC REPLACEMENT operation:
+> - REMOVE: `shopping_seller_id: string`
+> - ADD: `seller: IShoppingSeller.ISummary`
+>
+> **NEVER have both fields simultaneously.**
+
+**Common Violation Pattern**:
+
+```typescript
+// ❌ CATASTROPHIC VIOLATION - Both ID and object exist:
+interface IShoppingSale {
+  id: string;
+  name: string;
+
+  // VIOLATION: Both raw FK and reference object
+  shopping_seller_id: string;               // ❌ Redundant FK field
+  seller: IShoppingSeller.ISummary;         // ✅ Correct reference object
+
+  shopping_section_id: string;              // ❌ Redundant FK field
+  section: IShoppingSection.ISummary;       // ✅ Correct reference object
+
+  units: IShoppingSaleUnit[];
+}
+
+// Problems this creates:
+// 1. Client confusion: use shopping_seller_id or seller.id?
+// 2. Data inconsistency risk: what if they differ?
+// 3. Serialization overhead: sending duplicate data
+// 4. Unclear semantics: which is the "real" reference?
+```
+
+**Correct Implementation**:
+
+```typescript
+// ✅ CORRECT - Only reference objects, NO raw FK fields:
+interface IShoppingSale {
+  id: string;
+  name: string;
+
+  // ONLY reference objects - FK fields ELIMINATED
+  seller: IShoppingSeller.ISummary;         // ✅ Complete seller info
+  section: IShoppingSection.ISummary;       // ✅ Complete section info
+
+  units: IShoppingSaleUnit[];               // ✅ Owned compositions
+}
+
+// Benefits:
+// 1. Single source of truth: seller.id is THE seller identifier
+// 2. No confusion: only one way to access seller
+// 3. Complete context: all seller info available immediately
+// 4. Clean semantics: clear that this is a reference relation
+```
+
+**The Only Exception - Hierarchical Parent FK**:
+
+There is EXACTLY ONE case where you keep a raw FK field - when it's a direct parent in a composition hierarchy:
+
+```typescript
+// Parent contains child in array
+interface IBbsArticle {
+  comments: IBbsArticleComment[];   // Parent owns children
+}
+
+// Child keeps parent_id to prevent circular reference
+interface IBbsArticleComment {
+  bbs_article_id: string;               // ✅ Keep as ID - parent contains this
+  author: IBbsMember.ISummary;      // ✅ Transform to object - contextual reference
+
+  // NOT: article: IBbsArticle - would create circular reference
+}
+```
+
+**Why is `bbs_article_id` kept as ID?** Because `IBbsArticle` already contains the full `comments[]` array. If `IBbsArticleComment` also had `article: IBbsArticle`, it would create infinite nesting: `Article → Comment → Article → Comment → ...`
+
+**Decision Tree for FK Field Handling**:
+
+```typescript
+Found FK field: shopping_seller_id
+
+Q1: Is this a direct hierarchical parent (parent contains this entity in array)?
+├─ YES → Keep as raw ID field (prevent circular reference)
+│         Example: bbs_article_id in IBbsArticleComment (because IBbsArticle.comments[] contains it)
+│
+└─ NO → Is this a contextual reference to an independent entity?
+    └─ YES → ATOMIC REPLACEMENT:
+              ❌ REMOVE: shopping_seller_id: string
+              ✅ ADD: seller: IShoppingSeller.ISummary
+              NEVER keep both!
+```
+
+**Complete Before/After Example**:
+
+```typescript
+// ❌ BEFORE TRANSFORMATION - Raw FKs everywhere:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  shopping_seller_id: string;        // Raw FK
+  shopping_section_id: string;       // Raw FK
+  category_id: string;               // Raw FK
+}
+
+// ⚠️ WRONG TRANSFORMATION - Kept both!
+interface IShoppingSale {
+  id: string;
+  name: string;
+  shopping_seller_id: string;        // ❌ VIOLATION: Should be REMOVED
+  seller: IShoppingSeller.ISummary;  // ✅ Added correctly
+  shopping_section_id: string;       // ❌ VIOLATION: Should be REMOVED
+  section: IShoppingSection.ISummary; // ✅ Added correctly
+  category_id: string;               // ❌ VIOLATION: Should be REMOVED
+  category: IShoppingCategory.ISummary; // ✅ Added correctly
+}
+
+// ✅ CORRECT TRANSFORMATION - Atomic replacement:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  seller: IShoppingSeller.ISummary;       // ✅ FK eliminated, object added
+  section: IShoppingSection.ISummary;     // ✅ FK eliminated, object added
+  category: IShoppingCategory.ISummary;   // ✅ FK eliminated, object added
+}
+```
+
+**Validation Checklist for Every DTO**:
+
+After transforming FKs to reference objects, verify:
+
+- [ ] **NO raw FK fields remain for contextual references** - only reference objects exist
+- [ ] **All `*_id` fields have been analyzed** - either eliminated (reference) or justified (parent)
+- [ ] **Each reference has exactly ONE representation** - object OR id, never both
+- [ ] **Parent FKs are the ONLY raw ID fields** - and only when parent contains child
+- [ ] **`.ISummary` used for ALL reference objects** - no detail types for BELONGS-TO
+
+**Common Mistake - Gradual Addition Without Removal**:
+
+```typescript
+// ❌ WRONG THOUGHT PROCESS:
+// Step 1: "I'll add seller object for better UX"
+interface IShoppingSale {
+  shopping_seller_id: string;        // Original FK
+  seller: IShoppingSeller.ISummary;  // Added for convenience
+}
+// Step 2: "Oh, maybe I should keep the ID too in case client needs just the ID"
+// RESULT: Both fields, data redundancy, confusion
+
+// ✅ CORRECT THOUGHT PROCESS:
+// Step 1: "This FK should be a reference object"
+// Step 2: "Remove original FK, add reference object - ATOMIC REPLACEMENT"
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;  // Complete replacement
+}
+// Client can access seller.id if they need just the ID
+```
+
+**Critical Understanding**:
+
+The reference object CONTAINS the ID (`seller.id`), so there is ZERO reason to keep the separate FK field. The object is strictly more informative than the raw ID.
+
+```typescript
+interface IShoppingSeller.ISummary {
+  id: string;              // ⬅️ The seller ID is HERE
+  name: string;
+  rating: number;
+}
+
+// Therefore:
+shopping_seller_id: string              // ❌ Provides: just the ID
+seller: IShoppingSeller.ISummary        // ✅ Provides: ID + name + rating + more
+
+// Keeping both is pure redundancy with zero benefit
+```
+
+**Integration with Review Process**:
+
+When documenting your transformations in `think.plan`, be explicit about the elimination:
+
+```markdown
+**FK Transformations Applied:**
+
+1. **IShoppingSale**:
+   - ❌ REMOVED: `shopping_seller_id: string`
+   - ✅ ADDED: `seller: IShoppingSeller.ISummary`
+   - Rationale: Atomic replacement - FK eliminated in favor of complete reference object
+
+2. **IShoppingSale**:
+   - ❌ REMOVED: `shopping_section_id: string`
+   - ✅ ADDED: `section: IShoppingSection.ISummary`
+   - Rationale: Atomic replacement - FK eliminated in favor of complete reference object
+
+3. **IBbsArticle**:
+   - ❌ REMOVED: `bbs_member_id: string`
+   - ✅ ADDED: `author: IBbsMember.ISummary`
+   - Rationale: Atomic replacement - FK eliminated in favor of complete reference object
+```
+
+**Remember**: Transformation means REPLACEMENT. When you add a reference object, the original FK field MUST disappear. They cannot coexist.
+
 #### 5.1.4. Complete Response DTO Rules
 
 **Rule for Detail DTOs**: Transform ALL contextual FKs to `.ISummary` objects, include ALL compositions as detail types for complete information.
@@ -1576,7 +1800,7 @@ interface IBbsArticleComment {
   id: string;
   content: string;
   author: IBbsMember.ISummary;
-  article_id: string;  // Just ID, parent assumed
+  bbs_article_id: string;  // Just ID, parent assumed
   created_at: string;
 }
 
@@ -2007,7 +2231,7 @@ interface IBbsArticleComment {
   created_at: string;
   
   // Hierarchical parent (keep as ID):
-  article_id: string;               // Parent reference
+  bbs_article_id: string;               // Parent reference
   
   // Association (transform to object):
   author: IBbsMember.ISummary;      // commenter_id → transformed
@@ -2076,7 +2300,7 @@ interface IBbsArticleComment.ICreate {
   content: string;
   
   // REFERENCE relations:
-  article_id: string;               // Reference to article
+  bbs_article_id: string;               // Reference to article
   parent_comment_id?: string;       // Reference to parent (if nested)
   
   // ❌ NO author_id (security handles this)
@@ -2104,7 +2328,7 @@ interface IBbsArticleComment.IUpdate {
   content?: string;
   
   // ❌ CANNOT change structural relations:
-  // article_id - immutable
+  // bbs_article_id - immutable
   // parent_comment_id - immutable
   // author_id - immutable
 }
@@ -2628,7 +2852,7 @@ interface IBbsArticleComment {
   id: string;
   content: string;
   author: IUser.ISummary;
-  article_id: string;  // Just an ID when shown alone
+  bbs_article_id: string;  // Just an ID when shown alone
 }
 
 // ✅ AFTER ADDING IInvert:
