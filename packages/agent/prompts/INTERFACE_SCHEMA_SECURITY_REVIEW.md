@@ -28,6 +28,30 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ---
 
+## ⚠️ MOST CRITICAL SECURITY RULE - PASSWORD FIELDS
+
+**🚨 ABSOLUTE PROHIBITION - Request DTOs:**
+
+**NEVER EVER** accept hashed password fields in Create/Login/Update DTOs:
+- ❌ `password_hashed` - ABSOLUTELY FORBIDDEN
+- ❌ `hashed_password` - ABSOLUTELY FORBIDDEN
+- ❌ `password_hash` - ABSOLUTELY FORBIDDEN
+- ✅ `password` (plain text ONLY) - THIS IS THE ONLY ALLOWED FIELD
+
+**CRITICAL RULE**: Even if Prisma schema has `password_hashed` column → DTO MUST use `password: string`
+
+**Why This is Critical**:
+1. Clients sending pre-hashed passwords = security vulnerability
+2. Backend MUST control hashing algorithm and salt generation
+3. DTO field names should be user-friendly, NOT database column names
+4. This is a **field name mapping** scenario: `DTO.password` → hash → `Prisma.password_hashed`
+
+**Response DTOs**: NEVER expose ANY password-related fields (`password`, `password_hashed`, `salt`, etc.)
+
+**If you find `password_hashed` in a Create/Login DTO → DELETE it immediately and REPLACE with `password: string`**
+
+---
+
 ## 1. Input Materials
 
 You will receive the following materials to guide your security review:
@@ -560,39 +584,63 @@ interface IShoppingProduct.IUpdate {
 
 ### 5.3. CRITICAL Pattern #3: Password and Secret Exposure
 
-#### 4.2.1. Password Fields in Responses
+#### 4.2.1. Password Fields in Responses - CRITICAL DATA LEAK PREVENTION
 
-**Automatic Deletion from ALL Response DTOs**:
+**🚨 AUTOMATIC DELETION from ALL Response DTOs - NO EXCEPTIONS**:
+
+**ABSOLUTELY FORBIDDEN in ANY response type** (`IEntity`, `IEntity.ISummary`, `IPageIEntity`, etc.):
 ```typescript
-// 🔴 NEVER in response DTOs:
-"password"         // Plain password
-"hashed_password"  // Hashed version
-"password_hash"    // Alternative name
-"password_hashed"  // Another variation
-"salt"            // Password salt
-"password_salt"   // Salt with prefix
+// ❌ ABSOLUTELY FORBIDDEN - DELETE IMMEDIATELY:
+"password"         // Plain password - NEVER expose
+"hashed_password"  // Hashed version - NEVER expose
+"password_hash"    // Alternative name - NEVER expose
+"password_hashed"  // Another variation - NEVER expose
+"salt"             // Password salt - NEVER expose
+"password_salt"    // Salt with prefix - NEVER expose
 ```
+
+**CRITICAL RULE**: Even if Prisma model has `password_hashed` field → **DELETE from ALL response DTOs**
+
+**Response Types that MUST EXCLUDE passwords**:
+- ❌ `IEntity` (main response)
+- ❌ `IEntity.ISummary` (list response)
+- ❌ All other response variants
+
+**Why This is Critical**:
+- Exposing hashed passwords = security breach (rainbow tables, hash cracking)
+- Even hashed passwords should NEVER leave the server
+- This applies to ALL response types, not just main entities
 
 #### 4.2.2. Password Handling in Requests
 
-**Critical Distinction**:
+**Critical Rule - Field Name Mapping**:
 ```typescript
+// Assume Prisma schema has:
+// model User { password_hashed String }
+
 // ✅ CORRECT in IUser.ICreate (registration/login):
 interface IUser.ICreate {
-  password: string;  // Plain text for initial hashing
+  password: string;  // Plain text - maps to Prisma's password_hashed column
 }
 
 // ❌ WRONG in IUser.ICreate:
 interface IUser.ICreate {
+  password_hashed: string;  // NEVER use Prisma's hashed field name
   hashed_password: string;  // Client should NEVER hash
   password_hash: string;    // Hashing is backend job
 }
 ```
 
+**Field Mapping Rule**:
+- **Prisma Column**: `password_hashed`, `hashed_password`, or `password_hash`
+- **DTO Field**: ALWAYS `password: string` (plain text)
+- **Backend's Job**: Receive plain password → hash it → store in `password_hashed` column
+
 **Why Clients Must Send Plain Passwords**:
 1. Backend controls hashing algorithm (bcrypt, argon2, etc.)
 2. Backend manages salt generation
 3. Backend can upgrade hashing without client changes
+4. DTOs use user-friendly field names, not internal storage names
 4. Prevents weak client-side hashing
 
 #### 5.3.3. Token and Secret Fields
@@ -686,12 +734,16 @@ interface IProduct {
 
 **Security Audit Checklist**:
 
-#### Password/Secret Protection
-- [ ] NO `password` field in any form
-- [ ] NO `hashed_password` or `password_hash`
-- [ ] NO `salt` or `password_salt`
+#### Password/Secret Protection - ABSOLUTELY CRITICAL
+- [ ] ❌ ABSOLUTELY NO `password` field in ANY response type
+- [ ] ❌ ABSOLUTELY NO `hashed_password` in ANY response type
+- [ ] ❌ ABSOLUTELY NO `password_hash` in ANY response type
+- [ ] ❌ ABSOLUTELY NO `password_hashed` in ANY response type
+- [ ] ❌ ABSOLUTELY NO `salt` or `password_salt` in ANY response type
+- [ ] **This applies to ALL response variants**: `IEntity`, `IEntity.ISummary`, etc.
+- [ ] **EVEN IF Prisma has these fields** → DELETE from ALL responses
 - [ ] NO tokens (`refresh_token`, `api_key`, `access_token`)
-- [ ] NO private/secret keys
+- [ ] NO private/secret keys (`secret_key`, `private_key`, `encryption_key`)
 
 #### Internal Data Protection
 - [ ] NO `is_deleted` soft-delete flags
@@ -724,9 +776,13 @@ interface IProduct {
 - [ ] NO computed fields (`*_count`, `total_*`)
 - [ ] NO aggregate fields
 
-#### Password Handling
-- [ ] ONLY plain `password` field (never hashed)
-- [ ] NO `hashed_password` or `password_hash`
+#### Password Handling - ABSOLUTELY CRITICAL
+- [ ] ✅ ONLY plain `password: string` field in Create/Login/Update DTOs
+- [ ] ❌ ABSOLUTELY FORBIDDEN: `password_hashed` in ANY request DTO
+- [ ] ❌ ABSOLUTELY FORBIDDEN: `hashed_password` in ANY request DTO
+- [ ] ❌ ABSOLUTELY FORBIDDEN: `password_hash` in ANY request DTO
+- [ ] **EVEN IF** Prisma has `password_hashed` → DTO MUST use `password`
+- [ ] **Field Name Mapping Required**: Prisma column ≠ DTO field name
 
 **CRITICAL for BBS Pattern**:
 ```typescript
@@ -887,7 +943,10 @@ if (property.name === 'bbs_member_id') DELETE;
 
 1. **CRITICAL Violations**: DELETE immediately
    - Authentication context in requests
-   - Passwords in responses
+   - Passwords in responses (any form: `password`, `hashed_password`, `password_hash`, `password_hashed`, `salt`)
+   - **HASHED PASSWORD IN REQUESTS**: `password_hashed`, `hashed_password`, `password_hash` in Create/Login/Update DTOs
+     - **REPLACE WITH**: `password: string` (plain text only)
+     - **This is a CRITICAL security error** - clients must NEVER send pre-hashed passwords
    - Non-existent Prisma fields
 
 2. **HIGH Violations**: DELETE after verification
@@ -1020,10 +1079,12 @@ interface IBbsArticle.ICreate {
 }
 ```
 
-### 10.2. The Password Exposure Violation
+### 10.2. The Password Violations - TWO CRITICAL MISTAKES
+
+#### 10.2.1. PASSWORD IN RESPONSE (Data Leak)
 
 ```typescript
-// ❌ DATA LEAK - Common mistake:
+// ❌ DATA LEAK - Common mistake in Response DTO:
 interface IUser {
   id: string;
   email: string;
@@ -1042,6 +1103,45 @@ interface IUser {
   // Password data removed - never expose
 }
 ```
+
+#### 10.2.2. HASHED PASSWORD IN REQUEST (Security Vulnerability)
+
+**THE #1 MOST CRITICAL MISTAKE WITH PRISMA FIELD MAPPING**:
+
+```typescript
+// Assume Prisma schema has:
+// model User { id String; password_hashed String; email String }
+
+// ❌ CRITICAL SECURITY ERROR - Copying Prisma field name to DTO:
+interface IUser.ICreate {
+  email: string;
+  name: string;
+  password_hashed: string;  // 🔴🔴🔴 ABSOLUTELY FORBIDDEN - DELETE IMMEDIATELY
+}
+
+// ❌ ALSO WRONG - Other variations:
+interface IUser.ICreate {
+  email: string;
+  hashed_password: string;  // 🔴 DELETE
+  password_hash: string;    // 🔴 DELETE
+}
+
+// ✅ CORRECT - Use plain password field (field name mapping):
+interface IUser.ICreate {
+  email: string;
+  name: string;
+  password: string;  // ✅ Plain text - backend will hash it
+  // password_hashed is NEVER in DTO - that's a Prisma column name
+}
+```
+
+**Why This is Critical**:
+- If clients send `password_hashed`, they're sending pre-hashed passwords
+- This bypasses backend security controls (algorithm choice, salt generation)
+- DTO field names should be user-friendly (`password`), not database internals (`password_hashed`)
+- Backend receives `password`, hashes it, stores in `password_hashed` column
+
+**RULE**: Prisma column name ≠ DTO field name. Use `password` in DTOs ALWAYS.
 
 ### 10.3. The Phantom Timestamp Violation
 
@@ -1076,9 +1176,11 @@ Repeat these as you review:
 
 1. **"Authentication context comes from JWT, never from request body"**
 2. **"Passwords are sacred - never expose hashed or plain"**
-3. **"System fields are system-managed - clients cannot control"**
-4. **"If it's not in Prisma, it doesn't exist"**
-5. **"When in doubt, DELETE for security"**
+3. **"Request DTOs use `password` field ONLY - NEVER `password_hashed`, `hashed_password`, or `password_hash`"**
+4. **"Prisma column names ≠ DTO field names - password field mapping is REQUIRED"**
+5. **"System fields are system-managed - clients cannot control"**
+6. **"If it's not in Prisma, it doesn't exist"**
+7. **"When in doubt, DELETE for security"**
 
 ---
 
@@ -1089,6 +1191,8 @@ Before submitting your security review:
 ### Security Validation Complete
 - [ ] ALL request DTOs checked for authentication context
 - [ ] ALL response DTOs checked for sensitive data
+- [ ] **ALL password fields validated - NO `password_hashed` in requests, ONLY `password`**
+- [ ] **ALL Create/Login/Update DTOs use `password: string` field (field name mapping verified)**
 - [ ] ALL DTOs validated against Prisma schema
 - [ ] ALL system fields protected from client manipulation
 
@@ -1100,6 +1204,8 @@ Before submitting your security review:
 ### Quality Assurance
 - [ ] No authentication bypass vulnerabilities remain
 - [ ] No data exposure risks remain
+- [ ] **No `password_hashed` fields in ANY request DTO**
+- [ ] **All password fields use plain `password` field name**
 - [ ] No phantom fields remain
 - [ ] All fixes are properly documented
 
