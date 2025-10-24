@@ -622,9 +622,9 @@ When an actor requires login/authentication (e.g., users, administrators, custom
     - Relation name: camelCase of actor, e.g., `user`, `administrator`, `customer`
     - Not unique (an actor can have multiple concurrent sessions)
 - Connection context
+  - `ip: string` — IP address
   - `href: string` — Connection URL
   - `referrer: string` — Referrer URL
-  - `ip: string` — IP address
 - Temporal
   - `created_at: datetime` — Session creation time
   - `expired_at: datetime?` — Session end time (nullable)
@@ -642,9 +642,9 @@ When an actor requires login/authentication (e.g., users, administrators, custom
 model user_sessions {
   id         String   @id @uuid
   user_id    String   @uuid
+  ip         String   // IP address
   href       String   // Connection URL
   referrer   String   // Referrer URL
-  ip         String   // IP address
   created_at DateTime
   expired_at DateTime?
 

@@ -829,6 +829,204 @@ For authentication operations (login, join, refresh), the response type MUST fol
 }
 ```
 
+### 3.6. Session Context Fields for Authentication Operations
+
+**CRITICAL REQUIREMENT**: For authentication/identity operations where **the actor themselves** are signing up or logging in, the request body DTO MUST include session context fields.
+
+**Why This Is Mandatory**:
+- Session records in the database require `ip`, `href`, and `referrer` fields (as defined in the Session Table Pattern)
+- These fields enable proper audit trails and security monitoring
+- Without these fields, session records cannot be properly populated
+- These are NOT authentication fields - they are connection context metadata
+
+**CRITICAL DISTINCTION - When to Include Session Context Fields**:
+
+✅ **INCLUDE session context fields** (ip, href, referrer):
+- When the **actor themselves** are performing the operation (self-signup, self-login)
+- Session is created **immediately** for the actor
+- Examples:
+  - Customer signing up themselves → `ICustomer.IJoin` or `ICustomer.ICreate`
+  - User logging in themselves → `IUser.ILogin`
+  - Seller registering themselves → `ISeller.IJoin`
+
+❌ **DO NOT include session context fields**:
+- When an **admin/system creates an account** for someone else
+- Session is **not created immediately** (user will login later)
+- Examples:
+  - Admin creating a user account → `IUser.ICreate` (from admin context)
+  - System auto-generating accounts
+  - Batch user imports
+
+**Operation Naming Patterns**:
+
+1. **`IEntity.ILogin`**: Always includes session context (self-login)
+2. **`IEntity.IJoin`**: Always includes session context (self-signup with immediate login)
+3. **`IEntity.ICreate`**: Context-dependent
+   - If used for **self-signup** → Include session context
+   - If used by **admin/system** → Do NOT include session context
+   - Check `operation.authorizationActor` to determine context
+
+**REQUIRED Fields in Self-Signup/Self-Login Request DTOs**:
+
+```typescript
+// Self-Login Operation
+interface IUser.ILogin {
+  email: string;
+  password: string;
+
+  // SESSION CONTEXT FIELDS - MANDATORY for self-login
+  ip: string;       // Client IP address
+  href: string;     // Connection URL (current page URL)
+  referrer: string; // Referrer URL (previous page URL)
+}
+
+// Self-Signup Operation (pattern 1: IJoin)
+interface ICustomer.IJoin {
+  email: string;
+  password: string;
+  name: string;
+  // ... other customer fields
+
+  // SESSION CONTEXT FIELDS - MANDATORY for self-signup
+  ip: string;       // Client IP address
+  href: string;     // Connection URL (current page URL)
+  referrer: string; // Referrer URL (previous page URL)
+}
+
+// Self-Signup Operation (pattern 2: ICreate without authorization)
+// Check: operation.authorizationActor should be null or the entity type itself
+interface IUser.ICreate {
+  email: string;
+  password: string;
+  name: string;
+  // ... other user fields
+
+  // SESSION CONTEXT FIELDS - MANDATORY only if self-signup
+  ip: string;       // Client IP address
+  href: string;     // Connection URL (current page URL)
+  referrer: string; // Referrer URL (previous page URL)
+}
+
+// Admin-Created Account (no session context)
+// Check: operation.authorizationActor is "admin" or "manager"
+interface IUser.ICreate {
+  email: string;
+  password: string;  // Optional - admin may set or send reset email
+  name: string;
+  role: string;
+  // ... other user fields
+
+  // NO SESSION CONTEXT FIELDS - admin is creating for someone else
+  // Session will be created later when the user logs in themselves
+}
+```
+
+**JSON Schema Format Examples**:
+
+```json
+{
+  "IUser.ILogin": {
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string",
+        "format": "email",
+        "description": "User email address"
+      },
+      "password": {
+        "type": "string",
+        "description": "User password (plain text for verification)"
+      },
+      "ip": {
+        "type": "string",
+        "description": "Client IP address for session tracking"
+      },
+      "href": {
+        "type": "string",
+        "format": "uri",
+        "description": "Connection URL (current page URL)"
+      },
+      "referrer": {
+        "type": "string",
+        "format": "uri",
+        "description": "Referrer URL (previous page URL)"
+      }
+    },
+    "required": ["email", "password", "ip", "href", "referrer"]
+  },
+  "ICustomer.IJoin": {
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string",
+        "format": "email",
+        "description": "Customer email address"
+      },
+      "password": {
+        "type": "string",
+        "description": "Customer password"
+      },
+      "name": {
+        "type": "string",
+        "description": "Customer name"
+      },
+      "ip": {
+        "type": "string",
+        "description": "Client IP address for session tracking"
+      },
+      "href": {
+        "type": "string",
+        "format": "uri",
+        "description": "Connection URL (current page URL)"
+      },
+      "referrer": {
+        "type": "string",
+        "format": "uri",
+        "description": "Referrer URL (previous page URL)"
+      }
+    },
+    "required": ["email", "password", "name", "ip", "href", "referrer"]
+  }
+}
+```
+
+**How to Determine if Session Context is Needed**:
+
+1. **Check operation type**:
+   - `IEntity.ILogin` → ALWAYS include
+   - `IEntity.IJoin` → ALWAYS include
+   - `IEntity.ICreate` → Check authorization context (step 2)
+
+2. **Check `operation.authorizationActor`**:
+   - `null` or matches entity type (e.g., "user" for IUser.ICreate) → Self-signup → INCLUDE
+   - Different role (e.g., "admin" for IUser.ICreate) → Admin creating → EXCLUDE
+
+3. **Business logic check**:
+   - Does session get created immediately? → INCLUDE
+   - Will user login later? → EXCLUDE
+
+**When to Include These Fields**:
+- ✅ Self-login operations (`IEntity.ILogin`)
+- ✅ Self-signup operations (`IEntity.IJoin`)
+- ✅ Self-registration for actor entities (`IEntity.ICreate` without admin authorization)
+- ✅ Any operation where **the actor themselves** establishes their own session
+- ❌ Admin/system creating accounts for others
+- ❌ Token refresh operations (reuses existing session)
+- ❌ Logout operations (terminates session)
+- ❌ Regular entity creation (non-actor entities)
+
+**Security Note**:
+- These are NOT authentication fields that come from JWT
+- These are connection metadata that MUST be provided by the client
+- The backend uses these to populate the `{actor}_sessions` table
+- Without these fields, the session table pattern cannot be properly implemented
+
+**Validation Rules**:
+- `ip`: Required string, valid IP address format (IPv4 or IPv6)
+- `href`: Required string, valid URI format
+- `referrer`: Required string, valid URI format (can be empty string for direct access)
+- All three fields are REQUIRED only in self-signup/self-login DTOs
+
 ---
 
 ## 4. DTO Relation Strategy
@@ -3713,6 +3911,14 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **Response DTOs exclude all passwords** - No `password`, `hashed_password`, `salt`, or `password_hash` fields
 - [ ] **Actor IDs from context only** - Never accept `user_id`, `author_id`, `creator_id` in request bodies
 - [ ] **No authentication bypass** - User identity MUST come from JWT/session, not request body
+
+### ✅ Session Context Fields for Authentication Operations
+- [ ] **Self-login includes session context** - `IEntity.ILogin` MUST include `ip`, `href`, `referrer` fields
+- [ ] **Self-signup includes session context** - `IEntity.IJoin` MUST include `ip`, `href`, `referrer` fields
+- [ ] **Context-aware for ICreate** - Self-signup `IEntity.ICreate` (authorizationActor: null) includes session context
+- [ ] **Admin-created accounts exclude session context** - `IEntity.ICreate` with admin authorization does NOT include `ip`, `href`, `referrer`
+- [ ] **Session fields are required** - All three session context fields marked as required in self-authentication DTOs
+- [ ] **Proper field descriptions** - Session context fields described as connection metadata, not authentication data
 
 ### ✅ System Field Protection
 - [ ] **Timestamps are system-managed** - Never accept `created_at`, `updated_at`, `deleted_at` in requests
