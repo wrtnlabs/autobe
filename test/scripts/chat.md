@@ -58,136 +58,7 @@
 
 이 시스템은 기업의 복잡한 조직 구조를 그대로 반영하면서도, 철저한 권한 관리와 데이터 보호를 통해 엔터프라이즈 환경에 최적화된 AI 서비스를 제공한다.
 
-## 2. Actor 분류 - 요구사항 분석의 핵심 원칙
-
-### 2.1. 시스템 Actor의 절대 원칙
-
-**⚠️ CRITICAL WARNING: 본 시스템의 Actor는 정확히 2개뿐이다**
-
-Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한다:
-- 전체 시스템에 존재하는 Actor는 오직 2개
-- 역할(role), 직책(title), 권한(permission)이 다르다고 해서 Actor가 늘어나는 것이 아님
-- 이는 시스템 설계의 근본 원칙이며, 절대 변경 불가
-
-### 2.2. 두 개의 Actor 정의
-
-#### 2.2.1. Moderator Actor
-- **정의**: 뤼튼 내부 직원으로서 시스템을 운영하고 관리하는 주체
-- **대응 테이블**: `wrtn_moderators`
-- **AutoBeAnalyzeRole**: `moderator`
-- **포함되는 역할들**:
-  - `master`: 시스템 최고 관리자
-  - `manager`: 시스템 관리자
-- **핵심 이해**: 위 2개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
-
-#### 2.2.2. Employee Actor
-- **정의**: 기업 고객사의 직원으로서 AI 서비스를 사용하는 주체
-- **대응 테이블**: `wrtn_enterprise_employees`
-- **AutoBeAnalyzeRole**: `employee`
-- **포함되는 직책들**:
-  - `master`: 기업 전체 최고 권한자
-  - `manager`: 기업 관리자
-  - `member`: 일반 직원
-- **핵심 이해**: 위 모든 직책은 **하나의 Actor** 안에서의 세부 구분일 뿐
-
-### 2.3. Actor 분류 시 절대 금지 사항
-
-#### 2.3.1. 잘못된 Actor 분류 (절대 금지)
-```typescript
-// ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
-enum AutoBeAnalyzeRole {
-    master = "master",
-    manager = "manager",
-    member = "member"
-}
-```
-
-**왜 잘못되었는가?**
-- Actor와 Role을 혼동함
-- 권한 차이를 Actor 차이로 오해함
-- 시스템 복잡도를 불필요하게 증가시킴
-
-#### 2.3.2. 올바른 Actor 분류 (반드시 이렇게)
-```typescript
-// ✅ 올바른 설계 - 정확히 2개의 Actor만 존재
-enum AutoBeAnalyzeRole {
-    moderator = "moderator",      // 내부 관리자 Actor
-    employee = "employee" // 기업 직원 Actor
-}
-```
-
-### 2.4. Actor 분류가 시스템 전체에 미치는 영향
-
-#### 2.4.1. 요구사항 분석 단계
-- Analyze Agent는 모든 기능을 2개 Actor 관점에서 분석
-- Use Case는 Actor별로 정리되며, role/title은 조건문으로 처리
-- 요구사항 문서에서 Actor는 2개만 명시
-
-#### 2.4.2. API 설계 단계
-- 최상위 경로는 Actor별로 분리 (`/moderator/*`, `/enterprise/*`)
-- 인증/인가는 Actor 단위로 처리
-- Actor 내부의 role/title은 권한 체크 로직에서 처리
-
-#### 2.4.3. 구현 단계
-- Guard/Interceptor는 Actor별로 구현
-- Service Layer는 Actor를 먼저 확인, 그 다음 role/title 체크
-- 로깅과 감사 추적도 Actor를 최우선으로 기록
-
-### 2.5. 실제 적용 예시
-
-#### 2.5.1. 챗봇 세션 생성 시
-```typescript
-// Analyze Agent의 요구사항 분석
-if (actor === AutoBeAnalyzeRole.moderator) {
-    // 내부 관리자는 모든 기업의 세션 생성 가능
-    // role에 따라 생성 가능한 세션 타입이 달라질 수 있음
-} else if (actor === AutoBeAnalyzeRole.employee) {
-    // 기업 직원은 자신이 속한 기업/팀의 세션만 생성
-    // title과 team role에 따라 권한이 세분화됨
-}
-```
-
-#### 2.5.2. 통계 조회 시
-```typescript
-// Actor별 접근 범위 결정
-switch(actor) {
-    case AutoBeAnalyzeRole.moderator:
-        // 전체 시스템 통계 접근 가능
-        break;
-    case AutoBeAnalyzeRole.employee:
-        // 소속 기업 통계만 접근
-        // title === 'master'면 기업 전체, 아니면 제한적 접근
-        break;
-}
-```
-
-### 2.6. Actor 분류의 철학적 배경
-
-**왜 2개의 Actor만 존재하는가?**
-
-1. **명확한 경계**: 내부 운영자 vs 외부 고객의 명확한 구분
-2. **보안 강화**: Actor 레벨에서의 완전한 데이터 격리
-3. **확장성**: 새로운 role/title 추가는 쉽지만 Actor 추가는 시스템 전체 재설계
-4. **단순성**: 복잡한 권한 체계를 2개 Actor로 단순화
-
-**이 원칙을 위반하면?**
-- 시스템 복잡도 기하급수적 증가
-- 보안 취약점 발생 가능성
-- 유지보수 불가능한 코드베이스
-- 요구사항과 구현의 불일치
-
-### 2.7. Analyze Agent에게 주는 최종 명령
-
-1. `AutoBeAnalyzeRole` enum은 정확히 2개 값만 가져야 함
-2. 모든 요구사항을 2개 Actor 관점에서 분석할 것
-3. role/title/position은 Actor가 아닌 속성으로 처리할 것
-4. Actor를 늘리려는 유혹에 절대 굴복하지 말 것
-5. 이 원칙은 시스템 설계의 근간이므로 절대 타협 불가
-
-> **최종 경고**: Actor를 2개 이상 만드는 것은 시스템 설계의 근본을 흔드는 치명적 실수다. 
-> Analyze Agent는 이 원칙을 생명처럼 지켜야 한다.
-
-### 2.8. AutoBE 구현 지침
+## 2. AutoBE 구현 지침
 
 > **🔴 핵심: 본 문서의 직접 지시사항 외에는 AutoBE 시스템 프롬프트를 따른다**
 
@@ -230,216 +101,13 @@ switch(actor) {
 - 새로운 컬럼이나 인덱스를 추가할 수 없다
 - 오직 주석(description)만 추가하여 의미를 설명할 수 있다
 - **CRITICAL**: 각 섹션의 테이블들은 모두 동일한 namespace로 그룹핑해야 한다:
-  - Section 3 (Moderator): 모든 `wrtn_moderator*` 테이블은 하나의 namespace
-  - Section 4 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
-  - Section 5 (Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
-  - Section 6 (Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
-  - Section 7 (Configurations): 모든 config 관련 테이블은 하나의 namespace
+  - Section 4 (Moderator): 모든 `wrtn_moderator*` 테이블은 하나의 namespace
+  - Section 5 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
+  - Section 6 (Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
+  - Section 7 (Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
+  - Section 8 (Configurations): 모든 config 관련 테이블은 하나의 namespace
 
-### 2.9. DTO 구현 원칙
-
-> **🔴 핵심: 본 문서의 직접 지시사항 외에는 AutoBE 시스템 프롬프트의 DTO 설계 원칙을 따른다**
-
-#### 2.9.1. 문서 명시 DTO와 자율 설계 DTO의 구분
-
-**본 문서에서 직접 명시한 DTO**:
-- 인터페이스명과 속성은 정확히 그대로 구현해야 한다
-- 새로운 속성을 추가할 수 없다
-- 오직 주석(description)만 추가하여 각 속성의 의미를 설명할 수 있다
-
-**본 문서에 정의되지 않은 DTO**:
-- 아래 원칙에 따라 자율적으로 설계한다
-- DB 스키마 지시사항은 DTO에 적용하지 않는다
-- API 사용성과 개발자 경험을 최우선으로 고려한다
-
-#### 2.9.2. DB 스키마와 DTO의 분리 원칙
-
-**DB 스키마에 대한 지시사항은 DTO에 적용되지 않음**
-- DB 테이블 구조를 그대로 DTO로 만들지 말 것
-- DB 스키마는 저장 구조 최적화에 초점, DTO는 API 사용성에 초점
-- DB의 정규화된 구조를 그대로 노출하지 않고, 사용자 친화적으로 변환
-- FK 관계, 조인된 데이터 등을 적절히 구성하여 제공
-
-#### 2.9.3. AutoBE의 DTO 설계 원칙
-
-**AutoBE interface 설계 원칙 준수**
-- AutoBE의 고유 시스템 프롬프트에 정의된 interface 설계 원칙을 철저히 따라 DTO 설계 진행
-- 아래 설명하는 "Relation 맵핑 원칙"과 "JWT 인증 컨텍스트 보안 원칙"은 AutoBE interface 설계 원칙의 일부를 발췌한 것임
-- **중요**: AutoBE의 interface (특히 DTO) 설계 원칙을 완벽하게 준수하여 설계해야 함
-
-**Relation 맵핑 원칙**
-- Response DTO에서 FK를 객체로 변환
-- **핵심 엔티티 참조 맵핑 (필수, 예외 없음)**: Response DTO (detail/summary 모두)에서 다음 FK 참조들은 반드시 객체로 맵핑해야 함
-  - **Actor 참조**: `IWrtnChatSession.wrtn_enterprise_employee_id` (X) → `IWrtnChatSession.employee` (O)
-  - **Actor 참조**: `IWrtnEnterprise.wrtn_moderator_id` (X) → `IWrtnEnterprise.moderator` (O)
-  - **Team 참조**: `IWrtnChatSession.wrtn_enterprise_team_id` (X) → `IWrtnChatSession.team` (O)
-  - **Enterprise 참조**: 통계 조회 시 `wrtn_enterprise_id` (X) → `enterprise` (O)
-  - Detail DTO든 Summary DTO든 관계없이 모든 Response DTO에 적용
-- Create DTO에서 관계 타입별로 적절히 구성 (Composition, Association, Aggregation)
-- Create DTO는 단일 API 호출로 완전한 엔티티 생성이 가능하도록 설계 (Atomic Operation Principle)
-- 관련 엔티티들이 함께 생성되어야 할 경우, 중첩된 객체 구조로 한 번에 처리
-
-```typescript
-//----
-// Relation 맵핑 예시
-//----
-// 아래 예시에서 명시된 relation 필드들(employee, team, persona 등)은
-// 반드시 포함되어야 한다. 다만 나머지 scalar 속성들(id, title 등)이나
-// 추가 relation을 정의하는 것은 자유롭게 해도 된다.
-// Read(Response) DTO 기준 맵핑 원리를 파악하여 도처에 응용하기 바란다.
-export interface IWrtnChatSession {
-  // 이하 FK 참조 관계를 객체로 맵핑 (필수)
-  employee: IWrtnEnterpriseEmployee.ISummary;
-  team: IWrtnEnterpriseTeam.ISummary | null;
-  persona: IWrtnPersona.ISummary;
-
-  // 이하 has 관계를 객체 내지 배열로 맵핑 (필수)
-  token_usage: IWrtnTokenUsage | null;
-  connections: IWrtnChatSessionConnection[];
-  histories: IWrtnChatSessionHistory[];
-
-  // 이후로 자유로이 나머지 속성들을 설계할 것...
-  id: string & tags.Format<"uuid">;
-  title: string | null;
-  created_at: string & tags.Format<"date-time">;
-}
-
-export interface IWrtnEnterpriseEmployee {
-  // FK 참조관계 및 has 관계 맵핑 (필수)
-  enterprise: IWrtnEnterprise.ISummary;
-  companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
-
-  // 이후로 자유로이 나머지 속성들을 설계할 것...
-  id: string & tags.Format<"uuid">;
-  email: string & tags.Format<"email">;
-  title: "master" | "manager" | "member" | null;
-  created_at: string & tags.Format<"date-time">;
-  updated_at: string & tags.Format<"date-time">;
-  approved_at: string & tags.Format<"date-time"> | null;
-}
-export namespace IWrtnEnterpriseEmployee {
-  export interface ISummary {
-    // FK 참조관계 및 has 관계 맵핑 (필수)
-    enterprise: IWrtnEnterprise.ISummary;
-
-    // 여기만큼은 예외적으로 1: M has relationship 이지만
-    // 이렇게 소속 팀 정보를 전부 다 보여주어야 함
-    // 이게 은근 중요한 정보라 summary 차원에서도 필히 표기해야하여 그러하다
-    companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
-
-    // 이후로 자유로이 나머지 속성들을 설계할 것...
-    id: string & tags.Format<"uuid">;
-    email: string & tags.Format<"email">;
-    title: "master" | "manager" | "member" | null;
-    created_at: string & tags.Format<"date-time">;
-    updated_at: string & tags.Format<"date-time">;
-    approved_at: string & tags.Format<"date-time"> | null;
-  }
-}
-
-export namespace IWrtnEnterpriseTeamCompanion {
-  export interface ISummaryFromEmployee {
-    // FK 참조관계 맵핑 (필수)
-    // employee 는 절대 맵팡하지 않는다.
-    team: IWrtnEnterpriseTeam.ISummary;
-
-    // 이후로 자유로이 나머지 속성들을 설계할 것...
-    id: string & tags.Format<"uuid">;
-    title: "member" | null;
-    created_at: string & tags.Format<"date-time">;
-  }
-  export interface ISummaryFromTeam {
-    // FK 참조관계 맵핑 (필수)
-    // team 은 절대 맵팡하지 않는다.
-    employee: IWrtnEnterpriseEmployee.ISummary;
-
-    // 이후로 자유로이 나머지 속성들을 설계할 것...
-    id: string & tags.Format<"uuid">;
-    title: "member" | null;
-    created_at: string & tags.Format<"date-time">;
-  }
-}
-
-export interface IWrtnEnterpriseEmployeeAppointment {
-  // 명시된 relation들은 필수로 포함
-  id: string & tags.Format<"uuid">;
-  employee: IWrtnEnterpriseEmployee.ISummary; // 임명된 사람
-  appointer: IWrtnEnterpriseEmployee.ISummary; // 임명한 사람
-  title: "master" | "manager" | "member" | null;
-  created_at: string & tags.Format<"date-time">;
-}
-
-export interface IWrtnEnterpriseEmployeeInvitation {
-  // 명시된 relation들은 필수로 포함
-  id: string & tags.Format<"uuid">;
-  employee: IWrtnEnterpriseEmployee.ISummary; // 초대한 사람
-  email: string & tags.Format<"email">; // 초대받은 이메일
-  title: "master" | "manager" | "member" | null;
-  created_at: string & tags.Format<"date-time">;
-  expired_at: string & tags.Format<"date-time"> | null;
-}
-```
-
-**DTO 타입 명명 규칙 - 완전한 테이블명 반영 원칙**
-
-**절대 규칙: 데이터베이스 테이블명의 모든 구성 요소를 DTO 타입명에 완전히 반영하라**
-
-- 테이블명에서 단어를 누락하거나 축약하지 마라
-- 테이블명의 모든 semantic component를 DTO 타입명에 그대로 포함시켜라
-- prefix/infix/suffix 등 모든 단어를 PascalCase로 정확히 변환하라
-
-**올바른 명명 예시**:
-```typescript
-// ✅ CORRECT: 테이블명의 모든 단어를 완전히 포함
-wrtn_enterprise_employees              → IWrtnEnterpriseEmployee
-wrtn_enterprise_employee_personas      → IWrtnEnterpriseEmployeePersona
-wrtn_enterprise_teams                  → IWrtnEnterpriseTeam
-wrtn_enterprise_team_companions        → IWrtnEnterpriseTeamCompanion
-wrtn_enterprise_employee_appointments  → IWrtnEnterpriseEmployeeAppointment
-wrtn_enterprise_employee_invitations   → IWrtnEnterpriseEmployeeInvitation
-wrtn_chat_sessions                     → IWrtnChatSession
-wrtn_chat_session_histories            → IWrtnChatSessionHistory
-wrtn_procedure_executions              → IWrtnProcedureExecution
-```
-
-**잘못된 명명 예시 (절대 금지)**:
-```typescript
-// ❌ WRONG: 중간 단어 누락
-wrtn_enterprise_employees              → IWrtnEmployee          // 'Enterprise' 누락
-wrtn_enterprise_employee_personas      → IWrtnEmployeePersona   // 'Enterprise' 누락
-wrtn_enterprise_teams                  → IWrtnTeam              // 'Enterprise' 누락
-
-// ❌ WRONG: 의미 단위 축약
-wrtn_enterprise_employee_appointments  → IWrtnEmpAppointment    // 'Enterprise' 누락, 'Employee' 축약
-
-// ❌ WRONG: 임의의 재구성
-wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누락
-```
-
-**명명 변환 프로세스**:
-1. 테이블명에서 prefix를 식별: `wrtn_` → `IWrtn`
-2. 테이블명의 각 단어를 snake_case에서 PascalCase로 변환
-3. 복수형 테이블명은 단수형 DTO로 변환 (예: `employees` → `Employee`)
-4. **중요**: 변환 과정에서 어떤 단어도 제거하거나 축약하지 않음
-
-**왜 이것이 중요한가**:
-- 일관성: 테이블명과 DTO명의 명확한 1:1 매핑 관계 유지
-- 명확성: 도메인 컨텍스트를 완전히 표현 (`IWrtnEmployee`는 어떤 Employee인지 불명확)
-- 충돌 방지: 서로 다른 도메인의 동일한 개념 구분 (예: `enterprise_employees` vs `employees`)
-- 추적 가능성: 코드에서 테이블로, 테이블에서 코드로의 역추적 용이
-
-**특별 지침**:
-- 본 문서에 명시된 테이블명과 DTO명은 이미 올바르게 정의되어 있으므로, 정확히 그대로 사용하라
-- 새로운 테이블을 추가할 때도 동일한 명명 규칙을 철저히 따라라
-- DTO의 중첩 타입(Summary, Create, Update 등)도 동일한 원칙 적용
-
-**JWT 인증 컨텍스트 보안 원칙**
-- Create DTO에 **현재 인증된 사용자**의 actor_id나 actor_session_id를 포함하지 마라
-- 현재 사용자의 `wrtn_moderator_id`, `wrtn_moderator_session_id`, `wrtn_enterprise_employee_id`, `wrtn_enterprise_employee_session_id`는 JWT 토큰에서 자동 취득
-- 단, 대상 엔티티 지정이 필요한 경우 (예: 직원 임명 시 target_employee_id)는 반드시 포함해야 함
-- 클라이언트가 제공한 현재 사용자 identity를 신뢰하지 말고, 서버가 JWT에서 검증된 사용자 컨텍스트를 주입
-
-### 2.10. 추가 구현의 자유와 확장 의무
+**추가 구현의 자유와 확장 의무**:
 
 > **🔴 핵심: 본 문서 외의 모든 개발은 AutoBE 시스템 프롬프트에 따라 자율적으로 진행한다**
 
@@ -448,7 +116,7 @@ wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누�
 - **중요**: 본 문서는 **최소한의 핵심 테이블**만을 정의한 것이다. 완전한 엔터프라이즈 B2B SaaS 시스템이 되려면 훨씬 많은 테이블과 기능이 필요하다
 - **명령**: 본 문서의 테이블들은 단지 시작점일 뿐이다. AutoBE는 완전히 작동하는 엔터프라이즈 백엔드를 만들기 위해 필요한 모든 추가 테이블과 기능을 자율적으로 설계하고 구현해야 한다
 
-#### 2.10.1. B2B SaaS 필수 기능 발굴 의무
+**B2B SaaS 필수 기능 발굴 의무**:
 
 **AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 기능을 스스로 발굴하고 구현해야 한다**:
 - AI 서비스 사용에 도움이 필요한 기업들을 위한 지원 시스템
@@ -473,7 +141,136 @@ wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누�
 > - ❌ DTO 타입: `IWrtnWrtn` 같은 이름 절대 금지
 > - 내가 작성한 테이블명과 DTO명을 그대로 사용하라. 절대 수정하지 마라.
 
-## 3. Moderator (Internal Supporter)
+## 3. Actor 분류 - 요구사항 분석의 핵심 원칙
+
+### 3.1. 시스템 Actor의 절대 원칙
+
+**⚠️ CRITICAL WARNING: 본 시스템의 Actor는 정확히 2개뿐이다**
+
+Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한다:
+- 전체 시스템에 존재하는 Actor는 오직 2개
+- 역할(role), 직책(title), 권한(permission)이 다르다고 해서 Actor가 늘어나는 것이 아님
+- 이는 시스템 설계의 근본 원칙이며, 절대 변경 불가
+
+### 3.2. 두 개의 Actor 정의
+
+#### 3.2.1. Moderator Actor
+- **정의**: 뤼튼 내부 직원으로서 시스템을 운영하고 관리하는 주체
+- **대응 테이블**: `wrtn_moderators`
+- **AutoBeAnalyzeRole**: `moderator`
+- **포함되는 역할들**:
+  - `master`: 시스템 최고 관리자
+  - `manager`: 시스템 관리자
+- **핵심 이해**: 위 2개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
+
+#### 3.2.2. Employee Actor
+- **정의**: 기업 고객사의 직원으로서 AI 서비스를 사용하는 주체
+- **대응 테이블**: `wrtn_enterprise_employees`
+- **AutoBeAnalyzeRole**: `employee`
+- **포함되는 직책들**:
+  - `master`: 기업 전체 최고 권한자
+  - `manager`: 기업 관리자
+  - `member`: 일반 직원
+- **핵심 이해**: 위 모든 직책은 **하나의 Actor** 안에서의 세부 구분일 뿐
+
+### 3.3. Actor 분류 시 절대 금지 사항
+
+#### 3.3.1. 잘못된 Actor 분류 (절대 금지)
+```typescript
+// ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
+enum AutoBeAnalyzeRole {
+    master = "master",
+    manager = "manager",
+    member = "member"
+}
+```
+
+**왜 잘못되었는가?**
+- Actor와 Role을 혼동함
+- 권한 차이를 Actor 차이로 오해함
+- 시스템 복잡도를 불필요하게 증가시킴
+
+#### 3.3.2. 올바른 Actor 분류 (반드시 이렇게)
+```typescript
+// ✅ 올바른 설계 - 정확히 2개의 Actor만 존재
+enum AutoBeAnalyzeRole {
+    moderator = "moderator",      // 내부 관리자 Actor
+    employee = "employee" // 기업 직원 Actor
+}
+```
+
+### 3.4. Actor 분류가 시스템 전체에 미치는 영향
+
+#### 3.4.1. 요구사항 분석 단계
+- Analyze Agent는 모든 기능을 2개 Actor 관점에서 분석
+- Use Case는 Actor별로 정리되며, role/title은 조건문으로 처리
+- 요구사항 문서에서 Actor는 2개만 명시
+
+#### 3.4.2. API 설계 단계
+- 최상위 경로는 Actor별로 분리 (`/moderator/*`, `/enterprise/*`)
+- 인증/인가는 Actor 단위로 처리
+- Actor 내부의 role/title은 권한 체크 로직에서 처리
+
+#### 3.4.3. 구현 단계
+- Guard/Interceptor는 Actor별로 구현
+- Service Layer는 Actor를 먼저 확인, 그 다음 role/title 체크
+- 로깅과 감사 추적도 Actor를 최우선으로 기록
+
+### 3.5. 실제 적용 예시
+
+#### 3.5.1. 챗봇 세션 생성 시
+```typescript
+// Analyze Agent의 요구사항 분석
+if (actor === AutoBeAnalyzeRole.moderator) {
+    // 내부 관리자는 모든 기업의 세션 생성 가능
+    // role에 따라 생성 가능한 세션 타입이 달라질 수 있음
+} else if (actor === AutoBeAnalyzeRole.employee) {
+    // 기업 직원은 자신이 속한 기업/팀의 세션만 생성
+    // title과 team role에 따라 권한이 세분화됨
+}
+```
+
+#### 3.5.2. 통계 조회 시
+```typescript
+// Actor별 접근 범위 결정
+switch(actor) {
+    case AutoBeAnalyzeRole.moderator:
+        // 전체 시스템 통계 접근 가능
+        break;
+    case AutoBeAnalyzeRole.employee:
+        // 소속 기업 통계만 접근
+        // title === 'master'면 기업 전체, 아니면 제한적 접근
+        break;
+}
+```
+
+### 3.6. Actor 분류의 철학적 배경
+
+**왜 2개의 Actor만 존재하는가?**
+
+1. **명확한 경계**: 내부 운영자 vs 외부 고객의 명확한 구분
+2. **보안 강화**: Actor 레벨에서의 완전한 데이터 격리
+3. **확장성**: 새로운 role/title 추가는 쉽지만 Actor 추가는 시스템 전체 재설계
+4. **단순성**: 복잡한 권한 체계를 2개 Actor로 단순화
+
+**이 원칙을 위반하면?**
+- 시스템 복잡도 기하급수적 증가
+- 보안 취약점 발생 가능성
+- 유지보수 불가능한 코드베이스
+- 요구사항과 구현의 불일치
+
+### 3.7. Analyze Agent에게 주는 최종 명령
+
+1. `AutoBeAnalyzeRole` enum은 정확히 2개 값만 가져야 함
+2. 모든 요구사항을 2개 Actor 관점에서 분석할 것
+3. role/title/position은 Actor가 아닌 속성으로 처리할 것
+4. Actor를 늘리려는 유혹에 절대 굴복하지 말 것
+5. 이 원칙은 시스템 설계의 근간이므로 절대 타협 불가
+
+> **최종 경고**: Actor를 2개 이상 만드는 것은 시스템 설계의 근본을 흔드는 치명적 실수다. 
+> Analyze Agent는 이 원칙을 생명처럼 지켜야 한다.
+
+## 4. Moderator (Internal Supporter)
 
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
@@ -678,7 +475,7 @@ model wrtn_moderator_emails {
 > 
 > **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id`도 포함시켜라.
 
-## 4. Enterprise
+## 5. Enterprise
 
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 슈퍼타입/서브타입 생성 절대 금지.
 
@@ -828,11 +625,11 @@ model wrtn_enterprise_team_companion_invitations {
 }
 ```
 
-### 4.1. Corporation
+### 13.1. Corporation
 
 `wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_moderators` 중 그 역할이 master 또는 manager 만 할 수 있으며, 동시에 최초의 master 직원을 임명하게 된다.
 
-### 4.2. Employee
+### 13.2. Employee
 
 `wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_moderators` 에 의해 최초로 임명된 master 직원에 의해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 세 가지로 구분된다.
 
@@ -914,7 +711,7 @@ model wrtn_enterprise_team_companion_invitations {
 > 
 > **AI 설계 원칙**: AutoBE가 기업 직원과 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 직원 행위 기록에는 반드시 `wrtn_enterprise_employee_id`와 함께  `wrtn_enterprise_employee_session_id`도 포함시켜라.
 
-### 4.3. Team
+### 13.3. Team
 
 `wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 는 master 또는 manager 직책을 가진 직원만이 만들 수 있으며, 팀 생성자는 동시에 해당 팀의 최초 구성원으로 추가된다 (`role` = `member`). 팀 삭제는 master 또는 manager 직책을 가진 직원이 할 수 있으며, `wrtn_enterprise_teams.deleted_at` 에 그 시각이 기록된다.
 
@@ -922,7 +719,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 > **중요**: `wrtn_enterprise_team_companions.role`은 오직 2가지 값(member/null)만 가진다. 팀장 등의 별도 역할은 없으며, 팀원 관리(초대/배제)는 오직 `wrtn_enterprise_employees.title`이 master 또는 manager인 직원만 할 수 있다.
 
-### 4.4. Companion
+### 13.4. Companion
 
 팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. master 또는 manager 직책을 가진 직원만이 다른 직원을 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 (`role` = `member`) 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다 (`role` = `member`). 팀원 초대장도 `expired_at` 시점에 만료되며, 만료된 초대장으로는 팀에 가입할 수 없다.
 
@@ -932,7 +729,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만 (`role` = `null`), `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 된다. 이를 통해 자진 탈퇴와 강제 제거를 구분할 수 있다.
 
-## 5. AI Chatbot
+## 6. AI Chatbot
 
 **절대 준수사항**: 모든 JSON 필드는 반드시 JSON으로 유지하라. JSON 필드를 절대 분해하거나 정규화하지 마라.
 
@@ -1073,7 +870,7 @@ AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, Ope
 
 단, 반복컨대 본 AI chatbot 은 웹소켓으로 구현된다. 따라서 AutoBE 가 만들어낼 Restful API 에서는 오직 `wrtn_chat_sessions` 레코드만 생성할 수 있고, 나머지 레코드들은 오직 읽기 API 로만 구현해야한다. 절대 나머지 엔티티들을 작성하고 편집하는 API 를 설계해서는 아니될 것이다.
 
-### 5.1. Chat Session 생성 API 요구사항
+### 13.1. Chat Session 생성 API 요구사항
 
 **IWrtnChatSession.ICreate**
 
@@ -1111,7 +908,7 @@ export namespace IWrtnChatSession {
 
 이를 통해 사용자는 매번 페르소나를 명시하지 않아도 자동으로 마지막 설정을 사용할 수 있으며, 필요시 다른 페르소나를 지정할 수도 있다.
 
-### 5.2. `IWrtnChatHistory`
+### 13.2. `IWrtnChatHistory`
 
 ```typescript
 export type IWrtnChatHistory =
@@ -1172,7 +969,7 @@ export interface IWrtnChatFunctionCallHistory {
 
 웹소켓에서 본격적으로 다루게 될 녀석들인데, AutoBE 는 이 타입 그대로 구현하되 각 타입마다 시의적절한 설명을 보충하여 사용할 것 (JSON schema 상 `description`).
 
-### 5.3. `IWrtnTokenUsage`
+### 13.3. `IWrtnTokenUsage`
 
 토큰 사용량 타입은 이렇게 정의한다.
 
@@ -1204,7 +1001,7 @@ export interface IWrtnTokenUsageOutput {
 }
 ```
 
-## 6. AI Procedure
+## 7. AI Procedure
 
 > **절대 준수사항**: JSON 필드는 절대 분해하지 마라. 정규화하지 마라. JSON으로 유지하라.
 
@@ -1365,8 +1162,8 @@ Progress   | None    | Streaming
 
 토큰을 소비하지 않는 히스토리 엔트리의 경우, 해당하는 token_usages 테이블 레코드가 존재하지 않을 수 있다. 이 경우 API 레벨에서는 `IWrtnTokenUsage` 인터페이스의 모든 속성값을 0으로 채워서 반환한다.
 
-## 7. Configurations
-### 7.1. Persona
+## 8. Configurations
+### 13.1. Persona
 뤼튼의 모든 엔터프라이즈 유저들은 (`wrtn_enterprise_employees`) 페르소나를 설정할 수 있다. 여기서 말하는 페르소나란, AI chatbot 의 말투 및 태도에 관한 것을 뜻한다.
 
 > **중요**: `wrtn_enterprise_employee_personas.memory` 필드는 JSON value로 유지해야 한다. 절대로 이를 분해하여 정규 컬럼으로 나누지 마라. 
@@ -1408,7 +1205,7 @@ model wrtn_enterprise_employee_personas {
 
 이 API는 직원이 자신의 현재 페르소나 설정을 확인할 때나, 새 채팅 세션을 시작할 때 기본 페르소나를 가져오는 데 사용된다.
 
-### 7.2. Enterprise Procedure
+### 13.2. Enterprise Procedure
 각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
 
 그리고 각 회사의 각 팀은 다시 각 팀이 사용할 수 있는 프로시저를 스스로 설정할 수 있다; `wrtn_enterprise_team_procedures`. 그러나 설정할 수 있는 프로시저는 해당 회사가 지원하는 프로시저로 한정한다.
@@ -1447,7 +1244,7 @@ model wrtn_enterprise_team_procedures {
 }
 ```
 
-## 8. File Management
+## 9. File Management
 
 ```prisma
 model wrtn_attachment_files {
@@ -1480,17 +1277,17 @@ model wrtn_attachment_files {
 
 > **중요**: AutoBE가 설계하는 시스템에서 발생하는 **모든 파일 업로드와 첨부**는 반드시 이 `wrtn_attachment_files` 테이블을 통해 관리되어야 한다. 각 도메인별로 별도의 파일 테이블을 만들지 말고, 이 중앙 테이블을 참조하는 연결 테이블만 생성하라.
 
-### 8.1. 파일 관리 원칙
+### 13.1. 파일 관리 원칙
 - 파일 업로드는 별도의 파일 업로드 API를 통해 먼저 수행
 - 업로드 완료 후 반환된 id를 채팅이나 프로시저에서 참조
 - 한 번 업로드된 파일은 여러 곳에서 재사용 가능
 - **파일 관련 기능은 최대한 단순하게 유지** (보안 검사, 버전 관리, 상세 로깅 등 복잡한 기능 금지)
 
-## 9. Statistics & Dashboard
+## 10. Statistics & Dashboard
 
 뤼튼 엔터프라이즈는 복잡한 조직 구조와 다층적 권한 체계에 맞춰, 각 사용자가 자신의 권한 범위 내에서만 통계와 대시보드에 접근할 수 있도록 설계되어야 한다.
 
-### 9.1. 권한별 접근 범위
+### 13.1. 권한별 접근 범위
 
 통계 시스템의 핵심은 **계층적 데이터 격리**이다. 각 역할은 다음과 같은 범위의 데이터에만 접근할 수 있다:
 
@@ -1521,7 +1318,7 @@ model wrtn_attachment_files {
 - 본인의 사용 내역과 통계만 조회
 - 팀이나 전사 통계는 접근 불가
 
-### 9.2. AI Model 비용 관리
+### 13.2. AI Model 비용 관리
 
 AI 모델별 비용을 관리하기 위한 테이블 설계:
 
@@ -1557,7 +1354,7 @@ model wrtn_ai_model_pricings {
 - 시간에 따른 가격 변동 이력 추적
 - 특정 시점의 사용량에 대한 정확한 비용 계산 가능
 
-### 9.3. Chat Session 통계 지표
+### 13.3. Chat Session 통계 지표
 
 > **🚨 절대적 구현 요구사항 - B2B SaaS의 핵심**
 > 
@@ -1619,7 +1416,7 @@ model wrtn_ai_model_pricings {
 | **모델 기준** | | |
 | `vendor` | AI 벤더 모델별 | AI 벤더 모델별 비용 분석 |
 
-### 9.4. Procedure Session 통계 지표
+### 13.4. Procedure Session 통계 지표
 
 > **📊 절대적 구현 요구사항 - 섹션 9.3과 함께 B2B SaaS의 핵심**
 > 
@@ -1652,7 +1449,7 @@ model wrtn_ai_model_pricings {
 - 법인/팀/개인 단위로 그룹핑하여 조회할 수 있어야 한다
 - 실행 횟수, 성공률, 토큰 사용량, 비용 등의 지표를 확인할 수 있어야 한다
 
-### 9.5. 종합 대시보드 구성
+### 13.5. 종합 대시보드 구성
 
 **실시간 모니터링**
 - 현재 활성 세션 수 (채팅/프로시저)
@@ -1677,7 +1474,7 @@ model wrtn_ai_model_pricings {
 - 세션당 평균 대화 턴 수
 - 프로시저 성공률 추이
 
-### 9.6. 통계 조회 요구사항 요약
+### 13.6. 통계 조회 요구사항 요약
 
 > **⚠️ AutoBE에게 다시 한 번 강조하는 절대적 구현 명령**
 > 
@@ -1714,7 +1511,7 @@ model wrtn_ai_model_pricings {
 | **기업 직원 (manager)** | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 본인: ✓<br>&nbsp;&nbsp;- 같은 팀 멤버: ✓<br>&nbsp;&nbsp;- 다른 팀 manager: ✗<br>&nbsp;&nbsp;- master 권한자: ✗ | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 같은 팀 멤버만<br>&nbsp;&nbsp;- master/다른 manager 제외<br>• 자사 사용 프로시저 | 자사 집계 뷰<br>팀 상세 뷰<br>(자신의 팀만 개인 조회) | 자신의 팀만<br>(타 팀 제외) |
 | **기업 직원 (member)** | • 본인 통계만<br>• 소속 팀 집계<br>&nbsp;&nbsp;(개인 식별 불가) | • 본인 통계만<br>• 본인 사용 프로시저 | 개인 뷰만<br>(본인 데이터) | 본인 활동만 |
 
-### 9.8. 감사 추적 (Audit Trail)
+### 13.8. 감사 추적 (Audit Trail)
 
 > **감사 추적 설계 원칙**:
 > 
@@ -1773,7 +1570,7 @@ model wrtn_ai_model_pricings {
 
 감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, master는 자사 전체를, manager는 자신의 팀과 관리 범위 내의 로그만 볼 수 있다.
 
-### 9.10. 접근 권한 요약
+### 13.10. 접근 권한 요약
 
 | 데이터 범위 | 내부 관리자 | master (기업) | manager (기업) | member (기업) |
 |----------|-----------|--------------|---------------|--------------|
@@ -1786,7 +1583,7 @@ model wrtn_ai_model_pricings {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-### 9.9. 비정규화 및 집계 테이블 금지
+### 13.9. 비정규화 및 집계 테이블 금지
 
 > **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
 > 
@@ -1801,9 +1598,9 @@ model wrtn_ai_model_pricings {
 > 3. 성능 문제가 발생하면 나중에 DBA가 직접 MATERIALIZED VIEW를 생성할 것이다
 > 4. AutoBE는 이러한 성능 최적화를 고려하지 말고 정규화된 설계에만 집중해라
 
-## 10. 결제 정책 및 서비스 연속성
+## 11. 결제 정책 및 서비스 연속성
 
-### 10.1. B2B SaaS 후불 결제 시스템
+### 13.1. B2B SaaS 후불 결제 시스템
 
 본 서비스는 B2B SaaS 서비스로써 **후불제(Post-paid)** 방식을 채택한다:
 
@@ -1811,7 +1608,7 @@ model wrtn_ai_model_pricings {
 - **신용 기반 거래**: 기업 간 거래의 특성상 선결제가 아닌 후불 정산
 - **사용량 기반 과금**: 실제 사용한 토큰, 스토리지, API 호출량에 따른 과금
 
-### 10.2. 서비스 연속성 보장
+### 13.2. 서비스 연속성 보장
 
 > **절대 금지사항**: 잔고 부족을 이유로 서비스를 차단하지 마라
 > 
@@ -1828,13 +1625,216 @@ model wrtn_ai_model_pricings {
 
 엔터프라이즈 B2B 환경에서는 서비스 연속성이 매우 중요하다. 일시적인 예산 초과나 결제 지연으로 인해 업무가 중단되어서는 안 된다. 이는 B2B SaaS의 기본 원칙이다.
 
-## 11. 요구사항 분석과 DB 설계 종합 실습
+## 12. DTO 구현 원칙
+
+> **🔴 핵심: 본 문서의 직접 지시사항 외에는 AutoBE 시스템 프롬프트의 DTO 설계 원칙을 따른다**
+
+### 12.1. 문서 명시 DTO와 자율 설계 DTO의 구분
+
+**본 문서에서 직접 명시한 DTO**:
+- 인터페이스명과 속성은 정확히 그대로 구현해야 한다
+- 새로운 속성을 추가할 수 없다
+- 오직 주석(description)만 추가하여 각 속성의 의미를 설명할 수 있다
+
+**본 문서에 정의되지 않은 DTO**:
+- 아래 원칙에 따라 자율적으로 설계한다
+- DB 스키마 지시사항은 DTO에 적용하지 않는다
+- API 사용성과 개발자 경험을 최우선으로 고려한다
+
+### 12.2. DB 스키마와 DTO의 분리 원칙
+
+**DB 스키마에 대한 지시사항은 DTO에 적용되지 않음**
+- DB 테이블 구조를 그대로 DTO로 만들지 말 것
+- DB 스키마는 저장 구조 최적화에 초점, DTO는 API 사용성에 초점
+- DB의 정규화된 구조를 그대로 노출하지 않고, 사용자 친화적으로 변환
+- FK 관계, 조인된 데이터 등을 적절히 구성하여 제공
+
+### 12.3. AutoBE의 DTO 설계 원칙
+
+**AutoBE interface 설계 원칙 준수**
+- AutoBE의 고유 시스템 프롬프트에 정의된 interface 설계 원칙을 철저히 따라 DTO 설계 진행
+- 아래 설명하는 "Relation 맵핑 원칙"과 "JWT 인증 컨텍스트 보안 원칙"은 AutoBE interface 설계 원칙의 일부를 발췌한 것임
+- **중요**: AutoBE의 interface (특히 DTO) 설계 원칙을 완벽하게 준수하여 설계해야 함
+
+**Relation 맵핑 원칙**
+- Response DTO에서 FK를 객체로 변환
+- **핵심 엔티티 참조 맵핑 (필수, 예외 없음)**: Response DTO (detail/summary 모두)에서 다음 FK 참조들은 반드시 객체로 맵핑해야 함
+  - **Actor 참조**: `IWrtnChatSession.wrtn_enterprise_employee_id` (X) → `IWrtnChatSession.employee` (O)
+  - **Actor 참조**: `IWrtnEnterprise.wrtn_moderator_id` (X) → `IWrtnEnterprise.moderator` (O)
+  - **Team 참조**: `IWrtnChatSession.wrtn_enterprise_team_id` (X) → `IWrtnChatSession.team` (O)
+  - **Enterprise 참조**: 통계 조회 시 `wrtn_enterprise_id` (X) → `enterprise` (O)
+  - Detail DTO든 Summary DTO든 관계없이 모든 Response DTO에 적용
+- Create DTO에서 관계 타입별로 적절히 구성 (Composition, Association, Aggregation)
+- Create DTO는 단일 API 호출로 완전한 엔티티 생성이 가능하도록 설계 (Atomic Operation Principle)
+- 관련 엔티티들이 함께 생성되어야 할 경우, 중첩된 객체 구조로 한 번에 처리
+
+```typescript
+//----
+// Relation 맵핑 예시
+//----
+// 아래 예시에서 명시된 relation 필드들(employee, team, persona 등)은
+// 반드시 포함되어야 한다. 다만 나머지 scalar 속성들(id, title 등)이나
+// 추가 relation을 정의하는 것은 자유롭게 해도 된다.
+// Read(Response) DTO 기준 맵핑 원리를 파악하여 도처에 응용하기 바란다.
+export interface IWrtnChatSession {
+  // 이하 FK 참조 관계를 객체로 맵핑 (필수)
+  employee: IWrtnEnterpriseEmployee.ISummary;
+  team: IWrtnEnterpriseTeam.ISummary | null;
+  persona: IWrtnPersona.ISummary;
+
+  // 이하 has 관계를 객체 내지 배열로 맵핑 (필수)
+  token_usage: IWrtnTokenUsage | null;
+  connections: IWrtnChatSessionConnection[];
+  histories: IWrtnChatSessionHistory[];
+
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  title: string | null;
+  created_at: string & tags.Format<"date-time">;
+}
+
+export interface IWrtnEnterpriseEmployee {
+  // FK 참조관계 및 has 관계 맵핑 (필수)
+  enterprise: IWrtnEnterprise.ISummary;
+  companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
+
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  approved_at: string & tags.Format<"date-time"> | null;
+}
+export namespace IWrtnEnterpriseEmployee {
+  export interface ISummary {
+    // FK 참조관계 및 has 관계 맵핑 (필수)
+    enterprise: IWrtnEnterprise.ISummary;
+
+    // 여기만큼은 예외적으로 1: M has relationship 이지만
+    // 이렇게 소속 팀 정보를 전부 다 보여주어야 함
+    // 이게 은근 중요한 정보라 summary 차원에서도 필히 표기해야하여 그러하다
+    companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
+
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    email: string & tags.Format<"email">;
+    title: "master" | "manager" | "member" | null;
+    created_at: string & tags.Format<"date-time">;
+    updated_at: string & tags.Format<"date-time">;
+    approved_at: string & tags.Format<"date-time"> | null;
+  }
+}
+
+export namespace IWrtnEnterpriseTeamCompanion {
+  export interface ISummaryFromEmployee {
+    // FK 참조관계 맵핑 (필수)
+    // employee 는 절대 맵팡하지 않는다.
+    team: IWrtnEnterpriseTeam.ISummary;
+
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    title: "member" | null;
+    created_at: string & tags.Format<"date-time">;
+  }
+  export interface ISummaryFromTeam {
+    // FK 참조관계 맵핑 (필수)
+    // team 은 절대 맵팡하지 않는다.
+    employee: IWrtnEnterpriseEmployee.ISummary;
+
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    title: "member" | null;
+    created_at: string & tags.Format<"date-time">;
+  }
+}
+
+export interface IWrtnEnterpriseEmployeeAppointment {
+  // 명시된 relation들은 필수로 포함
+  id: string & tags.Format<"uuid">;
+  employee: IWrtnEnterpriseEmployee.ISummary; // 임명된 사람
+  appointer: IWrtnEnterpriseEmployee.ISummary; // 임명한 사람
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+}
+
+export interface IWrtnEnterpriseEmployeeInvitation {
+  // 명시된 relation들은 필수로 포함
+  id: string & tags.Format<"uuid">;
+  employee: IWrtnEnterpriseEmployee.ISummary; // 초대한 사람
+  email: string & tags.Format<"email">; // 초대받은 이메일
+  title: "master" | "manager" | "member" | null;
+  created_at: string & tags.Format<"date-time">;
+  expired_at: string & tags.Format<"date-time"> | null;
+}
+```
+
+**DTO 타입 명명 규칙 - 완전한 테이블명 반영 원칙**
+
+**절대 규칙: 데이터베이스 테이블명의 모든 구성 요소를 DTO 타입명에 완전히 반영하라**
+
+- 테이블명에서 단어를 누락하거나 축약하지 마라
+- 테이블명의 모든 semantic component를 DTO 타입명에 그대로 포함시켜라
+- prefix/infix/suffix 등 모든 단어를 PascalCase로 정확히 변환하라
+
+**올바른 명명 예시**:
+```typescript
+// ✅ CORRECT: 테이블명의 모든 단어를 완전히 포함
+wrtn_enterprise_employees              → IWrtnEnterpriseEmployee
+wrtn_enterprise_employee_personas      → IWrtnEnterpriseEmployeePersona
+wrtn_enterprise_teams                  → IWrtnEnterpriseTeam
+wrtn_enterprise_team_companions        → IWrtnEnterpriseTeamCompanion
+wrtn_enterprise_employee_appointments  → IWrtnEnterpriseEmployeeAppointment
+wrtn_enterprise_employee_invitations   → IWrtnEnterpriseEmployeeInvitation
+wrtn_chat_sessions                     → IWrtnChatSession
+wrtn_chat_session_histories            → IWrtnChatSessionHistory
+wrtn_procedure_executions              → IWrtnProcedureExecution
+```
+
+**잘못된 명명 예시 (절대 금지)**:
+```typescript
+// ❌ WRONG: 중간 단어 누락
+wrtn_enterprise_employees              → IWrtnEmployee          // 'Enterprise' 누락
+wrtn_enterprise_employee_personas      → IWrtnEmployeePersona   // 'Enterprise' 누락
+wrtn_enterprise_teams                  → IWrtnTeam              // 'Enterprise' 누락
+
+// ❌ WRONG: 의미 단위 축약
+wrtn_enterprise_employee_appointments  → IWrtnEmpAppointment    // 'Enterprise' 누락, 'Employee' 축약
+
+// ❌ WRONG: 임의의 재구성
+wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누락
+```
+
+**명명 변환 프로세스**:
+1. 테이블명에서 prefix를 식별: `wrtn_` → `IWrtn`
+2. 테이블명의 각 단어를 snake_case에서 PascalCase로 변환
+3. 복수형 테이블명은 단수형 DTO로 변환 (예: `employees` → `Employee`)
+4. **중요**: 변환 과정에서 어떤 단어도 제거하거나 축약하지 않음
+
+**왜 이것이 중요한가**:
+- 일관성: 테이블명과 DTO명의 명확한 1:1 매핑 관계 유지
+- 명확성: 도메인 컨텍스트를 완전히 표현 (`IWrtnEmployee`는 어떤 Employee인지 불명확)
+- 충돌 방지: 서로 다른 도메인의 동일한 개념 구분 (예: `enterprise_employees` vs `employees`)
+- 추적 가능성: 코드에서 테이블로, 테이블에서 코드로의 역추적 용이
+
+**특별 지침**:
+- 본 문서에 명시된 테이블명과 DTO명은 이미 올바르게 정의되어 있으므로, 정확히 그대로 사용하라
+- 새로운 테이블을 추가할 때도 동일한 명명 규칙을 철저히 따라라
+- DTO의 중첩 타입(Summary, Create, Update 등)도 동일한 원칙 적용
+
+**JWT 인증 컨텍스트 보안 원칙**
+- Create DTO에 **현재 인증된 사용자**의 actor_id나 actor_session_id를 포함하지 마라
+- 현재 사용자의 `wrtn_moderator_id`, `wrtn_moderator_session_id`, `wrtn_enterprise_employee_id`, `wrtn_enterprise_employee_session_id`는 JWT 토큰에서 자동 취득
+- 단, 대상 엔티티 지정이 필요한 경우 (예: 직원 임명 시 target_employee_id)는 반드시 포함해야 함
+- 클라이언트가 제공한 현재 사용자 identity를 신뢰하지 말고, 서버가 JWT에서 검증된 사용자 컨텍스트를 주입
+
+## 13. 요구사항 분석과 DB 설계 종합 실습
 
 > **핵심 과제**: 본 문서에 정의된 25개 테이블은 AI Chatbot과 AI Procedure 기능만 다룬다.
 > 완전한 B2B SaaS 시스템을 위해서는 추가 기능과 테이블이 필수적이다.
 > AutoBE는 기존 테이블을 보호하면서, 새로운 영역에 대한 테이블을 적극 추가해야 한다.
 
-### 11.1. 기존 영역과 신규 영역의 명확한 구분
+### 13.1. 기존 영역과 신규 영역의 명확한 구분
 
 **기존 영역 (추가 테이블 금지)**:
 - 내부 관리자 관리: `wrtn_moderators` 관련 테이블들이 담당
@@ -1848,7 +1848,7 @@ model wrtn_ai_model_pricings {
 - 본 문서에 정의되지 않은 모든 B2B SaaS 필수 기능
 - 아래는 예시이며, 이외에도 필요한 모든 영역에 테이블 추가 필요
 
-### 11.2. 필수 추가 테이블 영역
+### 13.2. 필수 추가 테이블 영역
 
 다음 영역들은 B2B SaaS에 필수적이므로 반드시 새 테이블을 설계하라:
 
@@ -1878,7 +1878,7 @@ model wrtn_ai_model_pricings {
 
 **위 영역들은 필수이며, 이외에도 B2B SaaS에 필요한 모든 기능을 추가하라.**
 
-### 11.3. 명확한 설계 지침
+### 13.3. 명확한 설계 지침
 
 **절대 규칙**:
 1. **기존 25개 테이블**: 수정, 컬럼 추가, 삭제 절대 금지
@@ -1891,7 +1891,7 @@ model wrtn_ai_model_pricings {
 - 감사 추적을 위한 created_at, updated_at 등 포함
 - 세션 기반 추적이 필요한 경우 적절한 세션 ID 참조
 
-### 11.4. AutoBE의 의무와 권한
+### 13.4. AutoBE의 의무와 권한
 
 **의무**:
 - 본 문서의 25개 테이블을 정확히 구현
@@ -1913,65 +1913,65 @@ model wrtn_ai_model_pricings {
 > 본 문서는 시작점일 뿐, 완성은 네가 하는 것이다.
 
 
-## 12. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+## 14. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
 > **🔴 최우선 검증: AutoBE 시스템 프롬프트 준수 여부**
 > - [ ] 본 문서의 직접 지시사항만 그대로 따랐는가?
 > - [ ] 나머지 모든 설계와 구현은 AutoBE 시스템 프롬프트를 따랐는가?
 > - [ ] AutoBE의 기본 설계 원칙(DB, DTO, API, 테스트 등)을 완벽히 적용했는가?
 
-### 12.1. Actor 검증
+### 13.1. Actor 검증
 - [ ] `AutoBeAnalyzeRole`을 정확히 2개(`moderator`, `employee`)만 정의했는가?
 - [ ] role/title/position별로 별도의 actor를 만들지 않았는가?
 - [ ] API 설계 시 2개의 actor 기준으로만 분리했는가?
 
-### 12.2. 시스템 완성도 검증
+### 13.2. 시스템 완성도 검증
 - [ ] 본 문서의 약 25개 테이블 외에 필요한 만큼 추가 테이블을 설계했는가?
 - [ ] 완전한 엔터프라이즈 B2B SaaS 시스템으로 작동 가능한가?
 
-### 12.3. 세션 기반 감사 추적 검증
+### 13.3. 세션 기반 감사 추적 검증
 - [ ] 새로 설계하는 모든 테이블에서 사용자 행위 기록 시 세션 ID를 포함시켰는가?
 - [ ] 내부 관리자 작업 기록에 `wrtn_moderator_session_id`를 사용했는가?
 - [ ] 기업 직원 작업 기록에 `wrtn_enterprise_employee_session_id`를 사용했는가?
 - [ ] 모든 중요 행위에 대해 "누가 + 언제 + 어느 세션에서"를 추적 가능한가?
 
-### 12.4. B2B SaaS 완성도 검증
+### 13.4. B2B SaaS 완성도 검증
 - [ ] 본 문서의 핵심 기능(AI Chatbot, Procedure) 외에 추가 기능을 발굴했는가?
 - [ ] 기업 고객이 실제로 필요로 할 기능들을 스스로 판단하여 추가했는가?
 - [ ] 단순히 테이블만 나열한 것이 아니라 실제 작동하는 시스템을 설계했는가?
 - [ ] 완전한 B2B SaaS 엔터프라이즈 시스템이라고 자신있게 말할 수 있는가?
 
-### 12.5. 테이블 및 컬럼 관련
+### 13.5. 테이블 및 컬럼 관련
 - [ ] 본 문서에 정의된 모든 테이블명을 그대로 사용했는가?
 - [ ] 본 문서에 정의된 모든 컬럼명을 그대로 사용했는가?
 - [ ] 기존 테이블에 새로운 컬럼을 추가하지 않았는가?
 - [ ] 테이블명이나 컬럼명을 변경하지 않았는가?
 
-### 12.6. 영역 중복 및 서브타입 검증
+### 13.6. 영역 중복 및 서브타입 검증
 - [ ] 본 문서에 이미 정의된 테이블의 영역과 겹치는 새 테이블을 만들지 않았는가?
 - [ ] wrtn_moderators의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_employees의 title별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_team_companions의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
 
-### 12.7. JSON 필드 관련
+### 13.7. JSON 필드 관련
 - [ ] `data`, `arguments`, `value`, `memory` 등 JSON 필드를 분해하지 않았는가?
 - [ ] JSON 필드를 정규화하여 별도 테이블로 만들지 않았는가?
 - [ ] 토큰 사용량은 별도의 1:1 관계 테이블로 올바르게 정규화했는가?
 
-### 12.8. 통계 및 집계 관련
+### 13.8. 통계 및 집계 관련
 - [ ] 비정규화된 통계 테이블을 만들지 않았는가?
 - [ ] 일별/월별 집계 테이블을 생성하지 않았는가?
 - [ ] 모든 통계를 SQL 쿼리로 처리하도록 설계했는가?
 - [ ] 성능 최적화보다 정규화를 우선시했는가?
 
-### 12.9. 결제 및 서비스 관련
+### 13.9. 결제 및 서비스 관련
 - [ ] 잔고 부족으로 서비스를 차단하는 로직을 만들지 않았는가?
 - [ ] 예산 초과 시에도 서비스가 계속되도록 설계했는가?
 - [ ] 후불제 정책을 반영한 설계를 했는가?
 - [ ] 사용량 추적과 서비스 제공을 분리했는가?
 
-### 12.10. DTO 관련
+### 13.10. DTO 관련
 
 **DTO 인터페이스 정합성 검증**:
 - [ ] 본 문서에 직접 명시한 DTO 인터페이스명을 그대로 사용했는가?
@@ -2007,14 +2007,14 @@ model wrtn_ai_model_pricings {
 > 3. 테이블명의 모든 단어가 DTO 타입명에 반영되었는지 재확인하라
 > 4. 수정 후 다시 이 체크리스트를 실행하여 모든 항목을 통과하라
 
-### 12.11. 절대 변경 금지 테이블
+### 13.11. 절대 변경 금지 테이블
 - [ ] wrtn_chat_sessions 및 하위 테이블들을 수정하지 않았는가?
 - [ ] wrtn_procedure_sessions 및 하위 테이블들을 수정하지 않았는가?
 - [ ] 이들 테이블에 컬럼을 추가하거나 삭제하지 않았는가?
 - [ ] 이들 테이블의 이름을 변경하지 않았는가?
 
 
-### 12.12. 최종 확인
+### 13.12. 최종 확인
 - [ ] AI의 주관적 판단을 배제하고 문서 지시사항만 따랐는가?
 - [ ] "더 나은 설계"라는 생각으로 변경을 시도하지 않았는가?
 - [ ] 모든 지시사항에 절대 복종했는가?
