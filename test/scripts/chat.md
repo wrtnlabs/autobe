@@ -307,7 +307,7 @@ export interface IWrtnChatSession {
 export interface IWrtnEnterpriseEmployee {
   // FK 참조관계 및 has 관계 맵핑 (필수)
   enterprise: IWrtnEnterprise.ISummary;
-  companions: IWrtnEnterpriseTeamCompanion[];
+  companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
 
   // 이후로 자유로이 나머지 속성들을 설계할 것...
   id: string & tags.Format<"uuid">;
@@ -320,20 +320,43 @@ export interface IWrtnEnterpriseEmployee {
 export namespace IWrtnEnterpriseEmployee {
   export interface ISummary {
     // FK 참조관계 및 has 관계 맵핑 (필수)
-  enterprise: IWrtnEnterprise.ISummary;
+    enterprise: IWrtnEnterprise.ISummary;
 
-  // 여기만큼은 예외적으로 1: M has relationship 이지만
-  // 이렇게 소속 팀 정보를 전부 다 보여주어야 함
-  // 이게 은근 중요한 정보라 summary 차원에서도 필히 표기해야하여 그러하다
-  companions: IWrtnEnterpriseTeamCompanion[];
+    // 여기만큼은 예외적으로 1: M has relationship 이지만
+    // 이렇게 소속 팀 정보를 전부 다 보여주어야 함
+    // 이게 은근 중요한 정보라 summary 차원에서도 필히 표기해야하여 그러하다
+    companions: IWrtnEnterpriseTeamCompanion.ISummaryFromEmployee[];
 
-  // 이후로 자유로이 나머지 속성들을 설계할 것...
-  id: string & tags.Format<"uuid">;
-  email: string & tags.Format<"email">;
-  title: "master" | "manager" | "member" | null;
-  created_at: string & tags.Format<"date-time">;
-  updated_at: string & tags.Format<"date-time">;
-  approved_at: string & tags.Format<"date-time"> | null;
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    email: string & tags.Format<"email">;
+    title: "master" | "manager" | "member" | null;
+    created_at: string & tags.Format<"date-time">;
+    updated_at: string & tags.Format<"date-time">;
+    approved_at: string & tags.Format<"date-time"> | null;
+  }
+}
+
+export namespace IWrtnEnterpriseTeamCompanion {
+  export interface ISummaryFromEmployee {
+    // FK 참조관계 맵핑 (필수)
+    // employee 는 절대 맵팡하지 않는다.
+    team: IWrtnEnterpriseTeam.ISummary;
+
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    title: "member" | null;
+    created_at: string & tags.Format<"date-time">;
+  }
+  export interface ISummaryFromTeam {
+    // FK 참조관계 맵핑 (필수)
+    // team 은 절대 맵팡하지 않는다.
+    employee: IWrtnEnterpriseEmployee.ISummary;
+
+    // 이후로 자유로이 나머지 속성들을 설계할 것...
+    id: string & tags.Format<"uuid">;
+    title: "member" | null;
+    created_at: string & tags.Format<"date-time">;
   }
 }
 
@@ -356,6 +379,59 @@ export interface IWrtnEnterpriseEmployeeInvitation {
   expired_at: string & tags.Format<"date-time"> | null;
 }
 ```
+
+**DTO 타입 명명 규칙 - 완전한 테이블명 반영 원칙**
+
+**절대 규칙: 데이터베이스 테이블명의 모든 구성 요소를 DTO 타입명에 완전히 반영하라**
+
+- 테이블명에서 단어를 누락하거나 축약하지 마라
+- 테이블명의 모든 semantic component를 DTO 타입명에 그대로 포함시켜라
+- prefix/infix/suffix 등 모든 단어를 PascalCase로 정확히 변환하라
+
+**올바른 명명 예시**:
+```typescript
+// ✅ CORRECT: 테이블명의 모든 단어를 완전히 포함
+wrtn_enterprise_employees              → IWrtnEnterpriseEmployee
+wrtn_enterprise_employee_personas      → IWrtnEnterpriseEmployeePersona
+wrtn_enterprise_teams                  → IWrtnEnterpriseTeam
+wrtn_enterprise_team_companions        → IWrtnEnterpriseTeamCompanion
+wrtn_enterprise_employee_appointments  → IWrtnEnterpriseEmployeeAppointment
+wrtn_enterprise_employee_invitations   → IWrtnEnterpriseEmployeeInvitation
+wrtn_chat_sessions                     → IWrtnChatSession
+wrtn_chat_session_histories            → IWrtnChatSessionHistory
+wrtn_procedure_executions              → IWrtnProcedureExecution
+```
+
+**잘못된 명명 예시 (절대 금지)**:
+```typescript
+// ❌ WRONG: 중간 단어 누락
+wrtn_enterprise_employees              → IWrtnEmployee          // 'Enterprise' 누락
+wrtn_enterprise_employee_personas      → IWrtnEmployeePersona   // 'Enterprise' 누락
+wrtn_enterprise_teams                  → IWrtnTeam              // 'Enterprise' 누락
+
+// ❌ WRONG: 의미 단위 축약
+wrtn_enterprise_employee_appointments  → IWrtnEmpAppointment    // 'Enterprise' 누락, 'Employee' 축약
+
+// ❌ WRONG: 임의의 재구성
+wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누락
+```
+
+**명명 변환 프로세스**:
+1. 테이블명에서 prefix를 식별: `wrtn_` → `IWrtn`
+2. 테이블명의 각 단어를 snake_case에서 PascalCase로 변환
+3. 복수형 테이블명은 단수형 DTO로 변환 (예: `employees` → `Employee`)
+4. **중요**: 변환 과정에서 어떤 단어도 제거하거나 축약하지 않음
+
+**왜 이것이 중요한가**:
+- 일관성: 테이블명과 DTO명의 명확한 1:1 매핑 관계 유지
+- 명확성: 도메인 컨텍스트를 완전히 표현 (`IWrtnEmployee`는 어떤 Employee인지 불명확)
+- 충돌 방지: 서로 다른 도메인의 동일한 개념 구분 (예: `enterprise_employees` vs `employees`)
+- 추적 가능성: 코드에서 테이블로, 테이블에서 코드로의 역추적 용이
+
+**특별 지침**:
+- 본 문서에 명시된 테이블명과 DTO명은 이미 올바르게 정의되어 있으므로, 정확히 그대로 사용하라
+- 새로운 테이블을 추가할 때도 동일한 명명 규칙을 철저히 따라라
+- DTO의 중첩 타입(Summary, Create, Update 등)도 동일한 원칙 적용
 
 **JWT 인증 컨텍스트 보안 원칙**
 - Create DTO에 **현재 인증된 사용자**의 actor_id나 actor_session_id를 포함하지 마라
@@ -785,7 +861,7 @@ model wrtn_enterprise_team_companion_invitations {
 > - 검증 실패 시 명확한 오류 메시지와 함께 요청을 거부한다
 >
 > **저장 방식**:
-> - 비밀번호는 반드시 해시화하여 `wrtn_enterprise_employees.password` 에 저장
+> - 비밀번호는 반드시 해시화하여 `wrtn_enterprise_employees.password_hashed` 에 저장
 > - 평문 비밀번호는 절대 저장하지 않음
 > - 해시 알고리즘은 bcrypt 또는 이와 동등한 보안 수준의 알고리즘 사용
 >
@@ -1896,6 +1972,8 @@ model wrtn_ai_model_pricings {
 - [ ] 사용량 추적과 서비스 제공을 분리했는가?
 
 ### 12.10. DTO 관련
+
+**DTO 인터페이스 정합성 검증**:
 - [ ] 본 문서에 직접 명시한 DTO 인터페이스명을 그대로 사용했는가?
 - [ ] 본 문서에 직접 정의한 DTO 속성은 그대로 유지했는가?
 - [ ] AutoBE의 고유 interface 설계 원칙을 완벽하게 준수했는가?
@@ -1903,6 +1981,31 @@ model wrtn_ai_model_pricings {
 - [ ] Create DTO가 단일 API 호출로 완전한 엔티티 생성이 가능한가? (Atomic Operation Principle)
 - [ ] JWT 인증 컨텍스트 보안 원칙을 준수했는가? (현재 사용자 정보는 JWT에서, 대상 엔티티는 DTO에 포함)
 - [ ] DB 스키마를 그대로 따르지 않고 API 사용성에 맞게 설계했는가?
+
+**DTO 타입 명명 규칙 검증 (섹션 2.9.3 참조)**:
+- [ ] 모든 DTO 타입명이 대응하는 테이블명의 **모든 단어**를 완전히 포함하는가?
+- [ ] 테이블명에서 어떤 단어도 누락되거나 축약되지 않았는가?
+- [ ] snake_case → PascalCase 변환이 정확한가?
+- [ ] 복수형 → 단수형 변환이 적절한가?
+
+**DTO 명명 안티패턴 검증 (다음이 하나라도 존재하면 즉시 수정)**:
+- [ ] ❌ `wrtn_enterprise_employees` → `IWrtnEmployee` (Enterprise 누락)
+- [ ] ❌ `wrtn_enterprise_employee_personas` → `IWrtnEmployeePersona` (Enterprise 누락)
+- [ ] ❌ `wrtn_enterprise_teams` → `IWrtnTeam` (Enterprise 누락)
+- [ ] ❌ `wrtn_chat_session_histories` → `IWrtnSessionHistory` (Chat 누락)
+- [ ] ❌ `wrtn_procedure_executions` → `IWrtnExecution` (Procedure 누락)
+- [ ] ❌ 기타 테이블명의 semantic component를 누락한 DTO 타입명
+
+**DTO 명명 일관성 검증**:
+- [ ] 모든 관련 DTO (detail, summary, create, update)가 동일한 base name을 사용하는가?
+- [ ] namespace 내부의 중첩 타입들도 동일한 명명 규칙을 따르는가?
+- [ ] 테이블명과 DTO명의 1:1 대응 관계가 명확한가?
+
+> **🚨 DTO 타입 명명 검증 실패 시 즉시 조치**:
+> 1. Interface Phase를 중단하고 즉시 DTO 타입명을 수정하라
+> 2. 섹션 2.9.3의 "DTO 타입 명명 규칙" 원칙을 다시 읽어라
+> 3. 테이블명의 모든 단어가 DTO 타입명에 반영되었는지 재확인하라
+> 4. 수정 후 다시 이 체크리스트를 실행하여 모든 항목을 통과하라
 
 ### 12.11. 절대 변경 금지 테이블
 - [ ] wrtn_chat_sessions 및 하위 테이블들을 수정하지 않았는가?
