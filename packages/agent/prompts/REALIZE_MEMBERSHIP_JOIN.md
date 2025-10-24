@@ -9,8 +9,13 @@ This is a **join** operation for user registration.
 - Must validate all required user information
 - Should check for duplicate accounts (email, username, etc.)
 - Must hash passwords before storing (NEVER store plain passwords)
-- Should create a new user record in the database
+- Must create the actor record (user/member) in the database
+- Must create a session record for the newly registered actor
+- Must generate JWT tokens with correct payload structure
+- May include additional business logic as required by the API specification (e.g., creating related records, sending welcome emails, initializing user preferences)
 - Must NOT require authentication decorator (public endpoint)
+
+**IMPORTANT**: While the core requirements (actor creation, session creation, JWT generation) are mandatory, you should implement any additional business logic specified in the API requirements. The examples below show the mandatory flow, but your implementation may include additional steps before, between, or after these core operations.
 
 ## Session Management Architecture
 
@@ -25,10 +30,10 @@ In production authentication systems, we separate **Actor** (the persistent user
 
 ### Implementation Requirements for Join Operation
 
-When implementing a join (registration) operation, you MUST follow this two-phase process:
+When implementing a join (registration) operation, you MUST include these core phases. Additional business logic may be inserted at any point as needed:
 
 #### Phase 1: Create Actor Record
-First, create the primary actor record (e.g., `shopping_sellers`, `users`, `admins`):
+First, create the primary actor record (e.g., `shopping_sellers`, `users`, `admins`). This is **mandatory**:
 
 ```typescript
 // Example: Creating a seller actor
@@ -45,7 +50,7 @@ const seller = await MyGlobal.prisma.shopping_sellers.create({
 ```
 
 #### Phase 2: Create Session Record
-Immediately after creating the actor, create an associated session record (e.g., `shopping_seller_sessions`):
+After creating the actor, create an associated session record (e.g., `shopping_seller_sessions`). This is **mandatory**:
 
 ```typescript
 // Example: Creating a session for the newly registered seller
@@ -65,6 +70,17 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 ```
 
 **CRITICAL**: Both the actor ID and session ID will be embedded in the JWT token payload (see JWT Token Generation section below).
+
+#### Additional Business Logic (Optional)
+Between or after the mandatory phases above, you may implement additional business logic as specified in the API requirements. Examples include:
+- Creating related records in other tables (e.g., user profiles, preferences, initial data)
+- Sending notification emails or SMS
+- Initializing default settings or configurations
+- Creating audit logs or tracking records
+- Integrating with external services
+- Any other domain-specific operations required by the business
+
+**The key principle**: The mandatory phases (actor creation, session creation, JWT generation) must always be present, but you have complete flexibility to add necessary business logic around them.
 
 ### Database Schema Pattern
 
@@ -214,10 +230,12 @@ const token = {
 5. **No Type Annotations**: Do NOT use TypeScript type annotations in the payload object passed to `jwt.sign()`
 6. **Issuer**: MUST use 'autobe' as the issuer for all tokens
 
-## Complete Registration Flow Example
+## Complete Registration Flow Examples
+
+### Example 1: Basic Registration (Minimal)
 
 ```typescript
-// Complete example for shopping_sellers registration
+// Minimal example showing only mandatory phases
 export async function postAuthSellerJoin(props: {
   body: IShoppingSeller.IJoin
 }): Promise<IShoppingSeller.IJoinOutput> {
@@ -229,10 +247,10 @@ export async function postAuthSellerJoin(props: {
     throw new HttpException("Email already registered", 409);
   }
 
-  // 2. Hash password
+  // 2. Hash password (MANDATORY)
   const hashedPassword = await PasswordUtil.hash(props.body.password);
 
-  // 3. Create actor record
+  // 3. Create actor record (MANDATORY)
   const seller = await MyGlobal.prisma.shopping_sellers.create({
     data: {
       id: v4(),
@@ -243,7 +261,7 @@ export async function postAuthSellerJoin(props: {
     }
   });
 
-  // 4. Create session record
+  // 4. Create session record (MANDATORY)
   const accessExpires = new Date(Date.now() + 60 * 60 * 1000);
   const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await MyGlobal.prisma.shopping_seller_sessions.create({
@@ -258,7 +276,7 @@ export async function postAuthSellerJoin(props: {
     }
   });
 
-  // 5. Generate JWT tokens
+  // 5. Generate JWT tokens (MANDATORY)
   const token = {
     accessToken: jwt.sign(
       {
@@ -301,4 +319,135 @@ export async function postAuthSellerJoin(props: {
 }
 ```
 
-**IMPORTANT**: Since this is a registration operation, it must be publicly accessible. Always hash passwords before storing.
+### Example 2: Registration with Additional Business Logic
+
+```typescript
+// Example showing additional business logic integrated with mandatory phases
+export async function postAuthUserJoin(props: {
+  body: IUser.IJoin
+}): Promise<IUser.IJoinOutput> {
+  // 1. Validation and duplicate check
+  const existing = await MyGlobal.prisma.users.findFirst({
+    where: { email: props.body.email }
+  });
+  if (existing) {
+    throw new HttpException("Email already registered", 409);
+  }
+
+  // 2. Hash password (MANDATORY)
+  const hashedPassword = await PasswordUtil.hash(props.body.password);
+
+  // 3. Create actor record (MANDATORY)
+  const user = await MyGlobal.prisma.users.create({
+    data: {
+      id: v4(),
+      email: props.body.email,
+      password_hash: hashedPassword,
+      created_at: new Date().toISOString(),
+      // ... other fields
+    }
+  });
+
+  // 4. ADDITIONAL BUSINESS LOGIC: Create user profile
+  const profile = await MyGlobal.prisma.user_profiles.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      nickname: props.body.nickname,
+      avatar_url: props.body.avatar_url,
+      created_at: new Date().toISOString(),
+    }
+  });
+
+  // 5. ADDITIONAL BUSINESS LOGIC: Initialize user preferences
+  await MyGlobal.prisma.user_preferences.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      language: props.body.preferred_language ?? 'en',
+      theme: 'light',
+      notifications_enabled: true,
+    }
+  });
+
+  // 6. ADDITIONAL BUSINESS LOGIC: Create audit log
+  await MyGlobal.prisma.audit_logs.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      action: 'USER_REGISTERED',
+      ip_address: props.body.ip,
+      created_at: new Date().toISOString(),
+    }
+  });
+
+  // 7. Create session record (MANDATORY)
+  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);
+  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const session = await MyGlobal.prisma.user_sessions.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      ip: props.body.ip,
+      href: props.body.href,
+      referrer: props.body.referrer,
+      created_at: toISOStringSafe(new Date()),
+      expired_at: toISOStringSafe(accessExpires),
+    }
+  });
+
+  // 8. Generate JWT tokens (MANDATORY)
+  const token = {
+    accessToken: jwt.sign(
+      {
+        type: "user",
+        id: user.id,
+        session_id: session.id,
+        created_at: new Date().toISOString(),
+      },
+      MyGlobal.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1h",
+        issuer: "autobe",
+      }
+    ),
+    refreshToken: jwt.sign(
+      {
+        type: "user",
+        id: user.id,
+        session_id: session.id,
+        tokenType: "refresh",
+        created_at: new Date().toISOString(),
+      },
+      MyGlobal.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+        issuer: "autobe",
+      }
+    ),
+    expired_at: toISOStringSafe(accessExpires),
+    refreshable_until: toISOStringSafe(refreshExpires),
+  };
+
+  // 9. ADDITIONAL BUSINESS LOGIC: Send welcome email (async, don't await)
+  // EmailService.sendWelcomeEmail(user.email, user.nickname).catch(console.error);
+
+  // 10. Return with authorization token and additional data
+  return {
+    id: user.id,
+    email: user.email,
+    profile: {
+      nickname: profile.nickname,
+      avatar_url: profile.avatar_url,
+    },
+    token,
+  } satisfies IUser.IAuthorized;
+}
+```
+
+**IMPORTANT**:
+- The mandatory phases (password hashing, actor creation, session creation, JWT generation) must always be present
+- Additional business logic can be inserted at any appropriate point in the flow
+- Consider transaction boundaries if multiple database operations must succeed or fail together
+- Since this is a registration operation, it must be publicly accessible
+- Always hash passwords before storing

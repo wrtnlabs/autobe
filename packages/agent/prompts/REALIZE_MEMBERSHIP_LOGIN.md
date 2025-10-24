@@ -7,9 +7,14 @@ This is a **login** operation that authenticates users.
 ### Login Operation Requirements
 - This is a login endpoint that authenticates users
 - Must validate credentials (username/email and password)
+- Must verify password using PasswordUtil
+- Must create a new session record for this login
+- Must generate JWT tokens with correct payload structure
 - Should return authentication tokens (access and refresh tokens)
+- May include additional business logic as required by the API specification (e.g., updating last login timestamp, creating audit logs, checking account status)
 - Must NOT require authentication decorator (this endpoint creates authentication)
-- Should check if user exists and password matches
+
+**IMPORTANT**: While the core requirements (credential validation, session creation, JWT generation) are mandatory, you should implement any additional business logic specified in the API requirements. The examples below show the mandatory flow, but your implementation may include additional steps before, between, or after these core operations.
 
 ## Session Management Architecture
 
@@ -24,10 +29,10 @@ In production authentication systems, we separate **Actor** (the persistent user
 
 ### Implementation Requirements for Login Operation
 
-When implementing a login operation, you MUST follow this two-phase process:
+When implementing a login operation, you MUST include these core phases. Additional business logic may be inserted at any point as needed:
 
 #### Phase 1: Validate Actor Credentials
-First, verify the actor's credentials and retrieve the actor record:
+First, verify the actor's credentials and retrieve the actor record. This is **mandatory**:
 
 ```typescript
 // Example: Validating seller credentials
@@ -49,7 +54,7 @@ if (!isValid) {
 ```
 
 #### Phase 2: Create Session Record
-After successful authentication, create a NEW session record for this login:
+After successful authentication, create a NEW session record for this login. This is **mandatory**:
 
 ```typescript
 // Example: Creating a new session for the authenticated seller
@@ -69,6 +74,19 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 ```
 
 **CRITICAL**: Each login creates a NEW session. Both the actor ID and session ID will be embedded in the JWT token payload (see JWT Token Generation section below).
+
+#### Additional Business Logic (Optional)
+Between or after the mandatory phases above, you may implement additional business logic as specified in the API requirements. Examples include:
+- Updating last login timestamp on the actor record
+- Creating audit logs or login history records
+- Checking account status (e.g., banned, suspended, email verified)
+- Enforcing rate limiting or login attempt tracking
+- Invalidating old sessions if needed (e.g., single device policy)
+- Sending login notification emails or SMS
+- Tracking login analytics or metrics
+- Any other domain-specific operations required by the business
+
+**The key principle**: The mandatory phases (credential validation, session creation, JWT generation) must always be present, but you have complete flexibility to add necessary business logic around them.
 
 ### Database Schema Pattern
 
@@ -219,14 +237,16 @@ const decoded = jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY, {
 });
 ```
 
-## Complete Login Flow Example
+## Complete Login Flow Examples
+
+### Example 1: Basic Login (Minimal)
 
 ```typescript
-// Complete example for shopping_sellers login
+// Minimal example showing only mandatory phases
 export async function postAuthSellerLogin(props: {
   body: IShoppingSeller.ILogin
 }): Promise<IShoppingSeller.ILoginOutput> {
-  // 1. Find actor by credentials
+  // 1. Find actor by credentials (MANDATORY)
   const seller = await MyGlobal.prisma.shopping_sellers.findFirst({
     where: { email: props.body.email }
   });
@@ -234,7 +254,7 @@ export async function postAuthSellerLogin(props: {
     throw new HttpException("Invalid credentials", 401);
   }
 
-  // 2. Verify password
+  // 2. Verify password (MANDATORY)
   const isValid = await PasswordUtil.verify(
     props.body.password,
     seller.password_hash
@@ -243,7 +263,7 @@ export async function postAuthSellerLogin(props: {
     throw new HttpException("Invalid credentials", 401);
   }
 
-  // 3. Create NEW session record
+  // 3. Create NEW session record (MANDATORY)
   const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
   const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await MyGlobal.prisma.shopping_seller_sessions.create({
@@ -258,7 +278,7 @@ export async function postAuthSellerLogin(props: {
     },
   });
 
-  // 4. Generate JWT tokens
+  // 4. Generate JWT tokens (MANDATORY)
   const token = {
     accessToken: jwt.sign(
       {
@@ -301,4 +321,163 @@ export async function postAuthSellerLogin(props: {
 }
 ```
 
-**IMPORTANT**: Since this is a login operation, it must be publicly accessible without authentication.
+### Example 2: Login with Additional Business Logic
+
+```typescript
+// Example showing additional business logic integrated with mandatory phases
+export async function postAuthUserLogin(props: {
+  body: IUser.ILogin
+}): Promise<IUser.ILoginOutput> {
+  // 1. Find actor by credentials (MANDATORY)
+  const user = await MyGlobal.prisma.users.findFirst({
+    where: { email: props.body.email }
+  });
+  if (!user) {
+    throw new HttpException("Invalid credentials", 401);
+  }
+
+  // 2. ADDITIONAL BUSINESS LOGIC: Check account status
+  if (user.status === 'banned') {
+    throw new HttpException("Account has been banned", 403);
+  }
+  if (user.status === 'suspended') {
+    throw new HttpException("Account is temporarily suspended", 403);
+  }
+  if (!user.email_verified) {
+    throw new HttpException("Please verify your email first", 403);
+  }
+
+  // 3. Verify password (MANDATORY)
+  const isValid = await PasswordUtil.verify(
+    props.body.password,
+    user.password_hash
+  );
+  if (!isValid) {
+    // ADDITIONAL BUSINESS LOGIC: Track failed login attempt
+    await MyGlobal.prisma.login_attempts.create({
+      data: {
+        id: v4(),
+        user_id: user.id,
+        success: false,
+        ip_address: props.body.ip,
+        created_at: new Date().toISOString(),
+      }
+    });
+    throw new HttpException("Invalid credentials", 401);
+  }
+
+  // 4. ADDITIONAL BUSINESS LOGIC: Update last login timestamp
+  await MyGlobal.prisma.users.update({
+    where: { id: user.id },
+    data: {
+      last_login_at: new Date().toISOString(),
+      last_login_ip: props.body.ip,
+    }
+  });
+
+  // 5. ADDITIONAL BUSINESS LOGIC: Invalidate old sessions (single device policy)
+  if (props.body.single_device_only) {
+    await MyGlobal.prisma.user_sessions.updateMany({
+      where: {
+        user_id: user.id,
+        expired_at: { gt: new Date().toISOString() }
+      },
+      data: {
+        expired_at: new Date().toISOString() // Expire immediately
+      }
+    });
+  }
+
+  // 6. Create NEW session record (MANDATORY)
+  const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
+  const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const session = await MyGlobal.prisma.user_sessions.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      ip: props.body.ip,
+      href: props.body.href,
+      referrer: props.body.referrer,
+      user_agent: props.body.user_agent,
+      created_at: new Date().toISOString(),
+      expired_at: toISOStringSafe(accessExpires),
+    },
+  });
+
+  // 7. ADDITIONAL BUSINESS LOGIC: Create audit log
+  await MyGlobal.prisma.audit_logs.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      action: 'USER_LOGIN',
+      ip_address: props.body.ip,
+      session_id: session.id,
+      created_at: new Date().toISOString(),
+    }
+  });
+
+  // 8. ADDITIONAL BUSINESS LOGIC: Track successful login attempt
+  await MyGlobal.prisma.login_attempts.create({
+    data: {
+      id: v4(),
+      user_id: user.id,
+      success: true,
+      ip_address: props.body.ip,
+      session_id: session.id,
+      created_at: new Date().toISOString(),
+    }
+  });
+
+  // 9. Generate JWT tokens (MANDATORY)
+  const token = {
+    accessToken: jwt.sign(
+      {
+        type: "user",
+        id: user.id,
+        session_id: session.id,
+        created_at: new Date().toISOString(),
+      },
+      MyGlobal.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1h",
+        issuer: "autobe",
+      }
+    ),
+    refreshToken: jwt.sign(
+      {
+        type: "user",
+        id: user.id,
+        session_id: session.id,
+        tokenType: "refresh",
+        created_at: new Date().toISOString(),
+      },
+      MyGlobal.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+        issuer: "autobe",
+      }
+    ),
+    expired_at: toISOStringSafe(accessExpires),
+    refreshable_until: toISOStringSafe(refreshExpires),
+  };
+
+  // 10. ADDITIONAL BUSINESS LOGIC: Send login notification (async, don't await)
+  // NotificationService.sendLoginAlert(user.email, props.body.ip).catch(console.error);
+
+  // 11. Return with authorization token
+  return {
+    id: user.id,
+    email: user.email,
+    last_login_at: user.last_login_at,
+    // ... other fields
+    token,
+  } satisfies IUser.IAuthorized;
+}
+```
+
+**IMPORTANT**:
+- The mandatory phases (credential validation, password verification, session creation, JWT generation) must always be present
+- Additional business logic can be inserted at any appropriate point in the flow
+- Consider security implications of additional logic (e.g., rate limiting, account status checks)
+- Consider transaction boundaries if multiple database operations must succeed or fail together
+- Since this is a login operation, it must be publicly accessible without authentication
