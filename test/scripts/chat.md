@@ -339,7 +339,7 @@ model wrtn_moderators {
   updated_at DateTime // updated when title changes
   approved_at DateTime? // first approved time
   deleted_at DateTime?
-  
+
   @@unique([mobile])
   @@unique([nickname])
   @@index([name])
@@ -397,13 +397,15 @@ model wrtn_moderator_emails {
   verified_at DateTime?
   created_at DateTime
   deleted_at DateTime?
-  
+
   @@unique([email])
   @@index([wrtn_moderator_id])
 }
 ```
 
-내부 관리자는 엔터프라이즈 기업을 관리하는 역할을 해. 서포터의 일종이라 볼 수 있다.
+### 4.1. 내부 관리자 개요
+
+내부 관리자는 엔터프라이즈 기업을 관리하는 역할을 한다. 서포터의 일종이라 볼 수 있다.
 
 다만 이들의 역할 (`wrtn_moderators.role`) 은 다음과 같이 두 가지로 세분화되어있다. 이들 모두 엔터프라이즈를 개설하고 철폐하는 등의 엔터프라이즈사들에 대한 직접적인 관리가 가능하다.
 
@@ -412,116 +414,158 @@ model wrtn_moderator_emails {
 
 > **중요**: `wrtn_moderators.role`은 위의 2가지 값(master/manager/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
 
+### 4.2. 이메일과 로그인
+
 `wrtn_moderators`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
-> ### 비밀번호 규칙 (`wrtn_moderators`)
->
-> 내부 관리자의 비밀번호는 다음 보안 요구사항을 충족해야 한다:
->
-> **필수 요구사항**:
-> - **최소 길이**: 8자 이상
-> - **3종 조합 필수**:
->   - 영문자 (대문자 또는 소문자)
->   - 숫자 (0-9)
->   - 특수문자 (예: `!@#$%^&*()_+-=[]{}|;:,.<>?`)
->
-> **검증 로직**:
-> - 비밀번호는 회원가입, 비밀번호 변경 시 모두 동일한 규칙으로 검증된다
-> - 위 3가지 종류 중 **반드시 3종 모두** 포함되어야 한다
-> - 검증 실패 시 명확한 오류 메시지와 함께 요청을 거부한다
->
-> **저장 방식**:
-> - 비밀번호는 반드시 해시화하여 `wrtn_moderators.password_hashed` 에 저장
-> - 평문 비밀번호는 절대 저장하지 않음
-> - 해시 알고리즘은 bcrypt 또는 이와 동등한 보안 수준의 알고리즘 사용
->
-> **API 응답**:
-> - 비밀번호 검증 실패 시 구체적인 실패 이유를 제공:
->   - "비밀번호는 최소 8자 이상이어야 합니다"
->   - "비밀번호는 영문자, 숫자, 특수문자를 모두 포함해야 합니다"
+### 4.3. 비밀번호 규칙
 
-또한 `wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, master 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
+내부 관리자의 비밀번호는 다음 보안 요구사항을 충족해야 한다:
 
-> ### 초대장 만료 정책 (`wrtn_moderator_invitations`)
->
-> **기본 만료 기한**: 초대장은 발행 시점으로부터 **7일** 후에 자동으로 만료된다.
->
-> **만료 기한 설정 방식**:
-> - API 호출 시 `expired_at` 파라미터를 통해 만료 시각을 직접 지정할 수 있다 (선택 사항)
-> - `expired_at` 파라미터를 생략하면 기본값으로 현재 시각 + 7일이 자동 설정된다
-> - 이는 초대장 **최초 발행** 시와 **연장** 시 모두 동일하게 적용된다
->
-> **초대장 연장 규칙**:
-> - 초대장이 아직 만료되지 않은 상태에서 만료 기한을 연장할 수 있다
-> - 연장 시에도 새로운 `expired_at` 을 직접 지정하거나, 생략하면 연장 시점 + 7일이 설정된다
-> - 연장 처리는 기존 `wrtn_moderator_invitations` 레코드의 `expired_at` 값을 업데이트하는 방식으로 이루어진다
-> - 이미 만료된 초대장(`expired_at` < 현재 시각)은 연장할 수 없다
-> - 이미 수락되어 가입이 완료된 초대장도 연장할 수 없다
+#### 4.3.1. 필수 요구사항
 
-이외에 master 나 manager 가 기존의 관리자를 탈퇴 처리하면, `wrtn_moderators.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_moderator_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 관리자이며, 이 때 변경되는 역할은 `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 이 된다. 만일 관리자 당사자 스스로가 탈퇴한 것이라면, `wrtn_moderator_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
+- **최소 길이**: 8자 이상
+- **3종 조합 필수**:
+  - 영문자 (대문자 또는 소문자)
+  - 숫자 (0-9)
+  - 특수문자 (예: `!@#$%^&*()_+-=[]{}|;:,.<>?`)
 
-> ### Master 강퇴를 위한 2인 승인 절차
->
-> **중요 보안 정책**: master 권한을 가진 관리자를 강제로 탈퇴시키는 것은 매우 민감한 작업이므로, 단독 결정이 아닌 복수 master의 합의를 통해서만 가능하다.
->
-> **자진 탈퇴와 강제 탈퇴의 구분**:
-> - **자진 탈퇴**: master 본인이 스스로 탈퇴하는 경우에는 2인 승인 절차가 필요 없다. 즉시 `wrtn_moderators.deleted_at` 에 시각이 기록되고, `wrtn_moderator_appointments` 레코드가 생성되며, `wrtn_appointer_id` 는 자기 자신이 된다.
-> - **강제 탈퇴**: 어떤 master A가 다른 master B를 강퇴시키려는 경우, 반드시 2인 승인 절차를 거쳐야 한다.
->
-> **2인 승인 절차**:
->
-> master A가 master B를 강제 탈퇴시키고자 하는 경우, 다음과 같은 절차가 필요하다:
->
-> 1. **1단계 - 강퇴 신청**: master A가 master B에 대한 강퇴 요청을 제출한다.
->    - 이 시점에는 아직 B의 계정에 어떠한 변경도 일어나지 않는다.
->    - 강퇴 요청 정보가 시스템에 기록된다 (요청자 A, 대상자 B, 요청 시각).
->
-> 2. **2단계 - 제3자 승인**: A도 B도 아닌 제3의 master C가 이 강퇴 요청을 검토하고 승인한다.
->    - C는 시스템에 기록된 대기 중인 강퇴 요청 목록을 조회할 수 있다.
->    - C가 해당 요청을 승인해야만 B의 강퇴가 최종 처리된다.
->    - 만약 C가 거부하거나 일정 시간 내에 처리하지 않으면 요청은 자동으로 만료된다.
->
-> 3. **3단계 - 강퇴 확정**: C의 승인이 완료되면 비로소 B의 계정이 탈퇴 처리된다.
->    - `wrtn_moderators.deleted_at` 에 탈퇴 시각 기록
->    - `wrtn_moderator_appointments` 레코드 생성 (임명자는 최종 승인자 C)
->    - `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 로 설정
->
-> **권한별 강퇴 규칙 정리**:
->
-> | 대상자 역할 | 처리자 역할 | 필요 절차 |
-> |-----------|-----------|---------|
-> | **master** | master 본인 | 즉시 자진 탈퇴 (2인 승인 불필요) |
-> | **master** | 다른 master A | 2인 승인 필요 (A의 신청 + 제3의 master C의 승인) |
-> | **manager** | master 또는 manager | 즉시 강퇴 가능 (2인 승인 불필요) |
-> | **null** | master 또는 manager | 즉시 강퇴 가능 (2인 승인 불필요) |
->
-> **2인 승인 절차의 목적**:
-> - 한 명의 master가 독단적으로 다른 master를 제거하는 것을 방지
-> - 내부 관리자 간의 견제와 균형 유지
-> - 중요한 인사 결정에 대한 투명성과 책임성 확보
-> - 악의적인 계정 탈취나 권한 남용 방지
->
-> **manager 강퇴의 경우**:
-> - manager를 강퇴시킬 때는 2인 승인 절차가 필요 없다.
-> - master 또는 다른 manager가 단독으로 즉시 강퇴 처리할 수 있다.
-> - 이는 manager가 master보다 낮은 권한 수준이므로 master와 동일한 보호 수준이 필요하지 않기 때문이다.
+#### 4.3.2. 검증 로직
 
-> ### 추적을 위한 세션 관리
-> 
-> `wrtn_moderator_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다. 각 세션은 다음 정보를 포함한다:
-> 
-> - **href**: 접속한 URL 주소
-> - **referrer**: 어디서 왔는지 (리퍼러 URL)
-> - **ip**: 접속자의 IP 주소
-> - **created_at**: 세션 시작 시각
-> - **expired_at**: 세션 종료 시각
-> 
-> 이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있으며, 모든 중요한 행위는 해당 세션 ID와 함께 기록된다. 예를 들어:
-> - 기업 생성 시: `wrtn_enterprises` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
-> - 관리자 임명 시: `wrtn_moderator_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
-> - 초대장 발송 시: `wrtn_moderator_invitations` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
-> 
-> **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id`도 포함시켜라.
+- 비밀번호는 회원가입, 비밀번호 변경 시 모두 동일한 규칙으로 검증된다
+- 위 3가지 종류 중 **반드시 3종 모두** 포함되어야 한다
+- 검증 실패 시 명확한 오류 메시지와 함께 요청을 거부한다
+
+#### 4.3.3. 저장 방식
+
+- 비밀번호는 반드시 해시화하여 `wrtn_moderators.password_hashed` 에 저장
+- 평문 비밀번호는 절대 저장하지 않음
+- 해시 알고리즘은 bcrypt 또는 이와 동등한 보안 수준의 알고리즘 사용
+
+#### 4.3.4. API 응답
+
+비밀번호 검증 실패 시 구체적인 실패 이유를 제공:
+- "비밀번호는 최소 8자 이상이어야 합니다"
+- "비밀번호는 영문자, 숫자, 특수문자를 모두 포함해야 합니다"
+
+### 4.4. 가입 방법
+
+`wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다.
+
+#### 4.4.1. 직접 가입 후 승인
+
+첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, master 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다.
+
+#### 4.4.2. 초대장을 통한 가입
+
+두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
+
+### 4.5. 초대장 만료 정책
+
+#### 4.5.1. 기본 만료 기한
+
+초대장은 발행 시점으로부터 **7일** 후에 자동으로 만료된다.
+
+#### 4.5.2. 만료 기한 설정 방식
+
+- API 호출 시 `expired_at` 파라미터를 통해 만료 시각을 직접 지정할 수 있다 (선택 사항)
+- `expired_at` 파라미터를 생략하면 기본값으로 현재 시각 + 7일이 자동 설정된다
+- 이는 초대장 **최초 발행** 시와 **연장** 시 모두 동일하게 적용된다
+
+#### 4.5.3. 초대장 연장 규칙
+
+- 초대장이 아직 만료되지 않은 상태에서 만료 기한을 연장할 수 있다
+- 연장 시에도 새로운 `expired_at` 을 직접 지정하거나, 생략하면 연장 시점 + 7일이 설정된다
+- 연장 처리는 기존 `wrtn_moderator_invitations` 레코드의 `expired_at` 값을 업데이트하는 방식으로 이루어진다
+- 이미 만료된 초대장(`expired_at` < 현재 시각)은 연장할 수 없다
+- 이미 수락되어 가입이 완료된 초대장도 연장할 수 없다
+
+### 4.6. 탈퇴 처리
+
+이외에 master 나 manager 가 기존의 관리자를 탈퇴 처리하면, `wrtn_moderators.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_moderator_appointments` 레코드가 하나 더 생성된다.
+
+이 때의 임명자는 탈퇴 처리를 한 바로 그 관리자이며, 이 때 변경되는 역할은 `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 이 된다.
+
+만일 관리자 당사자 스스로가 탈퇴한 것이라면, `wrtn_moderator_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
+
+### 4.7. Master 강퇴를 위한 2인 승인 절차
+
+#### 4.7.1. 중요 보안 정책
+
+master 권한을 가진 관리자를 강제로 탈퇴시키는 것은 매우 민감한 작업이므로, 단독 결정이 아닌 복수 master의 합의를 통해서만 가능하다.
+
+#### 4.7.2. 자진 탈퇴와 강제 탈퇴의 구분
+
+- **자진 탈퇴**: master 본인이 스스로 탈퇴하는 경우에는 2인 승인 절차가 필요 없다. 즉시 `wrtn_moderators.deleted_at` 에 시각이 기록되고, `wrtn_moderator_appointments` 레코드가 생성되며, `wrtn_appointer_id` 는 자기 자신이 된다.
+- **강제 탈퇴**: 어떤 master A가 다른 master B를 강퇴시키려는 경우, 반드시 2인 승인 절차를 거쳐야 한다.
+
+#### 4.7.3. 2인 승인 절차
+
+master A가 master B를 강제 탈퇴시키고자 하는 경우, 다음과 같은 절차가 필요하다:
+
+**1단계 - 강퇴 신청**: master A가 master B에 대한 강퇴 요청을 제출한다.
+- 이 시점에는 아직 B의 계정에 어떠한 변경도 일어나지 않는다.
+- 강퇴 요청 정보가 시스템에 기록된다 (요청자 A, 대상자 B, 요청 시각).
+
+**2단계 - 제3자 승인**: A도 B도 아닌 제3의 master C가 이 강퇴 요청을 검토하고 승인한다.
+- C는 시스템에 기록된 대기 중인 강퇴 요청 목록을 조회할 수 있다.
+- C가 해당 요청을 승인해야만 B의 강퇴가 최종 처리된다.
+- 만약 C가 거부하거나 일정 시간 내에 처리하지 않으면 요청은 자동으로 만료된다.
+
+**3단계 - 강퇴 확정**: C의 승인이 완료되면 비로소 B의 계정이 탈퇴 처리된다.
+- `wrtn_moderators.deleted_at` 에 탈퇴 시각 기록
+- `wrtn_moderator_appointments` 레코드 생성 (임명자는 최종 승인자 C)
+- `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 로 설정
+
+#### 4.7.4. 권한별 강퇴 규칙 정리
+
+| 대상자 역할 | 처리자 역할 | 필요 절차 |
+|-----------|-----------|---------|
+| **master** | master 본인 | 즉시 자진 탈퇴 (2인 승인 불필요) |
+| **master** | 다른 master A | 2인 승인 필요 (A의 신청 + 제3의 master C의 승인) |
+| **manager** | master 또는 manager | 즉시 강퇴 가능 (2인 승인 불필요) |
+| **null** | master 또는 manager | 즉시 강퇴 가능 (2인 승인 불필요) |
+
+#### 4.7.5. 2인 승인 절차의 목적
+
+- 한 명의 master가 독단적으로 다른 master를 제거하는 것을 방지
+- 내부 관리자 간의 견제와 균형 유지
+- 중요한 인사 결정에 대한 투명성과 책임성 확보
+- 악의적인 계정 탈취나 권한 남용 방지
+
+#### 4.7.6. Manager 강퇴의 경우
+
+- manager를 강퇴시킬 때는 2인 승인 절차가 필요 없다.
+- master 또는 다른 manager가 단독으로 즉시 강퇴 처리할 수 있다.
+- 이는 manager가 master보다 낮은 권한 수준이므로 master와 동일한 보호 수준이 필요하지 않기 때문이다.
+
+### 4.8. 세션 기반 감사 추적
+
+`wrtn_moderator_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다.
+
+#### 4.8.1. 세션 정보 구성
+
+각 세션은 다음 정보를 포함한다:
+
+- **href**: 접속한 URL 주소
+- **referrer**: 어디서 왔는지 (리퍼러 URL)
+- **ip**: 접속자의 IP 주소
+- **created_at**: 세션 시작 시각
+- **expired_at**: 세션 종료 시각
+
+#### 4.8.2. 세션 ID 활용
+
+이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있으며, 모든 중요한 행위는 해당 세션 ID와 함께 기록된다. 예를 들어:
+
+- 기업 생성 시: `wrtn_enterprises` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
+- 관리자 임명 시: `wrtn_moderator_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
+- 초대장 발송 시: `wrtn_moderator_invitations` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
+
+#### 4.8.3. AI 설계 원칙
+
+**AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다.**
+
+모든 관리자 행위 기록에는 반드시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id`도 포함시켜라.
 
 ## 5. Enterprise
 
@@ -689,75 +733,81 @@ model wrtn_enterprise_team_companion_invitations {
 
 > **중요**: `wrtn_enterprise_employees.title`은 위의 3가지 값(master/manager/member/null)만 가진다. 이 title 값으로 모든 권한을 관리한다.
 
-> ### 비밀번호 규칙 (`wrtn_enterprise_employees`)
->
-> 기업 직원의 비밀번호는 다음 보안 요구사항을 충족해야 한다:
->
-> **필수 요구사항**:
-> - **최소 길이**: 8자 이상
-> - **3종 조합 필수**:
->   - 영문자 (대문자 또는 소문자)
->   - 숫자 (0-9)
->   - 특수문자 (예: `!@#$%^&*()_+-=[]{}|;:,.<>?`)
->
-> **검증 로직**:
-> - 비밀번호는 회원가입, 비밀번호 변경 시 모두 동일한 규칙으로 검증된다
-> - 위 3가지 종류 중 **반드시 3종 모두** 포함되어야 한다
-> - 검증 실패 시 명확한 오류 메시지와 함께 요청을 거부한다
->
-> **저장 방식**:
-> - 비밀번호는 반드시 해시화하여 `wrtn_enterprise_employees.password_hashed` 에 저장
-> - 평문 비밀번호는 절대 저장하지 않음
-> - 해시 알고리즘은 bcrypt 또는 이와 동등한 보안 수준의 알고리즘 사용
->
-> **API 응답**:
-> - 비밀번호 검증 실패 시 구체적인 실패 이유를 제공:
->   - "비밀번호는 최소 8자 이상이어야 합니다"
->   - "비밀번호는 영문자, 숫자, 특수문자를 모두 포함해야 합니다"
->
-> **참고**: 이 비밀번호 규칙은 `wrtn_moderators`의 비밀번호 규칙과 동일하다. 모든 사용자 계정에 대해 일관된 보안 정책을 유지한다.
+#### 5.2.1. 비밀번호 규칙
+
+기업 직원의 비밀번호는 다음 보안 요구사항을 충족해야 한다:
+
+**필수 요구사항**:
+- **최소 길이**: 8자 이상
+- **3종 조합 필수**:
+  - 영문자 (대문자 또는 소문자)
+  - 숫자 (0-9)
+  - 특수문자 (예: `!@#$%^&*()_+-=[]{}|;:,.<>?`)
+
+**검증 로직**:
+- 비밀번호는 회원가입, 비밀번호 변경 시 모두 동일한 규칙으로 검증된다
+- 위 3가지 종류 중 **반드시 3종 모두** 포함되어야 한다
+- 검증 실패 시 명확한 오류 메시지와 함께 요청을 거부한다
+
+**저장 방식**:
+- 비밀번호는 반드시 해시화하여 `wrtn_enterprise_employees.password_hashed` 에 저장
+- 평문 비밀번호는 절대 저장하지 않음
+- 해시 알고리즘은 bcrypt 또는 이와 동등한 보안 수준의 알고리즘 사용
+
+**API 응답**:
+- 비밀번호 검증 실패 시 구체적인 실패 이유를 제공:
+  - "비밀번호는 최소 8자 이상이어야 합니다"
+  - "비밀번호는 영문자, 숫자, 특수문자를 모두 포함해야 합니다"
+
+**참고**: 이 비밀번호 규칙은 `wrtn_moderators`의 비밀번호 규칙과 동일하다. 모든 사용자 계정에 대해 일관된 보안 정책을 유지한다.
+
+#### 5.2.2. 가입 방법
 
 직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 master 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 master 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
-> ### 초대장 만료 정책 (`wrtn_enterprise_employee_invitations`)
->
-> **기본 만료 기한**: 초대장은 발행 시점으로부터 **7일** 후에 자동으로 만료된다.
->
-> **만료 기한 설정 방식**:
-> - API 호출 시 `expired_at` 파라미터를 통해 만료 시각을 직접 지정할 수 있다 (선택 사항)
-> - `expired_at` 파라미터를 생략하면 기본값으로 현재 시각 + 7일이 자동 설정된다
-> - 이는 초대장 **최초 발행** 시와 **연장** 시 모두 동일하게 적용된다
->
-> **초대장 연장 규칙**:
-> - 초대장이 아직 만료되지 않은 상태에서 만료 기한을 연장할 수 있다
-> - 연장 시에도 새로운 `expired_at` 을 직접 지정하거나, 생략하면 연장 시점 + 7일이 설정된다
-> - 연장 처리는 기존 `wrtn_enterprise_employee_invitations` 레코드의 `expired_at` 값을 업데이트하는 방식으로 이루어진다
-> - 이미 만료된 초대장(`expired_at` < 현재 시각)은 연장할 수 없다
-> - 이미 수락되어 가입이 완료된 초대장도 연장할 수 없다
+#### 5.2.3. 초대장 만료 정책
+
+**기본 만료 기한**: 초대장은 발행 시점으로부터 **7일** 후에 자동으로 만료된다.
+
+**만료 기한 설정 방식**:
+- API 호출 시 `expired_at` 파라미터를 통해 만료 시각을 직접 지정할 수 있다 (선택 사항)
+- `expired_at` 파라미터를 생략하면 기본값으로 현재 시각 + 7일이 자동 설정된다
+- 이는 초대장 **최초 발행** 시와 **연장** 시 모두 동일하게 적용된다
+
+**초대장 연장 규칙**:
+- 초대장이 아직 만료되지 않은 상태에서 만료 기한을 연장할 수 있다
+- 연장 시에도 새로운 `expired_at` 을 직접 지정하거나, 생략하면 연장 시점 + 7일이 설정된다
+- 연장 처리는 기존 `wrtn_enterprise_employee_invitations` 레코드의 `expired_at` 값을 업데이트하는 방식으로 이루어진다
+- 이미 만료된 초대장(`expired_at` < 현재 시각)은 연장할 수 없다
+- 이미 수락되어 가입이 완료된 초대장도 연장할 수 없다
+
+#### 5.2.4. 직책 변경
 
 직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. master 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
 
 다만 최초 master 의 경우 `wrtn_moderators` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 master 를 지정했음을 의미한다.
 
+#### 5.2.5. 퇴사 처리
+
 직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 master 또는 manager 가 직원을 해고하는 경우이다. master 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
 
 두 번째는 직원 본인이 스스로 사직하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_employees.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_employee_appointments` 레코드가 생성되지만, `wrtn_enterprise_appointer_id` 는 자기 자신의 ID가 되며, `title` 은 역시 `null` 이 된다. 이를 통해 자진 퇴사와 해고를 구분할 수 있다.
 
-> #### 세션 기반 감사 추적
-> 
-> `wrtn_enterprise_employee_sessions`는 기업 직원들의 모든 접속 세션을 기록한다. 내부 관리자의 세션 관리와 동일한 원칙으로, 기업 내에서 발생하는 모든 중요 행위를 "누가 + 언제 + 어느 세션에서" 했는지 완벽하게 추적한다.
-> 
-> 이 세션 정보는 기업 내 모든 활동과 연결된다:
-> - 직원 임명/해고: `wrtn_enterprise_employee_appointments`에 `wrtn_enterprise_appointer_session_id` 기록
-> - 초대장 발송: `wrtn_enterprise_employee_invitations`에 `wrtn_enterprise_employee_session_id` 기록
-> - 팀 구성원 관리: `wrtn_enterprise_team_companion_appointments`에 `wrtn_enterprise_team_appointer_session_id` 기록
-> - AI 채팅 생성: `wrtn_chat_sessions`에 `wrtn_enterprise_employee_session_id` 기록
-> - AI 프로시저 실행: `wrtn_procedure_sessions`에 `wrtn_enterprise_employee_session_id` 기록
-> - 페르소나 설정: `wrtn_enterprise_employee_personas`에 `wrtn_enterprise_employee_session_id` 기록
-> 
-> 이를 통해 기업은 직원들의 모든 활동을 정확하게 감사 추적할 수 있으며, 보안 사고 발생 시 정확한 원인 파악이 가능하다.
-> 
-> **AI 설계 원칙**: AutoBE가 기업 직원과 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 직원 행위 기록에는 반드시 `wrtn_enterprise_employee_id`와 함께  `wrtn_enterprise_employee_session_id`도 포함시켜라.
+#### 5.2.6. 세션 기반 감사 추적
+
+`wrtn_enterprise_employee_sessions`는 기업 직원들의 모든 접속 세션을 기록한다. 내부 관리자의 세션 관리와 동일한 원칙으로, 기업 내에서 발생하는 모든 중요 행위를 "누가 + 언제 + 어느 세션에서" 했는지 완벽하게 추적한다.
+
+이 세션 정보는 기업 내 모든 활동과 연결된다:
+- 직원 임명/해고: `wrtn_enterprise_employee_appointments`에 `wrtn_enterprise_appointer_session_id` 기록
+- 초대장 발송: `wrtn_enterprise_employee_invitations`에 `wrtn_enterprise_employee_session_id` 기록
+- 팀 구성원 관리: `wrtn_enterprise_team_companion_appointments`에 `wrtn_enterprise_team_appointer_session_id` 기록
+- AI 채팅 생성: `wrtn_chat_sessions`에 `wrtn_enterprise_employee_session_id` 기록
+- AI 프로시저 실행: `wrtn_procedure_sessions`에 `wrtn_enterprise_employee_session_id` 기록
+- 페르소나 설정: `wrtn_enterprise_employee_personas`에 `wrtn_enterprise_employee_session_id` 기록
+
+이를 통해 기업은 직원들의 모든 활동을 정확하게 감사 추적할 수 있으며, 보안 사고 발생 시 정확한 원인 파악이 가능하다.
+
+**AI 설계 원칙**: AutoBE가 기업 직원과 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 직원 행위 기록에는 반드시 `wrtn_enterprise_employee_id`와 함께  `wrtn_enterprise_employee_session_id`도 포함시켜라.
 
 ### 5.3. Team
 
@@ -1240,7 +1290,7 @@ model wrtn_enterprise_employee_personas {
 }
 ```
 
-#### 7.1.1. Persona API 요구사항
+#### 8.1.1. Persona API 요구사항
 
 **직원의 마지막 페르소나 조회**
 
@@ -1497,7 +1547,7 @@ model wrtn_ai_model_pricings {
 - 법인/팀/개인 단위로 그룹핑하여 조회할 수 있어야 한다
 - 실행 횟수, 성공률, 토큰 사용량, 비용 등의 지표를 확인할 수 있어야 한다
 
-### 14.5. 종합 대시보드 구성
+### 10.5. 종합 대시보드 구성
 
 **실시간 모니터링**
 - 현재 활성 세션 수 (채팅/프로시저)
@@ -1522,7 +1572,7 @@ model wrtn_ai_model_pricings {
 - 세션당 평균 대화 턴 수
 - 프로시저 성공률 추이
 
-### 14.6. 통계 조회 요구사항 요약
+### 10.6. 통계 조회 요구사항 요약
 
 > **⚠️ AutoBE에게 다시 한 번 강조하는 절대적 구현 명령**
 > 
@@ -1559,7 +1609,7 @@ model wrtn_ai_model_pricings {
 | **기업 직원 (manager)** | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 본인: ✓<br>&nbsp;&nbsp;- 같은 팀 멤버: ✓<br>&nbsp;&nbsp;- 다른 팀 manager: ✗<br>&nbsp;&nbsp;- master 권한자: ✗ | • 자사 전체 집계<br>• 자사 모든 팀 집계<br>• **개인별 제한**:<br>&nbsp;&nbsp;- 같은 팀 멤버만<br>&nbsp;&nbsp;- master/다른 manager 제외<br>• 자사 사용 프로시저 | 자사 집계 뷰<br>팀 상세 뷰<br>(자신의 팀만 개인 조회) | 자신의 팀만<br>(타 팀 제외) |
 | **기업 직원 (member)** | • 본인 통계만<br>• 소속 팀 집계<br>&nbsp;&nbsp;(개인 식별 불가) | • 본인 통계만<br>• 본인 사용 프로시저 | 개인 뷰만<br>(본인 데이터) | 본인 활동만 |
 
-### 14.8. 감사 추적 (Audit Trail)
+### 10.7. 감사 추적 (Audit Trail)
 
 > **감사 추적 설계 원칙**:
 > 
@@ -1618,7 +1668,7 @@ model wrtn_ai_model_pricings {
 
 감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, master는 자사 전체를, manager는 자신의 팀과 관리 범위 내의 로그만 볼 수 있다.
 
-### 10.10. 접근 권한 요약
+### 10.8. 접근 권한 요약
 
 | 데이터 범위 | 내부 관리자 | master (기업) | manager (기업) | member (기업) |
 |----------|-----------|--------------|---------------|--------------|
@@ -1631,7 +1681,7 @@ model wrtn_ai_model_pricings {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-### 14.9. 비정규화 및 집계 테이블 금지
+### 10.9. 비정규화 및 집계 테이블 금지
 
 > **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
 > 
