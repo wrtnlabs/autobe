@@ -1849,7 +1849,7 @@ export namespace IWrtnEnterpriseTeamCompanion {
   }
   export interface ISummaryFromTeam {
     // FK 참조관계 맵핑 (필수)
-    // team 은 절대 맵팡하지 않는다.
+    // team 은 절대 맵핑하지 않는다.
     employee: IWrtnEnterpriseEmployee.ISummary;
 
     // 이후로 자유로이 나머지 속성들을 설계할 것...
