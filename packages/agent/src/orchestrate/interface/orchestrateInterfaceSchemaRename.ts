@@ -51,24 +51,20 @@ export async function orchestrateInterfaceSchemaRename<
     total: entireTypeNames.size,
     completed: 0,
   };
-  const refactors: AutoBeInterfaceSchemaRefactor[] = Array.from(
-    new Map(
-      (
-        await executeCachedBatch(
-          matrix.map(
-            (typeNames) => (promptCacheKey) =>
-              divideAndConquer(ctx, {
-                tableNames,
-                typeNames,
-                promptCacheKey,
-                progress,
-              }),
-          ),
-        )
+  const refactors: AutoBeInterfaceSchemaRefactor[] = uniqueRefactors(
+    (
+      await executeCachedBatch(
+        matrix.map(
+          (typeNames) => (promptCacheKey) =>
+            divideAndConquer(ctx, {
+              tableNames,
+              typeNames,
+              promptCacheKey,
+              progress,
+            }),
+        ),
       )
-        .flat()
-        .map((r) => [r.from, r]),
-    ).values(),
+    ).flat(),
   );
   orchestrateInterfaceSchemaRename.rename(document, refactors);
 }
@@ -177,13 +173,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       return [];
     }
 
-    pointer.value.refactors = Array.from(
-      new Map(
-        pointer.value.refactors
-          .filter((r) => r.from !== r.to)
-          .map((r) => [r.from, r]),
-      ).values(),
-    );
+    pointer.value.refactors = uniqueRefactors(pointer.value.refactors);
     ctx.dispatch({
       type: "interfaceSchemaRename",
       id: v7(),
@@ -198,6 +188,53 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     props.progress.completed += props.typeNames.length;
     return [];
   }
+};
+
+const uniqueRefactors = (
+  refactors: AutoBeInterfaceSchemaRefactor[],
+): AutoBeInterfaceSchemaRefactor[] => {
+  // Remove self-references (A->A)
+  refactors = refactors.filter((r) => r.from !== r.to);
+
+  // Remove duplicates (keep the first occurrence)
+  refactors = Array.from(new Map(refactors.map((r) => [r.from, r])).values());
+
+  // Build adjacency map: from -> to
+  const renameMap: Map<string, string> = new Map();
+  for (const r of refactors) {
+    renameMap.set(r.from, r.to);
+  }
+
+  // Resolve transitive chains: A->B, B->C becomes A->C
+  const resolveChain = (from: string): string => {
+    const visited: Set<string> = new Set();
+    let current: string = from;
+
+    while (renameMap.has(current)) {
+      // Cycle detection: A->B, B->C, C->A
+      if (visited.has(current)) {
+        // Cycle detected, keep the last valid mapping before cycle
+        return current;
+      }
+      visited.add(current);
+      current = renameMap.get(current)!;
+    }
+    return current;
+  };
+
+  // Build final refactor list with resolved chains
+  const resolved: Map<string, AutoBeInterfaceSchemaRefactor> = new Map();
+  for (const from of renameMap.keys()) {
+    const finalTo: string = resolveChain(from);
+    // Only include if actually changes
+    if (from !== finalTo) {
+      resolved.set(from, {
+        from,
+        to: finalTo,
+      });
+    }
+  }
+  return Array.from(resolved.values());
 };
 
 const createController = <Model extends ILlmSchema.Model>(

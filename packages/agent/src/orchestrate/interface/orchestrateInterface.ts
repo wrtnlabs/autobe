@@ -154,7 +154,15 @@ export const orchestrateInterface =
         }),
       );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
+
+    const beforeMissed: string[] = missedOpenApiSchemas(document);
     await orchestrateInterfaceSchemaRename(ctx, document);
+    const afterMissed: string[] = missedOpenApiSchemas(document);
+    console.log(
+      "missed schemas (before -> after): ",
+      beforeMissed,
+      afterMissed,
+    );
 
     JsonSchemaFactory.finalize({
       document,
