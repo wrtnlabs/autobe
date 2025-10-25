@@ -1839,7 +1839,7 @@ export namespace IWrtnEnterpriseEmployee {
 export namespace IWrtnEnterpriseTeamCompanion {
   export interface ISummaryFromEmployee {
     // FK 참조관계 맵핑 (필수)
-    // employee 는 절대 맵팡하지 않는다.
+    // employee 는 절대 맵핑하지 않는다.
     team: IWrtnEnterpriseTeam.ISummary;
 
     // 이후로 자유로이 나머지 속성들을 설계할 것...
@@ -1889,35 +1889,42 @@ export interface IWrtnEnterpriseEmployeeInvitation {
 - 테이블명의 모든 semantic component를 DTO 타입명에 그대로 포함시켜라
 - prefix/infix/suffix 등 모든 단어를 PascalCase로 정확히 변환하라
 
-#### 12.5.2. 올바른 명명 예시
+#### 12.5.2. 올바른 명명 예시 및 잘못된 명명 예시
 
-```typescript
-// ✅ CORRECT: 테이블명의 모든 단어를 완전히 포함
-wrtn_enterprise_employees              → IWrtnEnterpriseEmployee
-wrtn_enterprise_employee_personas      → IWrtnEnterpriseEmployeePersona
-wrtn_enterprise_teams                  → IWrtnEnterpriseTeam
-wrtn_enterprise_team_companions        → IWrtnEnterpriseTeamCompanion
-wrtn_enterprise_employee_appointments  → IWrtnEnterpriseEmployeeAppointment
-wrtn_enterprise_employee_invitations   → IWrtnEnterpriseEmployeeInvitation
-wrtn_chat_sessions                     → IWrtnChatSession
-wrtn_chat_session_histories            → IWrtnChatSessionHistory
-wrtn_procedure_executions              → IWrtnProcedureExecution
-```
+**절대 규칙: 테이블명의 모든 단어를 완전히 포함하라. 중간 단어 생략 금지.**
 
-#### 12.5.3. 잘못된 명명 예시 (절대 금지)
+| Table Name | ✅ CORRECT Type | ❌ WRONG (Word Omitted) |
+|------------|----------------|------------------------|
+| `wrtn_enterprise_employees` | `IWrtnEnterpriseEmployee` | `IWrtnEmployee` (omits "Enterprise") |
+| `wrtn_enterprise_employees` | `IWrtnEnterpriseEmployee.ICreate` | `IWrtnEmployee.ICreate` (omits "Enterprise") |
+| `wrtn_enterprise_employees` | `IWrtnEnterpriseEmployee.IUpdate` | `IWrtnEmployee.IUpdate` (omits "Enterprise") |
+| `wrtn_enterprise_employees` | `IWrtnEnterpriseEmployee.ISummary` | `IWrtnEmployee.ISummary` (omits "Enterprise") |
+| `wrtn_enterprise_employee_personas` | `IWrtnEnterpriseEmployeePersona` | `IWrtnEmployeePersona` (omits "Enterprise") |
+| `wrtn_enterprise_employee_personas` | `IWrtnEnterpriseEmployeePersona.ICreate` | `IWrtnEmployeePersona.ICreate` (omits "Enterprise") |
+| `wrtn_enterprise_employee_personas` | `IWrtnEnterpriseEmployeePersona.IUpdate` | `IWrtnEmployeePersona.IUpdate` (omits "Enterprise") |
+| `wrtn_enterprise_teams` | `IWrtnEnterpriseTeam` | `IWrtnTeam` (omits "Enterprise") |
+| `wrtn_enterprise_team_companions` | `IWrtnEnterpriseTeamCompanion` | `IWrtnTeamCompanion` (omits "Enterprise") |
+| `wrtn_enterprise_employee_appointments` | `IWrtnEnterpriseEmployeeAppointment` | `IWrtnEmpAppointment` (omits "Enterprise", abbreviates "Employee") |
+| `wrtn_enterprise_employee_appointments` | `IWrtnEnterpriseEmployeeAppointment.ICreate` | `IWrtnEmpAppointment.ICreate` (omits "Enterprise", abbreviates "Employee") |
+| `wrtn_enterprise_employee_invitations` | `IWrtnEnterpriseEmployeeInvitation` | `IWrtnEmployeeInvitation` (omits "Enterprise") |
+| `wrtn_chat_sessions` | `IWrtnChatSession` | `IWrtnSession` (omits "Chat") |
+| `wrtn_chat_session_histories` | `IWrtnChatSessionHistory` | `IWrtnSessionHistory` (omits "Chat") |
+| `wrtn_chat_session_histories` | `IWrtnChatSessionHistory.ISummary` | `IWrtnSessionHistory.ISummary` (omits "Chat") |
+| `wrtn_procedure_executions` | `IWrtnProcedureExecution` | `IWrtnExecution` (omits "Procedure") |
+| `wrtn_procedure_executions` | `IWrtnProcedureExecution.ICreate` | `IWrtnExecution.ICreate` (omits "Procedure") |
+| `wrtn_procedure_executions` | `IWrtnProcedureExecution.IUpdate` | `IWrtnExecution.IUpdate` (omits "Procedure") |
 
-```typescript
-// ❌ WRONG: 중간 단어 누락
-wrtn_enterprise_employees              → IWrtnEmployee          // 'Enterprise' 누락
-wrtn_enterprise_employee_personas      → IWrtnEmployeePersona   // 'Enterprise' 누락
-wrtn_enterprise_teams                  → IWrtnTeam              // 'Enterprise' 누락
+#### 12.5.3. 명명 규칙 위반의 심각성
 
-// ❌ WRONG: 의미 단위 축약
-wrtn_enterprise_employee_appointments  → IWrtnEmpAppointment    // 'Enterprise' 누락, 'Employee' 축약
+중간 단어를 생략한 타입명은 다음과 같은 치명적 문제를 야기한다:
 
-// ❌ WRONG: 임의의 재구성
-wrtn_chat_session_histories            → IWrtnSessionHistory    // 'Chat' 누락
-```
+- **추적 불가능성**: `IWrtnEmployee`가 `wrtn_employees`인지 `wrtn_enterprise_employees`인지 구분 불가
+- **타입 충돌**: 서로 다른 테이블이 동일한 타입명을 가질 수 있음
+- **유지보수 악화**: 코드와 DB 스키마 간 매핑 관계가 모호해짐
+- **자동화 도구 실패**: 컴파일러와 생성 도구가 타입-테이블 매핑에 의존함
+- **도메인 컨텍스트 손실**: `IWrtnEmployee`는 비즈니스 컨텍스트(Enterprise)를 잃음
+
+**결론: 테이블명의 모든 단어는 타입명에 빠짐없이 포함되어야 한다. 예외 없음.**
 
 #### 12.5.4. 명명 변환 프로세스
 

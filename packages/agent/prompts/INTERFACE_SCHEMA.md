@@ -687,6 +687,29 @@ Database to Type Name Mapping:
 - `shopping_sale_units` → `IShoppingSaleUnit` (✅ CORRECT)
 - `shopping_sale_units` → `IShoppingUnit` (❌ WRONG - omits "Sale" intermediate)
 
+**3. NEVER OMIT INTERMEDIATE WORDS - CRITICAL**
+- When converting multi-word table names, **ALL words MUST be preserved** in the type name
+- Omitting intermediate words breaks the type-to-table traceability and causes system failures
+- This rule applies to **ALL type variants** including .ICreate, .IUpdate, .ISummary, etc.
+
+**Examples - Main Types and Nested Variants**:
+
+| Table Name | ✅ CORRECT Type | ❌ WRONG (Intermediate Word Omitted) |
+|------------|----------------|-------------------------------------|
+| `shopping_sale_reviews` | `IShoppingSaleReview` | `ISaleReview` (omits "Shopping") |
+| `shopping_sale_reviews` | `IShoppingSaleReview.ICreate` | `ISaleReview.ICreate` (omits "Shopping") |
+| `shopping_sale_reviews` | `IShoppingSaleReview.ISummary` | `ISaleReview.ISummary` (omits "Shopping") |
+| `bbs_article_comments` | `IBbsArticleComment` | `IBbsComment` (omits "Article") |
+| `bbs_article_comments` | `IBbsArticleComment.IUpdate` | `IBbsComment.IUpdate` (omits "Article") |
+| `shopping_order_good_refunds` | `IShoppingOrderGoodRefund` | `IShoppingRefund` (omits "OrderGood") |
+| `shopping_order_good_refunds` | `IShoppingOrderGoodRefund.ICreate` | `IShoppingRefund.ICreate` (omits "OrderGood") |
+
+**Why This Matters**:
+- **Traceability**: Type name must unambiguously map back to its source table
+- **Conflict Prevention**: Different domains may have similar concepts (e.g., `sale_reviews` vs `product_reviews`)
+- **Context Clarity**: Full names maintain the complete business domain context
+- **Consistency**: Automated tools rely on predictable naming patterns
+
 **Main Entity Types**: Use `IEntityName` format (singular, PascalCase after "I")
 
 **Operation-Specific Types**:

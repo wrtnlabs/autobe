@@ -291,6 +291,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
           h.type === "execute" && h.success === false,
       );
     if (errorHistory !== undefined) {
+      console.error("Error from", errorHistory.operation.name);
       if (errorHistory.value instanceof Error) throw errorHistory.value;
       else {
         const v = new Error();
