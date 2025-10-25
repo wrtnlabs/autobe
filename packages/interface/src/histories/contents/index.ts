@@ -7,6 +7,7 @@ export * from "./AutoBeUserMessageTextContent";
 export * from "./AutoBeAnalyzeActor";
 
 export * from "./AutoBeInterfaceAuthorization";
+export * from "./AutoBeInterfaceSchemaRefactor";
 
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";

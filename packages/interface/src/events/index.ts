@@ -43,6 +43,7 @@ export * from "./AutoBeInterfaceSchemaEvent";
 export * from "./AutoBeInterfaceSchemaSecurityReviewEvent";
 export * from "./AutoBeInterfaceSchemaRelationReviewEvent";
 export * from "./AutoBeInterfaceSchemaContentReviewEvent";
+export * from "./AutoBeInterfaceSchemaRenameEvent";
 export * from "./AutoBeInterfaceStartEvent";
 
 // TEST

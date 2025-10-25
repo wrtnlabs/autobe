@@ -26,6 +26,7 @@ import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
+import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
@@ -153,6 +154,7 @@ export const orchestrateInterface =
         }),
       );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
+    await orchestrateInterfaceSchemaRename(ctx, document);
 
     JsonSchemaFactory.finalize({
       document,
