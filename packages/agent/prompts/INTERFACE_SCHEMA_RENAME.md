@@ -51,6 +51,122 @@ This rule applies to **ALL type variants** including `.ICreate`, `.IUpdate`, `.I
 2. **Convert from snake_case to PascalCase** (maintaining word boundaries)
 3. **Add "I" prefix** for interface types
 4. **Use singular form** (NEVER plural)
+5. **Use dot separator** for type variants (`.ICreate`, `.IUpdate`, `.ISummary`, etc.)
+
+### 1.4. Namespace Separator Requirement
+
+**CRITICAL**: Type names you analyze may contain a CATASTROPHIC violation where variant suffixes are concatenated instead of using dot notation.
+
+**The Dot Separator Rule**:
+- Type variants MUST use dot notation: `IShoppingSale.ICreate` ✅
+- NEVER concatenate: `IShoppingSaleICreate` ❌
+
+**How to Detect This Violation**:
+
+When analyzing type names, check if they follow these patterns:
+
+```typescript
+// ❌ CONCATENATED VIOLATIONS (Multiple capital "I"s without dots)
+"IShoppingSaleICreate"          // Missing dot before "ICreate"
+"IBbsArticleIUpdate"            // Missing dot before "IUpdate"
+"IShoppingSaleReviewISummary"   // Missing dot before "ISummary"
+"IPageIShoppingSaleISummary"    // Missing dot before final "ISummary"
+
+// ✅ CORRECT PATTERNS (Dot separators present)
+"IShoppingSale.ICreate"         // Dot before variant
+"IBbsArticle.IUpdate"           // Dot before variant
+"IShoppingSaleReview.ISummary"  // Dot before variant
+"IPageIShoppingSale.ISummary"   // Dot before variant (not before "IPage")
+```
+
+**Pattern Recognition**:
+
+A concatenated violation has these characteristics:
+1. Multiple capital "I" letters in sequence without dots between them
+2. Ends with `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, or `IAbridge`
+3. The variant suffix is directly attached to the base type name
+
+**Refactoring Concatenated Types**:
+
+When you encounter a concatenated type name like `IShoppingSaleICreate`:
+
+1. **Identify the base type**: Find where the variant suffix starts
+   - Look for common suffixes: `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge`
+   - Base: `IShoppingSale`
+   - Suffix: `ICreate`
+
+2. **Insert dot separator**:
+   - From: `IShoppingSaleICreate`
+   - To: `IShoppingSale.ICreate`
+
+3. **Verify no other violations**: Check that the base name (`IShoppingSale`) also preserves all table words
+
+**Special Case - IPage Container**:
+
+```typescript
+// ❌ WRONG: Concatenated variant
+"IPageIShoppingSaleISummary"
+
+// ✅ CORRECT: Dot before variant
+"IPageIShoppingSale.ISummary"
+
+// Note: NO dot before "IPage" - it's part of the base type name
+// "IPageIShoppingSale" is ONE base type (container)
+// ".ISummary" is the variant of that container type
+```
+
+**Why This Matters for Your Validation**:
+
+Even if a type preserves all table words correctly, it's STILL INVALID if it uses concatenation instead of dot notation. You must detect BOTH violations:
+
+1. **Word omission** violations (your primary responsibility)
+2. **Concatenation** violations (namespace separator errors)
+
+**Example - Dual Violation**:
+
+```typescript
+// Table: shopping_sale_reviews
+❌ WRONG: "ISaleReviewICreate"
+   Violations:
+   1. Missing "Shopping" prefix (word omission)
+   2. Missing dot before "ICreate" (concatenation)
+
+✅ CORRECT: "IShoppingSaleReview.ICreate"
+   Fixes:
+   1. Added "Shopping" prefix
+   2. Added dot separator
+```
+
+**Refactoring Function Output**:
+
+When generating refactoring operations, you fix the BASE TYPE NAME only (without the variant):
+
+```typescript
+// If you encounter: "ISaleReviewICreate" or "ISaleReview.ICreate"
+// Both have the same base type problem: missing "Shopping"
+
+{
+  from: "ISaleReview",              // Base type only
+  to: "IShoppingSaleReview"         // Corrected base type
+}
+
+// The system will automatically fix ALL variants of this type:
+// - "ISaleReview.ICreate" → "IShoppingSaleReview.ICreate"
+// - "ISaleReviewICreate" → "IShoppingSaleReview.ICreate" (also fixes dot)
+```
+
+**Detection Algorithm Update**:
+
+When analyzing a type name string:
+
+1. **Strip variant suffix if present**:
+   - Check for: `.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert`, `.IAbridge`
+   - Also check concatenated forms: `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge` at the end
+   - Extract base type name
+
+2. **Analyze base type** for word omission (your primary task)
+
+3. **If concatenation detected**: The system will handle dot separator correction automatically when you provide the correct base type name
 
 ---
 
@@ -78,6 +194,47 @@ This rule applies to **ALL type variants** including `.ICreate`, `.IUpdate`, `.I
 
 **Impact**: The type name loses critical context about what entity it represents, breaking semantic clarity and type-to-table mapping.
 
+### 2.3. Concatenated Variant Suffix (CATASTROPHIC ERROR)
+
+| Type Name (Input) | ❌ WRONG (Concatenated) | ✅ CORRECT (Dot Separator) | Problem |
+|-------------------|------------------------|---------------------------|---------|
+| Base + Variant | `IShoppingSaleICreate` | `IShoppingSale.ICreate` | Missing dot separator |
+| Base + Variant | `IBbsArticleIUpdate` | `IBbsArticle.IUpdate` | Missing dot separator |
+| Base + Variant | `IShoppingSaleReviewISummary` | `IShoppingSaleReview.ISummary` | Missing dot separator |
+| Base + Variant | `IShoppingOrderIRequest` | `IShoppingOrder.IRequest` | Missing dot separator |
+| Container + Variant | `IPageIShoppingSaleISummary` | `IPageIShoppingSale.ISummary` | Missing dot separator |
+
+**Impact**: Type literally doesn't exist in the generated code. Compilation fails with "Cannot find name 'IShoppingSaleICreate'". Import statements break. Runtime crashes occur.
+
+**Detection Pattern**: Look for multiple consecutive capital "I"s followed by known variant suffixes (`ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge`) without a dot separator.
+
+**Refactoring Strategy**: When you detect concatenation, strip the suffix to get the base type, then provide the refactoring for the base type only. The system will automatically apply it to all variants and fix the dot separator.
+
+```typescript
+// Input type name: "ISaleReviewICreate"
+// Step 1: Strip suffix "ICreate" → base is "ISaleReview"
+// Step 2: Detect missing "Shopping" prefix
+// Step 3: Generate refactoring:
+{
+  from: "ISaleReview",           // Base type only
+  to: "IShoppingSaleReview"      // Corrected base
+}
+// System automatically fixes:
+// - "ISaleReview.ICreate" → "IShoppingSaleReview.ICreate"
+// - "ISaleReviewICreate" → "IShoppingSaleReview.ICreate" (also adds dot)
+```
+
+### 2.4. Combined Violations (DISASTER SCENARIO)
+
+| Prisma Table | ❌ WRONG Type | Issues | ✅ CORRECT Type |
+|--------------|--------------|---------|-----------------|
+| `shopping_sale_reviews` | `ISaleReviewICreate` | Missing prefix + concatenated | `IShoppingSaleReview.ICreate` |
+| `bbs_article_comments` | `ICommentISummary` | Missing context + concatenated | `IBbsArticleComment.ISummary` |
+| `shopping_order_goods` | `IOrderGoodIUpdate` | Missing prefix + concatenated | `IShoppingOrderGood.IUpdate` |
+
+**Impact**: Multiple cascading failures. Type doesn't exist (concatenation), AND wrong type (word omission), AND broken imports, AND compilation errors, AND runtime crashes.
+
+**Your Response**: Focus on correcting the BASE TYPE NAME. Provide refactoring that fixes word omission. The system handles dot separator correction automatically.
 
 ---
 

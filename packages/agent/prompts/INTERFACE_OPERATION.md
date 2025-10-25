@@ -635,6 +635,378 @@ For example, if the service prefix is "shopping":
   - "user-management" → "UserManagement" → `IUserManagementUser`
   - "blog_service" → "BlogService" → `IBlogServicePost`
 
+#### 6.5.1. CRITICAL DTO Type Name Formation Rules
+
+**ABSOLUTE MANDATE**: DTO type names MUST be derived from Prisma table names following exact transformation rules. Violations cause system failures including compilation errors, broken type mappings, and runtime crashes.
+
+##### The Fundamental Transformation Process
+
+When converting Prisma table names to DTO type names, follow this MANDATORY 4-step process:
+
+**Step 1: Preserve ALL Words**
+- **NEVER** omit any word from the table name
+- **NEVER** skip service prefixes (shopping_, bbs_, user_, etc.)
+- **NEVER** skip intermediate words in multi-word names
+- **NEVER** abbreviate or use synonyms
+
+**Step 2: Convert snake_case to PascalCase**
+- Split by underscores: `shopping_sale_reviews` → `["shopping", "sale", "reviews"]`
+- Capitalize first letter of each word: `["Shopping", "Sale", "Reviews"]`
+- Join without separators: `"ShoppingSaleReviews"`
+
+**Step 3: Singularize**
+- Convert plural forms to singular: `ShoppingSaleReviews` → `ShoppingSaleReview`
+- This is the ONLY acceptable modification to word forms
+
+**Step 4: Add "I" Prefix**
+- Prepend interface marker: `ShoppingSaleReview` → `IShoppingSaleReview`
+
+##### Mandatory Naming Rules
+
+**RULE 1: SINGULAR FORM REQUIREMENT (NON-NEGOTIABLE)**
+
+All DTO type names MUST use singular form. Plural type names cause system failures.
+
+| Prisma Table | ✅ CORRECT | ❌ WRONG (Plural) |
+|--------------|-----------|------------------|
+| `shopping_sales` | `IShoppingSale` | `IShoppingSales` |
+| `bbs_articles` | `IBbsArticle` | `IBbsArticles` |
+| `shopping_order_goods` | `IShoppingOrderGood` | `IShoppingOrderGoods` |
+
+**RULE 2: NAMESPACE SEPARATOR REQUIREMENT (CATASTROPHIC VIOLATION)**
+
+Type variants MUST use dot notation (`.`) as the namespace separator. NEVER concatenate variant names directly.
+
+**TypeScript Namespace Convention**:
+- Base type: `IShoppingSale`
+- Variants: `IShoppingSale.ICreate`, `IShoppingSale.IUpdate`, `IShoppingSale.ISummary`
+- Container: `IPageIShoppingSale`, `IPageIShoppingSale.ISummary`
+
+**CATASTROPHIC ERROR - Missing Dot Separator**:
+
+| Context | ✅ CORRECT | ❌ WRONG (No Dot) | Impact |
+|---------|-----------|------------------|---------|
+| Create variant | `IShoppingSale.ICreate` | `IShoppingSaleICreate` | Type doesn't exist, compilation fails |
+| Update variant | `IShoppingSale.IUpdate` | `IShoppingSaleIUpdate` | Type doesn't exist, compilation fails |
+| Summary variant | `IBbsArticle.ISummary` | `IBbsArticleISummary` | Type doesn't exist, compilation fails |
+| Request variant | `IShoppingOrder.IRequest` | `IShoppingOrderIRequest` | Type doesn't exist, compilation fails |
+| Paginated summary | `IPageIShoppingSale.ISummary` | `IPageIShoppingSaleISummary` | Type doesn't exist, compilation fails |
+| Invert variant | `IBbsArticleComment.IInvert` | `IBbsArticleCommentIInvert` | Type doesn't exist, compilation fails |
+
+**Why This Causes IMMEDIATE FAILURE**:
+
+1. **TypeScript Namespace Structure**: The dot notation represents actual TypeScript namespace hierarchy
+   ```typescript
+   // ✅ CORRECT - How types are actually defined
+   export interface IShoppingSale {
+     id: string;
+     name: string;
+   }
+
+   export namespace IShoppingSale {
+     export interface ICreate {  // Accessed as IShoppingSale.ICreate
+       name: string;
+     }
+     export interface IUpdate {  // Accessed as IShoppingSale.IUpdate
+       name?: string;
+     }
+   }
+
+   // ❌ WRONG - This type literally doesn't exist
+   // There is NO interface named "IShoppingSaleICreate"
+   // The system will fail with "Cannot find name 'IShoppingSaleICreate'"
+   ```
+
+2. **Code Generation Breaks**: Generated code attempts to import non-existent types
+   ```typescript
+   // ✅ CORRECT - Import succeeds
+   import type { IShoppingSale } from './IShoppingSale';
+   function create(input: IShoppingSale.ICreate): Promise<IShoppingSale>
+
+   // ❌ WRONG - Import fails (type doesn't exist)
+   import type { IShoppingSaleICreate } from './IShoppingSale';  // ERROR!
+   ```
+
+3. **API Contract Violation**: OpenAPI schema references become invalid
+   ```typescript
+   // ✅ CORRECT - Schema exists
+   { "typeName": "IShoppingSale.ICreate" }  // References IShoppingSale namespace's ICreate
+
+   // ❌ WRONG - Schema doesn't exist
+   { "typeName": "IShoppingSaleICreate" }   // No such schema defined
+   ```
+
+**Visual Pattern Recognition**:
+
+```typescript
+// ✅ CORRECT PATTERNS (Always use dots)
+IShoppingSale.ICreate           // Create operation
+IShoppingSale.IUpdate           // Update operation
+IShoppingSale.ISummary          // Summary view
+IShoppingSale.IRequest          // Search request
+IShoppingSale.IInvert           // Inverted composition
+IPageIShoppingSale              // Paginated base (no dot before "IPage")
+IPageIShoppingSale.ISummary     // Paginated summary (dot for variant)
+
+// ❌ WRONG PATTERNS (Missing dots - NEVER DO THIS)
+IShoppingSaleICreate            // ❌ Concatenated - type doesn't exist
+IShoppingSaleIUpdate            // ❌ Concatenated - compilation error
+IShoppingSaleISummary           // ❌ Concatenated - import fails
+IShoppingSaleIRequest           // ❌ Concatenated - runtime crash
+IPageIShoppingSaleISummary      // ❌ Concatenated - schema not found
+```
+
+**Container Type Exception**:
+
+The `IPage` prefix is NOT a namespace - it's part of the base type name, so NO dot before it:
+```typescript
+✅ CORRECT: IPageIShoppingSale           // "IPageIShoppingSale" is ONE type name
+✅ CORRECT: IPageIShoppingSale.ISummary  // Variant of the container type
+❌ WRONG:   IPage.IShoppingSale          // IPage is not a namespace
+❌ WRONG:   IPageIShoppingSaleISummary   // Missing dot for variant
+```
+
+**Pre-Generation Check for Every Type Reference**:
+
+Before writing ANY `typeName` field, verify:
+- [ ] Base type uses PascalCase with NO dots: `IShoppingSale` ✅
+- [ ] Variants use DOT separator: `IShoppingSale.ICreate` ✅
+- [ ] NOT concatenated: NOT `IShoppingSaleICreate` ❌
+- [ ] Container types have NO dot before IPage: `IPageIShoppingSale` ✅
+- [ ] Container variants DO have dot: `IPageIShoppingSale.ISummary` ✅
+
+**RULE 3: COMPLETE NAME PRESERVATION (CRITICAL)**
+
+Every word from the table name MUST appear in the type name in the same order.
+
+**Service Prefix Preservation** (MOST COMMON VIOLATION):
+
+| Prisma Table | ✅ CORRECT | ❌ WRONG (Omitted Prefix) | Problem |
+|--------------|-----------|--------------------------|---------|
+| `shopping_sales` | `IShoppingSale` | `ISale` | Missing "Shopping" service prefix |
+| `shopping_sale_reviews` | `IShoppingSaleReview` | `ISaleReview` | Missing "Shopping" prefix |
+| `bbs_articles` | `IBbsArticle` | `IArticle` | Missing "Bbs" prefix |
+| `bbs_article_comments` | `IBbsArticleComment` | `IComment` | Missing "BbsArticle" context |
+
+**Intermediate Word Preservation** (CRITICAL VIOLATION):
+
+| Prisma Table | ✅ CORRECT | ❌ WRONG (Omitted Word) | Missing Component |
+|--------------|-----------|------------------------|-------------------|
+| `shopping_sale_units` | `IShoppingSaleUnit` | `IShoppingUnit` | "Sale" omitted |
+| `bbs_article_comments` | `IBbsArticleComment` | `IBbsComment` | "Article" omitted |
+| `shopping_order_good_refunds` | `IShoppingOrderGoodRefund` | `IShoppingRefund` | "OrderGood" omitted |
+| `shopping_order_good_refunds` | `IShoppingOrderGoodRefund` | `IShoppingOrderRefund` | "Good" omitted |
+
+**RULE 4: NEVER OMIT INTERMEDIATE WORDS**
+
+Multi-word table names require ALL words in sequence. This is the MOST CRITICAL rule.
+
+**Why This Matters**:
+1. **Type-to-Table Traceability**: Type name must unambiguously map back to source table
+2. **Conflict Prevention**: Different domains have similar concepts (e.g., `sale_reviews` vs `product_reviews`)
+3. **Context Preservation**: Full names maintain complete business domain context
+4. **System Stability**: Compilers and code generators depend on exact name matching
+5. **Automated Tooling**: Subsequent agents rely on predictable patterns
+
+**Example Analysis - Detecting Violations**:
+
+```typescript
+// Table: bbs_article_comments
+// Word breakdown: ["bbs", "article", "comment"] (singular)
+
+✅ CORRECT: IBbsArticleComment
+   Analysis: ["Bbs", "Article", "Comment"] - all words present in order
+
+❌ WRONG: IBbsComment
+   Analysis: ["Bbs", "Comment"] - "Article" is MISSING
+   Impact: Type name loses critical context, breaks type-to-table mapping
+
+❌ WRONG: IComment
+   Analysis: ["Comment"] - "Bbs" and "Article" are MISSING
+   Impact: Severe - multiple services might have comments, creates ambiguity
+```
+
+```typescript
+// Table: shopping_order_good_refunds
+// Word breakdown: ["shopping", "order", "good", "refund"] (singular)
+
+✅ CORRECT: IShoppingOrderGoodRefund
+   Analysis: ["Shopping", "Order", "Good", "Refund"] - complete preservation
+
+❌ WRONG: IShoppingRefund
+   Analysis: ["Shopping", "Refund"] - "Order" and "Good" are MISSING
+   Impact: Loses context about what is being refunded
+
+❌ WRONG: IShoppingOrderRefund
+   Analysis: ["Shopping", "Order", "Refund"] - "Good" is MISSING
+   Impact: Ambiguous - could be order refund vs order-good refund
+```
+
+##### Type Variant Naming
+
+The base naming rules apply to ALL type variants:
+
+```typescript
+// Base type follows standard rules
+IShoppingSaleReview
+
+// All variants preserve the complete base name
+IShoppingSaleReview.ICreate    // ✅ Complete
+IShoppingSaleReview.IUpdate    // ✅ Complete
+IShoppingSaleReview.ISummary   // ✅ Complete
+IShoppingSaleReview.IRequest   // ✅ Complete
+
+// VIOLATIONS (missing "Shopping" prefix)
+ISaleReview.ICreate            // ❌ WRONG
+ISaleReview.ISummary           // ❌ WRONG
+```
+
+##### Acceptable Exceptions: Longer Type Names
+
+Type names that are LONGER than the base table name are ACCEPTABLE when extracting nested structures or creating specialized views.
+
+**Valid Extensions**:
+
+| Prisma Table | ✅ VALID (Base) | ✅ VALID (Extended) | Reason |
+|--------------|----------------|---------------------|--------|
+| `bbs_article_comments` | `IBbsArticleComment` | `IBbsArticleCommentContent` | Extracted content object |
+| `bbs_article_comments` | `IBbsArticleComment` | `IBbsArticleCommentMetadata` | Metadata structure |
+| `shopping_sales` | `IShoppingSale` | `IShoppingSaleSnapshot` | Snapshot variant |
+
+**Analysis Pattern**:
+1. Extract table words: `bbs_article_comments` → `["bbs", "article", "comment"]`
+2. Extract type words: `IBbsArticleCommentContent` → `["Bbs", "Article", "Comment", "Content"]`
+3. Verify ALL table words appear in type words IN ORDER: ✅ Yes
+4. Extra word "Content" is acceptable - NOT a violation
+
+**Rule**: Only detect violations when words are OMITTED, not when words are ADDED.
+
+##### Forbidden Practices
+
+**NEVER Abbreviate**:
+```typescript
+shopping_sales → IShopSale        // ❌ "Shopping" abbreviated to "Shop"
+bbs_articles → IBoardArticle      // ❌ "Bbs" changed to "Board"
+shopping_sales → IShoppingSl      // ❌ "Sale" abbreviated to "Sl"
+```
+
+**NEVER Use Synonyms**:
+```typescript
+shopping_customers → IShoppingClient    // ❌ "Customer" changed to "Client"
+bbs_articles → IBbsPost                // ❌ "Article" changed to "Post"
+```
+
+**NEVER Reorder Words**:
+```typescript
+shopping_sale_reviews → ISaleShoppingReview  // ❌ Wrong order
+```
+
+##### Pre-Generation Validation Checklist
+
+Before generating ANY operation with type references, verify:
+
+- [ ] **Identified source table** for each DTO type reference
+- [ ] **Extracted all words** from table name (split by underscore)
+- [ ] **Preserved every word** in the type name
+- [ ] **Converted to PascalCase** correctly (capitalize each word)
+- [ ] **Singularized** the final word if needed
+- [ ] **Added "I" prefix** to create interface name
+- [ ] **Applied to ALL variants** (.ICreate, .IUpdate, .ISummary, etc.)
+- [ ] **No abbreviations** or synonyms used
+- [ ] **No intermediate words omitted**
+
+##### Common Mistakes and Corrections
+
+**Mistake 1: Missing Dot Separator (CATASTROPHIC)**
+```typescript
+// Table: shopping_sales
+❌ WRONG: requestBody: { typeName: "IShoppingSaleICreate" }     // Concatenated
+✅ CORRECT: requestBody: { typeName: "IShoppingSale.ICreate" }  // Dot separator
+
+// Table: bbs_article_comments
+❌ WRONG: responseBody: { typeName: "IBbsArticleCommentISummary" }     // Concatenated
+✅ CORRECT: responseBody: { typeName: "IBbsArticleComment.ISummary" }  // Dot separator
+
+// Paginated summary
+❌ WRONG: responseBody: { typeName: "IPageIShoppingSaleISummary" }     // Concatenated
+✅ CORRECT: responseBody: { typeName: "IPageIShoppingSale.ISummary" }  // Dot separator
+```
+
+**Mistake 2: Omitting Service Prefix**
+```typescript
+// Table: shopping_sales
+❌ WRONG: requestBody: { typeName: "ISale.ICreate" }
+✅ CORRECT: requestBody: { typeName: "IShoppingSale.ICreate" }
+```
+
+**Mistake 3: Omitting Intermediate Words**
+```typescript
+// Table: bbs_article_comments
+❌ WRONG: responseBody: { typeName: "IPageIBbsComment.ISummary" }
+✅ CORRECT: responseBody: { typeName: "IPageIBbsArticleComment.ISummary" }
+```
+
+**Mistake 4: Using Plural Forms**
+```typescript
+// Table: shopping_sales
+❌ WRONG: responseBody: { typeName: "IShoppingSales" }
+✅ CORRECT: responseBody: { typeName: "IShoppingSale" }
+```
+
+**Mistake 5: Inconsistency Across Variants**
+```typescript
+// Table: shopping_sale_reviews
+❌ WRONG (Mixed):
+  requestBody: { typeName: "ISaleReview.ICreate" }        // Missing "Shopping"
+  responseBody: { typeName: "IShoppingSaleReview" }       // Correct
+
+✅ CORRECT (Consistent):
+  requestBody: { typeName: "IShoppingSaleReview.ICreate" }
+  responseBody: { typeName: "IShoppingSaleReview" }
+```
+
+**Mistake 6: Combined Violations (DISASTER)**
+```typescript
+// Table: shopping_sale_reviews
+❌ WRONG (Multiple violations):
+  requestBody: { typeName: "ISaleReviewICreate" }    // Missing prefix AND dot
+  responseBody: { typeName: "IPageISaleReviewISummary" }  // Missing prefix AND dot
+
+✅ CORRECT:
+  requestBody: { typeName: "IShoppingSaleReview.ICreate" }
+  responseBody: { typeName: "IPageIShoppingSaleReview.ISummary" }
+```
+
+##### Verification Against Subsequent Validation
+
+Your generated type names will be validated by the Schema Rename Agent, which performs systematic verification:
+
+1. **Decomposes table names** into word components
+2. **Decomposes type names** into word components
+3. **Verifies ALL table words** appear in type name in order
+4. **Identifies violations** and generates refactoring operations
+
+**To avoid refactoring failures**: Follow the rules EXACTLY as specified. Every violation you create will be detected and corrected, but creates unnecessary processing overhead and potential pipeline delays.
+
+##### Impact of Violations
+
+**Compilation Failures**:
+- Type name doesn't match generated code expectations
+- Import statements fail to resolve
+- TypeScript compilation errors
+
+**Runtime Failures**:
+- Type mappings break during code generation
+- API contracts become inconsistent
+- Client SDK generation fails
+
+**System Integrity**:
+- Automated refactoring required (processing overhead)
+- Pipeline delays from correction cycles
+- Potential cascading failures in dependent agents
+
+**CRITICAL REMINDER**: These are not stylistic preferences - they are MANDATORY system requirements. Every violation causes measurable harm to the generation pipeline.
+
 ### 6.6. Operation Name Requirements
 
 #### Reserved Word Restrictions
