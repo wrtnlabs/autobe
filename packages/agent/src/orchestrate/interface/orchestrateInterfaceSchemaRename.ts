@@ -92,14 +92,14 @@ export async function orchestrateInterfaceSchemaRename<
         },
       });
     for (const [key, value] of Object.entries(document.components.schemas)) {
-      const chnage = predicate(key);
-      if (chnage !== null) {
+      const change = predicate(key);
+      if (change !== null) {
+        document.components.schemas[change(key)] = value;
         delete document.components.schemas[key];
-        document.components.schemas[chnage(key)] = value;
       }
     }
-    for (const fn of $refChangers) fn();
   }
+  for (const fn of $refChangers) fn();
 }
 
 const divideAndConquer = async <Model extends ILlmSchema.Model>(
