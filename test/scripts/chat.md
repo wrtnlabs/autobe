@@ -1099,13 +1099,9 @@ export interface IWrtnChatSessionAssistantMessageHistory {
 export interface IWrtnChatSessionExecuteHistory {
   id: string & tags.Format<"uuid">;
   type: "execute";
-  arguments: {
-    search: string;
-  };
+  arguments: {}; // no properties defined object
   success: boolean;
-  value: {
-    result: string;
-  };
+  value: {}; // no properties defined object
   created_at: string & tags.Format<"date-time">;
   completed_at: string & tags.Format<"date-time">;
 }
@@ -1114,6 +1110,24 @@ export interface IWrtnChatSessionExecuteHistory {
 위 인터페이스 타입들은 본인(사람)이 직접 `wrtn_chat_user_histories.data` 의 타입에 대하여 정의한 DTO 타입들이다.
 
 웹소켓에서 본격적으로 다루게 될 녀석들인데, AutoBE 는 이 타입 그대로 구현하되 각 타입마다 시의적절한 설명을 보충하여 사용할 것 (JSON schema 상 `description`).
+
+**🔴 절대 준수사항: `IWrtnChatSessionExecuteHistory`의 `arguments`와 `value` 타입**
+
+`IWrtnChatSessionExecuteHistory.arguments`와 `IWrtnChatSessionExecuteHistory.value`는 **반드시 아무런 속성이 없는 텅 빈 오브젝트 타입 `{}`** 로 정의해야 한다. 절대로 `any` 타입이 되어서는 안 된다.
+
+**이유**: AutoBE는 `any` 타입을 허용하지 않는다. 이 필드들은 암호화된 JSON 값을 담는 범용 컨테이너로서, 실행 시점의 동적 데이터를 저장한다. 만약 타입을 지정하지 않거나 잘못 추론하면 `any`로 처리되어 AutoBE의 타입 검증 단계에서 거절당한다.
+
+**올바른 타입 정의**:
+```typescript
+// ✅ 올바른 정의 - 빈 오브젝트 타입
+arguments: {}
+value: {}
+
+// ❌ 잘못된 정의들
+arguments: any           // any 타입 사용 금지
+value: Record<string, any>  // any 타입 사용 금지
+arguments: object        // object 타입 사용 금지 (any와 동일하게 처리될 수 있음)
+```
 
 ### 6.3. `IWrtnTokenUsage`
 
@@ -1287,6 +1301,31 @@ model wrtn_procedure_session_aggregate_token_usages {
 - `wrtn_procedure_session_histories.value` - JSON value, encrypted
 
 추가 필드를 달아도 된다는 것은 새로운 컬럼을 추가할 수 있다는 의미이지, 기존 JSON 필드를 분해하라는 의미가 절대 아니다.
+
+**🔴 절대 준수사항: `wrtn_procedure_session_histories` 테이블 DTO의 `arguments`와 `value` 타입**
+
+`wrtn_procedure_session_histories` 테이블을 DTO로 정의할 때, `arguments`와 `value` 속성은 **반드시 아무런 속성이 없는 텅 빈 오브젝트 타입 `{}`** 로 정의해야 한다. 절대로 `any` 타입이 되어서는 안 된다.
+
+**이유**: 이 필드들은 Prisma 스키마에서 `String` 타입으로 정의되어 암호화된 JSON 값을 저장한다. 하지만 API DTO 레벨에서는 이를 객체로 표현해야 하는데, 구체적인 타입이 없는 범용 컨테이너이므로 빈 오브젝트 타입을 사용한다. AutoBE는 `any` 타입을 허용하지 않으므로, 타입을 명시하지 않거나 잘못 추론하면 생성 단계에서 거절당한다.
+
+**올바른 DTO 타입 정의 예시**:
+```typescript
+// ✅ 올바른 정의
+export interface IWrtnProcedureSessionHistory {
+  id: string & tags.Format<"uuid">;
+  arguments: {};     // 빈 오브젝트 타입
+  success: boolean | null;
+  value: {} | null;  // 빈 오브젝트 타입 (nullable)
+  created_at: string & tags.Format<"date-time">;
+  completed: (string & tags.Format<"date-time">) | null;
+}
+
+// ❌ 잘못된 정의들
+arguments: any                    // any 타입 절대 금지
+value: Record<string, any>        // any 타입 절대 금지
+arguments: object                 // object 타입 금지 (any로 처리될 수 있음)
+arguments: Record<string, unknown> // unknown 사용도 권장하지 않음
+```
 
 뤼튼 엔터프라이즈에서 말하는 AI Procedure 란, 위 [4. AI Chatbot](#4-ai-chatbot) 과 같은 챗봇의 형태가 아닌, 지정된 형태의 인풋을 받아서 약속된 형태의 아웃풋을 반환하는 함수형 서비스이다. 문자 그대로 함수(프로시저) 형태의 AI 서비스로써, Stable Diffusion 으로 이미지를 생성하는게 AI Procedure 의 가장 대표적인 사례이다.
 
