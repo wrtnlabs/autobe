@@ -1,6 +1,6 @@
 import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
 
 export namespace JsonSchemaFactory {
@@ -53,6 +53,7 @@ export namespace JsonSchemaFactory {
     application: AutoBePrisma.IApplication;
   }): void => {
     removeUnused(props.document);
+    removeDuplicated(props.document);
     fixTimestamps(props);
   };
 
@@ -82,6 +83,43 @@ export namespace JsonSchemaFactory {
     }
     for (const key of Object.keys(document.components.schemas))
       if (used.has(key) === false) delete document.components.schemas[key];
+  };
+
+  const removeDuplicated = (document: AutoBeOpenApi.IDocument): void => {
+    const correct: Map<string, string> = new Map();
+    for (const key of Object.keys(document.components.schemas)) {
+      if (key.includes(".") === false) continue;
+      const dotRemoved: string = key.replace(".", "");
+      if (document.components.schemas[dotRemoved] === undefined) continue;
+      correct.set(dotRemoved, key);
+    }
+
+    for (const op of document.operations) {
+      if (op.requestBody && correct.has(op.requestBody.typeName))
+        op.requestBody.typeName = correct.get(op.requestBody.typeName)!;
+      if (op.responseBody && correct.has(op.responseBody.typeName))
+        op.responseBody.typeName = correct.get(op.responseBody.typeName)!;
+    }
+
+    const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
+    for (const value of Object.values(document.components.schemas))
+      OpenApiTypeChecker.visit({
+        components: { schemas: document.components.schemas },
+        schema: value,
+        closure: (next) => {
+          if (OpenApiTypeChecker.isReference(next) === false) return;
+          const x: string = next.$ref.split("/").pop()!;
+          const y: string | undefined = correct.get(x);
+          if (y === undefined) return;
+          $refChangers.set(
+            next,
+            () => (next.$ref = `#/components/schemas/${y}`),
+          );
+        },
+      });
+    for (const fn of $refChangers.values()) fn();
+
+    for (const key of correct.keys()) delete document.components.schemas[key];
   };
 
   const fixTimestamps = (props: {
@@ -220,8 +258,8 @@ namespace IPage {
  * refresh tokens along with their expiration information.
  *
  * This token structure is automatically included in API schemas when the system
- * detects authorization actors in the requirements analysis phase. It provides a
- * standard format for JWT-based authentication across the generated backend
+ * detects authorization actors in the requirements analysis phase. It provides
+ * a standard format for JWT-based authentication across the generated backend
  * applications.
  */
 interface IAuthorizationToken {
