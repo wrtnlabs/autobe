@@ -81,16 +81,20 @@
 - **AI의 "더 나은 명명" 판단 절대 금지**: AI가 주관적으로 판단하여 명명 규칙을 통일하거나 개선하려는 시도는 중대한 위반이다
 
 **위반 예시 (절대 금지)**:
+- ❌ `wrtn_moderators` → `wrtn_enterprise_ai_suite_moderators` (AI가 prefix 추가로 "일관성" 확보)
 - ❌ `wrtn_chat_sessions` → `wrtn_chatbot_sessions` (AI가 "chatbot이 더 명확하다"고 판단)
+- ❌ `wrtn_procedures` → `wrtn_ai_procedures` (AI가 "ai 명시가 더 낫다"고 판단)
 - ❌ `wrtn_enterprise_employee_id` → `employee_id` (AI가 "prefix 제거가 더 깔끔하다"고 판단)
 - ❌ `disclosure` → `visibility` (AI가 "더 일반적인 용어"라고 판단)
 - ❌ `vendor` → `ai_model_vendor` (AI가 "더 구체적"이라고 판단)
 
 **올바른 접근**:
-- ✅ 본 문서에 `wrtn_chat_sessions`라고 명시되어 있으면 **정확히 `wrtn_chat_sessions`**
-- ✅ 본 문서에 `disclosure`라고 명시되어 있으면 **정확히 `disclosure`**
-- ✅ 본 문서에 `vendor`라고 명시되어 있으면 **정확히 `vendor`**
-- ✅ **단 한 글자도 바꾸지 않고** 그대로 사용
+- ✅ 본 문서에 `wrtn_moderators`라고 명시 → **정확히 `wrtn_moderators`** (prefix 추가 금지)
+- ✅ 본 문서에 `wrtn_chat_sessions`라고 명시 → **정확히 `wrtn_chat_sessions`** (chatbot으로 변경 금지)
+- ✅ 본 문서에 `wrtn_procedures`라고 명시 → **정확히 `wrtn_procedures`** (ai 추가 금지)
+- ✅ 본 문서에 `disclosure`라고 명시 → **정확히 `disclosure`** (visibility로 변경 금지)
+- ✅ 본 문서에 `vendor`라고 명시 → **정확히 `vendor`** (확장 금지)
+- ✅ **단 한 글자도 바꾸지 않고 문자 그대로 복사**
 
 #### 2.2.2. 추가 금지
 
@@ -148,11 +152,25 @@
 
 - 본 문서에 명시된 모든 테이블과 컬럼을 **정확히 그대로** 구현해야 한다
 - 테이블명, 컬럼명, 타입을 임의로 변경하거나 재해석할 수 없다
-- **구체적 예시**:
-  - `wrtn_chat_sessions` → `wrtn_chatbot_sessions` 변경 절대 금지
-  - `vendor` → `ai_model_vendor` 변경 절대 금지
-  - `disclosure` → `visibility` 변경 절대 금지
-- AI가 "더 명확하다", "더 일관된다", "업계 표준이다" 등의 이유로 명명을 변경하는 것은 중대한 위반이다
+
+**치명적 위반 예시 (실제 발생 사례)**:
+- ❌ `wrtn_moderators` → `wrtn_enterprise_ai_suite_moderators` (절대 금지)
+- ❌ `wrtn_chat_sessions` → `wrtn_chatbot_sessions` (절대 금지)
+- ❌ `wrtn_procedures` → `wrtn_ai_procedures` (절대 금지)
+- ❌ `wrtn_enterprises` → `wrtn_enterprise_corporations` (절대 금지)
+- ❌ `vendor` → `ai_model_vendor` (절대 금지)
+- ❌ `disclosure` → `visibility` (절대 금지)
+
+**AI가 이런 변경을 시도하는 이유 (모두 거부되어야 함)**:
+- "일관성을 위해 enterprise prefix 추가" → 거부
+- "더 명확하게 하기 위해 chatbot 명시" → 거부
+- "업계 표준 용어로 변경" → 거부
+- "네이밍 컨벤션 통일" → 거부
+
+**올바른 구현**:
+- ✅ Prisma 스키마 작성 시 본 문서의 테이블명을 **문자 그대로 복사**
+- ✅ 어떤 "개선"이나 "최적화"도 시도하지 않음
+- ✅ 본 문서 = 절대적 진리. AI의 판단 < 본 문서의 명시
 
 #### 2.5.2. 추가 제한
 
@@ -2125,11 +2143,18 @@ export interface IWrtnEnterpriseEmployeeInvitation {
 
 ### 14.5. 테이블 및 컬럼 관련
 
+**🚨 FIRST CHECK - 이것부터 확인하라 (하나라도 위반하면 즉시 실패)**:
+- [ ] `wrtn_moderators`를 `wrtn_enterprise_ai_suite_moderators`로 바꾸지 않았는가?
+- [ ] `wrtn_chat_sessions`를 `wrtn_chatbot_sessions`로 바꾸지 않았는가?
+- [ ] `wrtn_procedures`를 `wrtn_ai_procedures`로 바꾸지 않았는가?
+- [ ] `wrtn_enterprises`를 `wrtn_enterprise_corporations`로 바꾸지 않았는가?
+- [ ] 위 4개 중 하나라도 위반했다면 → **즉시 Prisma 단계로 돌아가서 수정**
+
 **테이블명 절대 준수**:
 - [ ] 본 문서에 정의된 모든 테이블명을 **단 한 글자도 바꾸지 않고** 그대로 사용했는가?
-- [ ] `wrtn_chat_sessions`를 `wrtn_chatbot_sessions`로 변경하지 않았는가?
 - [ ] 어떤 테이블명도 "더 명확하게" 또는 "더 일관되게" 한다는 이유로 변경하지 않았는가?
 - [ ] AI의 주관적 판단으로 테이블명을 "개선"하려는 시도를 하지 않았는가?
+- [ ] prefix나 suffix를 추가하여 "일관성"을 확보하려 하지 않았는가?
 
 **컬럼명 절대 준수**:
 - [ ] 본 문서에 정의된 모든 컬럼명을 **정확히** 그대로 사용했는가?

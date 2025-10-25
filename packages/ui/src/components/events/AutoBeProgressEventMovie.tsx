@@ -100,6 +100,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           description:
             "Reviewing API type schemas content completeness and consistency",
         };
+      case "interfaceSchemaRename":
+        return {
+          title: "Interface Schema Rename",
+          description: "Renaming API type schemas",
+        };
       case "interfacePrerequisite":
         return {
           title: "Interface Prerequisites",
