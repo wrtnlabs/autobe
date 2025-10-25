@@ -158,16 +158,18 @@ export const orchestrateInterface =
     const beforeMissed: string[] = missedOpenApiSchemas(document);
     await orchestrateInterfaceSchemaRename(ctx, document);
     const afterMissed: string[] = missedOpenApiSchemas(document);
-    console.log(
-      "missed schemas (before -> after): ",
-      beforeMissed,
-      afterMissed,
-    );
 
     JsonSchemaFactory.finalize({
       document,
       application: ctx.state().prisma!.result.data,
     });
+    const afterFinalizeMissed: string[] = missedOpenApiSchemas(document);
+    console.log(
+      "missed schemas (before -> after -> finalize): ",
+      beforeMissed,
+      afterMissed,
+      afterFinalizeMissed,
+    );
 
     // CONNECT PRE-REQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
