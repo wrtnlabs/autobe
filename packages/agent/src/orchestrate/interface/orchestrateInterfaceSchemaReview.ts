@@ -42,7 +42,7 @@ export async function orchestrateInterfaceSchemaReview<
     array: typeNames,
     capacity,
   });
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: matrix.length,
     completed: 0,
   };
@@ -222,8 +222,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceSchemaContentReviewApplication.IProps>;
-
-export interface IProgress {
-  total: number;
-  completed: number;
-}

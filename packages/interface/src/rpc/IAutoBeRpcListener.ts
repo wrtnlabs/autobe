@@ -13,6 +13,7 @@ import {
   AutoBeInterfaceSchemaContentReviewEvent,
   AutoBeInterfaceSchemaEvent,
   AutoBeInterfaceSchemaRelationReviewEvent,
+  AutoBeInterfaceSchemaRenameEvent,
   AutoBeInterfaceSchemaSecurityReviewEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
@@ -339,6 +340,10 @@ export interface IAutoBeRpcListener {
 
   interfaceSchemaContentReview?(
     event: AutoBeInterfaceSchemaContentReviewEvent,
+  ): Promise<void>;
+
+  interfaceSchemaRename?(
+    event: AutoBeInterfaceSchemaRenameEvent,
   ): Promise<void>;
 
   /**

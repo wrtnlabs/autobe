@@ -1,13 +1,25 @@
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceSchemaRefactor,
+  AutoBeInterfaceSchemaRenameEvent,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { transformInterfaceSchemaRenameHistories } from "./histories/trasnformInterfaceSchemaRenameHistories";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
 export async function orchestrateInterfaceSchemaRename<
@@ -34,6 +46,10 @@ export async function orchestrateInterfaceSchemaRename<
     array: Array.from(entireTypeNames),
     capacity,
   });
+  const progress: AutoBeProgressEventBase = {
+    total: entireTypeNames.size,
+    completed: 0,
+  };
   const refactors: AutoBeInterfaceSchemaRefactor[] = (
     await executeCachedBatch(
       matrix.map(
@@ -42,6 +58,7 @@ export async function orchestrateInterfaceSchemaRename<
             tableNames,
             typeNames,
             promptCacheKey,
+            progress,
           }),
       ),
     )
@@ -91,5 +108,73 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     tableNames: string[];
     typeNames: string[];
     promptCacheKey: string;
+    progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeInterfaceSchemaRefactor[]> => {};
+): Promise<AutoBeInterfaceSchemaRefactor[]> => {
+  try {
+    const pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { tokenUsage } = await ctx.conversate({
+      source: "interfaceSchemaRename",
+      controller: createController<Model>(
+        ctx.model,
+        (value) => (pointer.value = value),
+      ),
+      histories: transformInterfaceSchemaRenameHistories(props),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      message: "Rename DTO type names for consistency and clarity.",
+    });
+    if (pointer.value === null) {
+      props.progress.completed += props.typeNames.length;
+      return [];
+    }
+
+    ctx.dispatch({
+      type: "interfaceSchemaRename",
+      id: v7(),
+      refactors: pointer.value.refactors,
+      total: props.progress.total,
+      completed: (props.progress.completed += props.typeNames.length),
+      tokenUsage,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemaRenameEvent);
+    return pointer.value.refactors;
+  } catch {
+    props.progress.completed += props.typeNames.length;
+    return [];
+  }
+};
+
+const createController = <Model extends ILlmSchema.Model>(
+  model: Model,
+  build: (value: IAutoBeInterfaceSchemaRenameApplication.IProps) => void,
+): IAgenticaController.IClass<Model> => {
+  assertSchemaModel(model);
+  const application: ILlmApplication<Model> = collection[
+    model === "chatgpt" ? "chatgpt" : "claude"
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "SchemaRenamer",
+    application,
+    execute: {
+      rename: (props) => {
+        build(props);
+      },
+    } satisfies IAutoBeInterfaceSchemaRenameApplication,
+  };
+};
+
+const collection = {
+  chatgpt: typia.llm.application<
+    IAutoBeInterfaceSchemaRenameApplication,
+    "chatgpt"
+  >(),
+  claude: typia.llm.application<
+    IAutoBeInterfaceSchemaRenameApplication,
+    "claude"
+  >(),
+};
