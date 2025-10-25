@@ -46,10 +46,10 @@ export function transformRealizeCorrectHistories(props: {
         id: v7(),
         type: "assistantMessage",
         text: StringUtil.trim`
-            This is a past code and an error with the code. Please refer to the annotation for the location of the error.
+          This is a past code and an error with the code. Please refer to the annotation for the location of the error.
 
-            ${printErrorHints(f.function.content, f.diagnostics)}
-          `,
+          ${printErrorHints(f.function.content, f.diagnostics)}
+        `,
         created_at: new Date().toISOString(),
       } satisfies IAgenticaHistoryJson.IAssistantMessage;
     }),

@@ -9,14 +9,15 @@ export const transformRealizeWriteAuthorizationsHistories = (
   payload: Record<string, string>,
 ): Array<IAgenticaHistoryJson.ISystemMessage> => {
   if (operation.authorizationType === null) return [];
+  const text: string = PROMPTS[operation.authorizationType].replace(
+    "${PAYLOAD}",
+    JSON.stringify(payload),
+  );
   const history: IAgenticaHistoryJson.ISystemMessage = {
     id: v7(),
     created_at: new Date().toISOString(),
     type: "systemMessage" as const,
-    text: PROMPTS[operation.authorizationType].replace(
-      "${PAYLOAD}",
-      JSON.stringify(payload),
-    ),
+    text,
   };
   return [history];
 };
