@@ -1129,6 +1129,18 @@ value: Record<string, any>  // any 타입 사용 금지
 arguments: object        // object 타입 사용 금지 (any와 동일하게 처리될 수 있음)
 ```
 
+**올바른 JSON Schema 정의**:
+
+빈 오브젝트 타입 `{}`는 JSON Schema로 변환할 때 반드시 다음과 같이 명시해야 한다:
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "required": []
+}
+```
+
 ### 6.3. `IWrtnTokenUsage`
 
 토큰 사용량 타입은 이렇게 정의한다.
@@ -1325,6 +1337,18 @@ arguments: any                    // any 타입 절대 금지
 value: Record<string, any>        // any 타입 절대 금지
 arguments: object                 // object 타입 금지 (any로 처리될 수 있음)
 arguments: Record<string, unknown> // unknown 사용도 권장하지 않음
+```
+
+**올바른 JSON Schema 정의**:
+
+빈 오브젝트 타입 `{}`는 JSON Schema로 변환할 때 반드시 다음과 같이 명시해야 한다:
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "required": []
+}
 ```
 
 뤼튼 엔터프라이즈에서 말하는 AI Procedure 란, 위 [4. AI Chatbot](#4-ai-chatbot) 과 같은 챗봇의 형태가 아닌, 지정된 형태의 인풋을 받아서 약속된 형태의 아웃풋을 반환하는 함수형 서비스이다. 문자 그대로 함수(프로시저) 형태의 AI 서비스로써, Stable Diffusion 으로 이미지를 생성하는게 AI Procedure 의 가장 대표적인 사례이다.
