@@ -11,7 +11,6 @@ import {
   OpenApi,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
-import fs from "fs";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -66,11 +65,6 @@ export async function orchestrateInterfaceSchemaRename<
         ),
       )
     ).flat(),
-  );
-  await fs.promises.writeFile(
-    "refactors.json",
-    JSON.stringify(refactors),
-    "utf8",
   );
   orchestrateInterfaceSchemaRename.rename(document, refactors);
 }

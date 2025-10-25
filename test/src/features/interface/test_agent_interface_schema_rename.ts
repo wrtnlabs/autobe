@@ -1,6 +1,7 @@
 import { orchestrateInterfaceSchemaRename } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRename";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { missedOpenApiSchemas } from "@autobe/utils";
+import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
 export const test_agent_interface_schema_rename = (): void => {
@@ -70,8 +71,11 @@ export const test_agent_interface_schema_rename = (): void => {
     { from: "IArticle", to: "IBbsArticle" },
     { from: "IArticleComment", to: "IBbsArticleComment" },
   ]);
-  console.log(JSON.stringify(document, null, 2));
-  console.log(missedOpenApiSchemas(document));
+  TestValidator.equals(
+    "interface schema rename",
+    missedOpenApiSchemas(document),
+    [],
+  );
 };
 
 namespace IPageIArticle {

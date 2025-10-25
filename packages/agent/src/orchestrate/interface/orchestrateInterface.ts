@@ -13,7 +13,6 @@ import {
   revertOpenApiAccessor,
 } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
-import fs from "fs";
 import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
 
@@ -156,33 +155,11 @@ export const orchestrateInterface =
       );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
-    const beforeMissed: string[] = missedOpenApiSchemas(document);
-    await fs.promises.writeFile(
-      "before.json",
-      JSON.stringify(document),
-      "utf8",
-    );
     await orchestrateInterfaceSchemaRename(ctx, document);
-
-    const afterMissed: string[] = missedOpenApiSchemas(document);
-    await fs.promises.writeFile("after.json", JSON.stringify(document), "utf8");
-
     JsonSchemaFactory.finalize({
       document,
       application: ctx.state().prisma!.result.data,
     });
-    const afterFinalizeMissed: string[] = missedOpenApiSchemas(document);
-    await fs.promises.writeFile(
-      "finalize.json",
-      JSON.stringify(document),
-      "utf8",
-    );
-    console.log(
-      "missed schemas (before -> after -> finalize): ",
-      beforeMissed,
-      afterMissed,
-      afterFinalizeMissed,
-    );
 
     // CONNECT PRE-REQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
