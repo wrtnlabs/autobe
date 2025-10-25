@@ -19,7 +19,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaRenameHistories } from "./histories/trasnformInterfaceSchemaRenameHistories";
+import { transformInterfaceSchemaRenameHistories } from "./histories/transformInterfaceSchemaRenameHistories";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
 export async function orchestrateInterfaceSchemaRename<
