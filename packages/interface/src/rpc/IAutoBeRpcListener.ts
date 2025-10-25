@@ -330,18 +330,79 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchema?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
+  /**
+   * Optional handler for API schema security review events.
+   *
+   * Called when the Interface agent reviews DTO schemas for security violations
+   * such as password fields in responses, actor identity fields in requests, or
+   * other security-critical issues. This enables client applications to show
+   * that security validation is being performed to ensure safe API design.
+   *
+   * The security review agent checks for:
+   * - Password fields exposed in response DTOs
+   * - Actor identity fields (user_id, seller_id, etc.) in request bodies
+   * - Sensitive data leakage in summary or public DTOs
+   * - Authentication bypass vulnerabilities
+   */
   interfaceSchemaSecurityReview?(
     event: AutoBeInterfaceSchemaSecurityReviewEvent,
   ): Promise<void>;
 
+  /**
+   * Optional handler for API schema relation review events.
+   *
+   * Called when the Interface agent reviews and validates DTO relationship
+   * definitions to ensure correct belongs-to, has-many, and composition
+   * patterns. This enables client applications to show that relationship
+   * integrity is being verified to match the Prisma database schema.
+   *
+   * The relation review agent validates:
+   * - Correct use of ISummary for belongs-to relations
+   * - Proper omission of has-many arrays from response DTOs
+   * - Accurate FK-to-relation transformations
+   * - Relationship direction and cardinality correctness
+   */
   interfaceSchemaRelationReview?(
     event: AutoBeInterfaceSchemaRelationReviewEvent,
   ): Promise<void>;
 
+  /**
+   * Optional handler for API schema content review events.
+   *
+   * Called when the Interface agent reviews DTO schemas for completeness,
+   * field accuracy, type correctness, and documentation quality. This enables
+   * client applications to show that content validation is being performed to
+   * ensure accurate API type definitions.
+   *
+   * The content review agent checks:
+   * - All Prisma fields are included in appropriate DTOs
+   * - Data type mappings are correct (Prisma → OpenAPI)
+   * - Required field arrays match Prisma nullability
+   * - Descriptions are comprehensive and meaningful
+   * - DTO variants (.ICreate, .IUpdate, .ISummary) are complete
+   */
   interfaceSchemaContentReview?(
     event: AutoBeInterfaceSchemaContentReviewEvent,
   ): Promise<void>;
 
+  /**
+   * Optional handler for API schema rename events.
+   *
+   * Called when the Interface agent detects and corrects DTO type names that
+   * violate the critical naming convention: ALL words from the Prisma table
+   * name MUST be preserved in the DTO type name. This enables client
+   * applications to show that naming consistency is being enforced to maintain
+   * type-to-table traceability.
+   *
+   * The rename agent detects violations such as:
+   * - Service prefix omission: `ISale` should be `IShoppingSale`
+   * - Intermediate word omission: `IBbsComment` should be `IBbsArticleComment`
+   * - Multiple words omitted: `IShoppingRefund` should be `IShoppingOrderGoodRefund`
+   *
+   * Refactorings are automatically applied to base types, all variants
+   * (.ICreate, .IUpdate, .ISummary), page types (IPageISale), and all $ref
+   * references throughout the OpenAPI document.
+   */
   interfaceSchemaRename?(
     event: AutoBeInterfaceSchemaRenameEvent,
   ): Promise<void>;
