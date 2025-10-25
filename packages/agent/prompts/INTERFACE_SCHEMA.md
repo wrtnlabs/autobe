@@ -687,7 +687,71 @@ Database to Type Name Mapping:
 - `shopping_sale_units` → `IShoppingSaleUnit` (✅ CORRECT)
 - `shopping_sale_units` → `IShoppingUnit` (❌ WRONG - omits "Sale" intermediate)
 
-**3. NEVER OMIT INTERMEDIATE WORDS - CRITICAL**
+**3. NAMESPACE SEPARATOR REQUIREMENT - CATASTROPHIC IF VIOLATED**
+- Type variants **MUST** use dot notation (`.`) as the namespace separator
+- **NEVER** concatenate variant names directly - this creates non-existent types
+- Missing dots cause immediate compilation failure and runtime crashes
+
+**CATASTROPHIC ERROR - Missing Dot Separator**:
+
+| Context | ✅ CORRECT | ❌ WRONG (No Dot) | Consequence |
+|---------|-----------|------------------|-------------|
+| Create variant | `IShoppingSale.ICreate` | `IShoppingSaleICreate` | Type doesn't exist - compilation fails |
+| Update variant | `IBbsArticle.IUpdate` | `IBbsArticleIUpdate` | Import fails - undefined type |
+| Summary variant | `IShoppingSaleReview.ISummary` | `IShoppingSaleReviewISummary` | Schema not found - generation crashes |
+| Request variant | `IShoppingOrder.IRequest` | `IShoppingOrderIRequest` | TypeScript error - cannot resolve |
+| Paginated summary | `IPageIShoppingSale.ISummary` | `IPageIShoppingSaleISummary` | Reference broken - tests fail |
+
+**Why Dots Are Mandatory**:
+
+The dot represents TypeScript namespace structure. Without it, you reference a type that literally doesn't exist:
+
+```typescript
+// ✅ CORRECT - How types are actually defined
+export interface IShoppingSale {
+  id: string;
+  name: string;
+}
+
+export namespace IShoppingSale {
+  export interface ICreate {     // Accessed as: IShoppingSale.ICreate
+    name: string;
+  }
+}
+
+// ❌ WRONG - "IShoppingSaleICreate" is NOT defined anywhere
+// Referencing it causes: "Cannot find name 'IShoppingSaleICreate'"
+```
+
+**Visual Pattern Recognition**:
+
+```typescript
+// ✅ CORRECT PATTERNS (Always use dots for variants)
+IShoppingSale.ICreate           // Create DTO
+IShoppingSale.IUpdate           // Update DTO
+IShoppingSale.ISummary          // Summary DTO
+IBbsArticleComment.IInvert      // Inverted composition
+IPageIShoppingSale              // Paginated container (NO dot before IPage)
+IPageIShoppingSale.ISummary     // Paginated summary (dot for variant)
+
+// ❌ WRONG PATTERNS (Concatenated - types don't exist)
+IShoppingSaleICreate            // ❌ Compilation error
+IShoppingSaleIUpdate            // ❌ Type not found
+IShoppingSaleISummary           // ❌ Import fails
+IBbsArticleCommentIInvert       // ❌ Schema missing
+IPageIShoppingSaleISummary      // ❌ Generation crashes
+```
+
+**Container Type Exception**:
+
+`IPage` is NOT a namespace - it's a prefix to the base type name:
+```typescript
+✅ CORRECT: IPageIShoppingSale           // "IPageIShoppingSale" is the base type
+✅ CORRECT: IPageIShoppingSale.ISummary  // .ISummary is variant of that container
+❌ WRONG:   IPage.IShoppingSale          // IPage is not a namespace
+```
+
+**4. NEVER OMIT INTERMEDIATE WORDS - CRITICAL**
 - When converting multi-word table names, **ALL words MUST be preserved** in the type name
 - Omitting intermediate words breaks the type-to-table traceability and causes system failures
 - This rule applies to **ALL type variants** including .ICreate, .IUpdate, .ISummary, etc.
@@ -712,7 +776,7 @@ Database to Type Name Mapping:
 
 **Main Entity Types**: Use `IEntityName` format (singular, PascalCase after "I")
 
-**Operation-Specific Types**:
+**Operation-Specific Types** (ALWAYS use dot separator):
 - `IEntityName.ICreate`: Request body for creation operations (POST)
 - `IEntityName.IUpdate`: Request body for update operations (PUT or PATCH)
 - `IEntityName.ISummary`: Simplified response version with essential properties
@@ -721,10 +785,10 @@ Database to Type Name Mapping:
 - `IEntityName.IInvert`: Alternative representation of an entity from a different perspective
 
 **Container Types**:
-- `IPageIEntityName`: Paginated results container
-  - Naming convention: `IPage` + entity type name
+- `IPageIEntityName`: Paginated results container (NO dot before IPage)
+  - Naming convention: `IPage` + entity type name (concatenated as one base type)
   - Example: `IPageIUser` contains array of `IUser` records
-  - Example: `IPageIProduct.ISummary` contains array of `IProduct.ISummary` records
+  - Example: `IPageIProduct.ISummary` contains array of `IProduct.ISummary` records (dot for variant)
   - The type name after `IPage` determines the array item type in the `data` property
 
 **Enum Types**: Pattern: `EEnumName` (e.g., `EUserRole`, `EPostStatus`)
