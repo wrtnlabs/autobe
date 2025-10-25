@@ -59,6 +59,11 @@ export namespace TestLogger {
       event.type === "interfaceSchemaSecurityReview"
     )
       content.push(`  - fixed: ${Object.keys(event.content).length}`);
+    else if (event.type === "interfaceSchemaRename")
+      content.push(
+        `  - refactors:`,
+        ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
+      );
     // PRINT
     console.log(content.join("\n"));
   };

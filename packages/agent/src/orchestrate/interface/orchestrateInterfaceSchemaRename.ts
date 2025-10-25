@@ -8,6 +8,7 @@ import {
 import {
   ILlmApplication,
   ILlmSchema,
+  OpenApi,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -64,7 +65,7 @@ export async function orchestrateInterfaceSchemaRename<
     )
   ).flat();
 
-  const $refChangers: Array<() => void> = [];
+  const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
   for (const rename of refactors) {
     const predicate = (current: string): ((str: string) => string) | null => {
       if (current === rename.from) return () => rename.to;
@@ -86,7 +87,7 @@ export async function orchestrateInterfaceSchemaRename<
           const current: string = schema.$ref.split("/").pop()!;
           const change = predicate(current);
           if (change !== null)
-            $refChangers.push(() => {
+            $refChangers.set(schema, () => {
               schema.$ref = `#/components/schemas/${change(current)}`;
             });
         },
@@ -99,7 +100,34 @@ export async function orchestrateInterfaceSchemaRename<
       }
     }
   }
-  for (const fn of $refChangers) fn();
+  for (const fn of $refChangers.values()) fn();
+
+  const replace = (typeName: string): string | null => {
+    const exact = refactors.find((r) => r.from === typeName);
+    if (exact !== undefined) return exact.to;
+    const prefix = refactors.find((r) => typeName.startsWith(`${r.from}.`));
+    if (prefix !== undefined)
+      return typeName.replace(`${prefix.from}.`, `${prefix.to}.`);
+    const pageExact = refactors.find((r) => typeName === `IPage${r.from}`);
+    if (pageExact !== undefined) return `IPage${pageExact.to}`;
+    const pagePrefix = refactors.find((r) =>
+      typeName.startsWith(`IPage${r.from}.`),
+    );
+    if (pagePrefix !== undefined)
+      return typeName.replace(
+        `IPage${pagePrefix.from}.`,
+        `IPage${pagePrefix.to}.`,
+      );
+    return null;
+  };
+  for (const op of document.operations) {
+    if (op.requestBody)
+      op.requestBody.typeName =
+        replace(op.requestBody.typeName) ?? op.requestBody.typeName;
+    if (op.responseBody)
+      op.responseBody.typeName =
+        replace(op.responseBody.typeName) ?? op.responseBody.typeName;
+  }
 }
 
 const divideAndConquer = async <Model extends ILlmSchema.Model>(

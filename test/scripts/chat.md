@@ -1876,6 +1876,25 @@ export interface IWrtnChatSession {
   // 이후로 자유로이 나머지 속성들을 설계할 것...
   id: string & tags.Format<"uuid">;
   title: string | null;
+  disclosure: "private" | "protected" | "public";
+  created_at: string & tags.Format<"date-time">;
+}
+
+export interface IWrtnProcedureSession {
+  // 이하 FK 참조 관계를 객체로 맵핑 (필수)
+  procedure: IWrtnProcedure.ISummary;
+  employee: IWrtnEnterpriseEmployee.ISummary;
+  team: IWrtnEnterpriseTeam.ISummary | null;
+
+  // 이하 has 관계를 객체 내지 배열로 맵핑 (필수)
+  token_usage: IWrtnTokenUsage | null;
+  connections: IWrtnProcedureSessionConnection[];
+  histories: IWrtnProcedureSessionHistory[];
+
+  // 이후로 자유로이 나머지 속성들을 설계할 것...
+  id: string & tags.Format<"uuid">;
+  title: string | null;
+  disclosure: "private" | "protected" | "public";
   created_at: string & tags.Format<"date-time">;
 }
 
