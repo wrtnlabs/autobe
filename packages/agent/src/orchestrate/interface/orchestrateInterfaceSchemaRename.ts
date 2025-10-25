@@ -65,54 +65,37 @@ export async function orchestrateInterfaceSchemaRename<
     )
   ).flat();
 
-  const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
-  for (const rename of refactors) {
-    const predicate = (current: string): ((str: string) => string) | null => {
-      if (current === rename.from) return () => rename.to;
-      else if (current.startsWith(`${rename.from}.`))
-        return (str: string) => str.replace(`${rename.from}.`, `${rename.to}.`);
-      else if (current === `IPage${rename.from}`)
-        return () => `IPage${rename.to}`;
-      else if (current.startsWith(`IPage${rename.from}.`))
-        return (str: string) =>
-          str.replace(`IPage${rename.from}.`, `IPage${rename.to}.`);
-      return null;
-    };
-    for (const value of Object.values(document.components.schemas))
-      OpenApiTypeChecker.visit({
-        components: document.components,
-        schema: value,
-        closure: (schema) => {
-          if (OpenApiTypeChecker.isReference(schema) === false) return;
-          const current: string = schema.$ref.split("/").pop()!;
-          const change = predicate(current);
-          if (change !== null)
-            $refChangers.set(schema, () => {
-              schema.$ref = `#/components/schemas/${change(current)}`;
-            });
-        },
-      });
-    for (const [key, value] of Object.entries(document.components.schemas)) {
-      const change = predicate(key);
-      if (change !== null) {
-        document.components.schemas[change(key)] = value;
-        delete document.components.schemas[key];
-      }
-    }
-  }
-  for (const fn of $refChangers.values()) fn();
+  renameSchemas(document, refactors);
+}
 
+const renameSchemas = (
+  document: AutoBeOpenApi.IDocument,
+  refactors: AutoBeInterfaceSchemaRefactor[],
+): void => {
+  // REPLACE RULE
   const replace = (typeName: string): string | null => {
-    const exact = refactors.find((r) => r.from === typeName);
+    // exact match
+    const exact: AutoBeInterfaceSchemaRefactor | undefined = refactors.find(
+      (r) => r.from === typeName,
+    );
     if (exact !== undefined) return exact.to;
-    const prefix = refactors.find((r) => typeName.startsWith(`${r.from}.`));
+
+    // T.X match
+    const prefix: AutoBeInterfaceSchemaRefactor | undefined = refactors.find(
+      (r) => typeName.startsWith(`${r.from}.`),
+    );
     if (prefix !== undefined)
       return typeName.replace(`${prefix.from}.`, `${prefix.to}.`);
-    const pageExact = refactors.find((r) => typeName === `IPage${r.from}`);
-    if (pageExact !== undefined) return `IPage${pageExact.to}`;
-    const pagePrefix = refactors.find((r) =>
-      typeName.startsWith(`IPage${r.from}.`),
+
+    // IPageT exact match
+    const pageExact: AutoBeInterfaceSchemaRefactor | undefined = refactors.find(
+      (r) => typeName === `IPage${r.from}`,
     );
+    if (pageExact !== undefined) return `IPage${pageExact.to}`;
+
+    // IPageT.X match
+    const pagePrefix: AutoBeInterfaceSchemaRefactor | undefined =
+      refactors.find((r) => typeName.startsWith(`IPage${r.from}.`));
     if (pagePrefix !== undefined)
       return typeName.replace(
         `IPage${pagePrefix.from}.`,
@@ -120,6 +103,35 @@ export async function orchestrateInterfaceSchemaRename<
       );
     return null;
   };
+
+  // JSON SCHEMA REFERENCES
+  const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
+  for (const value of Object.values(document.components.schemas))
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: value,
+      closure: (schema) => {
+        if (OpenApiTypeChecker.isReference(schema) === false) return;
+        const x: string = schema.$ref.split("/").pop()!;
+        const y: string | null = replace(x);
+        if (y !== null)
+          $refChangers.set(schema, () => {
+            schema.$ref = `#/components/schemas/${y}`;
+          });
+      },
+    });
+
+  // COMPONENT SCHEMAS
+  for (const x of Object.keys(document.components.schemas)) {
+    const y: string | null = replace(x);
+    if (y !== null) {
+      document.components.schemas[y] = document.components.schemas[x];
+      delete document.components.schemas[x];
+    }
+  }
+  for (const fn of $refChangers.values()) fn();
+
+  // OPERATIONS
   for (const op of document.operations) {
     if (op.requestBody)
       op.requestBody.typeName =
@@ -128,7 +140,7 @@ export async function orchestrateInterfaceSchemaRename<
       op.responseBody.typeName =
         replace(op.responseBody.typeName) ?? op.responseBody.typeName;
   }
-}
+};
 
 const divideAndConquer = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
