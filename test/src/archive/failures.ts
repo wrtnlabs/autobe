@@ -59,8 +59,8 @@ const main = async (): Promise<void> => {
         console.log("=======================================================");
         console.log(StringUtil.trim`
           \`\`\`bash
-          code results/${vendor}/${project}/${phase}
-          pnpm run archive --vendor ${vendor} --project ${project} --from ${phase} > archive.${vendor.replaceAll("/", "-")}.${project}.log
+          code results/${TestHistory.slugModel(vendor, false)}/${project}/${phase}
+          pnpm run archive --vendor ${vendor} --project ${project} --from ${phase} > archive.${TestHistory.slugModel(vendor, true)}.${project}.log
           \`\`\`
         `);
         console.log("\n");

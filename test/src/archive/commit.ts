@@ -11,6 +11,7 @@ import fs from "fs";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
+import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
@@ -66,7 +67,10 @@ const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
       ${row("reddit")}
       ${row("shopping")}
 
-      ![](https://autobe.dev/images/demonstrate/replay-${exp.vendor.replaceAll("/", "-")}.png)
+      ![](https://autobe.dev/images/demonstrate/replay-${TestHistory.slugModel(
+        exp.vendor,
+        true,
+      )}.png)
     `;
   };
   return StringUtil.trim`
@@ -79,7 +83,10 @@ const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
     ${experiments
       .map((e) =>
         [
-          `[\`${e.vendor}\`](#${e.vendor.replaceAll("/", "").replaceAll(".", "")})`,
+          `[\`${TestHistory.slugModel(
+            e.vendor,
+            false,
+          )}\`](#${TestHistory.slugModel(e.vendor, true)})`,
           e.score.aggregate,
           e.emoji,
         ].join(" | "),

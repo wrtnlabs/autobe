@@ -107,6 +107,12 @@ export namespace TestHistory {
     fs.existsSync(
       `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`,
     );
+
+  export const slugModel = (model: string, replaceSlash: boolean): string => {
+    model = model.replaceAll(":", "-");
+    if (replaceSlash) model = model.replaceAll("/", "-");
+    return model;
+  };
 }
 
 const PROMPT_TEMPLATE = {
