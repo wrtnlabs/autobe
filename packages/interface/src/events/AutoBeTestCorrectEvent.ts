@@ -22,6 +22,8 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeTestCorrectEvent
   extends AutoBeEventBase<"testCorrect">,
     AutoBeTokenUsageEventBase {
+  kind: "casting" | "overall" | "request";
+
   /**
    * The test file that contained compilation errors with its detailed scenario
    * metadata.

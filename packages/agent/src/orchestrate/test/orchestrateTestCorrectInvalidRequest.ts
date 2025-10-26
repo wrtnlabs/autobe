@@ -103,6 +103,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   );
   ctx.dispatch({
     type: "testCorrect",
+    kind: "request",
     id: v7(),
     created_at: new Date().toISOString(),
     file: {

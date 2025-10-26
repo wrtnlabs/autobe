@@ -46,10 +46,14 @@ export namespace TestLogger {
     // VALIDATIONS
     else if (event.type === "analyzeScenario")
       content.push(`  - prefix: ${event.prefix}`);
+    else if (event.type === "realizeCorrect")
+      content.push(`  - kind: ${event.kind}`);
     else if (event.type === "realizeValidate")
       content.push(
         ...printCompiled(event.result, Object.keys(event.files).length),
       );
+    else if (event.type === "testCorrect")
+      content.push(`  - kind: ${event.kind}`);
     else if (event.type === "interfaceComplement")
       content.push(
         `  - count: ${Object.keys(event.schemas).length}`,

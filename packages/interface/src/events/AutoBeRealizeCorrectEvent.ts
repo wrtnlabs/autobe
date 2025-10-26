@@ -21,6 +21,8 @@ export interface AutoBeRealizeCorrectEvent
   extends AutoBeEventBase<"realizeCorrect">,
     AutoBeProgressEventBase,
     AutoBeTokenUsageEventBase {
+  kind: "casting" | "overall";
+
   /**
    * Name of the implementation file that has been corrected and finalized.
    *

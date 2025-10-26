@@ -51,6 +51,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
                 correct: (next) =>
                   ({
                     type: "testCorrect",
+                    kind: "casting",
                     id: v7(),
                     created_at: new Date().toISOString(),
                     file: {
@@ -196,6 +197,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "testCorrect",
+    kind: "casting",
     id: v7(),
     created_at: new Date().toISOString(),
     file: props.validate.file,

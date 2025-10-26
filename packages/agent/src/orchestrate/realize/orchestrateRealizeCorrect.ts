@@ -261,6 +261,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",
+    kind: "overall",
     id: v7(),
     location: props.scenario.location,
     content: pointer.value.revise.final ?? pointer.value.draft,

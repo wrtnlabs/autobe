@@ -220,6 +220,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       ctx.dispatch({
         id: v7(),
         type: "realizeCorrect",
+        kind: "casting",
         content: pointer.value.revise.final ?? pointer.value.draft,
         created_at: new Date().toISOString(),
         location: func.location,
