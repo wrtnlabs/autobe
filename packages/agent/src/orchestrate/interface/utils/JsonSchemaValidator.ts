@@ -181,7 +181,7 @@ export namespace JsonSchemaValidator {
       const report = (description: string) =>
         props.errors.push({
           path: `${props.path}[${JSON.stringify(key)}]`,
-          expected: "Non-recursive schema definition",
+          expected: "Non-infinite recursive schema definition",
           value,
           description,
         });
@@ -191,10 +191,19 @@ export namespace JsonSchemaValidator {
       )
         report(StringUtil.trim`
           You have defined a nonsensible type like below:
-          
+
           \`\`\`typescript
           type ${key} = ${key};
           \`\`\`
+
+          This is an infinite recursive type definition that cannot exist in any
+          programming language. A type cannot be defined as itself - this creates
+          a circular definition with no base case, making the type impossible to
+          instantiate or validate.
+
+          If you need tree or graph structures, use explicit relationships with
+          ID references (e.g., parentId: string) instead of recursive type definitions.
+          Remove the self-reference and redesign the schema at the next time.
         `);
       else if (
         AutoBeOpenApiTypeChecker.isArray(value) &&
@@ -206,6 +215,15 @@ export namespace JsonSchemaValidator {
 
           \`\`\`typescript
           type ${key} = Array<${key}>;
+          \`\`\`
+
+          This is an infinite recursive array type that cannot exist in any
+          programming language. An array of itself creates a circular definition
+          with no base case, making the type impossible to instantiate or validate.
+
+          If you need nested structures, define explicit depth levels with separate
+          types, or use parent-child relationships with ID references.
+          Remove the self-reference and redesign the schema at the next time.
         `);
       else if (
         AutoBeOpenApiTypeChecker.isOneOf(value) &&
@@ -221,6 +239,48 @@ export namespace JsonSchemaValidator {
           \`\`\`typescript
           type ${key} = ${key} | ...;
           \`\`\`
+
+          This is an infinite recursive union type that cannot exist in any
+          programming language. A union that includes itself as a variant creates
+          a circular definition with no base case, making the type impossible to
+          instantiate or validate.
+
+          If you need polymorphic hierarchies, define separate concrete types for
+          each variant without including the union type itself as a variant.
+          Remove the self-reference and redesign the schema at the next time.
+        `);
+      else if (
+        AutoBeOpenApiTypeChecker.isObject(value) &&
+        value.properties &&
+        value.required &&
+        Object.entries(value.properties).some(
+          ([k, v]) =>
+            AutoBeOpenApiTypeChecker.isReference(v) &&
+            v.$ref === `#/components/schemas/${key}` &&
+            value.required.includes(k),
+        )
+      )
+        report(StringUtil.trim`
+          You have defined a nonsensible type like below:
+
+          \`\`\`typescript
+          interface ${key} {
+            someProperty: ${key}; // required, non-nullable
+          }
+          \`\`\`
+
+          This is an infinite recursive object type that cannot exist in any
+          programming language. A required non-nullable property referencing its
+          own type creates a circular definition with no base case, making the
+          type impossible to instantiate.
+
+          To create an instance of ${key}, you would need an instance of ${key},
+          which requires another instance of ${key}, infinitely. This is logically
+          impossible.
+
+          If you need parent-child or graph relationships, make the self-referencing
+          property either nullable or optional, or use ID references (e.g., parentId: string).
+          Remove the required self-reference and redesign the schema at the next time.
         `);
     }
   };
