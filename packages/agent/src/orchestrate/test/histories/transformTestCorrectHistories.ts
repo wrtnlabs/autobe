@@ -1,10 +1,10 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
@@ -39,29 +39,11 @@ export const transformTestCorrectHistories = async <
       text: AutoBeSystemPromptConstant.TEST_CORRECT,
     },
     previous.at(-1)!,
-    ...props.failures.map(
-      (f, i, array) =>
-        ({
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "assistantMessage",
-          text: StringUtil.trim`
-            ## ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
-            ### Generated TypeScript Code
-
-            \`\`\`typescript
-            ${f.function.script}
-            \`\`\`
-
-            ### Compile Errors
-
-            Fix the compilation error in the provided code.
-
-            \`\`\`json
-            ${JSON.stringify(f.failure.diagnostics)}
-            \`\`\`
-          `,
-        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
+    ...transformPreviousAndLatestCorrectHistories(
+      props.failures.map((f) => ({
+        script: f.function.script,
+        diagnostics: f.failure.diagnostics,
+      })),
     ),
   ];
 };
