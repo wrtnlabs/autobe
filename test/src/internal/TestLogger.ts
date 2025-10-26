@@ -19,6 +19,9 @@ export namespace TestLogger {
     if (typia.is<TokenUsageEvent>(event))
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
+        `  - log10 of input token usage: ${Math.log10(
+          event.tokenUsage.input.total,
+        )}`,
       );
     // FUNCTION CALLING
     if (event.type === "consentFunctionCall")
