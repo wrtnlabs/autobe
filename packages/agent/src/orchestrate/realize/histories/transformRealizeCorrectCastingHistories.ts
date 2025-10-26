@@ -46,6 +46,10 @@ export const transformRealizeCorrectCastingHistories = (
   console.log("------------ REALIZE CASTING HISTORIES ------------");
   console.log("number of failures", failures.length);
   console.log(
+    "total length",
+    histories.reduce((a, b) => a + b.text.length, 0),
+  );
+  console.log(
     "histories' sizes",
     histories.map((h) => [h.type, h.text.length, h.text.slice(0, 100)]),
   );
