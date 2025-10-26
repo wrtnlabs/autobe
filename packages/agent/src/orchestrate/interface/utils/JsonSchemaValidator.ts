@@ -13,6 +13,7 @@ export namespace JsonSchemaValidator {
   export const validateSchemas = (props: IProps): void => {
     validateAuthorization(props);
     validatePrismaSchema(props.errors);
+    validateRecursive(props);
     for (const key of Object.keys(props.schemas))
       validateKey({
         errors: props.errors,
@@ -172,6 +173,55 @@ export namespace JsonSchemaValidator {
           `["x-autobe-prisma-schema"]`,
         )} 
       `;
+    }
+  };
+
+  const validateRecursive = (props: IProps): void => {
+    for (const [key, value] of Object.entries(props.schemas)) {
+      const report = (description: string) =>
+        props.errors.push({
+          path: `${props.path}[${JSON.stringify(key)}]`,
+          expected: "Non-recursive schema definition",
+          value,
+          description,
+        });
+      if (
+        AutoBeOpenApiTypeChecker.isReference(value) &&
+        value.$ref === `#/components/schemas/${key}`
+      )
+        report(StringUtil.trim`
+          You have defined a nonsensible type like below:
+          
+          \`\`\`typescript
+          type ${key} = ${key};
+          \`\`\`
+        `);
+      else if (
+        AutoBeOpenApiTypeChecker.isArray(value) &&
+        AutoBeOpenApiTypeChecker.isReference(value.items) &&
+        value.items.$ref === `#/components/schemas/${key}`
+      )
+        report(StringUtil.trim`
+          You have defined a nonsensible type like below:
+
+          \`\`\`typescript
+          type ${key} = Array<${key}>;
+        `);
+      else if (
+        AutoBeOpenApiTypeChecker.isOneOf(value) &&
+        value.oneOf.some(
+          (v) =>
+            AutoBeOpenApiTypeChecker.isReference(v) &&
+            v.$ref === `#/components/schemas/${key}`,
+        ) === true
+      )
+        report(StringUtil.trim`
+          You have defined a nonsensible type like below:
+
+          \`\`\`typescript
+          type ${key} = ${key} | ...;
+          \`\`\`
+        `);
     }
   };
 }
