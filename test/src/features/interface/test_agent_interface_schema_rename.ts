@@ -11,6 +11,7 @@ export const test_agent_interface_schema_rename = (): void => {
         ...typia.random<AutoBeOpenApi.IOperation>(),
         method: "get",
         path: "/bbs/articles",
+        requestBody: null,
         responseBody: {
           typeName: "IPageIArticle.ISummary",
           description: "A paginated list of article summaries",
@@ -20,6 +21,7 @@ export const test_agent_interface_schema_rename = (): void => {
         ...typia.random<AutoBeOpenApi.IOperation>(),
         method: "get",
         path: "/bbs/articles/:articleId/comments",
+        requestBody: null,
         responseBody: {
           typeName: "IPageIArticleComment",
           description: "A paginated list of comments for an article",

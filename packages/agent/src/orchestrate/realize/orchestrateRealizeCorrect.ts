@@ -34,7 +34,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
-  _previousFailures: IAutoBeRealizeFunctionFailure[],
+  previousFailures: IAutoBeRealizeFunctionFailure[][],
   progress: AutoBeProgressEventBase,
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
@@ -94,27 +94,24 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
 
   const newFailures: IAutoBeRealizeFunctionFailure[] =
     Object.values(diagnosticsByFile);
-  const corrected: AutoBeRealizeFunction[] = await correct(
-    ctx,
+  const corrected: AutoBeRealizeFunction[] = await correct(ctx, {
     locations,
     scenarios,
     authorizations,
     functions,
-    filterDiagnostics(
+    previousFailures,
+    failures: filterDiagnostics(
       newFailures,
       functions.map((fn) => fn.location),
     ),
     progress,
-  );
+  });
   return orchestrateRealizeCorrect(
     ctx,
     scenarios,
     authorizations,
     corrected,
-    filterDiagnostics(
-      newFailures,
-      corrected.map((c) => c.location),
-    ),
+    [...previousFailures, newFailures],
     progress,
     life - 1,
   );
@@ -122,61 +119,66 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
 
 async function correct<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  locations: string[],
-  scenarios: IAutoBeRealizeScenarioResult[],
-  authorizations: AutoBeRealizeAuthorization[],
-  functions: AutoBeRealizeFunction[],
-  failures: IAutoBeRealizeFunctionFailure[],
-  progress: AutoBeProgressEventBase,
+  props: {
+    locations: string[];
+    scenarios: IAutoBeRealizeScenarioResult[];
+    authorizations: AutoBeRealizeAuthorization[];
+    functions: AutoBeRealizeFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure[][];
+    failures: IAutoBeRealizeFunctionFailure[];
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeRealizeFunction[]> {
-  if (locations.length === 0) {
-    return functions;
+  if (props.locations.length === 0) {
+    return props.functions;
   }
 
   const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
-    locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
-      const scenario = scenarios.find((el) => el.location === location);
-      const func = functions.find((el) => el.location === location);
+    props.locations.map(
+      (location) => async (): Promise<AutoBeRealizeFunction> => {
+        const scenario = props.scenarios.find((el) => el.location === location);
+        const func = props.functions.find((el) => el.location === location);
 
-      if (!func) {
-        throw new Error("No function found for location: " + location);
-      }
-
-      const RealizeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
-        failures.filter((f) => f.function?.location === location);
-
-      if (RealizeFunctionFailures.length && scenario) {
-        try {
-          const correctEvent: AutoBeRealizeCorrectEvent | null = await step(
-            ctx,
-            {
-              totalAuthorizations: authorizations,
-              authorization: scenario.decoratorEvent ?? null,
-              scenario,
-              function: func,
-              failures: RealizeFunctionFailures,
-              progress: progress,
-            },
-          );
-
-          return {
-            ...func,
-            content: correctEvent === null ? "" : correctEvent.content,
-          };
-        } catch (err) {
-          return func;
+        if (!func) {
+          throw new Error("No function found for location: " + location);
         }
-      }
 
-      return func;
-    }),
+        const RealizeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
+          props.failures.filter((f) => f.function?.location === location);
+
+        if (RealizeFunctionFailures.length && scenario) {
+          try {
+            const correctEvent: AutoBeRealizeCorrectEvent | null = await step(
+              ctx,
+              {
+                totalAuthorizations: props.authorizations,
+                authorization: scenario.decoratorEvent ?? null,
+                scenario,
+                function: func,
+                failures: RealizeFunctionFailures,
+                progress: props.progress,
+              },
+            );
+
+            return {
+              ...func,
+              content: correctEvent === null ? "" : correctEvent.content,
+            };
+          } catch (err) {
+            return func;
+          }
+        }
+
+        return func;
+      },
+    ),
   );
 
   // Create a map of corrected functions for efficient lookup
   const correctedMap = new Map(corrected.map((f) => [f.location, f]));
 
   // Return all functions, with corrected ones replaced
-  return functions.map((func) => correctedMap.get(func.location) || func);
+  return props.functions.map((func) => correctedMap.get(func.location) || func);
 }
 
 async function step<Model extends ILlmSchema.Model>(
