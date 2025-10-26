@@ -132,12 +132,33 @@ You must return a structured output following the `IAutoBeRealizeCorrectApplicat
 ```typescript
 export namespace IAutoBeRealizeCorrectApplication {
   export interface IProps {
-    think: string;                      // Initial error analysis and strategy
-    draft: string;                      // First draft with initial fixes applied
-    revise: {
-      review: string;                   // Review of corrections and improvements
-      final: string | null;             // Final implementation (null if draft is sufficient)
-    }
+    /**
+     * Initial error analysis and correction strategy.
+     */
+    think: string;
+
+    /**
+     * First correction attempt.
+     */
+    draft: string;
+
+    /**
+     * Revision and finalization phase.
+     */
+    revise: IReviseProps;
+  }
+
+  export interface IReviseProps {
+    /**
+     * Correction review and validation.
+     */
+    review: string;
+
+    /**
+     * Final error-free implementation.
+     * Returns `null` if the draft corrections are sufficient.
+     */
+    final: string | null;
   }
 }
 ```
@@ -250,17 +271,24 @@ const value: number = parseInt("123", 10); // Correct fix that satisfies compile
 
 #### 🧠 think
 
-**Initial Error Analysis and Strategy**
+**Initial Error Analysis and Correction Strategy**
 
-This field contains your first assessment of the TypeScript compilation errors:
-- Identify error patterns (null handling, missing fields, type mismatches)
-- Determine correction approach (minimal fix vs refactoring)
-- Note if errors are simple or complex
-- Decide which optional fields in revise to use
+Analyzes TypeScript compilation errors to understand:
+- Error patterns and root causes
+- Required fixes and their impact
+- Whether quick fixes or deep refactoring is needed
+- Prisma schema and API contract constraints
+
+Document in this field:
+- Error patterns identified (null handling, missing fields, type mismatches)
+- Correction approach needed (minimal fix vs aggressive refactoring)
+- Complexity assessment (simple vs complex errors)
 
 #### ✏️ draft
 
-**Draft Correction with Initial Fixes**
+**First Correction Attempt**
+
+Implements the initial fixes identified in the think phase. For simple errors (typos, missing imports), this may be the final solution. Complex errors may require further refinement.
 
 The code after applying your first round of corrections:
 - Apply obvious fixes (null checks, type conversions)
@@ -268,133 +296,29 @@ The code after applying your first round of corrections:
 - Add missing required properties
 - This is your working draft before final refinement
 
-#### 📊 revise.errorAnalysis
+#### 📋 revise.review
 
-**TypeScript Compilation Error Analysis and Resolution Strategy**
+**Correction Review and Validation**
 
-This field analyzes the TypeScript compiler diagnostics provided in the input:
+Analyzes the draft corrections to ensure:
+- All TypeScript errors are resolved
+- Business logic remains intact
+- AutoBE coding standards are maintained
+- No new errors are introduced
+- Performance and security are preserved
 
-**What this analyzes:**
-- **TypeScript error codes**: e.g., TS2322 (type assignment), TS2339 (missing property), TS2345 (argument mismatch)
-- **Compiler diagnostics**: The actual compilation failures from `tsc`, not runtime or logic errors
-- **Error messages**: From the `messageText` field in the diagnostic JSON
-
-**Common compilation error patterns:**
-- Type mismatches: `Type 'X' is not assignable to type 'Y'`
-- Missing properties: `Property 'foo' does not exist on type 'Bar'`
-- Nullable conflicts: `Type 'string | null' is not assignable to type 'string'`
-- Prisma type incompatibilities with DTOs
-- Typia tag mismatches: `Types of property '"typia.tag"' are incompatible`
-
-**Resolution strategies to document:**
-- Type conversions needed (e.g., `.toISOString()` for Date to string)
-- Null handling approaches (e.g., `?? ""` or `?? undefined`)
-- Field access corrections
-- Type assertion requirements
-
-**IMPORTANT**: This analyzes the TypeScript compilation errors from the provided diagnostics JSON, NOT errors you might anticipate or create yourself.
-
-The analysis MUST include:
-
-**📊 ERROR BREAKDOWN**:
-- List of all TypeScript error codes encountered (e.g., TS2339, TS2345)
-- Exact error messages and the lines/files where they occurred
-- Categorization of errors by type (type mismatch, missing property, etc.)
-
-**ROOT CAUSE ANALYSIS:**
-- Why each error occurred (e.g., incorrect type assumptions, missing fields)
-- Relationship between errors (e.g., cascading errors from a single issue)
-- Common patterns identified across multiple errors
-
-**🛠 RESOLUTION STRATEGY**:
-- Specific fixes for each error type
-- Priority order for addressing errors (fix critical errors first)
-- Alternative approaches if the direct fix is not possible
-
-**📝 SCHEMA VERIFICATION**:
-- Re-verification of Prisma schema fields actually available
-- Identification of assumed fields that don't exist
-- Correct field types and relationships
-
-**COMMON ERROR PATTERNS TO CHECK:**
-- Using non-existent fields (e.g., deleted_at, created_by)
-- Type mismatches in Prisma operations
-- Incorrect date handling (using Date instead of string)
-- Missing required fields in create/update operations
-- Incorrect relation handling in nested operations
-
-**🎯 CORRECTION APPROACH**:
-- Remove references to non-existent fields
-- Fix type conversions (especially dates with toISOStringSafe())
-- Simplify complex nested operations into separate queries
-- Add missing required fields
-- Use correct Prisma input types
-
-Example structure:
-```
-Errors Found:
-1. TS2339: Property 'deleted_at' does not exist on type 'User'
-   - Cause: Field assumed but not in schema
-   - Fix: Remove all deleted_at references
-
-2. TS2345: Type 'Date' is not assignable to type 'string'
-   - Cause: Direct Date assignment without conversion
-   - Fix: Use toISOStringSafe() for all date values
-   - ⚠️ CRITICAL: toISOStringSafe CANNOT handle null! Always check first:
-     ```typescript
-     // ❌ WRONG: Will crash if value is null
-     toISOStringSafe(value)
-     
-     // ❌ WRONG: ?? operator doesn't work for null checking with toISOStringSafe
-     deleted_at: user.deleted_at ?? null  // This passes null to next expression, not what we want!
-     
-     // ✅ CORRECT: Use ternary operator (? :) for nullable date fields
-     deleted_at: user.deleted_at ? toISOStringSafe(user.deleted_at) : null
-     
-     // ✅ CORRECT: Direct conversion for non-nullable date fields
-     created_at: toISOStringSafe(user.created_at)  // created_at is always non-null
-     updated_at: toISOStringSafe(user.updated_at)  // updated_at is always non-null
-     ```
-   
-   **REMEMBER**: 
-   - `??` (nullish coalescing) returns right side when left is null/undefined
-   - `? :` (ternary) allows conditional execution - USE THIS for toISOStringSafe!
-
-Resolution Plan:
-1. First, remove all non-existent field references
-2. Then, fix all date type conversions
-3. Finally, adjust Prisma query structures
-```
-
-#### revise.plan
-
-**Provider Function Implementation Plan**
-
-Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
-
-- **STEP 1 - PRISMA SCHEMA VERIFICATION**: List EVERY field with exact types
-- **STEP 2 - FIELD INVENTORY**: List ONLY confirmed fields
-- **STEP 3 - FIELD ACCESS STRATEGY**: Plan verified field usage
-- **STEP 4 - TYPE COMPATIBILITY**: Plan conversions
-- **STEP 5 - IMPLEMENTATION APPROACH**: Business logic plan
-
-(See REALIZE_WRITE_TOTAL for detailed requirements)
-
-#### revise.prismaSchemas
-
-**Prisma Schema String**
-
-Contains ONLY the relevant models and fields used in this implementation.
-
-#### revise.review
-
-**Refined Version**
-
-Improved version with real operations and error handling.
+This is where you review your draft and explain:
+- What corrections were applied
+- Whether the draft is sufficient or needs further refinement
+- Any remaining issues that need to be addressed in final
 
 #### 💻 revise.final
 
-**Final Implementation**
+**Final Error-Free Implementation**
+
+The complete, corrected code that passes all TypeScript compilation checks.
+
+Returns `null` if the draft corrections are sufficient and need no further changes.
 
 Complete, error-free TypeScript function implementation following all conventions.
 
@@ -415,18 +339,18 @@ When you encounter **multiple similar errors** across different files, apply the
 **IMMEDIATE ACTION - NO EXCEPTIONS**:
 ```typescript
 // ALWAYS REMOVE THIS - Field doesn't exist
-await prisma.table.update({
+await MyGlobal.prisma.table.update({
   where: { id },
   data: { deleted_at: new Date() }  // DELETE THIS LINE
 });
 
 // Option 1: Use hard delete instead
-await prisma.table.delete({
+await MyGlobal.prisma.table.delete({
   where: { id }
 });
 
 // Option 2: If update has other fields, keep them
-await prisma.table.update({
+await MyGlobal.prisma.table.update({
   where: { id },
   data: { /* other fields only, NO deleted_at */ }
 });
@@ -476,7 +400,7 @@ if (!('id' in attachmentUpdate)) {
 }
 
 // ✅ CORRECT - Use the actual field that identifies the record
-const updated = await prisma.attachments.update({
+const updated = await MyGlobal.prisma.attachments.update({
   where: { attachment_file_id: attachmentUpdate.attachment_file_id },
   // Use the correct field based on your API design
 });
@@ -594,7 +518,7 @@ if (!('id' in attachmentUpdate)) {
 }
 
 // ✅ CORRECT - Use the actual identifying field from the API
-await prisma.attachments.update({
+await MyGlobal.prisma.attachments.update({
   where: { 
     attachment_file_id: attachmentUpdate.attachment_file_id  // Correct field
   },
@@ -692,7 +616,7 @@ const createData = {
 // Example: cart_items table often doesn't have direct user fields
 
 // ❌ WRONG PATTERN: Trying to access non-existent user fields
-const cartItem = await prisma.cart_items.findUnique({
+const cartItem = await MyGlobal.prisma.cart_items.findUnique({
   where: { id },
   select: { 
     guest_user_id: true,    // Example: Field might not exist in cart_items
@@ -703,13 +627,13 @@ const cartItem = await prisma.cart_items.findUnique({
 // ✅ CORRECT PATTERN: User info might be in cart table, not cart_items
 // Example approach - actual implementation depends on your schema:
 // Step 1: Get cart_id from cart_item
-const cartItem = await prisma.cart_items.findUnique({
+const cartItem = await MyGlobal.prisma.cart_items.findUnique({
   where: { id },
   select: { shopping_cart_id: true }
 });
 
 // Step 2: Get user info from cart
-const cart = await prisma.carts.findUnique({
+const cart = await MyGlobal.prisma.carts.findUnique({
   where: { id: cartItem.shopping_cart_id },
   select: { user_id: true }  // Check your schema for actual field name
 });
@@ -781,7 +705,7 @@ When you see type errors in Prisma updates, always check:
 // Prisma Schema: community_platform_sub_community_id String (non-nullable!)
 
 // ❌ WRONG - The code that failed
-const updated = await prisma.community_platform_posts.update({
+const updated = await MyGlobal.prisma.community_platform_posts.update({
   data: {
     // Tried to handle null incorrectly
     community_platform_sub_community_id:
@@ -792,7 +716,7 @@ const updated = await prisma.community_platform_posts.update({
 });
 
 // ✅ CORRECT - Proper null handling for non-nullable field
-const updated = await prisma.community_platform_posts.update({
+const updated = await MyGlobal.prisma.community_platform_posts.update({
   data: {
     // Skip update if null or undefined
     community_platform_sub_community_id:
@@ -844,7 +768,7 @@ return {
 
 ```typescript
 // ERROR: Using non-existent fields
-const result = await prisma.shopping_mall_cart_items.findUnique({
+const result = await MyGlobal.prisma.shopping_mall_cart_items.findUnique({
   where: {
     id: itemId,
     deleted_at: null,        // ❌ Field doesn't exist!
@@ -853,14 +777,14 @@ const result = await prisma.shopping_mall_cart_items.findUnique({
 });
 
 // CORRECT: Remove non-existent fields
-const result = await prisma.shopping_mall_cart_items.findUnique({
+const result = await MyGlobal.prisma.shopping_mall_cart_items.findUnique({
   where: {
     id: itemId               // ✅ Only use existing fields
   }
 });
 
 // If you need user filtering, check if user_id exists instead
-const result = await prisma.shopping_mall_cart_items.findUnique({
+const result = await MyGlobal.prisma.shopping_mall_cart_items.findUnique({
   where: {
     id: itemId,
     user_id: userId          // ✅ Use actual field name from schema
@@ -874,7 +798,7 @@ const result = await prisma.shopping_mall_cart_items.findUnique({
 // DON'T try to find alternatives - just remove the field
 
 // Option 1: Hard delete (if business logic allows)
-await prisma.items.delete({ where: { id } });
+await MyGlobal.prisma.items.delete({ where: { id } });
 
 // Option 2: Return mock/empty response if soft delete required
 return { success: true };  // When soft delete field missing
@@ -902,7 +826,7 @@ return { success: true };  // When soft delete field missing
 **Resolution Strategy**:
 ```typescript
 // First: Check if it's a query structure issue
-const result = await prisma.table.findFirst({
+const result = await MyGlobal.prisma.table.findFirst({
   where: { id },
   // Add missing include/select if needed
   include: { relation: true }
@@ -998,7 +922,7 @@ return {
 
 // CONTEXT 2: Updating data in DB (API → Prisma)
 // When API sends nullable but Prisma field is non-nullable
-await prisma.update({
+await MyGlobal.prisma.update({
   data: {
     // ✅ CORRECT: Convert null to undefined for non-nullable fields
     title: body.title === null ? undefined : body.title,  // null → undefined (skip)
@@ -1154,10 +1078,10 @@ const orderBy = body.orderBy
   : { created_at: "desc" };      // Type: { created_at: string }
 
 // ERROR: 'string' is not assignable to 'SortOrder'
-await prisma.table.findMany({ orderBy }); // TYPE ERROR
+await MyGlobal.prisma.table.findMany({ orderBy }); // TYPE ERROR
 
 // SOLUTION: Define inline (ONLY WAY - NO INTERMEDIATE VARIABLES!)
-await prisma.table.findMany({
+await MyGlobal.prisma.table.findMany({
   orderBy: body.orderBy 
     ? { [body.orderBy]: "desc" as const }  // Literal type
     : { created_at: "desc" as const }
@@ -1165,7 +1089,7 @@ await prisma.table.findMany({
 
 // ❌ FORBIDDEN: NEVER create intermediate variables for Prisma operations!
 // const orderBy = { ... };  // VIOLATION!
-// await prisma.findMany({ orderBy });  // FORBIDDEN!
+// await MyGlobal.prisma.findMany({ orderBy });  // FORBIDDEN!
 ```
 
 **Example from BBS service (common pattern):**
@@ -1177,7 +1101,7 @@ const orderByConditions =
     : { created_at: body.sort_order === "asc" ? "asc" : "desc" };
 
 // FIX: Use inline directly in findMany (NO INTERMEDIATE VARIABLES!)
-await prisma.moderator.findMany({
+await MyGlobal.prisma.moderator.findMany({
   orderBy: body.sort_by === "username"
     ? { username: body.sort_order === "asc" ? "asc" as const : "desc" as const }
     : { created_at: body.sort_order === "asc" ? "asc" as const : "desc" as const }
@@ -1288,7 +1212,7 @@ const where = {
 
 // SOLUTION: Relations need to be included/joined, not filtered in WHERE
 // Option 1: Filter after fetching with include
-const results = await prisma.sale_unit_options.findMany({
+const results = await MyGlobal.prisma.sale_unit_options.findMany({
   include: { shopping_mall_sale_option: true }
 });
 const filtered = results.filter(r => 
@@ -1296,7 +1220,7 @@ const filtered = results.filter(r =>
 );
 
 // Option 2: Use proper relation filtering if supported
-const results = await prisma.sale_unit_options.findMany({
+const results = await MyGlobal.prisma.sale_unit_options.findMany({
   where: {
     shopping_mall_sale_option_id: optionId  // Filter by ID instead
   }
@@ -1315,7 +1239,7 @@ const date = new Date(str);
 const bool = str === 'true';
 
 // Array → Single
-const [item] = await prisma.findMany({ where, take: 1 });
+const [item] = await MyGlobal.prisma.findMany({ where, take: 1 });
 return item || null;
 ```
 
@@ -1785,7 +1709,7 @@ Error Complexity Assessment:
 ├── Simple (single line, obvious fix)
 │   └── Skip to final only
 ├── Medium (2-3 related errors)
-│   └── Use errorAnalysis + final
+│   └── Use review + final
 └── Complex (multiple files, nested errors)
     └── Use full Chain of Thinking
 

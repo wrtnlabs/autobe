@@ -281,7 +281,7 @@ if (typeof body.title !== 'string') {
 Any code that checks `typeof`, `instanceof`, or validates that a parameter matches its declared type is **STRICTLY FORBIDDEN**. This is not a guideline - it is an absolute rule with no exceptions.
 
 1. **NEVER create intermediate variables for ANY Prisma operation parameters**
-   - ❌ FORBIDDEN: `const updateData = {...}; await prisma.update({data: updateData})`
+   - ❌ FORBIDDEN: `const updateData = {...}; await MyGlobal.prisma.update({data: updateData})`
 
 ## 🔤 String Literal and Escape Sequence Handling
 
@@ -432,9 +432,9 @@ if (title.split('\n').length > 1 || title.split('\r').length > 1) {
   throw new HttpException("Title must not contain line breaks.", 400);
 }
 ```
-   - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
+   - ❌ FORBIDDEN: `const where = {...}; await MyGlobal.prisma.findMany({where})`
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
-   - ❌ FORBIDDEN: `const orderBy = {...}; await prisma.findMany({orderBy})`
+   - ❌ FORBIDDEN: `const orderBy = {...}; await MyGlobal.prisma.findMany({orderBy})`
    - ❌ FORBIDDEN: `props: {}` - NEVER use empty props type, omit the parameter instead!
    
    **EXCEPTION for Complex Where Conditions**: 
@@ -517,7 +517,7 @@ if (title.split('\n').length > 1 || title.split('\r').length > 1) {
    
    - ✅ REQUIRED: Define all parameters inline for single operations:
      ```typescript
-     await prisma.findMany({
+     await MyGlobal.prisma.findMany({
        where: {
          name: { contains: searchTerm },
          enabled: true
@@ -725,7 +725,7 @@ Object literal may only specify known properties, and 'field' does not exist in 
 
 ```typescript
 // ❌ COMPLEX: Trying to update multiple related models in one transaction
-const result = await prisma.model.update({
+const result = await MyGlobal.prisma.model.update({
   where: { id },
   data: {
     field1: value1,
@@ -738,12 +738,12 @@ const result = await prisma.model.update({
 });
 
 // ✅ SIMPLE: Use separate queries and join in application
-const model = await prisma.model.update({
+const model = await MyGlobal.prisma.model.update({
   where: { id },
   data: { field1: value1 }
 });
 
-const relation = await prisma.relation.update({
+const relation = await MyGlobal.prisma.relation.update({
   where: { modelId: id },
   data: { field2: value2 }
 });
@@ -1025,7 +1025,7 @@ export async function delete__users_$userId(props: {
 }): Promise<void> {
   // CONTRADICTION: API requires soft delete but schema lacks deleted_at field
   // Cannot implement soft delete without the field
-  await prisma.user.delete({
+  await MyGlobal.prisma.user.delete({
     where: { id: props.userId }
   });
 }
@@ -1097,7 +1097,7 @@ return typia.random<IUser>(); // Missing fields
 
 // ❌ WRONG: Comments explaining obvious code
 // Get user by ID
-const user = await prisma.user.findUnique({ where: { id } });
+const user = await MyGlobal.prisma.user.findUnique({ where: { id } });
 ```
 
 **DO NOT write comments for:**
@@ -1337,10 +1337,10 @@ export async function put__public_resources_$resourceId(
    ```typescript
    // ❌ ABSOLUTELY FORBIDDEN - Creates confusing type errors
    const updateData = { /* fields */ };
-   await prisma.model.update({ data: updateData });
+   await MyGlobal.prisma.model.update({ data: updateData });
    
    // ✅ REQUIRED - Provides clear property-level type errors
-   await prisma.model.update({ 
+   await MyGlobal.prisma.model.update({ 
      data: { /* fields defined directly here */ }
    });
    ```
@@ -1437,7 +1437,7 @@ const [results, total] = await Promise.all([
 
 // ❌ WRONG: Creating intermediate variables
 const where: Record<string, unknown> = { ... }; // FORBIDDEN!
-await prisma.findMany({ where }); // NO TYPE SAFETY!
+await MyGlobal.prisma.findMany({ where }); // NO TYPE SAFETY!
 ```
 
 > ⚠️ **MANDATORY: Always use `toISOStringSafe` for Date and ISO string handling.**
@@ -1773,7 +1773,7 @@ const amount = (body.amount ?? 0) as number &
   tags.Maximum<1000000> as number;  // Complex tags stripped
 
 // For pagination with Prisma:
-await prisma.posts.findMany({
+await MyGlobal.prisma.posts.findMany({
   skip: (page - 1) * limit,  // Plain numbers work with Prisma
   take: limit
 });
@@ -2305,7 +2305,7 @@ where: {
 }
 
 // ❌ Database-specific raw queries
-await prisma.$queryRaw`SELECT * FROM users WHERE created_at::date = current_date`
+await MyGlobal.prisma.$queryRaw`SELECT * FROM users WHERE created_at::date = current_date`
 
 // ❌ PostgreSQL-specific array operations
 where: {
@@ -2777,7 +2777,7 @@ const hasCommentId = body.comment_id !== undefined && body.comment_id !== null;
 if (hasPostId) {
   // ❌ TypeScript still thinks body.post_id could be null!
   // The boolean variable hasPostId doesn't narrow body.post_id's type
-  await prisma.posts.findFirst({ 
+  await MyGlobal.prisma.posts.findFirst({ 
     where: { id: body.post_id } // Type error: string | null not assignable to string
   }); 
 }
@@ -2790,12 +2790,12 @@ if (hasPostId) {
 // ✅ Direct check narrows the type correctly
 if (body.post_id !== undefined && body.post_id !== null) {
   // Now TypeScript knows body.post_id is non-null here!
-  const post = await prisma.posts.findFirst({
+  const post = await MyGlobal.prisma.posts.findFirst({
     where: { id: body.post_id } // Works!
   });
 } else if (body.comment_id !== undefined && body.comment_id !== null) {
   // TypeScript knows body.comment_id is non-null here
-  const comment = await prisma.comments.findFirst({
+  const comment = await MyGlobal.prisma.comments.findFirst({
     where: { id: body.comment_id } // Works!
   });
 }
@@ -2814,7 +2814,7 @@ if ((postId === null) === (commentId === null)) {
 
 // Use extracted values with clear types
 if (postId !== null) {
-  const post = await prisma.post.findFirst({
+  const post = await MyGlobal.prisma.post.findFirst({
     where: { id: postId, is_deleted: false }
   });
 }
@@ -2838,9 +2838,9 @@ if (body.post_id !== null && body.post_id !== undefined) {
 
 // Now use targetType and targetId with clear types
 if (targetType === 'post') {
-  await prisma.post.findFirst({ where: { id: targetId } });
+  await MyGlobal.prisma.post.findFirst({ where: { id: targetId } });
 } else {
-  await prisma.comment.findFirst({ where: { id: targetId } });
+  await MyGlobal.prisma.comment.findFirst({ where: { id: targetId } });
 }
 ```
 
@@ -2855,7 +2855,7 @@ if (body.post_id && body.comment_id) {
 }
 
 // Create the like with validated fields
-await prisma.like.create({
+await MyGlobal.prisma.like.create({
   data: {
     user_id: user.id,
     post_id: body.post_id ?? null,
@@ -3031,7 +3031,7 @@ if (hasField('deleted_at')) {
 
 ```ts
 // ❌ Assuming fields exist without schema verification
-const result = await prisma.model.findFirst({
+const result = await MyGlobal.prisma.model.findFirst({
   select: {
     id: true,
     deleted_at: true, // May not exist in schema
@@ -3040,7 +3040,7 @@ const result = await prisma.model.findFirst({
 });
 
 // ✅ Only select fields verified in the schema
-const result = await prisma.model.findFirst({
+const result = await MyGlobal.prisma.model.findFirst({
   select: {
     id: true,             // Verified in schema
     created_at: true,     // Verified in schema  
@@ -3362,7 +3362,7 @@ const results = await MyGlobal.prisma.discussionboard_tag.findMany({
 // ❌ NEVER create intermediate variables
 const where = { /* ... */ };  // FORBIDDEN
 const orderBy = { /* ... */ }; // FORBIDDEN
-await prisma.findMany({ where, orderBy }); // Complex type errors!
+await MyGlobal.prisma.findMany({ where, orderBy }); // Complex type errors!
 ```
 
 **Why this matters:**
@@ -3471,7 +3471,7 @@ const now = toISOStringSafe(new Date());
 const completed_at = body.mark_completed ? now : undefined;
 
 // Update with prepared values
-await prisma.task.update({
+await MyGlobal.prisma.task.update({
   where: { id },
   data: { 
     completed_at,
@@ -4089,7 +4089,7 @@ return response;
 **Example: Transforming a Complex Nested Query**
 ```typescript
 // ❌ Instead of fighting with complex nested types
-const result = await prisma.post.findMany({
+const result = await MyGlobal.prisma.post.findMany({
   include: {
     user: {
       include: {
@@ -4106,7 +4106,7 @@ const result = await prisma.post.findMany({
 });
 
 // ✅ Bold approach: Separate queries with clear types
-const posts = await prisma.post.findMany();
+const posts = await MyGlobal.prisma.post.findMany();
 const postIds = posts.map(p => p.id);
 
 const [users, comments] = await Promise.all([

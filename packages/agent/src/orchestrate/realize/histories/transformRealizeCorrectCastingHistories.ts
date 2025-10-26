@@ -13,7 +13,7 @@ export const transformRealizeCorrectCastingHistories = (props: {
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const hints: string = printErrorHints(props.script, props.diagnostics);
+  const hint: string = printErrorHints(props.script, props.diagnostics);
   const histories: Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
   > = [
@@ -54,7 +54,7 @@ export const transformRealizeCorrectCastingHistories = (props: {
         Never fix code from this error annotated code. You must fix
         the original code above.
 
-        ${hints}
+        ${hint}
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];
@@ -63,7 +63,7 @@ export const transformRealizeCorrectCastingHistories = (props: {
     const filename: string = v7();
     fs.writeFileSync(`${filename}.text.log`, overflow.text, "utf8");
     fs.writeFileSync(`${filename}.script.log`, props.script, "utf8");
-    fs.writeFileSync(`${filename}.hints.log`, hints, "utf8");
+    fs.writeFileSync(`${filename}.hints.log`, hint, "utf8");
     fs.writeFileSync(
       `${filename}.failures.log`,
       JSON.stringify(props.diagnostics, null, 2),
