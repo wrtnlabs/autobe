@@ -59,7 +59,7 @@ export const archive_realize = async (
   const model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/realize`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/realize`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",

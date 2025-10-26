@@ -46,11 +46,11 @@ pnpm run archive --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5
 pnpm run archive --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
 pnpm run archive --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
 
-# openai/gpt-oss-120b
-pnpm run archive --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b.todo.log
-pnpm run archive --vendor openai/gpt-oss-120b --project bbs > archive.gpt-oss-120b.bbs.log
-pnpm run archive --vendor openai/gpt-oss-120b --project reddit > archive.gpt-oss-120b.reddit.log
-pnpm run archive --vendor openai/gpt-oss-120b --project shopping > archive.gpt-oss-120b.shopping.log
+# openai/gpt-oss-120b:exacto
+pnpm run archive --vendor openai/gpt-oss-120b:exacto --project todo > archive.gpt-oss-120b.todo.log
+pnpm run archive --vendor openai/gpt-oss-120b:exacto --project bbs > archive.gpt-oss-120b.bbs.log
+pnpm run archive --vendor openai/gpt-oss-120b:exacto --project reddit > archive.gpt-oss-120b.reddit.log
+pnpm run archive --vendor openai/gpt-oss-120b:exacto --project shopping > archive.gpt-oss-120b.shopping.log
 
 ################################################
 # GROK
@@ -70,11 +70,11 @@ pnpm run archive --vendor x-ai/grok-code-fast-1 --project shopping --schema clau
 ################################################
 # DEEPSEEK
 ################################################
-# deepseek/deepseek-v3.1-terminus
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus --schema claude --project todo > archive.deepseek-v3.1-terminus.todo.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus --schema claude --project bbs > archive.deepseek-v3.1-terminus.bbs.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus --schema claude --project reddit > archive.deepseek-v3.1-terminus.reddit.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus --schema claude --project shopping > archive.deepseek-v3.1-terminus.shopping.log
+# deepseek/deepseek-v3.1-terminus:exacto
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project todo > archive.deepseek-v3.1-terminus.todo.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project bbs > archive.deepseek-v3.1-terminus.bbs.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project reddit > archive.deepseek-v3.1-terminus.reddit.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project shopping > archive.deepseek-v3.1-terminus.shopping.log
 
 # deepseek/deepseek-v3.2-exp
 pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project todo --schema claude > archive.deepseek-v3.2-exp.todo.log
@@ -124,11 +124,11 @@ pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > archi
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > archive.qwen-qwen3-next-80b-a3b-instruct.reddit.log
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > archive.qwen-qwen3-next-80b-a3b-instruct.shopping.log
 
-# qwen/qwen3-coder
-pnpm run archive --vendor qwen/qwen3-coder --project todo > archive.qwen-qwen3-coder.todo.log
-pnpm run archive --vendor qwen/qwen3-coder --project bbs > archive.qwen-qwen3-coder.bbs.log
-pnpm run archive --vendor qwen/qwen3-coder --project reddit > archive.qwen-qwen3-coder.reddit.log
-pnpm run archive --vendor qwen/qwen3-coder --project shopping > archive.qwen-qwen3-coder.shopping.log
+# qwen/qwen3-coder:exacto
+pnpm run archive --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-qwen3-coder.todo.log
+pnpm run archive --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
+pnpm run archive --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
+pnpm run archive --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
 
 ################################################
 # MISTRAL
@@ -148,17 +148,17 @@ pnpm run archive --vendor mistralai/devstral-medium --project shopping --schema 
 ################################################
 # GLM
 ################################################
-# z-ai/glm-4.6
-pnpm run archive --vendor z-ai/glm-4.6 --project todo > archive.z-ai-glm-4.6.todo.log
-pnpm run archive --vendor z-ai/glm-4.6 --project bbs > archive.z-ai-glm-4.6.bbs.log
-pnpm run archive --vendor z-ai/glm-4.6 --project reddit > archive.z-ai-glm-4.6.reddit.log
-pnpm run archive --vendor z-ai/glm-4.6 --project shopping > archive.z-ai-glm-4.6.shopping.log
+# z-ai/glm-4.6:exacto
+pnpm run archive --vendor z-ai/glm-4.6:exacto --project todo > archive.z-ai-glm-4.6.todo.log
+pnpm run archive --vendor z-ai/glm-4.6:exacto --project bbs > archive.z-ai-glm-4.6.bbs.log
+pnpm run archive --vendor z-ai/glm-4.6:exacto --project reddit > archive.z-ai-glm-4.6.reddit.log
+pnpm run archive --vendor z-ai/glm-4.6:exacto --project shopping > archive.z-ai-glm-4.6.shopping.log
 
 ################################################
 # KIMI
 ################################################
-# moonshotai/kimi-k2-0905
-pnpm run archive --vendor moonshotai/kimi-k2-0905 --project todo --schema claude > archive.moonshotai-kimi-k2-0905.todo.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905 --project bbs --schema claude > archive.moonshotai-kimi-k2-0905.bbs.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905 --project reddit --schema claude > archive.moonshotai-kimi-k2-0905.reddit.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905 --project shopping --schema claude > archive.moonshotai-kimi-k2-0905.shopping.log
+# moonshotai/kimi-k2-0905:exacto
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project todo --schema claude > archive.moonshotai-kimi-k2-0905.todo.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project bbs --schema claude > archive.moonshotai-kimi-k2-0905.bbs.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project reddit --schema claude > archive.moonshotai-kimi-k2-0905.reddit.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project shopping --schema claude > archive.moonshotai-kimi-k2-0905.shopping.log

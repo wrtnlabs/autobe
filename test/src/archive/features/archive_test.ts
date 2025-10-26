@@ -58,7 +58,7 @@ export let archive_test = async (
   let model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/test`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",

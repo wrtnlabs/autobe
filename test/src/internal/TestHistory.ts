@@ -17,7 +17,7 @@ import { TestFileSystem } from "./TestFileSystem";
 export namespace TestHistory {
   export const save = async (files: Record<string, string>): Promise<void> => {
     await TestFileSystem.save({
-      root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}`,
+      root: `${TestGlobal.ROOT}/assets/histories/${slugModel(TestGlobal.vendorModel, false)}`,
       overwrite: true,
       files,
     });
@@ -82,7 +82,7 @@ export namespace TestHistory {
     project: TestProject,
     phase: AutoBePhase,
   ): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${phase}.json.gz`;
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${slugModel(TestGlobal.vendorModel, false)}/${project}.${phase}.json.gz`;
     const content: string = await CompressUtil.gunzip(
       await fs.promises.readFile(location),
     );
@@ -96,7 +96,7 @@ export namespace TestHistory {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
       await CompressUtil.gunzip(
         await fs.promises.readFile(
-          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${phase}.snapshots.json.gz`,
+          `${TestGlobal.ROOT}/assets/histories/${slugModel(TestGlobal.vendorModel, false)}/${project}.${phase}.snapshots.json.gz`,
         ),
       ),
     );
@@ -105,7 +105,7 @@ export namespace TestHistory {
 
   export const has = (project: TestProject, type: AutoBePhase): boolean =>
     fs.existsSync(
-      `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`,
+      `${TestGlobal.ROOT}/assets/histories/${slugModel(TestGlobal.vendorModel, false)}/${project}.${type}.json.gz`,
     );
 
   export const slugModel = (model: string, replaceSlash: boolean): string => {

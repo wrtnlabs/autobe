@@ -43,7 +43,7 @@ export const archive_prisma = async (
   agent.on("prismaStart", async (e) => {
     try {
       await FileSystemIterator.save({
-        root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
+        root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma`,
         files: {
           "histories.json": JSON.stringify(agent.getHistories(), null, 2),
           "instruction.md": e.reason,
@@ -64,7 +64,7 @@ export const archive_prisma = async (
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-correct-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
         ["errors.json", JSON.stringify(event.failure.errors)],
         ["correction.json", JSON.stringify(event.correction)],
@@ -75,7 +75,7 @@ export const archive_prisma = async (
   agent.on("prismaValidate", async (event) => {
     validates.push(event);
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-failure-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-failure-${validates.length}`,
       files: {
         "errors.json": JSON.stringify(event.result.errors),
         ...event.schemas,
@@ -102,7 +102,7 @@ export const archive_prisma = async (
   )!;
   if (prisma.compiled.type !== "success") {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-error`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-error`,
       files: {
         "result.json": JSON.stringify(prisma.result),
         ...prisma.schemas,
@@ -121,7 +121,7 @@ export const archive_prisma = async (
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma`,
       files: {
         ...(await agent.getFiles()),
         "autobe/instruction.md": prisma.instruction,

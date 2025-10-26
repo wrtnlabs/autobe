@@ -70,7 +70,7 @@ export const archive_analyze = async (
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
+      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/analyze`,
       files: await agent.getFiles(),
     });
   } catch {}
