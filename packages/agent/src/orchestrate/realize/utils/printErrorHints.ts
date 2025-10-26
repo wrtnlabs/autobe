@@ -51,5 +51,5 @@ export function printErrorHints(
         \`\`\`
       `;
     })
-    .join("\n");
+    .join("\n\n");
 }

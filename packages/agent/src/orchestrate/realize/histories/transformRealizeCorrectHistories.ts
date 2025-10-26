@@ -1,11 +1,14 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeRealizeAuthorization } from "@autobe/interface";
+import {
+  AutoBeRealizeAuthorization,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import fs from "fs";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { printErrorHints } from "../utils/printErrorHints";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
@@ -17,10 +20,11 @@ export function transformRealizeCorrectHistories(props: {
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
   dto: Record<string, string>;
-  failures: IAutoBeRealizeFunctionFailure[];
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > {
+  const hints: string = printErrorHints(props.code, props.diagnostics);
   const histories: Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
   > = [
@@ -33,45 +37,56 @@ export function transformRealizeCorrectHistories(props: {
     },
     {
       id: v7(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        Below is the code you made before. It's also something to review.
-
-        \`\`\`typescript
-        ${props.code}
-        \`\`\`
-      `,
-      created_at: new Date().toISOString(),
-    },
-    ...props.failures.map((f) => {
-      return {
-        id: v7(),
-        type: "assistantMessage",
-        text: StringUtil.trim`
-          This is a past code and an error with the code. Please refer to the annotation for the location of the error.
-
-          ${printErrorHints(f.function.content, f.diagnostics)}
-        `,
-        created_at: new Date().toISOString(),
-      } satisfies IAgenticaHistoryJson.IAssistantMessage;
-    }),
-    {
-      id: v7(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
       created_at: new Date().toISOString(),
     },
+    {
+      id: v7(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        ## Original Code
+
+        Here is the previous code you have to review and fix.
+
+        \`\`\`typescript
+        ${props.code}
+        \`\`\`
+
+        ## Compilation Errors
+
+        Here are the compilation errors found in the code above.
+
+        \`\`\`json
+        ${JSON.stringify(props.diagnostics)}
+        \`\`\`
+
+        ## Error Annotated Code
+
+        Here is the error annotated code.
+
+        Please refer to the annotation for the location of the error.
+
+        By the way, note that, this code is only for reference purpose.
+        Never fix code from this error annotated code. You must fix
+        the original code above.
+
+        ${hints}
+      `,
+      created_at: new Date().toISOString(),
+    },
   ];
-  console.log("------------ REALIZE CORRECT HISTORIES ------------");
-  console.log("number of failures", props.failures.length);
-  console.log(
-    "total length",
-    histories.reduce((a, b) => a + b.text.length, 0),
-  );
-  console.log(
-    "histories' sizes",
-    histories.map((h) => [h.type, h.text.length, h.text.slice(0, 100)]),
-  );
-  console.log("---------------------------------------------------");
+  const overflow = histories.find((h) => h.text.length > 1_000_000);
+  if (overflow) {
+    const filename: string = v7();
+    fs.writeFileSync(`${filename}.text.log`, overflow.text, "utf8");
+    fs.writeFileSync(`${filename}.script.log`, props.code, "utf8");
+    fs.writeFileSync(`${filename}.hints.log`, hints, "utf8");
+    fs.writeFileSync(
+      `${filename}.failures.log`,
+      JSON.stringify(props.diagnostics, null, 2),
+      "utf8",
+    );
+  }
   return histories;
 }

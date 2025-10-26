@@ -68,7 +68,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
   scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
-  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  _previousFailurees: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   progress: AutoBeProgressEventBase,
   event: AutoBeRealizeValidateEvent,
   life: number,
@@ -80,7 +80,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
       scenarios,
       authorizations,
       functions,
-      [...failures, ...event.result.diagnostics],
+      event.result.diagnostics,
       progress,
       event,
       life,
@@ -137,12 +137,10 @@ const correct = async <Model extends ILlmSchema.Model>(
 
       const { tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
-        histories: transformRealizeCorrectCastingHistories([
-          {
-            script: func.content,
-            diagnostics: failures.filter((d) => d.file === location),
-          },
-        ]),
+        histories: transformRealizeCorrectCastingHistories({
+          script: func.content,
+          diagnostics: failures.filter((d) => d.file === location),
+        }),
         controller: createController({
           model: ctx.model,
           functionName: scenario.functionName,

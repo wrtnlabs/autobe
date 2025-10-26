@@ -34,7 +34,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
-  failures: IAutoBeRealizeFunctionFailure[],
+  _previousFailures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
@@ -92,11 +92,8 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     diagnosticsByFile[location].diagnostics.push(diagnostic);
   });
 
-  const newFailures: IAutoBeRealizeFunctionFailure[] = [
-    ...failures,
-    ...Object.values(diagnosticsByFile),
-  ];
-
+  const newFailures: IAutoBeRealizeFunctionFailure[] =
+    Object.values(diagnosticsByFile);
   const corrected: AutoBeRealizeFunction[] = await correct(
     ctx,
     locations,
@@ -213,9 +210,10 @@ async function step<Model extends ILlmSchema.Model>(
       authorization: props.authorization,
       code: props.function.content,
       dto,
-      failures: props.failures.filter(
-        (f) => f.function.location === props.function.location,
-      ),
+      diagnostics: props.failures
+        .filter((f) => f.function.location === props.function.location)
+        .map((f) => f.diagnostics)
+        .flat(),
       totalAuthorizations: props.totalAuthorizations,
     }),
     enforceFunctionCall: true,
