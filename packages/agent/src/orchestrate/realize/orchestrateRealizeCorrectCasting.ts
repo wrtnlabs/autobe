@@ -24,6 +24,7 @@ import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
+import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "./utils/getRealizeWriteCodeTemplate";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
@@ -53,79 +54,77 @@ export const orchestrateRealizeCorrectCasting = async <
   );
   return predicate(
     ctx,
-    scenarios,
-    authorizations,
-    functions,
-    [],
-    progress,
-    validateEvent,
+    {
+      scenarios,
+      authorizations,
+      functions,
+      previousFailures: [],
+      progress,
+      event: validateEvent,
+    },
     life,
   );
 };
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenarios: IAutoBeRealizeScenarioResult[],
-  authorizations: AutoBeRealizeAuthorization[],
-  functions: AutoBeRealizeFunction[],
-  _previousFailurees: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-  progress: AutoBeProgressEventBase,
-  event: AutoBeRealizeValidateEvent,
+  props: {
+    scenarios: IAutoBeRealizeScenarioResult[];
+    authorizations: AutoBeRealizeAuthorization[];
+    functions: AutoBeRealizeFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure[][];
+    progress: AutoBeProgressEventBase;
+    event: AutoBeRealizeValidateEvent;
+  },
   life: number,
 ): Promise<AutoBeRealizeFunction[]> => {
-  if (event.result.type === "failure") {
-    ctx.dispatch(event);
-    return await correct(
-      ctx,
-      scenarios,
-      authorizations,
-      functions,
-      event.result.diagnostics,
-      progress,
-      event,
-      life,
-    );
+  if (props.event.result.type === "failure") {
+    ctx.dispatch(props.event);
+    return await correct(ctx, props, life);
   }
-  return functions;
+  return props.functions;
 };
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenarios: IAutoBeRealizeScenarioResult[],
-  authorizations: AutoBeRealizeAuthorization[],
-  functions: AutoBeRealizeFunction[],
-  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-  progress: AutoBeProgressEventBase,
-  event: AutoBeRealizeValidateEvent,
+  props: {
+    scenarios: IAutoBeRealizeScenarioResult[];
+    authorizations: AutoBeRealizeAuthorization[];
+    functions: AutoBeRealizeFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure[][];
+    progress: AutoBeProgressEventBase;
+    event: AutoBeRealizeValidateEvent;
+  },
   life: number,
 ): Promise<AutoBeRealizeFunction[]> => {
   // Early returns for non-correctable cases
-  if (event.result.type !== "failure" || life < 0) {
-    return functions;
+  if (props.event.result.type !== "failure" || life < 0) {
+    return props.functions;
   }
 
-  const locations: string[] = diagnose(event).filter((l) =>
-    functions.map((f) => f.location).includes(l),
+  const failure = props.event.result;
+  const locations: string[] = diagnose(props.event).filter((l) =>
+    props.functions.map((f) => f.location).includes(l),
   );
 
   // If no locations to correct, return original functions
   if (locations.length === 0) {
-    return functions;
+    return props.functions;
   }
 
-  progress.total += locations.length;
+  props.progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
     locations.map((location) => async (): Promise<CorrectionResult> => {
-      const func: AutoBeRealizeFunction = functions.find(
+      const func: AutoBeRealizeFunction = props.functions.find(
         (f) => f.location === location,
       )!;
-      const scenario: IAutoBeRealizeScenarioResult = scenarios.find(
+      const scenario: IAutoBeRealizeScenarioResult = props.scenarios.find(
         (s) => s.location === func.location,
       )!;
       const operation: AutoBeOpenApi.IOperation = scenario.operation;
       const authorization: AutoBeRealizeAuthorization | undefined =
-        authorizations.find(
+        props.authorizations.find(
           (a) => a.actor.name === operation.authorizationActor,
         );
 
@@ -134,12 +133,23 @@ const correct = async <Model extends ILlmSchema.Model>(
       > = {
         value: null,
       };
-
       const { tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
         histories: transformRealizeCorrectCastingHistories({
-          script: func.content,
-          diagnostics: failures.filter((d) => d.file === location),
+          failures: [
+            ...props.previousFailures
+              .map(
+                (pf) =>
+                  pf.find((f) => f.function.location === func.location) ?? null,
+              )
+              .filter((x) => x !== null),
+            {
+              function: func,
+              diagnostics: failure.diagnostics.filter(
+                (d) => d.file === func.location,
+              ),
+            },
+          ],
         }),
         controller: createController({
           model: ctx.model,
@@ -194,7 +204,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           I repeat that, never assert the Prisma type. It's not your mission.
         `,
       });
-      ++progress.completed;
+      ++props.progress.completed;
 
       if (pointer.value === null)
         return { result: "exception" as const, func: func };
@@ -224,8 +234,8 @@ const correct = async <Model extends ILlmSchema.Model>(
         location: func.location,
         step: ctx.state().analyze?.step ?? 0,
         tokenUsage,
-        completed: progress.completed,
-        total: progress.total,
+        completed: props.progress.completed,
+        total: props.progress.total,
       });
       return {
         result: "success" as const,
@@ -238,7 +248,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   );
 
   // Get functions that were not modified (not in locations array)
-  const unchangedFunctions: AutoBeRealizeFunction[] = functions.filter(
+  const unchangedFunctions: AutoBeRealizeFunction[] = props.functions.filter(
     (f) => !locations.includes(f.location),
   );
 
@@ -251,7 +261,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
     {
-      authorizations,
+      authorizations: props.authorizations,
       functions: allFunctionsForValidation,
     },
   );
@@ -261,7 +271,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     return allFunctionsForValidation;
   } else if (newResult.type === "exception") {
     // Compilation exception, return current functions. because retrying won't help.
-    return functions;
+    return props.functions;
   }
 
   if (
@@ -284,27 +294,33 @@ const correct = async <Model extends ILlmSchema.Model>(
     return [...success, ...ignored, ...unchangedFunctions];
   }
 
-  // Collect diagnostics relevant to failed functions
-  const failedLocations: string[] = failed.map((f) => f.location);
-  const allDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [
-    ...failures,
-    ...(newResult.type === "failure" ? newResult.diagnostics : []),
-  ];
-  const relevantDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
-    filterRelevantDiagnostics(allDiagnostics, failedLocations);
-
   // Recursively retry failed functions
   const retriedFunctions: AutoBeRealizeFunction[] = await predicate(
     ctx,
-    scenarios,
-    authorizations,
-    failed,
-    relevantDiagnostics,
-    progress,
-    newValidate,
+    {
+      scenarios: props.scenarios,
+      authorizations: props.authorizations,
+      functions: failed,
+      previousFailures: [
+        ...props.previousFailures,
+        failed.map(
+          (f) =>
+            ({
+              function: f,
+              diagnostics:
+                newValidate.result.type === "failure"
+                  ? newValidate.result.diagnostics.filter(
+                      (d) => d.file === f.location,
+                    )
+                  : [],
+            }) satisfies IAutoBeRealizeFunctionFailure,
+        ),
+      ],
+      progress: props.progress,
+      event: newValidate,
+    },
     life - 1,
   );
-
   return [...success, ...ignored, ...retriedFunctions, ...unchangedFunctions];
 };
 
@@ -361,22 +377,6 @@ const separateCorrectionResults = (
     .map((c) => c.func);
 
   return { success, failed, ignored };
-};
-
-/**
- * Filter diagnostics to only include those relevant to specific functions
- *
- * @param diagnostics - All diagnostics
- * @param functionLocations - Locations of functions to filter for
- * @returns Filtered diagnostics
- */
-const filterRelevantDiagnostics = (
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-  functionLocations: string[],
-): IAutoBeTypeScriptCompileResult.IDiagnostic[] => {
-  return diagnostics.filter(
-    (d) => d.file && functionLocations.includes(d.file),
-  );
 };
 
 const createController = <Model extends ILlmSchema.Model>(props: {

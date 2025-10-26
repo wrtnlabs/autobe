@@ -1,14 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeRealizeAuthorization,
-  IAutoBeTypeScriptCompileResult,
-} from "@autobe/interface";
+import { AutoBeRealizeAuthorization } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import fs from "fs";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
+import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { printErrorHints } from "../utils/printErrorHints";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
@@ -18,13 +15,11 @@ export function transformRealizeCorrectHistories(props: {
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
-  code: string;
   dto: Record<string, string>;
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+  failures: IAutoBeRealizeFunctionFailure[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > {
-  const hint: string = printErrorHints(props.code, props.diagnostics);
   const histories: Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
   > = [
@@ -34,59 +29,68 @@ export function transformRealizeCorrectHistories(props: {
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.COMMON_CORRECT_CASTING,
-    },
+    } as IAgenticaHistoryJson.ISystemMessage,
     {
       id: v7(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
       created_at: new Date().toISOString(),
-    },
-    {
-      id: v7(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        ## Original Code
+    } as IAgenticaHistoryJson.ISystemMessage,
+    ...props.failures.map(
+      (failure, i, array) =>
+        ({
+          id: v7(),
+          type: "assistantMessage",
+          text: StringUtil.trim`
+          # ${
+            i === array.length - 1
+              ? "# Latest Failure"
+              : StringUtil.trim`
+                # Previous Failure
 
-        Here is the previous code you have to review and fix.
+                This is the previous failure for your reference.
 
-        \`\`\`typescript
-        ${props.code}
-        \`\`\`
+                Never try to fix this previous failure code, but only
+                focus on the latest failure below. This is provided just
+                to give you context about your past mistakes.
 
-        ## Compilation Errors
+                If same mistake happens again, you must try to not
+                repeat the same mistake. Change your approach to fix
+                the issue.
+              `
+          }
+          
+          ## Original Code
 
-        Here are the compilation errors found in the code above.
+          Here is the previous code you have to review and fix.
 
-        \`\`\`json
-        ${JSON.stringify(props.diagnostics)}
-        \`\`\`
+          \`\`\`typescript
+          ${failure.function.content}
+          \`\`\`
 
-        ## Error Annotated Code
+          ## Compilation Errors
 
-        Here is the error annotated code.
+          Here are the compilation errors found in the code above.
 
-        Please refer to the annotation for the location of the error.
+          \`\`\`json
+          ${JSON.stringify(failure.diagnostics)}
+          \`\`\`
 
-        By the way, note that, this code is only for reference purpose.
-        Never fix code from this error annotated code. You must fix
-        the original code above.
+          ## Error Annotated Code
 
-        ${hint}
-      `,
-      created_at: new Date().toISOString(),
-    },
+          Here is the error annotated code.
+
+          Please refer to the annotation for the location of the error.
+
+          By the way, note that, this code is only for reference purpose.
+          Never fix code from this error annotated code. You must fix
+          the original code above.
+
+          ${printErrorHints(failure.function.content, failure.diagnostics)}
+        `,
+          created_at: new Date().toISOString(),
+        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
+    ),
   ];
-  const overflow = histories.find((h) => h.text.length > 1_000_000);
-  if (overflow) {
-    const filename: string = v7();
-    fs.writeFileSync(`${filename}.text.log`, overflow.text, "utf8");
-    fs.writeFileSync(`${filename}.script.log`, props.code, "utf8");
-    fs.writeFileSync(`${filename}.hints.log`, hint, "utf8");
-    fs.writeFileSync(
-      `${filename}.failures.log`,
-      JSON.stringify(props.diagnostics, null, 2),
-      "utf8",
-    );
-  }
   return histories;
 }

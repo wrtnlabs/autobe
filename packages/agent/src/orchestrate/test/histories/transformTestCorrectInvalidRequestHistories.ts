@@ -23,17 +23,17 @@ export const transformTestCorrectInvalidRequestHistories = (
     created_at: new Date().toISOString(),
     type: "assistantMessage",
     text: StringUtil.trim`
-        ## TypeScript Code
-        
-        \`\`\`typescript
-        ${func.script}
-        \`\`\`
+      ## TypeScript Code
+      
+      \`\`\`typescript
+      ${func.script}
+      \`\`\`
 
-        ## Compile Errors
+      ## Compile Errors
 
-        \`\`\`json
-        ${JSON.stringify(diagnostics)}
-        \`\`\`
-      `,
+      \`\`\`json
+      ${JSON.stringify(diagnostics)}
+      \`\`\`
+    `,
   },
 ];
