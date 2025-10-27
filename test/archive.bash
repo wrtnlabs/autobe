@@ -46,11 +46,17 @@ pnpm run archive --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5
 pnpm run archive --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
 pnpm run archive --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
 
-# openai/gpt-oss-120b:exacto
-pnpm run archive --vendor openai/gpt-oss-120b:exacto --project todo > archive.gpt-oss-120b.todo.log
-pnpm run archive --vendor openai/gpt-oss-120b:exacto --project bbs > archive.gpt-oss-120b.bbs.log
-pnpm run archive --vendor openai/gpt-oss-120b:exacto --project reddit > archive.gpt-oss-120b.reddit.log
-pnpm run archive --vendor openai/gpt-oss-120b:exacto --project shopping > archive.gpt-oss-120b.shopping.log
+# openai/gpt-5-codex
+pnpm run archive --vendor openai/gpt-5-codex --project todo > archive.openai-gpt-5-codex.todo.log
+pnpm run archive --vendor openai/gpt-5-codex --project bbs > archive.openai-gpt-5-codex.bbs.log
+pnpm run archive --vendor openai/gpt-5-codex --project reddit > archive.openai-gpt-5-codex.reddit.log
+pnpm run archive --vendor openai/gpt-5-codex --project shopping > archive.openai-gpt-5-codex.shopping.log
+
+# openai/gpt-oss-120b
+pnpm run archive --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b.todo.log
+pnpm run archive --vendor openai/gpt-oss-120b --project bbs > archive.gpt-oss-120b.bbs.log
+pnpm run archive --vendor openai/gpt-oss-120b --project reddit > archive.gpt-oss-120b.reddit.log
+pnpm run archive --vendor openai/gpt-oss-120b --project shopping > archive.gpt-oss-120b.shopping.log
 
 ################################################
 # GROK
@@ -129,6 +135,12 @@ pnpm run archive --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-
 pnpm run archive --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
 pnpm run archive --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
 pnpm run archive --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
+
+# qwen/qwen3-coder
+pnpm run archive --vendor qwen/qwen3-coder --project todo > archive.qwen-qwen3-coder.todo.log
+pnpm run archive --vendor qwen/qwen3-coder --project bbs > archive.qwen-qwen3-coder.bbs.log
+pnpm run archive --vendor qwen/qwen3-coder --project reddit > archive.qwen-qwen3-coder.reddit.log
+pnpm run archive --vendor qwen/qwen3-coder --project shopping > archive.qwen-qwen3-coder.shopping.log
 
 ################################################
 # MISTRAL
