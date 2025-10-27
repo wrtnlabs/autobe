@@ -46,12 +46,6 @@ pnpm run archive --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5
 pnpm run archive --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
 pnpm run archive --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
 
-# openai/gpt-5-codex
-pnpm run archive --vendor openai/gpt-5-codex --project todo > archive.openai-gpt-5-codex.todo.log
-pnpm run archive --vendor openai/gpt-5-codex --project bbs > archive.openai-gpt-5-codex.bbs.log
-pnpm run archive --vendor openai/gpt-5-codex --project reddit > archive.openai-gpt-5-codex.reddit.log
-pnpm run archive --vendor openai/gpt-5-codex --project shopping > archive.openai-gpt-5-codex.shopping.log
-
 # openai/gpt-oss-120b
 pnpm run archive --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b.todo.log
 pnpm run archive --vendor openai/gpt-oss-120b --project bbs > archive.gpt-oss-120b.bbs.log
