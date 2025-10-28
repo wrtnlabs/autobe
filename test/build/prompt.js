@@ -4,7 +4,7 @@ console.log("Build system prompts");
 const startTime = performance.now();
 cp.execSync("pnpm run build:prompt", {
   cwd: `${__dirname}/../../packages/agent`,
-  stdio: "ignore",
+  stdio: "inherit",
 });
 const duration = performance.now() - startTime;
 if (duration > 100) {
