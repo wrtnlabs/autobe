@@ -113,6 +113,127 @@ POST /articles/{articleId}/comments
 - Maintain consistent terminology throughout
 - NO prefixes (domain, role, or API version) in paths
 
+**CRITICAL: Unique Code Identifiers and Composite Unique Keys**:
+
+When reviewing path parameters, verify proper identifier usage:
+
+1. **Prefer Unique Codes Over UUIDs**:
+   - If Prisma schema has `@@unique([code])` → Use `{entityCode}` NOT `{entityId}`
+   - Example: `@@unique([code])` → `/enterprises/{enterpriseCode}` ✅
+   - Example: No unique code → `/orders/{orderId}` ✅ (UUID fallback)
+
+2. **Composite Unique Keys Require Complete Paths**:
+   - If Prisma schema has `@@unique([parent_id, code])` → Code is scoped to parent
+   - **MUST include parent in path** - code alone is ambiguous
+   - Example: `teams` with `@@unique([enterprise_id, code])`
+     * ✅ `/enterprises/{enterpriseCode}/teams/{teamCode}` - Complete context
+     * ❌ `/teams/{teamCode}` - Ambiguous! Which enterprise's team?
+
+**Review Actions for Identifier Issues**:
+
+```
+Check each endpoint with code-based parameters:
+
+Step 1: Find entity in Prisma schema
+Step 2: Check @@unique constraint
+
+Case A: @@unique([code])
+→ Global unique
+→ ✅ Can use `/entities/{entityCode}` independently
+→ Example: enterprises, categories
+
+Case B: @@unique([parent_id, code])
+→ Composite unique (scoped to parent)
+→ ❌ REMOVE independent endpoints like `/entities/{entityCode}`
+→ ✅ KEEP only nested: `/parents/{parentCode}/entities/{entityCode}`
+→ Example: teams scoped to enterprises
+
+Case C: No @@unique on code
+→ Not unique
+→ ✅ Use UUID: `/entities/{entityId}`
+```
+
+**Endpoints to REMOVE (Composite Unique Violations)**:
+
+If entity has `@@unique([parent_id, code])`:
+- ❌ `PATCH /entities` - Cannot search across parents safely
+- ❌ `GET /entities/{entityCode}` - Ambiguous! Which parent's entity?
+- ❌ `POST /entities` - Missing parent context
+- ❌ `PUT /entities/{entityCode}` - Cannot identify without parent
+- ❌ `DELETE /entities/{entityCode}` - Dangerous! Could delete wrong entity
+
+**Endpoints to KEEP (Composite Unique Correct Paths)**:
+- ✅ `PATCH /parents/{parentCode}/entities` - Search within parent
+- ✅ `GET /parents/{parentCode}/entities/{entityCode}` - Unambiguous
+- ✅ `POST /parents/{parentCode}/entities` - Clear parent context
+- ✅ `PUT /parents/{parentCode}/entities/{entityCode}` - Complete path
+- ✅ `DELETE /parents/{parentCode}/entities/{entityCode}` - Safe deletion
+
+**Real-World Example**:
+
+```prisma
+// Schema
+model erp_enterprises {
+  @@unique([code])  // Global unique
+}
+
+model erp_enterprise_teams {
+  @@unique([erp_enterprise_id, code])  // Composite unique
+}
+```
+
+```
+Scenario:
+- Enterprise "acme-corp" has Team "engineering"
+- Enterprise "globex-inc" has Team "engineering"
+- Enterprise "stark-industries" has Team "engineering"
+
+❌ REMOVE: GET /teams/engineering
+Problem: Returns which team? Ambiguous!
+
+✅ KEEP: GET /enterprises/acme-corp/teams/engineering
+Result: Clear - acme-corp's engineering team
+```
+
+**Deep Nesting with Multiple Composite Keys**:
+
+```prisma
+model erp_enterprises {
+  @@unique([code])  // Level 1: Global
+}
+
+model erp_enterprise_teams {
+  @@unique([erp_enterprise_id, code])  // Level 2: Scoped to enterprise
+}
+
+model erp_enterprise_team_projects {
+  @@unique([erp_enterprise_team_id, code])  // Level 3: Scoped to team
+}
+```
+
+```
+❌ REMOVE: All incomplete paths
+- GET /teams/{teamCode}
+- GET /projects/{projectCode}
+- GET /enterprises/{enterpriseCode}/projects/{projectCode}  (missing team!)
+
+✅ KEEP: Complete hierarchical paths
+- GET /enterprises/{enterpriseCode}/teams/{teamCode}
+- GET /enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}
+```
+
+**Parameter Naming Consistency Check**:
+
+Verify parameter names match identifier type:
+- Global unique code: `{entityCode}` (e.g., `{enterpriseCode}`)
+- Composite unique code: `{parentCode}/{entityCode}` (e.g., `{enterpriseCode}/teams/{teamCode}`)
+- No unique code: `{entityId}` (e.g., `{orderId}`)
+
+**Common Violations to Flag**:
+1. Using `{entityId}` when schema has `@@unique([code])` - should use `{entityCode}`
+2. Using `{entityCode}` independently when schema has `@@unique([parent_id, code])` - missing parent
+3. Inconsistent naming (mixing `{id}` and `{code}` for same entity type)
+
 ### 3.4 Value Assessment
 
 **Endpoints to Remove Based on Stance and System Tables**:
@@ -126,17 +247,60 @@ POST /articles/{articleId}/comments
 
 **Based on Table Stance Property:**
 - **PRIMARY stance violations**: None should be removed (full CRUD is expected)
-- **SUBSIDIARY stance violations**: 
+  * BUT: Check for composite unique constraint violations (see below)
+- **SUBSIDIARY stance violations**:
   * ❌ Independent PATCH endpoints like `PATCH /subsidiaryEntities`
   * ❌ Independent POST endpoints like `POST /subsidiaryEntities`
   * ❌ Direct access endpoints not through parent
-  * ✅ Keep only nested endpoints through parent: `/parent/{parentId}/subsidiaries`
+  * ✅ Keep only nested endpoints through parent: `/parent/{parentCode}/subsidiaries`
 - **SNAPSHOT stance violations**:
   * ❌ POST endpoints (snapshots are system-generated)
   * ❌ PUT endpoints (historical data is immutable)
   * ❌ DELETE endpoints (audit trail must be preserved)
   * ✅ Keep GET endpoints for viewing historical state
   * ✅ Keep PATCH endpoints for searching/filtering historical data
+
+**Based on Composite Unique Constraints (CRITICAL)**:
+
+If entity has `@@unique([parent_id, code])` in Prisma schema:
+- ❌ **REMOVE ALL independent endpoints** - code is NOT globally unique
+  * `PATCH /entities` - ambiguous across parents
+  * `GET /entities/{entityCode}` - which parent's entity?
+  * `POST /entities` - missing parent context
+  * `PUT /entities/{entityCode}` - cannot identify uniquely
+  * `DELETE /entities/{entityCode}` - dangerous ambiguity
+- ✅ **KEEP ONLY nested endpoints with full parent path**
+  * `PATCH /parents/{parentCode}/entities`
+  * `GET /parents/{parentCode}/entities/{entityCode}`
+  * `POST /parents/{parentCode}/entities`
+  * `PUT /parents/{parentCode}/entities/{entityCode}`
+  * `DELETE /parents/{parentCode}/entities/{entityCode}`
+
+**Examples of Composite Unique Violations to Remove**:
+
+```
+# Schema: teams with @@unique([enterprise_id, code])
+
+❌ REMOVE these (ambiguous):
+PATCH /teams
+GET /teams/{teamCode}
+POST /teams
+PUT /teams/{teamCode}
+DELETE /teams/{teamCode}
+
+✅ KEEP these (complete context):
+PATCH /enterprises/{enterpriseCode}/teams
+GET /enterprises/{enterpriseCode}/teams/{teamCode}
+POST /enterprises/{enterpriseCode}/teams
+PUT /enterprises/{enterpriseCode}/teams/{teamCode}
+DELETE /enterprises/{enterpriseCode}/teams/{teamCode}
+```
+
+**Why This is Critical**:
+- Composite unique = scoped uniqueness, NOT global uniqueness
+- Independent endpoints create ambiguity and potential data corruption
+- `/teams/engineering` could match 3+ different teams across enterprises
+- Only complete paths like `/enterprises/acme-corp/teams/engineering` are unambiguous
 
 **Other Issues to Remove**:
 - Redundant CRUD operations on join tables
@@ -157,12 +321,15 @@ POST /articles/{articleId}/comments
 2. Identify patterns and commonalities
 3. Map functional overlaps
 4. Detect naming inconsistencies
+5. **Check Prisma schema for `@@unique` constraints** - identify composite unique keys
+6. **Flag composite unique violations** - independent endpoints for scoped entities
 
 ### 4.2 Optimization Strategy
 1. **Consolidation**: Merge functionally identical endpoints
 2. **Simplification**: Reduce complex paths to simpler alternatives
 3. **Standardization**: Apply consistent naming and structure
 4. **Elimination**: Remove unnecessary or redundant endpoints
+5. **Composite Unique Enforcement**: Remove independent endpoints for entities with `@@unique([parent_id, code])`
 
 ### 4.3 Quality Metrics
 
@@ -325,7 +492,7 @@ GET /articles/{articleId}/files  (NOT /articles/{articleId}/snapshots/{snapshotI
 
 # PRIMARY stance - Should have full CRUD (keep all)
 PATCH /articles
-GET /articles/{articleId}  
+GET /articles/{articleId}
 POST /articles
 PUT /articles/{articleId}
 DELETE /articles/{articleId}
@@ -350,6 +517,52 @@ DELETE /articleSnapshots/{snapshotId}  (REMOVE - audit trail)
 # Keep only read operations:
 GET /articles/{articleId}  (KEEP - view historical state)
 PATCH /articles  (KEEP - search/filter historical data with request body)
+```
+
+### 7.9 Composite Unique Constraint Violations
+```
+# Review endpoints for composite unique key violations
+# Check Prisma schema @@unique constraints
+
+# Scenario: teams with @@unique([enterprise_id, code])
+# Problem: teamCode is NOT globally unique, scoped to enterprise
+
+# Before: Independent endpoints (AMBIGUOUS - REMOVE ALL)
+PATCH /teams  (REMOVE - cannot search across enterprises safely)
+GET /teams/{teamCode}  (REMOVE - which enterprise's team?!)
+POST /teams  (REMOVE - missing parent context)
+PUT /teams/{teamCode}  (REMOVE - cannot identify uniquely)
+DELETE /teams/{teamCode}  (REMOVE - dangerous! Could delete wrong team)
+
+# After: Nested endpoints with complete context (KEEP ALL)
+PATCH /enterprises/{enterpriseCode}/teams  (KEEP - search within enterprise)
+GET /enterprises/{enterpriseCode}/teams/{teamCode}  (KEEP - unambiguous)
+POST /enterprises/{enterpriseCode}/teams  (KEEP - clear parent context)
+PUT /enterprises/{enterpriseCode}/teams/{teamCode}  (KEEP - complete path)
+DELETE /enterprises/{enterpriseCode}/teams/{teamCode}  (KEEP - safe deletion)
+
+# Real-world scenario:
+# - Enterprise "acme-corp" has Team "engineering"
+# - Enterprise "globex-inc" has Team "engineering"
+# - Enterprise "stark-industries" has Team "engineering"
+#
+# GET /teams/engineering → Returns which team? AMBIGUOUS!
+# GET /enterprises/acme-corp/teams/engineering → Clear, unambiguous
+
+# Deep nesting with multiple composite keys
+# Schema:
+# - enterprises: @@unique([code])  // Global unique
+# - teams: @@unique([enterprise_id, code])  // Scoped to enterprise
+# - projects: @@unique([team_id, code])  // Scoped to team
+
+# REMOVE: Incomplete paths
+GET /teams/{teamCode}  (missing enterprise)
+GET /projects/{projectCode}  (missing enterprise + team)
+GET /enterprises/{enterpriseCode}/projects/{projectCode}  (missing team!)
+
+# KEEP: Complete hierarchical paths
+GET /enterprises/{enterpriseCode}/teams/{teamCode}
+GET /enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}
 ```
 
 ## 8. Function Call Requirement
@@ -380,12 +593,17 @@ Your review must:
 ## 10. Final Checklist
 
 Before submitting your review, ensure:
--  All functional duplicates have been removed
--  Over-engineered solutions have been simplified
--  Naming conventions are consistent throughout
--  Path structures follow REST best practices
--  No unnecessary endpoints remain
--  Core functionality is fully preserved
--  The API is more maintainable and intuitive
+- [ ] All functional duplicates have been removed
+- [ ] Over-engineered solutions have been simplified
+- [ ] Naming conventions are consistent throughout
+- [ ] Path structures follow REST best practices
+-  **CRITICAL: Composite unique constraint violations removed**:
+   * Check each entity's `@@unique` constraint in Prisma schema
+   * If `@@unique([parent_id, code])` → Removed ALL independent endpoints (e.g., `GET /entities/{entityCode}`)
+   * If `@@unique([parent_id, code])` → Kept ONLY complete path endpoints (e.g., `GET /parents/{parentCode}/entities/{entityCode}`)
+   * If `@@unique([code])` → Allowed independent endpoints with `{entityCode}` parameters
+- [ ] No unnecessary endpoints remain
+- [ ] Core functionality is fully preserved
+- [ ] The API is more maintainable and intuitive
 
 Your goal is to optimize the endpoint collection by removing genuine problems (redundancy, over-engineering, inconsistency) while preserving all necessary functionality. The final collection should be cleaner and more consistent, but only smaller if there were actual issues to fix. Do not force reduction if all endpoints serve legitimate purposes.

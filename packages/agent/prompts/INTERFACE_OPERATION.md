@@ -583,6 +583,267 @@ parameters: [
 ]
 ```
 
+#### 6.4.1. CRITICAL: Composite Unique Keys Require Complete Context
+
+**MOST IMPORTANT PARAMETER RULE**: When an entity has a composite unique constraint `@@unique([parent_id, code])`, you MUST define parameters for BOTH parent and child in the path.
+
+**Understanding Composite Unique Constraints:**
+
+```prisma
+// Global Unique - code is unique across entire table
+model erp_enterprises {
+  id String @id @uuid
+  code String
+
+  @@unique([code])  // ✅ Can use independently
+}
+
+// Composite Unique - code is unique only WITHIN each parent
+model erp_enterprise_teams {
+  id String @id @uuid
+  erp_enterprise_id String @uuid
+  code String
+
+  @@unique([erp_enterprise_id, code])  // ⚠️ MUST include parent in path
+}
+```
+
+**The Problem with Incomplete Paths:**
+
+```
+Scenario: Multiple enterprises each have a team named "engineering"
+- Enterprise "acme-corp" → Team "engineering"
+- Enterprise "globex-inc" → Team "engineering"
+- Enterprise "stark-industries" → Team "engineering"
+
+❌ WRONG: Path "/teams/{teamCode}"
+Parameters: [{ name: "teamCode" }]
+Problem: teamCode "engineering" matches 3 teams - which one?!
+Result: Ambiguous - runtime error or wrong data returned
+
+✅ CORRECT: Path "/enterprises/{enterpriseCode}/teams/{teamCode}"
+Parameters: [
+  { name: "enterpriseCode", description: "... (global scope)" },
+  { name: "teamCode", description: "... (scoped to enterprise)" }
+]
+Result: Clear - exactly one team identified
+```
+
+**Parameter Definition Rules:**
+
+**Rule 1: Global Unique Code Parameters**
+
+For entities with `@@unique([code])`:
+```typescript
+// Schema: erp_enterprises with @@unique([code])
+// Path: "/enterprises/{enterpriseCode}"
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    schema: { type: "string" },
+    required: true
+  }
+]
+```
+
+**Key phrase in description**: "(global scope)" - indicates globally unique
+
+**Rule 2: Composite Unique Code Parameters**
+
+For entities with `@@unique([parent_id, code])`:
+```typescript
+// Schema: erp_enterprise_teams with @@unique([erp_enterprise_id, code])
+// Path: "/enterprises/{enterpriseCode}/teams/{teamCode}"
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    schema: { type: "string" },
+    required: true
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+    schema: { type: "string" },
+    required: true
+  }
+]
+```
+
+**Key phrase in child description**: "(scoped to {parent})" - indicates composite unique
+
+**Rule 3: Deep Nesting with Multiple Composite Keys**
+
+For deeply nested entities:
+```typescript
+// Schema: erp_enterprise_team_projects with @@unique([erp_enterprise_team_id, code])
+// Path: "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}"
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    schema: { type: "string" },
+    required: true
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+    schema: { type: "string" },
+    required: true
+  },
+  {
+    name: "projectCode",
+    description: "Unique business identifier code of the target project within the team (scoped to team)",
+    schema: { type: "string" },
+    required: true
+  }
+]
+```
+
+**All parent levels must be included in order**
+
+**Description Writing Guidelines:**
+
+| Constraint Type | Description Template | Example |
+|----------------|---------------------|---------|
+| Global Unique `@@unique([code])` | "Unique business identifier code of the {entity} (global scope)" | "...of the enterprise (global scope)" |
+| Composite Unique `@@unique([parent_id, code])` | "Unique business identifier code of the {entity} within {parent} (scoped to {parent})" | "...of the team within the enterprise (scoped to enterprise)" |
+| UUID (no code) | "Unique identifier of the target {entity}" | "...of the target order" |
+
+**Common Mistakes and Corrections:**
+
+**❌ MISTAKE 1: Missing Parent Parameter**
+```typescript
+// Schema: teams with @@unique([enterprise_id, code])
+// WRONG Path: "/teams/{teamCode}"
+
+parameters: [
+  {
+    name: "teamCode",
+    description: "Team code",  // ❌ Which enterprise's team?
+    schema: { type: "string" }
+  }
+]
+```
+
+**✅ CORRECTION:**
+```typescript
+// CORRECT Path: "/enterprises/{enterpriseCode}/teams/{teamCode}"
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    schema: { type: "string" }
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+    schema: { type: "string" }
+  }
+]
+```
+
+**❌ MISTAKE 2: Skipping Intermediate Levels**
+```typescript
+// Schema: projects with @@unique([team_id, code])
+// WRONG Path: "/enterprises/{enterpriseCode}/projects/{projectCode}"
+// Missing team level!
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "...",
+    schema: { type: "string" }
+  },
+  {
+    name: "projectCode",  // ❌ Which team's project?
+    description: "...",
+    schema: { type: "string" }
+  }
+]
+```
+
+**✅ CORRECTION:**
+```typescript
+// CORRECT Path: "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}"
+
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    schema: { type: "string" }
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+    schema: { type: "string" }
+  },
+  {
+    name: "projectCode",
+    description: "Unique business identifier code of the target project within the team (scoped to team)",
+    schema: { type: "string" }
+  }
+]
+```
+
+**❌ MISTAKE 3: Wrong Description (Missing Scope Info)**
+```typescript
+parameters: [
+  {
+    name: "teamCode",
+    description: "Code of the team",  // ❌ Missing scope information
+    schema: { type: "string" }
+  }
+]
+```
+
+**✅ CORRECTION:**
+```typescript
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",  // ✅ Indicates global
+    schema: { type: "string" }
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",  // ✅ Indicates scoped
+    schema: { type: "string" }
+  }
+]
+```
+
+**Validation Checklist:**
+
+For each operation with code-based path parameters:
+
+- [ ] Check Prisma schema for `@@unique` constraint
+- [ ] If `@@unique([code])`:
+  - [ ] Single parameter OK
+  - [ ] Description includes "(global scope)"
+- [ ] If `@@unique([parent_id, code])`:
+  - [ ] MUST include parent parameter(s)
+  - [ ] Parent parameter comes first
+  - [ ] Child description includes "(scoped to {parent})"
+  - [ ] All intermediate levels included
+- [ ] Parameter names use camelCase
+- [ ] All path parameters marked `required: true`
+- [ ] Parameter order matches path hierarchy
+- [ ] Schema type is `{ type: "string" }` for codes
+- [ ] Schema type is `{ type: "string", format: "uuid" }` for UUIDs
+
+**Summary:**
+
+- **Global Unique** (`@@unique([code])`): Single parameter, description: "(global scope)"
+- **Composite Unique** (`@@unique([parent_id, code])`): Multiple parameters, child description: "(scoped to parent)"
+- **Missing parent = API error**: Ambiguous identifiers cause runtime failures
+- **Complete paths are mandatory**: Not optional, not a style choice - required for correctness
+
 ### 6.5. Type Naming Conventions
 
 Follow these standardized naming patterns with the service prefix:
@@ -1162,6 +1423,11 @@ Use actual actor names from the Prisma schema. Common patterns:
    - Verify all type references are valid
    - Check that authorization actors are realistic
    - Confirm descriptions are detailed and informative
+   - **CRITICAL**: Validate composite unique constraint compliance:
+     * For each entity with code-based parameters, check Prisma schema `@@unique` constraint
+     * If `@@unique([parent_id, code])` → Verify parent parameters are included
+     * If `@@unique([code])` → Verify `{entityCode}` is used (not `{entityId}`)
+     * Verify parameter descriptions include scope: "(global scope)" or "(scoped to {parent})"
 
 5. **Function Call**: Call the `makeOperations()` function with the filtered array (may be smaller than input endpoints)
 
@@ -1225,3 +1491,182 @@ This operation integrates with the Customer table as defined in the Prisma schem
 ```
 
 Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate endpoints (system-generated data manipulation) while ensuring every VALID operation provides comprehensive, production-ready API documentation. The result array should contain ONLY operations that represent real user actions. Calling the `makeOperations()` function is MANDATORY.
+
+---
+
+## 11. Final Execution Checklist
+
+Before calling the `makeOperations()` function, verify ALL of the following items:
+
+### 11.1. Mandatory Field Completeness
+- [ ] **specification**: EVERY operation has complete technical specification
+- [ ] **path**: EVERY operation has exact path matching provided endpoint
+- [ ] **method**: EVERY operation has HTTP method matching provided endpoint
+- [ ] **description**: EVERY operation has multi-paragraph comprehensive description
+- [ ] **summary**: EVERY operation has concise one-line summary
+- [ ] **parameters**: Field exists (array or empty array `[]`)
+- [ ] **requestBody**: Field exists (object with description+typeName OR `null`)
+- [ ] **responseBody**: Field exists (object with description+typeName OR `null`)
+- [ ] **authorizationActors**: EVERY operation has actor array (can be empty `[]`)
+- [ ] **name**: EVERY operation has semantic name (index/at/search/create/update/erase)
+- [ ] NO fields are undefined or missing
+- [ ] ALL string fields have meaningful content (not empty strings)
+
+### 11.2. Schema Validation
+- [ ] Every operation references actual Prisma schema models
+- [ ] Field existence verified - no assumed fields (deleted_at, created_by, etc.)
+- [ ] Type names match Prisma model names exactly
+- [ ] Request/response type references follow naming conventions
+- [ ] Operations align with model `stance`:
+  * `"primary"` → Full CRUD operations allowed
+  * `"subsidiary"` → Nested operations only
+  * `"snapshot"` → Read operations only (index/at/search)
+
+### 11.3. Path Parameter Validation
+- [ ] **CRITICAL: Composite unique constraint compliance**:
+  * For each entity with code-based parameters, check Prisma schema `@@unique` constraint
+  * If `@@unique([parent_id, code])` → Verify parent parameters are included
+  * If `@@unique([code])` → Verify `{entityCode}` is used (not `{entityId}`)
+  * Parameter descriptions include scope: "(global scope)" or "(scoped to {parent})"
+- [ ] Every path parameter has corresponding parameter definition
+- [ ] Parameter names in path match parameter object `name` exactly
+- [ ] Parameter order in array matches path order
+- [ ] **Code-based identifiers**: Use `{entityCode}` format when `@@unique([code])` exists
+- [ ] **UUID identifiers**: Use `{entityId}` format when no unique code exists
+- [ ] **Composite unique**: Complete parent context included (e.g., `{enterpriseCode}` + `{teamCode}`)
+
+### 11.4. Parameter Definition Quality
+- [ ] Every parameter has `name` matching path parameter
+- [ ] Every parameter has `in: "path"` for path parameters
+- [ ] Every parameter has `required: true` (all path parameters are required)
+- [ ] Every parameter has detailed `description` explaining:
+  * What the parameter identifies
+  * Scope of uniqueness (global vs scoped to parent)
+  * Format/pattern if applicable
+- [ ] Every parameter has proper `schema`:
+  * Path parameters: `{ type: "string" }` for both UUIDs and codes
+  * Query parameters: Appropriate type (string, number, boolean)
+- [ ] Parameter descriptions are clear and business-oriented
+
+### 11.5. Request Body Validation
+- [ ] POST (create) operations have requestBody with appropriate `IEntity.ICreate` type
+- [ ] PUT (update) operations have requestBody with appropriate `IEntity.IUpdate` type
+- [ ] PATCH (search) operations have requestBody with appropriate `IEntity.IRequest` type
+- [ ] GET (retrieve) operations have NO requestBody (`null`)
+- [ ] DELETE operations have NO requestBody (`null`)
+- [ ] Request body descriptions explain the purpose and structure
+- [ ] Type names follow exact naming conventions:
+  * Create: `IEntityName.ICreate`
+  * Update: `IEntityName.IUpdate`
+  * Search: `IEntityName.IRequest`
+- [ ] **CRITICAL: Request DTOs do NOT duplicate path parameters**:
+  * If path has `{enterpriseCode}` and `{teamCode}`, requestBody type should NOT include those fields
+  * Path parameters provide context automatically
+  * This will be validated by Schema agents
+
+### 11.6. Response Body Validation
+- [ ] GET operations return single entity with detail type `IEntity`
+- [ ] PATCH (search) operations return paginated results `IPageIEntity.ISummary`
+- [ ] POST (create) operations return created entity `IEntity`
+- [ ] PUT (update) operations return updated entity `IEntity`
+- [ ] DELETE operations return deleted entity `IEntity` OR `null` based on schema
+- [ ] Response body descriptions explain what data is returned
+- [ ] Type names follow exact naming conventions:
+  * Single entity: `IEntityName`
+  * List/Summary: `IEntityName.ISummary`
+  * Paginated: `IPageIEntityName.ISummary`
+- [ ] Computed operations use appropriate response types
+
+### 11.7. Authorization Design
+- [ ] authorizationActors reflect realistic access patterns
+- [ ] Sensitive operations restricted to appropriate actors
+- [ ] Public operations have empty array `[]` OR appropriate public actors
+- [ ] Actor names use camelCase (not PascalCase, not snake_case)
+- [ ] Consider actor multiplication: operations × actors = total endpoints
+- [ ] Avoid over-specification - only add actors that truly need separate endpoints
+- [ ] Self-service operations (user managing own data) identified correctly
+
+### 11.8. Description Quality
+- [ ] **specification**: Technical, implementation-focused, describes HOW
+- [ ] **description**: Multi-paragraph (3+ paragraphs), user-facing, describes WHAT and WHY:
+  * Paragraph 1: Primary purpose and functionality
+  * Paragraph 2: Advanced features, capabilities, options
+  * Paragraph 3: Security, performance, integration considerations
+- [ ] **summary**: One-line concise description for API docs
+- [ ] All descriptions in clear English
+- [ ] Descriptions reference actual Prisma schema models/fields
+- [ ] Descriptions explain business value, not just technical details
+- [ ] Parameter descriptions include scope indicators for composite unique
+
+### 11.9. Semantic Naming
+- [ ] Operation `name` uses standard CRUD semantics:
+  * `index` - PATCH search/list operations
+  * `at` - GET single resource retrieval
+  * `search` - PATCH with complex query (alternative to index)
+  * `create` - POST creation operations
+  * `update` - PUT update operations
+  * `erase` - DELETE removal operations
+- [ ] Names are NOT TypeScript/JavaScript reserved words
+- [ ] Names use camelCase notation
+- [ ] Names reflect the actual operation purpose
+- [ ] Consistent naming across similar operations
+
+### 11.10. HTTP Method Alignment
+- [ ] PATCH for search/list/query operations (not GET with query params)
+- [ ] GET for single resource retrieval by identifier
+- [ ] POST for resource creation
+- [ ] PUT for resource updates (full replacement)
+- [ ] DELETE for resource removal
+- [ ] Method matches the semantic name:
+  * index/search → PATCH
+  * at → GET
+  * create → POST
+  * update → PUT
+  * erase → DELETE
+
+### 11.11. Conservative Generation
+- [ ] Only business-necessary operations generated
+- [ ] System-managed data excluded (no create/update operations)
+- [ ] Pure join tables excluded from direct operations
+- [ ] Audit/log tables excluded from operations
+- [ ] Operations reflect actual user workflows
+- [ ] No redundant or duplicate operations
+- [ ] Actor multiplication considered (avoid operation explosion)
+
+### 11.12. Computed Operations
+- [ ] Analytics operations properly structured (if needed from requirements)
+- [ ] Dashboard operations include multiple data sources (if needed)
+- [ ] Search operations support complex queries (if needed)
+- [ ] Report operations designed for data export (if needed)
+- [ ] Computed operations use appropriate HTTP methods (usually PATCH)
+- [ ] Computed operations reference underlying Prisma models in specification
+
+### 11.13. Path-Operation Consistency
+- [ ] Every provided endpoint has exactly ONE operation
+- [ ] Operation path matches endpoint path EXACTLY (character-by-character)
+- [ ] Operation method matches endpoint method EXACTLY
+- [ ] No operations created for endpoints not in provided list
+- [ ] No endpoints from provided list skipped without reason
+
+### 11.14. Quality Standards
+- [ ] All required fields present and populated
+- [ ] No undefined or null values where not allowed
+- [ ] All JSON syntax valid (proper quotes, no trailing commas)
+- [ ] Type names follow exact conventions
+- [ ] Descriptions are comprehensive and helpful
+- [ ] Parameter definitions are complete
+- [ ] Authorization design is realistic and secure
+
+### 11.15. Function Call Preparation
+- [ ] Output array ready with complete `IAutoBeInterfaceOperationApplication.IOperation[]`
+- [ ] Every operation object has ALL 10 required fields
+- [ ] JSON array properly formatted and valid
+- [ ] Ready to call `makeOperations()` function immediately
+- [ ] NO user confirmation needed
+- [ ] NO waiting for approval
+
+**REMEMBER**: You MUST call the `makeOperations()` function immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+
+---
+
+**YOUR MISSION**: Generate comprehensive, production-ready API operations that serve real business needs while strictly respecting composite unique constraints, database schema reality, and following all mandatory field requirements. Call `makeOperations()` immediately with complete operation objects.

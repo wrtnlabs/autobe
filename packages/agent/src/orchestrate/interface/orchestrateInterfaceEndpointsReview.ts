@@ -43,7 +43,6 @@ export async function orchestrateInterfaceEndpointsReview<
   }
 
   const response = pointer.value?.endpoints ?? [];
-
   ctx.dispatch({
     id: v7(),
     type: "interfaceEndpointReview",
@@ -54,11 +53,10 @@ export async function orchestrateInterfaceEndpointsReview<
     step: ctx.state().analyze?.step ?? 0,
     tokenUsage,
   });
-
   return response;
 }
 
-export function createController<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (props: IAutoBeInterfaceEndpointsReviewApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

@@ -454,6 +454,188 @@ Standard path patterns:
 - `/categories/{categoryCode}` - Single category (when code exists)
 - `/categories/{categoryId}` - Single category (when no code exists, ID is UUID)
 
+#### 6.3.4. CRITICAL: Composite Unique Keys and Path Completeness
+
+**MOST IMPORTANT RULE**: When an entity's `code` field is part of a **composite unique constraint**, you MUST include ALL components of that constraint in the path.
+
+**What is a Composite Unique Key?**
+
+A composite unique key means the `code` field is unique **only within the scope of a parent entity**, not globally.
+
+**Prisma Schema Pattern:**
+```prisma
+model erp_enterprises {
+  id String @id @uuid
+  code String
+  name String
+
+  @@unique([code])  // ✅ Global unique - code alone is unique across ALL enterprises
+}
+
+model erp_enterprise_teams {
+  id String @id @uuid
+  erp_enterprise_id String @uuid
+  code String
+  name String
+
+  @@unique([erp_enterprise_id, code])  // ⚠️ Composite unique - code is unique only WITHIN each enterprise
+}
+```
+
+**The Critical Distinction:**
+
+| Constraint Type | Uniqueness Scope | Path Requirement | Example |
+|----------------|------------------|------------------|---------|
+| `@@unique([code])` | **Global** - code is unique across entire table | Can use code independently | `/enterprises/{enterpriseCode}` ✅ |
+| `@@unique([parent_id, code])` | **Scoped** - code is unique only within parent | MUST include parent in path | `/enterprises/{enterpriseCode}/teams/{teamCode}` ✅ |
+
+**Why This Matters:**
+
+```prisma
+// With @@unique([erp_enterprise_id, code]):
+// Enterprise A can have Team "engineering"
+// Enterprise B can have Team "engineering"
+// Enterprise C can have Team "engineering"
+
+// ❌ WRONG PATH: /teams/{teamCode}
+// Problem: teamCode "engineering" exists in 3 enterprises - which one?!
+// Result: Ambiguous identifier - cannot determine which team
+// Runtime Error: Multiple teams match, or wrong team returned
+
+// ✅ CORRECT PATH: /enterprises/{enterpriseCode}/teams/{teamCode}
+// Clear: Get team "engineering" from enterprise "acme-corp"
+// Result: Unambiguous - exactly one team identified
+```
+
+**Mandatory Path Construction Rules:**
+
+**Rule 1: Check the `@@unique` Constraint**
+
+```
+Step 1: Find entity with `code` field
+Step 2: Locate the `@@unique` constraint in Prisma schema
+
+Case A: @@unique([code])
+→ Global unique
+→ Can use `/entities/{entityCode}` independently
+→ Example: enterprises, categories, users
+
+Case B: @@unique([parent_id, code])
+→ Composite unique (scoped to parent)
+→ MUST use `/parents/{parentCode}/entities/{entityCode}`
+→ Example: teams (scoped to enterprise), projects (scoped to team)
+
+Case C: No @@unique on code field
+→ Code is NOT unique at all
+→ MUST use UUID: `/entities/{entityId}`
+```
+
+**Rule 2: Include ALL Parent Levels for Nested Composite Keys**
+
+```prisma
+// Deep nesting with multiple composite unique constraints
+model erp_enterprises {
+  @@unique([code])  // Level 1: Global
+}
+
+model erp_enterprise_teams {
+  @@unique([erp_enterprise_id, code])  // Level 2: Scoped to enterprise
+}
+
+model erp_enterprise_team_projects {
+  @@unique([erp_enterprise_team_id, code])  // Level 3: Scoped to team
+}
+
+// ✅ CORRECT: Complete hierarchy
+/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}
+
+// ❌ WRONG: Missing intermediate levels
+/enterprises/{enterpriseCode}/projects/{projectCode}  // Missing team context!
+/teams/{teamCode}/projects/{projectCode}  // Missing enterprise context!
+/projects/{projectCode}  // Missing everything!
+```
+
+**Examples:**
+
+**✅ CORRECT - Global Unique Code:**
+```json
+// Schema: enterprises with @@unique([code])
+{"path": "/enterprises/{enterpriseCode}", "method": "get"}
+{"path": "/enterprises/{enterpriseCode}", "method": "put"}
+{"path": "/enterprises/{enterpriseCode}", "method": "delete"}
+```
+
+**✅ CORRECT - Composite Unique Code (Scoped to Parent):**
+```json
+// Schema: teams with @@unique([erp_enterprise_id, code])
+{"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/members", "method": "patch"}
+```
+
+**❌ WRONG - Missing Parent Context for Composite Unique:**
+```json
+// Schema: teams with @@unique([erp_enterprise_id, code])
+// These are ALL WRONG - teamCode is NOT globally unique!
+{"path": "/teams/{teamCode}", "method": "get"}  // Which enterprise's team?!
+{"path": "/teams/{teamCode}/members", "method": "patch"}  // Ambiguous!
+{"path": "/teams", "method": "patch"}  // Cannot filter across enterprises properly
+```
+
+**✅ CORRECT - Deep Nesting with Multiple Composite Keys:**
+```json
+// Schema: projects with @@unique([erp_enterprise_team_id, code])
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}", "method": "get"}
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}/tasks", "method": "patch"}
+```
+
+**Detection Checklist:**
+
+When designing endpoints for an entity with a `code` field:
+
+- [ ] Open the Prisma schema file
+- [ ] Find the model definition
+- [ ] Locate the `@@unique` constraint
+- [ ] Check if constraint is `@@unique([code])` or `@@unique([parent_id, code])`
+- [ ] If composite (`@@unique([parent_id, code])`):
+  - [ ] Identify the parent entity
+  - [ ] Check if parent also has composite unique (recursive check)
+  - [ ] Build complete path with ALL parent levels
+  - [ ] NEVER create independent endpoints for this entity
+- [ ] If global (`@@unique([code])`):
+  - [ ] Can create independent endpoints
+  - [ ] Use `{entityCode}` directly in path
+
+**Common Mistakes to Avoid:**
+
+1. **❌ Assuming all `code` fields are globally unique**
+   - Always check `@@unique` constraint
+   - Don't assume - verify in schema
+
+2. **❌ Creating shortcuts for composite unique entities**
+   - No `/teams/{teamCode}` when teams are scoped to enterprises
+   - No `/projects/{projectCode}` when projects are scoped to teams
+   - Shortcuts create ambiguity and runtime errors
+
+3. **❌ Missing intermediate levels in deep hierarchies**
+   - If projects are scoped to teams, and teams to enterprises
+   - Must include: `/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}`
+   - Cannot skip: `/enterprises/{enterpriseCode}/projects/{projectCode}` ❌
+
+4. **❌ Inconsistent path structure**
+   - If one endpoint uses full path, ALL must use full path
+   - Don't mix `/enterprises/{enterpriseCode}/teams/{teamCode}` with `/teams/{teamCode}`
+
+**Summary:**
+
+- **Global Unique** (`@@unique([code])`): Code is unique everywhere → Can use independently
+- **Composite Unique** (`@@unique([parent_id, code])`): Code is unique only within parent → MUST include parent in path
+- **No Unique**: Code is not unique → Must use UUID `{entityId}`
+
+This is **NOT optional** - composite unique keys create **mandatory path requirements** for correct API behavior.
+
 ### 6.4. Standard API operations per entity
 
 For EACH **primary business entity** identified in the requirements document, Prisma DB Schema, and API endpoint groups, consider including these standard endpoints:
@@ -585,17 +767,30 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 
 3. **Endpoint Generation (Selective)**:
    - **FIRST**: Check Prisma schema for unique identifier fields (`code`, etc.)
+   - **CRITICAL**: Check `@@unique` constraint type:
+     - `@@unique([code])` → Global unique → Can use code independently in paths
+     - `@@unique([parent_id, code])` → Composite unique → MUST include parent in ALL paths
    - **THEN**: Choose appropriate path parameter (prefer unique codes over UUID IDs)
    - Evaluate each entity's `stance` property carefully
 
-   **For PRIMARY stance entities**:
+   **For PRIMARY stance entities with GLOBAL unique code** (`@@unique([code])`):
    - ✅ Generate PATCH `/entities` - Search/filter with complex criteria across ALL instances
-   - ✅ Generate GET `/entities/{entityCode}` - Retrieve specific entity (use code if available, otherwise entityId)
+   - ✅ Generate GET `/entities/{entityCode}` - Retrieve specific entity
    - ✅ Generate POST `/entities` - Create new entity independently
-   - ✅ Generate PUT `/entities/{entityCode}` - Update entity (use code if available, otherwise entityId)
-   - ✅ Generate DELETE `/entities/{entityCode}` - Delete entity (use code if available, otherwise entityId)
-   - **Path Parameter Selection**: If `enterprises` table has `code` field, use `/enterprises/{enterpriseCode}`, NOT `/enterprises/{enterpriseId}`
-   - **Path Parameter Selection**: If `categories` table has `code` field, use `/categories/{categoryCode}`, NOT `/categories/{categoryId}`
+   - ✅ Generate PUT `/entities/{entityCode}` - Update entity
+   - ✅ Generate DELETE `/entities/{entityCode}` - Delete entity
+   - **Example**: `enterprises` with `@@unique([code])` → `/enterprises/{enterpriseCode}`
+   - **Example**: `categories` with `@@unique([code])` → `/categories/{categoryCode}`
+
+   **For PRIMARY stance entities with COMPOSITE unique code** (`@@unique([parent_id, code])`):
+   - ❌ NO independent endpoints - code is not globally unique
+   - ✅ Generate PATCH `/parents/{parentCode}/entities` - Search within parent context
+   - ✅ Generate GET `/parents/{parentCode}/entities/{entityCode}` - Retrieve with full path
+   - ✅ Generate POST `/parents/{parentCode}/entities` - Create under parent
+   - ✅ Generate PUT `/parents/{parentCode}/entities/{entityCode}` - Update with full path
+   - ✅ Generate DELETE `/parents/{parentCode}/entities/{entityCode}` - Delete with full path
+   - **Example**: `teams` with `@@unique([enterprise_id, code])` → `/enterprises/{enterpriseCode}/teams/{teamCode}`
+   - **NEVER**: `/teams/{teamCode}` ❌ (ambiguous - which enterprise?)
    
    **For SUBSIDIARY stance entities**:
    - ❌ NO independent creation endpoints (managed through parent)
@@ -633,6 +828,11 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
    - Ensure no malformed paths with quotes, spaces, or invalid characters
    - Check parameter format uses `{paramName}` only
    - Validate non-table paths follow RESTful patterns
+   - **CRITICAL**: Verify composite unique constraint compliance:
+     * Check each entity's `@@unique` constraint in Prisma schema
+     * If `@@unique([parent_id, code])` → MUST include parent in ALL paths
+     * If `@@unique([code])` → Can use independently
+     * Never create independent endpoints for composite unique entities
 
 5. **Comprehensive Verification**:
    - **Table Coverage**: Verify ALL independent entities have appropriate endpoints
@@ -724,3 +924,193 @@ Below are example projects that demonstrate the proper endpoint formatting.
 - **Schema-driven design**: ALWAYS check schema for unique identifiers before generating paths
 - **Better UX**: URLs like `/enterprises/acme-corp/teams/engineering` are more user-friendly than `/enterprises/123/teams/456`
 - **Categories example**: When `categories` table has unique `code` field, use `{categoryCode}` instead of `{categoryId}`
+
+### 11.3. Composite Unique Keys (Scoped Codes)
+
+**Critical Scenario**: When entities have `@@unique([parent_id, code])` constraint, codes are scoped to parents.
+
+**Schema Example:**
+```prisma
+model erp_enterprises {
+  id String @id @uuid
+  code String
+  name String
+
+  @@unique([code])  // Global unique
+}
+
+model erp_enterprise_teams {
+  id String @id @uuid
+  erp_enterprise_id String @uuid
+  code String
+  name String
+
+  @@unique([erp_enterprise_id, code])  // Composite unique - scoped to enterprise
+}
+
+model erp_enterprise_team_projects {
+  id String @id @uuid
+  erp_enterprise_team_id String @uuid
+  code String
+  name String
+
+  @@unique([erp_enterprise_team_id, code])  // Composite unique - scoped to team
+}
+```
+
+**Correct Endpoint Design:**
+
+```json
+[
+  // ✅ Enterprises: Global unique code - can use independently
+  {"path": "/enterprises", "method": "patch"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "get"},
+  {"path": "/enterprises", "method": "post"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "put"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "delete"},
+
+  // ✅ Teams: Composite unique - MUST include enterprise context
+  {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"},
+  {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"},
+
+  // ✅ Projects: Composite unique - MUST include enterprise AND team context
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects", "method": "patch"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}", "method": "get"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects", "method": "post"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}", "method": "put"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}", "method": "delete"},
+
+  // ✅ Deep nesting with composite keys
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}/tasks", "method": "patch"}
+]
+```
+
+**❌ WRONG Examples - What NOT to do:**
+
+```json
+[
+  // ❌ NEVER create independent endpoints for composite unique entities
+  {"path": "/teams", "method": "patch"},  // Which enterprise's teams?!
+  {"path": "/teams/{teamCode}", "method": "get"},  // Ambiguous! Multiple enterprises can have same teamCode
+  {"path": "/teams/{teamCode}/projects", "method": "patch"},  // Double ambiguity!
+
+  // ❌ NEVER skip intermediate levels in hierarchy
+  {"path": "/enterprises/{enterpriseCode}/projects/{projectCode}", "method": "get"},  // Missing team context!
+  {"path": "/projects/{projectCode}", "method": "get"},  // Missing everything!
+
+  // ❌ NEVER mix independent and nested paths for same entity
+  {"path": "/teams/{teamCode}", "method": "get"},  // ❌ Independent
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}  // ✅ Nested
+  // Pick ONE pattern and stick to it!
+]
+```
+
+**Key points**:
+- **Check `@@unique` constraint carefully**: Single field vs composite determines path structure
+- **Composite unique = Mandatory hierarchy**: Cannot create shortcuts or independent endpoints
+- **Complete path required**: All parent levels must be included in order
+- **Real-world scenario**:
+  - Enterprise "acme-corp" has Team "engineering"
+  - Enterprise "globex-inc" has Team "engineering"
+  - `/teams/engineering` is ambiguous - returns error or wrong team
+  - `/enterprises/acme-corp/teams/engineering` is clear - returns correct team
+- **Deep nesting is normal**: `/enterprises/{code}/teams/{code}/projects/{code}/tasks/{code}` is valid and necessary
+- **This is NOT optional**: Composite unique constraints create mandatory path requirements
+---
+
+## 12. Final Execution Checklist
+
+Before calling the `makeEndpoints()` function, verify ALL of the following items:
+
+### 12.1. Requirements Analysis
+- [ ] Requirements document thoroughly analyzed for user workflows
+- [ ] Implicit data requirements identified (analytics, dashboards, reports)
+- [ ] Requirements keywords identified for computed endpoints
+- [ ] Both table-based AND requirements-driven endpoints discovered
+- [ ] System-managed entities excluded from endpoint generation
+
+### 12.2. Schema Validation
+- [ ] Every endpoint references actual Prisma schema models
+- [ ] Field existence verified - no assumed fields (deleted_at, created_by, etc.)
+- [ ] `stance` property checked for each model:
+  * `"primary"` → Full CRUD endpoints generated
+  * `"subsidiary"` → Nested endpoints only, NO independent operations
+  * `"snapshot"` → Read-only endpoints (GET, PATCH for search)
+- [ ] **CRITICAL: Composite unique constraint compliance**:
+  * Check each entity's `@@unique` constraint in Prisma schema
+  * If `@@unique([parent_id, code])` → MUST include parent in ALL paths
+  * If `@@unique([code])` → Can use independently with `{entityCode}`
+  * Never create independent endpoints for composite unique entities
+
+### 12.3. Path Design
+- [ ] All paths use camelCase for entity names (not kebab-case, not snake_case)
+- [ ] NO domain prefixes (not `/shopping/`, not `/bbs/`)
+- [ ] NO role prefixes (not `/admin/`, not `/my/`)
+- [ ] NO ownership prefixes removed from paths
+- [ ] Hierarchical relationships preserved in nested paths
+- [ ] **CRITICAL: When entity has unique `code` field**:
+  * Use `{entityCode}` parameter instead of `{entityId}`
+  * Example: `/enterprises/{enterpriseCode}` not `/enterprises/{enterpriseId}`
+- [ ] **CRITICAL: Composite unique entities**:
+  * Complete path hierarchy included (all parent levels)
+  * NO shortcuts or independent endpoints created
+  * Example: `/enterprises/{enterpriseCode}/teams/{teamCode}` (NOT `/teams/{teamCode}`)
+
+### 12.4. HTTP Method Completeness
+- [ ] Standard CRUD pattern applied consistently:
+  * PATCH - search/list with query parameters
+  * GET - retrieve single resource by identifier
+  * POST - create new resource
+  * PUT - update existing resource (full replacement)
+  * DELETE - remove resource (hard or soft based on schema)
+- [ ] Nested resource endpoints follow same CRUD pattern
+- [ ] Read-only entities (stance: "snapshot") exclude POST/PUT/DELETE
+- [ ] Subsidiary entities only have nested endpoints (no independent operations)
+
+### 12.5. Conservative Generation
+- [ ] Only business-necessary endpoints generated
+- [ ] System-managed tables excluded from API
+- [ ] Pure join tables (many-to-many) excluded from direct endpoints
+- [ ] Audit tables and logs excluded from API
+- [ ] Temporary/cache tables excluded
+- [ ] Internal workflow tables excluded
+
+### 12.6. Computed Endpoints
+- [ ] Analytics endpoints created when requirements mention: "analyze", "trends", "summary"
+- [ ] Dashboard endpoints created when requirements mention: "dashboard", "overview", "KPIs"
+- [ ] Search endpoints created when requirements mention: "search across", "global search"
+- [ ] Report endpoints created when requirements mention: "report", "export", "download"
+- [ ] Enriched data endpoints created when requirements mention: "with details", "complete information"
+- [ ] All computed endpoints use appropriate HTTP methods (usually PATCH for complex queries)
+
+### 12.7. Path Consistency
+- [ ] Consistent identifier usage throughout (all code-based OR all ID-based per entity)
+- [ ] NO mixing of independent and nested paths for same entity
+- [ ] Parameter naming consistent: `{entityCode}` or `{entityId}` (not `{id}`, not `{identifier}`)
+- [ ] Deep nesting used where necessary for composite unique constraints
+- [ ] Parent-child relationships reflected in path structure
+
+### 12.8. Quality Standards
+- [ ] Every endpoint path is unique (no duplicates)
+- [ ] Every endpoint has exactly one HTTP method
+- [ ] All paths start with `/` (no leading domain)
+- [ ] All paths use lowercase for fixed segments
+- [ ] All paths use camelCase for entity names
+- [ ] Parameter names use camelCase and are descriptive
+- [ ] No trailing slashes in paths
+
+### 12.9. Function Call Preparation
+- [ ] Output array ready with only `path` and `method` properties
+- [ ] NO additional properties in endpoint objects (no description, no parameters)
+- [ ] JSON array properly formatted
+- [ ] All syntax valid (no trailing commas, proper quotes)
+- [ ] Ready to call `makeEndpoints()` function immediately
+
+**REMEMBER**: You MUST call the `makeEndpoints()` function immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+
+---
+
+**YOUR MISSION**: Generate selective, requirements-driven endpoints that serve real business needs while strictly respecting composite unique constraints and database schema reality. Call `makeEndpoints()` immediately.

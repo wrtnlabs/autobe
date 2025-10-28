@@ -174,6 +174,280 @@ You will receive:
 - [ ] **Relationship Validity**: Referenced relations exist in schema
 - [ ] **Required Fields**: All Prisma required fields are included in create operations
 - [ ] **Unique Constraints**: Operations respect unique field constraints
+- [ ] **Composite Unique Validation**: Path parameters include all components of composite unique constraints
+
+### 4.2.1. CRITICAL: Path Parameter Identifier Validation
+
+**HIGHEST PRIORITY**: Verify that path parameters use correct identifier types and include all required context for composite unique constraints.
+
+**What to Check**:
+
+1. **Unique Code Preference Over UUIDs**:
+   - [ ] Check if Prisma schema has `@@unique([code])` constraint
+   - [ ] If yes, path MUST use `{entityCode}` NOT `{entityId}`
+   - [ ] Example: `@@unique([code])` → `/enterprises/{enterpriseCode}` ✅
+   - [ ] Example: No unique code → `/orders/{orderId}` ✅ (UUID fallback)
+
+2. **Composite Unique Constraint Completeness** (CRITICAL):
+   - [ ] Check if Prisma schema has `@@unique([parent_id, code])` constraint
+   - [ ] If yes, path MUST include parent parameter
+   - [ ] Incomplete paths are INVALID and MUST be flagged
+
+**Composite Unique Constraint Rules**:
+
+```prisma
+// Example Schema
+model erp_enterprises {
+  id String @id @uuid
+  code String
+
+  @@unique([code])  // Global unique
+}
+
+model erp_enterprise_teams {
+  id String @id @uuid
+  erp_enterprise_id String @uuid
+  code String
+
+  @@unique([erp_enterprise_id, code])  // Composite unique - CRITICAL!
+}
+```
+
+**Validation Logic**:
+
+```
+For each operation with code-based path parameters:
+
+Step 1: Find entity in Prisma schema
+Step 2: Check @@unique constraint type
+
+Case A: @@unique([code])
+→ Global unique
+→ ✅ Path can use `/entities/{entityCode}` independently
+→ Example: GET /enterprises/{enterpriseCode}
+
+Case B: @@unique([parent_id, code])  ← CRITICAL CASE
+→ Composite unique (scoped to parent)
+→ ❌ INVALID: `/entities/{entityCode}` - Missing parent context!
+→ ✅ VALID: `/parents/{parentCode}/entities/{entityCode}` - Complete path
+→ Example: GET /enterprises/{enterpriseCode}/teams/{teamCode}
+
+Case C: No @@unique on code
+→ Not unique
+→ ✅ Must use UUID: `/entities/{entityId}`
+```
+
+**RED FLAGS - Composite Unique Violations**:
+
+When you see operations for entity with `@@unique([parent_id, code])`:
+
+```typescript
+// ❌ INVALID OPERATIONS - Missing parent context
+{
+  path: "/teams/{teamCode}",  // WHICH ENTERPRISE'S TEAM?!
+  method: "get",
+  // PROBLEM: teamCode is NOT globally unique
+  // Multiple enterprises can have same teamCode
+}
+
+{
+  path: "/teams",
+  method: "patch",
+  // PROBLEM: Cannot search across enterprises safely
+  // teamCode is scoped to enterprise
+}
+
+{
+  path: "/teams",
+  method: "post",
+  // PROBLEM: Missing parent context for creation
+  // Which enterprise does this team belong to?
+}
+```
+
+**✅ VALID OPERATIONS - Complete context**:
+
+```typescript
+// ✅ CORRECT - Full parent path
+{
+  path: "/enterprises/{enterpriseCode}/teams/{teamCode}",
+  method: "get",
+  parameters: [
+    {
+      name: "enterpriseCode",
+      description: "Unique business identifier code of the target enterprise (global scope)",
+      schema: { type: "string" }
+    },
+    {
+      name: "teamCode",
+      description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+      schema: { type: "string" }
+    }
+  ]
+}
+
+{
+  path: "/enterprises/{enterpriseCode}/teams",
+  method: "patch",
+  // ✅ Search within specific enterprise
+}
+
+{
+  path: "/enterprises/{enterpriseCode}/teams",
+  method: "post",
+  // ✅ Create with clear parent context
+}
+```
+
+**Deep Nesting Validation**:
+
+For entities with multiple levels of composite unique constraints:
+
+```prisma
+model erp_enterprises {
+  @@unique([code])  // Level 1: Global
+}
+
+model erp_enterprise_teams {
+  @@unique([erp_enterprise_id, code])  // Level 2: Scoped to enterprise
+}
+
+model erp_enterprise_team_projects {
+  @@unique([erp_enterprise_team_id, code])  // Level 3: Scoped to team
+}
+```
+
+```typescript
+// ❌ INVALID - Missing intermediate levels
+{
+  path: "/teams/{teamCode}",  // Missing enterprise
+  method: "get"
+}
+
+{
+  path: "/projects/{projectCode}",  // Missing enterprise AND team
+  method: "get"
+}
+
+{
+  path: "/enterprises/{enterpriseCode}/projects/{projectCode}",  // Missing team!
+  method: "get"
+}
+
+// ✅ VALID - Complete hierarchical paths
+{
+  path: "/enterprises/{enterpriseCode}/teams/{teamCode}",
+  method: "get"
+}
+
+{
+  path: "/enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}",
+  method: "get"
+}
+```
+
+**Why This is CRITICAL**:
+
+1. **Data Integrity**: Incomplete paths create ambiguity
+   - `/teams/engineering` could match 3+ different teams
+   - Runtime errors or wrong data returned
+   - Potential data corruption
+
+2. **Security**: Ambiguous identifiers are security risks
+   - User could accidentally access wrong team's data
+   - Authorization checks may fail
+   - Data leakage across organizational boundaries
+
+3. **API Usability**: Ambiguous paths confuse API consumers
+   - Unpredictable behavior
+   - Difficult to debug
+   - Poor developer experience
+
+**Real-World Scenario**:
+
+```
+Scenario:
+- Enterprise "acme-corp" has Team "engineering"
+- Enterprise "globex-inc" has Team "engineering"
+- Enterprise "stark-industries" has Team "engineering"
+
+Operation: GET /teams/engineering
+Problem: Which team should be returned?
+Result: Ambiguous - runtime error or wrong data
+
+Operation: GET /enterprises/acme-corp/teams/engineering
+Result: Clear - returns acme-corp's engineering team
+```
+
+**Validation Actions**:
+
+When reviewing operations:
+
+1. **Identify entities with code-based parameters**
+2. **Check Prisma schema for each entity**
+3. **If `@@unique([parent_id, code])`**:
+   - Flag ALL operations missing parent in path
+   - Add to think.review as CRITICAL issue
+   - Mark for removal or correction
+4. **Verify parameter descriptions include scope**:
+   - Global unique: "(global scope)"
+   - Composite unique: "(scoped to {parent})"
+
+**Correction Requirements**:
+
+For composite unique violations:
+
+```typescript
+// BEFORE (Invalid)
+{
+  path: "/teams/{teamCode}",
+  method: "get",
+  // CRITICAL: Missing parent context
+}
+
+// AFTER (Corrected)
+// Option 1: Correct to full path
+{
+  path: "/enterprises/{enterpriseCode}/teams/{teamCode}",
+  method: "get",
+  parameters: [
+    { name: "enterpriseCode", ... },
+    { name: "teamCode", ... }
+  ]
+}
+
+// Option 2: If correction impossible, mark for removal
+// Document in think.review: "Operation removed - entity has composite unique
+// constraint @@unique([enterprise_id, code]), path must include parent"
+```
+
+**Parameter Description Validation**:
+
+Verify descriptions indicate scope:
+
+```typescript
+// ✅ CORRECT - Clear scope indication
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise (global scope)",
+    // ↑ "(global scope)" indicates @@unique([code])
+  },
+  {
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise (scoped to enterprise)",
+    // ↑ "(scoped to enterprise)" indicates @@unique([enterprise_id, code])
+  }
+]
+
+// ❌ WRONG - Missing scope information
+parameters: [
+  {
+    name: "teamCode",
+    description: "Team identifier",  // No scope info!
+  }
+]
+```
 
 ### 4.3. Logical Consistency Review
 - [ ] **Return Type Logic**: List operations MUST return arrays/paginated results, not single items
@@ -370,6 +644,12 @@ When you find system-generated data manipulation:
 - [ ] Required fields handled in create operations
 - [ ] Unique constraints respected in operations
 - [ ] Foreign key relationships valid
+- [ ] **CRITICAL**: Composite unique constraint path completeness:
+  * Check each entity's `@@unique` constraint in Prisma schema
+  * If `@@unique([parent_id, code])` → Path MUST include ALL parent parameters
+  * If `@@unique([code])` → Path can use `{entityCode}` independently
+  * Example: teams with `@@unique([enterprise_id, code])` → Path MUST be `/enterprises/{enterpriseCode}/teams/{teamCode}`
+- [ ] Path parameters use `{entityCode}` when `@@unique([code])` exists (not `{entityId}`)
 
 ### 5.3. Logical Consistency Checklist
 - [ ] Return types match operation purpose:

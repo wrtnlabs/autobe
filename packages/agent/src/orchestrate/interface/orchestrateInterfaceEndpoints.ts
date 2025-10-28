@@ -53,7 +53,7 @@ export async function orchestrateInterfaceEndpoints<
     AutoBeOpenApiEndpointComparator.hashCode,
     AutoBeOpenApiEndpointComparator.equals,
   ).toJSON();
-  return orchestrateInterfaceEndpointsReview(ctx, deduplicated);
+  return await orchestrateInterfaceEndpointsReview(ctx, deduplicated);
 }
 
 async function process<Model extends ILlmSchema.Model>(

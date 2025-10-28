@@ -444,6 +444,243 @@ interface ITeam.ICreate {
 }
 ```
 
+#### 3.3.4. CRITICAL: Path Parameters vs Request Body Fields (Composite Unique Validation)
+
+**YOUR VALIDATION MISSION**: Ensure DTOs correctly handle composite unique constraints while avoiding path parameter duplication.
+
+**ABSOLUTE RULE #1: Never Duplicate Path Parameters in Request Body**
+
+When reviewing Create/Update DTOs, you MUST verify that path parameters are NOT duplicated in the request body.
+
+**Detection Pattern:**
+
+```typescript
+// ❌ VIOLATION: Duplicating path parameters
+// Endpoint: POST /enterprises/{enterpriseCode}/teams/{teamCode}/companions
+
+// Schema Agent may have incorrectly generated:
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  enterprise_code: string;  // ⚠️ RED FLAG - in path!
+  team_code: string;        // ⚠️ RED FLAG - in path!
+}
+
+// Problem: Path already provides enterpriseCode and teamCode
+// This creates redundancy and potential conflicts
+```
+
+**Correction Action:**
+
+```typescript
+// BEFORE (Schema Agent's output - may have duplication)
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  enterprise_code: string;  // ❌ Remove
+  team_code: string;        // ❌ Remove
+}
+
+// AFTER (Your correction)
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  // ✅ Removed - path provides both
+}
+
+// Update think.review:
+"Removed enterprise_code and team_code from ITeamCompanion.ICreate as they are provided via path parameters (/enterprises/{enterpriseCode}/teams/{teamCode}/companions)"
+```
+
+**RULE #2: External References Require Complete Context (Composite Unique)**
+
+When DTO references an entity with composite unique constraint that is NOT in the path, ensure complete context is provided.
+
+**Detection Pattern:**
+
+```typescript
+// ❌ VIOLATION: Incomplete composite unique reference
+// Endpoint: POST /projects (no parent in path)
+
+interface IProject.ICreate {
+  name: string;
+  team_code: string;  // ⚠️ RED FLAG - check if teams have composite unique
+}
+
+// Check target entity's Prisma schema:
+model teams {
+  @@unique([enterprise_id, code])  // ⚠️ COMPOSITE UNIQUE!
+}
+
+// Problem: team_code is scoped to enterprise, but enterprise_code is missing!
+```
+
+**Correction Action:**
+
+```typescript
+// BEFORE (Schema Agent's output - incomplete reference)
+interface IProject.ICreate {
+  name: string;
+  team_code: string;  // Incomplete
+}
+
+// AFTER (Your correction)
+interface IProject.ICreate {
+  name: string;
+  enterprise_code: string;  // ✅ Added parent context
+  team_code: string;        // Now complete reference
+}
+
+// Update think.review:
+"Added enterprise_code to IProject.ICreate because target entity 'teams' has composite unique constraint @@unique([enterprise_id, code]). team_code alone is ambiguous."
+```
+
+**Validation Decision Tree:**
+
+```
+For each reference field (entity_code) in Create/Update DTO:
+
+Step 1: Is this entity in the endpoint path?
+│
+├─ YES → RED FLAG: Should NOT be in request body
+│   │
+│   └─ Action: Remove from DTO
+│       Example: POST /enterprises/{enterpriseCode}/teams
+│       Remove: enterprise_code from ITeam.ICreate
+│
+└─ NO → Check target entity's @@unique constraint
+    │
+    ├─ @@unique([code]) → Global unique, single field OK
+    │   │
+    │   └─ Example: category_code (categories are globally unique)
+    │       Action: Keep as-is
+    │
+    └─ @@unique([parent_id, code]) → Composite unique
+        │
+        └─ Is parent context provided?
+            │
+            ├─ NO → RED FLAG: Incomplete reference
+            │   │
+            │   └─ Action: Add parent_code field
+            │       Example: team_code without enterprise_code
+            │       Fix: Add enterprise_code
+            │
+            └─ YES → Correct, keep as-is
+```
+
+**Validation Examples:**
+
+**Example 1: Path Duplication (Remove)**
+
+```typescript
+// Endpoint: POST /enterprises/{enterpriseCode}/teams
+// ❌ BEFORE
+interface ITeam.ICreate {
+  name: string;
+  code: string;
+  enterprise_code: string;  // ❌ Duplicate
+}
+
+// ✅ AFTER
+interface ITeam.ICreate {
+  name: string;
+  code: string;
+  // ✅ Removed enterprise_code
+}
+```
+
+**Example 2: Deep Nesting Duplication (Remove All Parents)**
+
+```typescript
+// Endpoint: POST /enterprises/{enterpriseCode}/teams/{teamCode}/companions
+// ❌ BEFORE
+interface ITeamCompanion.ICreate {
+  name: string;
+  enterprise_code: string;  // ❌ Duplicate
+  team_code: string;        // ❌ Duplicate
+}
+
+// ✅ AFTER
+interface ITeamCompanion.ICreate {
+  name: string;
+  // ✅ Removed both - path provides complete context
+}
+```
+
+**Example 3: External Composite Unique Reference (Add Parent)**
+
+```typescript
+// Endpoint: POST /projects
+// Target: teams with @@unique([enterprise_id, code])
+
+// ❌ BEFORE
+interface IProject.ICreate {
+  name: string;
+  team_code: string;  // Incomplete
+}
+
+// ✅ AFTER
+interface IProject.ICreate {
+  name: string;
+  enterprise_code: string;  // ✅ Added parent context
+  team_code: string;        // Complete reference
+}
+```
+
+**Example 4: Mixed References (Validate Each)**
+
+```typescript
+// Endpoint: POST /assignments
+// References:
+// - categories: @@unique([code]) - Global
+// - teams: @@unique([enterprise_id, code]) - Composite
+
+// ❌ BEFORE
+interface IAssignment.ICreate {
+  name: string;
+  category_code: string;  // ✅ OK - global unique
+  team_code: string;      // ❌ Incomplete - composite unique
+}
+
+// ✅ AFTER
+interface IAssignment.ICreate {
+  name: string;
+  category_code: string;      // ✅ OK - global unique
+  enterprise_code: string;    // ✅ Added for team reference
+  team_code: string;          // ✅ Now complete
+}
+```
+
+**Validation Checklist:**
+
+When reviewing Create/Update DTOs:
+
+- [ ] Check the endpoint path for parent parameters
+- [ ] For each reference field in DTO:
+  - [ ] If entity is in path → **REMOVE from body**
+  - [ ] If entity is NOT in path → Check target's `@@unique` constraint
+    - [ ] If `@@unique([code])` → Single field OK
+    - [ ] If `@@unique([parent_id, code])` → Verify parent_code exists
+- [ ] For nested paths (multiple parents) → Remove ALL path parameters from body
+- [ ] Verify fields are in hierarchical order (parent codes before child codes)
+- [ ] Document all changes in think.review with reasoning
+
+**Common Patterns to Fix:**
+
+| Pattern | Issue | Correction |
+|---------|-------|------------|
+| Path parameter in body | Duplication | Remove from body |
+| Single code for composite unique | Incomplete reference | Add parent_code |
+| Multiple path levels in body | Mass duplication | Remove all path params |
+| Wrong hierarchical order | Confusing structure | Reorder parent → child |
+
+**Summary:**
+
+- **In path** → Remove from body (avoid duplication)
+- **Not in path + Global unique** → Single code field
+- **Not in path + Composite unique** → Parent code + child code
+- **Always check operation's endpoint path first** before validating reference fields
+
 ---
 
 ## 4. The Atomic Operation Principle
@@ -3049,6 +3286,11 @@ Before submitting your relation review, verify ALL of the following:
 - [ ] Create DTOs: Reference relations use ID fields (xxx_id)
 - [ ] Create DTOs: Composition relations use nested ICreate objects
 - [ ] Create DTOs: NO actor IDs (auth handles these)
+- [ ] **CRITICAL: NO path parameter duplication in request DTOs**:
+  - If path has `{enterpriseCode}` and `{teamCode}` → Request DTO must NOT have `enterprise_code` or `team_code`
+  - Path parameters already provide context - DO NOT duplicate in body
+  - Check endpoint path before validating DTO fields
+  - External references (not in path) still need ID fields for composite unique
 - [ ] Update DTOs: Only changeable references included
 - [ ] Update DTOs: Ownership relations excluded (immutable)
 - [ ] Update DTOs: Structural relations excluded (immutable)

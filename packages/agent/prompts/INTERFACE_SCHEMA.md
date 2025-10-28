@@ -2442,67 +2442,204 @@ interface IProduct.ICreate {
 }
 ```
 
-**Two Patterns for Relations in Create DTOs**:
+**CRITICAL: Path Parameters vs Request Body Fields**
 
-1. **Reference Relations (Association/Aggregation)**: Use code fields (or ID if no code)
-   - Selecting existing entities
-   - Example: `category_code`, `section_code`, `warehouse_id` (if no code)
+Before defining any reference fields, understand this fundamental rule:
 
-2. **Composition Relations**: Use nested ICreate objects
+**ABSOLUTE RULE #1: Never Duplicate Path Parameters in Request Body**
+
+If parent identifiers are already in the endpoint path, they are AUTOMATICALLY available to the server.
+**DO NOT include them in the request body** - this creates:
+- ❌ Redundancy and confusion
+- ❌ Potential conflicts (path says "acme" but body says "globex"?)
+- ❌ API consumer confusion
+- ❌ Unnecessary validation overhead
+
+**Examples of Path Context (DO NOT DUPLICATE):**
+
+```typescript
+// ✅ CORRECT: Path provides parent context
+// Endpoint: POST /enterprises/{enterpriseCode}/teams
+interface ITeam.ICreate {
+  name: string;
+  code: string;
+  description: string;
+  // ✅ NO enterprise_code field - already in path parameter
+  // Server extracts enterpriseCode from path automatically
+}
+
+// Server implementation:
+@Post('/enterprises/:enterpriseCode/teams')
+async createTeam(
+  @Param('enterpriseCode') enterpriseCode: string,  // ← From path
+  @Body() dto: ITeam.ICreate                        // ← From body
+) {
+  return this.service.create({
+    ...dto,
+    enterprise_code: enterpriseCode  // ✅ Injected from path
+  });
+}
+
+// ✅ CORRECT: Nested path with multiple parent levels
+// Endpoint: POST /enterprises/{enterpriseCode}/teams/{teamCode}/companions
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  role: string;
+  // ✅ NO enterprise_code - already in path
+  // ✅ NO team_code - already in path
+  // Both parent contexts provided by path
+}
+
+// ❌ WRONG: Duplicating path parameters
+// Endpoint: POST /enterprises/{enterpriseCode}/teams/{teamCode}/companions
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  role: string;
+  enterprise_code: string;  // ❌ REDUNDANT - already in path!
+  team_code: string;        // ❌ REDUNDANT - already in path!
+}
+```
+
+**RULE #2: External References Require Complete Context (Composite Unique)**
+
+When DTO references a DIFFERENT entity (not a parent in the path), and that entity has a composite unique constraint, provide complete context:
+
+```typescript
+// Endpoint: POST /projects
+// Project references team, but team is NOT in path
+
+// Prisma Schema:
+// model teams {
+//   @@unique([enterprise_id, code])  // Composite unique
+// }
+
+// ❌ WRONG: Incomplete reference
+interface IProject.ICreate {
+  name: string;
+  team_code: string;  // Which enterprise's team?!
+}
+
+// ✅ CORRECT: Complete reference with parent context
+interface IProject.ICreate {
+  name: string;
+  enterprise_code: string;  // Parent context
+  team_code: string;        // Now unambiguous
+}
+```
+
+**Decision Tree for Reference Fields:**
+
+```
+Is the referenced entity in the endpoint path?
+│
+├─ YES → DO NOT include in request body
+│   │  Path provides context automatically
+│   │
+│   └─ Example: POST /enterprises/{enterpriseCode}/teams
+│       Body: { name, code }
+│       ✅ NO enterprise_code field needed
+│
+└─ NO → Check referenced entity's @@unique constraint
+    │
+    ├─ @@unique([code]) → Global unique
+    │   │  Use single code field
+    │   │
+    │   └─ Example: categories with @@unique([code])
+    │       Body: { ..., category_code }
+    │
+    └─ @@unique([parent_id, code]) → Composite unique
+        │  Must provide parent context
+        │
+        └─ Example: teams with @@unique([enterprise_id, code])
+            Body: { ..., enterprise_code, team_code }
+```
+
+**Three Patterns for Relations in Create DTOs**:
+
+1. **Parent Context from Path**: DO NOT duplicate in body
+   - Parent identifiers already in path parameters
+   - Server extracts automatically
+   - Example: `/enterprises/{enterpriseCode}/teams` → NO `enterprise_code` in body
+
+2. **Reference Relations (Association/Aggregation)**: Use code fields (or ID if no code)
+   - Selecting existing entities NOT in path
+   - Check target's `@@unique` constraint
+   - Global unique: single code field
+   - Composite unique: parent code + child code
+   - Example: `category_code` (global), `enterprise_code + team_code` (composite)
+
+3. **Composition Relations**: Use nested ICreate objects
    - Creating entities together in same transaction
    - Example: `attachments`, `units`, `items`
 
 ```typescript
-// Example: Schema where categories have `code` field
-// categories(id UUID, code STRING UNIQUE)
-interface IBbsArticle.ICreate {
-  title: string;
-  content: string;
-
-  // REFERENCE relations → Use codes when available
-  category_code: string;            // ✅ Use code (category has code field)
-  parent_id?: string;               // ✅ Use ID (articles don't have code)
-
-  // COMPOSITION relations → Nested objects
-  attachments?: IBbsArticleAttachment.ICreate[] {
-    filename: string;
-    filesize: number;
-    mimetype: string;
-    url: string;
-  };
-
-  // ❌ NEVER include actor IDs
-  // author_id - handled by auth context
+// Example 1: Path provides parent context (DO NOT DUPLICATE)
+// Endpoint: POST /enterprises/{enterpriseCode}/teams
+interface ITeam.ICreate {
+  name: string;
+  code: string;
+  description: string;
+  // ✅ NO enterprise_code - path provides it
 }
 
-// Example: Schema where sections and categories have `code` fields
-// sections(code), categories(code), warehouses(id only)
-interface IShoppingSale.ICreate {
+// Example 2: Deep nesting - path provides all parent context
+// Endpoint: POST /enterprises/{enterpriseCode}/teams/{teamCode}/companions
+interface ITeamCompanion.ICreate {
+  name: string;
+  email: string;
+  role: string;
+  // ✅ NO enterprise_code - path provides it
+  // ✅ NO team_code - path provides it
+}
+
+// Example 3: External reference to entity with global unique
+// Endpoint: POST /products
+// Schema: categories(id, code UNIQUE) - global unique
+interface IProduct.ICreate {
+  name: string;
+  price: number;
+
+  // REFERENCE to external entity (global unique)
+  category_code: string;  // ✅ Single code - category is globally unique
+
+  // ❌ NEVER include actor IDs
+  // seller_id - handled by auth context
+}
+
+// Example 4: External reference to entity with composite unique
+// Endpoint: POST /projects
+// Schema: teams(id, enterprise_id, code) with @@unique([enterprise_id, code])
+interface IProject.ICreate {
   name: string;
   description: string;
 
-  // REFERENCE relations → Use codes when target has them
-  section_code: string;             // ✅ Use code (section has code)
-  category_codes: string[];         // ✅ Use codes (categories have codes)
+  // REFERENCE to external entity (composite unique)
+  enterprise_code: string;  // ✅ Parent context required
+  team_code: string;        // ✅ Now unambiguous reference
 
-  // COMPOSITION relations → Deep nested creation
-  units: IShoppingSaleUnit.ICreate[] {
-    name: string;
-    price: number;
-
-    options: IShoppingSaleUnitOption.ICreate[] {
-      name: string;
-      type: string;
-      candidates: IShoppingSaleUnitOptionCandidate.ICreate[];
-    };
-
-    stocks: IShoppingSaleUnitStock.ICreate[] {
-      quantity: number;
-      warehouse_id: string;         // ✅ Use ID (warehouses have no code)
-    };
+  // COMPOSITION relations → Nested objects
+  tasks: IProjectTask.ICreate[] {
+    title: string;
+    description: string;
   };
+}
 
-  // ❌ NO seller_id (auth handles this)
+// Example 5: Mixed references - global and composite unique
+// Endpoint: POST /assignments
+interface IAssignment.ICreate {
+  name: string;
+
+  // Reference to category (global unique)
+  category_code: string;  // ✅ Single code sufficient
+
+  // Reference to team (composite unique)
+  enterprise_code: string;  // ✅ Parent context
+  team_code: string;        // ✅ Complete reference
+
+  // Reference to warehouse (no code, use UUID)
+  warehouse_id: string;  // ✅ UUID fallback
 }
 
 interface IShoppingOrder.ICreate {
@@ -4040,6 +4177,11 @@ Before completing the schema generation, verify ALL of the following items:
   - Every property MUST exist in the referenced Prisma model (except computed fields)
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly
+- [ ] **CRITICAL: Composite unique constraint compliance** - When entity has unique `code` field:
+  - Check Prisma schema `@@unique` constraint on target entity
+  - If `@@unique([code])` (global) → Can use independently
+  - If `@@unique([parent_id, code])` (composite) → Path parameters already provide parent context
+  - **NEVER duplicate path parameters in request body** - If `enterpriseCode` in path, don't add it to DTO
 
 ### ✅ Relation Rules
 - [ ] **ALL BELONGS-TO (reference) relations use `.ISummary`** - no exceptions
