@@ -494,15 +494,40 @@ model wrtn_moderator_emails {
 
 ### 4.4. 가입 방법
 
-`wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다.
+내부 관리자는 두 가지 경로를 통해 시스템에 합류할 수 있다.
 
-#### 4.4.1. 직접 가입 후 승인
+#### 4.4.1. 자체 신청 후 승인 받기
 
-첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, master 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다.
+지원자가 스스로 내부 관리자 전용 포털에 접속하여 계정 생성을 요청하면, 기존 master 또는 manager가 심사를 거쳐 승인하는 방식이다.
 
-#### 4.4.2. 초대장을 통한 가입
+**이메일 검증 필수 절차**:
 
-두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
+자체 신청자는 신원 확인을 위해 반드시 이메일 인증을 완료해야 한다. 인증을 거치지 않은 상태에서는 가입 신청 자체가 불가능하다.
+
+회원 가입 API 설계 시, 이메일 인증 완료를 증명하는 레코드의 식별자를 입력 DTO에 포함시켜야 한다. 이를 통해 서버는 해당 신청자가 정당한 이메일 소유자임을 검증할 수 있다.
+
+이메일 검증을 마친 신청자는 "승인 대기" 상태가 되며, master 또는 manager의 최종 승인을 기다린다.
+
+**승인 시 기록되는 정보**:
+- 임명 이력: `wrtn_moderator_appointments` 에 새 레코드 생성
+- 승인 시각: `wrtn_moderators.approved_at` 에 정식 멤버가 된 시점 기록
+- 이메일 검증 시각: `wrtn_moderator_emails.verified_at` 에 인증 완료 시각 저장
+
+#### 4.4.2. 초대장으로 즉시 가입
+
+기존 관리자가 신뢰하는 인물에게 `wrtn_moderator_invitations`를 통해 이메일로 초대장을 발송하는 방식이다.
+
+**이메일 검증 생략**:
+
+초대장 수신자는 별도의 이메일 인증 절차를 거치지 않는다. 이메일 주소 자체로 초대장이 전달되었다는 것이 곧 소유권 증명이기 때문이다.
+
+따라서 회원 가입 API는 초대장 토큰의 존재 여부에 따라 이메일 인증 레코드 요구 여부를 달리 처리해야 한다.
+
+**즉시 합류 처리**:
+- 계정 생성: `wrtn_moderators` 레코드가 바로 생성됨
+- 임명 기록: `wrtn_moderator_appointments` 에 초대자를 임명자로 하여 기록
+- 이메일 검증 시각: `wrtn_moderator_emails.verified_at` 에 초대장 발행 시각(`wrtn_moderator_invitations.created_at`) 기입
+- 별도의 승인 대기 없이 시스템 즉시 사용 가능
 
 ### 4.5. 초대장 만료 정책
 
@@ -583,11 +608,48 @@ master A가 master B를 강제 탈퇴시키고자 하는 경우, 다음과 같�
 - master 또는 다른 manager가 단독으로 즉시 강퇴 처리할 수 있다.
 - 이는 manager가 master보다 낮은 권한 수준이므로 master와 동일한 보호 수준이 필요하지 않기 때문이다.
 
-### 4.8. 세션 기반 감사 추적
+### 4.8. 비밀번호 관리
+
+#### 4.8.1. 일반적인 비밀번호 변경
+
+모든 관리자는 로그인 상태에서 언제든 비밀번호를 갱신할 수 있다. 이 때 보안을 위해 현재 비밀번호를 먼저 확인한 후, 새 비밀번호를 입력받는다. 새 비밀번호 역시 섹션 4.3에서 정의한 강도 요구사항(8자 이상, 영문/숫자/특수문자 조합)을 충족해야 한다.
+
+#### 4.8.2. 비밀번호 분실 시 복구
+
+비밀번호를 잊어버린 관리자를 위한 재설정 메커니즘을 제공한다.
+
+**복구 흐름**:
+
+사용자가 등록된 이메일로 비밀번호 리셋을 요청하면, 시스템은 안전한 임시 비밀번호를 생성하여 해당 이메일로 발송한다.
+
+사용자는 이 임시 비밀번호로 로그인한 뒤, 즉시 비밀번호 변경 기능을 통해 자신만의 새 비밀번호를 설정하게 된다.
+
+**보안 설계 원칙**:
+- 원본 비밀번호는 해시로만 저장되므로 시스템도 알 수 없음 - 리셋만 가능
+- 임시 비밀번호는 일회용이며 복잡도 요구사항을 충족하는 무작위 문자열로 생성
+- 임시 비밀번호에 유효 기간을 두어 시간이 지나면 자동 무효화
+- 모든 비밀번호 리셋 요청과 성공 여부를 감사 로그에 기록
+
+### 4.9. 이메일 주소 변경
+
+내부 관리자가 계정에 연결된 이메일 주소를 바꾸려 할 때도 신원 확인을 위해 이메일 인증을 반드시 거친다.
+
+**변경 프로세스**:
+
+관리자가 새로운 이메일 주소를 제출하면, 시스템은 해당 주소로 인증 코드를 전송한다. 사용자가 이 코드를 정확히 입력하여 소유권을 증명하면, `wrtn_moderator_emails` 테이블에 새 레코드가 추가되고 `verified_at`에 인증 완료 시각이 기록된다.
+
+기존 이메일 레코드는 `deleted_at`을 설정하여 비활성화하거나, 이력 보존을 위해 그대로 유지할 수 있다.
+
+**보안 및 감사**:
+- 인증 없는 이메일 변경은 원천 차단
+- 모든 변경 이력은 추적 가능하도록 타임스탬프와 함께 기록
+- 계정 탈취 방지를 위해 기존 이메일 주소로도 "이메일이 변경되었습니다" 알림 발송
+
+### 4.10. 세션 기반 감사 추적
 
 `wrtn_moderator_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다.
 
-#### 4.8.1. 세션 정보 구성
+#### 4.10.1. 세션 정보 구성
 
 각 세션은 다음 정보를 포함한다:
 
@@ -597,7 +659,7 @@ master A가 master B를 강제 탈퇴시키고자 하는 경우, 다음과 같�
 - **created_at**: 세션 시작 시각
 - **expired_at**: 세션 종료 시각
 
-#### 4.8.2. 세션 ID 활용
+#### 4.10.2. 세션 ID 활용
 
 이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있으며, 모든 중요한 행위는 해당 세션 ID와 함께 기록된다. 예를 들어:
 
@@ -605,11 +667,12 @@ master A가 master B를 강제 탈퇴시키고자 하는 경우, 다음과 같�
 - 관리자 임명 시: `wrtn_moderator_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
 - 초대장 발송 시: `wrtn_moderator_invitations` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
 
-#### 4.8.3. AI 설계 원칙
+#### 4.10.3. AI 설계 원칙
 
 **AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다.**
 
 모든 관리자 행위 기록에는 반드시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id`도 포함시켜라.
+
 
 ## 5. Enterprise
 
@@ -810,7 +873,43 @@ model wrtn_enterprise_team_companion_invitations {
 
 #### 5.2.2. 가입 방법
 
-직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 master 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 master 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
+기업 직원 계정 생성은 자체 신청과 초대장 두 가지 경로로 이루어진다.
+
+**경로 1: 자체 신청과 승인 심사**
+
+직원 후보자가 기업 포털에서 계정을 직접 신청하면, master 또는 manager가 검토하여 승인하는 구조다.
+
+자체 신청자는 내부 관리자와 마찬가지로 이메일 소유권을 먼저 입증해야 한다. 이메일 인증을 완료하지 못하면 가입 신청서 제출 자체가 불가능하다.
+
+회원 가입 API는 이메일 인증 레코드의 참조를 입력 DTO에 포함하도록 설계되어야 한다. 서버는 이를 통해 신청자가 정당한 이메일 주소 소유자임을 확인한다.
+
+인증을 마친 신청자는 "승인 대기" 큐에 추가되며, master 또는 manager의 최종 심사를 기다린다. 승인되면 `wrtn_enterprise_employee_appointments` 레코드와 함께 `approved_at` 타임스탬프가 기록된다.
+
+**특수 케이스: 기업 첫 master 승인권**
+
+기업의 최초 가입자(반드시 `title`이 `master`)는 특별한 상황이다. 아직 기업 내에 아무도 없으므로 기업 내부에서 승인할 사람이 없기 때문이다.
+
+이 경우 두 가지 승인 경로가 존재한다:
+1. 동일 기업의 기존 master/manager가 승인 (일반적 케이스는 아님)
+2. **내부 관리자(`wrtn_moderators`)가 직접 승인** - 최초 master에 한하여 예외적으로 승인 권한 부여
+
+따라서 다음 Moderator 전용 API들이 반드시 구현되어야 한다:
+- 전체 기업들의 "승인 대기 중인 최초 master" 목록 조회
+- 특정 최초 master 신청 승인 처리
+- 특정 최초 master 신청 거부 처리
+
+**경로 2: 초대장으로 즉시 합류**
+
+기존 직원(master 또는 manager)이 신뢰하는 인물에게 `wrtn_enterprise_employee_invitations`를 통해 초대장을 이메일로 발송한다.
+
+초대장 수신자는 별도의 이메일 인증 과정을 거치지 않는다. 초대장 자체가 이메일로 전달되었다는 사실이 소유권 증명이 되기 때문이다.
+
+회원 가입 API는 초대장 토큰 유무에 따라 이메일 인증 레코드 요구 여부를 다르게 처리해야 한다.
+
+초대장을 통한 가입은 승인 대기 없이 즉시 완료된다:
+- 계정과 임명 레코드가 동시에 생성됨
+- 초대장에 명시된 직책이 바로 부여됨
+- 초대장이 `expired_at` 시점을 지나면 무효화되어 더 이상 사용 불가
 
 #### 5.2.3. 초대장 만료 정책
 
@@ -874,6 +973,84 @@ model wrtn_enterprise_team_companion_invitations {
 
 두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만 (`role` = `null`), `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 된다. 이를 통해 자진 탈퇴와 강제 제거를 구분할 수 있다.
 
+### 5.5. 비밀번호 관리
+
+기업 직원 역시 내부 관리자와 동일한 비밀번호 관리 체계를 따른다.
+
+#### 5.5.1. 비밀번호 변경
+
+로그인한 직원은 언제든 현재 비밀번호를 확인한 뒤 새로운 비밀번호로 갱신할 수 있다. 새 비밀번호는 섹션 5.2.1에 명시된 강도 규칙(8자 이상, 영문/숫자/특수문자 필수 포함)을 준수해야 한다.
+
+#### 5.5.2. 비밀번호 복구
+
+비밀번호를 분실한 직원을 위해, 등록된 이메일로 리셋 요청을 받아 임시 비밀번호를 생성하여 전송하는 메커니즘을 제공한다.
+
+임시 비밀번호로 로그인한 직원은 즉시 비밀번호 변경 화면으로 유도되어 자신만의 새 비밀번호를 설정하게 된다. 임시 비밀번호는 일회성이며 시간 제한이 있어 보안을 강화한다.
+
+### 5.6. 이메일 주소 변경
+
+기업 직원이 계정의 이메일 주소를 바꿀 때도 신원 확인을 위해 반드시 새 이메일 주소로 인증 코드를 받아 검증하는 과정을 거친다.
+
+인증이 완료되면 `wrtn_enterprise_employees.email` 필드가 새 주소로 업데이트되며, 계정 탈취를 방지하기 위해 기존 이메일 주소로도 "이메일이 변경되었습니다" 알림이 전송된다.
+
+**주의사항**: 기업 직원은 기업별로 단일 이메일 주소만 가지므로 (`@@unique([wrtn_enterprise_id, email])`), 변경 시 기존 컬럼을 업데이트하는 방식으로 처리한다. 내부 관리자처럼 복수 이메일을 가질 수 없다.
+
+### 5.7. LLM 사용량 한도 관리
+
+master 또는 manager 직책을 가진 직원은 AI 서비스 사용에 대한 비용 통제를 위해 팀 및 개인별로 월간 지출 한도를 설정할 수 있다.
+
+> **🔴 CRITICAL - 아래 정의된 모든 테이블명과 컬럼명을 본 문서에 적힌 그대로 단 한 글자도 바꾸지 않고 복사하라 🔴**
+
+```prisma
+model wrtn_enterprise_team_quotas {
+  id String @id @uuid
+  wrtn_enterprise_team_id String @uuid
+  wrtn_enterprise_configurator_id String @uuid // employee.id who set the quota
+  wrtn_enterprise_configurator_session_id String @uuid // for audit tracing
+  monthly_limit_usd Float // 월 단위 LLM 비용 한도 (달러)
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([wrtn_enterprise_team_id])
+  @@index([wrtn_enterprise_configurator_id])
+  @@index([wrtn_enterprise_configurator_session_id])
+}
+
+model wrtn_enterprise_employee_quotas {
+  id String @id @uuid
+  wrtn_enterprise_employee_id String @uuid
+  wrtn_enterprise_configurator_id String @uuid // employee.id who set the quota
+  wrtn_enterprise_configurator_session_id String @uuid // for audit tracing
+  monthly_limit_usd Float // 월 단위 LLM 비용 한도 (달러)
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_configurator_id])
+  @@index([wrtn_enterprise_configurator_session_id])
+}
+```
+
+**한도 체계의 특징**:
+
+**토큰이 아닌 비용 기준**: 한도는 소비한 토큰 개수가 아니라 실제 청구되는 달러 금액으로 설정한다. 이는 AI 모델별로 토큰 가격이 다르므로 통합된 비용 관리가 더 실용적이기 때문이다.
+
+**월 단위 리셋**: 매월 1일 0시(UTC) 기준으로 사용량이 초기화되어 새로운 한도가 적용된다.
+
+**계층적 우선순위**: 개인 한도가 설정되어 있으면 이를 최우선으로 적용하고, 개인 한도가 없으면 소속 팀의 한도를 참조한다. 둘 다 없으면 무제한 사용이 허용된다.
+
+**권한 관리**: 오직 master 또는 manager만이 한도를 설정하거나 수정할 수 있다.
+
+**감사 추적**: 한도를 생성하거나 변경한 직원의 ID와 세션 ID를 함께 기록하여, 추후 "누가 언제 어떤 세션에서 한도를 조정했는지" 완전히 추적 가능하다.
+
+**API 설계 가이드**:
+- 팀/개인별 한도 CRUD API 구현
+- 현재 월 누적 사용 비용 조회 API
+- 한도 대비 사용률(%) 계산 API
+- 한도 임박 또는 초과 시 알림 설정 API (선택 기능)
+
 ## 6. AI Chatbot
 
 > **🔴 CRITICAL - 아래 정의된 모든 테이블명과 컬럼명을 본 문서에 적힌 그대로 단 한 글자도 바꾸지 않고 복사하라 🔴**
@@ -898,12 +1075,16 @@ model wrtn_chat_sessions {
   disclosure String
   created_at DateTime
   updated_at DateTime // when title or disclosure changed 
+  pinned_at DateTime? // 목록에서의 상단 고정하기 기능, API 도 이것이 반영되어야 함
   deleted_at DateTime?
 
   @@index([wrtn_enterprise_employee_id, created_at])
   @@index([wrtn_enterprise_employee_session_id])
   @@index([wrtn_enterprise_employee_persona_id])
   @@index([wrtn_enterprise_team_id])
+
+  // API 상 제목에 대한 검색이 가능해야 한다
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
 }
 
 // Connection tracking for chat sessions
@@ -1190,6 +1371,17 @@ export interface IWrtnTokenUsageOutput {
 
 ```prisma
 // Available AI procedures catalog
+model wrtn_categories {
+  id String
+  code String @id // identifier code like "marketing"
+  name String // human friendly name like "Marketing"
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([name])
+}
+
 model wrtn_procedures {
   id String @id @uuid
   code String // identifier code like "image-generation"
@@ -1204,6 +1396,15 @@ model wrtn_procedures {
   @@unique([code])
   @@unique([title])
   @@index([created_at])
+}
+
+model wrtn_procedure_categories {
+  id String @id @uuid
+  wrtn_procedure_id String @uuid
+  wrtn_category_id String @uuid
+
+  @@unique([wrtn_procedure_id, wrtn_category_id])
+  @@index([wrtn_category_id])
 }
 
 // Procedure execution sessions
@@ -1402,8 +1603,9 @@ model wrtn_enterprise_employee_personas {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
   wrtn_enterprise_employee_session_id String @uuid // for audit tracing
+  wrtn_persona_tone_id String @uuid
   avatar_image_url String // 아바타 이미지 (gif)
-  name String // 아바타 이름
+  avatar_name String // 아바타 이름
   auto_web_search Boolean // 웹 검색 자동으로 사용 여부
   auto_question_suggest Boolean // 질문 자동 추천 여부
   tone String // 톤 앤 매너
@@ -1430,7 +1632,177 @@ model wrtn_enterprise_employee_personas {
 
 이 API는 직원이 자신의 현재 페르소나 설정을 확인할 때나, 새 채팅 세션을 시작할 때 기본 페르소나를 가져오는 데 사용된다.
 
-### 8.2. Enterprise Procedure
+### 8.2. Terms and Conditions (약관 관리)
+
+회원 가입 시 이용약관 및 개인정보처리방침 등에 대한 동의를 받아야 하며, 약관은 개정될 수 있으므로 버전별로 관리되어야 한다.
+
+> **🔴 CRITICAL - 아래 정의된 모든 테이블명과 컬럼명을 본 문서에 적힌 그대로 단 한 글자도 바꾸지 않고 복사하라 🔴**
+
+```prisma
+model wrtn_membership_terms {
+  id String @id @uuid
+  code String // identifier code like "privacy-policy"
+  title String // human friendly title like "Privacy Policy"
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([code])
+}
+
+model wrtn_membership_term_snapshots {
+  id String @id @uuid
+  wrtn_membership_term_id String @uuid
+  version String // version like "1.0.0", "2.1.3"
+  url String // URL to the full text of the terms
+  created_at DateTime
+
+  @@index([wrtn_membership_term_id, created_at])
+  @@unique([wrtn_membership_term_id, version])
+}
+
+model wrtn_moderator_terms {
+  id String @id @uuid
+  wrtn_moderator_id String @uuid
+  wrtn_membership_term_snapshot_id String @uuid // which version agreed
+  agreed_at DateTime
+  created_at DateTime
+
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_membership_term_snapshot_id])
+  @@unique([wrtn_moderator_id, wrtn_membership_term_snapshot_id])
+}
+
+model wrtn_enterprise_employee_terms {
+  id String @id @uuid
+  wrtn_enterprise_employee_id String @uuid
+  wrtn_membership_term_snapshot_id String @uuid // which version agreed
+  agreed_at DateTime
+  created_at DateTime
+
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_membership_term_snapshot_id])
+  @@unique([wrtn_enterprise_employee_id, wrtn_membership_term_snapshot_id])
+}
+```
+
+**약관 체계 구조**:
+
+`wrtn_membership_terms`는 약관의 종류를 정의하는 메타데이터 테이블이다. "개인정보처리방침", "이용약관", "마케팅 수신 동의" 같은 각 약관을 고유 코드와 함께 등록한다.
+
+`wrtn_membership_term_snapshots`는 각 약관이 개정될 때마다 생성되는 버전별 스냅샷이다. Semantic versioning("1.0.0", "1.2.0", "2.0.0" 등)으로 버전을 관리하며, 약관 전문은 별도 URL로 제공된다.
+
+`wrtn_moderator_terms`와 `wrtn_enterprise_employee_terms`는 각 사용자가 어느 버전의 약관에 동의했는지 기록한다.
+
+**가입 시 동의 절차**:
+
+회원 가입 시 필수 약관에 대한 동의를 받아야 하며, 이 때 해당 약관의 최신 스냅샷 ID를 저장한다. 사용자가 동의한 시각은 `agreed_at`에 기록되어 법적 증거로 활용될 수 있다.
+
+**약관 개정과 재동의**:
+
+약관이 개정되어 새로운 스냅샷이 생성되면, 기존 회원들에게 개정된 약관에 대한 동의를 요구할 수 있다. 필수 약관이 개정된 경우 동의하지 않으면 서비스 이용이 제한될 수 있으며, 선택 약관은 동의 여부에 따라 해당 기능만 선택적으로 제한된다.
+
+**중요**: 사용자 동의 테이블(`wrtn_moderator_terms`, `wrtn_enterprise_employee_terms`)은 `wrtn_membership_terms`가 아니라 반드시 `wrtn_membership_term_snapshots`를 참조해야 한다. 어느 버전에 동의했는지 명확히 기록해야 하기 때문이다.
+
+**API 설계 가이드**:
+- 현재 유효한 약관 목록 조회 (각 약관별 최신 버전)
+- 특정 버전의 약관 내용 조회 (URL 제공)
+- 사용자의 약관 동의 이력 조회
+- 약관 동의 처리 (가입 시 또는 재동의 시)
+- 미동의 약관 목록 조회
+- (Moderator 전용) 새 약관 버전 등록
+- (Moderator 전용) 약관 개정 및 재동의 강제 여부 설정
+
+### 8.3. Persona Templates (페르소나 템플릿)
+
+기업 직원이 AI 챗봇 페르소나를 설정할 때 참고할 수 있는 아바타 이미지와 톤 앤 매너 템플릿을 내부 관리자가 제공한다.
+
+#### 8.3.1. Persona Avatars (`wrtn_persona_avatars`)
+
+> **🔴 CRITICAL - 아래 정의된 모든 테이블명과 컬럼명을 본 문서에 적힌 그대로 단 한 글자도 바꾸지 않고 복사하라 🔴**
+
+```prisma
+model wrtn_persona_avatars {
+  id String @id @uuid
+  wrtn_moderator_id String @uuid // 생성한 모더레이터
+  wrtn_moderator_session_id String @uuid // for audit tracing
+  image_url String // 아바타 이미지
+  name String // 아바타 이름
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_moderator_session_id])
+  @@unique([name])
+}
+```
+
+**템플릿의 역할과 한계**:
+
+이 테이블은 어디까지나 기업 직원에게 선택지를 제공하는 템플릿일 뿐이다. 직원은 이 중 하나를 골라 그대로 사용할 수도 있고, 자신만의 아바타 이미지와 이름을 직접 입력할 수도 있다.
+
+따라서 `wrtn_enterprise_employee_personas` 테이블의 `avatar_image_url`과 `avatar_name` 컬럼은 여전히 유지되어야 하며, 절대로 이 테이블에 대한 FK로 대체해서는 안 된다. 템플릿은 참고 자료일 뿐, 강제하는 것이 아니다.
+
+**Moderator의 관리**:
+
+내부 관리자는 다음 작업을 수행할 수 있다:
+- 새로운 아바타 템플릿 추가
+- 기존 템플릿의 이미지 URL이나 이름 수정
+- 더 이상 제공하지 않을 템플릿 삭제 (`deleted_at` 처리)
+- 템플릿 목록 조회 (활성 템플릿만 또는 전체)
+
+모든 작업은 `wrtn_moderator_id`와 `wrtn_moderator_session_id`를 통해 누가 언제 어느 세션에서 작업했는지 완벽하게 추적된다.
+
+#### 8.3.2. Persona Tones (`wrtn_persona_tones`)
+
+> **🔴 CRITICAL - 아래 정의된 모든 테이블명과 컬럼명을 본 문서에 적힌 그대로 단 한 글자도 바꾸지 않고 복사하라 🔴**
+
+```prisma
+model wrtn_persona_tones {
+  id String @id @uuid
+  wrtn_moderator_id String @uuid // 생성한 모더레이터
+  wrtn_moderator_session_id String @uuid // for audit tracing
+  name String // 톤 이름 (예: "친근한", "전문적인", "유머러스한")
+  prompt String // 시스템 프롬프트
+  example String // 톤 예시 대화
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_moderator_session_id])
+  @@unique([name])
+}
+```
+
+**템플릿의 역할과 한계**:
+
+이 테이블 역시 아바타와 마찬가지로 단순한 참고 자료다. "친근한 말투", "전문적인 어조", "유머러스한 톤" 같은 미리 정의된 시스템 프롬프트와 예시를 제공하여, 직원들이 원하는 톤을 빠르게 선택할 수 있도록 돕는다.
+
+하지만 직원은 이를 그대로 쓸 수도 있고, 자기만의 톤과 프롬프트를 직접 작성할 수도 있다. 따라서 `wrtn_enterprise_employee_personas` 테이블의 `tone`과 `prompt` 컬럼은 그대로 유지되어야 하며, 이 테이블에 대한 FK로 바꿔서는 절대 안 된다.
+
+**Moderator의 관리**:
+
+내부 관리자는 다음 작업을 수행할 수 있다:
+- 새로운 톤 템플릿 추가 (이름, 시스템 프롬프트, 예시 대화 포함)
+- 기존 템플릿 수정
+- 사용하지 않을 템플릿 삭제 (`deleted_at` 처리)
+- 템플릿 목록 조회 (이름, 프롬프트, 예시 모두 포함)
+
+모든 작업은 역시 감사 추적을 위해 `wrtn_moderator_id`와 `wrtn_moderator_session_id`와 함께 기록된다.
+
+**설계 원칙 요약**:
+
+```
+[Moderator가 제공]                    [Employee가 활용]
+wrtn_persona_avatars (템플릿) ----참고---> wrtn_enterprise_employee_personas.avatar_*
+wrtn_persona_tones (템플릿) ------참고---> wrtn_enterprise_employee_personas.tone/prompt
+```
+
+템플릿은 일관된 사용자 경험을 제공하면서도, 각 직원의 창의성과 개성을 존중하는 균형잡힌 시스템을 구현한다.
+
+### 8.4. Enterprise Procedure
 각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
 
 그리고 각 회사의 각 팀은 다시 각 팀이 사용할 수 있는 프로시저를 스스로 설정할 수 있다; `wrtn_enterprise_team_procedures`. 그러나 설정할 수 있는 프로시저는 해당 회사가 지원하는 프로시저로 한정한다.
@@ -1438,6 +1810,8 @@ model wrtn_enterprise_employee_personas {
 또한 해당 팀에 단 하나의 `wrtn_enterprise_team_procedures` 레코드도 없다면, 이 때는 해당 팀이 그 어떠한 프로시저도 사용할 수 없는게 아니라, `wrtn_enterprise_procedures` 설정을 따라가는 것으로 한다.
 
 이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_moderators` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 master 또는 manager 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
+
+이외에 `wrtn_enterprise_employees` 들은 각기 자주 사용하는 프로시저를 즐겨찾기에 추가할 수 있다.
 
 ```prisma
 model wrtn_enterprise_procedures {
@@ -1465,6 +1839,16 @@ model wrtn_enterprise_team_procedures {
   deleted_at DateTime?
 
   @@unique([wrtn_enterprise_team_id, wrtn_procedure_id])
+  @@index([wrtn_procedure_id])
+}
+
+model wrtn_enterprise_employee_procedure_favorites {
+  id String @id @uuid
+  wrtn_enterprise_employee_id String @uuid
+  wrtn_procedure_id String @uuid
+  created_at DateTime
+
+  @@unique([wrtn_enterprise_employee_id, wrtn_procedure_id])
   @@index([wrtn_procedure_id])
 }
 ```
@@ -1543,11 +1927,26 @@ model wrtn_attachment_files {
 - 본인의 사용 내역과 통계만 조회
 - 팀이나 전사 통계는 접근 불가
 
-### 10.2. AI Model 비용 관리
+### 10.2. AI Model 및 비용 관리
 
-AI 모델별 비용을 관리하기 위한 테이블 설계:
+AI 모델 및 모델별 비용을 관리하기 위한 테이블 설계한다.
+
+단, `wrtn_ai_model_pricings` 는 `wrtn_ai_models` 테이블을 참고하는게 아니라, 직접 `code` 를 통해 AI 벤더 모델명을 기록하는 것으로 한다. 이는 같은 모델에 대해서도 프로바이더별로 표기하는 이름이 다르거나 가격이 판이하거나하는 등의 사정이 있기 때문이다.
+
+왜 AI 프로바이더들이 그모냥이냐고 따지지 마라, 아무튼 그러하니까 이렇게 정규화하지 말고 각각 테이블 따로이 만들 것.
 
 ```prisma
+model wrtn_ai_models {
+  id String @id @uuid
+  wrtn_moderator_id String @uuid // 모델을 등록한 관리자
+  wrtn_moderator_session_id String @uuid // for audit tracing
+  code String // "openai/gpt-4o", "anthropic/claude-3-opus" 등
+  name String // 화면 표시용 이름
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+}
+
 model wrtn_ai_model_pricings {
   id String @id @uuid
   wrtn_moderator_id String @uuid // 가격을 설정한 관리자
@@ -1850,7 +2249,266 @@ model wrtn_ai_model_pricings {
 
 엔터프라이즈 B2B 환경에서는 서비스 연속성이 매우 중요하다. 일시적인 예산 초과나 결제 지연으로 인해 업무가 중단되어서는 안 된다. 이는 B2B SaaS의 기본 원칙이다.
 
-## 12. DTO 구현 원칙
+## 12. API Operation 설계 원칙 - 최대한 공격적으로 발굴하라
+
+### 12.1. 핵심 철학: 과잉 설계를 두려워하지 마라
+
+**API operation은 가능한 한 최대한 많이, 그리고 공격적으로 발굴하여 설계한다.**
+
+단순히 CRUD 수준에서 그치지 말고, 실무에서 필요할 만한 모든 operation들을 빠짐없이 설계하여라.
+
+### 12.2. 설계 수준의 차이
+
+**❌ 소극적 설계 (나쁜 예)**:
+```
+POST   /employees
+GET    /employees
+GET    /employees/{id}
+PATCH  /employees/{id}
+DELETE /employees/{id}
+```
+
+**✅ 공격적 설계 (좋은 예)**:
+```
+POST   /employees                              # 직원 생성
+GET    /employees                              # 직원 목록 (필터링, 페이징, 정렬)
+GET    /employees/{id}                         # 직원 상세
+PATCH  /employees/{id}                         # 직원 정보 수정
+DELETE /employees/{id}                         # 직원 삭제
+
+GET    /employees/pending                      # 승인 대기 중인 직원 목록
+POST   /employees/{id}/approve                 # 직원 승인
+POST   /employees/{id}/reject                  # 직원 거부
+
+GET    /employees/{id}/appointments            # 직원 임명 이력
+POST   /employees/{id}/title                   # 직책 변경
+
+GET    /employees/{id}/teams                   # 소속 팀 목록
+GET    /employees/{id}/sessions                # 세션 이력
+GET    /employees/{id}/activities              # 활동 이력
+
+GET    /employees/masters                      # master 직책 직원만 조회
+GET    /employees/managers                     # manager 직책 직원만 조회
+GET    /employees/without-team                 # 팀 미소속 직원 조회
+
+GET    /employees/search                       # 이름, 이메일 등으로 검색
+GET    /employees/export                       # CSV/Excel 내보내기
+GET    /employees/{id}/statistics              # 개인 통계
+```
+
+### 12.3. Cross-Actor 관리 API
+
+**Enterprise가 주로 사용하는 엔티티일지라도, Moderator가 관리하고 열람해야 할 필요성이 있는지 적극 검토하라.**
+
+일말의 여지라도 있다면 그 API도 만들어라.
+
+**예시: `wrtn_enterprise_employees` (기업 직원)**
+
+**Enterprise용 API** (`/enterprise/employees/*`):
+- 자신의 기업 직원들만 관리
+- 직원 생성, 수정, 삭제, 조회
+- 직책 변경, 팀 배정 등
+
+**Moderator용 API** (`/moderator/enterprises/{enterpriseId}/employees/*`):
+- 모든 기업의 직원 정보 열람 (감독 목적)
+- 문제 발생 시 직원 계정 비활성화
+- 최초 master 직원 승인
+- 기업별 직원 통계 조회
+- 이상 활동 감지 및 조사
+
+### 12.4. 상태별, 필터별 조회 API
+
+단순히 "전체 목록 조회" 하나만 만들지 말고, 실무에서 필요한 모든 필터 조합을 고려하라.
+
+**예시: Chat Session 조회**
+
+```
+GET /chat-sessions                              # 전체 목록
+GET /chat-sessions/my                           # 내가 만든 세션
+GET /chat-sessions/shared                       # 공유된 세션
+GET /chat-sessions/pinned                       # 고정된 세션
+GET /chat-sessions/archived                     # 아카이브된 세션
+GET /chat-sessions/by-team/{teamId}             # 팀별 세션
+GET /chat-sessions/by-vendor/{vendor}           # AI 모델별 세션
+GET /chat-sessions/recent                       # 최근 사용한 세션
+GET /chat-sessions/popular                      # 인기 세션 (조회수 높은)
+GET /chat-sessions/search                       # 제목, 내용 검색
+```
+
+### 12.5. 통계 및 집계 API
+
+단순 CRUD를 넘어, 사용자가 실제로 알고 싶어하는 정보를 제공하는 API를 만들어라.
+
+**예시: 사용량 통계**
+
+```
+GET /statistics/token-usage/daily               # 일별 토큰 사용량
+GET /statistics/token-usage/monthly             # 월별 토큰 사용량
+GET /statistics/token-usage/by-employee         # 직원별 사용량
+GET /statistics/token-usage/by-team             # 팀별 사용량
+GET /statistics/token-usage/by-vendor           # AI 모델별 사용량
+GET /statistics/token-usage/trend               # 사용량 추세
+GET /statistics/cost-projection                 # 비용 예측
+GET /statistics/quota-status                    # 할당량 대비 사용 현황
+```
+
+### 12.6. Batch Operation API
+
+여러 개의 엔티티를 한 번에 처리해야 하는 상황을 고려하라.
+
+**예시: 팀원 관리**
+
+```
+POST /teams/{teamId}/members/batch              # 여러 직원 한 번에 초대
+DELETE /teams/{teamId}/members/batch            # 여러 직원 한 번에 제거
+PATCH /teams/{teamId}/members/batch/role        # 여러 직원 역할 일괄 변경
+```
+
+### 12.7. 관계 탐색 API
+
+엔티티 간의 관계를 쉽게 탐색할 수 있는 API를 제공하라.
+
+**예시: 직원 관계 탐색**
+
+```
+GET /employees/{id}/teams                       # 소속 팀 목록
+GET /employees/{id}/chat-sessions               # 생성한 채팅 세션 목록
+GET /employees/{id}/procedure-sessions          # 실행한 프로시저 세션 목록
+GET /employees/{id}/invitations                 # 발송한 초대장 목록
+GET /employees/{id}/appointments                # 임명 이력
+GET /employees/{id}/audit-logs                  # 감사 로그
+```
+
+### 12.8. 액션 API (상태 변경)
+
+리소스의 상태를 변경하는 명시적인 액션 API를 제공하라.
+
+**예시: 세션 관리**
+
+```
+POST /chat-sessions/{id}/pin                    # 고정
+DELETE /chat-sessions/{id}/pin                  # 고정 해제
+POST /chat-sessions/{id}/archive                # 아카이브
+POST /chat-sessions/{id}/unarchive              # 아카이브 해제
+POST /chat-sessions/{id}/share                  # 공유 설정 변경
+POST /chat-sessions/{id}/duplicate              # 복제
+POST /chat-sessions/{id}/export                 # 대화 내용 내보내기
+```
+
+### 12.9. 관리자용 특수 API
+
+시스템 관리와 모니터링을 위한 API를 빠짐없이 설계하라.
+
+**Moderator용 특수 API 예시**:
+
+```
+GET /moderator/dashboard/summary                # 대시보드 요약
+GET /moderator/enterprises/health               # 기업별 서비스 상태
+GET /moderator/enterprises/usage-ranking        # 사용량 랭킹
+GET /moderator/alert/anomalies                  # 이상 활동 감지
+GET /moderator/system/metrics                   # 시스템 메트릭
+POST /moderator/employees/{id}/suspend          # 직원 계정 정지
+POST /moderator/employees/{id}/restore          # 계정 복구
+GET /moderator/audit-logs                       # 전체 감사 로그
+GET /moderator/pending-approvals                # 승인 대기 항목 모아보기
+```
+
+### 12.10. 검증 및 미리보기 API
+
+사용자가 작업을 수행하기 전에 결과를 미리 확인할 수 있게 하라.
+
+**예시**:
+
+```
+POST /employees/validate                        # 직원 정보 유효성 검증
+GET /teams/{id}/members/preview                 # 팀원 추가 시 미리보기
+GET /quota/simulation                           # 한도 설정 시뮬레이션
+POST /terms/check-agreement                     # 약관 동의 여부 확인
+```
+
+### 12.11. 내보내기 및 보고서 API
+
+데이터를 다양한 형식으로 내보낼 수 있게 하라.
+
+**예시**:
+
+```
+GET /employees/export/csv                       # CSV 다운로드
+GET /employees/export/excel                     # Excel 다운로드
+GET /statistics/report/monthly                  # 월간 리포트
+GET /chat-sessions/{id}/transcript/pdf          # 대화 내용 PDF 다운로드
+GET /audit-logs/export                          # 감사 로그 내보내기
+```
+
+### 12.12. 절대 원칙: 너무 많은 API는 문제가 아니다
+
+**핵심 마인드셋**:
+- API를 너무 많이 설계하는 것을 걱정하지 마라
+- 프론트엔드/클라이언트 개발자가 리뷰하고 필요없으면 안 쓸 것이다
+- API를 너무 적게 설계하여 요구사항을 충족시키지 못하는 것이 진짜 문제다
+- **부족함은 수치스럽다, 과잉은 안전하다**
+
+**잘못된 걱정**:
+- ❌ "API가 너무 많으면 문서화가 어려울 텐데..."
+- ❌ "이건 사용하지 않을 것 같은데..."
+- ❌ "기본 CRUD만 있으면 클라이언트가 조합해서 쓰겠지..."
+
+**올바른 사고**:
+- ✅ "이 작업을 할 때 어떤 API가 있으면 편할까?"
+- ✅ "사용자 입장에서 어떤 정보를 보고 싶을까?"
+- ✅ "관리자가 이 상황을 어떻게 처리할까?"
+- ✅ "이 데이터를 어떤 방식으로 필터링하고 싶을까?"
+
+### 12.13. 실전 체크리스트
+
+각 엔티티마다 다음 항목들을 검토하라:
+
+**기본 CRUD**:
+- [ ] 생성, 조회(단일), 조회(목록), 수정, 삭제 API
+
+**상태 관리**:
+- [ ] 승인, 거부, 활성화, 비활성화 등 상태 변경 API
+- [ ] 상태별 필터링 조회 API
+
+**관계 탐색**:
+- [ ] 연관된 엔티티 조회 API (1:N, N:M 관계)
+- [ ] 역방향 관계 조회 API
+
+**통계 및 집계**:
+- [ ] 개수, 합계, 평균 등 집계 API
+- [ ] 기간별, 카테고리별 통계 API
+
+**검색 및 필터**:
+- [ ] 키워드 검색 API
+- [ ] 다양한 조건 조합 필터링 API
+- [ ] 정렬 옵션이 있는 목록 조회 API
+
+**Batch 작업**:
+- [ ] 여러 항목 일괄 처리 API
+
+**내보내기**:
+- [ ] CSV, Excel, PDF 등 내보내기 API
+
+**관리자 전용**:
+- [ ] Moderator가 필요한 관리/감독 API
+- [ ] 감사 로그 및 이력 조회 API
+
+**사용자 편의**:
+- [ ] 최근 항목, 즐겨찾기, 추천 등 API
+- [ ] 미리보기, 검증 등 도우미 API
+
+### 12.14. 결론: 공격적으로 설계하라
+
+**AutoBE에게 당부**:
+- 소극적으로 설계하지 마라
+- "이 정도면 충분하겠지"라고 생각하지 마라
+- 실무에서 "이 API가 있었으면 좋겠다"고 생각할 만한 모든 것을 만들어라
+- 100개의 API 중 50개가 사용되지 않아도 괜찮다
+- 필요한 API가 하나라도 빠져서 요구사항을 충족 못하는 것이 진짜 실패다
+
+**지나치게 API가 많은 것을 걱정하지 말고, 너무 적게 설계하여 요구사항을 충족시키지 못하는 것을 수치스러워하라.**
+
+## 13. DTO 구현 원칙
 
 > **🔴 핵심: 본 문서의 직접 지시사항 외에는 AutoBE 시스템 프롬프트의 DTO 설계 원칙을 따른다**
 
