@@ -377,13 +377,82 @@ makeEndpoints({
 - Single resource endpoints: `/resources/{resourceId}`
 - Nested resources: `/resources/{resourceId}/subsidiaries/{subsidiaryId}`
 
-Examples:
-- `/articles` - Articles collection
-- `/articles/{articleId}` - Single article
-- `/articles/{articleId}/comments` - Comments for an article
-- `/articles/{articleId}/comments/{commentId}` - Single comment
-- `/orders/{orderId}` - Single order
-- `/products` - Products collection
+**CRITICAL: Prefer Unique Code Identifiers Over UUID IDs**
+
+When designing path parameters, **ALWAYS check the target database schema first**:
+
+- **If a table has a unique `code` field** (or similar unique identifier like `username`, `slug`, `handle`), use it as the path parameter instead of the UUID `id`
+- **Only use UUID `id` when no human-readable unique identifier exists**
+
+**Benefits of using unique codes:**
+- ✅ More readable and meaningful URLs
+- ✅ Better user experience (users can understand/remember URLs)
+- ✅ Easier API debugging and testing
+- ✅ SEO-friendly for public-facing APIs
+- ✅ More memorable than UUIDs (e.g., `acme-corp` vs `550e8400-e29b-41d4-a716-446655440000`)
+
+**Path Parameter Selection Rules:**
+
+1. **Check Schema First**: Before designing any endpoint with path parameters, examine the Prisma schema for unique identifiers
+2. **Priority Order**: Use the first available unique identifier in this order:
+   - `code` (most common business identifier)
+   - `username`, `handle`, `slug` (for user/content entities)
+   - `sku`, `serial_number` (for product entities)
+   - `id` (UUID - only when no unique code exists)
+3. **Consistency**: Use the same identifier type throughout nested paths
+
+**Examples:**
+
+**Good (using unique codes):**
+```json
+// Schema has: enterprises(id, code UNIQUE)
+{"path": "/enterprises/{enterpriseCode}", "method": "get"}
+
+// Schema has: teams(id, enterprise_id, code UNIQUE)
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}
+
+// Schema has: categories(id, code UNIQUE)
+{"path": "/categories/{categoryCode}", "method": "get"}
+
+// Nested resources inherit parent identifier style
+{"path": "/enterprises/{enterpriseCode}/teams/{teamCode}/members", "method": "patch"}
+```
+
+**Bad (using UUID IDs when codes exist):**
+```json
+// DON'T use this when enterpriseCode exists
+{"path": "/enterprises/{enterpriseId}", "method": "get"}
+
+// DON'T mix IDs and codes inconsistently
+{"path": "/enterprises/{enterpriseCode}/teams/{teamId}", "method": "get"}
+
+// DON'T use ID when username exists
+{"path": "/users/{userId}", "method": "get"}
+```
+
+**When to use UUID IDs:**
+```json
+// Schema has: orders(id UUID) with NO unique code field
+{"path": "/orders/{orderId}", "method": "get"}
+
+// Schema has: order_items(id UUID, order_id) with NO unique code
+{"path": "/orders/{orderId}/items/{itemId}", "method": "get"}
+```
+
+**Mixed scenarios (parent has code, child doesn't):**
+```json
+// Enterprise has code, but addresses don't have unique code
+{"path": "/enterprises/{enterpriseCode}/addresses/{addressId}", "method": "get"}
+```
+
+Standard path patterns:
+- `/enterprises` - Enterprises collection
+- `/enterprises/{enterpriseCode}` - Single enterprise (when code exists)
+- `/enterprises/{enterpriseId}` - Single enterprise (when no code exists, ID is UUID)
+- `/enterprises/{enterpriseCode}/teams` - Teams under enterprise
+- `/categories` - Categories collection
+- `/categories/{categoryCode}` - Single category (when code exists)
+- `/categories/{categoryId}` - Single category (when no code exists, ID is UUID)
 
 ### 6.4. Standard API operations per entity
 
@@ -403,7 +472,12 @@ For EACH **primary business entity** identified in the requirements document, Pr
 9.  `PUT /parent-entities/{parentId}/child-entities/{childId}` - Update child entity
 10.  `DELETE /parent-entities/{parentId}/child-entities/{childId}` - Delete child entity
 
-**CRITICAL**: The DELETE operation behavior depends on the Prisma schema:
+**CRITICAL PATH PARAMETER SELECTION**:
+- **Check schema FIRST**: If entity has unique `code` field, use `{entityCode}` instead of `{entityId}`
+- **UUID IDs as fallback**: Only use `{entityId}` (UUID) when no unique code field exists
+- Examples: `/enterprises/{enterpriseCode}` if code exists, `/orders/{orderId}` if no code exists
+
+**CRITICAL DELETE OPERATION**:
 - If the entity has soft delete fields (e.g., `deleted_at`, `is_deleted`), the DELETE endpoint will perform soft delete
 - If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
 - NEVER assume soft delete fields exist without verifying in the actual Prisma schema
@@ -464,13 +538,15 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 - `/admin/users` (role prefix)
 - `/api/v1/users` (API prefix)
 - `/users/{user-id}` (kebab-case parameter)
+- `/enterprises/{enterpriseId}` (when schema has unique `code` field - should use `{enterpriseCode}`)
 
 **VALID PATH EXAMPLES**:
-- `/users`
-- `/users/{userId}`
-- `/articles/{articleId}/comments`
+- `/enterprises/{enterpriseCode}` (when code field exists)
+- `/enterprises/{enterpriseCode}/teams/{teamCode}` (when both have codes)
+- `/categories/{categoryCode}` (when code field exists)
+- `/orders/{orderId}` (when no code field exists - ID is UUID)
+- `/orders/{orderId}/items/{itemId}` (when no codes exist - IDs are UUIDs)
 - `/attachmentFiles`
-- `/orders/{orderId}/items/{itemId}`
 
 ## 8. Critical Requirements
 
@@ -508,35 +584,37 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
    - Scan for computed metrics keywords → `/entities/{id}/metrics`, `/entities/{id}/analytics`
 
 3. **Endpoint Generation (Selective)**:
+   - **FIRST**: Check Prisma schema for unique identifier fields (`code`, etc.)
+   - **THEN**: Choose appropriate path parameter (prefer unique codes over UUID IDs)
    - Evaluate each entity's `stance` property carefully
-   
+
    **For PRIMARY stance entities**:
    - ✅ Generate PATCH `/entities` - Search/filter with complex criteria across ALL instances
-   - ✅ Generate GET `/entities/{id}` - Retrieve specific entity
+   - ✅ Generate GET `/entities/{entityCode}` - Retrieve specific entity (use code if available, otherwise entityId)
    - ✅ Generate POST `/entities` - Create new entity independently
-   - ✅ Generate PUT `/entities/{id}` - Update entity
-   - ✅ Generate DELETE `/entities/{id}` - Delete entity
-   - Example: `bbs_article_comments` is PRIMARY because users need to:
-     * Search all comments by a user across all articles
-     * Moderate comments independently
-     * Edit/delete their comments directly
+   - ✅ Generate PUT `/entities/{entityCode}` - Update entity (use code if available, otherwise entityId)
+   - ✅ Generate DELETE `/entities/{entityCode}` - Delete entity (use code if available, otherwise entityId)
+   - **Path Parameter Selection**: If `enterprises` table has `code` field, use `/enterprises/{enterpriseCode}`, NOT `/enterprises/{enterpriseId}`
+   - **Path Parameter Selection**: If `categories` table has `code` field, use `/categories/{categoryCode}`, NOT `/categories/{categoryId}`
    
    **For SUBSIDIARY stance entities**:
    - ❌ NO independent creation endpoints (managed through parent)
    - ❌ NO independent search across all instances
-   - ✅ MAY have GET `/parent/{parentId}/subsidiaries` - List within parent context
-   - ✅ MAY have POST `/parent/{parentId}/subsidiaries` - Create through parent
-   - ✅ MAY have PUT `/parent/{parentId}/subsidiaries/{id}` - Update through parent
-   - ✅ MAY have DELETE `/parent/{parentId}/subsidiaries/{id}` - Delete through parent
-   - Example: `bbs_article_snapshot_files` - files attached to snapshots, managed via snapshot operations
-   
+   - ✅ MAY have GET `/parent/{parentCode}/subsidiaries` - List within parent context (use parent's code if available)
+   - ✅ MAY have POST `/parent/{parentCode}/subsidiaries` - Create through parent
+   - ✅ MAY have PUT `/parent/{parentCode}/subsidiaries/{subsidiaryCode}` - Update through parent (use subsidiary's code if available)
+   - ✅ MAY have DELETE `/parent/{parentCode}/subsidiaries/{subsidiaryCode}` - Delete through parent
+   - **Use parent's identifier type**: If parent uses `code`, use `/parent/{parentCode}/subsidiaries/{subsidiaryCode}`
+   - Example: `/enterprises/{enterpriseCode}/teams/{teamCode}` (both parent and child have unique codes)
+   - Example: `/enterprises/{enterpriseCode}/addresses/{addressId}` (parent has code, child doesn't)
+
    **For SNAPSHOT stance entities**:
-   - ✅ Generate GET `/entities/{id}` - View historical state
+   - ✅ Generate GET `/entities/{entityCode}` - View historical state (use code if available, otherwise entityId)
    - ✅ Generate PATCH `/entities` - Search/filter historical data (read-only)
    - ❌ NO POST endpoints - Snapshots are created automatically by system
    - ❌ NO PUT endpoints - Historical data is immutable
    - ❌ NO DELETE endpoints - Audit trail must be preserved
-   - Example: `bbs_article_snapshots` - historical states for audit/versioning
+   - **Path Parameter**: Use unique code if snapshot entity has one, otherwise use UUID id
    - Convert names to camelCase (e.g., `attachment-files` → `attachmentFiles`)
    - Ensure paths are clean without prefixes or role indicators
 
@@ -580,58 +658,21 @@ Generate endpoints that serve REAL BUSINESS NEEDS from requirements, not just ex
 | Original Format | Improved Format | Explanation |
 |-----------------|-----------------|-------------|
 | `/attachment-files` | `/attachmentFiles` | Convert kebab-case to camelCase |
-| `/bbs/articles` | `/articles` | Remove domain prefix |
 | `/admin/users` | `/users` | Remove role prefix |
 | `/my/posts` | `/posts` | Remove ownership prefix |
-| `/shopping/sales/snapshots` | `/sales/{saleId}/snapshots` | Remove prefix, add hierarchy |
-| `/bbs/articles/{id}/comments` | `/articles/{articleId}/comments` | Clean nested structure |
-| `/shopping/sales/snapshots/reviews/comments` | `/shopping/sales/{saleId}/reviews/comments` | Remove "snapshot" - it's implementation detail |
-| `/bbs/articles/snapshots` | `/articles` | Remove "snapshot" from all paths |
-| `/bbs/articles/snapshots/files` | `/articles/{articleId}/files` | Always remove "snapshot" from paths |
+| `/enterprises/{id}` | `/enterprises/{enterpriseCode}` | Use unique code instead of UUID ID |
+| `/enterprises/{enterpriseId}/teams/{teamId}` | `/enterprises/{enterpriseCode}/teams/{teamCode}` | Consistent code usage in nested paths |
+| `/categories/{id}` | `/categories/{categoryCode}` | Use unique code when available |
+| `/orders/{id}` | `/orders/{orderId}` | Keep UUID when no code exists |
 
 ## 11. Example Cases
 
 Below are example projects that demonstrate the proper endpoint formatting.
 
-### 11.1. BBS (Bulletin Board System)
+### 11.1. Standard CRUD Pattern (UUID IDs)
 
 ```json
 [
-  {"path": "/articles", "method": "patch"},
-  {"path": "/articles/{articleId}", "method": "get"},
-  {"path": "/articles", "method": "post"},
-  {"path": "/articles/{articleId}", "method": "put"},
-  {"path": "/articles/{articleId}", "method": "delete"},
-  {"path": "/articles/{articleId}/comments", "method": "patch"},
-  {"path": "/articles/{articleId}/comments/{commentId}", "method": "get"},
-  {"path": "/articles/{articleId}/comments", "method": "post"},
-  {"path": "/articles/{articleId}/comments/{commentId}", "method": "put"},
-  {"path": "/articles/{articleId}/comments/{commentId}", "method": "delete"},
-  {"path": "/categories", "method": "patch"},
-  {"path": "/categories/{categoryId}", "method": "get"},
-  {"path": "/categories", "method": "post"},
-  {"path": "/categories/{categoryId}", "method": "put"},
-  {"path": "/categories/{categoryId}", "method": "delete"}
-]
-```
-
-**Key points**: 
-- No domain prefixes (removed "bbs")
-- No role-based prefixes
-- Clean camelCase entity names
-- Hierarchical relationships preserved in nested paths
-- Both simple GET and complex PATCH endpoints for collections
-- Standard CRUD pattern: PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
-
-### 11.2. Shopping Mall
-
-```json
-[
-  {"path": "/products", "method": "patch"},
-  {"path": "/products/{productId}", "method": "get"},
-  {"path": "/products", "method": "post"},
-  {"path": "/products/{productId}", "method": "put"},
-  {"path": "/products/{productId}", "method": "delete"},
   {"path": "/orders", "method": "patch"},
   {"path": "/orders/{orderId}", "method": "get"},
   {"path": "/orders", "method": "post"},
@@ -641,18 +682,45 @@ Below are example projects that demonstrate the proper endpoint formatting.
   {"path": "/orders/{orderId}/items/{itemId}", "method": "get"},
   {"path": "/orders/{orderId}/items", "method": "post"},
   {"path": "/orders/{orderId}/items/{itemId}", "method": "put"},
-  {"path": "/orders/{orderId}/items/{itemId}", "method": "delete"},
-  {"path": "/categories", "method": "patch"},
-  {"path": "/categories/{categoryId}", "method": "get"},
-  {"path": "/categories", "method": "post"},
-  {"path": "/categories/{categoryId}", "method": "put"},
-  {"path": "/categories/{categoryId}", "method": "delete"}
+  {"path": "/orders/{orderId}/items/{itemId}", "method": "delete"}
 ]
 ```
 
-**Key points**: 
-- No shopping domain prefix
-- No role-based access indicators in paths
-- Clean nested resource structure (orders → items)
-- Both simple and complex query patterns for collections
-- Consistent HTTP methods: GET (simple operations), PATCH (complex search), POST (create), PUT (update), DELETE (delete)
+**Key points**:
+- No domain prefixes
+- No role-based prefixes
+- Clean camelCase entity names
+- Hierarchical relationships preserved in nested paths
+- Standard CRUD pattern: PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
+- Use `{orderId}` and `{itemId}` when entities don't have unique code fields
+
+### 11.2. Using Unique Code Identifiers
+
+**Example: Schema where enterprises and teams have unique `code` fields**
+
+```json
+[
+  {"path": "/enterprises", "method": "patch"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "get"},
+  {"path": "/enterprises", "method": "post"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "put"},
+  {"path": "/enterprises/{enterpriseCode}", "method": "delete"},
+  {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"},
+  {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"},
+  {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"},
+  {"path": "/categories", "method": "patch"},
+  {"path": "/categories/{categoryCode}", "method": "get"},
+  {"path": "/categories", "method": "post"},
+  {"path": "/categories/{categoryCode}", "method": "put"},
+  {"path": "/categories/{categoryCode}", "method": "delete"}
+]
+```
+
+**Key points**:
+- **Consistent code usage**: Both `enterprises` and `teams` use unique codes
+- **Deep nesting with codes**: `/enterprises/{enterpriseCode}/teams/{teamCode}`
+- **Schema-driven design**: ALWAYS check schema for unique identifiers before generating paths
+- **Better UX**: URLs like `/enterprises/acme-corp/teams/engineering` are more user-friendly than `/enterprises/123/teams/456`
+- **Categories example**: When `categories` table has unique `code` field, use `{categoryCode}` instead of `{categoryId}`

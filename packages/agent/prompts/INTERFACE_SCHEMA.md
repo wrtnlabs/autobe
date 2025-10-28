@@ -2382,26 +2382,87 @@ interface IShoppingSale {
 
 **Rule**: Use IDs for references, nested objects for compositions.
 
+**CRITICAL: Prefer Unique Code Fields Over UUID IDs in References**
+
+When defining reference fields in Create/Update DTOs, **CHECK THE TARGET SCHEMA FIRST**:
+
+1. **If the referenced entity has a unique `code` field** (or similar: `username`, `slug`, `sku`), use `entity_code` instead of `entity_id`
+2. **Only use `entity_id` (UUID) when the referenced entity has no human-readable unique identifier**
+
+**Path to DTO Consistency**:
+- This rule **MUST** match the path parameter rules from INTERFACE_ENDPOINT.md
+- If endpoint uses `/enterprises/{enterpriseCode}`, then DTOs referencing enterprises MUST use `enterprise_code`
+- If endpoint uses `/orders/{orderId}`, then DTOs referencing orders MUST use `order_id`
+
+**Field Naming Priority for References**:
+- `entity_code` (when target has unique `code` field)
+- `entity_username`, `entity_handle`, `entity_slug` (when target has these)
+- `entity_sku`, `entity_serial_number` (for product entities)
+- `entity_id` (UUID - only when target has no unique code)
+
+**Benefits**:
+- ✅ Consistency with API path parameters
+- ✅ More readable request bodies
+- ✅ Easier debugging (can see what's being referenced)
+- ✅ Better developer experience
+
+**Examples:**
+
+```typescript
+// Example 1: Referencing entity WITH unique code
+// Schema: enterprises(id UUID, code STRING UNIQUE)
+interface ITeam.ICreate {
+  name: string;
+  enterprise_code: string;  // ✅ Use code, NOT enterprise_id
+}
+
+// Example 2: Referencing entities with codes in nested composition
+// Schema: teams(code), projects(code)
+interface IProjectAssignment.ICreate {
+  team_code: string;        // ✅ Use code
+  project_code: string;     // ✅ Use code
+  role: string;
+}
+
+// Example 3: Referencing entity WITHOUT unique code
+// Schema: orders(id UUID) with NO code field
+interface IOrderItem.ICreate {
+  order_id: string;         // ✅ Use UUID id (no code exists)
+  product_sku: string;      // ✅ But product HAS sku, so use it
+  quantity: number;
+}
+
+// Example 4: Mixed references in same DTO
+// Schemas: categories(code), warehouses(id only)
+interface IProduct.ICreate {
+  name: string;
+  category_code: string;    // ✅ Category has code
+  warehouse_id: string;     // ✅ Warehouse has no code (UUID)
+  sku: string;              // ✅ This entity's own unique code
+}
+```
+
 **Two Patterns for Relations in Create DTOs**:
 
-1. **Reference Relations (Association/Aggregation)**: Use ID fields
+1. **Reference Relations (Association/Aggregation)**: Use code fields (or ID if no code)
    - Selecting existing entities
-   - Example: `category_id`, `section_id`
+   - Example: `category_code`, `section_code`, `warehouse_id` (if no code)
 
 2. **Composition Relations**: Use nested ICreate objects
    - Creating entities together in same transaction
    - Example: `attachments`, `units`, `items`
 
 ```typescript
-// ✅ CORRECT: Create DTOs with proper relation handling
+// Example: Schema where categories have `code` field
+// categories(id UUID, code STRING UNIQUE)
 interface IBbsArticle.ICreate {
   title: string;
   content: string;
-  
-  // REFERENCE relations → IDs
-  category_id: string;              // Select existing category
-  parent_id?: string;               // Select parent (if reply)
-  
+
+  // REFERENCE relations → Use codes when available
+  category_code: string;            // ✅ Use code (category has code field)
+  parent_id?: string;               // ✅ Use ID (articles don't have code)
+
   // COMPOSITION relations → Nested objects
   attachments?: IBbsArticleAttachment.ICreate[] {
     filename: string;
@@ -2409,36 +2470,38 @@ interface IBbsArticle.ICreate {
     mimetype: string;
     url: string;
   };
-  
+
   // ❌ NEVER include actor IDs
   // author_id - handled by auth context
 }
 
+// Example: Schema where sections and categories have `code` fields
+// sections(code), categories(code), warehouses(id only)
 interface IShoppingSale.ICreate {
   name: string;
   description: string;
-  
-  // REFERENCE relations → IDs
-  section_id: string;               // Select section
-  category_ids: string[];           // Select categories
-  
+
+  // REFERENCE relations → Use codes when target has them
+  section_code: string;             // ✅ Use code (section has code)
+  category_codes: string[];         // ✅ Use codes (categories have codes)
+
   // COMPOSITION relations → Deep nested creation
   units: IShoppingSaleUnit.ICreate[] {
     name: string;
     price: number;
-    
+
     options: IShoppingSaleUnitOption.ICreate[] {
       name: string;
       type: string;
       candidates: IShoppingSaleUnitOptionCandidate.ICreate[];
     };
-    
+
     stocks: IShoppingSaleUnitStock.ICreate[] {
       quantity: number;
-      warehouse_id: string;         // Reference within composition
+      warehouse_id: string;         // ✅ Use ID (warehouses have no code)
     };
   };
-  
+
   // ❌ NO seller_id (auth handles this)
 }
 

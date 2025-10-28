@@ -336,6 +336,114 @@ interface IBbsArticle.IUpdate {
 
 This matrix becomes our guiding principle for all FK transformations throughout the API.
 
+#### 3.3.3. CRITICAL: Prefer Unique Code Fields Over UUID IDs in Request DTOs
+
+**MANDATORY RULE**: When creating or updating entities that reference other entities, use unique code fields instead of UUID IDs whenever the target entity has one.
+
+**WHY THIS MATTERS**:
+- ✅ **Consistency**: Must match path parameter conventions from INTERFACE_ENDPOINT.md
+- ✅ **Readability**: Request bodies become human-readable and debuggable
+- ✅ **Developer Experience**: Easier to understand what's being referenced
+- ✅ **API Coherence**: If path uses `/enterprises/{enterpriseCode}`, request body should use `enterprise_code`
+
+**Field Naming Priority for References in Create/Update DTOs**:
+1. `entity_code` (when target has unique `code` field)
+2. `entity_username`, `entity_handle`, `entity_slug` (for user/content entities)
+3. `entity_sku`, `entity_serial_number` (for product entities)
+4. `entity_id` (UUID - only when target has no unique code)
+
+**Schema Validation Check**:
+- **ALWAYS check the target Prisma schema** for unique identifier fields BEFORE deciding field names
+- If target has `code STRING @unique`, use `entity_code`
+- If target has only `id String @id @default(uuid())`, use `entity_id`
+
+**Examples:**
+
+```typescript
+// Example 1: Target WITH unique code
+// Schema: enterprises(id UUID, code STRING UNIQUE)
+interface ITeam.ICreate {
+  name: string;
+  enterprise_code: string;  // ✅ Use code, NOT enterprise_id
+}
+
+interface ITeam.IUpdate {
+  name?: string;
+  enterprise_code?: string; // ✅ Can change enterprise reference via code
+}
+
+// Example 2: Multiple references with mixed code availability
+// Schemas: categories(code), warehouses(id only)
+interface IProduct.ICreate {
+  name: string;
+  category_code: string;    // ✅ Category has code
+  warehouse_id: string;     // ✅ Warehouse has no code (use UUID)
+}
+
+interface IProduct.IUpdate {
+  name?: string;
+  category_code?: string;   // ✅ Can change category via code
+  warehouse_id?: string;    // ✅ Can change warehouse via UUID
+}
+
+// Example 3: Array of code references
+// Schema: tags(code)
+interface IBlogPost.ICreate {
+  title: string;
+  content: string;
+  tag_codes: string[];      // ✅ Use codes for tag references
+}
+
+// Example 4: Nested composition with code references
+// Schemas: projects(code), teams(code)
+interface IProjectAssignment.ICreate {
+  project_code: string;     // ✅ Project has code
+  team_code: string;        // ✅ Team has code
+  role: string;
+  responsibilities: IResponsibility.ICreate[];  // Composition
+}
+```
+
+**Validation Checklist During Relation Review**:
+
+For each foreign key field in Create/Update DTOs:
+- [ ] Check target Prisma schema for unique identifier fields
+- [ ] If target has `code` field → Use `entity_code` (NOT `entity_id`)
+- [ ] If target has `username`/`slug`/`sku` → Use appropriate field name
+- [ ] If target has ONLY UUID `id` → Use `entity_id`
+- [ ] Ensure consistency with endpoint path parameters
+- [ ] Document the field with appropriate description mentioning the identifier type
+
+**WRONG vs CORRECT Examples**:
+
+```typescript
+// ❌ WRONG - Using UUID ID when code exists
+// Schema: enterprises(id UUID, code STRING UNIQUE)
+interface ITeam.ICreate {
+  name: string;
+  enterprise_id: string;    // ❌ Should use enterprise_code
+}
+
+// ✅ CORRECT - Using code field
+interface ITeam.ICreate {
+  name: string;
+  enterprise_code: string;  // ✅ Correct
+}
+
+// ❌ WRONG - Inconsistent with endpoint
+// Endpoint: PATCH /enterprises/{enterpriseCode}/teams
+// But DTO uses:
+interface ITeam.ICreate {
+  enterprise_id: string;    // ❌ Inconsistent
+}
+
+// ✅ CORRECT - Consistent with endpoint
+// Endpoint: PATCH /enterprises/{enterpriseCode}/teams
+interface ITeam.ICreate {
+  enterprise_code: string;  // ✅ Consistent
+}
+```
+
 ---
 
 ## 4. The Atomic Operation Principle

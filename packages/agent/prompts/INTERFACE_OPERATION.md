@@ -520,22 +520,64 @@ For each path parameter in the endpoint path:
 - Provide clear, concise description
 - Ensure parameter names match exactly with path
 
+**CRITICAL: Prefer Unique Code Identifiers Over UUID IDs**
+
+When defining path parameters, **CHECK THE PRISMA SCHEMA FIRST**:
+
+1. **If the entity has a unique `code` field** (or similar: `username`, `slug`, `sku`), use it as the parameter instead of UUID `id`
+2. **Only use UUID `id` when no human-readable unique identifier exists**
+
+**Path Parameter Selection Priority**:
+- `code` (most common business identifier) → Use `{entityCode}`
+- `username`, `handle`, `slug` → Use `{username}`, `{handle}`, `{slug}`
+- `sku`, `serial_number` → Use `{sku}`, `{serialNumber}`
+- `id` (UUID) → Use `{entityId}` (only when no unique code exists)
+
+**Benefits**:
+- ✅ More readable URLs (e.g., `/enterprises/acme-corp` vs `/enterprises/550e8400-e29b-41d4-a716-446655440000`)
+- ✅ Better developer experience and easier debugging
+
 **Naming Convention Rules**:
-- Valid: `userId`, `orderId`, `productId`, `categoryName`
+- Valid: `userId`, `orderId`, `productId`, `enterpriseCode`, `teamCode`, `username`
 - Invalid: `user_id` (snake_case), `user-id` (kebab-case), `UserId` (PascalCase)
 
-Example:
+**Examples:**
+
 ```typescript
-// For path: "/users/{userId}/posts/{postId}"
+// Example 1: Entity with unique code field
+// Schema: enterprises(id UUID, code STRING UNIQUE)
+// Path: "/enterprises/{enterpriseCode}"
 parameters: [
   {
-    name: "userId",  // camelCase required
-    description: "Unique identifier of the target user",
-    schema: { type: "string", format: "uuid" }
+    name: "enterpriseCode",  // Use code, not enterpriseId
+    description: "Unique business identifier code of the target enterprise",
+    schema: { type: "string" }  // String type for code
+  }
+]
+
+// Example 2: Nested entities both with codes
+// Schema: enterprises(code), teams(enterprise_id, code UNIQUE per enterprise)
+// Path: "/enterprises/{enterpriseCode}/teams/{teamCode}"
+parameters: [
+  {
+    name: "enterpriseCode",
+    description: "Unique business identifier code of the target enterprise",
+    schema: { type: "string" }
   },
   {
-    name: "postId",  // camelCase required
-    description: "Unique identifier of the target post",
+    name: "teamCode",
+    description: "Unique business identifier code of the target team within the enterprise",
+    schema: { type: "string" }
+  }
+]
+
+// Example 3: Entity WITHOUT unique code (fallback to UUID)
+// Schema: orders(id UUID) with NO code field
+// Path: "/orders/{orderId}"
+parameters: [
+  {
+    name: "orderId",  // UUID because no code exists
+    description: "Unique identifier of the target order",
     schema: { type: "string", format: "uuid" }
   }
 ]
