@@ -60,7 +60,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
   data: {
     id: v4(),
     shopping_seller_id: seller.id,  // Foreign key to actor
-    ip: props.body.ip ?? props.ip,
+    ip: props.body.ip ?? props.ip,  // IP is optional - use client-provided (SSR case) or server-extracted
     href: props.body.href,
     referrer: props.body.referrer,
     created_at: toISOStringSafe(new Date()),
