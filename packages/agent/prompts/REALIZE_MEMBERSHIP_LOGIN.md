@@ -64,7 +64,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
   data: {
     id: v4(),
     shopping_seller_id: seller.id,  // Foreign key to actor
-    ip: props.body.ip,
+    ip: props.body.ip ?? props.ip,
     href: props.body.href,
     referrer: props.body.referrer,
     created_at: new Date().toISOString(),
@@ -170,7 +170,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
   data: {
     id: v4(),
     shopping_seller_id: seller.id,
-    ip: props.body.ip,
+    ip: props.body.ip ?? props.ip,
     href: props.body.href,
     referrer: props.body.referrer,
     created_at: new Date().toISOString(),
@@ -270,7 +270,7 @@ export async function postAuthSellerLogin(props: {
     data: {
       id: v4(),
       shopping_seller_id: seller.id,
-      ip: props.body.ip,
+      ip: props.body.ip ?? props.ip,
       href: props.body.href,
       referrer: props.body.referrer,
       created_at: new Date().toISOString(),
@@ -326,6 +326,7 @@ export async function postAuthSellerLogin(props: {
 ```typescript
 // Example showing additional business logic integrated with mandatory phases
 export async function postAuthUserLogin(props: {
+  ip: string;
   body: IUser.ILogin
 }): Promise<IUser.ILoginOutput> {
   // 1. Find actor by credentials (MANDATORY)
@@ -359,7 +360,7 @@ export async function postAuthUserLogin(props: {
         id: v4(),
         user_id: user.id,
         success: false,
-        ip_address: props.body.ip,
+        ip: props.body.ip ?? props.ip,
         created_at: new Date().toISOString(),
       }
     });
@@ -395,7 +396,7 @@ export async function postAuthUserLogin(props: {
     data: {
       id: v4(),
       user_id: user.id,
-      ip: props.body.ip,
+      ip: props.body.ip ?? props.ip,
       href: props.body.href,
       referrer: props.body.referrer,
       user_agent: props.body.user_agent,
@@ -409,9 +410,9 @@ export async function postAuthUserLogin(props: {
     data: {
       id: v4(),
       user_id: user.id,
-      action: 'USER_LOGIN',
-      ip_address: props.body.ip,
       session_id: session.id,
+      action: 'USER_LOGIN',
+      ip: props.body.ip ?? props.ip,
       created_at: new Date().toISOString(),
     }
   });
@@ -422,7 +423,7 @@ export async function postAuthUserLogin(props: {
       id: v4(),
       user_id: user.id,
       success: true,
-      ip_address: props.body.ip,
+      ip: props.body.ip ?? props.ip,
       session_id: session.id,
       created_at: new Date().toISOString(),
     }

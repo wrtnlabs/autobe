@@ -36,13 +36,14 @@ export const writeRealizeControllers = async (
         );
         if (func === undefined || operate === undefined) return method; // unreachable
 
-        const auth: AutoBeRealizeAuthorization | undefined =
+        const authorization: AutoBeRealizeAuthorization | undefined =
           operate.authorizationActor
             ? props.authorizations.find(
                 (d) => d.actor.name === operate.authorizationActor,
               )
             : undefined;
-        if (operate.authorizationActor && auth === undefined) return method; // unreachable
+        if (operate.authorizationActor && authorization === undefined)
+          return method; // unreachable
 
         ctx.importer.external({
           type: "instance",
@@ -114,51 +115,15 @@ export const writeRealizeControllers = async (
           method.name,
           method.questionToken,
           method.typeParameters,
-          auth
+          authorization
             ? [
-                ts.factory.createParameterDeclaration(
-                  [
-                    ts.factory.createDecorator(
-                      ts.factory.createCallExpression(
-                        ts.factory.createIdentifier(
-                          ctx.importer.external({
-                            type: "instance",
-                            library: path
-                              .relative(
-                                ctx.controller.location,
-                                auth.decorator.location,
-                              )
-                              .replaceAll(path.sep, "/")
-                              .split(".ts")[0],
-                            name: auth.decorator.name,
-                          }),
-                        ),
-                        undefined,
-                        [],
-                      ),
-                    ),
-                  ],
-                  undefined,
-                  auth.actor.name,
-                  undefined,
-                  ts.factory.createTypeReferenceNode(
-                    ctx.importer.external({
-                      type: "instance",
-                      library: path
-                        .relative(
-                          ctx.controller.location,
-                          auth.payload.location,
-                        )
-                        .replaceAll(path.sep, "/")
-                        .split(".ts")[0],
-                      name: auth.payload.name,
-                    }),
-                  ),
-                  undefined,
-                ),
+                createAuthorizationParameter(ctx, authorization),
                 ...method.parameters,
               ]
-            : method.parameters,
+            : operate.authorizationType === "login" ||
+                operate.authorizationType === "join"
+              ? [createIpParameter(ctx), ...method.parameters]
+              : method.parameters,
           method.type,
           ts.factory.createBlock([tryCatch]),
         );
@@ -174,3 +139,69 @@ export const writeRealizeControllers = async (
   );
   return Object.fromEntries(entries);
 };
+
+const createAuthorizationParameter = (
+  ctx: NestiaMigrateNestMethodProgrammer.IContext,
+  authorization: AutoBeRealizeAuthorization,
+) =>
+  ts.factory.createParameterDeclaration(
+    [
+      ts.factory.createDecorator(
+        ts.factory.createCallExpression(
+          ts.factory.createIdentifier(
+            ctx.importer.external({
+              type: "instance",
+              library: path
+                .relative(
+                  ctx.controller.location,
+                  authorization.decorator.location,
+                )
+                .replaceAll(path.sep, "/")
+                .split(".ts")[0],
+              name: authorization.decorator.name,
+            }),
+          ),
+          undefined,
+          [],
+        ),
+      ),
+    ],
+    undefined,
+    authorization.actor.name,
+    undefined,
+    ts.factory.createTypeReferenceNode(
+      ctx.importer.external({
+        type: "instance",
+        library: path
+          .relative(ctx.controller.location, authorization.payload.location)
+          .replaceAll(path.sep, "/")
+          .split(".ts")[0],
+        name: authorization.payload.name,
+      }),
+    ),
+    undefined,
+  );
+
+const createIpParameter = (ctx: NestiaMigrateNestMethodProgrammer.IContext) =>
+  ts.factory.createParameterDeclaration(
+    [
+      ts.factory.createDecorator(
+        ts.factory.createCallExpression(
+          ts.factory.createIdentifier(
+            ctx.importer.external({
+              type: "instance",
+              library: "@nestjs/common",
+              name: "Ip",
+            }),
+          ),
+          undefined,
+          [],
+        ),
+      ),
+    ],
+    undefined,
+    "ip",
+    undefined,
+    ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+    undefined,
+  );

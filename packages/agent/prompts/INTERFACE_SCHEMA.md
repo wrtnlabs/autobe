@@ -920,15 +920,16 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 **CRITICAL REQUIREMENT**: For authentication/identity operations where **the actor themselves** are signing up or logging in, the request body DTO MUST include session context fields.
 
-**Why This Is Mandatory**:
-- Session records in the database require `ip`, `href`, and `referrer` fields (as defined in the Session Table Pattern)
+**Why Session Context Fields Are Important**:
+- Session records in the database store `ip`, `href`, and `referrer` fields (as defined in the Session Table Pattern)
 - These fields enable proper audit trails and security monitoring
-- Without these fields, session records cannot be properly populated
+- `href` and `referrer` are MANDATORY (client must provide, server cannot infer)
+- `ip` is OPTIONAL (server can extract from request, but client may provide for SSR cases)
 - These are NOT authentication fields - they are connection context metadata
 
 **CRITICAL DISTINCTION - When to Include Session Context Fields**:
 
-✅ **INCLUDE session context fields** (ip, href, referrer):
+✅ **INCLUDE session context fields** (href and referrer as required, ip as optional):
 - When the **actor themselves** are performing the operation (self-signup, self-login)
 - Session is created **immediately** for the actor
 - Examples:
@@ -961,10 +962,10 @@ interface IUser.ILogin {
   email: string;
   password: string;
 
-  // SESSION CONTEXT FIELDS - MANDATORY for self-login
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS - for self-login
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Self-Signup Operation (pattern 1: IJoin)
@@ -974,10 +975,10 @@ interface ICustomer.IJoin {
   name: string;
   // ... other customer fields
 
-  // SESSION CONTEXT FIELDS - MANDATORY for self-signup
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS - for self-signup
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Self-Signup Operation (pattern 2: ICreate without authorization)
@@ -988,10 +989,10 @@ interface IUser.ICreate {
   name: string;
   // ... other user fields
 
-  // SESSION CONTEXT FIELDS - MANDATORY only if self-signup
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS - only if self-signup
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Admin-Created Account (no session context)
@@ -1025,21 +1026,21 @@ interface IUser.ICreate {
         "description": "User password (plain text for verification)"
       },
       "ip": {
-        "type": "string",
-        "description": "Client IP address for session tracking"
+        "type": ["string", "null"],
+        "description": "Client IP address for session tracking (OPTIONAL - server can extract, but client may provide for SSR)"
       },
       "href": {
         "type": "string",
         "format": "uri",
-        "description": "Connection URL (current page URL)"
+        "description": "Connection URL (current page URL) - MANDATORY"
       },
       "referrer": {
         "type": "string",
         "format": "uri",
-        "description": "Referrer URL (previous page URL)"
+        "description": "Referrer URL (previous page URL) - MANDATORY"
       }
     },
-    "required": ["email", "password", "ip", "href", "referrer"]
+    "required": ["email", "password", "href", "referrer"]
   },
   "ICustomer.IJoin": {
     "type": "object",
@@ -1058,21 +1059,21 @@ interface IUser.ICreate {
         "description": "Customer name"
       },
       "ip": {
-        "type": "string",
-        "description": "Client IP address for session tracking"
+        "type": ["string", "null"],
+        "description": "Client IP address for session tracking (OPTIONAL - server can extract, but client may provide for SSR)"
       },
       "href": {
         "type": "string",
         "format": "uri",
-        "description": "Connection URL (current page URL)"
+        "description": "Connection URL (current page URL) - MANDATORY"
       },
       "referrer": {
         "type": "string",
         "format": "uri",
-        "description": "Referrer URL (previous page URL)"
+        "description": "Referrer URL (previous page URL) - MANDATORY"
       }
     },
-    "required": ["email", "password", "name", "ip", "href", "referrer"]
+    "required": ["email", "password", "name", "href", "referrer"]
   }
 }
 ```
@@ -1104,15 +1105,16 @@ interface IUser.ICreate {
 
 **Security Note**:
 - These are NOT authentication fields that come from JWT
-- These are connection metadata that MUST be provided by the client
+- These are connection metadata provided by the client
+- `href` and `referrer` MUST be provided by client (server cannot infer)
+- `ip` is OPTIONAL (server can extract, but client may provide for SSR)
 - The backend uses these to populate the `{actor}_sessions` table
-- Without these fields, the session table pattern cannot be properly implemented
 
 **Validation Rules**:
-- `ip`: Required string, valid IP address format (IPv4 or IPv6)
+- `ip`: Optional `string | null | undefined`, valid IP address format (IPv4 or IPv6) when provided
 - `href`: Required string, valid URI format
 - `referrer`: Required string, valid URI format (can be empty string for direct access)
-- All three fields are REQUIRED only in self-signup/self-login DTOs
+- Include these fields only in self-signup/self-login DTOs (ip as optional, href/referrer as required)
 
 ---
 
@@ -4205,11 +4207,12 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **No authentication bypass** - User identity MUST come from JWT/session, not request body
 
 ### ✅ Session Context Fields for Authentication Operations
-- [ ] **Self-login includes session context** - `IEntity.ILogin` MUST include `ip`, `href`, `referrer` fields
-- [ ] **Self-signup includes session context** - `IEntity.IJoin` MUST include `ip`, `href`, `referrer` fields
+- [ ] **Self-login includes session context** - `IEntity.ILogin` MUST include `href`, `referrer` (required) and `ip` (optional)
+- [ ] **Self-signup includes session context** - `IEntity.IJoin` MUST include `href`, `referrer` (required) and `ip` (optional)
 - [ ] **Context-aware for ICreate** - Self-signup `IEntity.ICreate` (authorizationActor: null) includes session context
 - [ ] **Admin-created accounts exclude session context** - `IEntity.ICreate` with admin authorization does NOT include `ip`, `href`, `referrer`
-- [ ] **Session fields are required** - All three session context fields marked as required in self-authentication DTOs
+- [ ] **IP field is optional** - `ip` field typed as `ip?: string | null | undefined` (server can extract)
+- [ ] **href/referrer are required** - `href` and `referrer` marked as required strings in self-authentication DTOs
 - [ ] **Proper field descriptions** - Session context fields described as connection metadata, not authentication data
 
 ### ✅ System Field Protection

@@ -837,7 +837,8 @@ interface IBbsArticle.ICreate {
 **ALLOWED Fields**:
 - `email` or `username`
 - `password` (plain text for verification)
-- **MANDATORY SESSION CONTEXT FIELDS**: `ip`, `href`, `referrer` (see section 6.5.1 below)
+- **MANDATORY SESSION CONTEXT FIELDS**: `href`, `referrer` (see section 6.5.1 below)
+- **OPTIONAL SESSION CONTEXT FIELD**: `ip` (server can extract, but client may provide for SSR cases)
 
 **FORBIDDEN Fields**:
 - NO `user_id` (choosing who to login as)
@@ -857,19 +858,20 @@ interface IUser.IAuthorized {
 }
 ```
 
-#### 6.5.1. Session Context Fields (MANDATORY for Self-Authentication Operations)
+#### 6.5.1. Session Context Fields (for Self-Authentication Operations)
 
 **CRITICAL REQUIREMENT**: Authentication operations where **the actor themselves** are signing up or logging in MUST include session context fields in their request body DTOs.
 
-**Why This Is Absolutely Mandatory**:
-- Session records in the database REQUIRE `ip`, `href`, and `referrer` fields
+**Why Session Context Fields Are Important**:
+- Session records in the database store `ip`, `href`, and `referrer` fields
 - These fields are part of the session table schema (as defined in PRISMA_SCHEMA.md)
-- Without these fields, the backend CANNOT create session records properly
 - These enable audit trails, security monitoring, and compliance requirements
+- `href` and `referrer` are MANDATORY (client must provide)
+- `ip` is OPTIONAL (server can extract from request, but client may provide for SSR cases)
 
 **CRITICAL DISTINCTION - When Session Context is Required**:
 
-✅ **REQUIRE session context fields** (ip, href, referrer):
+✅ **REQUIRE session context fields** (href, referrer) and **ALLOW OPTIONAL** (ip):
 - When the **actor themselves** are performing self-signup or self-login
 - Session is created **immediately** for the actor
 - Examples:
@@ -901,10 +903,10 @@ interface IUser.ILogin {
   email: string;
   password: string;
 
-  // SESSION CONTEXT FIELDS - ABSOLUTELY MANDATORY
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Self-Signup Operation Pattern 1: IJoin (ALWAYS includes session context)
@@ -914,10 +916,10 @@ interface ICustomer.IJoin {
   name: string;
   // ... other customer fields
 
-  // SESSION CONTEXT FIELDS - ABSOLUTELY MANDATORY
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Self-Signup Operation Pattern 2: ICreate without admin authorization
@@ -928,10 +930,10 @@ interface IUser.ICreate {
   name: string;
   // ... other user fields
 
-  // SESSION CONTEXT FIELDS - MANDATORY for self-signup
-  ip: string;       // Client IP address
-  href: string;     // Connection URL (current page URL)
-  referrer: string; // Referrer URL (previous page URL)
+  // SESSION CONTEXT FIELDS - for self-signup
+  ip?: string | null | undefined;  // Client IP address (OPTIONAL - server can extract, but client may provide for SSR)
+  href: string;                     // Connection URL (current page URL) - MANDATORY
+  referrer: string;                 // Referrer URL (previous page URL) - MANDATORY
 }
 
 // Admin-Created Account (NO session context)
@@ -950,7 +952,8 @@ interface IUser.ICreate {
 
 **Security Classification - CRITICAL DISTINCTION**:
 - ✅ **NOT authentication context** - These are NOT actor identity fields like `user_id` or `member_id`
-- ✅ **Connection metadata** - Client MUST provide these (cannot be inferred server-side)
+- ✅ **Connection metadata** - `href` and `referrer` MUST be provided by client (cannot be inferred server-side)
+- ✅ **IP address handling** - Server can extract IP from request, but client MAY provide for SSR cases
 - ✅ **Required for session creation** - Backend needs these to populate `{actor}_sessions` table
 - ✅ **Different from JWT fields** - These are not extracted from authentication tokens
 
@@ -964,9 +967,9 @@ Unlike actor identity fields which MUST be DELETED:
 - ❌ DELETE: `author_id`, `creator_id`, `owner_id` (current user from JWT)
 
 Session context fields MUST be RETAINED:
-- ✅ KEEP: `ip` - Client IP address (connection metadata)
-- ✅ KEEP: `href` - Connection URL (connection metadata)
-- ✅ KEEP: `referrer` - Referrer URL (connection metadata)
+- ✅ KEEP: `ip?: string | null | undefined` - Client IP address (OPTIONAL - server can extract, but allow for SSR)
+- ✅ KEEP: `href: string` - Connection URL (MANDATORY - connection metadata)
+- ✅ KEEP: `referrer: string` - Referrer URL (MANDATORY - connection metadata)
 
 **Why the Different Treatment?**:
 1. **Actor identity fields** (user_id, etc.):
@@ -977,10 +980,10 @@ Session context fields MUST be RETAINED:
 
 2. **Session context fields** (ip, href, referrer):
    - Come from HTTP connection metadata
-   - Server cannot always reliably extract these (proxies, CDNs, etc.)
-   - Client MUST provide for accurate session tracking
+   - `href` and `referrer`: Client MUST provide (server cannot infer)
+   - `ip`: Server can extract from request, but client MAY provide for SSR scenarios
    - Required to create session records in `{actor}_sessions` table
-   - **Rule**: REQUIRE in authentication request DTOs
+   - **Rule**: Include in authentication request DTOs (ip as optional, href/referrer as required)
 
 **How to Determine if Session Context is Required (Step-by-Step)**:
 
@@ -1009,19 +1012,20 @@ Session context fields MUST be RETAINED:
 - ❌ Regular entity creation (non-actor entities)
 
 **Validation Rules**:
-- `ip`: Required string, valid IP address format (IPv4 or IPv6)
+- `ip`: Optional `string | null | undefined`, valid IP address format (IPv4 or IPv6) when provided
 - `href`: Required string, valid URI format
 - `referrer`: Required string, valid URI format (can be empty string for direct access)
-- All three fields MUST be marked as required ONLY in self-authentication DTOs
+- Include these fields ONLY in self-authentication DTOs (ip as optional, href/referrer as required)
 
 **Security Review Checklist for Auth DTOs**:
-- [ ] ✅ **Self-authentication** request DTOs (ILogin, IJoin, self-signup ICreate) INCLUDE `ip`, `href`, `referrer`
+- [ ] ✅ **Self-authentication** request DTOs (ILogin, IJoin, self-signup ICreate) INCLUDE session context fields
+- [ ] ✅ `ip` field is typed as `ip?: string | null | undefined` (OPTIONAL)
+- [ ] ✅ `href` and `referrer` fields are required strings
 - [ ] ❌ **Admin-created** account DTOs DO NOT include `ip`, `href`, `referrer`
 - [ ] ❌ Authentication request DTOs DO NOT include actor identity fields (`user_id`, `member_id`, etc.)
 - [ ] ❌ Authentication request DTOs DO NOT include existing session references (`*_session_id`)
 - [ ] ❌ Authentication request DTOs DO NOT include `password_hashed` (use `password` only)
 - [ ] ❌ Authentication response DTOs DO NOT expose passwords or secrets
-- [ ] ✅ Session context fields in self-authentication DTOs are marked as required
 - [ ] ✅ Session context fields have proper descriptions indicating they are connection metadata
 - [ ] ✅ Correctly distinguished between self-signup and admin-created account patterns
 

@@ -60,7 +60,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
   data: {
     id: v4(),
     shopping_seller_id: seller.id,  // Foreign key to actor
-    ip: props.body.ip,
+    ip: props.body.ip ?? props.ip,
     href: props.body.href,
     referrer: props.body.referrer,
     created_at: toISOStringSafe(new Date()),
@@ -177,7 +177,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
   data: {
     id: v4(),
     shopping_seller_id: seller.id,
-    ip: props.body.ip,
+    ip: props.body.ip ?? props.ip,
     href: props.body.href,
     referrer: props.body.referrer,
     created_at: new Date().toISOString(),
@@ -237,7 +237,8 @@ const token = {
 ```typescript
 // Minimal example showing only mandatory phases
 export async function postAuthSellerJoin(props: {
-  body: IShoppingSeller.IJoin
+  ip: string;
+  body: IShoppingSeller.IJoin;
 }): Promise<IShoppingSeller.IJoinOutput> {
   // 1. Check for duplicate account
   const existing = await MyGlobal.prisma.shopping_sellers.findFirst({
@@ -268,7 +269,7 @@ export async function postAuthSellerJoin(props: {
     data: {
       id: v4(),
       shopping_seller_id: seller.id,
-      ip: props.body.ip,
+      ip: props.body.ip ?? props.ip,
       href: props.body.href,
       referrer: props.body.referrer,
       created_at: toISOStringSafe(new Date()),
@@ -324,6 +325,7 @@ export async function postAuthSellerJoin(props: {
 ```typescript
 // Example showing additional business logic integrated with mandatory phases
 export async function postAuthUserJoin(props: {
+  ip: string;
   body: IUser.IJoin
 }): Promise<IUser.IJoinOutput> {
   // 1. Validation and duplicate check
@@ -376,7 +378,7 @@ export async function postAuthUserJoin(props: {
       id: v4(),
       user_id: user.id,
       action: 'USER_REGISTERED',
-      ip_address: props.body.ip,
+      ip_address: props.body.ip ?? props.ip,
       created_at: new Date().toISOString(),
     }
   });
@@ -388,7 +390,7 @@ export async function postAuthUserJoin(props: {
     data: {
       id: v4(),
       user_id: user.id,
-      ip: props.body.ip,
+      ip: props.body.ip ?? props.ip,
       href: props.body.href,
       referrer: props.body.referrer,
       created_at: toISOStringSafe(new Date()),
