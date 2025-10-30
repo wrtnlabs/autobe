@@ -76,7 +76,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
     {
       value: null,
     };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial, tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationCorrect",
     histories: transformRealizeAuthorizationCorrectHistories(
       ctx,
@@ -126,7 +126,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
     created_at: new Date().toISOString(),
     authorization: result,
     result: compiled,
-    aggregate,
+    trial,
     tokenUsage,
     step: ctx.state().test?.step ?? 0,
   });

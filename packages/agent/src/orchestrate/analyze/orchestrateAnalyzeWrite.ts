@@ -28,7 +28,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "analyzeWrite",
     controller: createController<Model>({
       model: ctx.model,
@@ -50,7 +50,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       content: pointer.value.content,
     },
     tokenUsage,
-    aggregate,
+    trial: aggregate,
     step: (ctx.state().analyze?.step ?? -1) + 1,
     total: progress.total,
     completed: ++progress.completed,

@@ -62,7 +62,7 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceAuthorization",
     histories: transformInterfaceAuthorizationsHistories({
       state: ctx.state(),
@@ -88,7 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     operations: pointer.value.operations,
     completed: ++props.progress.completed,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,

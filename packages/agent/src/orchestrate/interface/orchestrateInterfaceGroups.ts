@@ -23,7 +23,7 @@ export async function orchestrateInterfaceGroups<
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceGroup",
     histories: transformInterfaceGroupHistories({
       state: ctx.state(),
@@ -44,7 +44,7 @@ export async function orchestrateInterfaceGroups<
     id: v7(),
     created_at: start.toISOString(),
     groups: pointer.value.groups,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
   } satisfies AutoBeInterfaceGroupEvent;

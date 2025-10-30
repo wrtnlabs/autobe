@@ -214,7 +214,7 @@ async function step<Model extends ILlmSchema.Model>(
   };
 
   const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "realizeCorrect",
     controller: createController({
       model: ctx.model,
@@ -278,7 +278,7 @@ async function step<Model extends ILlmSchema.Model>(
     id: v7(),
     location: props.scenario.location,
     content: pointer.value.revise.final ?? pointer.value.draft,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,

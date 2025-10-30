@@ -71,7 +71,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceEndpoint",
     histories: transformInterfaceEndpointHistories({
       state: ctx.state(),
@@ -100,7 +100,7 @@ async function process<Model extends ILlmSchema.Model>(
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     ).toJSON(),
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     created_at: start.toISOString(),
     step: ctx.state().analyze?.step ?? 0,

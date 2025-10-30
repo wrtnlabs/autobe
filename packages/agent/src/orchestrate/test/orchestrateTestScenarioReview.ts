@@ -42,7 +42,7 @@ async function review<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const { aggregate, tokenUsage } = await ctx.conversate({
+    const { trial, tokenUsage } = await ctx.conversate({
       source: "testScenarioReview",
       controller: createController({
         model: ctx.model,
@@ -70,7 +70,7 @@ async function review<Model extends ILlmSchema.Model>(
     ctx.dispatch({
       type: "testScenarioReview",
       id: v7(),
-      aggregate,
+      trial,
       tokenUsage,
       total: props.progress.total,
       completed: props.progress.completed,

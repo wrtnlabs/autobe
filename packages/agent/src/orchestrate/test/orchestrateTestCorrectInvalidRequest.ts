@@ -63,7 +63,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   > = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
     histories: await transformTestCorrectInvalidRequestHistories(
       null!,
@@ -112,7 +112,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       content: write.script,
     },
     result: event.result,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     think: pointer.value.think,

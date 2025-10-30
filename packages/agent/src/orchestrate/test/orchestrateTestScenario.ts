@@ -147,7 +147,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     ctx.state().interface?.authorizations ?? [];
 
   try {
-    const { aggregate, tokenUsage } = await ctx.conversate({
+    const { trial, tokenUsage } = await ctx.conversate({
       source: "testScenario",
       histories: transformTestScenarioHistories({
         state: ctx.state(),
@@ -184,7 +184,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     ctx.dispatch({
       type: "testScenario",
       id: v7(),
-      aggregate,
+      trial,
       tokenUsage,
       scenarios: pointer.value
         .map((v) =>

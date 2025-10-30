@@ -59,7 +59,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "prismaSchema",
     histories: transformPrismaSchemaHistories({
       analysis:
@@ -97,7 +97,7 @@ async function process<Model extends ILlmSchema.Model>(
       namespace: props.component.namespace,
       models: pointer.value.models,
     },
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     completed: (props.completed.value += props.component.tables.length),
     total: props.total,

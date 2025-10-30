@@ -80,7 +80,7 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationWrite",
     histories: transformRealizeAuthorizationHistories(ctx, actor),
     controller: createController({
@@ -129,7 +129,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     created_at: new Date().toISOString(),
     authorization: authorization,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     completed: ++progress.completed,
     total: progress.total,

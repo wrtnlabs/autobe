@@ -133,7 +133,7 @@ async function process<Model extends ILlmSchema.Model>(
   > | null> = {
     value: null,
   };
-  const { aggregate, tokenUsage } = await ctx.conversate({
+  const { trial: aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceSchema",
     histories: transformInterfaceSchemaHistories({
       state: ctx.state(),
@@ -187,7 +187,7 @@ async function process<Model extends ILlmSchema.Model>(
     type: "interfaceSchema",
     id: v7(),
     schemas,
-    aggregate,
+    trial: aggregate,
     tokenUsage,
     completed: (props.progress.completed += Object.keys(schemas).length),
     total: (props.progress.total += Object.keys(schemas).filter(

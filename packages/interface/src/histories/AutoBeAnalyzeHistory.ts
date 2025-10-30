@@ -52,6 +52,16 @@ export interface AutoBeAnalyzeHistory
   prefix: string;
 
   /**
+   * List of actors identified during the requirements analysis process.
+   *
+   * Contains the various user actors, personas, or stakeholder types that were
+   * identified and analyzed during the requirements gathering phase. These
+   * actors help define different user perspectives, access levels, and
+   * functional requirements needed for the system being developed.
+   */
+  actors: AutoBeAnalyzeActor[];
+
+  /**
    * Generated requirements analysis report files as key-value pairs.
    *
    * Contains the complete set of markdown documents that comprise the
@@ -76,14 +86,4 @@ export interface AutoBeAnalyzeHistory
    * changes.
    */
   completed_at: string & tags.Format<"date-time">;
-
-  /**
-   * List of actors identified during the requirements analysis process.
-   *
-   * Contains the various user actors, personas, or stakeholder types that were
-   * identified and analyzed during the requirements gathering phase. These
-   * actors help define different user perspectives, access levels, and
-   * functional requirements needed for the system being developed.
-   */
-  actors: AutoBeAnalyzeActor[];
 }

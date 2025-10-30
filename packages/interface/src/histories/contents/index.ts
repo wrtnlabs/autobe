@@ -20,4 +20,4 @@ export * from "./AutoBeRealizeAuthorizationDecorator";
 export * from "./AutoBeRealizeAuthorizationPayload";
 export * from "./AutoBeRealizeAuthorizationProvider";
 
-export * from "./AutoBeFunctionCallingAggregate";
+export * from "./AutoBeFunctionCallingTrial";
