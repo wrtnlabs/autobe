@@ -19,3 +19,5 @@ export * from "./AutoBeRealizeAuthorizationCorrect";
 export * from "./AutoBeRealizeAuthorizationDecorator";
 export * from "./AutoBeRealizeAuthorizationPayload";
 export * from "./AutoBeRealizeAuthorizationProvider";
+
+export * from "./AutoBeFunctionCallingAggregate";

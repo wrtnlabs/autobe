@@ -1,3 +1,4 @@
+import { AutoBeFunctionCallingAggregate } from "../histories";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 
 /**
@@ -31,4 +32,20 @@ export interface AutoBeTokenUsageEventBase {
    * automated backend development process.
    */
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
+
+  /**
+   * Aggregated function calling statistics for the current operation.
+   *
+   * Tracks the history of function calling attempts including total attempts,
+   * successful calls, validation failures, and invalid JSON responses. This
+   * aggregate data enables monitoring of AI agent reliability, identifying
+   * problematic function calling patterns, and measuring the effectiveness of
+   * self-healing loops in the AutoBE pipeline.
+   *
+   * The statistics help diagnose issues where agents struggle with specific
+   * tools, optimize system prompts to reduce validation failures, and ensure
+   * robust autonomous operation across the waterfall-spiral development
+   * process.
+   */
+  aggregate: AutoBeFunctionCallingAggregate;
 }

@@ -5,6 +5,7 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAssistantMessageEvent,
   AutoBeEvent,
+  AutoBeFunctionCallingAggregate,
   AutoBeHistory,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceHistory,
@@ -86,7 +87,13 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
       return message;
     },
     conversate: async (next, closure) => {
-      const trial = {
+      const aggregate: AutoBeFunctionCallingAggregate = {
+        attempt: 0,
+        success: 0,
+        validationFailure: 0,
+        invalidJson: 0,
+      };
+      const state = {
         request: 0,
         response: 0,
         timeout: 0,
@@ -113,6 +120,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event) => {
+          ++aggregate.attempt;
           if (next.enforceFunctionCall === true && event.body.tools)
             event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
@@ -123,7 +131,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             ...event,
             type: "vendorRequest",
             source: next.source,
-            retry: trial.request++,
+            retry: state.request++,
           });
         });
         agent.on("response", async (event) => {
@@ -132,11 +140,12 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               ...event,
               type: "vendorResponse",
               source: next.source,
-              retry: trial.response++,
+              retry: state.response++,
             })
             .catch(() => {});
         });
         agent.on("jsonParseError", (event) => {
+          ++aggregate.invalidJson;
           void props
             .dispatch({
               ...event,
@@ -145,6 +154,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             .catch(() => {});
         });
         agent.on("validate", (event) => {
+          ++aggregate.validationFailure;
           void props
             .dispatch({
               type: "jsonValidateError",
@@ -194,6 +204,17 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
           ]);
 
+        const success = (
+          histories: MicroAgenticaHistory<Model>[],
+          tokenUsage: IAutoBeTokenUsageJson.IComponent,
+        ) => {
+          ++aggregate.success;
+          return {
+            histories: histories,
+            tokenUsage,
+            aggregate,
+          };
+        };
         if (result.type === "error") throw result.error;
         else if (result.type === "timeout") {
           void props
@@ -202,7 +223,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               id: v7(),
               source: next.source,
               timeout: config.timeout!,
-              retry: trial.timeout++,
+              retry: state.timeout++,
               created_at: new Date().toISOString(),
             })
             .catch(() => {});
@@ -265,18 +286,12 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
                   (h) => h.type === "execute" && h.success === true,
                 )
               )
-                return {
-                  histories: newHistories,
-                  tokenUsage: newTokenUsage,
-                };
+                return success(newHistories, newTokenUsage);
             }
           }
           failure();
         }
-        return {
-          histories: result.histories,
-          tokenUsage,
-        };
+        return success(result.histories, tokenUsage);
       };
       if (next.enforceFunctionCall === true)
         return await forceRetry(execute, config.retry);

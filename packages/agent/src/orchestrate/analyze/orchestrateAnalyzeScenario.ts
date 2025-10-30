@@ -26,7 +26,7 @@ export const orchestrateAnalyzeScenario = async <
   const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null> = {
     value: null,
   };
-  const { histories, tokenUsage } = await ctx.conversate({
+  const { histories, tokenUsage, aggregate } = await ctx.conversate({
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
@@ -59,6 +59,7 @@ export const orchestrateAnalyzeScenario = async <
     language: pointer.value.language,
     actors: pointer.value.actors,
     files: pointer.value.files,
+    aggregate,
     tokenUsage,
     step: (ctx.state().analyze?.step ?? -1) + 1,
     created_at: start.toISOString(),
