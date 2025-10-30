@@ -133,7 +133,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       > = {
         value: null,
       };
-      const { tokenUsage } = await ctx.conversate({
+      const { aggregate, tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
         histories: transformRealizeCorrectCastingHistories({
           failures: [
@@ -165,13 +165,13 @@ const correct = async <Model extends ILlmSchema.Model>(
         message: StringUtil.trim`
           Fix the TypeScript casting problems to resolve the compilation error.
 
-          Most casting errors are caused by type mismatches between Date types and 
+          Most casting errors are caused by type mismatches between Date types and
           string & tags.Format<'date-time'>. To fix these:
           - Use ONLY the pre-provided toISOStringSafe() function to convert Date to string
           - Do NOT use .toISOString() method directly (use toISOStringSafe instead)
           - Never use Date type directly in declarations or return values
 
-          You don't need to explain me anything, but just fix or give it up 
+          You don't need to explain me anything, but just fix or give it up
           immediately without any hesitation, explanation, and questions.
 
           The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
@@ -195,10 +195,10 @@ const correct = async <Model extends ILlmSchema.Model>(
           Also, never use typia.assert and typia.assertGuard like functions
           to the Prisma types. Your mission is to fix the casting problem of
           primitive types like string or number. Prisma type is not your scope.
-          
+
           If you take a mistake that casting the Prisma type with the typia.assert
           function, it would be fallen into the infinite compilation due to extremely
-          complicated Prisma type. Note that, the typia.assert function is allowed 
+          complicated Prisma type. Note that, the typia.assert function is allowed
           only in the individual property level string or literal type.
 
           I repeat that, never assert the Prisma type. It's not your mission.
@@ -233,6 +233,7 @@ const correct = async <Model extends ILlmSchema.Model>(
         created_at: new Date().toISOString(),
         location: func.location,
         step: ctx.state().analyze?.step ?? 0,
+        aggregate,
         tokenUsage,
         completed: props.progress.completed,
         total: props.progress.total,

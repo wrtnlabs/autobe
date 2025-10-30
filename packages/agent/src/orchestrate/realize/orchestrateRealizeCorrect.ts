@@ -214,7 +214,7 @@ async function step<Model extends ILlmSchema.Model>(
   };
 
   const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "realizeCorrect",
     controller: createController({
       model: ctx.model,
@@ -239,7 +239,7 @@ async function step<Model extends ILlmSchema.Model>(
       When modifying, modify the entire code, but not the import statement.
 
       Below is template code you wrote:
-      
+
       ${getRealizeWriteCodeTemplate({
         scenario: props.scenario,
         schemas: ctx.state().interface!.document.components.schemas,
@@ -278,6 +278,7 @@ async function step<Model extends ILlmSchema.Model>(
     id: v7(),
     location: props.scenario.location,
     content: pointer.value.revise.final ?? pointer.value.draft,
+    aggregate,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,

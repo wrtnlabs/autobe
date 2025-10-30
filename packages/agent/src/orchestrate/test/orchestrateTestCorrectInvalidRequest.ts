@@ -63,7 +63,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   > = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
     histories: await transformTestCorrectInvalidRequestHistories(
       null!,
@@ -83,7 +83,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     message: StringUtil.trim`
       Fix the AutoBeTest.IFunction data to resolve the compilation error.
 
-      You don't need to explain me anything, but just fix or give it up 
+      You don't need to explain me anything, but just fix or give it up
       immediately without any hesitation, explanation, and questions.
     `,
   });
@@ -112,6 +112,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       content: write.script,
     },
     result: event.result,
+    aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     think: pointer.value.think,

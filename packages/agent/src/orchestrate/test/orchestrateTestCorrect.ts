@@ -61,6 +61,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
                     },
                     result: next.failure,
                     tokenUsage: next.tokenUsage,
+                    aggregate: next.aggregate,
                     think: next.think,
                     draft: next.draft,
                     review: next.review,
@@ -151,7 +152,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
     histories: await transformTestCorrectHistories(ctx, {
       instruction: props.instruction,
@@ -202,6 +203,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
     file: props.validate.file,
     result: props.validate.result,
+    aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     think: pointer.value.think,

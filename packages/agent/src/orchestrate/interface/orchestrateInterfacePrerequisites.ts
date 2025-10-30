@@ -107,7 +107,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   };
 
   try {
-    const { tokenUsage } = await ctx.conversate({
+    const { aggregate, tokenUsage } = await ctx.conversate({
       source: "interfacePrerequisite",
       controller: createController({
         model: ctx.model,
@@ -134,6 +134,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       type: "interfacePrerequisite",
       id: v7(),
       created_at: new Date().toISOString(),
+      aggregate,
       tokenUsage,
       operations: pointer.value,
       total: props.progress.total,

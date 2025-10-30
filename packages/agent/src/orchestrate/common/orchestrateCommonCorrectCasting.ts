@@ -1,4 +1,5 @@
 import {
+  AutoBeFunctionCallingAggregate,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCorrectEvent,
@@ -33,6 +34,7 @@ interface IFactoryProps<
     draft: string;
     review: string | undefined;
     final: string | undefined;
+    aggregate: AutoBeFunctionCallingAggregate;
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
   }): CorrectEvent;
   script(event: ValidateEvent): string;
@@ -92,7 +94,7 @@ const correct = async <
   > = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: factory.source,
     histories: transformCommonCorrectCastingHistories(
       [...failures, event].map((e) => ({
@@ -115,7 +117,7 @@ const correct = async <
     message: StringUtil.trim`
       Fix the TypeScript casting problems to resolve the compilation error.
 
-      You don't need to explain me anything, but just fix or give it up 
+      You don't need to explain me anything, but just fix or give it up
       immediately without any hesitation, explanation, and questions.
     `,
   });
@@ -129,6 +131,7 @@ const correct = async <
       draft: pointer.value.draft,
       review: pointer.value.revise.review,
       final: pointer.value.revise.final ?? undefined,
+      aggregate,
       tokenUsage,
     }),
   );

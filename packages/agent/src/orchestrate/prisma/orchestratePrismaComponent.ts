@@ -22,7 +22,7 @@ export async function orchestratePrismaComponents<
     value: null,
   };
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "prismaComponent",
     histories: transformPrismaComponentsHistories(ctx.state(), {
       prefix,
@@ -47,6 +47,7 @@ export async function orchestratePrismaComponents<
     review: pointer.value.review,
     decision: pointer.value.decision,
     components: pointer.value.components,
+    aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
   };

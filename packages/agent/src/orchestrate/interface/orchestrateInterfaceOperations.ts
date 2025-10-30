@@ -119,7 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceOperation",
     histories: transformInterfaceOperationHistories({
       state: ctx.state(),
@@ -181,6 +181,7 @@ async function process<Model extends ILlmSchema.Model>(
     type: "interfaceOperation",
     id: v7(),
     operations: pointer.value,
+    aggregate,
     tokenUsage,
     ...props.progress,
     step: ctx.state().analyze?.step ?? 0,

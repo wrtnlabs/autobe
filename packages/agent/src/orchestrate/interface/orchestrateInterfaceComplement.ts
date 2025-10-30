@@ -50,7 +50,7 @@ async function step<Model extends ILlmSchema.Model>(
   > | null> = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { aggregate, tokenUsage } = await ctx.conversate({
     source: "interfaceComplement",
     histories: transformInterfaceComplementHistories({
       state: ctx.state(),
@@ -86,6 +86,7 @@ async function step<Model extends ILlmSchema.Model>(
     id: v7(),
     missed,
     schemas: pointer.value,
+    aggregate,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),

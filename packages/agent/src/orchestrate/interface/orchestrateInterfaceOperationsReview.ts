@@ -28,7 +28,7 @@ export async function orchestrateInterfaceOperationsReview<
       {
         value: null,
       };
-    const { tokenUsage } = await ctx.conversate({
+    const { aggregate, tokenUsage } = await ctx.conversate({
       source: "interfaceOperationReview",
       histories: transformInterfaceOperationsReviewHistories(ctx, operations),
       controller: createReviewController({
@@ -60,6 +60,7 @@ export async function orchestrateInterfaceOperationsReview<
       review: pointer.value.think.review,
       plan: pointer.value.think.plan,
       content,
+      aggregate,
       tokenUsage,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
