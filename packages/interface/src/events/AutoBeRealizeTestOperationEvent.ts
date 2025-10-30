@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Realize agent completes the execution of an individual

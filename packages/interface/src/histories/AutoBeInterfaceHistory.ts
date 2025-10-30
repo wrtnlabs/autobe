@@ -3,6 +3,7 @@ import { tags } from "typia";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeInterfaceAuthorization } from "./contents";
+import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
  * History record generated when the Interface agent completes RESTful API
@@ -62,21 +63,6 @@ export interface AutoBeInterfaceHistory
   instruction: string;
 
   /**
-   * Iteration number of the requirements analysis report this API design was
-   * performed for.
-   *
-   * Indicates which version of the requirements analysis this API design
-   * reflects. If this value is lower than {@link AutoBeAnalyzeHistory.step}, it
-   * means the API design has not yet been updated to reflect the latest
-   * requirements and may need to be regenerated.
-   *
-   * A value of 0 indicates the initial API design, while higher values
-   * represent subsequent revisions based on updated requirements or database
-   * schema changes.
-   */
-  step: number;
-
-  /**
    * Array of schema type names that are referenced but not yet implemented in
    * components.schemas.
    *
@@ -95,6 +81,23 @@ export interface AutoBeInterfaceHistory
    * schemas through the complement process.
    */
   missed: string[];
+
+  aggregates: AutoBeProcessAggregateCollection<"interface">;
+
+  /**
+   * Iteration number of the requirements analysis report this API design was
+   * performed for.
+   *
+   * Indicates which version of the requirements analysis this API design
+   * reflects. If this value is lower than {@link AutoBeAnalyzeHistory.step}, it
+   * means the API design has not yet been updated to reflect the latest
+   * requirements and may need to be regenerated.
+   *
+   * A value of 0 indicates the initial API design, while higher values
+   * represent subsequent revisions based on updated requirements or database
+   * schema changes.
+   */
+  step: number;
 
   /**
    * ISO 8601 timestamp indicating when the API design process was completed.

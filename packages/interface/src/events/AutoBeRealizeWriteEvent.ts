@@ -1,6 +1,6 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired during the implementation process as the Realize agent creates
@@ -22,7 +22,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeRealizeWriteEvent
   extends AutoBeEventBase<"realizeWrite">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Name of the implementation file that has been completed.
    *

@@ -107,7 +107,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   };
 
   try {
-    const { trial, tokenUsage } = await ctx.conversate({
+    const { metric, tokenUsage } = await ctx.conversate({
       source: "interfacePrerequisite",
       controller: createController({
         model: ctx.model,
@@ -134,7 +134,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       type: "interfacePrerequisite",
       id: v7(),
       created_at: new Date().toISOString(),
-      trial,
+      metric,
       tokenUsage,
       operations: pointer.value,
       total: props.progress.total,

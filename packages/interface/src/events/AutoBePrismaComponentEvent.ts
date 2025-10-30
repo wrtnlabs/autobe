@@ -1,6 +1,6 @@
 import { AutoBePrisma } from "../prisma";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Prisma agent organizes database tables into categorized
@@ -20,7 +20,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBePrismaComponentEvent
   extends AutoBeEventBase<"prismaComponent">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Initial thoughts on namespace classification criteria.
    *

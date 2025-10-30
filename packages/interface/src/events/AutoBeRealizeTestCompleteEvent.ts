@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
 import { IAutoBeRealizeTestOperation } from "../compiler/IAutoBeRealizeTestOperation";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Realize agent completes the entire E2E test suite

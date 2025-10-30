@@ -1,6 +1,7 @@
 import { IAutoBePrismaCompileResult } from "../compiler";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBePrisma, IAutoBePrismaValidation } from "../prisma";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Prisma agent completes the database design process and
@@ -66,6 +67,8 @@ export interface AutoBePrismaCompleteEvent
    * the broader development ecosystem.
    */
   compiled: IAutoBePrismaCompileResult;
+
+  aggregates: AutoBeProcessAggregateCollection<"prisma">;
 
   /**
    * Iteration number of the requirements analysis this database design was

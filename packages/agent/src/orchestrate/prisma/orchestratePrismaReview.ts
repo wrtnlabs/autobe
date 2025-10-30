@@ -56,7 +56,7 @@ async function step<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
     value: null,
   };
-  const { trial: aggregate, tokenUsage } = await ctx.conversate({
+  const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaReview",
     histories: transformPrismaReviewHistories({
       analysis:
@@ -90,7 +90,7 @@ async function step<Model extends ILlmSchema.Model>(
     review: pointer.value.review,
     plan: pointer.value.plan,
     modifications: pointer.value.modifications,
-    trial: aggregate,
+    metric,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,

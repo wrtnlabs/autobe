@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Interface agent creates the complete list of API
@@ -23,7 +23,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeInterfaceEndpointEvent
   extends AutoBeEventBase<"interfaceEndpoint">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Array of API endpoints that have been defined for the application.
    *

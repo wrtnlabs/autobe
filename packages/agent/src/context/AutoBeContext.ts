@@ -10,7 +10,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
   AutoBeEventSource,
-  AutoBeFunctionCallingTrial,
+  AutoBeFunctionCallingMetric,
   AutoBeHistory,
   AutoBeInterfaceHistory,
   AutoBePrismaHistory,
@@ -80,6 +80,6 @@ export namespace AutoBeContext {
   export interface IResult<Model extends ILlmSchema.Model> {
     histories: MicroAgenticaHistory<Model>[];
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
-    trial: AutoBeFunctionCallingTrial;
+    metric: AutoBeFunctionCallingMetric;
   }
 }

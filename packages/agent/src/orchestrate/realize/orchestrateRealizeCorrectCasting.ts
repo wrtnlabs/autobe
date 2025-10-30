@@ -133,7 +133,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       > = {
         value: null,
       };
-      const { trial, tokenUsage } = await ctx.conversate({
+      const { metric, tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
         histories: transformRealizeCorrectCastingHistories({
           failures: [
@@ -233,7 +233,7 @@ const correct = async <Model extends ILlmSchema.Model>(
         created_at: new Date().toISOString(),
         location: func.location,
         step: ctx.state().analyze?.step ?? 0,
-        trial,
+        metric,
         tokenUsage,
         completed: props.progress.completed,
         total: props.progress.total,

@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "../openapi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event emitted during the API authorization and security design phase.
@@ -27,7 +27,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeInterfaceAuthorizationEvent
   extends AutoBeEventBase<"interfaceAuthorization">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Array of API operations being defined for the endpoints.
    *

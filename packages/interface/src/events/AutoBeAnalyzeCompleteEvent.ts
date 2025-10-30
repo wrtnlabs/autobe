@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Analyze agent completes the requirements analysis
@@ -35,6 +36,16 @@ export interface AutoBeAnalyzeCompleteEvent
   prefix: string;
 
   /**
+   * List of actors identified during the requirements analysis process.
+   *
+   * Contains the various user actors, personas, or stakeholder types that were
+   * identified and analyzed during the requirements gathering phase. These
+   * actors help define different user perspectives, access levels, and
+   * functional requirements needed for the system being developed.
+   */
+  actors: AutoBeAnalyzeActor[];
+
+  /**
    * Generated requirements analysis report files as key-value pairs.
    *
    * Contains the complete set of markdown documents that comprise the finalized
@@ -49,15 +60,7 @@ export interface AutoBeAnalyzeCompleteEvent
    */
   files: AutoBeAnalyzeFile[];
 
-  /**
-   * List of actors identified during the requirements analysis process.
-   *
-   * Contains the various user actors, personas, or stakeholder types that were
-   * identified and analyzed during the requirements gathering phase. These
-   * actors help define different user perspectives, access levels, and
-   * functional requirements needed for the system being developed.
-   */
-  actors: AutoBeAnalyzeActor[];
+  aggregates: AutoBeProcessAggregateCollection<"analyze">;
 
   /**
    * Final iteration number of the completed requirements analysis report.

@@ -1,5 +1,5 @@
 import {
-  AutoBeFunctionCallingTrial,
+  AutoBeFunctionCallingMetric,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCorrectEvent,
@@ -34,7 +34,7 @@ interface IFactoryProps<
     draft: string;
     review: string | undefined;
     final: string | undefined;
-    aggregate: AutoBeFunctionCallingTrial;
+    metric: AutoBeFunctionCallingMetric;
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
   }): CorrectEvent;
   script(event: ValidateEvent): string;
@@ -94,7 +94,7 @@ const correct = async <
   > = {
     value: null,
   };
-  const { trial: aggregate, tokenUsage } = await ctx.conversate({
+  const { metric, tokenUsage } = await ctx.conversate({
     source: factory.source,
     histories: transformCommonCorrectCastingHistories(
       [...failures, event].map((e) => ({
@@ -131,7 +131,7 @@ const correct = async <
       draft: pointer.value.draft,
       review: pointer.value.revise.review,
       final: pointer.value.revise.final ?? undefined,
-      aggregate,
+      metric,
       tokenUsage,
     }),
   );

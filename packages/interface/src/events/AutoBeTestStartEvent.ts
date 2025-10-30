@@ -1,4 +1,4 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Test agent begins the e2e test code generation process.

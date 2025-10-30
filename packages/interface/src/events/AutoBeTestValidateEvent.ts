@@ -1,6 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Test agent validates the generated test code using the

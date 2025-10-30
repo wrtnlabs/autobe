@@ -12,8 +12,8 @@ export * from "./AutoBeJsonParseErrorEvent";
 /** @internal */
 export * from "./AutoBeEventOfSerializable";
 export * from "./AutoBeEventSnapshot";
-export * from "./AutoBeProgressEventBase";
-export * from "./AutoBeTokenUsageEventBase";
+export * from "./base/AutoBeProgressEventBase";
+export * from "./base/AutoBeAggregateEventBase";
 
 // ANALYZE
 export * from "./AutoBeAnalyzeCompleteEvent";

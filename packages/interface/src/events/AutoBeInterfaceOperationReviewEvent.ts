@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "../openapi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired during the review and validation phase of API operation
@@ -24,7 +24,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeInterfaceOperationReviewEvent
   extends AutoBeEventBase<"interfaceOperationReview">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Original API operations submitted for review.
    *

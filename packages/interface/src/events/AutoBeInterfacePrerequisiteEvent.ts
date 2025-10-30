@@ -1,12 +1,12 @@
 import { AutoBeInterfacePrerequisite } from "../histories/contents/AutoBeInterfacePrerequisite";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 export interface AutoBeInterfacePrerequisiteEvent
   extends AutoBeEventBase<"interfacePrerequisite">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   operations: AutoBeInterfacePrerequisite[];
 
   step: number;

@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
-import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeEventSource } from "./AutoBeEventSource";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event emitted when sending a request to the AI vendor (OpenAI).

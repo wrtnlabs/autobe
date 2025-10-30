@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired during the multi-dimensional review and validation phase of
@@ -38,7 +38,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 export interface AutoBeInterfaceSchemaReviewEvent
   extends AutoBeEventBase<"interfaceSchemaReview">,
     AutoBeProgressEventBase,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Review dimension discriminator.
    *

@@ -1,6 +1,6 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Interface agent supplements missing types and schemas
@@ -20,7 +20,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBeInterfaceComplementEvent
   extends AutoBeEventBase<"interfaceComplement">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Array of missing schema names that were identified and need to be defined.
    *

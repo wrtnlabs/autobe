@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Realize agent completes the database reset process

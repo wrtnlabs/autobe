@@ -1,7 +1,7 @@
 import { IValidation } from "typia";
 
-import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeEventSource } from "./AutoBeEventSource";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 export interface AutoBeJsonValidateErrorEvent
   extends AutoBeEventBase<"jsonValidateError"> {

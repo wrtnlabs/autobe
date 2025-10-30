@@ -1,4 +1,4 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the AI assistant sends a message to the user during the

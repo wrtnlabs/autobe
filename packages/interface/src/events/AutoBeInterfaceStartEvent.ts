@@ -1,4 +1,4 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Interface agent begins the RESTful API design process.

@@ -3,6 +3,7 @@ import { tags } from "typia";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeAnalyzeActor } from "./contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "./contents/AutoBeAnalyzeFile";
+import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
  * History record generated when the Analyze agent and user have completed all
@@ -75,6 +76,8 @@ export interface AutoBeAnalyzeHistory
    * pipeline.
    */
   files: AutoBeAnalyzeFile[];
+
+  aggregates: AutoBeProcessAggregateCollection<"analyze">;
 
   /**
    * ISO 8601 timestamp indicating when the requirements analysis was completed.

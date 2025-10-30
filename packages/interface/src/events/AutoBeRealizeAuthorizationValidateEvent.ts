@@ -1,6 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired during the validation phase of authorization implementation.

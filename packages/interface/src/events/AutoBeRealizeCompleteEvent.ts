@@ -1,7 +1,8 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
 import { AutoBeRealizeFunction } from "../histories/contents/AutoBeRealizeFunction";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Realize agent completes the implementation of business
@@ -99,6 +100,8 @@ export interface AutoBeRealizeCompleteEvent
    * deployed immediately without any syntax or integration issues.
    */
   compiled: IAutoBeTypeScriptCompileResult;
+
+  aggregates: AutoBeProcessAggregateCollection<"realize">;
 
   /**
    * Final iteration number of the requirements analysis this implementation was

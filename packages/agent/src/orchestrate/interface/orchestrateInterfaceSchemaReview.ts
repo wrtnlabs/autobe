@@ -90,7 +90,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const { trial, tokenUsage } = await ctx.conversate({
+    const { metric, tokenUsage } = await ctx.conversate({
       source: "interfaceSchemaReview",
       controller: createController({
         model: ctx.model,
@@ -127,7 +127,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       review: pointer.value.think.review,
       plan: pointer.value.think.plan,
       content,
-      trial,
+      metric,
       tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
       total: props.progress.total,

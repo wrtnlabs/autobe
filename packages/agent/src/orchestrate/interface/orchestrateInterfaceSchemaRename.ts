@@ -157,7 +157,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const { trial: aggregate, tokenUsage } = await ctx.conversate({
+    const { metric, tokenUsage } = await ctx.conversate({
       source: "interfaceSchemaRename",
       controller: createController<Model>(
         ctx.model,
@@ -180,7 +180,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       refactors: pointer.value.refactors,
       total: props.progress.total,
       completed: (props.progress.completed += props.typeNames.length),
-      trial: aggregate,
+      metric,
       tokenUsage,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaRenameEvent);

@@ -1,7 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeRealizeAuthorizationCorrect } from "../histories/contents/AutoBeRealizeAuthorizationCorrect";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired during the correction phase of authorization implementation.
@@ -16,7 +16,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBeRealizeAuthorizationCorrectEvent
   extends AutoBeEventBase<"realizeAuthorizationCorrect">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Authorization configuration being corrected.
    *

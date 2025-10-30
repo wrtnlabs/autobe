@@ -1,4 +1,4 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when an exception occurs during AutoBE process.

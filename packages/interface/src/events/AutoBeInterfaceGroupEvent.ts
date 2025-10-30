@@ -1,6 +1,6 @@
 import { AutoBeInterfaceGroup } from "../histories/contents/AutoBeInterfaceGroup";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Interface agent generates logical groups for organizing
@@ -28,7 +28,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBeInterfaceGroupEvent
   extends AutoBeEventBase<"interfaceGroup">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Array of API endpoint groups organized by Prisma schema structure.
    *

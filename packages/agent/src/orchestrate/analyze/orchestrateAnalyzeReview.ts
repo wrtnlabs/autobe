@@ -28,7 +28,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
     value: null,
   };
-  const { trial: aggregate, tokenUsage } = await ctx.conversate({
+  const { metric, tokenUsage } = await ctx.conversate({
     source: "analyzeReview",
     controller: createController({
       model: ctx.model,
@@ -57,7 +57,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     review: pointer.value.review,
     content: pointer.value.content,
     tokenUsage,
-    trial: aggregate,
+    metric,
     total: props.progress.total,
     completed: ++props.progress.completed,
     step: (ctx.state().analyze?.step ?? -1) + 1,

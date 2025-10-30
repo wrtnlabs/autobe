@@ -1,5 +1,5 @@
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when a user sends a message during the conversation flow.

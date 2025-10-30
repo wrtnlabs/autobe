@@ -3,6 +3,7 @@ import { tags } from "typia";
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeRealizeAuthorization } from "./contents";
+import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 
 /**
@@ -26,14 +27,14 @@ import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated authentication and authorization decorators for actor-based access
-   * control.
+   * Generated authentication and authorization decorators for actor-based
+   * access control.
    *
    * Contains the complete set of NestJS parameter decorators that provide
    * automatic authentication and authorization functionality for different user
-   * actors. Each decorator includes its implementation code, associated provider
-   * functions, and payload type definitions that enable seamless integration of
-   * actor-based security into Controller methods.
+   * actors. Each decorator includes its implementation code, associated
+   * provider functions, and payload type definitions that enable seamless
+   * integration of actor-based security into Controller methods.
    *
    * These decorators eliminate the need for manual authentication logic in
    * Controllers by automatically validating JWT tokens, checking user roles,
@@ -78,12 +79,15 @@ export interface AutoBeRealizeHistory
    * Instructions for the Realize agent redefined by AI from user's utterance.
    *
    * Contains AI-generated specific guidance for the implementation phase,
-   * interpreted and refined from the user's original request. These instructions
-   * direct the Realize agent on business logic priorities, architectural patterns
-   * to follow, performance optimizations to consider, and specific implementation
-   * details required to fulfill the business requirements.
+   * interpreted and refined from the user's original request. These
+   * instructions direct the Realize agent on business logic priorities,
+   * architectural patterns to follow, performance optimizations to consider,
+   * and specific implementation details required to fulfill the business
+   * requirements.
    */
   instruction: string;
+
+  aggregates: AutoBeProcessAggregateCollection<"realize">;
 
   /**
    * Iteration number of the requirements analysis report this implementation

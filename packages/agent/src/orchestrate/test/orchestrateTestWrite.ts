@@ -77,7 +77,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
-  const { trial: aggregate, tokenUsage } = await ctx.conversate({
+  const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     histories: await transformTestWriteHistories(ctx, {
       scenario,
@@ -122,7 +122,7 @@ async function process<Model extends ILlmSchema.Model>(
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final ?? undefined,
-    trial: aggregate,
+    metric,
     tokenUsage,
     completed: ++progress.completed,
     total: progress.total,

@@ -1,6 +1,7 @@
 import { AutoBeInterfaceAuthorization } from "../histories";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Interface agent completes the RESTful API design process
@@ -69,6 +70,8 @@ export interface AutoBeInterfaceCompleteEvent
    * schemas through the complement process.
    */
   missed: string[];
+
+  aggregates: AutoBeProcessAggregateCollection<"interface">;
 
   /**
    * Iteration number of the requirements analysis this API design was completed

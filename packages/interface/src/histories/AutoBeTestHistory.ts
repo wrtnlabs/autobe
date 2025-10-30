@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 import { AutoBeTestFile } from "./contents/AutoBeTestFile";
 
 /**
@@ -63,12 +64,14 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
    * Instructions for the Test agent redefined by AI from user's utterance.
    *
    * Contains AI-generated specific guidance for the test code generation phase,
-   * interpreted and refined from the user's original request. These instructions
-   * direct the Test agent on test scenario prioritization, coverage requirements,
-   * edge cases to consider, and specific business rules to validate through
-   * comprehensive e2e testing.
+   * interpreted and refined from the user's original request. These
+   * instructions direct the Test agent on test scenario prioritization,
+   * coverage requirements, edge cases to consider, and specific business rules
+   * to validate through comprehensive e2e testing.
    */
   instruction: string;
+
+  aggregates: AutoBeProcessAggregateCollection<"test">;
 
   /**
    * Iteration number of the requirements analysis report this test code was

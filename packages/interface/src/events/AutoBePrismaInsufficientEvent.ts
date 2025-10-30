@@ -1,5 +1,5 @@
 import { AutoBePrisma } from "../prisma/AutoBePrisma";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Prisma agent creates fewer models than expected during

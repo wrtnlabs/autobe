@@ -1,5 +1,5 @@
-import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeEventSource } from "./AutoBeEventSource";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 export interface AutoBeConsentFunctionCallEvent
   extends AutoBeEventBase<"consentFunctionCall"> {

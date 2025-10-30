@@ -3,6 +3,7 @@ import { tags } from "typia";
 import { IAutoBePrismaCompileResult } from "../compiler";
 import { IAutoBePrismaValidation } from "../prisma";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
  * History record generated when the Prisma agent analyzes the requirements
@@ -73,12 +74,14 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
    * Instructions for the Prisma agent redefined by AI from user's utterance.
    *
    * Contains AI-generated specific guidance for the database design phase,
-   * interpreted and refined from the user's original request. These instructions
-   * direct the Prisma agent on how to approach database schema design,
-   * which data models to prioritize, relationships to establish, and any
-   * specific constraints or performance considerations to implement.
+   * interpreted and refined from the user's original request. These
+   * instructions direct the Prisma agent on how to approach database schema
+   * design, which data models to prioritize, relationships to establish, and
+   * any specific constraints or performance considerations to implement.
    */
   instruction: string;
+
+  aggregates: AutoBeProcessAggregateCollection<"prisma">;
 
   /**
    * Iteration number of the requirements analysis report this database design

@@ -116,7 +116,7 @@ async function execute<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
     value: null,
   };
-  const { trial: aggregate, tokenUsage } = await ctx.conversate({
+  const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaCorrect",
     histories: transformPrismaCorrectHistories(failure),
     controller: createController({
@@ -149,7 +149,7 @@ async function execute<Model extends ILlmSchema.Model>(
     failure,
     planning: pointer.value.planning,
     correction: correction,
-    trial: aggregate,
+    metric,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),

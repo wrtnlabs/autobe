@@ -1,6 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeTestFile } from "../histories";
-import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Test agent completes the e2e test code generation
@@ -64,6 +65,8 @@ export interface AutoBeTestCompleteEvent
    * issues.
    */
   compiled: IAutoBeTypeScriptCompileResult;
+
+  aggregates: AutoBeProcessAggregateCollection<"test">;
 
   /**
    * Final iteration number of the requirements analysis this test suite was

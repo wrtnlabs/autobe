@@ -1,7 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Test agent corrects compilation failures in the
@@ -21,7 +21,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBeTestCorrectEvent
   extends AutoBeEventBase<"testCorrect">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   kind: "casting" | "overall" | "request";
 
   /**

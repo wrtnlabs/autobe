@@ -2,8 +2,8 @@ import { tags } from "typia";
 
 import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event interface for analyze scenario composition operations in the AutoBE
@@ -38,7 +38,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBeAnalyzeScenarioEvent
   extends AutoBeEventBase<"analyzeScenario">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Prefix identifier for the analysis scenario.
    *

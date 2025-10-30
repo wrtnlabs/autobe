@@ -1,7 +1,7 @@
 import { AutoBePrisma } from "../prisma/AutoBePrisma";
 import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
-import { AutoBeEventBase } from "./AutoBeEventBase";
-import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
+import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the Prisma agent corrects validation failures in the
@@ -23,7 +23,7 @@ import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
  */
 export interface AutoBePrismaCorrectEvent
   extends AutoBeEventBase<"prismaCorrect">,
-    AutoBeTokenUsageEventBase {
+    AutoBeAggregateEventBase {
   /**
    * The validation failure details that triggered the correction process.
    *
