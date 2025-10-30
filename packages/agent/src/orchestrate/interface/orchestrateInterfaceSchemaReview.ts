@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import { AutoBeInterfaceSchemaReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceSchemaReviewEvent";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
@@ -19,10 +20,7 @@ import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 interface IConfig {
-  type:
-    | "interfaceSchemaContentReview"
-    | "interfaceSchemaSecurityReview"
-    | "interfaceSchemaRelationReview";
+  kind: AutoBeInterfaceSchemaReviewEvent["kind"];
   systemPrompt: string;
 }
 
@@ -34,19 +32,14 @@ export async function orchestrateInterfaceSchemaReview<
   props: {
     document: AutoBeOpenApi.IDocument;
     instruction: string;
+    progress: AutoBeProgressEventBase;
   },
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const typeNames: string[] = Object.keys(props.document.components.schemas);
   const matrix: string[][] = divideArray({
     array: typeNames,
-    capacity,
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
   });
-  const progress: AutoBeProgressEventBase = {
-    total: matrix.length,
-    completed: 0,
-  };
-
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
@@ -68,7 +61,7 @@ export async function orchestrateInterfaceSchemaReview<
             },
             {} as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
           ),
-          progress,
+          progress: props.progress,
           promptCacheKey,
         });
       return row;
@@ -98,7 +91,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         value: null,
       };
     const { tokenUsage } = await ctx.conversate({
-      source: "interfaceSchemaContentReview",
+      source: "interfaceSchemaReview",
       controller: createController({
         model: ctx.model,
         pointer,
@@ -127,7 +120,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
     ctx.dispatch({
-      type: config.type,
+      type: "interfaceSchemaReview",
+      kind: config.kind,
       id: v7(),
       schemas: props.reviewSchemas,
       review: pointer.value.think.review,

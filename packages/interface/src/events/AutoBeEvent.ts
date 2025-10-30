@@ -14,11 +14,9 @@ import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
-import { AutoBeInterfaceSchemaContentReviewEvent } from "./AutoBeInterfaceSchemaContentReviewEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
-import { AutoBeInterfaceSchemaRelationReviewEvent } from "./AutoBeInterfaceSchemaRelationReviewEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
-import { AutoBeInterfaceSchemaSecurityReviewEvent } from "./AutoBeInterfaceSchemaSecurityReviewEvent";
+import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
@@ -103,9 +101,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceOperationEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
-  | AutoBeInterfaceSchemaSecurityReviewEvent
-  | AutoBeInterfaceSchemaRelationReviewEvent
-  | AutoBeInterfaceSchemaContentReviewEvent
+  | AutoBeInterfaceSchemaReviewEvent
   | AutoBeInterfaceSchemaRenameEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
@@ -210,9 +206,7 @@ export namespace AutoBeEvent {
     interfaceOperation: AutoBeInterfaceOperationEvent;
     interfaceOperationReview: AutoBeInterfaceOperationReviewEvent;
     interfaceSchema: AutoBeInterfaceSchemaEvent;
-    interfaceSchemaSecurityReview: AutoBeInterfaceSchemaSecurityReviewEvent;
-    interfaceSchemaRelationReview: AutoBeInterfaceSchemaRelationReviewEvent;
-    interfaceSchemaContentReview: AutoBeInterfaceSchemaContentReviewEvent;
+    interfaceSchemaReview: AutoBeInterfaceSchemaReviewEvent;
     interfaceSchemaRename: AutoBeInterfaceSchemaRenameEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;

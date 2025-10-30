@@ -62,12 +62,11 @@ export namespace TestLogger {
         `  - count: ${Object.keys(event.schemas).length}`,
         `  - missed: ${event.missed.join(", ")}`,
       );
-    else if (
-      event.type === "interfaceSchemaContentReview" ||
-      event.type === "interfaceSchemaRelationReview" ||
-      event.type === "interfaceSchemaSecurityReview"
-    )
-      content.push(`  - fixed: ${Object.keys(event.content).length}`);
+    else if (event.type === "interfaceSchemaReview")
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - fixed: ${Object.keys(event.content).length}`,
+      );
     else if (event.type === "interfaceSchemaRename")
       content.push(
         `  - refactors:`,

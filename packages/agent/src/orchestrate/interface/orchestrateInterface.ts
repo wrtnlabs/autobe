@@ -5,6 +5,7 @@ import {
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import {
@@ -16,6 +17,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
@@ -130,19 +132,26 @@ export const orchestrateInterface =
       );
     await complement();
 
+    const reviewProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: Math.ceil(
+        Object.keys(document.components.schemas).length /
+          AutoBeConfigConstant.INTERFACE_CAPACITY,
+      ),
+    };
     for (const config of [
       {
-        type: "interfaceSchemaSecurityReview" as const,
+        kind: "security" as const,
         systemPrompt:
           AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
       },
       {
-        type: "interfaceSchemaRelationReview" as const,
+        kind: "relation" as const,
         systemPrompt:
           AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
       },
       {
-        type: "interfaceSchemaContentReview" as const,
+        kind: "content" as const,
         systemPrompt:
           AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
       },
@@ -151,6 +160,7 @@ export const orchestrateInterface =
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
           document,
+          progress: reviewProgress,
         }),
       );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
