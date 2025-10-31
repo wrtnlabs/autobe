@@ -1,7 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeTestFile } from "../histories";
-import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
-import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
  * Event fired when the Test agent completes the e2e test code generation
@@ -21,7 +20,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeTestCompleteEvent
-  extends AutoBeEventBase<"testComplete"> {
+  extends AutoBeCompleteEventBase<"testComplete"> {
   /**
    * Generated e2e test files as key-value pairs representing the complete test
    * suite.
@@ -65,44 +64,4 @@ export interface AutoBeTestCompleteEvent
    * issues.
    */
   compiled: IAutoBeTypeScriptCompileResult;
-
-  aggregates: AutoBeProcessAggregateCollection<"test">;
-
-  /**
-   * Final iteration number of the requirements analysis this test suite was
-   * completed for.
-   *
-   * Indicates which version of the requirements analysis this test suite
-   * reflects, representing the synchronization point between test scenarios and
-   * business requirements. This step number confirms that the completed test
-   * suite validates the latest requirements and incorporates all API
-   * specifications and database design decisions from the current development
-   * iteration.
-   *
-   * The step value serves as the definitive reference for the test coverage
-   * scope, ensuring that all stakeholders understand which requirements version
-   * has been comprehensively validated through the generated test scenarios.
-   */
-  step: number;
-
-  /**
-   * Elapsed time in milliseconds for the entire test generation process.
-   *
-   * Indicates the total time taken to complete the test generation process from
-   * the start of requirements analysis through to the final test suite
-   * generation. This metric helps in understanding the efficiency of the test
-   * generation phase and can be used for process improvement analysis.
-   *
-   * This elapsed time provides insights into the complexity of the test
-   * scenarios generated, the number of API endpoints covered, and the
-   * thoroughness of the business logic validation implemented in the test
-   * suite. It serves as a performance metric for the Test agent's code
-   * generation capabilities and the overall efficiency of the test generation
-   * workflow.
-   *
-   * This elapsed time is same with the difference between the timestamps
-   * recorded in the `created_at` field of the `AutoBeTestStartEvent` and this
-   * event.
-   */
-  elapsed: number;
 }

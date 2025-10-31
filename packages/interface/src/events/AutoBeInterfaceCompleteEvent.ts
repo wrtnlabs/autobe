@@ -1,7 +1,6 @@
 import { AutoBeInterfaceAuthorization } from "../histories";
-import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
  * Event fired when the Interface agent completes the RESTful API design process
@@ -21,7 +20,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceCompleteEvent
-  extends AutoBeEventBase<"interfaceComplete"> {
+  extends AutoBeCompleteEventBase<"interfaceComplete"> {
   /**
    * The complete OpenAPI document containing the finalized API specification.
    *
@@ -70,37 +69,4 @@ export interface AutoBeInterfaceCompleteEvent
    * schemas through the complement process.
    */
   missed: string[];
-
-  aggregates: AutoBeProcessAggregateCollection<"interface">;
-
-  /**
-   * Iteration number of the requirements analysis this API design was completed
-   * for.
-   *
-   * Indicates which version of the requirements analysis this API design
-   * reflects. If this value is lower than the current
-   * {@link AutoBeAnalyzeCompleteEvent.step}, it means the API design may not
-   * reflect the latest requirements and could need regeneration.
-   *
-   * The step value ensures proper synchronization between API specifications
-   * and the underlying requirements, enabling stakeholders to understand the
-   * currency of the API design relative to evolving project requirements.
-   */
-  step: number;
-
-  /**
-   * Elapsed time in milliseconds for the entire API design process.
-   *
-   * Indicates the total time taken to complete the API design process from the
-   * start of requirements analysis through to the final API specification
-   * generation. This metric helps in understanding the efficiency of the API
-   * design phase and can be used for process improvement analysis.
-   *
-   * This elapsed time includes all stages of the API design process, from
-   * initial requirements gathering, through business logic integration, to the
-   * final generation of the OpenAPI document. It serves as a performance
-   * indicator for the Interface agent's design capabilities and the overall
-   * efficiency of the API design workflow.
-   */
-  elapsed: number;
 }

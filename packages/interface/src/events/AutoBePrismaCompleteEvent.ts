@@ -1,7 +1,6 @@
-import { IAutoBePrismaCompileResult } from "../compiler";
-import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
-import { AutoBePrisma, IAutoBePrismaValidation } from "../prisma";
-import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { IAutoBePrismaCompileResult } from "../compiler/IAutoBePrismaCompileResult";
+import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
+import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
  * Event fired when the Prisma agent completes the database design process and
@@ -20,7 +19,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBePrismaCompleteEvent
-  extends AutoBeEventBase<"prismaComplete"> {
+  extends AutoBeCompleteEventBase<"prismaComplete"> {
   /**
    * The validated AST application structure containing the complete database
    * design.
@@ -67,36 +66,4 @@ export interface AutoBePrismaCompleteEvent
    * the broader development ecosystem.
    */
   compiled: IAutoBePrismaCompileResult;
-
-  aggregates: AutoBeProcessAggregateCollection<"prisma">;
-
-  /**
-   * Iteration number of the requirements analysis this database design was
-   * completed for.
-   *
-   * Indicates which version of the requirements analysis this database design
-   * reflects. This step number ensures that the database implementation is
-   * aligned with the current requirements and helps track the evolution of data
-   * architecture as business requirements change.
-   *
-   * The step value enables proper synchronization between database design and
-   * the underlying requirements, ensuring that subsequent development phases
-   * work with the most current and relevant database foundation.
-   */
-  step: number;
-
-  /**
-   * Elapsed time in milliseconds for the entire Prisma completion process.
-   *
-   * Indicates the total time taken from the start of the Prisma design phase
-   * until its completion. This metric helps in understanding the efficiency of
-   * the database design and validation process, providing insights into the
-   * time investment required for thorough design, validation, and code
-   * generation.
-   *
-   * This elapsed time is same with the difference between the timestamps
-   * recorded in the `created_at` field of the `AutoBePrismaStartEvent` and this
-   * event.
-   */
-  elapsed: number;
 }

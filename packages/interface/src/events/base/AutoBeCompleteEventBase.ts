@@ -1,3 +1,4 @@
+import { AutoBePhase } from "../../histories/AutoBePhase";
 import { AutoBeProcessAggregateCollection } from "../../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -13,8 +14,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * Unlike active operation events that track individual agent tasks, complete
  * events synthesize the entire phase execution, capturing the final state
  * machine step counter, total elapsed time, aggregated token usage across all
- * operations, and cumulative function calling trial statistics. This holistic
- * view enables understanding of phase-level resource consumption and operation
+ * operations, and cumulative function calling metrics. This holistic view
+ * enables understanding of phase-level resource consumption and operation
  * quality.
  *
  * The type-safe aggregation system ensures all metrics are properly organized
@@ -25,8 +26,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeCompleteEventBase<Phase extends string>
-  extends AutoBeEventBase<`${Phase}Complete`> {
+export interface AutoBeCompleteEventBase<Type extends `${AutoBePhase}Complete`>
+  extends AutoBeEventBase<Type> {
   /**
    * Final state machine step counter value for the phase.
    *
@@ -70,11 +71,11 @@ export interface AutoBeCompleteEventBase<Phase extends string>
   elapsed: number;
 
   /**
-   * Aggregated token usage and trial statistics by operation type.
+   * Aggregated token usage and function calling metrics by operation type.
    *
    * Maps each event type within the phase to its complete aggregate metrics,
    * including detailed token consumption breakdown with cache statistics and
-   * comprehensive function calling trial data. This comprehensive aggregation
+   * comprehensive function calling metrics data. This comprehensive aggregation
    * enables deep analysis of resource utilization patterns and operation
    * quality across the entire phase.
    *
@@ -83,8 +84,10 @@ export interface AutoBeCompleteEventBase<Phase extends string>
    * will have entries in this mapping.
    *
    * The aggregate data supports cost analysis (via token usage), reliability
-   * assessment (via trial statistics), and optimization opportunities (via
-   * cache hit rates and failure patterns).
+   * assessment (via function calling metrics), and optimization opportunities
+   * (via cache hit rates and failure patterns).
    */
-  aggregates: AutoBeProcessAggregateCollection;
+  aggregates: AutoBeProcessAggregateCollection<
+    Type extends `${infer Phase}Complete` ? `${Phase}` : never
+  >;
 }

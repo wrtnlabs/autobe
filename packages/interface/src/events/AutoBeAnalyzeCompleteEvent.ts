@@ -1,7 +1,6 @@
 import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
-import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
  * Event fired when the Analyze agent completes the requirements analysis
@@ -21,7 +20,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeCompleteEvent
-  extends AutoBeEventBase<"analyzeComplete"> {
+  extends AutoBeCompleteEventBase<"analyzeComplete"> {
   /**
    * Project alias prefix that will be applied to all generated artifacts.
    *
@@ -59,36 +58,4 @@ export interface AutoBeAnalyzeCompleteEvent
    * pipeline including database design, API specification, and implementation.
    */
   files: AutoBeAnalyzeFile[];
-
-  aggregates: AutoBeProcessAggregateCollection<"analyze">;
-
-  /**
-   * Final iteration number of the completed requirements analysis report.
-   *
-   * Indicates the final revision number of the requirements analysis that was
-   * completed. A value of 0 means this is the initial requirements analysis,
-   * while higher values represent the number of revisions that were made based
-   * on user feedback or additional requirements gathering.
-   *
-   * This step number serves as a reference point for other development
-   * artifacts, ensuring they are aligned with the latest requirements.
-   * Development artifacts with lower step values may need regeneration to
-   * reflect the completed analysis.
-   */
-  step: number;
-
-  /**
-   * Elapsed time in milliseconds for the entire requirements analysis process.
-   *
-   * Indicates the total time taken from the start of the requirements analysis
-   * process until its completion. This metric helps in understanding the
-   * efficiency of the requirements gathering and analysis phase, providing
-   * insights into the time investment required for thorough analysis and
-   * documentation of business requirements.
-   *
-   * This elapsed time is same with the difference between the timestamps
-   * recorded in the `created_at` field of the `AutoBeAnalyzeStartEvent` and
-   * this event.
-   */
-  elapsed: number;
 }

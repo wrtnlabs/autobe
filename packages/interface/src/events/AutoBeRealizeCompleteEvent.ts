@@ -1,8 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
-import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
 import { AutoBeRealizeFunction } from "../histories/contents/AutoBeRealizeFunction";
-import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
  * Event fired when the Realize agent completes the implementation of business
@@ -22,7 +21,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeCompleteEvent
-  extends AutoBeEventBase<"realizeComplete"> {
+  extends AutoBeCompleteEventBase<"realizeComplete"> {
   /**
    * Generated authentication and authorization decorators for role-based access
    * control.
@@ -100,42 +99,4 @@ export interface AutoBeRealizeCompleteEvent
    * deployed immediately without any syntax or integration issues.
    */
   compiled: IAutoBeTypeScriptCompileResult;
-
-  aggregates: AutoBeProcessAggregateCollection<"realize">;
-
-  /**
-   * Final iteration number of the requirements analysis this implementation was
-   * completed for.
-   *
-   * Indicates which version of the requirements analysis this implementation
-   * reflects, representing the final synchronization point for the entire
-   * development pipeline. This step number confirms that the completed
-   * implementation is aligned with the latest requirements and incorporates all
-   * design decisions from previous development phases.
-   *
-   * The step value serves as the definitive reference for the completed
-   * application, ensuring that all stakeholders understand which requirements
-   * version has been fully implemented and delivered as working software.
-   */
-  step: number;
-
-  /**
-   * Elapsed time in milliseconds for the entire Realize completion process.
-   *
-   * Indicates the total time taken from the start of the Realize phase until
-   * its completion. This metric helps in understanding the efficiency of the
-   * implementation phase and can be used for process improvement analysis.
-   *
-   * This elapsed time provides insights into the complexity of the
-   * implementation, the number of business logic functions generated, and the
-   * thoroughness of the integration with API specifications and database
-   * schemas. It serves as a performance metric for the Realize agent's code
-   * generation capabilities and the overall efficiency of the implementation
-   * workflow.
-   *
-   * This elapsed time is same with the difference between the timestamps
-   * recorded in the `created_at` field of the `AutoBeRealizeStartEvent` and
-   * this event.
-   */
-  elapsed: number;
 }
