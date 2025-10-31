@@ -112,6 +112,12 @@ pnpm run archive --vendor qwen/qwen3-30b-a3b-instruct-2507 --project bbs > archi
 pnpm run archive --vendor qwen/qwen3-30b-a3b-instruct-2507 --project reddit > archive.qwen-qwen3-30b-a3b-instruct-2507.reddit.log
 pnpm run archive --vendor qwen/qwen3-30b-a3b-instruct-2507 --project shopping > archive.qwen-qwen3-30b-a3b-instruct-2507.shopping.log
 
+# qwen/qwen3-30b-a3b-thinking-2507
+pnpm run archive --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > archive.qwen-qwen3-30b-a3b-thinking-2507.todo.log
+pnpm run archive --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > archive.qwen-qwen3-30b-a3b-thinking-2507.bbs.log
+pnpm run archive --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
+pnpm run archive --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
+
 # qwen/qwen3-235b-a22b-2507
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo > archive.qwen-qwen3-235b-a22b-2507.todo.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs > archive.qwen-qwen3-235b-a22b-2507.bbs.log
