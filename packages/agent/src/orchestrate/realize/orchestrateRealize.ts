@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
+import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
@@ -189,13 +190,17 @@ export const orchestrateRealize =
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
-      created_at: new Date().toISOString(),
       functions: bucket.corrected,
       authorizations,
       controllers,
       compiled: bucket.validate.result,
+      aggregates: AutoBeProcessAggregateFactory.filterPhase(
+        ctx.aggregates,
+        "realize",
+      ),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
+      created_at: new Date().toISOString(),
     });
   };
 

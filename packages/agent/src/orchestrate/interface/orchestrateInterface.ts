@@ -21,6 +21,7 @@ import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
+import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
@@ -191,8 +192,12 @@ export const orchestrateInterface =
       document,
       missed: missedOpenApiSchemas(document),
       authorizations,
-      created_at: new Date().toISOString(),
-      elapsed: new Date().getTime() - start.getTime(),
+      aggregates: AutoBeProcessAggregateFactory.filterPhase(
+        ctx.aggregates,
+        "interface",
+      ),
       step: ctx.state().analyze?.step ?? 0,
+      elapsed: new Date().getTime() - start.getTime(),
+      created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceCompleteEvent);
   };

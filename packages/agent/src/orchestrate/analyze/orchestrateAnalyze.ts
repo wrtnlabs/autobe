@@ -11,6 +11,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
@@ -92,6 +93,10 @@ export const orchestrateAnalyze = async <Model extends ILlmSchema.Model>(
     actors: scenario.actors,
     prefix: scenario.prefix,
     files: newFiles,
+    aggregates: AutoBeProcessAggregateFactory.filterPhase(
+      ctx.aggregates,
+      "analyze",
+    ),
     step,
     elapsed: new Date().getTime() - startTime.getTime(),
     created_at: new Date().toISOString(),

@@ -1,4 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import cp from "child_process";
@@ -29,6 +30,7 @@ export const test_compiler_realize_files = async () => {
           type: "success",
         },
         id: v7(),
+        aggregates: AutoBeProcessAggregateFactory.createCollection(),
         created_at: new Date().toISOString(),
         completed_at: new Date().toISOString(),
         instruction: "Realize files for compiler",

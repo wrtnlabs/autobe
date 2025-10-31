@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
+import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
@@ -104,6 +105,10 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     compiled: await compiler.prisma.compile({
       files: finalSchemas,
     }),
+    aggregates: AutoBeProcessAggregateFactory.filterPhase(
+      ctx.aggregates,
+      "prisma",
+    ),
     step: ctx.state().analyze?.step ?? 0,
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),

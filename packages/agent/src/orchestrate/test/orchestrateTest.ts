@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
+import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
@@ -101,10 +102,14 @@ export const orchestrateTest =
     return ctx.dispatch({
       type: "testComplete",
       id: v7(),
-      created_at: new Date().toISOString(),
       files: corrects.map((s) => s.file),
       compiled: compileResult,
+      aggregates: AutoBeProcessAggregateFactory.filterPhase(
+        ctx.aggregates,
+        "test",
+      ),
       step: ctx.state().interface?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
+      created_at: new Date().toISOString(),
     });
   };

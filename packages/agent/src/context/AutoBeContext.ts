@@ -14,6 +14,7 @@ import {
   AutoBeHistory,
   AutoBeInterfaceHistory,
   AutoBePrismaHistory,
+  AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
   IAutoBeCompiler,
@@ -32,6 +33,9 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   vendor: IAgenticaVendor;
   locale: string;
   retry: number;
+
+  // stack
+  aggregates: AutoBeProcessAggregateCollection;
 
   // accessors
   compilerListener: IAutoBeCompilerListener;

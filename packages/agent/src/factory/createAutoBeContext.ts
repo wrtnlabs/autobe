@@ -13,6 +13,7 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBePrismaHistory,
   AutoBePrismaStartEvent,
+  AutoBeProcessAggregateCollection,
   AutoBeRealizeCompleteEvent,
   AutoBeRealizeHistory,
   AutoBeRealizeStartEvent,
@@ -56,6 +57,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   histories: () => AutoBeHistory[];
   usage: () => AutoBeTokenUsage;
   dispatch: (event: AutoBeEvent) => Promise<void>;
+  aggregates: AutoBeProcessAggregateCollection;
 }): AutoBeContext<Model> => {
   const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
     {
@@ -69,6 +71,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     vendor: props.vendor,
     retry: config.retry,
     locale: config.locale,
+    aggregates: props.aggregates,
     compilerListener: props.compilerListener,
     compiler: async () => {
       const compiler = await props.compiler();

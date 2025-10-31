@@ -1,6 +1,4 @@
-import { AutoBeFunctionCallingMetric } from "../../histories/contents/AutoBeFunctionCallingMetric";
-import { AutoBeAggregateEventType } from "../../typings/AutoBeAggregateEventType";
-import { AutoBeAggregateEventBase } from "./AutoBeAggregateEventBase";
+import { AutoBeProcessAggregateCollection } from "../../histories/contents/AutoBeProcessAggregateCollection";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -29,34 +27,6 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeCompleteEventBase<Phase extends string>
   extends AutoBeEventBase<`${Phase}Complete`> {
-  /**
-   * Aggregated function calling trial statistics by operation type.
-   *
-   * Maps each event type within the phase to its cumulative trial statistics,
-   * tracking total function calling attempts, successful completions,
-   * validation failures, and invalid JSON responses across all iterations of
-   * that operation. This phase-level aggregation enables identification of
-   * which specific operations had the most difficulties during autonomous
-   * execution.
-   *
-   * The partial record structure reflects that not all possible event types may
-   * occur during phase execution. Only operations that were actually performed
-   * will have entries in this mapping.
-   *
-   * @example
-   *   ```typescript
-   *   trials: {
-   *     prismaSchema: { total: 5, success: 4, validationFailure: 1,
-   *   invalidJson: 0 },
-   *     prismaReview: { total: 2, success: 2, validationFailure: 0,
-   *   invalidJson: 0 },
-   *   }
-   *   ```;
-   */
-  trials: Partial<
-    Record<AutoBeAggregateEventType<Phase>, AutoBeFunctionCallingMetric>
-  >;
-
   /**
    * Final state machine step counter value for the phase.
    *
@@ -115,23 +85,6 @@ export interface AutoBeCompleteEventBase<Phase extends string>
    * The aggregate data supports cost analysis (via token usage), reliability
    * assessment (via trial statistics), and optimization opportunities (via
    * cache hit rates and failure patterns).
-   *
-   * @example
-   *   ```typescript
-   *   aggregates: {
-   *     interfaceOperation: {
-   *       tokenUsage: {
-   *         total: 25000,
-   *         input: { total: 15000, cache_creation: 10000, cache_read: 5000 },
-   *         output: { total: 10000, reasoning: 2000 },
-   *       },
-   *       trial: { total: 12, success: 10, validationFailure: 2, invalidJson:
-   *   0 },
-   *     },
-   *   }
-   *   ```;
    */
-  aggregates: Partial<
-    Record<AutoBeAggregateEventType<Phase>, AutoBeAggregateEventBase>
-  >;
+  aggregates: AutoBeProcessAggregateCollection;
 }
