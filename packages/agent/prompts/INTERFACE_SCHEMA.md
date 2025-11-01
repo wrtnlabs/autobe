@@ -3053,6 +3053,202 @@ interface IShoppingOrder.IUpdate {
 }
 ```
 
+#### 4.7.3. File Upload Pattern - URL-Only Rule
+
+**ABSOLUTE RULE: File uploads MUST ALWAYS use pre-uploaded URLs, NEVER binary data or base64 encoding in request bodies.**
+
+AutoBE follows a two-phase file upload pattern:
+1. **Phase 1**: Upload file to storage service (S3, CDN, etc.) → Get URL
+2. **Phase 2**: Submit entity with file URL reference
+
+**WHY URL-ONLY?**
+- ✅ Separates file storage from business logic
+- ✅ Enables validation before entity creation
+- ✅ Supports multiple storage providers (S3, CDN, etc.)
+- ✅ Prevents payload size issues in JSON requests
+- ✅ Allows file reuse across entities
+- ✅ Maintains clean, testable business APIs
+
+**❌ ABSOLUTELY FORBIDDEN - Binary/Base64 in Request DTOs**:
+```typescript
+// 💀 NEVER DO THIS - Base64 encoding in DTO
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  attachments: Array<{
+    filename: string;
+    data: string;  // ❌ base64 encoded data - FORBIDDEN
+  }>;
+}
+
+// 💀 NEVER DO THIS - format: "byte" (base64 encoding)
+{
+  "IBbsArticleAttachment.ICreate": {
+    "type": "object",
+    "properties": {
+      "filename": { "type": "string" },
+      "content": {
+        "type": "string",
+        "format": "byte"  // ❌ FORBIDDEN - base64 in JSON body
+      }
+    }
+  }
+}
+
+// 💀 NEVER DO THIS - format: "binary" (multipart/form-data upload)
+{
+  "IBbsArticleAttachment.ICreate": {
+    "type": "object",
+    "properties": {
+      "filename": { "type": "string" },
+      "file": {
+        "type": "string",
+        "format": "binary"  // ❌ FORBIDDEN - multipart binary upload
+      }
+    }
+  }
+}
+
+// 💀 NEVER DO THIS - contentMediaType without URL
+{
+  "IBbsArticleAttachment.ICreate": {
+    "type": "object",
+    "properties": {
+      "filename": { "type": "string" },
+      "data": {
+        "type": "string",
+        "contentMediaType": "image/jpeg"  // ❌ FORBIDDEN if not URL
+      }
+    }
+  }
+}
+```
+
+**✅ CORRECT - URL-Only Pattern**:
+```typescript
+// ✅ PERFECT - Only URLs in DTOs
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+  attachments?: IBbsArticleAttachment.ICreate[];
+}
+
+interface IBbsArticleAttachment.ICreate {
+  name: string;       // ✅ File name
+  extension: string;  // ✅ File extension (e.g., "jpg", "pdf")
+  url: string;        // ✅ Pre-uploaded file URL (REQUIRED)
+}
+
+// JSON Schema representation
+{
+  "IBbsArticleAttachment.ICreate": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "description": "File name"
+      },
+      "extension": {
+        "type": "string",
+        "description": "File extension (e.g., jpg, pdf, png)"
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded file URL from storage service"
+      }
+    },
+    "required": ["name", "extension", "url"]
+  }
+}
+```
+
+**Implementation Pattern**:
+```typescript
+// Step 1: Client uploads file to storage (separate endpoint)
+POST /files/upload
+Content-Type: multipart/form-data
+→ Returns: { url: "https://cdn.example.com/files/abc123.jpg" }
+
+// Step 2: Client creates entity with file URL
+POST /articles
+{
+  "title": "My Article",
+  "content": "...",
+  "attachments": [
+    {
+      "name": "photo",
+      "extension": "jpg",
+      "url": "https://cdn.example.com/files/abc123.jpg"
+    }
+  ]
+}
+```
+
+**File Attachment Field Requirements**:
+- **MUST** have exactly three fields: `name`, `extension`, `url`
+- **`url`** field MUST use `"format": "uri"` in JSON Schema
+- **All three fields** MUST be required (not optional)
+
+**Common File Upload Scenarios**:
+
+1. **Profile Picture Upload**:
+```typescript
+interface IUser.IUpdate {
+  name?: string;
+  avatar_url?: string;  // ✅ Pre-uploaded image URL
+  bio?: string;
+}
+```
+
+2. **Document Attachments**:
+```typescript
+interface IDocument.ICreate {
+  title: string;
+  description: string;
+  attachments: IDocumentAttachment.ICreate[];  // ✅ Array of URL references
+}
+```
+
+3. **Image Gallery**:
+```typescript
+interface IProduct.ICreate {
+  name: string;
+  description: string;
+  images: IProductImage.ICreate[];
+}
+
+interface IProductImage.ICreate {
+  name: string;       // ✅ Image name
+  extension: string;  // ✅ e.g., "jpg", "png"
+  url: string;        // ✅ Pre-uploaded URL
+  order: number;      // Display order
+  is_primary: boolean; // Main product image
+}
+```
+
+4. **Multiple File Types**:
+```typescript
+interface IReport.ICreate {
+  title: string;
+  summary_pdf_url: string;     // ✅ PDF document URL
+  data_csv_url: string;         // ✅ CSV data URL
+  chart_image_url?: string;     // ✅ Optional chart URL
+}
+```
+
+**CRITICAL VALIDATION POINTS**:
+- ✅ File attachments MUST have exactly three fields: `name`, `extension`, `url`
+- ✅ NEVER accept `data`, `content`, `binary`, `base64` fields
+- ✅ NEVER use `"format": "byte"` (base64 encoding in JSON body)
+- ✅ NEVER use `"format": "binary"` (multipart/form-data binary upload)
+- ✅ NEVER use `contentMediaType` on non-URL string fields
+- ✅ Storage/upload endpoints are separate from business logic endpoints
+
+**Remember**: AutoBE generates **business logic APIs**, not file storage APIs. File upload is infrastructure concern, handled separately. Business DTOs only reference files by URL.
+
 ### 4.8. Summary: Relation Decision Checklist by DTO Type
 
 Use this checklist for every relation decision:

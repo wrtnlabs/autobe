@@ -1202,8 +1202,6 @@ export namespace AutoBeOpenApi {
     export interface IString extends ISignificant<"string"> {
       /** Format restriction. */
       format?:
-        | "binary"
-        | "byte"
         | "password"
         | "regex"
         | "uuid"
@@ -1224,8 +1222,7 @@ export namespace AutoBeOpenApi {
         | "time"
         | "duration"
         | "json-pointer"
-        | "relative-json-pointer"
-        | (string & {});
+        | "relative-json-pointer";
 
       /** Pattern restriction. */
       pattern?: string;

@@ -601,6 +601,308 @@ Across all variants of an entity:
 3. **Ensure description consistency**
 4. **Identify and create missing variants**
 
+### 7.6. Phase 6: File Upload URL-Only Validation
+
+**CRITICAL ENFORCEMENT**: AutoBE has an ABSOLUTE RULE that file uploads MUST ALWAYS use pre-uploaded URLs, NEVER binary data or base64 encoding in request bodies.
+
+For EVERY schema with file-related fields:
+
+1. **Scan for forbidden file upload patterns**
+2. **Replace binary/base64 fields with URL references**
+3. **Add proper file metadata fields**
+4. **Ensure compliance with URL-only rule**
+
+#### 7.6.1. Forbidden Patterns to Detect
+
+**IMMEDIATE RED FLAGS** - These patterns are ABSOLUTELY FORBIDDEN and MUST be replaced:
+
+```typescript
+// 💀 FORBIDDEN PATTERN 1: Suspicious field names without URL format
+{
+  "properties": {
+    "data": { "type": "string" },  // ❌ Field named "data", "content", "binary", "file"
+    "file": { "type": "string" },  // ❌ Without format: uri
+    "image": { "type": "string" },  // ❌ Without format: uri
+    "attachment": { "type": "string" }  // ❌ Without format: uri
+  }
+}
+
+// 💀 FORBIDDEN PATTERN 2: format: "byte" (base64 encoding)
+{
+  "properties": {
+    "document": {
+      "type": "string",
+      "format": "byte"  // ❌ FORBIDDEN - base64 in JSON body
+    }
+  }
+}
+
+// 💀 FORBIDDEN PATTERN 3: format: "binary" (multipart upload)
+{
+  "properties": {
+    "attachment": {
+      "type": "string",
+      "format": "binary"  // ❌ FORBIDDEN - multipart/form-data binary upload
+    }
+  }
+}
+
+// 💀 FORBIDDEN PATTERN 4: contentMediaType without URL
+{
+  "properties": {
+    "photo": {
+      "type": "string",
+      "contentMediaType": "image/jpeg"  // ❌ If not format: uri
+    }
+  }
+}
+
+// 💀 FORBIDDEN PATTERN 5: Base64 or binary mentions in descriptions
+{
+  "properties": {
+    "document": {
+      "type": "string",
+      "description": "Base64 encoded file"  // ❌ Any mention of base64/binary
+    },
+    "file": {
+      "type": "string",
+      "description": "Binary file data"  // ❌ FORBIDDEN
+    }
+  }
+}
+```
+
+#### 7.6.2. Mandatory Corrections
+
+When you detect ANY forbidden pattern, apply these corrections:
+
+**Step 1: Replace individual file fields with URL**:
+```typescript
+// ❌ BEFORE:
+{
+  "properties": {
+    "avatar": {
+      "type": "string",
+      "description": "User profile picture"
+    }
+  }
+}
+
+// ✅ AFTER:
+{
+  "properties": {
+    "avatar_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Pre-uploaded user profile picture URL from storage service"
+    }
+  }
+}
+```
+
+**Step 2: Replace file data objects with attachment objects**:
+```typescript
+// ❌ BEFORE:
+{
+  "IBbsArticleAttachment.ICreate": {
+    "properties": {
+      "filename": { "type": "string" },
+      "data": { "type": "string" }  // ❌ FORBIDDEN
+    }
+  }
+}
+
+// ✅ AFTER:
+{
+  "IBbsArticleAttachment.ICreate": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "description": "File name"
+      },
+      "extension": {
+        "type": "string",
+        "description": "File extension (e.g., jpg, pdf, png)"
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded file URL from storage service"
+      }
+    },
+    "required": ["name", "extension", "url"]
+  }
+}
+```
+
+**Step 3: Convert binary/base64 arrays to URL reference arrays**:
+```typescript
+// ❌ BEFORE:
+{
+  "IDocument.ICreate": {
+    "properties": {
+      "files": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "content": { "type": "string", "format": "binary" }  // ❌ FORBIDDEN
+          }
+        }
+      }
+    }
+  }
+}
+
+// ✅ AFTER:
+{
+  "IDocument.ICreate": {
+    "properties": {
+      "attachments": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/IDocumentAttachment.ICreate"
+        },
+        "description": "Pre-uploaded document attachments"
+      }
+    }
+  },
+  "IDocumentAttachment.ICreate": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "File name"
+      },
+      "extension": {
+        "type": "string",
+        "description": "File extension (e.g., pdf, docx)"
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded file URL from storage service"
+      }
+    },
+    "required": ["name", "extension", "url"]
+  }
+}
+```
+
+#### 7.6.3. File Upload Validation Checklist
+
+For each schema, verify:
+
+- [ ] **NO fields named**: `data`, `content`, `binary`, `base64`, `file`, `attachment` (without format: uri)
+- [ ] **NO `format: "byte"`** anywhere (base64 encoding in JSON body)
+- [ ] **NO `format: "binary"`** anywhere (multipart/form-data binary upload)
+- [ ] **NO `contentMediaType`** without `format: "uri"`
+- [ ] **NO descriptions mentioning**: "base64", "binary data", "file content", "encoded"
+- [ ] **ALL file references use**: `url` field with `format: "uri"`
+- [ ] **ALL file attachment objects have EXACTLY three fields**: `name`, `extension`, `url`
+- [ ] **Simple file fields renamed**: `avatar` → `avatar_url`, `photo` → `photo_url`
+- [ ] **File arrays use**: proper attachment schemas with URL references
+
+#### 7.6.4. Common File Upload Scenarios
+
+**Scenario 1: Profile Picture**
+```typescript
+// ✅ CORRECT:
+{
+  "IUser.IUpdate": {
+    "properties": {
+      "avatar_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded profile picture URL"
+      }
+    }
+  }
+}
+```
+
+**Scenario 2: Document Attachments**
+```typescript
+// ✅ CORRECT:
+{
+  "IArticle.ICreate": {
+    "properties": {
+      "attachments": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/IArticleAttachment.ICreate" }
+      }
+    }
+  },
+  "IArticleAttachment.ICreate": {
+    "properties": {
+      "name": { "type": "string" },
+      "extension": { "type": "string" },
+      "url": { "type": "string", "format": "uri" }
+    },
+    "required": ["name", "extension", "url"]
+  }
+}
+```
+
+**Scenario 3: Multiple File Types**
+```typescript
+// ✅ CORRECT:
+{
+  "IReport.ICreate": {
+    "properties": {
+      "summary_pdf_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded PDF summary document URL"
+      },
+      "data_csv_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded CSV data file URL"
+      },
+      "chart_image_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Pre-uploaded chart image URL"
+      }
+    },
+    "required": ["summary_pdf_url", "data_csv_url"]
+  }
+}
+```
+
+#### 7.6.5. Reporting File Upload Violations
+
+When you find file upload violations, document them clearly:
+
+**In think.review**:
+```markdown
+### File Upload Violations (URL-Only Rule)
+- IUser.ICreate: Field "avatar" missing format: uri (must be avatar_url)
+- IArticle.ICreate: Attachment field "data" uses format: "byte" (base64 - FORBIDDEN)
+- IDocument.ICreate: Field "file" uses format: "binary" (multipart upload - FORBIDDEN)
+- IAttachment.ICreate: Has 5 fields instead of required 3 (name, extension, url)
+- IProduct.ICreate: Field "photo" has contentMediaType without format: uri
+- IAttachment.ICreate: Description mentions "base64 encoded" (FORBIDDEN)
+```
+
+**In think.plan**:
+```markdown
+### File Upload Corrections (URL-Only Rule Enforcement)
+- RENAMED IUser.ICreate.avatar → avatar_url with format: uri
+- REPLACED IArticle.ICreate field "data" (format: byte) with url field (format: uri)
+- REPLACED IDocument.ICreate field "file" (format: binary) with url field (format: uri)
+- SIMPLIFIED IAttachment.ICreate to exactly 3 fields: name, extension, url
+- FIXED IProduct.ICreate.photo to use format: uri instead of contentMediaType alone
+- REMOVED all base64/binary mentions from descriptions
+- CREATED proper attachment schemas with name, extension, url pattern
+```
+
+**REMEMBER**: AutoBE generates **business logic APIs**, not file storage APIs. File upload is an infrastructure concern, handled separately. Business DTOs ONLY reference files by URL. This rule has NO EXCEPTIONS.
+
 ---
 
 ## 9. Complete Content Review Examples
