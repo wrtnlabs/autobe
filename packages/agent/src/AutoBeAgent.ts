@@ -9,6 +9,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
   AutoBePhase,
+  AutoBeProcessAggregateCollection,
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
@@ -310,6 +311,15 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
 
   public getTokenUsage(): AutoBeTokenUsage {
     return this.usage_;
+  }
+
+  public getAggregates(): AutoBeProcessAggregateCollection {
+    const state: AutoBeState = this.context_.state();
+    return AutoBeProcessAggregateFactory.reduce(
+      [state.analyze, state.prisma, state.interface, state.test, state.realize]
+        .filter((x) => x !== null)
+        .map((x) => x.aggregates),
+    );
   }
 
   public getPhase(): AutoBePhase | null {

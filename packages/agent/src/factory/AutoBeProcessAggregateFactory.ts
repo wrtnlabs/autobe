@@ -74,4 +74,31 @@ export namespace AutoBeProcessAggregateFactory {
     }
     return result;
   };
+
+  export const reduce = (
+    collections: AutoBeProcessAggregateCollection[],
+  ): AutoBeProcessAggregateCollection => {
+    const result: AutoBeProcessAggregateCollection = createCollection();
+    for (const collection of collections) {
+      for (const [key, value] of Object.entries(collection)) {
+        if (key === "total") continue;
+        (result as any)[key] ??= createAggregate();
+        const local: AutoBeProcessAggregate = (result as any)[
+          key
+        ] as AutoBeProcessAggregate;
+        AutoBeFunctionCallingMetricFactory.increment(
+          local.metric,
+          value.metric,
+        );
+        TokenUsageComputer.increment(local.tokenUsage, value.tokenUsage);
+        AutoBeFunctionCallingMetricFactory.increment(
+          result.total.metric,
+          value.metric,
+        );
+        TokenUsageComputer.increment(result.total.tokenUsage, value.tokenUsage);
+      }
+    }
+    result.total = computeTotal(result);
+    return result;
+  };
 }
