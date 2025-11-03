@@ -5,15 +5,13 @@ import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import cp from "child_process";
 import fs from "fs";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
-import { TestProject } from "../structures/TestProject";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
+import { AutoBePlaygroundReplayDocumentation } from "./utils/AutoBePlaygroundReplayDocumentation";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const initialize = async (): Promise<void> => {
@@ -31,70 +29,6 @@ const initialize = async (): Promise<void> => {
       stdio: "inherit",
     },
   );
-};
-
-const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
-  const section = (exp: IAutoBePlaygroundBenchmark): string => {
-    const row = (project: TestProject): string => {
-      const found = exp.replays.find((r) => r.project === project);
-      if (found === undefined)
-        return `\`${project}\` | 0 | ❌ | ❌ | ❌ | ❌ | ❌`;
-      const phase = (
-        state: IAutoBePlaygroundReplay.IPhaseState | null,
-      ): string => {
-        if (state === null) return "❌";
-        else if (state.success === false) return "🟡";
-        else return "🟢";
-      };
-      return [
-        `[\`${found.project}\`](./${exp.vendor}/${found.project}/)`,
-        (exp.score as any)[project],
-        phase(found.analyze),
-        phase(found.prisma),
-        phase(found.interface),
-        phase(found.test),
-        phase(found.realize),
-      ].join(" | ");
-    };
-
-    return StringUtil.trim`
-      ## \`${exp.vendor}\`
-      
-      Project | Score | Analyze | Prisma | Interface | Test | Realize
-      :-------|------:|:-------:|:------:|:----------|:----:|:-------:
-      ${row("todo")}
-      ${row("bbs")}
-      ${row("reddit")}
-      ${row("shopping")}
-
-      ![](https://autobe.dev/images/demonstrate/replay-${TestHistory.slugModel(
-        exp.vendor,
-        true,
-      )}.png)
-    `;
-  };
-  return StringUtil.trim`
-    # AutoBe Generated Examples
-
-    ## Benchmark
-
-    AI Model | Score | Status 
-    :--------|------:|:------:
-    ${experiments
-      .map((e) =>
-        [
-          `[\`${TestHistory.slugModel(
-            e.vendor,
-            false,
-          )}\`](#${TestHistory.slugModel(e.vendor, true)})`,
-          e.score.aggregate,
-          e.emoji,
-        ].join(" | "),
-      )
-      .join("\n")}
-
-    ${experiments.map(section).join("\n\n")}
-  `;
 };
 
 const main = async (): Promise<void> => {
@@ -146,7 +80,7 @@ const main = async (): Promise<void> => {
   );
 
   // COMMIT
-  bucket["README.md"] = readme(experiments);
+  bucket["README.md"] = AutoBePlaygroundReplayDocumentation.readme(experiments);
   for (const file of await fs.promises.readdir(
     `${TestGlobal.ROOT}/repositories/examples`,
   )) {

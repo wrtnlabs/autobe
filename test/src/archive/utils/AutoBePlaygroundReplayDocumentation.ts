@@ -15,20 +15,35 @@ export namespace AutoBePlaygroundReplayDocumentation {
     
         ## Benchmark
     
-        AI Model | Score | Status 
-        :--------|------:|:------:
+        AI Model | Score | FCSR | Status 
+        :--------|------:|-----:|:------:
         ${experiments
           .map((e) =>
             [
               `[\`${TestHistory.slugModel(
                 e.vendor,
                 false,
-              )}\`](#${TestHistory.slugModel(e.vendor, true)})`,
+              )}\`](#${TestHistory.slugModel(e.vendor, false)
+                .replaceAll("/", "")
+                .replaceAll(".", "")})`,
               e.score.aggregate,
+              (() => {
+                const [x, y] = e.replays
+                  .map((r) => r.aggregates.total.metric)
+                  .map((m) => [m.success, m.attempt])
+                  .reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+                return y === 0 ? "0%" : Math.floor((x / y) * 100) + "%";
+              })(),
               e.emoji,
             ].join(" | "),
           )
           .join("\n")}
+
+        - FCSR: Function Calling Success Rate
+        - Status:
+          - 🟢: All projects completed successfully
+          - 🟡: Some projects failed
+          - ❌: All projects failed or not executed
 
         ${experiments.map(vendor).join("\n\n\n")}
       `;
@@ -66,17 +81,14 @@ export namespace AutoBePlaygroundReplayDocumentation {
       ${row("reddit")}
       ${row("shopping")}
 
-      ![](https://autobe.dev/images/demonstrate/replay-${TestHistory.slugModel(
-        exp.vendor,
-        true,
-      )}.png)
-
-      ${exp.replays.map((r) =>
-        project({
-          replay: r,
-          score: (exp.score as any)[r.project],
-        }),
-      )}
+      ${exp.replays
+        .map((r) =>
+          project({
+            replay: r,
+            score: (exp.score as any)[r.project],
+          }),
+        )
+        .join("\n\n\n")}
     `;
   };
 
@@ -89,45 +101,45 @@ export namespace AutoBePlaygroundReplayDocumentation {
       if (props.replay[key] === null)
         return [`⚪ ${title}`, "", "", "", ""].join(" | ");
       return [
-        `${props.replay[key].success === true ? "🟢" : "🔴"} title`,
+        `${props.replay[key].success === true ? "🟢" : "🔴"} ${title}`,
         Object.entries(props.replay[key].commodity)
           .map(([key, value]) => `\`${key}\`: ${value}`)
           .join(", "),
-        props.replay[key].aggregates.total.tokenUsage.total,
+        formatTokens(props.replay[key].aggregates.total.tokenUsage.total),
         formatElapsedTime(props.replay[key].elapsed),
+        Math.floor(
+          (props.replay.aggregates.total.metric.success /
+            props.replay.aggregates.total.metric.attempt) *
+            100,
+        ) + "%",
       ].join(" | ");
     };
-    const records: string[] = Object.entries(props.replay.aggregates)
-      .filter(([a]) => a !== "all")
-      .map(([k, { metric }]) =>
-        [
-          k,
-          metric.attempt,
-          metric.success,
-          metric.consent,
-          metric.validationFailure,
-          metric.invalidJson,
-        ].join(" | "),
-      );
     return StringUtil.trim`
       ### \`${props.replay.vendor} - ${props.replay.project}\`
 
-      - Github Repository: ${`[\`${props.replay}.project}\`](./${props.replay.vendor}/${props.replay.project}/)`}
+      - Source Code: ${`[\`${TestHistory.slugModel(
+        props.replay.vendor,
+        false,
+      )}/${props.replay.project}\`](./${TestHistory.slugModel(
+        props.replay.vendor,
+        false,
+      )}/${props.replay.project}/)`}
       - Score: ${props.score}
+      - Elapsed Time: ${formatElapsedTime(props.replay.elapsed)}
+      - Token Usage: ${formatTokens(
+        props.replay.aggregates.total.tokenUsage.total,
+      )}
+      - Function Calling Success Rate: ${(
+        (props.replay.aggregates.total.metric.success /
+          props.replay.aggregates.total.metric.attempt) *
+        100
+      ).toFixed(2)}%
 
-      #### Phase Performance
-
-      Phase | Generated | Token Consumption | Elapsed Time
-      :-----|:----------|:------------------:|:-----------:
+      Phase | Generated | Token Usage | Elapsed Time | FCSR
+      :-----|:----------|------------:|-------------:|------:
       ${(["analyze", "prisma", "interface", "test", "realize"] as const)
         .map((key) => phase(key))
         .join("\n")}
-      
-      #### Function Calling Performance
-
-      Event | Attempt | Success | Consent | Validation Failure | Invalid JSON
-      :-----|--------:|:-------:|:-------:|:------------------:|:-------------:
-      ${records.join("\n")}
     `;
   };
 }
@@ -148,4 +160,13 @@ function formatElapsedTime(ms: number): string {
   } else {
     return `${s}s`;
   }
+}
+
+function formatTokens(num: number): string {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(2)}M`;
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  }
+  return num.toString();
 }

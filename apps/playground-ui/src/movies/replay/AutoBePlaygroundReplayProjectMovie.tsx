@@ -76,6 +76,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
   const getPhaseIndex = (p: AutoBePhase | null) => phases.indexOf(p ?? "null");
   const phaseColor = getPhaseColor(replay.phase);
   const vendorColor = getVendorColor(replay.vendor);
+  const tokenUsage = replay.aggregates.total.tokenUsage;
 
   return (
     <Card
@@ -373,7 +374,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                     },
                   }}
                 >
-                  {formatTokenCount(replay.tokenUsage.aggregate.total)}
+                  {formatTokenCount(tokenUsage.total)}
                 </Typography>
                 <Stack direction="column" spacing={0} sx={{ mt: 0.2 }}>
                   <Typography
@@ -386,11 +387,9 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                       color: "text.secondary",
                     }}
                   >
-                    in:{" "}
-                    {formatTokenCount(replay.tokenUsage.aggregate.input.total)}
-                    {replay.tokenUsage.aggregate.input.cached &&
-                    replay.tokenUsage.aggregate.input.cached > 0
-                      ? ` (${formatTokenCount(replay.tokenUsage.aggregate.input.cached)} cached)`
+                    in: {formatTokenCount(tokenUsage.input.total)}
+                    {tokenUsage.input.cached && tokenUsage.input.cached > 0
+                      ? ` (${formatTokenCount(tokenUsage.input.cached)} cached)`
                       : ""}
                   </Typography>
                   <Typography
@@ -403,8 +402,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                       color: "text.secondary",
                     }}
                   >
-                    out:{" "}
-                    {formatTokenCount(replay.tokenUsage.aggregate.output.total)}
+                    out: {formatTokenCount(tokenUsage.output.total)}
                   </Typography>
                 </Stack>
               </Stack>

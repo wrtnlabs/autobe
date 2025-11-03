@@ -1,7 +1,7 @@
 import { AutoBeMockAgent } from "@autobe/agent";
+import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import { CompressUtil } from "@autobe/filesystem";
 import {
-  AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBePhase,
   IAutoBePlaygroundReplay,
@@ -97,13 +97,10 @@ export namespace AutoBePlaygroundReplayProvider {
         const histories: AutoBeHistory[] = await load(
           `${r.project}.${r.phase}.json.gz`,
         );
-        const snapshots: AutoBeEventSnapshot[] = await load(
-          `${r.project}.${r.phase}.snapshots.json.gz`,
-        );
         const predicate = <Type extends AutoBePhase>(
           type: Type,
           success: (history: AutoBeHistory.Mapper[Type]) => boolean,
-          aggregate: (
+          commodity: (
             history: AutoBeHistory.Mapper[Type],
           ) => Record<string, number>,
         ): IAutoBePlaygroundReplay.IPhaseState | null => {
@@ -114,16 +111,28 @@ export namespace AutoBePlaygroundReplayProvider {
           if (history === undefined) return null;
           return {
             success: success(history),
-            aggregate: aggregate(history),
+            commodity: commodity(history),
             elapsed:
               new Date(history.completed_at).getTime() -
               new Date(history.created_at).getTime(),
+            aggregates: history.aggregates,
           };
         };
 
         return {
           ...r,
-          tokenUsage: snapshots.at(-1)!.tokenUsage,
+          aggregates: AutoBeProcessAggregateFactory.reduce(
+            histories
+              .filter(
+                (h) =>
+                  h.type === "analyze" ||
+                  h.type === "prisma" ||
+                  h.type === "interface" ||
+                  h.type === "test" ||
+                  h.type === "realize",
+              )
+              .map((h) => h.aggregates),
+          ),
           elapsed: histories
             .filter(
               (h) => h.type !== "userMessage" && h.type !== "assistantMessage",
