@@ -24,14 +24,20 @@ export default function AutoBeDemoProjectMovie(
     replay.project.charAt(0).toUpperCase() + replay.project.slice(1);
 
   // Generate URL based on vendor and project
-  const vendor = replay.vendor.replace(/\//g, "-");
   const url = `https://github.com/wrtnlabs/autobe-examples/tree/main/${replay.vendor}/${replay.project}`;
 
-  const tokenUsage = replay.tokenUsage.aggregate;
+  const tokenUsage = replay.aggregates.total.tokenUsage;
   const totalTokens = formatTokens(tokenUsage.total);
   const inputTokens = formatTokens(tokenUsage.input.total);
   const cachedTokens = formatTokens(tokenUsage.input.cached);
   const outputTokens = formatTokens(tokenUsage.output.total);
+
+  // Calculate function calling success rate
+  const successRate = (
+    (replay.aggregates.total.metric.success /
+      replay.aggregates.total.metric.attempt) *
+    100
+  ).toFixed(2);
 
   // Detect container width to show/hide time column
   const containerRef = useRef<HTMLAnchorElement>(null);
@@ -123,8 +129,8 @@ export default function AutoBeDemoProjectMovie(
                 );
               }
 
-              const detail = phase.aggregate
-                ? Object.entries(phase.aggregate)
+              const detail = phase.commodity
+                ? Object.entries(phase.commodity)
                     .map(([key, value]) => `${key}: ${value}`)
                     .join(", ")
                 : "-";
@@ -174,6 +180,15 @@ export default function AutoBeDemoProjectMovie(
       </div>
 
       <div className="border-t border-gray-600 pt-4">
+        {/* Function Calling Success Rate */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center text-sm text-gray-400">
+            <span className="mr-2">✓</span>
+            <span>Function Calling Success Rate</span>
+          </div>
+          <span className="text-green-400 font-bold">{successRate}%</span>
+        </div>
+
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center text-sm text-gray-400">
             <span className="mr-2">⏱</span>

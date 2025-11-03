@@ -13,6 +13,7 @@ import {
   AutoBeFunctionCallingMetric,
   AutoBeHistory,
   AutoBeInterfaceHistory,
+  AutoBePhase,
   AutoBePrismaHistory,
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
@@ -34,16 +35,17 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   locale: string;
   retry: number;
 
-  // stack
-  aggregates: AutoBeProcessAggregateCollection;
-
   // accessors
+  aggregates: AutoBeProcessAggregateCollection;
   compilerListener: IAutoBeCompilerListener;
   compiler: () => Promise<IAutoBeCompiler>;
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => Readonly<AutoBeHistory[]>;
   state: () => Readonly<AutoBeState>;
   usage: () => AutoBeTokenUsage;
+  getCurrentAggregates: (
+    phase: AutoBePhase,
+  ) => AutoBeProcessAggregateCollection;
 
   // events
   dispatch: <Event extends Exclude<AutoBeEvent, AutoBeAssistantMessageEvent>>(

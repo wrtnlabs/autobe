@@ -275,8 +275,8 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                         </Typography>
 
                         {/* Aggregate info */}
-                        {stepData?.aggregate &&
-                          Object.keys(stepData.aggregate).length > 0 && (
+                        {stepData?.commodity &&
+                          Object.keys(stepData.commodity).length > 0 && (
                             <Typography
                               component="span"
                               sx={{
@@ -289,7 +289,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                               }}
                             >
                               (
-                              {Object.entries(stepData.aggregate).map(
+                              {Object.entries(stepData.commodity).map(
                                 ([key, value], index) => (
                                   <Box
                                     key={key}

@@ -20,9 +20,8 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
-import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
+import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
@@ -192,10 +191,7 @@ export const orchestrateInterface =
       document,
       missed: missedOpenApiSchemas(document),
       authorizations,
-      aggregates: AutoBeProcessAggregateFactory.filterPhase(
-        ctx.aggregates,
-        "interface",
-      ),
+      aggregates: ctx.getCurrentAggregates("interface"),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
       created_at: new Date().toISOString(),

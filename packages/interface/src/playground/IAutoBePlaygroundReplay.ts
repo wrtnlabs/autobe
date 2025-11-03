@@ -1,6 +1,6 @@
 import { AutoBeEventSnapshot } from "../events/AutoBeEventSnapshot";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
-import { IAutoBeTokenUsageJson } from "../json";
+import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 
 /**
  * Interface representing replay data for vibe coding session playback.
@@ -145,15 +145,7 @@ export namespace IAutoBePlaygroundReplay {
    * the vibe coding pipeline.
    */
   export interface ISummary extends IProps {
-    /**
-     * Aggregated token usage across all AI interactions.
-     *
-     * Comprehensive token consumption metrics including prompt tokens,
-     * completion tokens, and total usage across all agents and phases. This
-     * data helps in understanding resource utilization and optimizing AI model
-     * usage for cost-effective development.
-     */
-    tokenUsage: IAutoBeTokenUsageJson;
+    aggregates: AutoBeProcessAggregateCollection;
 
     /**
      * Total elapsed time for the entire vibe coding session in milliseconds.
@@ -239,14 +231,28 @@ export namespace IAutoBePlaygroundReplay {
     elapsed: number;
 
     /**
-     * Aggregated event counts by event type for this phase.
+     * Count of generated elements by category for this phase.
      *
-     * Provides a frequency distribution of different event types that occurred
-     * during the phase execution. Keys represent event type names and values
-     * indicate occurrence counts, offering insights into phase complexity and
-     * AI interaction patterns.
+     * Provides the number of key artifacts generated during the phase
+     * execution. Each phase produces different types of elements:
+     *
+     * - Analyze: actors, documents
+     * - Prisma: namespaces, models
+     * - Interface: operations, schemas
+     * - Test: functions
+     * - Realize: functions
+     *
+     * Keys represent element type names (e.g., "actors", "operations") and
+     * values indicate the count of each element type generated, offering
+     * insights into the scope and complexity of the generated application.
+     *
+     * @example
+     *   { actors: 3, documents: 11 }  // Analyze phase
+     *   { operations: 34, schemas: 35 }  // Interface phase
      */
-    aggregate: Record<string, number>;
+    commodity: Record<string, number>;
+
+    aggregates: AutoBeProcessAggregateCollection;
   }
 
   export type Collection = Record<string, IAutoBePlaygroundReplay.ISummary[]>;

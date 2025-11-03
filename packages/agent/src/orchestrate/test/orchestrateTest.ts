@@ -11,9 +11,8 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
-import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
+import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { orchestrateTestWrite } from "./orchestrateTestWrite";
@@ -104,10 +103,7 @@ export const orchestrateTest =
       id: v7(),
       files: corrects.map((s) => s.file),
       compiled: compileResult,
-      aggregates: AutoBeProcessAggregateFactory.filterPhase(
-        ctx.aggregates,
-        "test",
-      ),
+      aggregates: ctx.getCurrentAggregates("test"),
       step: ctx.state().interface?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
       created_at: new Date().toISOString(),

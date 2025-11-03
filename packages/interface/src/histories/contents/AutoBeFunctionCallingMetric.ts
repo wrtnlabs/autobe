@@ -27,7 +27,7 @@ export interface AutoBeFunctionCallingMetric {
    * agent, regardless of outcome. This baseline metric enables calculation of
    * success rates and overall agent activity levels.
    */
-  total: number;
+  attempt: number;
 
   /**
    * Number of successful function calls.

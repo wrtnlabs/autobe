@@ -1,7 +1,7 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
+import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
-import { IAutoBeFacadeApplication } from "./IAutoBeFacadeApplication";
 
 /**
  * Comprehensive token usage tracker for the AutoBe vibe coding system.

@@ -13,6 +13,7 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBePrismaHistory,
   AutoBePrismaStartEvent,
+  AutoBeProcessAggregate,
   AutoBeProcessAggregateCollection,
   AutoBeRealizeCompleteEvent,
   AutoBeRealizeHistory,
@@ -36,11 +37,13 @@ import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
-import { IAutoBeFacadeApplication } from "../context/IAutoBeFacadeApplication";
+import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
 import { TimedConversation } from "../utils/TimedConversation";
+import { TokenUsageComputer } from "../utils/TokenUsageComputer";
+import { AutoBeProcessAggregateFactory } from "./AutoBeProcessAggregateFactory";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
@@ -90,12 +93,35 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
       return message;
     },
     conversate: async (next, closure) => {
-      const metric: AutoBeFunctionCallingMetric = {
-        total: 0,
-        success: 0,
-        consent: 0,
-        validationFailure: 0,
-        invalidJson: 0,
+      const aggregate: AutoBeProcessAggregate =
+        AutoBeProcessAggregateFactory.createAggregate();
+      const metric = (key: keyof AutoBeFunctionCallingMetric) => {
+        const accumulate = (collection: AutoBeProcessAggregateCollection) => {
+          ++collection.total.metric[key];
+          collection[next.source as "analyzeWrite"] ??=
+            AutoBeProcessAggregateFactory.createAggregate();
+          ++collection[next.source as "analyzeWrite"]!.metric[key];
+        };
+        ++aggregate.metric[key];
+        accumulate(props.aggregates);
+      };
+      const consume = (tokenUsage: IAutoBeTokenUsageJson.IComponent) => {
+        const accumulate = (collection: AutoBeProcessAggregateCollection) => {
+          TokenUsageComputer.increment(collection.total.tokenUsage, tokenUsage);
+          collection[next.source as "analyzeWrite"] ??=
+            AutoBeProcessAggregateFactory.createAggregate();
+          TokenUsageComputer.increment(
+            collection[next.source as "analyzeWrite"]!.tokenUsage,
+            tokenUsage,
+          );
+        };
+        TokenUsageComputer.increment(aggregate.tokenUsage, tokenUsage);
+        accumulate(props.aggregates);
+        props
+          .usage()
+          .record(tokenUsage, [
+            STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
+          ]);
       };
       const progress = {
         request: 0,
@@ -124,7 +150,6 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event) => {
-          ++metric.total;
           if (next.enforceFunctionCall === true && event.body.tools)
             event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
@@ -148,8 +173,11 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             })
             .catch(() => {});
         });
+        agent.on("call", () => {
+          metric("attempt");
+        });
         agent.on("jsonParseError", (event) => {
-          ++metric.invalidJson;
+          metric("invalidJson");
           void props
             .dispatch({
               ...event,
@@ -158,7 +186,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             .catch(() => {});
         });
         agent.on("validate", (event) => {
-          ++metric.validationFailure;
+          metric("validationFailure");
           void props
             .dispatch({
               type: "jsonValidateError",
@@ -207,16 +235,14 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           .record(tokenUsage, [
             STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
           ]);
+        consume(tokenUsage);
 
-        const success = (
-          histories: MicroAgenticaHistory<Model>[],
-          tokenUsage: IAutoBeTokenUsageJson.IComponent,
-        ) => {
-          ++metric.success;
+        const success = (histories: MicroAgenticaHistory<Model>[]) => {
+          metric("success");
           return {
-            histories: histories,
-            tokenUsage,
-            metric,
+            histories,
+            tokenUsage: aggregate.tokenUsage,
+            metric: aggregate.metric,
           };
         };
         if (result.type === "error") throw result.error;
@@ -258,7 +284,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             last?.type === "assistantMessage" &&
             last.text.trim().length !== 0
           ) {
-            ++metric.consent;
+            metric("consent");
             const consent: string | null = await consentFunctionCall({
               source: next.source,
               dispatch: (e) => {
@@ -271,36 +297,45 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             if (consent !== null) {
               const newHistories: MicroAgenticaHistory<Model>[] =
                 await agent.conversate(consent);
-              const newTokenUsage: IAutoBeTokenUsageJson.IComponent = agent
-                .getTokenUsage()
-                .toJSON().aggregate;
-              props
-                .usage()
-                .record(
-                  AutoBeTokenUsageComponent.minus(
-                    new AutoBeTokenUsageComponent(newTokenUsage),
-                    new AutoBeTokenUsageComponent(tokenUsage),
+              const newTokenUsage: IAutoBeTokenUsageJson.IComponent =
+                AutoBeTokenUsageComponent.minus(
+                  new AutoBeTokenUsageComponent(
+                    agent.getTokenUsage().toJSON().aggregate,
                   ),
-                  [
-                    STAGES.find((stage) => next.source.startsWith(stage)) ??
-                      "analyze",
-                  ],
+                  new AutoBeTokenUsageComponent(tokenUsage),
                 );
-              if (
-                newHistories.some(
-                  (h) => h.type === "execute" && h.success === true,
-                )
-              )
-                return success(newHistories, newTokenUsage);
+              consume(newTokenUsage);
+              if (newHistories.some((h) => h.type === "execute" && h.success))
+                return success(newHistories);
             }
           }
           failure();
         }
-        return success(result.histories, tokenUsage);
+        return success(result.histories);
       };
       if (next.enforceFunctionCall === true)
         return await forceRetry(execute, config.retry);
       else return await execute();
+    },
+    getCurrentAggregates: (phase) => {
+      const previous: AutoBeProcessAggregateCollection =
+        AutoBeProcessAggregateFactory.reduce(
+          props
+            .histories()
+            .filter(
+              (h) =>
+                h.type === "analyze" ||
+                h.type === "prisma" ||
+                h.type === "interface" ||
+                h.type === "test" ||
+                h.type === "realize",
+            )
+            .map((h) => h.aggregates),
+        );
+      return AutoBeProcessAggregateFactory.filterPhase(
+        AutoBeProcessAggregateFactory.minus(props.aggregates, previous),
+        phase,
+      );
     },
   };
 };

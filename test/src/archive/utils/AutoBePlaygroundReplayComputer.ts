@@ -1,4 +1,4 @@
-import { AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import {
   AutoBeHistory,
   AutoBePhase,
@@ -76,7 +76,7 @@ export namespace AutoBePlaygroundReplayComputer {
     const predicate = <Type extends AutoBePhase>(
       type: Type,
       success: (history: AutoBeHistory.Mapper[Type]) => boolean,
-      aggregate: (
+      commodity: (
         history: AutoBeHistory.Mapper[Type],
       ) => Record<string, number>,
     ): IAutoBePlaygroundReplay.IPhaseState | null => {
@@ -92,10 +92,11 @@ export namespace AutoBePlaygroundReplayComputer {
       if (history === undefined) return null;
       return {
         success: success(history),
-        aggregate: aggregate(history),
+        commodity: commodity(history),
         elapsed:
           new Date(history.completed_at).getTime() -
           new Date(history.created_at).getTime(),
+        aggregates: history.aggregates,
       };
     };
     const phaseStates: Record<
@@ -160,13 +161,18 @@ export namespace AutoBePlaygroundReplayComputer {
     return {
       vendor: replay.vendor,
       project: replay.project,
-      tokenUsage:
-        replay.realize?.at(-1)?.tokenUsage ??
-        replay.test?.at(-1)?.tokenUsage ??
-        replay.interface?.at(-1)?.tokenUsage ??
-        replay.prisma?.at(-1)?.tokenUsage ??
-        replay.analyze?.at(-1)?.tokenUsage ??
-        new AutoBeTokenUsage().toJSON(),
+      aggregates: AutoBeProcessAggregateFactory.reduce(
+        replay.histories
+          .filter(
+            (h) =>
+              h.type === "analyze" ||
+              h.type === "prisma" ||
+              h.type === "interface" ||
+              h.type === "test" ||
+              h.type === "realize",
+          )
+          .map((h) => h.aggregates),
+      ),
       elapsed: replay.histories
         .filter(
           (h) => h.type !== "userMessage" && h.type !== "assistantMessage",

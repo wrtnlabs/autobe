@@ -98,7 +98,44 @@ export namespace AutoBeProcessAggregateFactory {
         TokenUsageComputer.increment(result.total.tokenUsage, value.tokenUsage);
       }
     }
-    result.total = computeTotal(result);
+    result.total ??= createAggregate();
+    Object.assign(result.total, computeTotal(result));
+    return result;
+  };
+
+  export const increment = (
+    x: AutoBeProcessAggregateCollection,
+    y: AutoBeProcessAggregateCollection,
+  ): void => {
+    for (const [key, value] of Object.entries(y)) {
+      if (key === "total") continue;
+      (x as any)[key] ??= createAggregate();
+      const local: AutoBeProcessAggregate = (x as any)[
+        key
+      ] as AutoBeProcessAggregate;
+      AutoBeFunctionCallingMetricFactory.increment(local.metric, value.metric);
+    }
+    x.total ??= createAggregate();
+    Object.assign(x.total, computeTotal(x));
+  };
+
+  export const minus = (
+    x: AutoBeProcessAggregateCollection,
+    y: AutoBeProcessAggregateCollection,
+  ): AutoBeProcessAggregateCollection => {
+    const result = JSON.parse(
+      JSON.stringify(x),
+    ) as AutoBeProcessAggregateCollection;
+    for (const [key, value] of Object.entries(y)) {
+      if (key === "total") continue;
+      (result as any)[key] ??= createAggregate();
+      const local: AutoBeProcessAggregate = (result as any)[
+        key
+      ] as AutoBeProcessAggregate;
+      AutoBeFunctionCallingMetricFactory.minus(local.metric, value.metric);
+    }
+    result.total ??= createAggregate();
+    Object.assign(result.total, computeTotal(result));
     return result;
   };
 }

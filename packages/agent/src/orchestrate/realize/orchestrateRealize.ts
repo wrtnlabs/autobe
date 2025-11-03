@@ -13,10 +13,9 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
-import { AutoBeProcessAggregateFactory } from "../../factory/AutoBeProcessAggregateFactory";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
+import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
@@ -194,10 +193,7 @@ export const orchestrateRealize =
       authorizations,
       controllers,
       compiled: bucket.validate.result,
-      aggregates: AutoBeProcessAggregateFactory.filterPhase(
-        ctx.aggregates,
-        "realize",
-      ),
+      aggregates: ctx.getCurrentAggregates("realize"),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
       created_at: new Date().toISOString(),

@@ -26,12 +26,12 @@ import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { AutoBeProcessAggregateFactory } from "./factory/AutoBeProcessAggregateFactory";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
-import { createAutoBeController } from "./factory/createAutoBeApplication";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { supportMistral } from "./factory/supportMistral";
-import { transformFacadeStateMessage } from "./orchestrate/facade/transformFacadeStateMessage";
+import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
+import { transformFacadeStateMessage } from "./orchestrate/facade/structures/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
 import { randomBackoffStrategy } from "./utils/backoffRetry";
 
@@ -73,13 +73,16 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
   private readonly histories_: AutoBeHistory[];
 
   /** @internal */
-  private readonly context_: Omit<AutoBeContext<Model>, "aggregates">;
+  private readonly context_: AutoBeContext<Model>;
 
   /** @internal */
   private readonly state_: AutoBeState;
 
   /** @internal */
   private readonly usage_: AutoBeTokenUsage;
+
+  /** @internal */
+  private readonly aggregates_: AutoBeProcessAggregateCollection;
 
   /* -----------------------------------------------------------
     CONSTRUCTOR
@@ -131,10 +134,26 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     const compiler = new Singleton(async () =>
       props.compiler(compilerListener),
     );
+
+    // CONTEXT
+    this.aggregates_ = !!props.histories?.length
+      ? AutoBeProcessAggregateFactory.reduce(
+          props.histories
+            .filter(
+              (h) =>
+                h.type === "analyze" ||
+                h.type === "prisma" ||
+                h.type === "interface" ||
+                h.type === "test" ||
+                h.type === "realize",
+            )
+            .map((h) => h.aggregates),
+        )
+      : AutoBeProcessAggregateFactory.createCollection();
     this.context_ = createAutoBeContext({
       model: props.model,
       vendor: props.vendor,
-      aggregates: AutoBeProcessAggregateFactory.createCollection(),
+      aggregates: this.aggregates_,
       config: {
         backoffStrategy: randomBackoffStrategy,
         ...props.config,
@@ -147,6 +166,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       usage: () => this.usage_,
       dispatch: (event) => this.dispatch(event),
     });
+
+    // AGENTICA
     this.agentica_ = new MicroAgentica({
       vendor,
       model: props.model,
@@ -162,15 +183,13 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         },
       },
       controllers: [
-        createAutoBeController({
+        createAutoBeFacadeController({
           model: props.model,
           context: this.getContext(),
         }),
       ],
     });
     supportMistral(this.agentica_, props.vendor);
-
-    // HISTORIES MANIPULATION
     this.agentica_.getHistories().push(
       ...this.histories_
         .map((history) =>
@@ -313,7 +332,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     return this.usage_;
   }
 
-  public getAggregates(): AutoBeProcessAggregateCollection {
+  public getAggregates(
+    latest: boolean = false,
+  ): AutoBeProcessAggregateCollection {
+    if (latest === false) return this.aggregates_;
     const state: AutoBeState = this.context_.state();
     return AutoBeProcessAggregateFactory.reduce(
       [state.analyze, state.prisma, state.interface, state.test, state.realize]
@@ -336,9 +358,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
 
   /** @internal */
   public getContext(): AutoBeContext<Model> {
-    return {
-      ...this.context_,
-      aggregates: AutoBeProcessAggregateFactory.createCollection(),
-    };
+    return this.context_;
   }
 }
