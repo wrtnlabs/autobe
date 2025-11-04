@@ -1,5 +1,6 @@
 import { orchestrateInterfacePrerequisites } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisites";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeEventOfSerializable, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import fs from "fs";
@@ -8,7 +9,6 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 

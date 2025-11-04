@@ -2,12 +2,12 @@ import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import cp from "child_process";
 import OpenAI from "openai";
 import { v7 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
-import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_realize_files = async () => {
   if (

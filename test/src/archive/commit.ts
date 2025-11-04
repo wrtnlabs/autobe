@@ -1,6 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
@@ -10,7 +11,6 @@ import fs from "fs";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
-import { ArchiveStorage } from "./utils/ArchiveStorage";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayDocumentation } from "./utils/AutoBePlaygroundReplayDocumentation";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";

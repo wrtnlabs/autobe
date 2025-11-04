@@ -1,10 +1,10 @@
 import { orchestrateInterfaceGroups } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceGroups";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeInterfaceGroupEvent } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 

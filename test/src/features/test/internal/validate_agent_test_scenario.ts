@@ -1,5 +1,5 @@
 import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
@@ -12,7 +12,6 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 

@@ -1,6 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeHistory, AutoBePhase } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
@@ -10,7 +11,6 @@ import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
-import { ArchiveStorage } from "./utils/ArchiveStorage";
 
 const main = async (): Promise<void> => {
   if (fs.existsSync(`${TestGlobal.ROOT}/results`) === true)

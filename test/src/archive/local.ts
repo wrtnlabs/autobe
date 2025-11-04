@@ -1,13 +1,13 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeHistory, AutoBePhase } from "@autobe/interface";
 import OpenAI from "openai";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
-import { ArchiveStorage } from "./utils/ArchiveStorage";
 
 const archive = async (props: {
   vendor: string;

@@ -1,5 +1,6 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeHistory,
   AutoBePrismaHistory,
@@ -8,7 +9,6 @@ import {
 import { TestValidator } from "@nestia/e2e";
 
 import { TestGlobal } from "../../TestGlobal";
-import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_prisma_sqlite = async () => {
   if (

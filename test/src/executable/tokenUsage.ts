@@ -1,8 +1,8 @@
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { ArchiveStorage } from "../archive/utils/ArchiveStorage";
 import { TestProject } from "../structures/TestProject";
 
 const main = async (): Promise<void> => {

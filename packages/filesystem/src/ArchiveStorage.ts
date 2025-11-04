@@ -1,7 +1,6 @@
-import { AutoBeTokenUsage } from "@autobe/agent";
-import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
+  AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
   AutoBeUserMessageHistory,
@@ -9,12 +8,11 @@ import {
 } from "@autobe/interface";
 import cp from "child_process";
 import fs from "fs";
-import { Singleton } from "tstl";
+import path from "path";
+import { Singleton, VariadicSingleton } from "tstl";
 import { v7 } from "uuid";
 
-import { TestGlobal } from "../../TestGlobal";
-import { TestFileSystem } from "../../internal/TestFileSystem";
-import { TestProject } from "../../structures/TestProject";
+import { CompressUtil } from "./CompressUtil";
 
 export namespace ArchiveStorage {
   export const repository = (): string => examples.get();
@@ -26,10 +24,10 @@ export namespace ArchiveStorage {
 
   export const save = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
     files: Record<string, string>;
   }): Promise<void> => {
-    await TestFileSystem.save({
+    await saveWithGzip({
       root: `${getDirectory(props)}`,
       files: props.files,
       overwrite: true,
@@ -37,15 +35,15 @@ export namespace ArchiveStorage {
   };
 
   export const getUserMessage = async (props: {
-    project: TestProject;
+    project: AutoBeExampleProject;
     phase: AutoBePhase;
   }): Promise<AutoBeUserMessageHistory> => {
-    const full: string = `${TestGlobal.ROOT}/scripts/${props.project}/${props.phase}`;
+    const full: string = `${TEST_ROOT}/scripts/${props.project}/${props.phase}`;
     if (fs.existsSync(`${full}.md`) === false) {
       const text: string =
         props.phase === "analyze"
           ? await fs.promises.readFile(
-              `${TestGlobal.ROOT}/scripts/${props.project}.md`,
+              `${TEST_ROOT}/scripts/${props.project}.md`,
               "utf8",
             )
           : PROMPT_TEMPLATE[props.phase];
@@ -90,7 +88,7 @@ export namespace ArchiveStorage {
 
   export const getHistories = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
     phase: AutoBePhase;
   }): Promise<AutoBeHistory[]> => {
     const location: string = `${getDirectory(props)}/${props.phase}.histories.json.gz`;
@@ -102,7 +100,7 @@ export namespace ArchiveStorage {
 
   export const getSnapshots = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
     phase: AutoBePhase;
   }): Promise<AutoBeEventSnapshot[]> => {
     const location: string = `${getDirectory(props)}/${props.phase}.snapshots.json.gz`;
@@ -114,22 +112,42 @@ export namespace ArchiveStorage {
 
   export const getTokenUsage = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
     phase: AutoBePhase;
   }): Promise<IAutoBeTokenUsageJson> => {
-    const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-      await CompressUtil.gunzip(
-        await fs.promises.readFile(
-          `${getDirectory(props)}/${props.phase}.snapshots.json.gz`,
-        ),
-      ),
+    const snapshots: AutoBeEventSnapshot[] = await getSnapshots(props);
+    return (
+      snapshots.at(-1)?.tokenUsage ??
+      (() => {
+        const component = (): IAutoBeTokenUsageJson.IComponent => ({
+          total: 0,
+          input: {
+            total: 0,
+            cached: 0,
+          },
+          output: {
+            total: 0,
+            reasoning: 0,
+            accepted_prediction: 0,
+            rejected_prediction: 0,
+          },
+        });
+        return {
+          aggregate: component(),
+          facade: component(),
+          analyze: component(),
+          prisma: component(),
+          interface: component(),
+          test: component(),
+          realize: component(),
+        };
+      })()
     );
-    return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
   };
 
   export const has = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
     phase: AutoBePhase;
   }): Promise<boolean> => {
     return fs.existsSync(
@@ -150,15 +168,16 @@ const PROMPT_TEMPLATE = {
   test: "Make the e2e test functions.",
   realize: "Implement API functions.",
 };
+const TEST_ROOT: string = `${__dirname}/../../../../test`;
 
 const examples = new Singleton(() => {
-  const location: string = `${TestGlobal.ROOT}/repositories/autobe-examples`;
+  const location: string = `${TEST_ROOT}/repositories/autobe-examples`;
   if (fs.existsSync(location) === false) {
     try {
-      fs.mkdirSync(`${TestGlobal.ROOT}/repositories`);
+      fs.mkdirSync(`${TEST_ROOT}/repositories`);
     } catch {}
     cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
-      cwd: `${TestGlobal.ROOT}/repositories`,
+      cwd: `${TEST_ROOT}/repositories`,
       stdio: "inherit",
     });
   }
@@ -170,3 +189,26 @@ const examples = new Singleton(() => {
     fs.mkdirSync(`${location}/raw`);
   return location;
 });
+
+const saveWithGzip = async (props: {
+  root: string;
+  files: Record<string, string>;
+  overwrite?: boolean;
+}): Promise<void> => {
+  if (props.overwrite !== true && fs.existsSync(props.root))
+    await fs.promises.rm(props.root, {
+      recursive: true,
+    });
+  const directory = new VariadicSingleton(async (location: string) => {
+    try {
+      await fs.promises.mkdir(location, {
+        recursive: true,
+      });
+    } catch {}
+  });
+  for (const [key, value] of Object.entries(props.files)) {
+    const file: string = path.resolve(`${props.root}/${key}.gz`);
+    await directory.get(path.dirname(file));
+    await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
+  }
+};

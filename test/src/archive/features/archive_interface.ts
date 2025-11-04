@@ -1,5 +1,6 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -16,7 +17,6 @@ import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_interface } from "../../features/interface/internal/prepare_agent_interface";
 import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
-import { ArchiveStorage } from "../utils/ArchiveStorage";
 
 export const archive_interface = async (props: {
   factory: TestFactory;

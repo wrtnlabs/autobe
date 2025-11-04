@@ -1,11 +1,11 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
+import { ArchiveStorage } from "@autobe/filesystem";
 import { AutoBeHistory } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 
 export const prepare_agent_realize = async (props: {

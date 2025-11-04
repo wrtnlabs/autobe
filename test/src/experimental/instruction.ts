@@ -6,6 +6,7 @@ import {
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { IAutoBeFacadeApplication } from "@autobe/agent/src/orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBePhase, AutoBeUserMessageHistory } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmController } from "@samchon/openapi";
@@ -13,7 +14,6 @@ import { IPointer } from "tstl";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { ArchiveStorage } from "../archive/utils/ArchiveStorage";
 
 const SEQUENCE = ["analyze", "prisma", "interface", "test", "realize"] as const;
 

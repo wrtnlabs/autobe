@@ -1,5 +1,7 @@
+import { ArchiveStorage } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
+  AutoBeExampleProject,
   AutoBeHackathonModel,
   AutoBeHistory,
   AutoBePhase,
@@ -7,13 +9,10 @@ import {
   IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
 } from "@autobe/interface";
-import { MapUtil, RandomGenerator } from "@nestia/e2e";
-import fs from "fs";
+import { RandomGenerator } from "@nestia/e2e";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { CompressUtil } from "../../../../packages/filesystem/src/CompressUtil";
-import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
 import { AutoBeHackathonSessionEventProvider } from "../providers/sessions/AutoBeHackathonSessionEventProvider";
 import { AutoBeHackathonSessionHistoryProvider } from "../providers/sessions/AutoBeHackathonSessionHistoryProvider";
@@ -79,63 +78,36 @@ export namespace AutoBeHackathonSessionSeeder {
 
 const getAssets = async (): Promise<IAsset[]> => {
   const assets: IAsset[] = [];
-  const root: string = `${AutoBeHackathonConfiguration.ROOT}/../../test/assets/histories`;
-  for (const model of typia.misc.literals<AutoBeHackathonModel>()) {
-    if (fs.existsSync(`${root}/${model}`) === false) continue;
-    const gzFiles: string[] = (
-      await fs.promises.readdir(`${root}/${model}`)
-    ).filter((s) => s.endsWith(".json.gz"));
-
-    interface IGroup {
-      project: string;
-      histories: string[];
-      snapshots: string[];
-    }
-    const groupDict: Map<string, IGroup> = new Map();
-    for (const file of gzFiles) {
-      const elements: string[] = file.split(".");
-      const project: string = elements[0];
-      const tail: string = elements[2];
-      const group: IGroup = MapUtil.take(groupDict, project, () => ({
-        project,
-        histories: [],
-        snapshots: [],
-      }));
-      if (tail === "json") group.histories.push(file);
-      else if (tail === "snapshots") group.snapshots.push(file);
-    }
-    for (const group of groupDict.values()) {
-      group.histories.sort((a, b) =>
-        compare(a.split(".")[1] as AutoBePhase, b.split(".")[1] as AutoBePhase),
-      );
-      group.snapshots.sort((a, b) =>
-        compare(a.split(".")[1] as AutoBePhase, b.split(".")[1] as AutoBePhase),
-      );
-      assets.push({
-        model,
-        project: group.project,
-        phase: group.histories.at(-1)!.split(".")[1] as AutoBePhase,
-        histories: JSON.parse(
-          await CompressUtil.gunzip(
-            await fs.promises.readFile(
-              `${root}/${model}/${group.histories.at(-1)!}`,
-            ),
-          ),
-        ),
-        snapshots: (
-          await Promise.all(
-            group.snapshots.map(async (file) =>
-              JSON.parse(
-                await CompressUtil.gunzip(
-                  await fs.promises.readFile(`${root}/${model}/${file}`),
-                ),
-              ),
-            ),
-          )
-        ).flat(),
-      });
-    }
-  }
+  for (const model of typia.misc.literals<AutoBeHackathonModel>())
+    for (const project of typia.misc.literals<AutoBeExampleProject>())
+      for (const phase of sequence) {
+        try {
+          const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+            vendor: model,
+            project,
+            phase,
+          });
+          const snapshots: AutoBeEventSnapshot[] = [];
+          for (const prevPhase of sequence) {
+            snapshots.push(
+              ...(await ArchiveStorage.getSnapshots({
+                vendor: model,
+                project,
+                phase: prevPhase,
+              })),
+            );
+            if (phase === prevPhase) break;
+          }
+          assets.push({
+            model,
+            project,
+            phase,
+            histories,
+            snapshots,
+          });
+          break;
+        } catch {}
+      }
   return assets;
 };
 
@@ -154,5 +126,3 @@ const sequence = [
   "test",
   "realize",
 ] as const satisfies AutoBePhase[];
-const compare = (a: AutoBePhase, b: AutoBePhase): number =>
-  sequence.indexOf(a) - sequence.indexOf(b);

@@ -1,4 +1,5 @@
 import { orchestratePrismaSchemas } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchemas";
+import { ArchiveStorage } from "@autobe/filesystem";
 import {
   AutoBePrismaComponentEvent,
   AutoBePrismaSchemaEvent,
@@ -7,7 +8,6 @@ import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 

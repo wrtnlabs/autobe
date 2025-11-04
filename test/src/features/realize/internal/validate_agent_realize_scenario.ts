@@ -1,6 +1,6 @@
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "@autobe/agent/src/orchestrate/realize/utils/generateRealizeScenario";
-import { CompressUtil } from "@autobe/filesystem";
+import { ArchiveStorage, CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -13,7 +13,6 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 

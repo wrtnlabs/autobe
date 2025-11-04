@@ -1,5 +1,6 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -18,7 +19,6 @@ import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_prisma } from "../../features/prisma/internal/prepare_agent_prisma";
 import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
-import { ArchiveStorage } from "../utils/ArchiveStorage";
 
 export const archive_prisma = async (props: {
   factory: TestFactory;

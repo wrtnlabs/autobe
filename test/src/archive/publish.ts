@@ -1,3 +1,4 @@
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
@@ -5,7 +6,6 @@ import {
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
-import { ArchiveStorage } from "./utils/ArchiveStorage";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 

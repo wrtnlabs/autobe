@@ -1,5 +1,6 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -14,7 +15,6 @@ import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
-import { ArchiveStorage } from "../utils/ArchiveStorage";
 
 export const archive_analyze = async (props: {
   factory: TestFactory;

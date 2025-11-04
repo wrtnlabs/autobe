@@ -1,6 +1,6 @@
 import { orchestrateRealizeAuthorizationCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorizationCorrect";
 import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
   AutoBeRealizeAuthorization,
@@ -9,7 +9,6 @@ import {
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 

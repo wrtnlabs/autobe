@@ -1,3 +1,4 @@
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBePhase,
   IAutoBePlaygroundBenchmark,
@@ -6,7 +7,6 @@ import {
 import { StringUtil } from "@autobe/utils";
 
 import { TestProject } from "../../structures/TestProject";
-import { ArchiveStorage } from "./ArchiveStorage";
 
 export namespace AutoBePlaygroundReplayDocumentation {
   export const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {

@@ -1,12 +1,12 @@
 import { orchestrateInterfaceSchemas } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemas";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
+import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeOpenApi } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
