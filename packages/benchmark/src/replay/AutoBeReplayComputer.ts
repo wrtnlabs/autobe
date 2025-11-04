@@ -1,15 +1,14 @@
 import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import {
+  AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
   IAutoBePlaygroundBenchmarkScore,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 
-import { TestProject } from "../../structures/TestProject";
-
-export namespace AutoBePlaygroundReplayComputer {
-  export const SIGNIFICANT_PROJECTS: TestProject[] = [
+export namespace AutoBeReplayComputer {
+  export const SIGNIFICANT_PROJECTS: AutoBeExampleProject[] = [
     "todo",
     "bbs",
     "reddit",
@@ -56,7 +55,7 @@ export namespace AutoBePlaygroundReplayComputer {
         add(summary.realize, 20)
       );
     };
-    const individual = (project: TestProject): number => {
+    const individual = (project: AutoBeExampleProject): number => {
       const found = summaries.find((s) => s.project === project);
       if (found === undefined) return 0;
       return compute(found);

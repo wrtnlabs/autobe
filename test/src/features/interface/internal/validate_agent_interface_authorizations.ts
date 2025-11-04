@@ -1,20 +1,20 @@
 import { orchestrateInterfaceAuthorizations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeAnalyzeActor,
   AutoBeInterfaceAuthorization,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_authorizations = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -34,7 +34,7 @@ export const validate_agent_interface_authorizations = async (props: {
     },
   });
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

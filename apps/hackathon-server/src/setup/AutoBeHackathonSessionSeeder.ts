@@ -1,4 +1,4 @@
-import { ArchiveStorage } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeEventSnapshot,
   AutoBeExampleProject,
@@ -82,15 +82,16 @@ const getAssets = async (): Promise<IAsset[]> => {
     for (const project of typia.misc.literals<AutoBeExampleProject>())
       for (const phase of sequence) {
         try {
-          const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
-            vendor: model,
-            project,
-            phase,
-          });
+          const histories: AutoBeHistory[] =
+            await AutoBeExampleStorage.getHistories({
+              vendor: model,
+              project,
+              phase,
+            });
           const snapshots: AutoBeEventSnapshot[] = [];
           for (const prevPhase of sequence) {
             snapshots.push(
-              ...(await ArchiveStorage.getSnapshots({
+              ...(await AutoBeExampleStorage.getSnapshots({
                 vendor: model,
                 project,
                 phase: prevPhase,

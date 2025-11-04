@@ -173,6 +173,9 @@ importers:
       '@autobe/agent':
         specifier: workspace:^
         version: link:../../packages/agent
+      '@autobe/benchmark':
+        specifier: workspace:^
+        version: link:../../packages/benchmark
       '@autobe/compiler':
         specifier: workspace:^
         version: link:../../packages/compiler
@@ -398,6 +401,9 @@ importers:
       '@autobe/agent':
         specifier: workspace:^
         version: link:../../packages/agent
+      '@autobe/benchmark':
+        specifier: workspace:^
+        version: link:../../packages/benchmark
       '@autobe/compiler':
         specifier: workspace:^
         version: link:../../packages/compiler
@@ -791,6 +797,43 @@ importers:
         specifier: catalog:typescript
         version: 5.9.2
 
+  packages/benchmark:
+    dependencies:
+      '@autobe/agent':
+        specifier: workspace:^
+        version: link:../agent
+      '@autobe/filesystem':
+        specifier: workspace:^
+        version: link:../filesystem
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
+      '@autobe/utils':
+        specifier: workspace:^
+        version: link:../utils
+      tstl:
+        specifier: catalog:samchon
+        version: 3.0.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.7.2(typescript@5.9.2)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+    devDependencies:
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      ts-patch:
+        specifier: catalog:typescript
+        version: 3.3.0
+      typescript:
+        specifier: catalog:typescript
+        version: 5.9.2
+
   packages/compiler:
     dependencies:
       '@autobe/filesystem':
@@ -1024,6 +1067,9 @@ importers:
       '@autobe/agent':
         specifier: workspace:^
         version: link:../packages/agent
+      '@autobe/benchmark':
+        specifier: workspace:^
+        version: link:../packages/benchmark
       '@autobe/compiler':
         specifier: workspace:^
         version: link:../packages/compiler
@@ -5877,6 +5923,7 @@ packages:
 
   mathjax-full@3.2.2:
     resolution: {integrity: sha512-+LfG9Fik+OuI8SLwsiR02IVdjcnRCy5MufYLi0C3TdMT56L/pjB0alMVGgoWJF8pN9Rc7FESycZB9BMNWIid5w==}
+    deprecated: Version 4 replaces this package with the scoped package @mathjax/src
 
   mdast-util-find-and-replace@3.0.2:
     resolution: {integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==}

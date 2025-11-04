@@ -1,6 +1,6 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -8,24 +8,24 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
-import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
 
 export const archive_analyze = async (props: {
   factory: TestFactory;
-  project: TestProject;
+  project: AutoBeExampleProject;
   vendor: string;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const userMessage: AutoBeUserMessageHistory =
-    await ArchiveStorage.getUserMessage({
+    await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "analyze",
     });
@@ -73,11 +73,11 @@ export const archive_analyze = async (props: {
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/analyze`,
+      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/analyze`,
       files: await agent.getFiles(),
     });
   } catch {}
-  await ArchiveStorage.save({
+  await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {

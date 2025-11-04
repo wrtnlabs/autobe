@@ -1,30 +1,27 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
-import {
-  ArchiveStorage,
-  CompressUtil,
-  FileSystemIterator,
-} from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeTestScenario,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
 export const validate_agent_test_write = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -33,7 +30,7 @@ export const validate_agent_test_write = async (props: {
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory({
+        `${AutoBeExampleStorage.getDirectory({
           vendor: props.vendor,
           project: props.project,
         })}/test.scenarios.json.gz`,
@@ -92,7 +89,7 @@ export const validate_agent_test_write = async (props: {
     },
   });
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

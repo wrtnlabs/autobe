@@ -1,6 +1,6 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -9,18 +9,18 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_interface } from "../../features/interface/internal/prepare_agent_interface";
-import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
 
 export const archive_interface = async (props: {
   factory: TestFactory;
-  project: TestProject;
+  project: AutoBeExampleProject;
   vendor: string;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
@@ -41,7 +41,7 @@ export const archive_interface = async (props: {
     agent.on(type, listen);
 
   const userMessage: AutoBeUserMessageHistory =
-    await ArchiveStorage.getUserMessage({
+    await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "interface",
     });
@@ -65,7 +65,7 @@ export const archive_interface = async (props: {
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.project, false)}/${props.project}/interface`,
+      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.project, false)}/${props.project}/interface`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -73,7 +73,7 @@ export const archive_interface = async (props: {
       },
     });
   } catch {}
-  await ArchiveStorage.save({
+  await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {

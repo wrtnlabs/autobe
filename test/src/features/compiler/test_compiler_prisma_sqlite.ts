@@ -1,6 +1,6 @@
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeHistory,
   AutoBePrismaHistory,
@@ -12,7 +12,7 @@ import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_prisma_sqlite = async () => {
   if (
-    (await ArchiveStorage.has({
+    (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
       phase: "prisma",
@@ -20,7 +20,7 @@ export const test_compiler_prisma_sqlite = async () => {
   )
     return false;
 
-  const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+  const histories: AutoBeHistory[] = await AutoBeExampleStorage.getHistories({
     vendor: TestGlobal.vendorModel,
     project: "todo",
     phase: "prisma",

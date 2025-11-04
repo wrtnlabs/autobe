@@ -1,6 +1,6 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -9,19 +9,19 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_test } from "../../features/test/internal/prepare_agent_test";
-import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
 
 export let archive_test = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -41,7 +41,7 @@ export let archive_test = async (props: {
   agent.on("vendorTimeout", (e) => ArchiveLogger.event(start, e));
 
   const userMessage: AutoBeUserMessageHistory =
-    await ArchiveStorage.getUserMessage({
+    await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "test",
     });
@@ -61,7 +61,7 @@ export let archive_test = async (props: {
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/test`,
+      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/test`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -69,7 +69,7 @@ export let archive_test = async (props: {
       },
     });
   } catch {}
-  await ArchiveStorage.save({
+  await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {

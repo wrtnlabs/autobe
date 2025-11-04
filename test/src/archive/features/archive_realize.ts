@@ -1,6 +1,6 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -9,19 +9,19 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_realize } from "../../features/realize/internal/prepare_agent_realize";
-import { TestProject } from "../../structures/TestProject";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
 
 export const archive_realize = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -40,7 +40,7 @@ export const archive_realize = async (props: {
     agent.on(type, listen);
 
   const userMessage: AutoBeUserMessageHistory =
-    await ArchiveStorage.getUserMessage({
+    await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "realize",
     });
@@ -62,7 +62,7 @@ export const archive_realize = async (props: {
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/realize`,
+      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/realize`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -70,7 +70,7 @@ export const archive_realize = async (props: {
       },
     });
   } catch {}
-  await ArchiveStorage.save({
+  await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {

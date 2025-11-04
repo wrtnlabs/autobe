@@ -1,5 +1,4 @@
 import { AutoBeMockAgent } from "@autobe/agent";
-import { ArchiveStorage } from "@autobe/filesystem";
 import {
   AutoBeExampleProject,
   IAutoBePlaygroundReplay,
@@ -9,20 +8,23 @@ import {
 import { WebSocketAcceptor } from "tgrid";
 import typia from "typia";
 
+import {
+  AutoBeExampleStorage,
+  AutoBeReplayComputer,
+  AutoBeReplayStorage,
+} from "../../../../packages/benchmark/src";
 import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
-import { AutoBePlaygroundReplayComputer } from "./AutoBePlaygroundReplayComputer";
-import { AutoBePlaygroundReplayStorage } from "./AutoBePlaygroundReplayStorage";
 
 export namespace AutoBePlaygroundReplayProvider {
   export const index = async (): Promise<
     IAutoBePlaygroundReplay.ISummary[]
   > => {
     const all = (vendor: string): Promise<IAutoBePlaygroundReplay[]> =>
-      AutoBePlaygroundReplayStorage.getAll(vendor);
+      AutoBeReplayStorage.getAll(vendor);
     const replays: IAutoBePlaygroundReplay[][] = await Promise.all(
-      (await ArchiveStorage.getVendorModels()).map(all),
+      (await AutoBeExampleStorage.getVendorModels()).map(all),
     );
-    return replays.flat().map(AutoBePlaygroundReplayComputer.summarize);
+    return replays.flat().map(AutoBeReplayComputer.summarize);
   };
 
   export const get = async (
@@ -34,7 +36,7 @@ export namespace AutoBePlaygroundReplayProvider {
     props: IAutoBePlaygroundReplay.IProps,
   ): Promise<void> => {
     const replay: IAutoBePlaygroundReplay | null =
-      await AutoBePlaygroundReplayStorage.get({
+      await AutoBeReplayStorage.get({
         vendor: props.vendor,
         project: typia.assert<AutoBeExampleProject>(props.project),
       });

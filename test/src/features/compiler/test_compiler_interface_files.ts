@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import cp from "child_process";
 import OpenAI from "openai";
 
@@ -9,7 +9,7 @@ import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_interface_files = async () => {
   if (
-    (await ArchiveStorage.has({
+    (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
       phase: "interface",
@@ -23,7 +23,7 @@ export const test_compiler_interface_files = async () => {
       api: new OpenAI({ apiKey: "********" }),
       model: "gpt-4.1-mini",
     },
-    histories: await ArchiveStorage.getHistories({
+    histories: await AutoBeExampleStorage.getHistories({
       vendor: TestGlobal.vendorModel,
       project: "todo",
       phase: "interface",

@@ -1,6 +1,6 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeHistory,
   AutoBeTestHistory,
@@ -14,7 +14,7 @@ import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_test_build = async () => {
   if (
-    (await ArchiveStorage.has({
+    (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
       phase: "test",
@@ -22,7 +22,7 @@ export const test_compiler_test_build = async () => {
   )
     return false;
 
-  const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+  const histories: AutoBeHistory[] = await AutoBeExampleStorage.getHistories({
     vendor: TestGlobal.vendorModel,
     project: "todo",
     phase: "test",

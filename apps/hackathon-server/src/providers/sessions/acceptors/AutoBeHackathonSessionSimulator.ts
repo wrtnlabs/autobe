@@ -1,5 +1,5 @@
 import { AutoBeMockAgent } from "@autobe/agent";
-import { ArchiveStorage } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBePhase, IAutoBePlaygroundReplay } from "@autobe/interface";
 
 import { AutoBeHackathonSessionCompiler } from "./AutoBeHackathonSessionCompiler";
@@ -13,7 +13,7 @@ export namespace AutoBeHackathonSessionSimulator {
 
   const getReplay = async (): Promise<IAutoBePlaygroundReplay> => {
     const snapshots = (phase: AutoBePhase) =>
-      ArchiveStorage.getSnapshots({
+      AutoBeExampleStorage.getSnapshots({
         vendor: VENDOR,
         project: PROJECT,
         phase,
@@ -21,7 +21,7 @@ export namespace AutoBeHackathonSessionSimulator {
     return {
       vendor: "openai/gpt-4.1",
       project: PROJECT,
-      histories: await ArchiveStorage.getHistories({
+      histories: await AutoBeExampleStorage.getHistories({
         vendor: VENDOR,
         project: PROJECT,
         phase: "realize",

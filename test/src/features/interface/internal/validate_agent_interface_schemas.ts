@@ -1,19 +1,19 @@
 import { orchestrateInterfaceSchemas } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemas";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_schemas = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -22,7 +22,7 @@ export const validate_agent_interface_schemas = async (props: {
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
@@ -52,7 +52,7 @@ export const validate_agent_interface_schemas = async (props: {
     },
   });
   if (process.argv.includes("--archive"))
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

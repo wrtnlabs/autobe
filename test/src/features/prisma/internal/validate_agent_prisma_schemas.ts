@@ -1,27 +1,27 @@
 import { orchestratePrismaSchemas } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchemas";
-import { ArchiveStorage } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBePrismaComponentEvent,
   AutoBePrismaSchemaEvent,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
 export const validate_agent_prisma_schemas = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(props);
   const components: AutoBePrismaComponentEvent = JSON.parse(
     await fs.promises.readFile(
-      `${ArchiveStorage.getDirectory(props)}/prisma.components.json`,
+      `${AutoBeExampleStorage.getDirectory(props)}/prisma.components.json`,
       "utf8",
     ),
   );
@@ -50,7 +50,7 @@ export const validate_agent_prisma_schemas = async (props: {
     components.components,
   );
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

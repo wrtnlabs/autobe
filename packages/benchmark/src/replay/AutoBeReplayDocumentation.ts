@@ -1,56 +1,56 @@
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
+  AutoBeExampleProject,
   AutoBePhase,
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 
-import { TestProject } from "../../structures/TestProject";
+import { AutoBeExampleStorage } from "../example/AutoBeExampleStorage";
 
-export namespace AutoBePlaygroundReplayDocumentation {
+export namespace AutoBeReplayDocumentation {
   export const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
     return StringUtil.trim`
-        # AutoBe Generated Examples
-    
-        ## Benchmark
-    
-        AI Model | Score | FCSR | Status 
-        :--------|------:|-----:|:------:
-        ${experiments
-          .map((e) =>
-            [
-              `[\`${ArchiveStorage.slugModel(
-                e.vendor,
-                false,
-              )}\`](#${ArchiveStorage.slugModel(e.vendor, false)
-                .replaceAll("/", "")
-                .replaceAll(".", "")})`,
-              e.score.aggregate,
-              (() => {
-                const [x, y] = e.replays
-                  .map((r) => r.aggregates.total.metric)
-                  .map((m) => [m.success, m.attempt])
-                  .reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
-                return y === 0 ? "0%" : Math.floor((x / y) * 100) + "%";
-              })(),
-              e.emoji,
-            ].join(" | "),
-          )
-          .join("\n")}
+      # AutoBe Generated Examples
+  
+      ## Benchmark
+  
+      AI Model | Score | FCSR | Status 
+      :--------|------:|-----:|:------:
+      ${experiments
+        .map((e) =>
+          [
+            `[\`${AutoBeExampleStorage.slugModel(
+              e.vendor,
+              false,
+            )}\`](#${AutoBeExampleStorage.slugModel(e.vendor, false)
+              .replaceAll("/", "")
+              .replaceAll(".", "")})`,
+            e.score.aggregate,
+            (() => {
+              const [x, y] = e.replays
+                .map((r) => r.aggregates.total.metric)
+                .map((m) => [m.success, m.attempt])
+                .reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+              return y === 0 ? "0%" : Math.floor((x / y) * 100) + "%";
+            })(),
+            e.emoji,
+          ].join(" | "),
+        )
+        .join("\n")}
 
-        - FCSR: Function Calling Success Rate
-        - Status:
-          - 🟢: All projects completed successfully
-          - 🟡: Some projects failed
-          - ❌: All projects failed or not executed
+      - FCSR: Function Calling Success Rate
+      - Status:
+        - 🟢: All projects completed successfully
+        - 🟡: Some projects failed
+        - ❌: All projects failed or not executed
 
-        ${experiments.map(vendor).join("\n\n\n")}
-      `;
+      ${experiments.map(vendor).join("\n\n\n")}
+    `;
   };
 
   const vendor = (exp: IAutoBePlaygroundBenchmark): string => {
-    const row = (project: TestProject): string => {
+    const row = (project: AutoBeExampleProject): string => {
       const found = exp.replays.find((r) => r.project === project);
       if (found === undefined)
         return `\`${project}\` | 0 | ❌ | ❌ | ❌ | ❌ | ❌`;
@@ -118,10 +118,10 @@ export namespace AutoBePlaygroundReplayDocumentation {
     return StringUtil.trim`
       ### \`${props.replay.vendor}\` - \`${props.replay.project}\`
 
-      - Source Code: ${`[\`${ArchiveStorage.slugModel(
+      - Source Code: ${`[\`${AutoBeExampleStorage.slugModel(
         props.replay.vendor,
         false,
-      )}/${props.replay.project}\`](./${ArchiveStorage.slugModel(
+      )}/${props.replay.project}\`](./${AutoBeExampleStorage.slugModel(
         props.replay.vendor,
         false,
       )}/${props.replay.project}/)`}

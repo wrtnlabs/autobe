@@ -1,20 +1,20 @@
 import { orchestrateInterfaceEndpoints } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceEndpoints";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_endpoints = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -23,7 +23,7 @@ export const validate_agent_interface_endpoints = async (props: {
     AutoBeInterfaceGroup[]
   >(
     await fs.promises.readFile(
-      `${ArchiveStorage.getDirectory(props)}/interface.groups.json`,
+      `${AutoBeExampleStorage.getDirectory(props)}/interface.groups.json`,
       "utf8",
     ),
   );
@@ -31,7 +31,7 @@ export const validate_agent_interface_endpoints = async (props: {
     AutoBeOpenApi.IOperation[]
   >(
     await fs.promises.readFile(
-      `${ArchiveStorage.getDirectory(props)}/interface.authorizations.json`,
+      `${AutoBeExampleStorage.getDirectory(props)}/interface.authorizations.json`,
       "utf8",
     ),
   );
@@ -50,7 +50,7 @@ export const validate_agent_interface_endpoints = async (props: {
     },
   });
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

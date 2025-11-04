@@ -1,7 +1,12 @@
 import { AutoBeAgent } from "@autobe/agent";
+import {
+  AutoBeExampleStorage,
+  AutoBeReplayComputer,
+  AutoBeReplayDocumentation,
+  AutoBeReplayStorage,
+} from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
@@ -11,9 +16,6 @@ import fs from "fs";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
-import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
-import { AutoBePlaygroundReplayDocumentation } from "./utils/AutoBePlaygroundReplayDocumentation";
-import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const initialize = async (): Promise<void> => {
   if (fs.existsSync(`${TestGlobal.ROOT}/repositories/autobe-examples`) === true)
@@ -36,10 +38,10 @@ const main = async (): Promise<void> => {
   // GATHER DATA
   const bucket: Record<string, string> = {};
   const experiments: IAutoBePlaygroundBenchmark[] = [];
-  for (const vendor of await ArchiveStorage.getVendorModels()) {
+  for (const vendor of await AutoBeExampleStorage.getVendorModels()) {
     const replayList: IAutoBePlaygroundReplay[] =
-      await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
-        AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
+      await AutoBeReplayStorage.getAll(vendor, (project) =>
+        AutoBeReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
       );
     if (replayList.length === 0) continue;
     for (const replay of replayList) {
@@ -62,13 +64,13 @@ const main = async (): Promise<void> => {
     }
 
     const summaries: IAutoBePlaygroundReplay.ISummary[] = replayList.map(
-      AutoBePlaygroundReplayComputer.summarize,
+      AutoBeReplayComputer.summarize,
     );
     experiments.push({
       vendor,
       replays: summaries,
-      score: AutoBePlaygroundReplayComputer.score(summaries),
-      emoji: AutoBePlaygroundReplayComputer.emoji(summaries),
+      score: AutoBeReplayComputer.score(summaries),
+      emoji: AutoBeReplayComputer.emoji(summaries),
     });
   }
   experiments.sort((a, b) =>
@@ -78,7 +80,7 @@ const main = async (): Promise<void> => {
   );
 
   // COMMIT
-  bucket["README.md"] = AutoBePlaygroundReplayDocumentation.readme(experiments);
+  bucket["README.md"] = AutoBeReplayDocumentation.readme(experiments);
   for (const file of await fs.promises.readdir(
     `${TestGlobal.ROOT}/repositories/autobe-examples`,
   )) {

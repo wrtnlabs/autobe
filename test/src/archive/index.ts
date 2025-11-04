@@ -2,23 +2,23 @@ import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
-import { TestProject } from "../structures/TestProject";
 
 type Step = keyof AutoBeState;
 interface ITestFunction {
   name: string;
   step: Step;
-  project: TestProject;
+  project: AutoBeExampleProject;
   execute: (factory: TestFactory) => Promise<void>;
 }
 
-const PROJECT_INDEXES: Record<TestProject, number> = {
+const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
   todo: 0,
   bbs: 1,
   reddit: 2,
@@ -50,7 +50,7 @@ const collect = async (): Promise<ITestFunction[]> => {
           continue;
         const step: string = key.split("archive_")?.[1] ?? "";
         if (typia.is<Step>(step) === false) continue;
-        typia.misc.literals<TestProject>().forEach((project) => {
+        typia.misc.literals<AutoBeExampleProject>().forEach((project) => {
           container.push({
             name: key,
             execute: (factory: TestFactory) => value(factory, project),
@@ -69,7 +69,8 @@ const collect = async (): Promise<ITestFunction[]> => {
   });
 
   const projects: string[] =
-    TestGlobal.getArguments("project") ?? typia.misc.literals<TestProject>();
+    TestGlobal.getArguments("project") ??
+    typia.misc.literals<AutoBeExampleProject>();
   const from: string = TestGlobal.getArguments("from")?.[0] ?? "analyze";
   const to: string = TestGlobal.getArguments("to")?.[0] ?? "realize";
   return container.filter(

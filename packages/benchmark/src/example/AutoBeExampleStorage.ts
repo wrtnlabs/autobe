@@ -1,3 +1,4 @@
+import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeExampleProject,
@@ -12,9 +13,7 @@ import path from "path";
 import { Singleton, VariadicSingleton } from "tstl";
 import { v7 } from "uuid";
 
-import { CompressUtil } from "./CompressUtil";
-
-export namespace ArchiveStorage {
+export namespace AutoBeExampleStorage {
   export const repository = (): string => examples.get();
   export const getDirectory = (props: {
     vendor: string;

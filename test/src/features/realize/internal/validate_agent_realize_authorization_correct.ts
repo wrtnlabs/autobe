@@ -1,21 +1,22 @@
 import { orchestrateRealizeAuthorizationCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorizationCorrect";
 import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
-import { ArchiveStorage, FileSystemIterator } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
   AutoBeRealizeAuthorization,
   IAutoBeCompiler,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
 export const validate_agent_realize_authorization_correct = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -205,7 +206,7 @@ export const validate_agent_realize_authorization_correct = async (props: {
   });
 
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

@@ -1,7 +1,8 @@
 import { orchestrateInterfaceComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceComplement";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { OpenApiTypeChecker } from "@samchon/openapi";
 import fs from "fs";
@@ -9,13 +10,12 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_complement = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -24,14 +24,14 @@ export const validate_agent_interface_complement = async (props: {
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
   const components: AutoBeOpenApi.IComponents = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/interface.schemas.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/interface.schemas.json.gz`,
       ),
     ),
   );

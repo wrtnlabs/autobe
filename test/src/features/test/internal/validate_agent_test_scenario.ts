@@ -1,10 +1,12 @@
 import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
-import { ArchiveStorage, FileSystemIterator } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
   AutoBeTestScenario,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { HashMap, Pair } from "tstl";
 import typia from "typia";
@@ -12,13 +14,12 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
 export const validate_agent_test_scenario = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -66,7 +67,7 @@ export const validate_agent_test_scenario = async (props: {
     },
   });
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

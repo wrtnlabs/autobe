@@ -1,4 +1,8 @@
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
+import {
+  AutoBeExampleStorage,
+  AutoBeReplayComputer,
+  AutoBeReplayStorage,
+} from "@autobe/benchmark";
 import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundReplay,
@@ -6,25 +10,23 @@ import {
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
-import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
-import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const main = async (): Promise<void> => {
   const experiments: IAutoBePlaygroundBenchmark[] = [];
-  for (const vendor of await ArchiveStorage.getVendorModels()) {
+  for (const vendor of await AutoBeExampleStorage.getVendorModels()) {
     const replayList: IAutoBePlaygroundReplay[] =
-      await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
-        AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
+      await AutoBeReplayStorage.getAll(vendor, (project) =>
+        AutoBeReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
       );
     if (replayList.length === 0) continue;
     const summaries: IAutoBePlaygroundReplay.ISummary[] = replayList.map(
-      AutoBePlaygroundReplayComputer.summarize,
+      AutoBeReplayComputer.summarize,
     );
     experiments.push({
       vendor,
       replays: summaries,
-      score: AutoBePlaygroundReplayComputer.score(summaries),
-      emoji: AutoBePlaygroundReplayComputer.emoji(summaries),
+      score: AutoBeReplayComputer.score(summaries),
+      emoji: AutoBeReplayComputer.emoji(summaries),
     });
   }
   experiments.sort((a, b) =>

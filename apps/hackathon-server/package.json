@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@autobe/agent": "workspace:^",
+    "@autobe/benchmark": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",

@@ -5,8 +5,8 @@ import {
 } from "@agentica/core";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { IAutoBeFacadeApplication } from "@autobe/agent/src/orchestrate/facade/histories/IAutoBeFacadeApplication";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBePhase, AutoBeUserMessageHistory } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmController } from "@samchon/openapi";
@@ -109,7 +109,7 @@ const main = async (): Promise<void> => {
 
   for (const phase of SEQUENCE) {
     const message: AutoBeUserMessageHistory =
-      await ArchiveStorage.getUserMessage({
+      await AutoBeExampleStorage.getUserMessage({
         project: "chat",
         phase,
       });

@@ -7,16 +7,16 @@ import {
   AutoBeRealizeAuthorization,
   IAutoBeCompiler,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
 export const validate_agent_realize_authorization = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 

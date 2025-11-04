@@ -1,8 +1,8 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import cp from "child_process";
 import OpenAI from "openai";
 import { v7 } from "uuid";
@@ -11,7 +11,7 @@ import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_realize_files = async () => {
   if (
-    (await ArchiveStorage.has({
+    (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
       phase: "test",
@@ -27,7 +27,7 @@ export const test_compiler_realize_files = async () => {
     },
     compiler: (listener) => new AutoBeCompiler(listener),
     histories: [
-      ...(await ArchiveStorage.getHistories({
+      ...(await AutoBeExampleStorage.getHistories({
         vendor: TestGlobal.vendorModel,
         project: "todo",
         phase: "test",

@@ -1,19 +1,19 @@
 import { orchestratePrismaComponents } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaComponent";
-import { ArchiveStorage } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaComponentEvent,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
 export const validate_agent_prisma_components = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -26,7 +26,7 @@ export const validate_agent_prisma_components = async (props: {
   if (result.type !== "prismaComponent")
     throw new Error("Failed to orchestrate prisma components");
   else if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

@@ -1,25 +1,26 @@
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "@autobe/agent/src/orchestrate/realize/utils/generateRealizeScenario";
-import { ArchiveStorage, CompressUtil } from "@autobe/filesystem";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeOpenApi,
   AutoBeRealizeAuthorization,
 } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
 export const validate_agent_realize_scenario = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -42,7 +43,7 @@ export const validate_agent_realize_scenario = async (props: {
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
@@ -50,7 +51,7 @@ export const validate_agent_realize_scenario = async (props: {
   const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/realize.authorization-correct.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/realize.authorization-correct.json.gz`,
       ),
     ),
   );
@@ -66,7 +67,7 @@ export const validate_agent_realize_scenario = async (props: {
   );
 
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {

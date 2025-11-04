@@ -1,25 +1,25 @@
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import {
   AutoBeEventSnapshot,
+  AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import typia from "typia";
 
-import { TestProject } from "../../structures/TestProject";
+import { AutoBeExampleStorage } from "../example/AutoBeExampleStorage";
 
-export namespace AutoBePlaygroundReplayStorage {
+export namespace AutoBeReplayStorage {
   export const getAll = async (
     vendor: string,
-    projectFilter?: (project: TestProject) => boolean,
+    projectFilter?: (project: AutoBeExampleProject) => boolean,
   ): Promise<IAutoBePlaygroundReplay[]> => {
-    const projects: TestProject[] = typia.misc
-      .literals<TestProject>()
+    const projects: AutoBeExampleProject[] = typia.misc
+      .literals<AutoBeExampleProject>()
       .filter(projectFilter ?? (() => true));
     const replays: Array<IAutoBePlaygroundReplay | null> = await Promise.all(
       projects.map((p) =>
-        AutoBePlaygroundReplayStorage.get({
+        AutoBeReplayStorage.get({
           vendor,
           project: p,
         }),
@@ -30,7 +30,7 @@ export namespace AutoBePlaygroundReplayStorage {
 
   export const get = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
   }): Promise<IAutoBePlaygroundReplay | null> => {
     const histories: AutoBeHistory[] | null = await getHistories(props);
     if (histories === null) return null;
@@ -39,7 +39,7 @@ export namespace AutoBePlaygroundReplayStorage {
       phase: AutoBePhase,
     ): Promise<AutoBeEventSnapshot[] | null> => {
       try {
-        return await ArchiveStorage.getSnapshots({
+        return await AutoBeExampleStorage.getSnapshots({
           vendor: props.vendor,
           project: props.project,
           phase,
@@ -62,11 +62,11 @@ export namespace AutoBePlaygroundReplayStorage {
 
   const getHistories = async (props: {
     vendor: string;
-    project: TestProject;
+    project: AutoBeExampleProject;
   }): Promise<AutoBeHistory[] | null> => {
     for (const phase of SEQUENCE) {
       try {
-        return await ArchiveStorage.getHistories({
+        return await AutoBeExampleStorage.getHistories({
           vendor: props.vendor,
           project: props.project,
           phase,

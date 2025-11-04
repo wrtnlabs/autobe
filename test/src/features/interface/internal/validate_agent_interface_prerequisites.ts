@@ -1,7 +1,8 @@
 import { orchestrateInterfacePrerequisites } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisites";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
-import { ArchiveStorage } from "@autobe/filesystem/src/ArchiveStorage";
 import { AutoBeEventOfSerializable, AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeExampleProject } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import fs from "fs";
 import typia from "typia";
@@ -9,13 +10,12 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
-import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_prerequisites = async (props: {
   factory: TestFactory;
   vendor: string;
-  project: TestProject;
+  project: AutoBeExampleProject;
 }) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
@@ -31,7 +31,7 @@ export const validate_agent_interface_prerequisites = async (props: {
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
+        `${AutoBeExampleStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
@@ -41,7 +41,7 @@ export const validate_agent_interface_prerequisites = async (props: {
     JSON.parse(
       await CompressUtil.gunzip(
         await fs.promises.readFile(
-          `${ArchiveStorage.getDirectory(props)}/interface.schemas.json.gz`,
+          `${AutoBeExampleStorage.getDirectory(props)}/interface.schemas.json.gz`,
         ),
       ),
     );
@@ -70,7 +70,7 @@ export const validate_agent_interface_prerequisites = async (props: {
     },
   });
   if (TestGlobal.archive)
-    await ArchiveStorage.save({
+    await AutoBeExampleStorage.save({
       vendor: props.vendor,
       project: props.project,
       files: {
