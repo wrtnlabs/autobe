@@ -15,7 +15,11 @@ interface ITestFunction {
   name: string;
   step: Step;
   project: AutoBeExampleProject;
-  execute: (factory: TestFactory) => Promise<void>;
+  execute: (props: {
+    factory: TestFactory;
+    project: AutoBeExampleProject;
+    vendor: string;
+  }) => Promise<void>;
 }
 
 const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
@@ -53,7 +57,7 @@ const collect = async (): Promise<ITestFunction[]> => {
         typia.misc.literals<AutoBeExampleProject>().forEach((project) => {
           container.push({
             name: key,
-            execute: (factory: TestFactory) => value(factory, project),
+            execute: (props) => value(props),
             project,
             step,
           });
@@ -161,7 +165,11 @@ const main = async (): Promise<void> => {
     `);
     const start: Date = new Date();
     try {
-      await tf.execute(factory);
+      await tf.execute({
+        factory,
+        project: tf.project,
+        vendor: TestGlobal.vendorModel,
+      });
       console.log(
         `- Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,
       );
