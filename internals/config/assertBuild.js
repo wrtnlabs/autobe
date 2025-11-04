@@ -1,11 +1,13 @@
 const fs = require("fs");
 
 console.log("Checking build output...");
-if (
-  (fs.existsSync("lib/index.js") === false &&
-    fs.existsSync("lib/index.mjs") === false) ||
-  fs.existsSync("lib/index.d.ts") === false
-) {
+
+const src = fs
+  .readdirSync("src")
+  .map((file) => (file.endsWith(".ts") ? file.replace(".ts", ".js") : file));
+const lib = fs.readdirSync("lib");
+
+if (src.every((x) => lib.includes(x)) === false) {
   console.log("Root folder of build output is not lib.");
   process.exit(-1);
 }
