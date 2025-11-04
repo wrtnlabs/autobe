@@ -7,12 +7,12 @@ import {
   IAutoBeHackathonSession,
   IPage,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { UnprocessableEntityException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { StringUtil } from "../../../../../packages/utils/src";
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
 import { IEntity } from "../../structures/IEntity";
 import { PaginationUtil } from "../../utils/PaginationUtil";

@@ -1,10 +1,10 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { AutoBeHistory, IAutoBeHackathonSession } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ArrayUtil } from "@nestia/e2e";
 import OpenAI from "openai";
 
-import { StringUtil } from "../../../../../packages/utils/src";
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
 import { AutoBeHackathonSessionProvider } from "../sessions/AutoBeHackathonSessionProvider";
 
