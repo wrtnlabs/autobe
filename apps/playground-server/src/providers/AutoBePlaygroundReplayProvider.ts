@@ -1,5 +1,10 @@
 import { AutoBeMockAgent } from "@autobe/agent";
 import {
+  AutoBeExampleStorage,
+  AutoBeReplayComputer,
+  AutoBeReplayStorage,
+} from "@autobe/benchmark";
+import {
   AutoBeExampleProject,
   IAutoBePlaygroundReplay,
   IAutoBeRpcListener,
@@ -8,11 +13,6 @@ import {
 import { WebSocketAcceptor } from "tgrid";
 import typia from "typia";
 
-import {
-  AutoBeExampleStorage,
-  AutoBeReplayComputer,
-  AutoBeReplayStorage,
-} from "../../../../packages/benchmark/src";
 import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
 
 export namespace AutoBePlaygroundReplayProvider {

@@ -25,6 +25,7 @@
     "build:env": "ts-node build/env.ts",
     "build:prisma": "pnpm run build:env && prisma generate --schema=./prisma/schema",
     "build:sdk": "nestia sdk",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
     "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
