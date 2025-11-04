@@ -5,12 +5,13 @@ import {
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
+import { ArchiveStorage } from "./utils/ArchiveStorage";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const main = async (): Promise<void> => {
   const experiments: IAutoBePlaygroundBenchmark[] = [];
-  for (const vendor of await AutoBePlaygroundReplayStorage.getVendorModels()) {
+  for (const vendor of await ArchiveStorage.getVendorModels()) {
     const replayList: IAutoBePlaygroundReplay[] =
       await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
         AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),

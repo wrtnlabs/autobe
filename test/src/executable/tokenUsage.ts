@@ -1,7 +1,8 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import typia from "typia";
 
-import { TestHistory } from "../internal/TestHistory";
+import { TestGlobal } from "../TestGlobal";
+import { ArchiveStorage } from "../archive/utils/ArchiveStorage";
 import { TestProject } from "../structures/TestProject";
 
 const main = async (): Promise<void> => {
@@ -9,18 +10,19 @@ const main = async (): Promise<void> => {
     console.log("-------------------------------------------------");
     console.log(project.toUpperCase());
     console.log("-------------------------------------------------");
-    for (const step of [
+    for (const phase of [
       "analyze",
       "prisma",
       "interface",
       "test",
       "realize",
     ] as const) {
-      const usage: IAutoBeTokenUsageJson = await TestHistory.getTokenUsage(
+      const usage: IAutoBeTokenUsageJson = await ArchiveStorage.getTokenUsage({
+        vendor: TestGlobal.vendorModel,
         project,
-        step,
-      );
-      console.log(`  - ${step}: ${usage.aggregate.total.toLocaleString()}`);
+        phase,
+      });
+      console.log(`  - ${phase}: ${usage.aggregate.total.toLocaleString()}`);
     }
   }
 };

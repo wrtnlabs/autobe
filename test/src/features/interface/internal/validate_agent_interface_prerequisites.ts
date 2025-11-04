@@ -7,24 +7,23 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
+import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
-export const validate_agent_interface_prerequisites = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_interface_prerequisites = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const { agent } = await prepare_agent_interface(factory, project);
-  const model: string = TestGlobal.vendorModel;
-
+  const { agent } = await prepare_agent_interface(props);
   for (let type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, (event) => {
-      TestLogger.event(new Date(), event);
+      ArchiveLogger.event(new Date(), event);
     });
 
   console.log(agent.getContext().vendor.model);
@@ -32,7 +31,7 @@ export const validate_agent_interface_prerequisites = async (
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json.gz`,
+        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
@@ -42,7 +41,7 @@ export const validate_agent_interface_prerequisites = async (
     JSON.parse(
       await CompressUtil.gunzip(
         await fs.promises.readFile(
-          `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.schemas.json.gz`,
+          `${ArchiveStorage.getDirectory(props)}/interface.schemas.json.gz`,
         ),
       ),
     );
@@ -63,7 +62,7 @@ export const validate_agent_interface_prerequisites = async (
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/operations`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/interface/operations`,
     files: {
       ...(await agent.getFiles()),
       "logs/prerequisites.json": JSON.stringify(prerequisites, null, 2),
@@ -71,7 +70,11 @@ export const validate_agent_interface_prerequisites = async (
     },
   });
   if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.interface.operations.json`]: JSON.stringify(operations),
+    await ArchiveStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`interface.operations.json`]: JSON.stringify(operations),
+      },
     });
 };

@@ -10,25 +10,23 @@ import fs from "fs";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
+import { ArchiveStorage } from "./utils/ArchiveStorage";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayDocumentation } from "./utils/AutoBePlaygroundReplayDocumentation";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const initialize = async (): Promise<void> => {
-  if (fs.existsSync(`${TestGlobal.ROOT}/repositories/examples`) === true)
+  if (fs.existsSync(`${TestGlobal.ROOT}/repositories/autobe-examples`) === true)
     return;
   try {
     await fs.promises.mkdir(`${TestGlobal.ROOT}/repositories`, {
       recursive: true,
     });
   } catch {}
-  cp.execSync(
-    "git clone https://github.com/wrtnlabs/autobe-examples examples",
-    {
-      cwd: `${TestGlobal.ROOT}/repositories`,
-      stdio: "inherit",
-    },
-  );
+  cp.execSync("git clone https://github.com/wrtnlabs/autobe-examples", {
+    cwd: `${TestGlobal.ROOT}/repositories`,
+    stdio: "inherit",
+  });
 };
 
 const main = async (): Promise<void> => {
@@ -38,7 +36,7 @@ const main = async (): Promise<void> => {
   // GATHER DATA
   const bucket: Record<string, string> = {};
   const experiments: IAutoBePlaygroundBenchmark[] = [];
-  for (const vendor of await AutoBePlaygroundReplayStorage.getVendorModels()) {
+  for (const vendor of await ArchiveStorage.getVendorModels()) {
     const replayList: IAutoBePlaygroundReplay[] =
       await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
         AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
@@ -82,9 +80,9 @@ const main = async (): Promise<void> => {
   // COMMIT
   bucket["README.md"] = AutoBePlaygroundReplayDocumentation.readme(experiments);
   for (const file of await fs.promises.readdir(
-    `${TestGlobal.ROOT}/repositories/examples`,
+    `${TestGlobal.ROOT}/repositories/autobe-examples`,
   )) {
-    const location: string = `${TestGlobal.ROOT}/repositories/examples/${file}`;
+    const location: string = `${TestGlobal.ROOT}/repositories/autobe-examples/${file}`;
     const stat: fs.Stats = await fs.promises.lstat(location);
     if (stat.isDirectory() === true && file !== ".git")
       await fs.promises.rm(location, {
@@ -93,7 +91,7 @@ const main = async (): Promise<void> => {
       });
   }
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/repositories/examples`,
+    root: `${TestGlobal.ROOT}/repositories/autobe-examples`,
     files: bucket,
     overwrite: true,
   });
@@ -102,7 +100,7 @@ const main = async (): Promise<void> => {
   if (TestGlobal.getArguments("no-commit") === null) {
     const execute = (command: string) => {
       cp.execSync(command, {
-        cwd: `${TestGlobal.ROOT}/repositories/examples`,
+        cwd: `${TestGlobal.ROOT}/repositories/autobe-examples`,
         stdio: "ignore",
       });
     };

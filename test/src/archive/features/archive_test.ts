@@ -14,22 +14,23 @@ import typia from "typia";
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_test } from "../../features/test/internal/prepare_agent_test";
-import { TestHistory } from "../../internal/TestHistory";
-import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveLogger } from "../utils/ArchiveLogger";
+import { ArchiveStorage } from "../utils/ArchiveStorage";
 
-export let archive_test = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export let archive_test = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  let { agent, zero } = await prepare_agent_test(factory, project);
+  let { agent, zero } = await prepare_agent_test(props);
   let snapshots: AutoBeEventSnapshot[] = [];
   let start: Date = new Date();
   let listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -37,10 +38,13 @@ export let archive_test = async (
   };
   for (let type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
-  agent.on("vendorTimeout", (e) => TestLogger.event(start, e));
+  agent.on("vendorTimeout", (e) => ArchiveLogger.event(start, e));
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "test");
+    await ArchiveStorage.getUserMessage({
+      project: props.project,
+      phase: "test",
+    });
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
@@ -55,10 +59,9 @@ export let archive_test = async (
   const result: AutoBeTestHistory = histories.find((h) => h.type === "test")!;
 
   // REPORT RESULT
-  let model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/test`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/test`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -66,14 +69,20 @@ export let archive_test = async (
       },
     });
   } catch {}
-  await TestHistory.save({
-    [`${project}.test.json`]: JSON.stringify(agent.getHistories()),
-    [`${project}.test.snapshots.json`]: JSON.stringify(
-      snapshots.map((s) => ({
-        event: s.event,
-        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
-      })),
-    ),
+  await ArchiveStorage.save({
+    vendor: props.vendor,
+    project: props.project,
+    files: {
+      [`test.json`]: JSON.stringify(agent.getHistories()),
+      [`test.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .increment(zero)
+            .toJSON(),
+        })),
+      ),
+    },
   });
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);

@@ -4,17 +4,18 @@ import { AutoBeInterfaceGroupEvent } from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
-export const validate_agent_interface_groups = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_interface_groups = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_interface(factory, project);
+  const { agent } = await prepare_agent_interface(props);
   const result: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroups(
     agent.getContext(),
     {
@@ -22,14 +23,18 @@ export const validate_agent_interface_groups = async (
     },
   );
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/endpoints`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/interface/groups`,
     files: {
       ...(await agent.getFiles()),
       "logs/groups.json": JSON.stringify(result.groups),
     },
   });
   if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.interface.groups.json`]: JSON.stringify(result.groups),
+    await ArchiveStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`interface.groups.json`]: JSON.stringify(result.groups),
+      },
     });
 };

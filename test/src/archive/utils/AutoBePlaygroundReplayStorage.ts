@@ -1,33 +1,15 @@
-import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBePhase,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
-import fs from "fs";
 import typia from "typia";
 
-import { TestGlobal } from "../../TestGlobal";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveStorage } from "./ArchiveStorage";
 
 export namespace AutoBePlaygroundReplayStorage {
-  export const getVendorModels = async (): Promise<string[]> => {
-    const result: string[] = [];
-    for (const vendor of await fs.promises.readdir(
-      `${TestGlobal.ROOT}/assets/histories`,
-    ))
-      for (const model of await fs.promises.readdir(
-        `${TestGlobal.ROOT}/assets/histories/${vendor}`,
-      )) {
-        const stat: fs.Stats = await fs.promises.lstat(
-          `${TestGlobal.ROOT}/assets/histories/${vendor}/${model}`,
-        );
-        if (stat.isDirectory() === true) result.push(`${vendor}/${model}`);
-      }
-    return result.sort();
-  };
-
   export const getAll = async (
     vendor: string,
     projectFilter?: (project: TestProject) => boolean,
@@ -56,11 +38,15 @@ export namespace AutoBePlaygroundReplayStorage {
     const snapshots = async (
       phase: AutoBePhase,
     ): Promise<AutoBeEventSnapshot[] | null> => {
-      const location: string = `${TestGlobal.ROOT}/assets/histories/${props.vendor}/${props.project}.${phase}.snapshots.json.gz`;
-      if (fs.existsSync(location) === false) return null;
-      return JSON.parse(
-        await CompressUtil.gunzip(await fs.promises.readFile(location)),
-      );
+      try {
+        return await ArchiveStorage.getSnapshots({
+          vendor: props.vendor,
+          project: props.project,
+          phase,
+        });
+      } catch {
+        return null;
+      }
     };
     return {
       vendor: props.vendor,
@@ -79,11 +65,13 @@ export namespace AutoBePlaygroundReplayStorage {
     project: TestProject;
   }): Promise<AutoBeHistory[] | null> => {
     for (const phase of SEQUENCE) {
-      const location: string = `${TestGlobal.ROOT}/assets/histories/${props.vendor}/${props.project}.${phase}.json.gz`;
-      if (fs.existsSync(location) === false) continue;
-      return JSON.parse(
-        await CompressUtil.gunzip(await fs.promises.readFile(location)),
-      ) as AutoBeHistory[];
+      try {
+        return await ArchiveStorage.getHistories({
+          vendor: props.vendor,
+          project: props.project,
+          phase,
+        });
+      } catch {}
     }
     return null;
   };

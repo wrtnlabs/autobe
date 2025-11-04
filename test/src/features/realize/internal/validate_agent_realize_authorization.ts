@@ -13,14 +13,15 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_authorization = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_realize_authorization = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_realize(factory, project);
+  const { agent } = await prepare_agent_realize(props);
 
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
@@ -74,9 +75,8 @@ export const validate_agent_realize_authorization = async (
   };
 
   const histories: AutoBeHistory[] = agent.getHistories();
-  const model: string = TestGlobal.vendorModel;
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/authorization`,
     files: {
       ...(await agent.getFiles()),
       ...files,

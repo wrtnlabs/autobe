@@ -7,10 +7,17 @@ import OpenAI from "openai";
 import { v7 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
-import { TestHistory } from "../../internal/TestHistory";
+import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_realize_files = async () => {
-  if (TestHistory.has("todo", "test") === false) return false;
+  if (
+    (await ArchiveStorage.has({
+      vendor: TestGlobal.vendorModel,
+      project: "todo",
+      phase: "test",
+    })) === false
+  )
+    return false;
 
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -20,7 +27,11 @@ export const test_compiler_realize_files = async () => {
     },
     compiler: (listener) => new AutoBeCompiler(listener),
     histories: [
-      ...(await TestHistory.getHistories("todo", "test")),
+      ...(await ArchiveStorage.getHistories({
+        vendor: TestGlobal.vendorModel,
+        project: "todo",
+        phase: "test",
+      })),
       {
         type: "realize",
         functions: [],

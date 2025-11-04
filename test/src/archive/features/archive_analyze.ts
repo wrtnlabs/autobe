@@ -12,26 +12,29 @@ import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
-import { TestHistory } from "../../internal/TestHistory";
-import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveLogger } from "../utils/ArchiveLogger";
+import { ArchiveStorage } from "../utils/ArchiveStorage";
 
-export const archive_analyze = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const archive_analyze = async (props: {
+  factory: TestFactory;
+  project: TestProject;
+  vendor: string;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "analyze");
+    await ArchiveStorage.getUserMessage({
+      project: props.project,
+      phase: "analyze",
+    });
   const start: Date = new Date();
-  const model: string = TestGlobal.vendorModel;
   const snapshots: AutoBeEventSnapshot[] = [];
 
-  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([]);
+  const agent: AutoBeAgent<ILlmSchema.Model> = props.factory.createAgent([]);
   const listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -45,7 +48,7 @@ export const archive_analyze = async (
 
   // GENERATE REPORT
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
-    factory.getTokenUsage().toJSON(),
+    props.factory.getTokenUsage().toJSON(),
   );
   const go = async (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
@@ -70,26 +73,32 @@ export const archive_analyze = async (
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/analyze`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/analyze`,
       files: await agent.getFiles(),
     });
   } catch {}
-  await TestHistory.save({
-    [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
-    [`${project}.analyze.snapshots.json`]: JSON.stringify(
-      snapshots.map((s) => ({
-        event: s.event,
-        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).decrement(zero).toJSON(),
-      })),
-    ),
-    // [`${project}.analyze.writes.json`]: JSON.stringify(
-    //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeWrite"),
-    // ),
-    // [`${project}.analyze.reviews.json`]: JSON.stringify(
-    //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeReview"),
-    // ),
-    // [`${project}.analyze.scenario.json`]: JSON.stringify(
-    //   snapshots.map((s) => s.event).find((e) => e.type === "analyzeScenario")!,
-    // ),
+  await ArchiveStorage.save({
+    vendor: props.vendor,
+    project: props.project,
+    files: {
+      [`analyze.histories.json`]: JSON.stringify(agent.getHistories()),
+      [`analyze.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .decrement(zero)
+            .toJSON(),
+        })),
+      ),
+      // [`${project}.analyze.writes.json`]: JSON.stringify(
+      //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeWrite"),
+      // ),
+      // [`${project}.analyze.reviews.json`]: JSON.stringify(
+      //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeReview"),
+      // ),
+      // [`${project}.analyze.scenario.json`]: JSON.stringify(
+      //   snapshots.map((s) => s.event).find((e) => e.type === "analyzeScenario")!,
+      // ),
+    },
   });
 };

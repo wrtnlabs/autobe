@@ -14,23 +14,24 @@ import { v7 } from "uuid";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
+import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_write = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_realize_write = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_realize(factory, project);
+  const { agent } = await prepare_agent_realize(props);
   const start: Date = new Date();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -41,11 +42,10 @@ export const validate_agent_realize_write = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 
-  const model: string = TestGlobal.vendorModel;
   const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorization-correct.json.gz`,
+        `${ArchiveStorage.getDirectory(props)}/realize.authorization-correct.json.gz`,
       ),
     ),
   );
@@ -53,7 +53,7 @@ export const validate_agent_realize_write = async (
   const scenarios: IAutoBeRealizeScenarioResult[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.scenarios.json.gz`,
+        `${ArchiveStorage.getDirectory(props)}/realize.scenarios.json.gz`,
       ),
     ),
   );
@@ -111,7 +111,7 @@ export const validate_agent_realize_write = async (
   );
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization-correct`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/authorization-correct`,
     files: {
       ...(await agent.getFiles()),
       ...Object.fromEntries(retried.map((el) => [el?.location, el?.content])),
@@ -119,10 +119,14 @@ export const validate_agent_realize_write = async (
   });
 
   if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.realize.writes.json`]: JSON.stringify(
-        [...writes, ...retried].filter((w) => w !== null),
-      ),
+    await ArchiveStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`realize.writes.json`]: JSON.stringify(
+          [...writes, ...retried].filter((w) => w !== null),
+        ),
+      },
     });
 };
 

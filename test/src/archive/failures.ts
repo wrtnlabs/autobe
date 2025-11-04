@@ -9,8 +9,8 @@ import path from "path";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
+import { ArchiveStorage } from "./utils/ArchiveStorage";
 
 const main = async (): Promise<void> => {
   if (fs.existsSync(`${TestGlobal.ROOT}/results`) === true)
@@ -35,13 +35,20 @@ const main = async (): Promise<void> => {
   for (const vendor of typia.misc.literals<VendorModel>())
     for (const project of typia.misc.literals<TestProject>())
       for (const phase of phaseSequence) {
-        TestGlobal.vendorModel = vendor;
-        if ((await TestHistory.has(project, phase)) === false) continue;
+        if (
+          (await ArchiveStorage.has({
+            project,
+            vendor,
+            phase,
+          })) === false
+        )
+          continue;
 
-        const histories: AutoBeHistory[] = await TestHistory.getHistories(
+        const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
           project,
           phase,
-        );
+          vendor,
+        });
         const last: AutoBeHistory | undefined = histories.at(-1);
         if (last === undefined) continue;
         else if (
@@ -59,8 +66,8 @@ const main = async (): Promise<void> => {
         console.log("=======================================================");
         console.log(StringUtil.trim`
           \`\`\`bash
-          code results/${TestHistory.slugModel(vendor, false)}/${project}/${phase}
-          pnpm run archive --vendor ${vendor} --project ${project} --from ${phase} > archive.${TestHistory.slugModel(vendor, true)}.${project}.log
+          code results/${ArchiveStorage.slugModel(vendor, false)}/${project}/${phase}
+          pnpm run archive --vendor ${vendor} --project ${project} --from ${phase} > archive.${ArchiveStorage.slugModel(vendor, true)}.${project}.log
           \`\`\`
         `);
         console.log("\n");

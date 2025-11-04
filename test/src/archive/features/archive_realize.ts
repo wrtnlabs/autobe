@@ -14,22 +14,23 @@ import typia from "typia";
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_realize } from "../../features/realize/internal/prepare_agent_realize";
-import { TestHistory } from "../../internal/TestHistory";
-import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveLogger } from "../utils/ArchiveLogger";
+import { ArchiveStorage } from "../utils/ArchiveStorage";
 
-export const archive_realize = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const archive_realize = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent, zero } = await prepare_agent_realize(factory, project);
+  const { agent, zero } = await prepare_agent_realize(props);
   const start: Date = new Date();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -39,7 +40,10 @@ export const archive_realize = async (
     agent.on(type, listen);
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "realize");
+    await ArchiveStorage.getUserMessage({
+      project: props.project,
+      phase: "realize",
+    });
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
@@ -56,10 +60,9 @@ export const archive_realize = async (
   )!;
 
   // REPORT RESULT
-  const model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/realize`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/realize`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -67,14 +70,20 @@ export const archive_realize = async (
       },
     });
   } catch {}
-  await TestHistory.save({
-    [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
-    [`${project}.realize.snapshots.json`]: JSON.stringify(
-      snapshots.map((s) => ({
-        event: s.event,
-        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
-      })),
-    ),
+  await ArchiveStorage.save({
+    vendor: props.vendor,
+    project: props.project,
+    files: {
+      [`realize.json`]: JSON.stringify(agent.getHistories()),
+      [`realize.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .increment(zero)
+            .toJSON(),
+        })),
+      ),
+    },
   });
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);

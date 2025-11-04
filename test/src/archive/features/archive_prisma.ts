@@ -16,22 +16,22 @@ import typia from "typia";
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_prisma } from "../../features/prisma/internal/prepare_agent_prisma";
-import { TestHistory } from "../../internal/TestHistory";
-import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveLogger } from "../utils/ArchiveLogger";
+import { ArchiveStorage } from "../utils/ArchiveStorage";
 
-export const archive_prisma = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const archive_prisma = async (props: {
+  factory: TestFactory;
+  project: TestProject;
+  vendor: string;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
-  const { agent, zero } = await prepare_agent_prisma(factory, project);
+  const { agent, zero } = await prepare_agent_prisma(props);
   const start: Date = new Date();
-  const model: string = TestGlobal.vendorModel;
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -43,7 +43,7 @@ export const archive_prisma = async (
   agent.on("prismaStart", async (e) => {
     try {
       await FileSystemIterator.save({
-        root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma`,
+        root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/prisma`,
         files: {
           "histories.json": JSON.stringify(agent.getHistories(), null, 2),
           "instruction.md": e.reason,
@@ -64,7 +64,7 @@ export const archive_prisma = async (
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-correct-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
         ["errors.json", JSON.stringify(event.failure.errors)],
         ["correction.json", JSON.stringify(event.correction)],
@@ -75,7 +75,7 @@ export const archive_prisma = async (
   agent.on("prismaValidate", async (event) => {
     validates.push(event);
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-failure-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/prisma-failure-${validates.length}`,
       files: {
         "errors.json": JSON.stringify(event.result.errors),
         ...event.schemas,
@@ -84,7 +84,10 @@ export const archive_prisma = async (
   });
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "prisma");
+    await ArchiveStorage.getUserMessage({
+      project: props.project,
+      phase: "prisma",
+    });
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
@@ -102,7 +105,7 @@ export const archive_prisma = async (
   )!;
   if (prisma.compiled.type !== "success") {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma-error`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/prisma-error`,
       files: {
         "result.json": JSON.stringify(prisma.result),
         ...prisma.schemas,
@@ -121,20 +124,26 @@ export const archive_prisma = async (
   // REPORT RESULT
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/prisma`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.vendor, false)}/${props.project}/prisma`,
       files: {
         ...(await agent.getFiles()),
         "autobe/instruction.md": prisma.instruction,
       },
     });
   } catch {}
-  await TestHistory.save({
-    [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),
-    [`${project}.prisma.snapshots.json`]: JSON.stringify(
-      snapshots.map((s) => ({
-        event: s.event,
-        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
-      })),
-    ),
+  await ArchiveStorage.save({
+    vendor: props.vendor,
+    project: props.project,
+    files: {
+      [`prisma.json`]: JSON.stringify(agent.getHistories()),
+      [`prisma.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .increment(zero)
+            .toJSON(),
+        })),
+      ),
+    },
   });
 };

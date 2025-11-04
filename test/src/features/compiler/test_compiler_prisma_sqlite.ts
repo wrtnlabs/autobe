@@ -8,15 +8,23 @@ import {
 import { TestValidator } from "@nestia/e2e";
 
 import { TestGlobal } from "../../TestGlobal";
-import { TestHistory } from "../../internal/TestHistory";
+import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_prisma_sqlite = async () => {
-  if (TestHistory.has("todo", "prisma") === false) return false;
+  if (
+    (await ArchiveStorage.has({
+      vendor: TestGlobal.vendorModel,
+      project: "todo",
+      phase: "prisma",
+    })) === false
+  )
+    return false;
 
-  const histories: AutoBeHistory[] = await TestHistory.getHistories(
-    "todo",
-    "prisma",
-  );
+  const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+    vendor: TestGlobal.vendorModel,
+    project: "todo",
+    phase: "prisma",
+  });
   const prisma: AutoBePrismaHistory | undefined = histories.find(
     (h) => h.type === "prisma",
   );

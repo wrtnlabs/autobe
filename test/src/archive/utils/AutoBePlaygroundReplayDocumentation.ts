@@ -5,8 +5,8 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 
-import { TestHistory } from "../../internal/TestHistory";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveStorage } from "./ArchiveStorage";
 
 export namespace AutoBePlaygroundReplayDocumentation {
   export const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
@@ -20,10 +20,10 @@ export namespace AutoBePlaygroundReplayDocumentation {
         ${experiments
           .map((e) =>
             [
-              `[\`${TestHistory.slugModel(
+              `[\`${ArchiveStorage.slugModel(
                 e.vendor,
                 false,
-              )}\`](#${TestHistory.slugModel(e.vendor, false)
+              )}\`](#${ArchiveStorage.slugModel(e.vendor, false)
                 .replaceAll("/", "")
                 .replaceAll(".", "")})`,
               e.score.aggregate,
@@ -118,10 +118,10 @@ export namespace AutoBePlaygroundReplayDocumentation {
     return StringUtil.trim`
       ### \`${props.replay.vendor}\` - \`${props.replay.project}\`
 
-      - Source Code: ${`[\`${TestHistory.slugModel(
+      - Source Code: ${`[\`${ArchiveStorage.slugModel(
         props.replay.vendor,
         false,
-      )}/${props.replay.project}\`](./${TestHistory.slugModel(
+      )}/${props.replay.project}\`](./${ArchiveStorage.slugModel(
         props.replay.vendor,
         false,
       )}/${props.replay.project}/)`}

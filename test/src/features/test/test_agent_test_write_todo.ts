@@ -1,5 +1,10 @@
 import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
 import { validate_agent_test_write } from "./internal/validate_agent_test_write";
 
 export const test_agent_test_write_todo = (factory: TestFactory) =>
-  validate_agent_test_write(factory, "todo");
+  validate_agent_test_write({
+    factory,
+    project: "todo",
+    vendor: TestGlobal.vendorModel,
+  });

@@ -5,10 +5,17 @@ import cp from "child_process";
 import OpenAI from "openai";
 
 import { TestGlobal } from "../../TestGlobal";
-import { TestHistory } from "../../internal/TestHistory";
+import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_test_files = async () => {
-  if (TestHistory.has("todo", "test") === false) return false;
+  if (
+    (await ArchiveStorage.has({
+      vendor: TestGlobal.vendorModel,
+      project: "todo",
+      phase: "test",
+    })) === false
+  )
+    return false;
 
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -17,7 +24,11 @@ export const test_compiler_test_files = async () => {
       model: "gpt-4.1",
     },
     compiler: (listener) => new AutoBeCompiler(listener),
-    histories: await TestHistory.getHistories("todo", "test"),
+    histories: await ArchiveStorage.getHistories({
+      vendor: TestGlobal.vendorModel,
+      project: "todo",
+      phase: "test",
+    }),
   });
   const files: Record<string, string> = await agent.getFiles();
   const root: string = `${TestGlobal.ROOT}/results/compiler.test.files`;

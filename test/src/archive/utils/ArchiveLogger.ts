@@ -5,7 +5,7 @@ import {
 } from "@autobe/interface";
 import typia from "typia";
 
-export namespace TestLogger {
+export namespace ArchiveLogger {
   export const event = (start: Date, event: AutoBeEvent): void => {
     // DEFAULT TITLE
     const time = (prev: Date) =>

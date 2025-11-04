@@ -8,29 +8,30 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
-export const validate_agent_interface_complement = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_interface_complement = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const { agent } = await prepare_agent_interface(factory, project);
-  const model: string = TestGlobal.vendorModel;
+  const { agent } = await prepare_agent_interface(props);
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json.gz`,
+        `${ArchiveStorage.getDirectory(props)}/interface.operations.json.gz`,
       ),
     ),
   );
   const components: AutoBeOpenApi.IComponents = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.schemas.json.gz`,
+        `${ArchiveStorage.getDirectory(props)}/interface.schemas.json.gz`,
       ),
     ),
   );
@@ -76,7 +77,7 @@ export const validate_agent_interface_complement = async (
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/complement`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/interface/complement`,
     files: {
       ...(await agent.getFiles()),
       "logs/operations.json": JSON.stringify(operations),

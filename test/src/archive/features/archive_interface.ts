@@ -14,23 +14,24 @@ import typia from "typia";
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_interface } from "../../features/interface/internal/prepare_agent_interface";
-import { TestHistory } from "../../internal/TestHistory";
-import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
+import { ArchiveLogger } from "../utils/ArchiveLogger";
+import { ArchiveStorage } from "../utils/ArchiveStorage";
 
-export const archive_interface = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const archive_interface = async (props: {
+  factory: TestFactory;
+  project: TestProject;
+  vendor: string;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent, zero } = await prepare_agent_interface(factory, project);
+  const { agent, zero } = await prepare_agent_interface(props);
   const snapshots: AutoBeEventSnapshot[] = [];
   const start: Date = new Date();
 
   const listen = (event: AutoBeEventOfSerializable) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
+    if (TestGlobal.archive) ArchiveLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -40,7 +41,10 @@ export const archive_interface = async (
     agent.on(type, listen);
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "interface");
+    await ArchiveStorage.getUserMessage({
+      project: props.project,
+      phase: "interface",
+    });
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
@@ -59,10 +63,9 @@ export const archive_interface = async (
   )!;
 
   // REPORT RESULT
-  const model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${TestHistory.slugModel(model, false)}/${project}/interface`,
+      root: `${TestGlobal.ROOT}/results/${ArchiveStorage.slugModel(props.project, false)}/${props.project}/interface`,
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
@@ -70,14 +73,20 @@ export const archive_interface = async (
       },
     });
   } catch {}
-  await TestHistory.save({
-    [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
-    [`${project}.interface.snapshots.json`]: JSON.stringify(
-      snapshots.map((s) => ({
-        event: s.event,
-        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
-      })),
-    ),
+  await ArchiveStorage.save({
+    vendor: props.vendor,
+    project: props.project,
+    files: {
+      [`interface.json`]: JSON.stringify(agent.getHistories()),
+      [`interface.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .increment(zero)
+            .toJSON(),
+        })),
+      ),
+    },
   });
   TestValidator.equals("missed", result.missed, []);
 };

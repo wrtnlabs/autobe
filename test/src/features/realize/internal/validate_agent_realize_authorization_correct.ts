@@ -9,18 +9,19 @@ import {
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_authorization_correct = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_realize_authorization_correct = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_realize(factory, project);
+  const { agent } = await prepare_agent_realize(props);
 
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
@@ -193,9 +194,8 @@ export const validate_agent_realize_authorization_correct = async (
     ),
   };
 
-  const model: string = TestGlobal.vendorModel;
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization-correct`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/authorization-correct`,
     files: {
       ...(await agent.getFiles()),
       ...files,
@@ -206,9 +206,12 @@ export const validate_agent_realize_authorization_correct = async (
   });
 
   if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.realize.authorization-correct.json`]:
-        JSON.stringify(results),
+    await ArchiveStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`realize.authorization-correct.json`]: JSON.stringify(results),
+      },
     });
 
   const compiler: IAutoBeCompiler = await ctx.compiler();

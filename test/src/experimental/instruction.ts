@@ -13,7 +13,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
+import { ArchiveStorage } from "../archive/utils/ArchiveStorage";
 
 const SEQUENCE = ["analyze", "prisma", "interface", "test", "realize"] as const;
 
@@ -107,11 +107,12 @@ const main = async (): Promise<void> => {
     event.body.tool_choice = "required";
   });
 
-  for (const s of SEQUENCE) {
-    const message: AutoBeUserMessageHistory = await TestHistory.getUserMessage(
-      "chat",
-      s,
-    );
+  for (const phase of SEQUENCE) {
+    const message: AutoBeUserMessageHistory =
+      await ArchiveStorage.getUserMessage({
+        project: "chat",
+        phase,
+      });
     console.log(
       "userMessage",
       message.contents[0].type === "text"

@@ -6,17 +6,18 @@ import {
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
+import { ArchiveStorage } from "../../../archive/utils/ArchiveStorage";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
-export const validate_agent_prisma_components = async (
-  factory: TestFactory,
-  project: TestProject,
-) => {
+export const validate_agent_prisma_components = async (props: {
+  factory: TestFactory;
+  vendor: string;
+  project: TestProject;
+}) => {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_prisma(factory, project);
+  const { agent } = await prepare_agent_prisma(props);
   const result: AutoBePrismaComponentEvent | AutoBeAssistantMessageHistory =
     await orchestratePrismaComponents(
       agent.getContext(),
@@ -25,7 +26,11 @@ export const validate_agent_prisma_components = async (
   if (result.type !== "prismaComponent")
     throw new Error("Failed to orchestrate prisma components");
   else if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.prisma.components.json`]: JSON.stringify(result),
+    await ArchiveStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`prisma.components.json`]: JSON.stringify(result),
+      },
     });
 };

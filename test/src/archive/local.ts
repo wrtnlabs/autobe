@@ -6,8 +6,8 @@ import OpenAI from "openai";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
+import { ArchiveStorage } from "./utils/ArchiveStorage";
 
 const archive = async (props: {
   vendor: string;
@@ -15,10 +15,11 @@ const archive = async (props: {
   phase: AutoBePhase;
   dbms: "sqlite" | "postgres";
 }): Promise<void> => {
-  const histories: AutoBeHistory[] = await TestHistory.getHistories(
-    props.project,
-    props.phase,
-  );
+  const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+    vendor: props.vendor,
+    project: props.project,
+    phase: props.phase,
+  });
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {

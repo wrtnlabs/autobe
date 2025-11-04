@@ -9,15 +9,24 @@ import { TestValidator } from "@nestia/e2e";
 import OpenAI from "openai";
 import typia from "typia";
 
-import { TestHistory } from "../../internal/TestHistory";
+import { TestGlobal } from "../../TestGlobal";
+import { ArchiveStorage } from "../../archive/utils/ArchiveStorage";
 
 export const test_compiler_test_build = async () => {
-  if (TestHistory.has("todo", "test") === false) return false;
+  if (
+    (await ArchiveStorage.has({
+      vendor: TestGlobal.vendorModel,
+      project: "todo",
+      phase: "test",
+    })) === false
+  )
+    return false;
 
-  const histories: AutoBeHistory[] = await TestHistory.getHistories(
-    "todo",
-    "test",
-  );
+  const histories: AutoBeHistory[] = await ArchiveStorage.getHistories({
+    vendor: TestGlobal.vendorModel,
+    project: "todo",
+    phase: "test",
+  });
   const testHistory: AutoBeTestHistory = typia.assert<AutoBeTestHistory>(
     histories.at(-1),
   );
