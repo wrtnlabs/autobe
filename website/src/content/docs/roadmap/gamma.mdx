@@ -18,9 +18,9 @@ gantt
   Performance Benchmark : active, 2025-11-01, 14d
   
   section Lessons Learned
-  Direct Instruction     : done,    2025-10-15, 14d
-  Interface Schema Review: done,    2025-10-20, 16d
-  JSON Schema Guideline  : done,    2025-10-29,  7d
+  Direct Instruction     : done   , 2025-10-15, 14d
+  Interface Schema Review: done   , 2025-10-20, 16d
+  JSON Schema Guideline  : done   , 2025-10-29,  7d
   Image Understanding    : planned, 2025-11-17, 13d
 
   section RAG Optimization
@@ -72,7 +72,7 @@ AutoBE의 기반 프레임워크인 Agentica를 주제로 오픈소스 해커톤
 - Agentica를 활용한 AI 챗봇 및 에이전트 어플리케이션 개발 대회로 진행
 - 다수의 팀이 참가하였으며, 본선에 총 10개 팀이 진출하여 경쟁 중
 - 실제 활용 사례와 피드백을 수집하며, Agentica의 발전 방향 모색
-- Function calling을 위한 스키마 설계와 에이전트 활용에 뛰어난 역량을 보인 참가자들을 Wrtn Technologies AI Agent 개발팀으로 영입 예정
+- Function calling을 위한 스키마 설계와 에이전트 활용에 뛰어난 역량을 보인 참가자들을 Wrtn Technologies AX 개발팀으로 추천 예정
 
 **전략적 가치**: 대회를 통해 피드백을 수집할 뿐만 아니라, 스키마 설계 및 function calling 아키텍처에 전문성을 가진 인재를 발굴하는 인재 파이프라인으로도 기능한다.
 
@@ -129,118 +129,80 @@ AutoBE의 운영 효율성을 다차원적으로 측정, 평가, 최적화하는
 **영향**: 접근성은 유지하면서도, 비즈니스 맥락상 필수적인 아키텍처 결정을 사용자가 직접 통제할 수 있는 권한을 부여한다.
 
 ### 2.2. Interface Schema Review
-Interface phase의 DTO 설계 프로세스를 전문화된 리뷰 에이전트로 분할하여, 관계 무결성, 보안 강화, 내용 완전성 각 영역을 심층적으로 검증한다.
+Interface phase의 DTO 설계 프로세스를 전문화된 리뷰 에이전트로 분할하여, 관계 무결성, 보안 강화, 내용 완전성 각 영역을 심층적으로 검증할 계획이다.
 
-**아키텍처 진화**: 기존에는 단일 Schema Agent가 DTO 설계의 모든 측면을 담당하였다. 엔터프라이즈 필드 테스트 결과, 이 모놀리식 접근법이 관계 모델링, 보안 제약, 내용 정확성이라는 서로 경쟁하는 요구사항을 동시에 다루는데 한계가 있음이 드러났다. Gamma 릴리즈는 3단계 리뷰 파이프라인을 도입한다:
+**개발 배경**: 현재 단일 Review Agent가 DTO 설계에 대한 검증 일체를 담당하고 있다. 엔터프라이즈 필드 테스트 결과, 이 모놀리식 접근법이 관계 모델링, 보안 제약, 내용 정확성이라는 서로 경쟁하는 요구사항을 동시에 다루는데 한계가 있음이 드러났다. Gamma에서는 3단계 리뷰 파이프라인을 구축할 예정이다:
 
-**1. Relation Review Agent** ([`INTERFACE_SCHEMA_RELATION_REVIEW.md`](https://github.com/wrtnlabs/autobe/blob/main/packages/agent/prompts/INTERFACE_SCHEMA_RELATION_REVIEW.md))
+**1. Relation Review Agent**
 - 외래 키 관계 및 중첩 객체 구조 검증
 - DTO 변형(Create, Update, Read)이 엔티티 연관관계를 올바르게 표현하는지 확인
+  - composition
+  - aggregation
+  - association
 - Prisma 모델과 OpenAPI 스키마 간 관계 불일치 탐지 및 교정
 - 복잡한 시나리오 처리: 선택적/필수 관계, 계단식 갱신, 순환 의존성
 
-**2. Security Review Agent** ([`INTERFACE_SCHEMA_SECURITY_REVIEW.md`](https://github.com/wrtnlabs/autobe/blob/main/packages/agent/prompts/INTERFACE_SCHEMA_SECURITY_REVIEW.md))
+**2. Security Review Agent**
 - 클라이언트 제공 데이터와 서버 관리 데이터 간 인증 경계 분리 강제
 - 요청 DTO에 해시된 비밀번호 필드 노출 등 치명적 취약점 방지
 - 인증된 요청 본문에서 actor identity 필드(예: `user_id`, `member_id`) 제거 검증
 - 응답 DTO가 민감한 시스템 필드(토큰, 솔트, 내부 ID) 유출하지 않도록 보장
 
-**3. Content Review Agent** ([`INTERFACE_SCHEMA_CONTENT_REVIEW.md`](https://github.com/wrtnlabs/autobe/blob/main/packages/agent/prompts/INTERFACE_SCHEMA_CONTENT_REVIEW.md))
+**3. Content Review Agent**
 - Prisma 스키마와 교차 참조하여 필드 완전성 보장
 - 데이터 타입 매핑(Prisma → OpenAPI JSON Schema) 검증
 - 비즈니스 로직 기반 필수/선택 필드 설정 강제
 - 모든 속성에 대한 종합적 문서화 보장
 
-**품질 영향**: 관심사 분리를 통해 각 에이전트가 해당 영역을 심층 전문화할 수 있게 되어, DTO 품질이 극적으로 향상된다. 이전에 누락되던 보안 취약점은 이제 체계적으로 포착되고, 관계 모델링 오류는 코드 생성 전에 탐지되며, 필드 완전성은 자동 교차 참조를 통해 보장된다.
+**기대 효과**: 관심사 분리를 통해 각 에이전트가 해당 영역을 심층 전문화할 수 있게 되어, DTO 품질이 극적으로 향상될 것이다. 현재 누락되는 보안 취약점을 체계적으로 포착하고, 관계 모델링 오류를 코드 생성 전에 탐지하며, 필드 완전성을 자동 교차 참조를 통해 보장할 수 있을 것으로 기대한다.
 
 ### 2.3. JSON Schema Guideline
-Interface 스키마 리뷰 에이전트가 정교해지고 전문화되면서, 치명적 약점이 드러났다: 많은 LLM 모델들이 구문적으로 유효하고 의미적으로 올바른 JSON Schema 구조를 일관되게 생성하는데 어려움을 겪는다.
+Interface 스키마 리뷰 에이전트를 정교하게 전문화할 계획인데, 이에 따라 예상되는 도전과제가 있다: 많은 LLM 모델들이 구문적으로 유효하고 의미적으로 올바른 JSON Schema 구조를 일관되게 생성하는데 어려움을 겪는다.
 
-**오픈소스 모델의 도전과제**: GPT-4.1 같은 상용 모델은 JSON Schema 생성을 안정적으로 처리하지만, 오픈소스 대안들은 빈번하게 잘못된 스키마를 생성한다. 3단계 리뷰 파이프라인이 이 문제를 증폭시켰다—관계, 보안, 내용 리뷰 에이전트가 상호 의존적 수정을 가하면서, 사소한 JSON Schema 오류조차도 컴파일 실패로 연쇄적으로 확대된다.
+**예상되는 오픈소스 모델의 도전과제**: GPT-4.1 같은 상용 모델은 JSON Schema 생성을 안정적으로 처리하지만, 오픈소스 대안들은 빈번하게 잘못된 스키마를 생성할 가능성이 있다. 특히 3단계 리뷰 파이프라인을 도입하면 이 문제가 증폭될 수 있다—관계, 보안, 내용 리뷰 에이전트가 상호 의존적 수정을 가할 때, 사소한 JSON Schema 오류조차도 컴파일 실패로 연쇄적으로 확대될 수 있다.
 
-**근본 원인**: LLM은 JSON Schema의 미묘한 요구사항에 대한 명시적 구조 가이드가 부족하다:
+**근본 원인 분석**: LLM은 JSON Schema의 미묘한 요구사항에 대한 명시적 구조 가이드가 부족하다:
 - `properties`, `required`, `additionalProperties`의 올바른 중첩
 - 스키마 컴포지션을 위한 `$ref`의 정확한 사용
 - 유효한 `type` 제약 및 형식 지정자
 - 검증 키워드(`minLength`, `pattern`, `enum` 등)의 적절한 적용
 - OpenAPI 전용 확장과 핵심 JSON Schema의 구분
 
-**해결책: 규범적 가이드라인**: Gamma는 에이전트 시스템 프롬프트에 직접 내장된 포괄적 JSON Schema 작성 가이드라인을 도입한다:
+**계획된 해결책: 규범적 가이드라인**: Gamma에서는 에이전트 시스템 프롬프트에 직접 내장되는 포괄적 JSON Schema 작성 가이드라인을 개발할 예정이다:
 1. **구조 템플릿**: 일반적인 DTO 시나리오(Create, Update, Read 변형)에 대한 사전 검증된 패턴
 2. **제약 명세**: 특정 검증 키워드를 언제 사용할지에 대한 명확한 규칙
 3. **참조 패턴**: 엔티티 관계 및 중첩 객체를 위한 표준 접근법
 4. **안티 패턴**: 일반적 실수와 그 교정 방법에 대한 명시적 문서화
 
-**영향**: 에이전트에게 명확하고 규범적인 JSON Schema 구성 규칙을 제공함으로써, 역량이 떨어지는 모델에서도 잘못된 스키마 생성을 극적으로 감소시킨다. 이는 AutoBE의 모델 호환성을 민주화하여, 생성 품질을 유지하면서도 운영 비용을 절감한다.
+**기대 효과**: 에이전트에게 명확하고 규범적인 JSON Schema 구성 규칙을 제공함으로써, 역량이 떨어지는 모델에서도 잘못된 스키마 생성을 극적으로 감소시킬 수 있을 것으로 기대한다. 이는 AutoBE의 모델 호환성을 확대하여, 생성 품질을 유지하면서도 운영 비용을 절감할 수 있을 것이다.
 
 ### 2.4. Image Understanding
-요구사항은 깔끔한 텍스트 문서로 도착하지 않는다. 실제 소프트웨어 개발은 Figma 목업, 화이트보드 다이어그램, 주석이 달린 와이어프레임의 혼란스러운 교차점에서 작동한다. AutoBE는 대화뿐만 아니라 시각적 산출물로부터 요구사항을 추출하고 해석해야 한다.
+요구사항은 깔끔한 텍스트 문서로 도착하지 않는다. 실제 소프트웨어 개발은 Figma 목업, 화이트보드 다이어그램, 주석이 달린 와이어프레임의 혼란스러운 교차점에서 작동한다. AutoBE는 대화뿐만 아니라 시각적 산출물로부터도 요구사항을 추출하고 해석할 수 있어야 한다.
 
-**시각적 요구사항의 현실**: 엔터프라이즈 필드 테스트 동안, 핵심 요구사항이 디자인 파일에만 존재하는 경우를 발견하였다:
+**시각적 요구사항의 현실**: 엔터프라이즈 필드 테스트 동안, 핵심 요구사항이 디자인 파일에만 존재하는 경우를 빈번하게 발견하였다:
 - **Figma 디자인**: UI 레이아웃이 암묵적으로 데이터 모델 정의 (예: 폼 필드 = DTO 속성)
 - **와이어프레임**: 네비게이션 흐름이 API 엔드포인트 구조 노출
 - **ERD 다이어그램**: 손으로 그렸거나 도구로 생성된 데이터베이스 스키마
 - **플로우차트**: 특정 API 작업이 필요한 비즈니스 로직 시퀀스
 - **스크린샷**: 마이그레이션 명세를 제공하는 기존 시스템
 
-Wrtn Technologies 내부에서조차, 공식 요구사항은 불완전한 경우가 많았고, "진실의 원천"은 명세 문서가 아닌 디자인 산출물에 존재하였다.
+Wrtn Technologies 내부에서조차, 공식 요구사항 문서는 불완전한 경우가 많았고, "진실의 원천"은 명세 문서가 아닌 디자인 산출물에 존재하였다.
 
-**멀티모달 분석 파이프라인**: Gamma는 시각 이해 능력을 가진 에이전트를 도입한다:
+**개발 계획: 멀티모달 분석 파이프라인**: Gamma에서는 시각 이해 능력을 가진 에이전트를 개발할 예정이다:
 1. **구조 정보 추출**: 시각적 레이아웃을 파싱하여 데이터 모델 및 엔티티 관계 추론
 2. **암묵적 요구사항 식별**: 디자인 결정에 내재된 요구사항 탐지 (예: 페이지네이션 컨트롤 = 오프셋 기반 API 설계 암시)
 3. **텍스트와 교차 참조**: 이미지 분석을 대화 컨텍스트와 결합하여 종합적 이해
 4. **구조화된 요구사항 생성**: 시각적 입력으로부터 공식 요구사항 명세 생산
 
-**Analyze Agent와의 통합**: 이미지로부터 파생된 요구사항은 기존 Analyze agent 파이프라인으로 흘러들어가, 텍스트 요구사항과 병합되어 전체론적 분석을 수행한다. 이 멀티모달 접근은 제품 팀이 실제로 의도를 전달하는 전체 스펙트럼을 포착한다.
+**Analyze Agent와의 통합 계획**: 이미지로부터 파생된 요구사항을 기존 Analyze agent 파이프라인으로 전달하여, 텍스트 요구사항과 병합하여 전체론적 분석을 수행하도록 구현할 예정이다. 이 멀티모달 접근을 통해 제품 팀이 실제로 의도를 전달하는 전체 스펙트럼을 포착할 수 있을 것이다.
 
-**미래 비전**: 멀티모달 LLM 능력이 발전함에 따라, AutoBE는 시각적 이해에 점점 더 의존하게 되며, Figma 링크나 스크린샷 업로드를 주요 요구사항 소스로 수용하게 될 것이다.
+**장기 비전**: 멀티모달 LLM 능력이 발전함에 따라, AutoBE는 시각적 이해에 점점 더 의존하게 될 것이며, 최종적으로는 Figma 링크나 스크린샷 업로드를 주요 요구사항 소스로 수용하는 것을 목표로 한다.
 
 ## 3. RAG Optimization
 <br/>
 <AutoBeDemoModelMovie model="openai/gpt-4.1" />
 
-Transitioning to a next-generation architecture that maximizes token efficiency and improves generation quality through intelligent cyclic workflows.
-
-Currently, each AutoBE agent operates with a single function call, receiving and processing all results from previous stages in bulk. For example, the Test Agent receives all documents generated by Analysis, Prisma, and Interface Agents at once, causing inefficiency where token consumption increases exponentially at each stage.
-
-In gamma update, we're transitioning to an intelligent cyclic structure where each agent **selectively requests only necessary information**. Agents gradually collect information through multiple function calls and generate final outputs when sufficient context is secured.
-
-**Revolutionary Improvement Effects**:
-- **70% Token Consumption Reduction**: Eliminating unnecessary context through selective information loading
-- **Improved Memory Efficiency**: Stable processing even in large-scale projects
-- **Enhanced Accuracy**: More accurate code generation with focused context
-- **Progressive Improvement**: Immediate reflection of feedback at each stage
-
-<Tabs 
-  items={["Interface Agent", "Test Agent"]}
-  defaultIndex={1}>
-  <Tabs.Tab>
-```typescript showLineNumbers
-interface IAutoBeInterfaceOperationApplication {
-  getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[]; 
-  complete(operations: AutoBeOpenApi.IOperation[]): void;
-  halt(reason: string): void;
-}
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```typescript showLineNumbers
-interface IAutoBeTestScenarioApplication {
-  getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[]; 
-  getOperation(endpoints: AutoBeOpenApi.IEndpoint[]): {
-    operations: AutoBeOpenApi.IOperation[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  };
-  complete(scenario: IAutoBeTestScenario): void;
-  halt(reason: string): void;
-}
-```
-  </Tabs.Tab>
-</Tabs>
-
-This cyclic workflow evolves AutoBE into a smarter and more efficient system, enabling cost-effective operation even in large-scale enterprise projects.
+지능형 순환 워크플로우를 통해 토큰 효율성을 극대화하고 생성 품질을 향상시키는 차세대 아키텍처로 전환한다.
 
 **현재의 한계**: AutoBE의 각 에이전트는 현재 상류 산출물을 한꺼번에 받는 단일 모놀리식 function call로 작동한다:
 - **Test Agent**는 모든 문서, 모든 Prisma 모델, 모든 API 작업을 동시에 수신
@@ -261,11 +223,47 @@ This cyclic workflow evolves AutoBE into a smarter and more efficient system, en
 3. **반복적 정제**: 필요에 따라 추가 컨텍스트 로드, 필요 이상으로는 절대 로드하지 않음
 4. **완료**: 충분한 정보가 수집되면 출력 생성
 
-**혁신적 이점**:
-- **70% 토큰 감소**: 선택적 로딩으로 중복 컨텍스트 제거
+**신규 Function Calling 인터페이스**:
+
+<Tabs
+  items={["Interface Agent", "Test Agent"]}
+  defaultIndex={1}>
+  <Tabs.Tab>
+```typescript showLineNumbers
+interface IAutoBeInterfaceOperationApplication {
+  getDocuments(filenames: string[]): Record<string, string>;
+  getModels(names: string[]): AutoBePrisma.IModel[];
+  complete(operations: AutoBeOpenApi.IOperation[]): void;
+  halt(reason: string): void;
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript showLineNumbers
+interface IAutoBeTestScenarioApplication {
+  getDocuments(filenames: string[]): Record<string, string>;
+  getModels(names: string[]): AutoBePrisma.IModel[];
+  getOperation(endpoints: AutoBeOpenApi.IEndpoint[]): {
+    operations: AutoBeOpenApi.IOperation[];
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  };
+  complete(scenario: IAutoBeTestScenario): void;
+  halt(reason: string): void;
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+**혁신적 개선 효과**:
+- **70% 토큰 소비 절감**: 선택적 정보 로딩을 통한 불필요한 컨텍스트 제거
+- **메모리 효율성 향상**: 대규모 프로젝트에서도 안정적인 처리
+- **정확도 향상**: 집중된 컨텍스트로 더욱 정확한 코드 생성
+- **점진적 개선**: 각 단계에서 피드백 즉시 반영
 - **모듈화 가능**: 에이전트가 코드 구조를 분석하고, 공통 패턴을 식별하며, 재사용 가능한 모듈 추출 (§4)
 - **유지보수 지원**: 점진적 업데이트가 영향받는 컴포넌트만 로드 (§5)
 - **엔터프라이즈 확장성**: 프로젝트 크기에 따른 선형적 토큰 증가 (기하급수적이 아님)
+
+이 순환형 워크플로우는 AutoBE를 더욱 스마트하고 효율적인 시스템으로 진화시켜, 대규모 엔터프라이즈 프로젝트에서도 비용 효율적인 운영을 가능하게 한다.
 
 **핵심 의존성**: RAG 최적화는 단순한 성능 개선이 아니라, 모듈화(§4)와 보완(§5)의 아키텍처 전제조건이다. 선택적 컨텍스트 로딩 없이는 에이전트가 코드 관계를 추론하거나 타겟팅된 업데이트를 수행할 수 없다.
 
@@ -291,31 +289,31 @@ This cyclic workflow evolves AutoBE into a smarter and more efficient system, en
 
 **전략적 지연의 근거**: 이는 실수가 아니라 의도적이었다. AutoBE의 초기 개발은 코드 우아함을 추구하기 전에 기능적 정확성을 입증하는 것을 올바르게 우선시했다. 모듈화는 성공적인 구현 전반의 패턴 이해가 필요하며, 이는 광범위한 생성 테스트 이후에만 나타났다.
 
-**Gamma 모듈화 이니셔티브**: RAG 최적화가 선택적 코드 분석을 가능하게 함에 따라(§3), 에이전트는 이제 다음을 수행할 수 있다:
+**Gamma 모듈화 이니셔티브**: RAG 최적화가 선택적 코드 분석을 가능하게 하면(§3), 에이전트가 다음을 수행할 수 있도록 개발할 계획이다:
 1. **패턴 감지**: 생성된 코드를 분석하여 공통 작업 식별
 2. **모듈 추출**: 재사용 가능한 유틸리티 함수 및 클래스 생성
 3. **구현 리팩토링**: 중복 코드를 모듈 호출로 대체
 4. **정확성 유지**: 100% 컴파일 및 런타임 성공률 보존
 
 ### 4.1. (Test) Authorization
-사용자 컨텍스트가 필요한 모든 테스트 함수에 반복되는 인증 및 권한 부여 로직을 모듈화한다.
+사용자 컨텍스트가 필요한 모든 테스트 함수에 반복되는 인증 및 권한 부여 로직을 모듈화할 예정이다.
 
-인증 로직을 중앙화하여 전역 커스터마이징(예: JWT에서 세션 기반 인증으로 전환)을 단일 지점 수정으로 가능하게 한다. 모든 테스트에서 인증 관련 수정 사항이 자동으로 반영되어, 일관성을 유지하면서도 유지보수 부담을 극적으로 감소시킨다.
+인증 로직을 중앙화하여 전역 커스터마이징(예: JWT에서 세션 기반 인증으로 전환)을 단일 지점 수정으로 가능하게 할 것이다. 모든 테스트에서 인증 관련 수정 사항이 자동으로 반영되어, 일관성을 유지하면서도 유지보수 부담을 극적으로 감소시킬 수 있을 것으로 기대한다.
 
 ### 4.2. (Test) Data Creation
-테스트 픽스처 설정을 위한 Create 엔드포인트 API 호출을 모듈화한다.
+테스트 픽스처 설정을 위한 Create 엔드포인트 API 호출을 모듈화할 계획이다.
 
-픽스처 생성이 일관되고 유지보수 가능해진다. DTO에 필수 필드를 추가할 때 팩토리 함수만 업데이트하면 되며, 모든 테스트가 자동으로 새 요구사항을 준수하게 된다. 또한 테스트 데이터 생성 로직을 중앙화하여 다양한 테스트 시나리오를 쉽게 지원할 수 있다.
+픽스처 생성을 일관되고 유지보수 가능하게 만들 것이다. DTO에 필수 필드를 추가할 때 팩토리 함수만 업데이트하면 되며, 모든 테스트가 자동으로 새 요구사항을 준수하게 된다. 또한 테스트 데이터 생성 로직을 중앙화하여 다양한 테스트 시나리오를 쉽게 지원할 수 있도록 할 것이다.
 
 ### 4.3. (Realize) Transformation
-모든 GET 엔드포인트에 중복된 Prisma 모델에서 Read DTO로의 변환 로직을 모듈화한다.
+모든 GET 엔드포인트에 중복된 Prisma 모델에서 Read DTO로의 변환 로직을 모듈화할 예정이다.
 
-계산된 필드 추가, 데이터 정제 적용, DTO 구조 조정이 한 곳에서만 변경하면 된다. 커스텀 비즈니스 로직(예: 민감 필드 편집)이 모든 엔드포인트에 일관되게 적용된다. 타입 안전성을 유지하면서도 변환 로직을 재사용할 수 있어, 코드 중복을 제거하고 유지보수성을 크게 향상시킨다.
+계산된 필드 추가, 데이터 정제 적용, DTO 구조 조정을 한 곳에서만 변경할 수 있도록 할 것이다. 커스텀 비즈니스 로직(예: 민감 필드 편집)이 모든 엔드포인트에 일관되게 적용되도록 하며, 타입 안전성을 유지하면서도 변환 로직을 재사용할 수 있도록 개발하여, 코드 중복을 제거하고 유지보수성을 크게 향상시킬 계획이다.
 
 ### 4.4. (Realize) Collection
-Create DTO에서 Prisma 입력 준비 로직을 모듈화하여, 중첩 관계 및 데이터 검증을 처리한다.
+Create DTO에서 Prisma 입력 준비 로직을 모듈화하여, 중첩 관계 및 데이터 검증을 처리하도록 개발할 예정이다.
 
-관계 처리 로직(connect, create, disconnect)이 재사용 가능한 모듈로 중앙화된다. 조직별 데이터 변환이나 커스텀 검증을 추가하는 것이 간단해진다. POST/PUT 엔드포인트 전반에 걸친 일관된 데이터 준비 패턴을 제공하며, DB 저장 직전 단계까지의 코드를 모듈화하여 유연성과 재사용성을 확보한다.
+관계 처리 로직(connect, create, disconnect)을 재사용 가능한 모듈로 중앙화할 것이다. 조직별 데이터 변환이나 커스텀 검증을 추가하는 것을 간단하게 만들며, POST/PUT 엔드포인트 전반에 걸친 일관된 데이터 준비 패턴을 제공하고, DB 저장 직전 단계까지의 코드를 모듈화하여 유연성과 재사용성을 확보할 계획이다.
 
 ---
 
@@ -345,40 +343,40 @@ Create DTO에서 Prisma 입력 준비 로직을 모듈화하여, 중첩 관계 �
 
 완벽한 첫 번째 검토를 기대하는 것은 비현실적이다. 개발자는 전부 아니면 전무의 재생성이 아닌 **반복적 개선**이 필요하다.
 
-**Gamma 보완 시스템**: RAG 최적화(§3)를 활용하여, AutoBE는 모든 파이프라인 단계에서 타겟팅된 유지보수 기능을 확보한다:
+**Gamma 보완 시스템 개발 계획**: RAG 최적화(§3)를 활용하여, AutoBE가 모든 파이프라인 단계에서 타겟팅된 유지보수 기능을 제공하도록 개발할 예정이다:
 
-**Analyze Phase 보완**:
+**Analyze Phase 보완** (개발 예정):
 - 피드백 기반으로 특정 요구사항 문서 업데이트
 - 누락된 사용자 스토리나 비즈니스 규칙 추가
 - 전체 분석 재생성 없이 기존 요구사항 정제
 
-**Prisma Phase 보완**:
+**Prisma Phase 보완** (개발 예정):
 - 특정 모델 수정 (필드 추가, 관계 조정, 제약 변경)
 - 마이그레이션 스크립트 점진적 업데이트
 - 수동으로 커스터마이징된 데이터베이스 로직 보존
 
-**Interface Phase 보완**:
+**Interface Phase 보완** (개발 예정):
 - 개별 DTO 정제 (검증 추가, 필드 타입 조정, 보안 문제 수정)
 - 전체 OpenAPI 명세 재생성 없이 특정 API 작업 업데이트
 - 스키마 업데이트 시 커스텀 엔드포인트 로직 유지
 
-**Test Phase 보완**:
+**Test Phase 보완** (개발 예정):
 - 특정 엔드포인트를 위한 누락된 테스트 시나리오 추가
 - 전체 테스트 스위트 재생성 없이 실패 테스트 업데이트
 - 커스텀 테스트 유틸리티 및 픽스처 통합
 
-**Realize Phase 보완**:
+**Realize Phase 보완** (개발 예정):
 - 개별 API 구현 수정
 - 특정 엔드포인트의 비즈니스 로직 업데이트
 - 수동으로 추가한 통합 보존 (결제 게이트웨이, 외부 API, WebSocket 핸들러)
 
-**기술적 기반**: RAG 최적화(§3)가 다음을 통해 보완을 가능하게 한다:
+**기술적 기반**: RAG 최적화(§3)를 통해 다음이 가능하도록 구현할 계획이다:
 1. **영향받는 컴포넌트 식별**: 업데이트가 필요한 모델/DTO/엔드포인트 결정
 2. **선택적 컨텍스트 로드**: 관련 기존 코드 및 명세만 검색
 3. **타겟팅된 변경 생성**: 완전한 재작성이 아닌 최소 diff 생산
 4. **일관성 검증**: 변경 사항이 의존성을 깨지 않도록 보장
 
-**성공 기준**: 개발자가 특정 변경("User.ICreate에 이메일 검증 추가", "Article 모델에 view_count 추가")을 요청하면, 관련 컴포넌트만 영향을 미치는 수술적 업데이트를 받아야 한다. "모두 불태우고 처음부터"의 시대는 끝나고 있다.
+**성공 기준**: 개발자가 특정 변경("User.ICreate에 이메일 검증 추가", "Article 모델에 view_count 추가")을 요청하면, 관련 컴포넌트만 영향을 미치는 수술적 업데이트를 제공할 수 있어야 한다. "모두 불태우고 처음부터"의 시대를 종식시키는 것이 목표다.
 
 ## 6. Recruitment
 AutoBE의 가속화된 개발 속도는 팀 확장을 요구한다. Gamma 프로토타입을 프로덕션 수준의 기능으로 변환할 전담 AutoBE 개발자를 채용한다.
