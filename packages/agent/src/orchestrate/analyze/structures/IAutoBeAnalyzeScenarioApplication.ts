@@ -4,18 +4,12 @@ import { tags } from "typia";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
-   * Compose project structure with actors and files.
+   * Composes project structure with actors and documentation files.
    *
-   * Design a list of actors and initial documents that you need to create for
-   * that requirement. Actors define user types and their responsibilities, while files
-   * define the documentation structure. These are managed separately. If you
-   * determine from the conversation that the user's requirements have not been
-   * fully gathered, you must stop the analysis and continue collecting the
-   * remaining requirements. In this case, you do not need to generate any files
-   * or actors. Simply pass an empty array to `input.files` and `input.actors`.
+   * Determines the list of user actors and documents to generate based on
+   * requirements. If requirements are incomplete, returns empty arrays.
    *
-   * @param input Prefix, actors, and files
-   * @returns
+   * @param input - Project prefix, actors, and file list
    */
   compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void;
 }
@@ -33,7 +27,15 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      */
     prefix: string & CamelCasePattern;
 
-    /** Actors to be assigned for the project */
+    /**
+     * Actors to be assigned for the project.
+     *
+     * Each actor has:
+     *
+     * - `name`: Actor identifier (camelCase)
+     * - `kind`: "guest" | "member" | "admin"
+     * - `description`: Actor's permissions and capabilities
+     */
     actors: AutoBeAnalyzeActor[];
 
     /**

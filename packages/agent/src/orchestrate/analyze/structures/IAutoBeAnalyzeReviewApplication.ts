@@ -1,24 +1,11 @@
 export interface IAutoBeAnalyzeReviewApplication {
   /**
-   * Enhances planning documentation to meet all quality standards and requirements.
+   * Enhances and finalizes planning documentation.
    *
-   * This function receives a document and outputs an improved version directly.
-   * The output IS the enhanced document itself, NOT review comments or feedback.
+   * Receives a draft document and outputs the improved version. The output is
+   * the enhanced document itself, not review comments.
    *
-   * The enhancement process includes:
-   * - Expanding sections that are too brief
-   * - Converting vague statements to specific EARS format requirements
-   * - Fixing Mermaid diagram syntax errors
-   * - Adding missing business processes and workflows
-   * - Ensuring proper document structure and completeness
-   *
-   * DO: Output the actual document content that will be saved.
-   * DO NOT: Output review comments or analysis of the document.
-   * 
-   * Note: Any text output becomes part of the final document.
-   *
-   * @param props - The properties containing the document to enhance along with
-   *   plan and review criteria for guidance
+   * @param props - Document content, plan, and review criteria
    */
   review(props: IAutoBeAnalyzeReviewApplication.IProps): void;
 }
@@ -27,7 +14,7 @@ export namespace IAutoBeAnalyzeReviewApplication {
   export interface IProps {
     /**
      * Step 1 (CoT: Review Phase) - Enhancement Criteria
-     * 
+     *
      * The enhancement criteria and guidelines that the agent must follow.
      *
      * This includes:
@@ -48,14 +35,16 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - DO NOT: Use spaces between brackets and quotes in Mermaid
      * - DO: Make requirements specific and measurable in natural language
      * - DO: Focus on business requirements and user scenarios
-     * - DO NOT: Accept documents containing database schemas or API specifications
-     * - DO: Describe business model and authentication requirements in natural language
+     * - DO NOT: Accept documents containing database schemas or API
+     *   specifications
+     * - DO: Describe business model and authentication requirements in natural
+     *   language
      */
     review: string;
 
     /**
      * Step 2 (CoT: Plan Phase) - Original Document Plan
-     * 
+     *
      * The document plan that was used to create the content.
      *
      * This helps the reviewer understand:
@@ -71,43 +60,19 @@ export namespace IAutoBeAnalyzeReviewApplication {
     plan: string;
 
     /**
-     * Step 3 (CoT: Content Phase) - Complete Document Content
-     * 
-     * The actual markdown document content that incorporates review feedback.
+     * Step 3 (CoT: Content Phase) - Document Content (INPUT → OUTPUT)
      *
-     * This field contains a COMPLETE MARKDOWN DOCUMENT that has already 
-     * incorporated the review criteria and plan requirements.
-     * 
-     * DO: Treat this as the final, production-ready document.
-     * DO NOT: Treat this as raw input to be reviewed.
-     * 
-     * This content represents:
-     * - A fully-formed markdown document (.md file)
-     * - The result of applying review criteria to the original plan
-     * - A production-ready document for immediate deployment
-     * - Complete business requirements ready for developers
-     * 
-     * The enhancer should treat this as the actual document content:
+     * INPUT: The document written by Write Agent (may have issues) OUTPUT: The
+     * enhanced, complete markdown document to be saved
      *
-     * - Length and completeness (minimum 2,000 characters, more for technical
-     *   docs)
-     * - All sections from the plan are fully written
-     * - No vague or abstract statements
-     * - Proper use of EARS format for requirements
-     * - Correct Mermaid diagram syntax (double quotes mandatory)
-     * - Appropriate level of detail for backend implementation
-     * - Proper document linking (descriptive text, not raw filenames)
+     * Enhancement requirements:
      *
-     * The enhancer outputs the document itself:
+     * - Fix Mermaid syntax errors (add quotes, fix arrows)
+     * - Convert vague statements to EARS format
+     * - Expand sections that are too brief
+     * - Add missing business processes
      *
-     * - If content is provided, it represents the actual document
-     * - The enhancer outputs the enhanced version AS the document itself
-     * - No meta-commentary or review feedback should be in the output
-     * - The output becomes the saved .md file directly
-     * 
-     * Example of what this field contains:
-     * "# Service Overview\n## Vision\nThe service provides..." (actual document)
-     * NOT: "This document should cover service overview..." (review comment)
+     * Output must be the actual document content (not review comments).
      */
     content: string;
   }
