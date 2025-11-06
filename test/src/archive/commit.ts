@@ -29,6 +29,10 @@ const initialize = async (): Promise<void> => {
     cwd: `${TestGlobal.ROOT}/repositories`,
     stdio: "inherit",
   });
+  cp.execSync("git config core.longpaths true", {
+    cwd: `${TestGlobal.ROOT}/repositories/autobe-examples`,
+    stdio: "inherit",
+  });
 };
 
 const main = async (): Promise<void> => {
@@ -86,7 +90,7 @@ const main = async (): Promise<void> => {
   )) {
     const location: string = `${TestGlobal.ROOT}/repositories/autobe-examples/${file}`;
     const stat: fs.Stats = await fs.promises.lstat(location);
-    if (stat.isDirectory() === true && file !== ".git")
+    if (stat.isDirectory() === true && file !== ".git" && file !== "raw")
       await fs.promises.rm(location, {
         recursive: true,
         force: true,

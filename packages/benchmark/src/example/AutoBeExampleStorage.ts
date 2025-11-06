@@ -74,14 +74,21 @@ export namespace AutoBeExampleStorage {
 
   export const getVendorModels = async (): Promise<string[]> => {
     const result: string[] = [];
-    const repoPath: string = repository();
-    for (const vendor of await fs.promises.readdir(repoPath))
-      for (const model of await fs.promises.readdir(`${repoPath}/${vendor}`)) {
+    const rawPath: string = `${repository()}/raw`;
+    for (const vendor of await fs.promises.readdir(rawPath)) {
+      if (
+        (await fs.promises
+          .lstat(`${rawPath}/${vendor}`)
+          .then((stat) => stat.isDirectory())) === false
+      )
+        continue;
+      for (const model of await fs.promises.readdir(`${rawPath}/${vendor}`)) {
         const stat: fs.Stats = await fs.promises.lstat(
-          `${repoPath}/${vendor}/${model}`,
+          `${rawPath}/${vendor}/${model}`,
         );
         if (stat.isDirectory() === true) result.push(`${vendor}/${model}`);
       }
+    }
     return result.sort();
   };
 
