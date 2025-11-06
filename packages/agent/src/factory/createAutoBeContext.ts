@@ -33,6 +33,7 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -141,6 +142,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             },
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
+              validate: () => AutoBeSystemPromptConstant.VALIDATE,
             },
           },
           histories: next.histories,

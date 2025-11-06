@@ -55,12 +55,14 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     page: number;
 
     /**
-     * # Document files to be generated
+     * Array of document metadata objects defining files to be generated.
      *
-     * File name must be English and it must contain the numbering and prefix.
+     * Each array element is an AutoBeAnalyzeFile.Scenario object containing:
+     * - filename: The output file name (e.g., "01-service-overview.md")
+     * - reason: Why this document is being created
+     * - documentType, outline, constraints, etc.: Metadata guiding content generation
      *
-     * These files represent business documentation that may include:
-     *
+     * These documents represent business-focused planning documentation:
      * - Business requirements and functional specifications in natural language
      * - User journey mapping and use case scenarios
      * - Business rules and workflow definitions
@@ -70,17 +72,16 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - DO NOT: Include database schemas, ERD, or API specifications
      * - DO: Write all requirements in natural language for clarity
      *
-     * Generate files based on actual requirements gathered from conversation.
+     * Generate metadata objects based on actual requirements gathered from conversation.
      * Do not create unnecessary documentation - only generate what is needed to
      * properly define the business requirements and system specifications.
      *
-     * # Page Length Rules
+     * # Array Length Rules
      *
-     * The number of documents must match the user's request, excluding the
-     * table of contents. For example, if the user requests 3 pages, a total of
-     * 4 documents should be generated, including the table of contents. If the
-     * user does not specify a number, generate a sufficient number of documents
-     * to adequately support the service.
+     * The array length must match the user's requested page count plus one for ToC.
+     * For example: user requests 3 pages → generate 4 objects (1 ToC + 3 content).
+     * If user does not specify a number, generate sufficient objects to adequately
+     * document the service (typically 11+ objects including ToC).
      */
     files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
   }
