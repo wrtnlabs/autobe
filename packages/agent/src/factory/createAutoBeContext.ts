@@ -142,7 +142,6 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             },
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
-              validate: () => AutoBeSystemPromptConstant.VALIDATE,
             },
           },
           histories: next.histories,
