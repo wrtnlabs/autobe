@@ -21,6 +21,13 @@ async function main(): Promise<void> {
   const content: string = all.join(
     ["\n\n", `<div style="page-break-after: always;"></div>`, "\n\n"].join(""),
   );
-  await fs.promises.writeFile(`${DIRECTORY}/ALL.md`, content, "utf-8");
+  try {
+    await fs.promises.mkdir(`${DIRECTORY}/aggregate`);
+  } catch {}
+  await fs.promises.writeFile(
+    `${DIRECTORY}/aggregate/ALL.md`,
+    content,
+    "utf-8",
+  );
 }
 main().catch(console.error);

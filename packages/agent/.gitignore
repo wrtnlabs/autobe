@@ -1,2 +1,3 @@
-prompts/ALL.md
+prompts/aggregate/ALL.md
+prompts/aggregate/ALL.pdf
 src/constants/AutoBeSystemPromptConstant.ts

@@ -16,6 +16,17 @@ pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project r
 pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project shopping > archive.claude-haiku-4.5.shopping.log
 
 ################################################
+# GOOGLE
+################################################
+# google/gemini-2.5-pro
+pnpm run archive --vendor google/gemini-2.5-pro --project todo > archive.google-gemini-2.5-pro.todo.log
+pnpm run archive --vendor google/gemini-2.5-pro --project bbs > archive.google-gemini-2.5-pro.bbs.log
+pnpm run archive --vendor google/gemini-2.5-pro --project reddit > archive.google-gemini-2.5-pro.reddit.log
+pnpm run archive --vendor google/gemini-2.5-pro --project shopping > archive.google-gemini-2.5-pro.shopping.log
+
+# google/gemini-2.5-flash
+
+################################################
 # OPENAI
 ################################################
 # openai/gpt-4.1

@@ -491,32 +491,34 @@ When in doubt:
 - **Remember**: Organizational hierarchy ≠ System actors
 - **Think**: Would a senior developer design separate tables for these, or use one table with attributes?
 
-# File Metadata Requirements
+# File Metadata Guidelines for AutoBeAnalyzeFile.Scenario Objects
 
-When creating files using the AutoBeAnalyzeFile.Scenario structure, follow these strict guidelines:
+Each object in the `files` array represents metadata for a single document to be generated. The metadata properties guide content creation while maintaining business focus.
 
-## documentType Property
-- Use types like "requirement", "user-story", "business-model", "service-overview"
-- NEVER use types suggesting technical implementation (e.g., "api-spec", "database-design", "architecture")
+## Property Usage Guidelines
 
-## outline Property
-- Include sections for business requirements and user needs
-- PROHIBITED sections: "API Design", "Database Schema", "Technical Architecture", "Implementation Details"
-- Example of GOOD outline: ["Business Overview", "User Scenarios", "Functional Requirements", "Success Criteria"]
-- Example of BAD outline: ["API Endpoints", "Database Tables", "System Architecture"]
+### documentType Property
+Specify the document category to guide content structure:
+- Use business-oriented types: "requirement", "user-story", "business-model", "service-overview"
+- AVOID technical categories: "api-spec", "database-design", "architecture"
 
-## constraints Property
-When specifying constraints, focus on business constraints ONLY:
-- ✅ GOOD: "Must support 10,000 concurrent users", "Must comply with GDPR", "Must integrate with payment systems"
-- ❌ BAD: "Must use PostgreSQL", "Must implement REST API", "Must use microservices architecture"
+### outline Property
+Define the major sections that will structure the document content:
+- Focus on business requirements and user needs sections
+- EXCLUDE technical sections: "API Design", "Database Schema", "Technical Architecture", "Implementation Details"
 
-## keyQuestions Property
-Questions should focus on business and user needs:
-- ✅ GOOD: "What problems does this solve for users?", "What are the business goals?"
-- ❌ BAD: "What database should we use?", "How should we structure the API?"
+### constraints Property
+Specify business constraints and operational requirements:
+- Business constraints: "Must support 10,000 concurrent users", "Must comply with GDPR"
+- AVOID technical mandates: "Must use PostgreSQL", "Must implement REST API"
 
-## CRITICAL REMINDER
-All file properties must guide the creation of business-focused, natural language documentation. Any property value that suggests technical implementation details, database design, or API specifications must be rejected and replaced with business-appropriate alternatives.
+### keyQuestions Property
+List questions that the document content should answer:
+- Business-focused: "What problems does this solve for users?", "What are the business goals?"
+- AVOID implementation-focused: "What database should we use?", "How should we structure the API?"
+
+## Content Direction
+All metadata properties should guide the creation of business-focused, natural language documentation. Avoid any metadata that suggests technical implementation details, database design, or API specifications.
 
 # Mermaid Diagram Guidelines
 

@@ -16,7 +16,7 @@ export namespace IAutoBeAnalyzeWriteApplication {
   export interface IProps {
     /**
      * Step 1 (CoT: Plan Phase) - Document Planning Structure
-     * 
+     *
      * The document planning structure that outlines what needs to be written.
      *
      * This includes:
@@ -42,33 +42,17 @@ export namespace IAutoBeAnalyzeWriteApplication {
     plan: string;
 
     /**
-     * Step 2 (CoT: Write Phase) - Document Content Creation
-     * 
-     * The initial content or context for the document being written.
+     * Step 2 (CoT: Write Phase) - Complete Document Content
      *
-     * This may include:
+     * The complete, production-ready markdown document content to be saved.
      *
-     * - User requirements and business goals
-     * - Existing documentation to build upon
-     * - Specific scenarios or use cases to document
-     * - Technical constraints or preferences
-     * - Related documents for reference
+     * Requirements:
      *
-     * The content provides the raw material that the AI agent will transform
-     * into structured, developer-ready documentation following the planning
-     * guidelines.
-     *
-     * The AI agent will expand this content into comprehensive documentation
-     * that:
-     *
-     * - Removes all ambiguity for backend developers
-     * - Provides specific, measurable requirements in natural language
-     * - Focuses on business logic and requirements, NOT technical implementation
-     * - STRICTLY PROHIBITED: Do NOT write database schemas, ERD, or API
-     *   specifications
+     * - Minimum 5,000 characters for technical documents
      * - Uses EARS format for all applicable requirements
-     * - Follows proper document linking conventions
-     * - Includes Mermaid diagrams with proper syntax (double quotes mandatory)
+     * - Includes proper Mermaid diagram syntax (double quotes for labels)
+     * - Focuses on business requirements in natural language
+     * - PROHIBITED: Database schemas, ERD, API specifications
      */
     content: string;
   }
