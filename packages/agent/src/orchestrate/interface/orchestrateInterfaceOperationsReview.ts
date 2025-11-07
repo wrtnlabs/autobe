@@ -101,7 +101,11 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     return result;
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
@@ -132,6 +136,15 @@ const collection = {
     typia.llm.application<
       IAutoBeInterfaceOperationsReviewApplication,
       "claude"
+    >({
+      validate: {
+        reviewOperations: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeInterfaceOperationsReviewApplication,
+      "gemini"
     >({
       validate: {
         reviewOperations: validate,

@@ -166,7 +166,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -187,16 +191,10 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
   return unique.size;
 };
 
-const claude = typia.llm.application<
-  IAutoBePrismaCorrectApplication,
-  "claude"
->();
 const collection = {
   chatgpt: typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<IAutoBePrismaCorrectApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBePrismaCorrectApplication, "gemini">(),
 };
 
 interface IExecutionResult extends IAutoBePrismaCorrectApplication.IProps {

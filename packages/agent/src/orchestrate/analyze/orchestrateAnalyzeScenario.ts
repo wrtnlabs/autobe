@@ -72,7 +72,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -86,17 +90,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeAnalyzeScenarioApplication,
-  "claude"
->();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeAnalyzeScenarioApplication,
     "chatgpt"
   >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<
+    IAutoBeAnalyzeScenarioApplication,
+    "claude"
+  >(),
+  gemini: typia.llm.application<
+    IAutoBeAnalyzeScenarioApplication,
+    "gemini"
+  >(),
 };

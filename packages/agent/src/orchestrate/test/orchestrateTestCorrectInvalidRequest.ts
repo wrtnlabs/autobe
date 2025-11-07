@@ -155,7 +155,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -190,6 +194,19 @@ const collection = {
     typia.llm.application<
       IAutoBeTestCorrectInvalidRequestApplication,
       "claude"
+    >({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestCorrectInvalidRequestApplication,
+      "gemini"
     >({
       validate: {
         rewrite: validate,

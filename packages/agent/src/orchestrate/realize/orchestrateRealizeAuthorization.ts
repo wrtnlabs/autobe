@@ -150,7 +150,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
   assertSchemaModel(props.model);
 
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
@@ -165,17 +169,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeRealizeAuthorizationApplication,
-  "claude"
->();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeRealizeAuthorizationApplication,
     "chatgpt"
   >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<
+    IAutoBeRealizeAuthorizationApplication,
+    "claude"
+  >(),
+  gemini: typia.llm.application<
+    IAutoBeRealizeAuthorizationApplication,
+    "gemini"
+  >(),
 };

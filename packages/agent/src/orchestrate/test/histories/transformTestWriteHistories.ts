@@ -167,6 +167,6 @@ export namespace transformTestWriteHistories {
 const systemPrompt = new Singleton(() =>
   AutoBeSystemPromptConstant.TEST_WRITE.replace(
     "{{AutoBeTestScenario}}",
-    JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
+    JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "claude">()),
   ),
 );

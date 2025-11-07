@@ -29,7 +29,11 @@ export const createAutoBeFacadeController = <
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -125,11 +129,8 @@ export const createAutoBeFacadeController = <
   };
 };
 
-const claude = typia.llm.application<IAutoBeFacadeApplication, "claude">();
 const collection = {
   chatgpt: typia.llm.application<IAutoBeFacadeApplication, "chatgpt">(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<IAutoBeFacadeApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBeFacadeApplication, "gemini">(),
 };

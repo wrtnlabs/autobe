@@ -314,7 +314,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
@@ -340,6 +344,12 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeRealizeCorrectApplication, "claude">({
+      validate: {
+        correct: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCorrectApplication, "gemini">({
       validate: {
         correct: validate,
       },
