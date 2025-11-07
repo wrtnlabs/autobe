@@ -17,12 +17,12 @@
     "@autobe/rpc": "workspace:^",
     "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
-    "tgrid": "catalog:samchon"
+    "tgrid": "catalog:samchon",
+    "typia": "catalog:samchon"
   },
   "devDependencies": {
     "@ryoppippi/unplugin-typia": "^2.6.5",
     "ts-patch": "^3.3.0",
-    "tsdown": "^0.14.0",
-    "typia": "^9.7.2"
+    "tsdown": "^0.14.0"
   }
 }

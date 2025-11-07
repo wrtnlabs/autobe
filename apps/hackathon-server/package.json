@@ -43,7 +43,7 @@
     "@autobe/utils": "workspace:^",
     "@autobe/rpc": "workspace:^",
     "@nestia/core": "catalog:samchon",
-    "@nestia/e2e": "^8.0.5",
+    "@nestia/e2e": "catalog:samchon",
     "@nestia/sdk": "catalog:samchon",
     "@nestjs/common": "^11.1.3",
     "@nestjs/core": "^11.1.3",

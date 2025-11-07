@@ -5,11 +5,11 @@
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@nestia/e2e": "^8.0.7",
-    "@nestia/fetcher": "^8.0.7",
-    "@samchon/openapi": "^4.7.1",
+    "@nestia/e2e": "^9.0.0",
+    "@nestia/fetcher": "^9.0.0",
+    "@samchon/openapi": "^5.0.0",
     "@types/node": "^22.15.3",
     "typescript": "~5.9.2",
-    "typia": "^9.7.2"
+    "typia": "^10.0.0"
   }
 }
