@@ -12,7 +12,7 @@ export interface IAutoBePreliminaryApplication {
    * into context.
    */
   getRequirementAnalyses(
-    props: IAutoBePreliminaryApplication.IRequiementAnalysesProps,
+    props: IAutoBePreliminaryApplication.IRequirementAnalysesProps,
   ): void;
 
   /**
@@ -58,7 +58,7 @@ export interface IAutoBePreliminaryApplication {
   ): void;
 }
 export namespace IAutoBePreliminaryApplication {
-  export interface IRequiementAnalysesProps {
+  export interface IRequirementAnalysesProps {
     /**
      * Array of requirement analysis document filenames to retrieve.
      *

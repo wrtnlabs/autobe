@@ -26,9 +26,9 @@ export namespace PreliminaryApplicationValidator {
 
     return (
       input: unknown,
-    ): IValidation<IAutoBePreliminaryApplication.IRequiementAnalysesProps> => {
-      const result: IValidation<IAutoBePreliminaryApplication.IRequiementAnalysesProps> =
-        typia.validate<IAutoBePreliminaryApplication.IRequiementAnalysesProps>(
+    ): IValidation<IAutoBePreliminaryApplication.IRequirementAnalysesProps> => {
+      const result: IValidation<IAutoBePreliminaryApplication.IRequirementAnalysesProps> =
+        typia.validate<IAutoBePreliminaryApplication.IRequirementAnalysesProps>(
           input,
         );
       if (result.success === false) return result;
