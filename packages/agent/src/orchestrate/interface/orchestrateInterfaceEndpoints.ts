@@ -88,7 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: props.message,
+    userMessage: props.message,
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
 

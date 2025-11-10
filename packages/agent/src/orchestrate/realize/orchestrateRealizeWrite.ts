@@ -58,7 +58,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: StringUtil.trim`
+    userMessage: StringUtil.trim`
       Write complete, production-ready TypeScript code that strictly follows these rules:
 
       DO NOT:

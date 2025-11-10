@@ -61,7 +61,16 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaSchema",
-    histories: transformPrismaSchemaHistories({
+    controller: createController(ctx, {
+      targetComponent: props.component,
+      otherTables: props.otherTables,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
+    ...transformPrismaSchemaHistories({
       analysis:
         ctx
           .state()
@@ -73,16 +82,6 @@ async function process<Model extends ILlmSchema.Model>(
       otherTables: props.otherTables,
       instruction: props.instruction,
     }),
-    controller: createController(ctx, {
-      targetComponent: props.component,
-      otherTables: props.otherTables,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    message: "Make prisma schema file please",
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");

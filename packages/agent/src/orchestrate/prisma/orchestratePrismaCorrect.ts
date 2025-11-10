@@ -118,7 +118,6 @@ async function execute<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaCorrect",
-    histories: transformPrismaCorrectHistories(failure),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -126,8 +125,7 @@ async function execute<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message:
-      "Resolve the compilation errors in the provided Prisma schema files.",
+    ...transformPrismaCorrectHistories(failure),
   });
   if (pointer.value === null)
     throw new Error(

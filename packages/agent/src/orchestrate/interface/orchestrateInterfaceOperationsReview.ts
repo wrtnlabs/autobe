@@ -39,7 +39,7 @@ export async function orchestrateInterfaceOperationsReview<
         },
       }),
       enforceFunctionCall: false,
-      message: "Review the operations",
+      userMessage: "Review the operations",
     });
     if (pointer.value === null) {
       ++progress.completed;

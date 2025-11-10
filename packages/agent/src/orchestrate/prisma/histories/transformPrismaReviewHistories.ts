@@ -1,19 +1,17 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformPrismaReviewHistories = (props: {
   analysis: Record<string, string>;
   application: AutoBePrisma.IApplication;
   schemas: Record<string, string>;
   component: AutoBePrisma.IComponent;
-}): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => {
-  return [
+}): IAutoBeTransformHistory => ({
+  histories: [
     {
       id: v7(),
       created_at: new Date().toISOString(),
@@ -65,5 +63,6 @@ export const transformPrismaReviewHistories = (props: {
         ${props.component.tables.map((table) => `- ${table}`).join("\n")}
       `,
     },
-  ];
-};
+  ],
+  userMessage: "Please review the Prisma schema file.",
+});

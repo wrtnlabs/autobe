@@ -162,7 +162,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           },
         }),
         enforceFunctionCall: true,
-        message: StringUtil.trim`
+        userMessage: StringUtil.trim`
           Fix the TypeScript casting problems to resolve the compilation error.
 
           Most casting errors are caused by type mismatches between Date types and

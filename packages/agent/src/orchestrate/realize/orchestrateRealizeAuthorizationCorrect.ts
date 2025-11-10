@@ -91,7 +91,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
       },
     }),
     enforceFunctionCall: true,
-    message: "Please correct the decorator and the provider.",
+    userMessage: "Please correct the decorator and the provider.",
   });
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
 

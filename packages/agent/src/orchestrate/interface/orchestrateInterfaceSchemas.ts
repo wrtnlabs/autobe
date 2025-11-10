@@ -153,7 +153,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: StringUtil.trim`
+    userMessage: StringUtil.trim`
       Make type components please.
 
       Here is the list of request/response bodies' type names from

@@ -174,7 +174,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
+    userMessage: StringUtil.trim`
       Fix the AutoBeTest.IFunction data to resolve the compilation error.
 
       You don't need to explain me anything, but just fix it immediately

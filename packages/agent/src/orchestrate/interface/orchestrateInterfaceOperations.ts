@@ -173,7 +173,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: "Make API operations",
+    userMessage: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
 

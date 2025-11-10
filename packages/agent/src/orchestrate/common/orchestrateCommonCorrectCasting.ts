@@ -114,7 +114,7 @@ const correct = async <
       },
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
+    userMessage: StringUtil.trim`
       Fix the TypeScript casting problems to resolve the compilation error.
 
       You don't need to explain me anything, but just fix or give it up

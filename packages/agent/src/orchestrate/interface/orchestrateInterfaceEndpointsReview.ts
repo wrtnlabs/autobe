@@ -35,7 +35,7 @@ export async function orchestrateInterfaceEndpointsReview<
       },
     }),
     enforceFunctionCall: true,
-    message,
+    userMessage: message,
   });
 
   if (pointer.value === null) {

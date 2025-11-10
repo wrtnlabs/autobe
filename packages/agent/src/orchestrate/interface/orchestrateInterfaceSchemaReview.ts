@@ -106,7 +106,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      message: "Review DTO content completeness and consistency.",
+      userMessage: "Review DTO content completeness and consistency.",
     });
     if (pointer.value === null) {
       ++props.progress.completed;

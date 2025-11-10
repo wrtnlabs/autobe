@@ -78,7 +78,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: "Create Authorization Operation for the given roles",
+    userMessage: "Create Authorization Operation for the given roles",
   });
   if (pointer.value === null)
     throw new Error("Failed to generate authorization operation.");

@@ -34,10 +34,9 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: transformAnalyzeWriteHistories(ctx, props),
     enforceFunctionCall: true,
     promptCacheKey,
-    message: "Write requirement analysis report.",
+    ...transformAnalyzeWriteHistories(ctx, props),
   });
   if (pointer.value === null)
     throw new Error("The Analyze Agent failed to create the document.");

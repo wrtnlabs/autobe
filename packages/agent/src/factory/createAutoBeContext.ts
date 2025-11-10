@@ -204,7 +204,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         const message: string =
           next.enforceFunctionCall === true
             ? StringUtil.trim`
-                ${next.message}
+                ${next.userMessage}
 
                 > You have to call function(s) of below to accomplish my request.
                 >
@@ -220,7 +220,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
                   .map((f) => `> - ${f.name}`)
                   .join("\n")}
               `
-            : next.message;
+            : next.userMessage;
         const result: TimedConversation.IResult<Model> =
           await TimedConversation.process({
             timeout: config.timeout,

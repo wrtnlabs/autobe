@@ -34,17 +34,14 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: [
-      ...transformAnalyzeReviewHistories(
-        ctx,
-        props.scenario,
-        props.allFiles,
-        props.myFile,
-      ),
-    ],
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    message: "Review the requirement document",
+    ...transformAnalyzeReviewHistories(
+      ctx,
+      props.scenario,
+      props.allFiles,
+      props.myFile,
+    ),
   });
   if (pointer.value === null)
     throw new Error("Failed to extract review information.");

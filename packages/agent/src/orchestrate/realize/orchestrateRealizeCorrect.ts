@@ -232,7 +232,7 @@ async function step<Model extends ILlmSchema.Model>(
       totalAuthorizations: props.totalAuthorizations,
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
+    userMessage: StringUtil.trim`
       Correct the TypeScript code implementation.
 
       The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.

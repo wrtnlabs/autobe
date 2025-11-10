@@ -1,16 +1,14 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBePrismaValidation } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformPrismaCorrectHistories = (
   result: IAutoBePrismaValidation.IFailure,
-): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => {
-  return [
+): IAutoBeTransformHistory => ({
+  histories: [
     {
       id: v7(),
       created_at: new Date().toISOString(),
@@ -41,5 +39,7 @@ export const transformPrismaCorrectHistories = (
         \`\`\`
       `,
     },
-  ];
-};
+  ],
+  userMessage:
+    "Resolve the compilation errors in the provided Prisma schema files.",
+});

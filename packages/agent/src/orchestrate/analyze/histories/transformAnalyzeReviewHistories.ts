@@ -1,4 +1,3 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { StringUtil } from "@autobe/utils";
@@ -7,6 +6,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
@@ -14,16 +14,12 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
   scenario: AutoBeAnalyzeScenarioEvent,
   allFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
-): Array<
-  | IAgenticaHistoryJson.IUserMessage
-  | IAgenticaHistoryJson.IAssistantMessage
-  | IAgenticaHistoryJson.ISystemMessage
-> => {
-  return [
+): IAutoBeTransformHistory => ({
+  histories: [
     ...transformAnalyzeWriteHistories(ctx, {
       scenario,
       file: myFile,
-    }).slice(0, -2),
+    }).histories.slice(0, -2),
     {
       id: v7(),
       created_at: new Date().toISOString(),
@@ -52,5 +48,6 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
         Note that, never review others.
       `,
     },
-  ];
-};
+  ],
+  userMessage: "Review the requirement document",
+});

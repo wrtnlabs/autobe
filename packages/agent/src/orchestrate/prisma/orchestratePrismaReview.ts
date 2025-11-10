@@ -58,7 +58,14 @@ async function step<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaReview",
-    histories: transformPrismaReviewHistories({
+    controller: createController(ctx, {
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
+    ...transformPrismaReviewHistories({
       analysis:
         ctx
           .state()
@@ -70,14 +77,6 @@ async function step<Model extends ILlmSchema.Model>(
       schemas: props.schemas,
       component: props.component,
     }),
-    controller: createController(ctx, {
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    message: "Please review the Prisma schema file.",
   });
   if (pointer.value === null)
     throw new Error("Failed to review the Prisma schema.");

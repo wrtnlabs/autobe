@@ -36,7 +36,7 @@ export async function orchestrateInterfaceGroups<
       },
     }),
     enforceFunctionCall: true,
-    message: props.message ?? "Design API operations for the given assets.",
+    userMessage: props.message ?? "Design API operations for the given assets.",
   });
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {
@@ -76,16 +76,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceGroupApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeInterfaceGroupApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeInterfaceGroupApplication,
-    "gemini"
-  >(),
+  chatgpt: typia.llm.application<IAutoBeInterfaceGroupApplication, "chatgpt">(),
+  claude: typia.llm.application<IAutoBeInterfaceGroupApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBeInterfaceGroupApplication, "gemini">(),
 };

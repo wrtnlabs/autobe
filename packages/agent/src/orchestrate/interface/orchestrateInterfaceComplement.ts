@@ -74,7 +74,7 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message: "Fill missing schema types please",
+    userMessage: "Fill missing schema types please",
   });
   if (pointer.value === null)
     // unreachable

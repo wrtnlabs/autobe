@@ -6,7 +6,6 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -32,14 +31,8 @@ export const orchestrateAnalyzeScenario = async <
       model: ctx.model,
       build: (value) => (pointer.value = value),
     }),
-    histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
-    message: StringUtil.trim`
-      Design a complete list of documents and user actors for this project.
-      Define user actors that can authenticate via API and create appropriate documentation files.
-      You must respect the number of documents specified by the user.
-      Note that the user's locale is in ${ctx.locale}.
-    `,
+    ...transformAnalyzeSceHistories(ctx),
   });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
@@ -95,12 +88,6 @@ const collection = {
     IAutoBeAnalyzeScenarioApplication,
     "chatgpt"
   >(),
-  claude: typia.llm.application<
-    IAutoBeAnalyzeScenarioApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeAnalyzeScenarioApplication,
-    "gemini"
-  >(),
+  claude: typia.llm.application<IAutoBeAnalyzeScenarioApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBeAnalyzeScenarioApplication, "gemini">(),
 };

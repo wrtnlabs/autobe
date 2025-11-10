@@ -173,7 +173,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      message: `Create e2e test scenarios.`,
+      userMessage: `Create e2e test scenarios.`,
     });
     if (pointer.value.length === 0) return [];
 

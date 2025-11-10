@@ -125,7 +125,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       ),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      message: "Create prerequisite for the given operations",
+      userMessage: "Create prerequisite for the given operations",
     });
     if (pointer.value === null) return [];
 

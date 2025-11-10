@@ -91,7 +91,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    message: "Create Authorization Provider and Decorator.",
+    userMessage: "Create Authorization Provider and Decorator.",
   });
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 

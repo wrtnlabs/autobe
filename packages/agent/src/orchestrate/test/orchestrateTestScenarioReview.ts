@@ -55,7 +55,7 @@ async function review<Model extends ILlmSchema.Model>(
         instruction: props.instruction,
       }),
       enforceFunctionCall: true,
-      message: "Review the Test Scenario.",
+      userMessage: "Review the Test Scenario.",
     });
     if (pointer.value === null) {
       // unreachable

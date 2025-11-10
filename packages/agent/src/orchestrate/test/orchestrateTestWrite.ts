@@ -94,7 +94,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    message: "Create e2e test functions.",
+    userMessage: "Create e2e test functions.",
   });
   if (pointer.value === null) {
     ++progress.completed;

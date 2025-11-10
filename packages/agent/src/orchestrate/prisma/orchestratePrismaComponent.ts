@@ -15,7 +15,6 @@ export async function orchestratePrismaComponents<
 >(
   ctx: AutoBeContext<Model>,
   instruction: string,
-  message: string = "Design database from the given requirement analysis documents.",
 ): Promise<AutoBePrismaComponentEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
@@ -24,10 +23,6 @@ export async function orchestratePrismaComponents<
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaComponent",
-    histories: transformPrismaComponentsHistories(ctx.state(), {
-      prefix,
-      instruction,
-    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -35,7 +30,10 @@ export async function orchestratePrismaComponents<
       },
     }),
     enforceFunctionCall: true,
-    message,
+    ...transformPrismaComponentsHistories(ctx.state(), {
+      instruction,
+      prefix,
+    }),
   });
   if (pointer.value === null)
     throw new Error("Failed to extract files and tables."); // unreachable
@@ -83,12 +81,6 @@ const collection = {
     IAutoBePrismaComponentApplication,
     "chatgpt"
   >(),
-  claude: typia.llm.application<
-    IAutoBePrismaComponentApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBePrismaComponentApplication,
-    "gemini"
-  >(),
+  claude: typia.llm.application<IAutoBePrismaComponentApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBePrismaComponentApplication, "gemini">(),
 };
