@@ -1,6 +1,12 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceSchemaApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceSchemaApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
+  > {
   /**
    * Generate OpenAPI components containing named schema types.
    *

@@ -1,5 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
 /**
  * Interface Prerequisite Agent application for analyzing and generating API
  * operation dependencies.
@@ -8,19 +10,18 @@ import { AutoBeOpenApi } from "@autobe/interface";
  * be executed as prerequisites based on resource creation dependencies and
  * existence validations.
  */
-export interface IAutoBeInterfacePrerequisitesApplication {
+export interface IAutoBeInterfacePrerequisiteApplication
+  extends IAutoBePreliminaryApplication {
   /**
    * Generate prerequisites for the provided operations.
    *
    * Analyzes each operation's dependencies and returns the complete list with
    * their required prerequisite chains based on resource relationships.
    */
-  makePrerequisite(
-    props: IAutoBeInterfacePrerequisitesApplication.IProps,
-  ): void;
+  makePrerequisite(props: IAutoBeInterfacePrerequisiteApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfacePrerequisitesApplication {
+export namespace IAutoBeInterfacePrerequisiteApplication {
   export interface IProps {
     /**
      * Target operations requiring prerequisite analysis.

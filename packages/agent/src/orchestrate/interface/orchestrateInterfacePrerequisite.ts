@@ -15,7 +15,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
-import { IAutoBeInterfacePrerequisitesApplication } from "./structures/IAutoBeInterfacePrerequisitesApplication";
+import { IAutoBeInterfacePrerequisiteApplication } from "./structures/IAutoBeInterfacePrerequisiteApplication";
 
 export async function orchestrateInterfacePrerequisite<
   Model extends ILlmSchema.Model,
@@ -148,6 +148,7 @@ async function process<Model extends ILlmSchema.Model>(
         dict: props.dict,
         includes: props.includes,
         prerequisitesNotFound: props.prerequisitesNotFound,
+        preliminary,
         build: (next) => {
           pointer.value = next;
         },
@@ -189,15 +190,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   includes: AutoBeOpenApi.IOperation[];
   prerequisitesNotFound: string;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
   build: (next: AutoBeInterfacePrerequisite[]) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfacePrerequisitesApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfacePrerequisitesApplication.IProps> =
-      typia.validate<IAutoBeInterfacePrerequisitesApplication.IProps>(next);
+  ): IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> =
+      typia.validate<IAutoBeInterfacePrerequisiteApplication.IProps>(next);
     if (result.success === false) return result;
 
     const operations: AutoBeInterfacePrerequisite[] = result.data.operations;
@@ -278,10 +285,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ](
+  ]({
+    preliminary: props.preliminary,
     validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-
+  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",
@@ -290,31 +297,48 @@ function createController<Model extends ILlmSchema.Model>(props: {
       makePrerequisite: (next) => {
         props.build(next.operations);
       },
-    } satisfies IAutoBeInterfacePrerequisitesApplication,
+      analyzeFiles: () => {},
+      prismaSchemas: () => {},
+      interfaceOperations: () => {},
+      interfaceSchemas: () => {},
+    } satisfies IAutoBeInterfacePrerequisiteApplication,
   };
 }
 
 const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfacePrerequisitesApplication, "chatgpt">({
+  chatgpt: (props: CustomValidateProps) =>
+    typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "chatgpt">({
       validate: {
-        makePrerequisite: validate,
+        makePrerequisite: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfacePrerequisitesApplication, "claude">({
+  claude: (props: CustomValidateProps) =>
+    typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "claude">({
       validate: {
-        makePrerequisite: validate,
+        makePrerequisite: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfacePrerequisitesApplication, "gemini">({
+  gemini: (props: CustomValidateProps) =>
+    typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "gemini">({
       validate: {
-        makePrerequisite: validate,
+        makePrerequisite: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
 };
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfacePrerequisitesApplication.IProps>;
+) => IValidation<IAutoBeInterfacePrerequisiteApplication.IProps>;
+
+interface CustomValidateProps {
+  validate: Validator;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
+}

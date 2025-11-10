@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceComplementApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceComplementApplication
+  extends IAutoBePreliminaryApplication {
   /**
    * Complements missing schema types
    *

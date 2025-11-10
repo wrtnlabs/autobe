@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceSchemaRelationReviewApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceSchemaRelationReviewApplication
+  extends IAutoBePreliminaryApplication {
   /**
    * Reviews and validates DTO relations and structural patterns in OpenAPI
    * schemas.

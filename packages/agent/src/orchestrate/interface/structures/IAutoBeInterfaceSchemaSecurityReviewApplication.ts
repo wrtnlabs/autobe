@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceSchemaSecurityReviewApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceSchemaSecurityReviewApplication
+  extends IAutoBePreliminaryApplication {
   /**
    * Reviews and validates OpenAPI schema definitions for security compliance.
    *

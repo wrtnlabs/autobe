@@ -1,7 +1,13 @@
 import { AutoBeOpenApi, CamelCasePattern } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBeInterfaceOperationApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceOperationApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas"
+  > {
   /**
    * Generate detailed API operations from path/method combinations.
    *
@@ -367,8 +373,8 @@ export namespace IAutoBeInterfaceOperationApplication {
      *
      * - ❌ BAD: Separate GET endpoints for admin, member, moderator to view the
      *   same public data
-     * - ✅ GOOD: Single public endpoint `[]` with actor-based filtering in business
-     *   logic
+     * - ✅ GOOD: Single public endpoint `[]` with actor-based filtering in
+     *   business logic
      *
      * **DO NOT enumerate all possible actors when the Prisma schema uses a
      * single User table:**

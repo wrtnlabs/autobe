@@ -137,8 +137,9 @@ async function process<Model extends ILlmSchema.Model>(
     const { metric, tokenUsage, histories } = await ctx.conversate({
       source: "interfaceSchemaReview",
       controller: createController({
-        model: ctx.model,
+        preliminary,
         pointer,
+        model: ctx.model,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -186,6 +187,12 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeInterfaceSchemaContentReviewApplication.IProps | null>;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -224,9 +231,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ](
+  ]({
     validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    preliminary: props.preliminary,
+  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "ContentReviewer",
@@ -235,36 +243,43 @@ function createController<Model extends ILlmSchema.Model>(props: {
       review: (input) => {
         props.pointer.value = input;
       },
+      analyzeFiles: () => {},
+      prismaSchemas: () => {},
+      interfaceOperations: () => {},
+      interfaceSchemas: () => {},
     } satisfies IAutoBeInterfaceSchemaContentReviewApplication,
   };
 }
 
 const collection = {
-  chatgpt: (validate: Validator) =>
+  chatgpt: (props: CustomValidateProps) =>
     typia.llm.application<
       IAutoBeInterfaceSchemaContentReviewApplication,
       "chatgpt"
     >({
       validate: {
-        review: validate,
+        review: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  claude: (validate: Validator) =>
+  claude: (props: CustomValidateProps) =>
     typia.llm.application<
       IAutoBeInterfaceSchemaContentReviewApplication,
       "claude"
     >({
       validate: {
-        review: validate,
+        review: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  gemini: (validate: Validator) =>
+  gemini: (props: CustomValidateProps) =>
     typia.llm.application<
       IAutoBeInterfaceSchemaContentReviewApplication,
       "gemini"
     >({
       validate: {
-        review: validate,
+        review: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
 };
@@ -272,3 +287,13 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceSchemaContentReviewApplication.IProps>;
+
+interface CustomValidateProps {
+  validate: Validator;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
+}

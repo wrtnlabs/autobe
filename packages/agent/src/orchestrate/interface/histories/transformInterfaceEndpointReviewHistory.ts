@@ -16,7 +16,7 @@ export const transformInterfaceEndpointReviewHistory = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     },
-    ...props.preliminary.getHistories(),
+    ...props.preliminary.createHistories(),
     {
       id: v7(),
       type: "assistantMessage",

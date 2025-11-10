@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-export interface IAutoBeInterfaceSchemaContentReviewApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceSchemaContentReviewApplication
+  extends IAutoBePreliminaryApplication {
   /**
    * Reviews and validates DTO content completeness and consistency in OpenAPI
    * schemas.

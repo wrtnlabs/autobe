@@ -24,7 +24,7 @@ export const transformInterfaceComplementHistory = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
-    ...props.preliminary.getHistories(),
+    ...props.preliminary.createHistories(),
     {
       type: "systemMessage",
       id: v7(),

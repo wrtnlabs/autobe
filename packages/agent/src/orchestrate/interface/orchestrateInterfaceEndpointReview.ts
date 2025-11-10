@@ -10,7 +10,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceEndpointReviewHistory } from "./histories/transformInterfaceEndpointReviewHistory";
-import { IAutoBeInterfaceEndpointsReviewApplication } from "./structures/IAutoBeInterfaceEndpointsReviewApplication";
+import { IAutoBeInterfaceEndpointReviewApplication } from "./structures/IAutoBeInterfaceEndpointReviewApplication";
 
 export async function orchestrateInterfaceEndpointReview<
   Model extends ILlmSchema.Model,
@@ -25,13 +25,14 @@ export async function orchestrateInterfaceEndpointReview<
     state: ctx.state(),
   });
   while (true) {
-    const pointer: IPointer<IAutoBeInterfaceEndpointsReviewApplication.IProps | null> =
+    const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
       {
         value: null,
       };
     const { metric, tokenUsage, histories } = await ctx.conversate({
       source: "interfaceEndpointReview",
       controller: createController({
+        preliminary,
         model: ctx.model,
         build: (props) => {
           pointer.value = props;
@@ -69,7 +70,8 @@ export async function orchestrateInterfaceEndpointReview<
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (props: IAutoBeInterfaceEndpointsReviewApplication.IProps) => void;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  build: (props: IAutoBeInterfaceEndpointReviewApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -79,7 +81,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ](
+    props.preliminary,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",
@@ -88,21 +92,31 @@ function createController<Model extends ILlmSchema.Model>(props: {
       reviewEndpoints: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeInterfaceEndpointsReviewApplication,
+      analyzeFiles: () => {},
+      prismaSchemas: () => {},
+    } satisfies IAutoBeInterfaceEndpointReviewApplication,
   };
 }
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceEndpointsReviewApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeInterfaceEndpointsReviewApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeInterfaceEndpointsReviewApplication,
-    "gemini"
-  >(),
+  chatgpt: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
+    typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "chatgpt">(
+      {
+        validate: preliminary.createValidate(),
+      },
+    ),
+  claude: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
+    typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "claude">({
+      validate: preliminary.createValidate(),
+    }),
+  gemini: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
+    typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "gemini">({
+      validate: preliminary.createValidate(),
+    }),
 };

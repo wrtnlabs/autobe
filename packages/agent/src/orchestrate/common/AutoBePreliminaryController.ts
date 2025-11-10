@@ -24,7 +24,7 @@ export class AutoBePreliminaryController<
     return createPreliminaryValidate(this.keys, this.all);
   }
 
-  public getHistories(): IAgenticaHistoryJson.IAssistantMessage[] {
+  public createHistories(): IAgenticaHistoryJson.IAssistantMessage[] {
     return transformPreliminaryHistories(this);
   }
 

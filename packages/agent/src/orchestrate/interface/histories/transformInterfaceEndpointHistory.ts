@@ -22,7 +22,7 @@ export const transformInterfaceEndpointHistory = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     },
-    ...props.preliminary.getHistories(),
+    ...props.preliminary.createHistories(),
     {
       type: "assistantMessage",
       id: v7(),

@@ -131,6 +131,7 @@ async function process<Model extends ILlmSchema.Model>(
     const { metric, tokenUsage, histories } = await ctx.conversate({
       source: "interfaceOperation",
       controller: createController({
+        preliminary,
         model: ctx.model,
         actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
         build: (operations) => {
@@ -208,6 +209,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actors: string[];
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
   ) => void;
@@ -264,9 +266,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ](
+  ]({
+    preliminary: props.preliminary,
     validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
@@ -276,27 +279,32 @@ function createController<Model extends ILlmSchema.Model>(props: {
       makeOperations: (next) => {
         props.build(next.operations);
       },
+      analyzeFiles: () => {},
+      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceOperationApplication,
   };
 }
 
 const collection = {
-  chatgpt: (validate: Validator) =>
+  chatgpt: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "chatgpt">({
       validate: {
-        makeOperations: validate,
+        makeOperations: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  claude: (validate: Validator) =>
+  claude: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "claude">({
       validate: {
-        makeOperations: validate,
+        makeOperations: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
-  gemini: (validate: Validator) =>
+  gemini: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "gemini">({
       validate: {
-        makeOperations: validate,
+        makeOperations: props.validate,
+        ...props.preliminary.createValidate(),
       },
     }),
 };
@@ -304,3 +312,8 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceOperationApplication.IProps>;
+
+interface CustomValidateProps {
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  validate: Validator;
+}

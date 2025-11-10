@@ -193,14 +193,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
         }`,
           value: `No authorizationType "${type}" found in any operation`,
           description: StringUtil.trim`
-          There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
-          for the "${props.actor}" role's authorization activity; "${type}".
+            There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
+            for the "${props.actor}" role's authorization activity; "${type}".
 
-          However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}"
-          value, so that the "${props.actor}" cannot perform the authorization ${type} activity.
+            However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}"
+            value, so that the "${props.actor}" cannot perform the authorization ${type} activity.
 
-          Please make that operation at the next function calling. You have to do it.
-        `,
+            Please make that operation at the next function calling. You have to do it.
+          `,
         });
     if (errors.length !== 0) {
       return {

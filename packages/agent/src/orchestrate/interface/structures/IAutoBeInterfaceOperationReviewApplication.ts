@@ -1,5 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
 /**
  * Application interface for reviewing and validating API operations.
  *
@@ -9,7 +11,11 @@ import { AutoBeOpenApi } from "@autobe/interface";
  * analytical findings and actionable improvements, along with the final
  * enhanced operations ready for implementation.
  */
-export interface IAutoBeInterfaceOperationsReviewApplication {
+export interface IAutoBeInterfaceOperationReviewApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas"
+  > {
   /**
    * Reviews a batch of API operations for quality and correctness.
    *
@@ -22,11 +28,11 @@ export interface IAutoBeInterfaceOperationsReviewApplication {
    *   the enhanced operations content
    */
   reviewOperations(
-    input: IAutoBeInterfaceOperationsReviewApplication.IProps,
+    input: IAutoBeInterfaceOperationReviewApplication.IProps,
   ): void;
 }
 
-export namespace IAutoBeInterfaceOperationsReviewApplication {
+export namespace IAutoBeInterfaceOperationReviewApplication {
   /**
    * Properties for API operation review and improvement process.
    *
