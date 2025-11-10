@@ -5,13 +5,12 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceAuthorizationsHistories = (props: {
   state: AutoBeState;
   actor: AutoBeAnalyzeActor;
-  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
@@ -23,9 +22,7 @@ export const transformInterfaceAuthorizationsHistories = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
       },
-      ...transformInterfaceAssetHistories({
-        local: props.local,
-      }),
+      ...props.preliminary.getHistories(),
       {
         type: "systemMessage",
         id: v7(),

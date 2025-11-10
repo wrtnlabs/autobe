@@ -7,6 +7,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getReferenceIds } from "../../test/utils/getReferenceIds";
 
+// @todo -> RAG
 export const transformInterfacePrerequisitesHistories = (
   document: AutoBeOpenApi.IDocument,
   include: AutoBeOpenApi.IOperation[],

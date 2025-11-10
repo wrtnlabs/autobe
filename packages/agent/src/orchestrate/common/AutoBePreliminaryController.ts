@@ -1,4 +1,5 @@
 import { AutoBeState } from "../../context/AutoBeState";
+import { transformPreliminaryHistories } from "./histories/transformPreliminaryHistories";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
 import { createPreliminaryValidate } from "./internal/createPreliminaryValidator";
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
@@ -19,6 +20,10 @@ export class AutoBePreliminaryController<
 
   public createValidate() {
     return createPreliminaryValidate(this.keys, this.all);
+  }
+
+  public getHistories() {
+    return transformPreliminaryHistories(this);
   }
 }
 export namespace AutoBePreliminaryController {

@@ -4,14 +4,18 @@ import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceSchemaReviewHistories = (props: {
   state: AutoBeState;
   systemPrompt: string;
   instruction: string;
-  local: IAutoBePreliminaryCollection;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
   operations: AutoBeOpenApi.IOperation[];
   everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -24,9 +28,7 @@ export const transformInterfaceSchemaReviewHistories = (props: {
         created_at: new Date().toISOString(),
         text: props.systemPrompt,
       },
-      ...transformInterfaceAssetHistories({
-        local: props.local,
-      }),
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),
@@ -47,15 +49,6 @@ export const transformInterfaceSchemaReviewHistories = (props: {
           follow them precisely even if you believe you have better alternatives.
 
           ${props.instruction}
-
-          ## Schemas (Complete Set for Reference)
-
-          Here is the COMPLETE set of all schemas in the system for
-          reference context:
-
-          \`\`\`json
-          ${JSON.stringify(props.everySchemas)}
-          \`\`\`
         `,
       },
       {

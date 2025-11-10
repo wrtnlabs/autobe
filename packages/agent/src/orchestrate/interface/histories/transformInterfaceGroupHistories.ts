@@ -4,8 +4,6 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { createPreliminaryCollection } from "../../common/internal/createPreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 import { transformInterfaceCommonHistories } from "./transformInterfaceCommonHistories";
 
 export const transformInterfaceGroupHistories = (props: {
@@ -25,16 +23,25 @@ export const transformInterfaceGroupHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+        text: AutoBeSystemPromptConstant.INTERFACE_GROUP,
       },
-      ...transformInterfaceAssetHistories({
-        local: createPreliminaryCollection(props.state),
-      }),
       {
         id: v7(),
         created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: AutoBeSystemPromptConstant.INTERFACE_GROUP,
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          ## Requirement Analysis Report
+
+          \`\`\`json
+          ${JSON.stringify(props.state.analyze!.files)}
+          \`\`\`
+
+          ## Prisma DB Schemas
+
+          \`\`\`json
+          ${JSON.stringify(props.state.prisma!.schemas)}
+          \`\`\`
+        `,
       },
       {
         id: v7(),

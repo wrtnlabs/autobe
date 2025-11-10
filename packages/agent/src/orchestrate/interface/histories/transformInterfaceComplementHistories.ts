@@ -4,14 +4,18 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceComplementHistories = (props: {
   state: AutoBeState;
   instruction: string;
   missed: string[];
-  local: IAutoBePreliminaryCollection;
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -20,9 +24,7 @@ export const transformInterfaceComplementHistories = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
-    ...transformInterfaceAssetHistories({
-      local: props.local,
-    }),
+    ...props.preliminary.getHistories(),
     {
       type: "systemMessage",
       id: v7(),
@@ -57,25 +59,9 @@ export const transformInterfaceComplementHistories = (props: {
 
         ${props.instruction}
 
-        ## Operations
-
-        Here is the OpenAPI operations what you AI have made:
-
-        \`\`\`json
-        ${JSON.stringify(props.local.interfaceOperations)}
-        \`\`\`
-
-        ## Schemas
-
-        Here is the OpenAPI schemas what you AI have made:
-
-        \`\`\`json
-        ${JSON.stringify(props.local.interfaceSchemas)}
-        \`\`\`
-
         ## Missed Types
 
-        However, you AI have missed below schema types:
+        You AI have missed below schema types:
 
         ${props.missed.map((s) => `- ${s}`).join("\n")}
       `,

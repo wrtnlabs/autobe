@@ -4,16 +4,12 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceSchemaHistories = (props: {
   operations: AutoBeOpenApi.IOperation[];
   typeNames: string[];
-  local: Pick<
-    IAutoBePreliminaryCollection,
-    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
-  >;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   instruction: string;
   already: string[];
   remained: Set<string>;
@@ -31,9 +27,7 @@ export const transformInterfaceSchemaHistories = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
       },
-      ...transformInterfaceAssetHistories({
-        local: props.local,
-      }),
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),

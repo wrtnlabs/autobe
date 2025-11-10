@@ -94,7 +94,7 @@ async function process<Model extends ILlmSchema.Model>(
         state: ctx.state(),
         group: props.group,
         authorizations: props.authorizations,
-        local: preliminary.local,
+        preliminary: preliminary.local,
         instruction: props.instruction,
       }),
     });

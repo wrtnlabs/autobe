@@ -4,13 +4,12 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
-import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceOperationHistories = (props: {
   prefix: string;
   endpoints: AutoBeOpenApi.IEndpoint[];
-  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   return {
@@ -21,9 +20,7 @@ export const transformInterfaceOperationHistories = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
-      ...transformInterfaceAssetHistories({
-        local: props.local,
-      }),
+      ...props.preliminary.getHistories(),
       {
         type: "systemMessage",
         id: v7(),
