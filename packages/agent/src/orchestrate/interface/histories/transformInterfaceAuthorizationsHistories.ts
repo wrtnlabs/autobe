@@ -11,7 +11,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 export const transformInterfaceAuthorizationsHistories = (props: {
   state: AutoBeState;
   actor: AutoBeAnalyzeActor;
-  preliminary: IAutoBePreliminaryCollection;
+  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
@@ -23,7 +23,9 @@ export const transformInterfaceAuthorizationsHistories = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
       },
-      ...transformInterfaceAssetHistories(props.preliminary),
+      ...transformInterfaceAssetHistories({
+        local: props.local,
+      }),
       {
         type: "systemMessage",
         id: v7(),

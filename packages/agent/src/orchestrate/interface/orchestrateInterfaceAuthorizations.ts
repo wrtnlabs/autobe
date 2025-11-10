@@ -15,9 +15,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { PreliminaryApplicationValidator } from "../common/PreliminaryApplicationValidator";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
-import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
@@ -62,22 +61,12 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
-  const all: IAutoBePreliminaryCollection = {
-    analyzeFiles: ctx.state().analyze!.files,
-    prismaSchemas: ctx
-      .state()
-      .prisma!.result.data.files.map((f) => f.models)
-      .flat(),
-    interfaceOperations: [],
-    interfaceSchemas: {},
-  };
-  const partial: IAutoBePreliminaryCollection = {
-    analyzeFiles: [],
-    prismaSchemas: [],
-    interfaceOperations: [],
-    interfaceSchemas: {},
-  };
-
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas"],
+    state: ctx.state(),
+  });
   while (true) {
     const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
       {
@@ -91,13 +80,14 @@ async function process<Model extends ILlmSchema.Model>(
         build: (next) => {
           pointer.value = next;
         },
-        collection: all,
+        preliminary,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceAuthorizationsHistories({
         state: ctx.state(),
         instruction: props.instruction,
+        local: preliminary.local,
         actor: props.actor,
       }),
     });
@@ -122,8 +112,7 @@ async function process<Model extends ILlmSchema.Model>(
 
     orchestratePreliminary(ctx, {
       executes,
-      all,
-      partial,
+      preliminary,
     });
     continue;
   }
@@ -132,10 +121,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actor: AutoBeAnalyzeActor;
-  collection: Pick<
-    IAutoBePreliminaryCollection,
-    "analyzeFiles" | "prismaSchemas"
-  >;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -240,7 +226,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         : "claude"
   ]({
     validate,
-    collection: props.collection,
+    preliminary: props.preliminary,
   }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
@@ -263,10 +249,7 @@ const collection = {
       {
         validate: {
           makeOperations: props.validate,
-          ...PreliminaryApplicationValidator.createValidate(
-            ["analyzeFiles", "prismaSchemas"],
-            props.collection,
-          ),
+          ...props.preliminary.createValidate(),
         },
       },
     ),
@@ -274,20 +257,14 @@ const collection = {
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "claude">({
       validate: {
         makeOperations: props.validate,
-        ...PreliminaryApplicationValidator.createValidate(
-          ["analyzeFiles", "prismaSchemas"],
-          props.collection,
-        ),
+        ...props.preliminary.createValidate(),
       },
     }),
   gemini: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "gemini">({
       validate: {
         makeOperations: props.validate,
-        ...PreliminaryApplicationValidator.createValidate(
-          ["analyzeFiles", "prismaSchemas"],
-          props.collection,
-        ),
+        ...props.preliminary.createValidate(),
       },
     }),
 };
@@ -298,8 +275,5 @@ type Validator = (
 
 interface CustomValidateProps {
   validate: Validator;
-  collection: Pick<
-    IAutoBePreliminaryCollection,
-    "analyzeFiles" | "prismaSchemas"
-  >;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
 }

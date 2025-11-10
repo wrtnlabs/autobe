@@ -6,12 +6,14 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceEndpointHistories = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];
+  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
@@ -21,7 +23,9 @@ export const transformInterfaceEndpointHistories = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     },
-    ...transformInterfaceAssetHistories(props.state),
+    ...transformInterfaceAssetHistories({
+      local: props.local,
+    }),
     {
       type: "assistantMessage",
       id: v7(),

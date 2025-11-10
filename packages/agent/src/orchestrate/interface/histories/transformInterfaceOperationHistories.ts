@@ -1,18 +1,18 @@
-import { AutoBeAnalyzeHistory, AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceOperationHistories = (props: {
-  state: AutoBeState;
+  prefix: string;
   endpoints: AutoBeOpenApi.IEndpoint[];
+  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
-  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return {
     histories: [
       {
@@ -21,19 +21,21 @@ export const transformInterfaceOperationHistories = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
-      ...transformInterfaceAssetHistories(props.state),
+      ...transformInterfaceAssetHistories({
+        local: props.local,
+      }),
       {
         type: "systemMessage",
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
           ## Service Prefix
-          - Original: ${analyze.prefix}
-          - PascalCase for DTOs: ${analyze.prefix
+          - Original: ${props.prefix}
+          - PascalCase for DTOs: ${props.prefix
             .split(/[-_]/)
             .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
             .join("")}
-          - Expected DTO pattern: I${analyze.prefix
+          - Expected DTO pattern: I${props.prefix
             .split(/[-_]/)
             .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
             .join("")}{EntityName}

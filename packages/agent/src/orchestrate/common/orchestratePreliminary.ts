@@ -5,85 +5,111 @@ import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
-import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
-export const orchestratePreliminary = <Model extends ILlmSchema.Model>(
+export const orchestratePreliminary = <
+  Model extends ILlmSchema.Model,
+  Key extends keyof IAutoBePreliminaryApplication,
+>(
   ctx: AutoBeContext<Model>,
   props: {
     executes: AgenticaExecuteHistory<Model>[];
-    all: IAutoBePreliminaryCollection;
-    partial: IAutoBePreliminaryCollection;
+    preliminary: AutoBePreliminaryController<Key>;
   },
 ): void => {
   ctx; // @todo -> dispatch events
   for (const exec of props.executes)
-    switch (exec.operation.function.name) {
-      case "requirementAnalyses":
-        fillRequirementAnalyses({
-          all: props.all.analyzeFiles,
-          partial: props.partial.analyzeFiles,
-          arguments: exec.operation.function.parameters,
-        });
-        break;
-      case "prismaSchemas":
-        fillPrismaSchemas({
-          all: props.all.prismaSchemas,
-          partial: props.partial.prismaSchemas,
-          arguments: exec.operation.function.parameters,
-        });
-        break;
-      case "interfaceOperations":
-        fillInterfaceOperations({
-          all: {
-            operations: props.all.interfaceOperations,
-            schemas: props.all.interfaceSchemas,
-          },
-          partial: {
-            operations: props.partial.interfaceOperations,
-            schemas: props.partial.interfaceSchemas,
-          },
-          arguments: exec.operation.function.parameters,
-        });
-        break;
-      case "interfaceSchemas":
-        fillInterfaceSchemas({
-          all: props.all.interfaceSchemas,
-          partial: props.partial.interfaceSchemas,
-          arguments: exec.operation.function.parameters,
-        });
-        break;
-    }
+    if (isAnalysisFiles(props.preliminary, exec.operation.function.name))
+      fillRequirementAnalyses({
+        all: props.preliminary.all.analyzeFiles,
+        local: props.preliminary.local.analyzeFiles,
+        arguments: exec.operation.function.parameters,
+      });
+    else if (isPrismaSchemas(props.preliminary, exec.operation.function.name))
+      fillPrismaSchemas({
+        all: props.preliminary.all.prismaSchemas,
+        local: props.preliminary.local.prismaSchemas,
+        arguments: exec.operation.function.parameters,
+      });
+    else if (
+      isInterfaceOperations(props.preliminary, exec.operation.function.name)
+    )
+      fillInterfaceOperations({
+        all: {
+          operations: props.preliminary.all.interfaceOperations,
+          schemas: props.preliminary.all.interfaceSchemas,
+        },
+        local: {
+          operations: props.preliminary.local.interfaceOperations,
+          schemas: props.preliminary.local.interfaceSchemas,
+        },
+        arguments: exec.operation.function.parameters,
+      });
+    else if (
+      isInterfaceSchemas(props.preliminary, exec.operation.function.name)
+    )
+      fillInterfaceSchemas({
+        all: props.preliminary.all.interfaceSchemas,
+        local: props.preliminary.local.interfaceSchemas,
+        arguments: exec.operation.function.parameters,
+      });
 };
+
+const isAnalysisFiles = (
+  preliminary: AutoBePreliminaryController<any>,
+  functionName: string,
+): preliminary is AutoBePreliminaryController<"analyzeFiles"> =>
+  typia.is<"analyzeFiles">(functionName) &&
+  preliminary.all[functionName] !== undefined;
+
+const isPrismaSchemas = (
+  preliminary: AutoBePreliminaryController<any>,
+  functionName: string,
+): preliminary is AutoBePreliminaryController<"prismaSchemas"> =>
+  typia.is<"prismaSchemas">(functionName) &&
+  preliminary.all[functionName] !== undefined;
+
+const isInterfaceOperations = (
+  preliminary: AutoBePreliminaryController<any>,
+  functionName: string,
+): preliminary is AutoBePreliminaryController<
+  "interfaceOperations" | "interfaceSchemas"
+> =>
+  typia.is<"interfaceOperations">(functionName) &&
+  preliminary.all[functionName] !== undefined;
+
+const isInterfaceSchemas = (
+  preliminary: AutoBePreliminaryController<any>,
+  functionName: string,
+): preliminary is AutoBePreliminaryController<"interfaceSchemas"> =>
+  typia.is<"interfaceSchemas">(functionName) &&
+  preliminary.all[functionName] !== undefined;
 
 const fillRequirementAnalyses = (props: {
   all: AutoBeAnalyzeFile[];
-  partial: AutoBeAnalyzeFile[];
+  local: AutoBeAnalyzeFile[];
   arguments: unknown;
 }): void => {
-  if (history === null)
-    throw new Error(
-      "Cannot fill requirement analyses when analyze history is null.",
-    );
   typia.assertGuard<IAutoBePreliminaryApplication.IRequirementAnalysesProps>(
     props.arguments,
   );
   for (const filename of props.arguments.filenames)
-    if (props.partial.find((f) => f.filename === filename) === undefined)
-      props.partial.push(props.all.find((f) => f.filename === filename)!);
+    if (props.local.find((f) => f.filename === filename) === undefined)
+      props.local.push(props.all.find((f) => f.filename === filename)!);
 };
 
 const fillPrismaSchemas = (props: {
   all: AutoBePrisma.IModel[];
-  partial: AutoBePrisma.IModel[];
+  local: AutoBePrisma.IModel[];
   arguments: unknown;
 }): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
     props.arguments,
   );
   for (const name of props.arguments.schemaNames)
-    if (props.partial.find((m) => m.name === name) === undefined)
-      props.partial.push(props.all.find((m) => m.name === name)!);
+    if (props.local.find((m) => m.name === name) === undefined)
+      props.local.push(props.all.find((m) => m.name === name)!);
 };
 
 const fillInterfaceOperations = (props: {
@@ -91,7 +117,7 @@ const fillInterfaceOperations = (props: {
     operations: AutoBeOpenApi.IOperation[];
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   };
-  partial: {
+  local: {
     operations: AutoBeOpenApi.IOperation[];
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   };
@@ -104,7 +130,7 @@ const fillInterfaceOperations = (props: {
   const typeNames: Set<string> = new Set();
   for (const endpoint of props.arguments.endpoints) {
     if (
-      props.partial.operations.find(
+      props.local.operations.find(
         (v) => v.method === endpoint.method && v.path === endpoint.path,
       ) !== undefined
     )
@@ -112,13 +138,13 @@ const fillInterfaceOperations = (props: {
     const operation: AutoBeOpenApi.IOperation = props.all.operations.find(
       (v) => v.method === endpoint.method && v.path === endpoint.path,
     )!;
-    props.partial.operations.push(operation);
+    props.local.operations.push(operation);
     if (operation.requestBody) typeNames.add(operation.requestBody.typeName);
     if (operation.responseBody) typeNames.add(operation.responseBody.typeName);
   }
   fillInterfaceSchemas({
     all: props.all.schemas,
-    partial: props.partial.schemas,
+    local: props.local.schemas,
     arguments: {
       typeNames: Array.from(typeNames),
     } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
@@ -127,7 +153,7 @@ const fillInterfaceOperations = (props: {
 
 const fillInterfaceSchemas = (props: {
   all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  partial: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   arguments: unknown;
 }): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(

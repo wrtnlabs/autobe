@@ -1,19 +1,16 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export function transformInterfaceOperationsReviewHistories<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
-): IAutoBeOrchestrateHistory {
+export function transformInterfaceOperationsReviewHistories(props: {
+  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas">;
+  operations: AutoBeOpenApi.IOperation[];
+}): IAutoBeOrchestrateHistory {
   return {
     histories: [
       {
@@ -22,7 +19,9 @@ export function transformInterfaceOperationsReviewHistories<
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
-      ...transformInterfaceAssetHistories(ctx.state()),
+      ...transformInterfaceAssetHistories({
+        local: props.local,
+      }),
       {
         type: "systemMessage",
         id: v7(),
@@ -37,7 +36,7 @@ export function transformInterfaceOperationsReviewHistories<
           Review the following API operations:
 
           \`\`\`json
-          ${JSON.stringify(operations)}
+          ${JSON.stringify(props.operations)}
           \`\`\`
         `,
       },

@@ -4,9 +4,15 @@ import { v7 } from "uuid";
 
 import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 
-export const transformInterfaceAssetHistories = (
-  preliminary: IAutoBePreliminaryCollection,
-): Array<
+export const transformInterfaceAssetHistories = (props: {
+  local: Pick<IAutoBePreliminaryCollection, "analyzeFiles" | "prismaSchemas"> &
+    Partial<
+      Pick<
+        IAutoBePreliminaryCollection,
+        "interfaceOperations" | "interfaceSchemas"
+      >
+    >;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -23,7 +29,7 @@ export const transformInterfaceAssetHistories = (
         ## Requirement Analysis Report
 
         \`\`\`json
-        ${JSON.stringify(preliminary.analyzeFiles)}
+        ${JSON.stringify(props.local.analyzeFiles)}
         \`\`\`
       `,
     },
@@ -41,7 +47,7 @@ export const transformInterfaceAssetHistories = (
         ## Prisma DB Schema
 
         \`\`\`json
-        ${JSON.stringify(preliminary.prismaSchemas)}
+        ${JSON.stringify(props.local.prismaSchemas)}
         \`\`\`
       `,
     },

@@ -4,6 +4,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { createPreliminaryCollection } from "../../common/internal/createPreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 import { transformInterfaceCommonHistories } from "./transformInterfaceCommonHistories";
 
@@ -26,7 +27,9 @@ export const transformInterfaceGroupHistories = (props: {
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
       },
-      ...transformInterfaceAssetHistories(props.state),
+      ...transformInterfaceAssetHistories({
+        local: createPreliminaryCollection(props.state),
+      }),
       {
         id: v7(),
         created_at: new Date().toISOString(),

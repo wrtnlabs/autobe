@@ -1,17 +1,17 @@
-import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceComplementHistories = (props: {
   state: AutoBeState;
   instruction: string;
   missed: string[];
-  document: AutoBeOpenApi.IDocument;
+  local: IAutoBePreliminaryCollection;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -20,7 +20,9 @@ export const transformInterfaceComplementHistories = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
-    ...transformInterfaceAssetHistories(props.state),
+    ...transformInterfaceAssetHistories({
+      local: props.local,
+    }),
     {
       type: "systemMessage",
       id: v7(),
@@ -60,7 +62,7 @@ export const transformInterfaceComplementHistories = (props: {
         Here is the OpenAPI operations what you AI have made:
 
         \`\`\`json
-        ${JSON.stringify(props.document.operations)}
+        ${JSON.stringify(props.local.interfaceOperations)}
         \`\`\`
 
         ## Schemas
@@ -68,7 +70,7 @@ export const transformInterfaceComplementHistories = (props: {
         Here is the OpenAPI schemas what you AI have made:
 
         \`\`\`json
-        ${JSON.stringify(props.document.components.schemas)}
+        ${JSON.stringify(props.local.interfaceSchemas)}
         \`\`\`
 
         ## Missed Types

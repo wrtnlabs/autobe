@@ -4,12 +4,14 @@ import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBePreliminaryCollection } from "../../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceSchemaReviewHistories = (props: {
   state: AutoBeState;
   systemPrompt: string;
   instruction: string;
+  local: IAutoBePreliminaryCollection;
   operations: AutoBeOpenApi.IOperation[];
   everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -22,7 +24,9 @@ export const transformInterfaceSchemaReviewHistories = (props: {
         created_at: new Date().toISOString(),
         text: props.systemPrompt,
       },
-      ...transformInterfaceAssetHistories(props.state),
+      ...transformInterfaceAssetHistories({
+        local: props.local,
+      }),
       {
         type: "assistantMessage",
         id: v7(),

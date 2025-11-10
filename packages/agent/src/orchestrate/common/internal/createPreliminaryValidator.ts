@@ -4,30 +4,30 @@ import { StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
 
-import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
-import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
+import { IAutoBePreliminaryApplication } from "../structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
-export namespace PreliminaryApplicationValidator {
-  export type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
-    [P in Key]: (
-      input: unknown,
-    ) => IValidation<Parameters<IAutoBePreliminaryApplication[P]>[0]>;
-  };
+type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
+  [P in Key]: (
+    input: unknown,
+  ) => IValidation<Parameters<IAutoBePreliminaryApplication[P]>[0]>;
+};
 
-  export function createValidate<
-    Key extends keyof IAutoBePreliminaryApplication,
-  >(
-    keys: Key[],
-    collection: Pick<IAutoBePreliminaryCollection, Key>,
-  ): Validator<Key> {
-    const result: Validator<Key> = {} as any;
-    for (const k of keys)
-      result[k] = PreliminaryApplicationValidator[k](
-        collection as IAutoBePreliminaryCollection,
-      );
-    return result;
-  }
+export function createPreliminaryValidate<
+  Key extends keyof IAutoBePreliminaryApplication,
+>(
+  keys: Key[],
+  collection: Pick<IAutoBePreliminaryCollection, Key>,
+): Validator<Key> {
+  const result: Validator<Key> = {} as any;
+  for (const k of keys)
+    result[k] = PreliminaryApplicationValidator[k](
+      collection as IAutoBePreliminaryCollection,
+    );
+  return result;
+}
 
+namespace PreliminaryApplicationValidator {
   export const analyzeFiles = (props: {
     analyzeFiles: AutoBeAnalyzeFile[];
   }) => {

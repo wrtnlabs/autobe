@@ -14,9 +14,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { PreliminaryApplicationValidator } from "../common/PreliminaryApplicationValidator";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
-import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
 import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpointsReview";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
@@ -69,22 +68,12 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
-  const all: IAutoBePreliminaryCollection = {
-    analyzeFiles: ctx.state().analyze!.files,
-    prismaSchemas: ctx
-      .state()
-      .prisma!.result.data.files.map((f) => f.models)
-      .flat(),
-    interfaceOperations: [],
-    interfaceSchemas: {},
-  };
-  const partial: IAutoBePreliminaryCollection = {
-    analyzeFiles: [],
-    prismaSchemas: [],
-    interfaceOperations: [],
-    interfaceSchemas: {},
-  };
-
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas"],
+    state: ctx.state(),
+  });
   while (true) {
     const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
       value: null,
@@ -97,7 +86,7 @@ async function process<Model extends ILlmSchema.Model>(
           pointer.value ??= endpoints;
           pointer.value.push(...endpoints);
         },
-        all,
+        preliminary,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -105,6 +94,7 @@ async function process<Model extends ILlmSchema.Model>(
         state: ctx.state(),
         group: props.group,
         authorizations: props.authorizations,
+        local: preliminary.local,
         instruction: props.instruction,
       }),
     });
@@ -134,8 +124,7 @@ async function process<Model extends ILlmSchema.Model>(
     if (executes.length === 0) throw new Error("Failed to generate endpoints."); // unreachable
     orchestratePreliminary(ctx, {
       executes,
-      all,
-      partial,
+      preliminary,
     });
     continue;
   }
@@ -143,7 +132,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  all: IAutoBePreliminaryCollection;
+  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -155,7 +144,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         ? "gemini"
         : "claude"
   ](
-    props.all,
+    props.preliminary,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -172,25 +161,22 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }
 
 const collection = {
-  chatgpt: (all: IAutoBePreliminaryCollection) =>
+  chatgpt: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
     typia.llm.application<IAutoBeInterfaceEndpointApplication, "chatgpt">({
-      validate: PreliminaryApplicationValidator.createValidate(
-        ["analyzeFiles", "prismaSchemas"],
-        all,
-      ),
+      validate: preliminary.createValidate(),
     }),
-  claude: (all: IAutoBePreliminaryCollection) =>
+  claude: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
     typia.llm.application<IAutoBeInterfaceEndpointApplication, "claude">({
-      validate: PreliminaryApplicationValidator.createValidate(
-        ["analyzeFiles", "prismaSchemas"],
-        all,
-      ),
+      validate: preliminary.createValidate(),
     }),
-  gemini: (all: IAutoBePreliminaryCollection) =>
+  gemini: (
+    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
+  ) =>
     typia.llm.application<IAutoBeInterfaceEndpointApplication, "gemini">({
-      validate: PreliminaryApplicationValidator.createValidate(
-        ["analyzeFiles", "prismaSchemas"],
-        all,
-      ),
+      validate: preliminary.createValidate(),
     }),
 };
