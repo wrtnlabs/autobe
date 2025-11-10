@@ -2,7 +2,6 @@ import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -65,10 +64,6 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectInvalidRequestHistories(
-      null!,
-      event.result.diagnostics,
-    ),
     controller: createController({
       model: ctx.model,
       functionName: write.scenario.functionName,
@@ -80,12 +75,10 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    userMessage: StringUtil.trim`
-      Fix the AutoBeTest.IFunction data to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix or give it up
-      immediately without any hesitation, explanation, and questions.
-    `,
+    ...transformTestCorrectInvalidRequestHistories(
+      null!,
+      event.result.diagnostics,
+    ),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event; // other's responsibility

@@ -78,12 +78,6 @@ export async function orchestrateRealizeAuthorizationCorrect<
     };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationCorrect",
-    histories: transformRealizeAuthorizationCorrectHistories(
-      ctx,
-      authorization,
-      templateFiles,
-      compiled.diagnostics,
-    ),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -91,7 +85,12 @@ export async function orchestrateRealizeAuthorizationCorrect<
       },
     }),
     enforceFunctionCall: true,
-    userMessage: "Please correct the decorator and the provider.",
+    ...transformRealizeAuthorizationCorrectHistories(
+      ctx,
+      authorization,
+      templateFiles,
+      compiled.diagnostics,
+    ),
   });
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
 

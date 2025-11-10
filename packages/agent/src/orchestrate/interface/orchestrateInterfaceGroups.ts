@@ -16,7 +16,6 @@ export async function orchestrateInterfaceGroups<
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
-    message?: string;
   },
 ): Promise<AutoBeInterfaceGroupEvent> {
   const start: Date = new Date();
@@ -25,10 +24,6 @@ export async function orchestrateInterfaceGroups<
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceGroup",
-    histories: transformInterfaceGroupHistories({
-      state: ctx.state(),
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -36,7 +31,10 @@ export async function orchestrateInterfaceGroups<
       },
     }),
     enforceFunctionCall: true,
-    userMessage: props.message ?? "Design API operations for the given assets.",
+    ...transformInterfaceGroupHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+    }),
   });
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {

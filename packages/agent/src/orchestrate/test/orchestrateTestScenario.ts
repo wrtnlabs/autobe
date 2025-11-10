@@ -149,13 +149,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   try {
     const { metric, tokenUsage } = await ctx.conversate({
       source: "testScenario",
-      histories: transformTestScenarioHistories({
-        state: ctx.state(),
-        document: props.document,
-        include: props.include,
-        exclude: props.exclude,
-        instruction: props.instruction,
-      }),
       controller: createController({
         model: ctx.model,
         endpointNotFound: props.endpointNotFound,
@@ -173,7 +166,13 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      userMessage: `Create e2e test scenarios.`,
+      ...transformTestScenarioHistories({
+        state: ctx.state(),
+        document: props.document,
+        include: props.include,
+        exclude: props.exclude,
+        instruction: props.instruction,
+      }),
     });
     if (pointer.value.length === 0) return [];
 

@@ -96,7 +96,9 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         model: ctx.model,
         pointer,
       }),
-      histories: transformInterfaceSchemaReviewHistories({
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceSchemaReviewHistories({
         state: ctx.state(),
         systemPrompt: config.systemPrompt,
         instruction: props.instruction,
@@ -104,9 +106,6 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         everySchemas: props.everySchemas,
         reviewSchemas: props.reviewSchemas,
       }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      userMessage: "Review DTO content completeness and consistency.",
     });
     if (pointer.value === null) {
       ++props.progress.completed;

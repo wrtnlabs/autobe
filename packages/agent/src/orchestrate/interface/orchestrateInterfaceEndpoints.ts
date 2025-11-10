@@ -41,7 +41,6 @@ export async function orchestrateInterfaceEndpoints<
             group,
             authorizations: props.authorizations,
             instruction: props.instruction,
-            message: props.message ?? "Make endpoints for the given assets.",
             progress,
             promptCacheKey,
           }),
@@ -60,7 +59,6 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     group: AutoBeInterfaceGroup;
-    message: string;
     progress: AutoBeProgressEventBase;
     authorizations: AutoBeOpenApi.IOperation[];
     promptCacheKey: string;
@@ -73,12 +71,6 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceEndpoint",
-    histories: transformInterfaceEndpointHistories({
-      state: ctx.state(),
-      group: props.group,
-      authorizations: props.authorizations,
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       build: (endpoints) => {
@@ -88,7 +80,12 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    userMessage: props.message,
+    ...transformInterfaceEndpointHistories({
+      state: ctx.state(),
+      group: props.group,
+      authorizations: props.authorizations,
+      instruction: props.instruction,
+    }),
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
 

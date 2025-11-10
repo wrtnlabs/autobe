@@ -82,7 +82,6 @@ async function process<Model extends ILlmSchema.Model>(
     };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationWrite",
-    histories: transformRealizeAuthorizationHistories(ctx, actor),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -91,7 +90,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    userMessage: "Create Authorization Provider and Decorator.",
+    ...transformRealizeAuthorizationHistories(ctx, actor),
   });
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 

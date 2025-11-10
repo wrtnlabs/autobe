@@ -64,11 +64,6 @@ async function process<Model extends ILlmSchema.Model>(
     };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceAuthorization",
-    histories: transformInterfaceAuthorizationsHistories({
-      state: ctx.state(),
-      instruction: props.instruction,
-      actor: props.actor,
-    }),
     controller: createController({
       model: ctx.model,
       actor: props.actor,
@@ -78,7 +73,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    userMessage: "Create Authorization Operation for the given roles",
+    ...transformInterfaceAuthorizationsHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+      actor: props.actor,
+    }),
   });
   if (pointer.value === null)
     throw new Error("Failed to generate authorization operation.");

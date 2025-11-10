@@ -15,7 +15,6 @@ export async function orchestrateInterfaceEndpointsReview<
 >(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
-  message: string = `Review the generated endpoints`,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const pointer: IPointer<IAutoBeInterfaceEndpointsReviewApplication.IProps | null> =
     {
@@ -24,10 +23,6 @@ export async function orchestrateInterfaceEndpointsReview<
 
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceEndpointReview",
-    histories: transformInterfaceEndpointsReviewHistories(
-      ctx.state(),
-      endpoints,
-    ),
     controller: createController({
       model: ctx.model,
       build: (props) => {
@@ -35,7 +30,7 @@ export async function orchestrateInterfaceEndpointsReview<
       },
     }),
     enforceFunctionCall: true,
-    userMessage: message,
+    ...transformInterfaceEndpointsReviewHistories(ctx.state(), endpoints),
   });
 
   if (pointer.value === null) {

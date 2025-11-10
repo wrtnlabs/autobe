@@ -1,4 +1,3 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeTestScenario } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
@@ -13,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
@@ -25,108 +25,107 @@ export async function transformTestWriteHistories<
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
   },
-): Promise<
-  Array<
-    IAgenticaHistoryJson.ISystemMessage | IAgenticaHistoryJson.IAssistantMessage
-  >
-> {
-  return [
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: systemPrompt.get(),
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        Here is the list of input material composition.
+): Promise<IAutoBeTransformHistory> {
+  return {
+    histories: [
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "systemMessage",
+        text: systemPrompt.get(),
+      },
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          Here is the list of input material composition.
 
-        Make e2e test functions based on the following information.
+          Make e2e test functions based on the following information.
 
-        ## Instructions
+          ## Instructions
 
-        The following e2e-test-specific instructions were extracted from
-        the user's requirements and conversations. These instructions focus
-        exclusively on test-related aspects such as test data generation strategies,
-        assertion patterns, error handling approaches, and specific validation logic
-        that should be implemented in the test code.
-        
-        Follow these instructions when implementing the e2e test function.
-        Carefully distinguish between:
-        - Suggestions or recommendations (consider these as guidance)
-        - Direct specifications or explicit commands (these must be followed exactly)
-        
-        When instructions contain direct specifications or explicit design decisions, 
-        follow them precisely even if you believe you have better alternatives.
+          The following e2e-test-specific instructions were extracted from
+          the user's requirements and conversations. These instructions focus
+          exclusively on test-related aspects such as test data generation strategies,
+          assertion patterns, error handling approaches, and specific validation logic
+          that should be implemented in the test code.
 
-        ${props.instruction}
+          Follow these instructions when implementing the e2e test function.
+          Carefully distinguish between:
+          - Suggestions or recommendations (consider these as guidance)
+          - Direct specifications or explicit commands (these must be followed exactly)
 
-        ## Function Name
+          When instructions contain direct specifications or explicit design decisions,
+          follow them precisely even if you believe you have better alternatives.
 
-        The e2e test function name must be ${JSON.stringify(props.scenario.functionName)}.
+          ${props.instruction}
 
-        ## Scenario Plan
+          ## Function Name
 
-        Here is the scenario plan what you have to implement.
+          The e2e test function name must be ${JSON.stringify(props.scenario.functionName)}.
 
-        \`\`\`json
-        ${JSON.stringify(props.scenario)}
-        \`\`\`
+          ## Scenario Plan
 
-        ## DTO Definitions
+          Here is the scenario plan what you have to implement.
 
-        You can use these DTO definitions.
+          \`\`\`json
+          ${JSON.stringify(props.scenario)}
+          \`\`\`
 
-        Never use the DTO definitions that are not listed here.
+          ## DTO Definitions
 
-        ${transformTestWriteHistories.structures(props.artifacts)}
+          You can use these DTO definitions.
 
-        ## API (SDK) Functions
+          Never use the DTO definitions that are not listed here.
 
-        You can use these API functions.
+          ${transformTestWriteHistories.structures(props.artifacts)}
 
-        Never use the functions that are not listed here.
+          ## API (SDK) Functions
 
-        ${transformTestWriteHistories.functional(props.artifacts)}
+          You can use these API functions.
 
-        ## E2E Mockup Functions
+          Never use the functions that are not listed here.
 
-        Just reference, and never follow this code as it is.
+          ${transformTestWriteHistories.functional(props.artifacts)}
 
-        \`\`\`json
-        ${JSON.stringify(props.artifacts.e2e)}
-        \`\`\`
+          ## E2E Mockup Functions
 
-        ## External Definitions
+          Just reference, and never follow this code as it is.
 
-        Here is the external declaration files (d.ts) you can reference.
+          \`\`\`json
+          ${JSON.stringify(props.artifacts.e2e)}
+          \`\`\`
 
-        \`\`\`json
-        ${JSON.stringify(await getTestExternalDeclarations(ctx))}
-        \`\`\`
+          ## External Definitions
 
-        ## Template Code
+          Here is the external declaration files (d.ts) you can reference.
 
-        Here is the template e2e test code what you must follow.
+          \`\`\`json
+          ${JSON.stringify(await getTestExternalDeclarations(ctx))}
+          \`\`\`
 
-        You're only allowed to modify the "<SCENARIO DESCRIPTION HERE>" and
-        code inside the function block marked as "// <E2E TEST CODE HERE>". 
-        Change the template code by writing your scenario description to the 
-        comment, and filling your implementation logic into the function.
+          ## Template Code
 
-        Note that, you don't need to add any "import" statement more than
-        this template code. Everything you need is already imported, so
-        make your implementation code in the import scope.
+          Here is the template e2e test code what you must follow.
 
-        \`\`\`typescript
-        ${props.artifacts.template}
-        \`\`\`
-      `,
-    },
-  ];
+          You're only allowed to modify the "<SCENARIO DESCRIPTION HERE>" and
+          code inside the function block marked as "// <E2E TEST CODE HERE>".
+          Change the template code by writing your scenario description to the
+          comment, and filling your implementation logic into the function.
+
+          Note that, you don't need to add any "import" statement more than
+          this template code. Everything you need is already imported, so
+          make your implementation code in the import scope.
+
+          \`\`\`typescript
+          ${props.artifacts.template}
+          \`\`\`
+        `,
+      },
+    ],
+    userMessage: `Write e2e test function ${props.scenario.functionName} please`,
+  };
 }
 export namespace transformTestWriteHistories {
   export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {

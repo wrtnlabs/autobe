@@ -49,13 +49,12 @@ async function review<Model extends ILlmSchema.Model>(
         pointer,
         originalGroups: props.groups,
       }),
-      histories: transformTestScenarioReviewHistories({
+      enforceFunctionCall: true,
+      ...transformTestScenarioReviewHistories({
         state: ctx.state(),
         groups: props.groups,
         instruction: props.instruction,
       }),
-      enforceFunctionCall: true,
-      userMessage: "Review the Test Scenario.",
     });
     if (pointer.value === null) {
       // unreachable

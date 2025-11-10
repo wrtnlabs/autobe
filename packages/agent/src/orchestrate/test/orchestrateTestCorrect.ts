@@ -5,7 +5,6 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -154,17 +153,6 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectHistories(ctx, {
-      instruction: props.instruction,
-      function: props.function,
-      failures: [
-        ...props.failures,
-        {
-          function: props.function,
-          failure: props.validate.result,
-        },
-      ],
-    }),
     controller: createController({
       model: ctx.model,
       functionName: props.function.scenario.functionName,
@@ -174,13 +162,18 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    userMessage: StringUtil.trim`
-      Fix the AutoBeTest.IFunction data to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix it immediately
-      without any hesitation, explanation, and questions.
-    `,
     promptCacheKey: props.promptCacheKey,
+    ...(await transformTestCorrectHistories(ctx, {
+      instruction: props.instruction,
+      function: props.function,
+      failures: [
+        ...props.failures,
+        {
+          function: props.function,
+          failure: props.validate.result,
+        },
+      ],
+    })),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 

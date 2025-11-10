@@ -135,14 +135,6 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceSchema",
-    histories: transformInterfaceSchemaHistories({
-      state: ctx.state(),
-      typeNames: Array.from(
-        new Set([...props.remained, ...Object.keys(props.oldbie)]),
-      ),
-      operations: props.operations,
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       build: async (next) => {
@@ -153,6 +145,16 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
+    ...transformInterfaceSchemaHistories({
+      state: ctx.state(),
+      typeNames: Array.from(
+        new Set([...props.remained, ...Object.keys(props.oldbie)]),
+      ),
+      operations: props.operations,
+      instruction: props.instruction,
+      remained: props.remained,
+      already,
+    }),
     userMessage: StringUtil.trim`
       Make type components please.
 

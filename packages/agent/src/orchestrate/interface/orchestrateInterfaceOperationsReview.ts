@@ -30,7 +30,6 @@ export async function orchestrateInterfaceOperationsReview<
       };
     const { metric, tokenUsage } = await ctx.conversate({
       source: "interfaceOperationReview",
-      histories: transformInterfaceOperationsReviewHistories(ctx, operations),
       controller: createReviewController({
         model: ctx.model,
         prismaSchemas: files,
@@ -39,7 +38,7 @@ export async function orchestrateInterfaceOperationsReview<
         },
       }),
       enforceFunctionCall: false,
-      userMessage: "Review the operations",
+      ...transformInterfaceOperationsReviewHistories(ctx, operations),
     });
     if (pointer.value === null) {
       ++progress.completed;

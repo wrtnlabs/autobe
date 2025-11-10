@@ -79,11 +79,6 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
-    histories: await transformTestWriteHistories(ctx, {
-      scenario,
-      artifacts,
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       functionName: props.scenario.functionName,
@@ -94,7 +89,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    userMessage: "Create e2e test functions.",
+    ...await transformTestWriteHistories(ctx, {
+      scenario,
+      artifacts,
+      instruction: props.instruction,
+    }),
   });
   if (pointer.value === null) {
     ++progress.completed;

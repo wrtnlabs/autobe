@@ -121,11 +121,6 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceOperation",
-    histories: transformInterfaceOperationHistories({
-      state: ctx.state(),
-      endpoints: props.endpoints.toJSON(),
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
@@ -173,7 +168,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    userMessage: "Make API operations",
+    ...transformInterfaceOperationHistories({
+      state: ctx.state(),
+      endpoints: props.endpoints.toJSON(),
+      instruction: props.instruction,
+    }),
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
 

@@ -1,10 +1,10 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
+import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceComplementHistories = (props: {
@@ -12,71 +12,72 @@ export const transformInterfaceComplementHistories = (props: {
   instruction: string;
   missed: string[];
   document: AutoBeOpenApi.IDocument;
-}): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => [
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
-  },
-  ...transformInterfaceAssetHistories(props.state),
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-  },
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
-  },
-  {
-    type: "assistantMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: StringUtil.trim`
-      ## API Design Instructions
+}): IAutoBeTransformHistory => ({
+  histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
+    },
+    ...transformInterfaceAssetHistories(props.state),
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+    },
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
+    },
+    {
+      type: "assistantMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
+        ## API Design Instructions
 
-      The following API-specific instructions were extracted from
-      the user's requirements. These focus on API interface design aspects
-      such as endpoint patterns, request/response formats, DTO schemas,
-      and operation specifications.
+        The following API-specific instructions were extracted from
+        the user's requirements. These focus on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
 
-      Follow these instructions when completing missing schema types.
-      Carefully distinguish between:
-      - Suggestions or recommendations (consider these as guidance)
-      - Direct specifications or explicit commands (these must be followed exactly)
-      
-      When instructions contain direct specifications or explicit design decisions, 
-      follow them precisely even if you believe you have better alternatives.
+        Follow these instructions when completing missing schema types.
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
 
-      ${props.instruction}
+        When instructions contain direct specifications or explicit design decisions,
+        follow them precisely even if you believe you have better alternatives.
 
-      ## Operations
+        ${props.instruction}
 
-      Here is the OpenAPI operations what you AI have made:
+        ## Operations
 
-      \`\`\`json
-      ${JSON.stringify(props.document.operations)}
-      \`\`\`
+        Here is the OpenAPI operations what you AI have made:
 
-      ## Schemas
+        \`\`\`json
+        ${JSON.stringify(props.document.operations)}
+        \`\`\`
 
-      Here is the OpenAPI schemas what you AI have made:
+        ## Schemas
 
-      \`\`\`json
-      ${JSON.stringify(props.document.components.schemas)}
-      \`\`\`
+        Here is the OpenAPI schemas what you AI have made:
 
-      ## Missed Types
+        \`\`\`json
+        ${JSON.stringify(props.document.components.schemas)}
+        \`\`\`
 
-      However, you AI have missed below schema types:
+        ## Missed Types
 
-      ${props.missed.map((s) => `- ${s}`).join("\n")}
-    `,
-  },
-];
+        However, you AI have missed below schema types:
+
+        ${props.missed.map((s) => `- ${s}`).join("\n")}
+      `,
+    },
+  ],
+  userMessage: "Complete the missing schema types please",
+});

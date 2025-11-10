@@ -52,12 +52,6 @@ async function step<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "interfaceComplement",
-    histories: transformInterfaceComplementHistories({
-      state: ctx.state(),
-      instruction: props.instruction,
-      document: props.document,
-      missed,
-    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -74,7 +68,12 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    userMessage: "Fill missing schema types please",
+    ...transformInterfaceComplementHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+      document: props.document,
+      missed,
+    }),
   });
   if (pointer.value === null)
     // unreachable

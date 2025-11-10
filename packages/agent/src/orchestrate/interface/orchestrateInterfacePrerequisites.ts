@@ -119,13 +119,12 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
           pointer.value = next;
         },
       }),
-      histories: transformInterfacePrerequisitesHistories(
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfacePrerequisitesHistories(
         props.document,
         props.includes,
       ),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      userMessage: "Create prerequisite for the given operations",
     });
     if (pointer.value === null) return [];
 

@@ -4,7 +4,6 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -42,13 +41,6 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
   const { metric, tokenUsage } = await ctx.conversate({
     source: "realizeWrite",
-    histories: transformRealizeWriteHistories({
-      state: ctx.state(),
-      scenario: props.scenario,
-      authorization: props.authorization,
-      totalAuthorizations: props.totalAuthorizations,
-      dto,
-    }),
     controller: createController({
       model: ctx.model,
       functionName: props.scenario.functionName,
@@ -58,23 +50,13 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    userMessage: StringUtil.trim`
-      Write complete, production-ready TypeScript code that strictly follows these rules:
-
-      DO NOT:
-      - Use the native \`Date\` type anywhere
-      - Use \`as\` for type assertions
-
-      DO:
-      - Write all date/datetime values as \`string & tags.Format<'date-time'>\`
-      - Generate UUIDs using \`v4()\` and type as \`string & tags.Format<'uuid'>\`
-      - Resolve types properly without assertions
-      - Type all functions with clear parameter and return types
-      6. Do not skip validations or default values where necessary.
-      7. Follow functional, immutable, and consistent code structure.
-
-      Use \`@nestia/e2e\` test structure if relevant.
-    `,
+    ...transformRealizeWriteHistories({
+      state: ctx.state(),
+      scenario: props.scenario,
+      authorization: props.authorization,
+      totalAuthorizations: props.totalAuthorizations,
+      dto,
+    }),
   });
   if (pointer.value === null) throw new Error("Failed to write code.");
 

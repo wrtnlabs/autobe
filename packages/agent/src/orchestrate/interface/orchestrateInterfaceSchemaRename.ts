@@ -163,10 +163,9 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         ctx.model,
         (value) => (pointer.value = value),
       ),
-      histories: transformInterfaceSchemaRenameHistories(props),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      userMessage: "Rename DTO type names for consistency and clarity.",
+      ...transformInterfaceSchemaRenameHistories(props),
     });
     if (pointer.value === null) {
       props.progress.completed += props.typeNames.length;
