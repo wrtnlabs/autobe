@@ -22,10 +22,9 @@ export const validate_agent_interface_authorizations = async (props: {
   const actors: AutoBeAnalyzeActor[] =
     agent.getContext().state().analyze?.actors ?? [];
   const authorizations: AutoBeInterfaceAuthorization[] =
-    await orchestrateInterfaceAuthorizations(
-      agent.getContext(),
-      "Design API specs carefully considering the security.",
-    );
+    await orchestrateInterfaceAuthorizations(agent.getContext(), {
+      instruction: "Design API specs carefully considering the security.",
+    });
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/interface/authorizations`,
     files: {

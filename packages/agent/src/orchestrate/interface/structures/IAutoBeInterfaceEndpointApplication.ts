@@ -1,7 +1,13 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBeInterfaceEndpointApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceEndpointApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas"
+  > {
   /**
    * Create Restful API endpoints.
    *

@@ -71,7 +71,9 @@ export const orchestrateInterface =
 
     // AUTHORIZATION
     const authorizations: AutoBeInterfaceAuthorization[] =
-      await orchestrateInterfaceAuthorizations(ctx, props.instruction);
+      await orchestrateInterfaceAuthorizations(ctx, {
+        instruction: props.instruction,
+      });
     const authOperations: AutoBeOpenApi.IOperation[] = authorizations
       .map((authorization) => authorization.operations)
       .flat();

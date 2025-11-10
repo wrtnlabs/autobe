@@ -1,4 +1,4 @@
-import { IAgenticaController } from "@agentica/core";
+import { AgenticaExecuteHistory, IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeActor,
   AutoBeInterfaceAuthorization,
@@ -15,6 +15,9 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { PreliminaryApplicationValidator } from "../common/PreliminaryApplicationValidator";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
@@ -22,7 +25,9 @@ export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  instruction: string,
+  props: {
+    instruction: string;
+  },
 ): Promise<AutoBeInterfaceAuthorization[]> {
   const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
@@ -36,7 +41,7 @@ export async function orchestrateInterfaceAuthorizations<
           actor: a,
           progress,
           promptCacheKey,
-          instruction,
+          instruction: props.instruction,
         });
         ctx.dispatch(event);
         return {
@@ -45,7 +50,6 @@ export async function orchestrateInterfaceAuthorizations<
         };
       }),
     );
-
   return authorizations;
 }
 
@@ -58,46 +62,80 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
-  const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
-    {
-      value: null,
-    };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceAuthorization",
-    controller: createController({
-      model: ctx.model,
-      actor: props.actor,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    ...transformInterfaceAuthorizationsHistories({
-      state: ctx.state(),
-      instruction: props.instruction,
-      actor: props.actor,
-    }),
-  });
-  if (pointer.value === null)
-    throw new Error("Failed to generate authorization operation.");
+  const all: IAutoBePreliminaryCollection = {
+    analyzeFiles: ctx.state().analyze!.files,
+    prismaSchemas: ctx
+      .state()
+      .prisma!.result.data.files.map((f) => f.models)
+      .flat(),
+    interfaceOperations: [],
+    interfaceSchemas: {},
+  };
+  const partial: IAutoBePreliminaryCollection = {
+    analyzeFiles: [],
+    prismaSchemas: [],
+    interfaceOperations: [],
+    interfaceSchemas: {},
+  };
 
-  return {
-    type: "interfaceAuthorization",
-    id: v7(),
-    operations: pointer.value.operations,
-    completed: ++props.progress.completed,
-    metric,
-    tokenUsage,
-    created_at: new Date().toISOString(),
-    step: ctx.state().analyze?.step ?? 0,
-    total: props.progress.total,
-  } satisfies AutoBeInterfaceAuthorizationEvent;
+  while (true) {
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
+      source: "interfaceAuthorization",
+      controller: createController({
+        model: ctx.model,
+        actor: props.actor,
+        build: (next) => {
+          pointer.value = next;
+        },
+        collection: all,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceAuthorizationsHistories({
+        state: ctx.state(),
+        instruction: props.instruction,
+        actor: props.actor,
+      }),
+    });
+    if (pointer.value !== null)
+      return {
+        type: "interfaceAuthorization",
+        id: v7(),
+        operations: pointer.value.operations,
+        completed: ++props.progress.completed,
+        metric,
+        tokenUsage,
+        created_at: new Date().toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+      } satisfies AutoBeInterfaceAuthorizationEvent;
+
+    const executes: AgenticaExecuteHistory<Model>[] = histories.filter(
+      (h) => h.type === "execute",
+    );
+    if (executes.length === 0)
+      throw new Error("Failed to generate authorization operation."); // unreachable
+
+    orchestratePreliminary(ctx, {
+      executes,
+      all,
+      partial,
+    });
+    continue;
+  }
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actor: AutoBeAnalyzeActor;
+  collection: Pick<
+    IAutoBePreliminaryCollection,
+    "analyzeFiles" | "prismaSchemas"
+  >;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -200,9 +238,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ](
+  ]({
     validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    collection: props.collection,
+  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
@@ -212,29 +251,43 @@ function createController<Model extends ILlmSchema.Model>(props: {
       makeOperations: (next) => {
         props.build(next);
       },
+      analyzeFiles: () => {},
+      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
 }
 
 const collection = {
-  chatgpt: (validate: Validator) =>
+  chatgpt: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "chatgpt">(
       {
         validate: {
-          makeOperations: validate,
+          makeOperations: props.validate,
+          ...PreliminaryApplicationValidator.createValidate(
+            ["analyzeFiles", "prismaSchemas"],
+            props.collection,
+          ),
         },
       },
     ),
-  claude: (validate: Validator) =>
+  claude: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "claude">({
       validate: {
-        makeOperations: validate,
+        makeOperations: props.validate,
+        ...PreliminaryApplicationValidator.createValidate(
+          ["analyzeFiles", "prismaSchemas"],
+          props.collection,
+        ),
       },
     }),
-  gemini: (validate: Validator) =>
+  gemini: (props: CustomValidateProps) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "gemini">({
       validate: {
-        makeOperations: validate,
+        makeOperations: props.validate,
+        ...PreliminaryApplicationValidator.createValidate(
+          ["analyzeFiles", "prismaSchemas"],
+          props.collection,
+        ),
       },
     }),
 };
@@ -242,3 +295,11 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps>;
+
+interface CustomValidateProps {
+  validate: Validator;
+  collection: Pick<
+    IAutoBePreliminaryCollection,
+    "analyzeFiles" | "prismaSchemas"
+  >;
+}

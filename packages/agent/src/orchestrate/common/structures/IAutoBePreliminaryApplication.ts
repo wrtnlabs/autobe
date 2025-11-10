@@ -11,7 +11,7 @@ export interface IAutoBePreliminaryApplication {
    * Be careful not to request the same documents that have already been loaded
    * into context.
    */
-  getRequirementAnalyses(
+  analyzeFiles(
     props: IAutoBePreliminaryApplication.IRequirementAnalysesProps,
   ): void;
 
@@ -25,9 +25,7 @@ export interface IAutoBePreliminaryApplication {
    * Be careful not to request the same models that have already been loaded
    * into context.
    */
-  gerPrismaSchemas(
-    props: IAutoBePreliminaryApplication.IPrismaSchemasProps,
-  ): void;
+  prismaSchemas(props: IAutoBePreliminaryApplication.IPrismaSchemasProps): void;
 
   /**
    * Retrieves OpenAPI operation specifications.
@@ -39,7 +37,7 @@ export interface IAutoBePreliminaryApplication {
    * Be careful not to request the same operations that have already been loaded
    * into context.
    */
-  getInterfaceOperations(
+  interfaceOperations(
     props: IAutoBePreliminaryApplication.IInterfaceOperationsProps,
   ): void;
 
@@ -53,7 +51,7 @@ export interface IAutoBePreliminaryApplication {
    * Be careful not to request the same schemas that have already been loaded
    * into context.
    */
-  getInterfaceSchemas(
+  interfaceSchemas(
     props: IAutoBePreliminaryApplication.IInterfaceSchemasProps,
   ): void;
 }
@@ -86,7 +84,7 @@ export namespace IAutoBePreliminaryApplication {
      * The available model names are provided as context when calling this
      * function.
      */
-    schemas: string[];
+    schemaNames: string[];
   }
 
   export interface IInterfaceOperationsProps {

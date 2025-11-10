@@ -5,13 +5,38 @@ import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
 
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
 export namespace PreliminaryApplicationValidator {
-  export const getRequirementAnalyses = (props: {
-    files: AutoBeAnalyzeFile[];
+  export type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
+    [P in Key]: (
+      input: unknown,
+    ) => IValidation<Parameters<IAutoBePreliminaryApplication[P]>[0]>;
+  };
+
+  export function createValidate<
+    Key extends keyof IAutoBePreliminaryApplication,
+  >(
+    keys: Key[],
+    collection: Pick<IAutoBePreliminaryCollection, Key>,
+  ): Validator<Key> {
+    const result: Validator<Key> = {} as any;
+    for (const k of keys)
+      result[k] = PreliminaryApplicationValidator[k](
+        collection as IAutoBePreliminaryCollection,
+      );
+    return result;
+  }
+
+  export const analyzeFiles = (props: {
+    analyzeFiles: AutoBeAnalyzeFile[];
   }) => {
-    const dict: Set<string> = new Set(props.files.map((f) => f.filename));
-    const quoted: string[] = props.files.map((f) => JSON.stringify(f.filename));
+    const dict: Set<string> = new Set(
+      props.analyzeFiles.map((f) => f.filename),
+    );
+    const quoted: string[] = props.analyzeFiles.map((f) =>
+      JSON.stringify(f.filename),
+    );
     const description: string = StringUtil.trim`
       Here are the list of analysis requirement document files you can use.
 
@@ -19,7 +44,7 @@ export namespace PreliminaryApplicationValidator {
 
       Filename | Document Type
       ---------|---------------
-      ${props.files
+      ${props.analyzeFiles
         .map((f) => [f.filename, f.documentType].join(" | "))
         .join("\n")}
     `;
@@ -47,11 +72,13 @@ export namespace PreliminaryApplicationValidator {
     };
   };
 
-  export const gerPrismaSchemas = (props: {
-    schemas: AutoBePrisma.IModel[];
+  export const prismaSchemas = (props: {
+    prismaSchemas: AutoBePrisma.IModel[];
   }) => {
-    const dict: Set<string> = new Set(props.schemas.map((s) => s.name));
-    const quoted: string[] = props.schemas.map((s) => JSON.stringify(s.name));
+    const dict: Set<string> = new Set(props.prismaSchemas.map((s) => s.name));
+    const quoted: string[] = props.prismaSchemas.map((s) =>
+      JSON.stringify(s.name),
+    );
     const description = StringUtil.trim`
       Here are the list of prisma schema models you can use.
 
@@ -70,7 +97,7 @@ export namespace PreliminaryApplicationValidator {
       if (result.success === false) return result;
 
       const errors: IValidation.IError[] = [];
-      result.data.schemas.forEach((key, i) => {
+      result.data.schemaNames.forEach((key, i) => {
         if (dict.has(key) === true) return;
         errors.push({
           path: `$input.schemas[${i}]`,
@@ -83,11 +110,11 @@ export namespace PreliminaryApplicationValidator {
     };
   };
 
-  export const getInterfaceOperations = (props: {
-    operations: AutoBeOpenApi.IOperation[];
+  export const interfaceOperations = (props: {
+    interfaceOperations: AutoBeOpenApi.IOperation[];
   }) => {
     const dict: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.operations.map((o) => ({
+      props.interfaceOperations.map((o) => ({
         method: o.method,
         path: o.path,
       })),
@@ -99,7 +126,7 @@ export namespace PreliminaryApplicationValidator {
 
       Method | Path 
       -------|------
-      ${props.operations.map((o) => [o.method, o.path].join(" | ")).join("\n")}
+      ${props.interfaceOperations.map((o) => [o.method, o.path].join(" | ")).join("\n")}
       }
     `;
 
@@ -126,10 +153,10 @@ export namespace PreliminaryApplicationValidator {
     };
   };
 
-  export const getInterfaceSchemas = (props: {
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  export const interfaceSchemas = (props: {
+    interfaceSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }) => {
-    const quoted: string[] = Object.keys(props.schemas).map((k) =>
+    const quoted: string[] = Object.keys(props.interfaceSchemas).map((k) =>
       JSON.stringify(k),
     );
     const description: string = StringUtil.trim`
@@ -150,7 +177,7 @@ export namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.typeNames.forEach((key, i) => {
-        if (props.schemas[key] !== undefined) return;
+        if (props.interfaceSchemas[key] !== undefined) return;
         errors.push({
           path: `$input.typeNames[${i}]`,
           value: key,

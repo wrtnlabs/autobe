@@ -1,7 +1,13 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBeInterfaceAuthorizationsApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeInterfaceAuthorizationsApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas"
+  > {
   /**
    * Creates an authorization Operations for the given roles
    *
