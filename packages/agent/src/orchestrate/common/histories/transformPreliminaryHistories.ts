@@ -32,6 +32,8 @@ namespace Transformer {
 
       ### List of Analysis Files
 
+      The complete list of available analysis documents. Checkmarks (✅) indicate which ones are currently loaded into your context.
+
       No | FileName | Document Type | Selected
       ---|----------|---------------|----------
       ${props.all.analyzeFiles
@@ -47,7 +49,9 @@ namespace Transformer {
         )
         .join("\n")}
 
-      ### Currently Selected ㅁnalysis Files
+      ### Currently Selected Analysis Files
+
+      The full content of documents currently loaded into your context. Need additional documents? Call \`analyzeFiles()\` with their filenames.
 
       \`\`\`json
       ${JSON.stringify(props.local.analyzeFiles)}
@@ -66,8 +70,12 @@ namespace Transformer {
   ): IAgenticaHistoryJson.IAssistantMessage => {
     const text: string = StringUtil.trim`
       ## Prisma DB Schema
-      
+
       ### List of Prisma Schemas
+
+      The complete list of available Prisma models.
+      
+      Checkmarks (✅) indicate which ones are currently loaded into your context.
 
       No | Schema Name | Summary | Selected
       ---|--------------|---------|----------
@@ -85,6 +93,10 @@ namespace Transformer {
         .join("\n")}
 
       ### Currently Selected Prisma Schemas
+
+      The full schema definitions of models currently loaded into your context.
+      
+      Need additional models? Call \`prismaSchemas()\` with their schema names.
 
       \`\`\`json
       ${JSON.stringify(props.local.prismaSchemas)}
@@ -106,6 +118,10 @@ namespace Transformer {
 
       ### List of OpenAPI Operations
 
+      The complete list of available API operations. 
+      
+      Checkmarks (✅) indicate which ones are currently loaded into your context.
+
       No | Path | Method | Summary | Selected
       ---|------|--------|---------|----------
       ${props.all.interfaceOperations
@@ -125,6 +141,10 @@ namespace Transformer {
         .join("\n")}
 
       ### Currently Selected OpenAPI Operations
+
+      The full specifications of operations currently loaded into your context. 
+      
+      Need additional operations? Call \`interfaceOperations()\` with their endpoints (method + path).
 
       \`\`\`json
       ${JSON.stringify(props.local.interfaceOperations)}
@@ -146,6 +166,10 @@ namespace Transformer {
 
       ### List of OpenAPI Schemas
 
+      The complete list of available schema types. 
+      
+      Checkmarks (✅) indicate which ones are currently loaded into your context.
+
       No | Schema Name | Summary | Selected
       ---|-------------|---------|----------
       ${Object.entries(props.all.interfaceSchemas)
@@ -160,6 +184,10 @@ namespace Transformer {
         .join("\n")}
 
       ### Currently Selected OpenAPI Schemas
+
+      The full JSON Schema definitions of types currently loaded into your context.
+      
+      Need additional types? Call \`interfaceSchemas()\` with their type names.
 
       \`\`\`json
       ${JSON.stringify(props.local.interfaceSchemas)}
