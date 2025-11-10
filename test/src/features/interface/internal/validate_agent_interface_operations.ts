@@ -1,4 +1,4 @@
-import { orchestrateInterfaceOperations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceOperations";
+import { orchestrateInterfaceOperation } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceOperation";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
@@ -29,7 +29,7 @@ export const validate_agent_interface_operations = async (props: {
 
   // GENERATE OPERATIONS
   const operations: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceOperations(agent.getContext(), {
+    await orchestrateInterfaceOperation(agent.getContext(), {
       endpoints,
       instruction: "Design API specs carefully considering the security.",
     });

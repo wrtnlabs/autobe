@@ -1,4 +1,4 @@
-import { AgenticaExecuteHistory, IAgenticaController } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceEndpointEvent,
   AutoBeOpenApi,
@@ -16,11 +16,11 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
-import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
-import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpointsReview";
+import { transformInterfaceEndpointHistory } from "./histories/transformInterfaceEndpointHistory";
+import { orchestrateInterfaceEndpointReview } from "./orchestrateInterfaceEndpointReview";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 
-export async function orchestrateInterfaceEndpoints<
+export async function orchestrateInterfaceEndpoint<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -54,7 +54,7 @@ export async function orchestrateInterfaceEndpoints<
     AutoBeOpenApiEndpointComparator.hashCode,
     AutoBeOpenApiEndpointComparator.equals,
   ).toJSON();
-  return await orchestrateInterfaceEndpointsReview(ctx, deduplicated);
+  return await orchestrateInterfaceEndpointReview(ctx, deduplicated);
 }
 
 async function process<Model extends ILlmSchema.Model>(
@@ -90,12 +90,12 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceEndpointHistories({
+      ...transformInterfaceEndpointHistory({
         state: ctx.state(),
         group: props.group,
         authorizations: props.authorizations,
-        preliminary: preliminary.local,
         instruction: props.instruction,
+        preliminary,
       }),
     });
     if (pointer.value !== null) {
@@ -116,17 +116,12 @@ async function process<Model extends ILlmSchema.Model>(
       };
       ctx.dispatch(event);
       return pointer.value;
-    }
-
-    const executes: AgenticaExecuteHistory<Model>[] = histories.filter(
-      (h) => h.type === "execute",
-    );
-    if (executes.length === 0) throw new Error("Failed to generate endpoints."); // unreachable
-    orchestratePreliminary(ctx, {
-      executes,
-      preliminary,
-    });
-    continue;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceEndpoint",
+        histories,
+        preliminary,
+      });
   }
 }
 

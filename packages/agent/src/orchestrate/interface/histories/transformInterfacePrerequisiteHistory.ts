@@ -5,13 +5,20 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { getReferenceIds } from "../../test/utils/getReferenceIds";
 
 // @todo -> RAG
-export const transformInterfacePrerequisitesHistories = (
-  document: AutoBeOpenApi.IDocument,
-  include: AutoBeOpenApi.IOperation[],
-): IAutoBeOrchestrateHistory => {
+export const transformInterfacePrerequisiteHistory = (props: {
+  document: AutoBeOpenApi.IDocument;
+  includes: AutoBeOpenApi.IOperation[];
+  preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
+}): IAutoBeOrchestrateHistory => {
   const domainSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     {};
   const visit = (key: string) =>
@@ -19,14 +26,14 @@ export const transformInterfacePrerequisitesHistories = (
       schema: {
         $ref: `#/components/schemas/${key}`,
       },
-      components: document.components,
+      components: props.document.components,
       closure: (next) => {
         if (OpenApiTypeChecker.isReference(next))
           domainSchemas[next.$ref.split("/").pop()!] =
-            document.components.schemas[next.$ref.split("/").pop()!];
+            props.document.components.schemas[next.$ref.split("/").pop()!];
       },
     });
-  for (const op of include) {
+  for (const op of props.includes) {
     if (op.requestBody) visit(op.requestBody.typeName);
     if (op.responseBody) visit(op.responseBody.typeName);
   }
@@ -39,54 +46,13 @@ export const transformInterfacePrerequisitesHistories = (
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_PREREQUISITE,
       },
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          ## Document Overview
-
-          ### Entire API Operations
-
-          All operations in this project for prerequisite references.
-
-          These are the complete list of API endpoints that can be used
-          as prerequisites. You should select appropriate operations from
-          this list when establishing dependency chains.
-
-          \`\`\`json
-          ${JSON.stringify({
-            operations: document.operations
-              .filter(
-                (op) => op.authorizationType === null && op.method === "post",
-              )
-              .map((op) => {
-                return {
-                  ...op,
-                  prerequisites: undefined,
-                };
-              }),
-          })}
-          \`\`\`
-
-          ### Entire Schema Definitions
-
-          Data structure definitions to understand entity relationships.
-
-          Use these schemas to identify parent-child relationships and
-          data dependencies between operations.
-
-          \`\`\`json
-          ${JSON.stringify({
-            components: {
-              schemas: document.components.schemas,
-            },
-          })}
-          \`\`\`
-
-          ## Target Operations and Schemas
-
-          ### Target Operations
+          ## Target Operations
 
           Operations requiring prerequisite analysis.
 
@@ -96,10 +62,13 @@ export const transformInterfacePrerequisitesHistories = (
 
           \`\`\`json
           ${JSON.stringify(
-            include.map((op) => {
+            props.includes.map((op) => {
               return {
                 ...op,
-                requiredIds: getReferenceIds({ document, operation: op }),
+                requiredIds: getReferenceIds({
+                  document: props.document,
+                  operation: op,
+                }),
               };
             }),
           )}

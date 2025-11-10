@@ -6,7 +6,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceSchemaReviewHistories = (props: {
+export const transformInterfaceSchemaReviewHistory = (props: {
   state: AutoBeState;
   systemPrompt: string;
   instruction: string;
@@ -16,8 +16,7 @@ export const transformInterfaceSchemaReviewHistories = (props: {
     | "interfaceOperations"
     | "interfaceSchemas"
   >;
-  operations: AutoBeOpenApi.IOperation[];
-  everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  reviewOperations: AutoBeOpenApi.IOperation[];
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 }): IAutoBeOrchestrateHistory => {
   return {
@@ -78,7 +77,7 @@ export const transformInterfaceSchemaReviewHistories = (props: {
           the schemas you're reviewing:
 
           \`\`\`json
-          ${JSON.stringify(props.operations)}
+          ${JSON.stringify(props.reviewOperations)}
           \`\`\`
         `,
       },

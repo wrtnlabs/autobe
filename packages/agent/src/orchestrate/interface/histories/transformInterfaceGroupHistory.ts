@@ -4,13 +4,13 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformInterfaceCommonHistories } from "./transformInterfaceCommonHistories";
+import { transformInterfaceCommonHistory } from "./transformInterfaceCommonHistory";
 
-export const transformInterfaceGroupHistories = (props: {
+export const transformInterfaceGroupHistory = (props: {
   state: AutoBeState;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
-  const prerequisite = transformInterfaceCommonHistories(props.state);
+  const prerequisite = transformInterfaceCommonHistory(props.state);
   if (prerequisite !== null)
     return {
       histories: prerequisite,

@@ -11,11 +11,13 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { transformInterfaceOperationsReviewHistories } from "./histories/transformInterfaceOperationsReviewHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { IAutoBeInterfaceOperationsReviewApplication } from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 import { OperationValidator } from "./utils/OperationValidator";
 
-export async function orchestrateInterfaceOperationsReview<
+export async function orchestrateInterfaceOperationReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -23,12 +25,31 @@ export async function orchestrateInterfaceOperationsReview<
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   try {
+    return await process(ctx, operations, progress);
+  } catch {
+    ++progress.completed;
+    return [];
+  }
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
+  progress: AutoBeProgressEventBase,
+): Promise<AutoBeOpenApi.IOperation[]> {
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas"],
+    state: ctx.state(),
+  });
+  while (true) {
     const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
     const pointer: IPointer<IAutoBeInterfaceOperationsReviewApplication.IProps | null> =
       {
         value: null,
       };
-    const { metric, tokenUsage } = await ctx.conversate({
+    const { metric, tokenUsage, histories } = await ctx.conversate({
       source: "interfaceOperationReview",
       controller: createReviewController({
         model: ctx.model,
@@ -38,38 +59,40 @@ export async function orchestrateInterfaceOperationsReview<
         },
       }),
       enforceFunctionCall: false,
-      ...transformInterfaceOperationsReviewHistories(ctx, operations),
-    });
-    if (pointer.value === null) {
-      ++progress.completed;
-      return [];
-    }
-
-    const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
-      (op) => ({
-        ...op,
-        authorizationType: null,
+      ...transformInterfaceOperationReviewHistory({
+        preliminary,
+        operations,
       }),
-    );
+    });
 
-    ctx.dispatch({
-      type: "interfaceOperationReview",
-      id: v7(),
-      operations: content,
-      review: pointer.value.think.review,
-      plan: pointer.value.think.plan,
-      content,
-      metric,
-      tokenUsage,
-      created_at: new Date().toISOString(),
-      step: ctx.state().analyze?.step ?? 0,
-      total: progress.total,
-      completed: ++progress.completed,
-    } satisfies AutoBeInterfaceOperationReviewEvent);
-    return content;
-  } catch {
-    ++progress.completed;
-    return [];
+    if (pointer.value !== null) {
+      const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
+        (op) => ({
+          ...op,
+          authorizationType: null,
+        }),
+      );
+      ctx.dispatch({
+        type: "interfaceOperationReview",
+        id: v7(),
+        operations: content,
+        review: pointer.value.think.review,
+        plan: pointer.value.think.plan,
+        content,
+        metric,
+        tokenUsage,
+        created_at: new Date().toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        total: progress.total,
+        completed: ++progress.completed,
+      } satisfies AutoBeInterfaceOperationReviewEvent);
+      return content;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceOperationReview",
+        histories,
+        preliminary,
+      });
   }
 }
 

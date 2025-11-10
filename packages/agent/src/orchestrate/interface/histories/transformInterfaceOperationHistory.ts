@@ -1,26 +1,24 @@
-import { AutoBeAnalyzeActor, AutoBeAnalyzeHistory } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceAuthorizationsHistories = (props: {
-  state: AutoBeState;
-  actor: AutoBeAnalyzeActor;
+export const transformInterfaceOperationHistory = (props: {
+  prefix: string;
+  endpoints: AutoBeOpenApi.IEndpoint[];
   preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
-  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return {
     histories: [
       {
         type: "systemMessage",
         id: v7(),
         created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
+        text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
       ...props.preliminary.getHistories(),
       {
@@ -29,12 +27,12 @@ export const transformInterfaceAuthorizationsHistories = (props: {
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
           ## Service Prefix
-          - Original: ${analyze.prefix}
-          - PascalCase for DTOs: ${analyze.prefix
+          - Original: ${props.prefix}
+          - PascalCase for DTOs: ${props.prefix
             .split(/[-_]/)
             .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
             .join("")}
-          - Expected DTO pattern: I${analyze.prefix
+          - Expected DTO pattern: I${props.prefix
             .split(/[-_]/)
             .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
             .join("")}{EntityName}
@@ -52,7 +50,7 @@ export const transformInterfaceAuthorizationsHistories = (props: {
           such as endpoint patterns, request/response formats, DTO schemas,
           and operation specifications.
 
-          Follow these instructions when designing authorization operations for ${props.actor.name}.
+          Follow these instructions when designing operation specifications.
           Carefully distinguish between:
           - Suggestions or recommendations (consider these as guidance)
           - Direct specifications or explicit commands (these must be followed exactly)
@@ -62,16 +60,20 @@ export const transformInterfaceAuthorizationsHistories = (props: {
 
           ${props.instruction}
 
-          ## Actor
+          ## Operations
 
-          You have to make API operations for the given actor:
+          You have to make API operations for the given endpoints:
 
           \`\`\`json
-          ${JSON.stringify(props.actor)}
+          ${JSON.stringify(props.endpoints)}
           \`\`\`
+
+          If there is a content in the failure, it is to explain why it failed before.
+          Please supplement or modify the Operation accordingly.
         `,
       },
     ],
-    userMessage: `Make authorization operations for ${props.actor.name} actor please`,
+    userMessage:
+      "Create API operation specifications for the given endpoints please",
   };
 };

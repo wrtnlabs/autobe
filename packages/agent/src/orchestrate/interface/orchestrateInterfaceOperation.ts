@@ -16,12 +16,14 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
-import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
+import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { OperationValidator } from "./utils/OperationValidator";
 
-export async function orchestrateInterfaceOperations<
+export async function orchestrateInterfaceOperation<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -97,7 +99,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     }
   }
   const newbie: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceOperationsReview(
+    await orchestrateInterfaceOperationReview(
       ctx,
       unique.toJSON().map((it) => it.second),
       props.reviewProgress,
@@ -116,77 +118,91 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
-  const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceOperation",
-    controller: createController({
-      model: ctx.model,
-      actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
-      build: (operations) => {
-        pointer.value ??= [];
-        const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
-          if (op.authorizationActors.length === 0)
-            return [
-              {
-                ...op,
-                path:
-                  "/" +
-                  [prefix, ...op.path.split("/")]
-                    .filter((it) => it !== "")
-                    .join("/"),
-                authorizationActor: null,
-                authorizationType: null,
-                prerequisites: [],
-              },
-            ];
-          return op.authorizationActors.map((actor) => ({
-            ...op,
-            path:
-              "/" +
-              [prefix, actor, ...op.path.split("/")]
-                .filter((it) => it !== "")
-                .join("/"),
-            authorizationActor: actor,
-            authorizationType: null,
-            prerequisites: [],
-          }));
-        });
-        pointer.value.push(...matrix.flat());
-        props.progress.completed += matrix.flat().length;
-        props.progress.total += operations
-          .map((op) =>
-            props.endpoints.has({ path: op.path, method: op.method })
-              ? op.authorizationActors.length === 0
-                ? 0
-                : op.authorizationActors.length - 1
-              : op.authorizationActors.length,
-          )
-          .reduce((a, b) => a + b, 0);
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    ...transformInterfaceOperationHistories({
-      state: ctx.state(),
-      endpoints: props.endpoints.toJSON(),
-      instruction: props.instruction,
-    }),
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas"],
+    state: ctx.state(),
   });
-  if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
-
-  ctx.dispatch({
-    type: "interfaceOperation",
-    id: v7(),
-    operations: pointer.value,
-    metric,
-    tokenUsage,
-    ...props.progress,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  } satisfies AutoBeInterfaceOperationEvent);
-  return pointer.value;
+  while (true) {
+    const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
+      value: null,
+    };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
+      source: "interfaceOperation",
+      controller: createController({
+        model: ctx.model,
+        actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
+        build: (operations) => {
+          pointer.value ??= [];
+          const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
+            if (op.authorizationActors.length === 0)
+              return [
+                {
+                  ...op,
+                  path:
+                    "/" +
+                    [prefix, ...op.path.split("/")]
+                      .filter((it) => it !== "")
+                      .join("/"),
+                  authorizationActor: null,
+                  authorizationType: null,
+                  prerequisites: [],
+                },
+              ];
+            return op.authorizationActors.map((actor) => ({
+              ...op,
+              path:
+                "/" +
+                [prefix, actor, ...op.path.split("/")]
+                  .filter((it) => it !== "")
+                  .join("/"),
+              authorizationActor: actor,
+              authorizationType: null,
+              prerequisites: [],
+            }));
+          });
+          pointer.value.push(...matrix.flat());
+          props.progress.completed += matrix.flat().length;
+          props.progress.total += operations
+            .map((op) =>
+              props.endpoints.has({ path: op.path, method: op.method })
+                ? op.authorizationActors.length === 0
+                  ? 0
+                  : op.authorizationActors.length - 1
+                : op.authorizationActors.length,
+            )
+            .reduce((a, b) => a + b, 0);
+        },
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceOperationHistory({
+        endpoints: props.endpoints.toJSON(),
+        instruction: props.instruction,
+        prefix,
+        preliminary,
+      }),
+    });
+    if (pointer.value !== null) {
+      ctx.dispatch({
+        type: "interfaceOperation",
+        id: v7(),
+        operations: pointer.value,
+        metric,
+        tokenUsage,
+        ...props.progress,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceOperationEvent);
+      return pointer.value;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceOperation",
+        histories,
+        preliminary,
+      });
+  }
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

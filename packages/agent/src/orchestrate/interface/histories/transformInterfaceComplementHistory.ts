@@ -6,7 +6,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceComplementHistories = (props: {
+export const transformInterfaceComplementHistory = (props: {
   state: AutoBeState;
   instruction: string;
   missed: string[];

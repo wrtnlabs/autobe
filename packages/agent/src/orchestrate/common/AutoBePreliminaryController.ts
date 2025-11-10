@@ -1,3 +1,5 @@
+import { IAgenticaHistoryJson } from "@agentica/core";
+
 import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistories } from "./histories/transformPreliminaryHistories";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
@@ -8,9 +10,9 @@ import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCol
 export class AutoBePreliminaryController<
   Key extends keyof IAutoBePreliminaryApplication,
 > {
-  public readonly keys: Key[];
-  public readonly all: Pick<IAutoBePreliminaryCollection, Key>;
-  public readonly local: Pick<IAutoBePreliminaryCollection, Key>;
+  private readonly keys: Key[];
+  private readonly all: Pick<IAutoBePreliminaryCollection, Key>;
+  private readonly local: Pick<IAutoBePreliminaryCollection, Key>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Key>) {
     this.keys = props.keys;
@@ -22,8 +24,20 @@ export class AutoBePreliminaryController<
     return createPreliminaryValidate(this.keys, this.all);
   }
 
-  public getHistories() {
+  public getHistories(): IAgenticaHistoryJson.IAssistantMessage[] {
     return transformPreliminaryHistories(this);
+  }
+
+  public getKeys(): Key[] {
+    return this.keys;
+  }
+
+  public getAll(): Pick<IAutoBePreliminaryCollection, Key> {
+    return this.all;
+  }
+
+  public getLocal(): Pick<IAutoBePreliminaryCollection, Key> {
+    return this.local;
   }
 }
 export namespace AutoBePreliminaryController {

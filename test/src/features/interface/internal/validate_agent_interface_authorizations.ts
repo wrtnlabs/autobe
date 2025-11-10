@@ -1,4 +1,4 @@
-import { orchestrateInterfaceAuthorizations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations";
+import { orchestrateInterfaceAuthorization } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -22,7 +22,7 @@ export const validate_agent_interface_authorizations = async (props: {
   const actors: AutoBeAnalyzeActor[] =
     agent.getContext().state().analyze?.actors ?? [];
   const authorizations: AutoBeInterfaceAuthorization[] =
-    await orchestrateInterfaceAuthorizations(agent.getContext(), {
+    await orchestrateInterfaceAuthorization(agent.getContext(), {
       instruction: "Design API specs carefully considering the security.",
     });
   await FileSystemIterator.save({

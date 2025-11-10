@@ -1,4 +1,4 @@
-import { AgenticaExecuteHistory, IAgenticaController } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeActor,
   AutoBeInterfaceAuthorization,
@@ -17,10 +17,10 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestratePreliminary } from "../common/orchestratePreliminary";
-import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
+import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
-export async function orchestrateInterfaceAuthorizations<
+export async function orchestrateInterfaceAuthorization<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -84,11 +84,11 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceAuthorizationsHistories({
+      ...transformInterfaceAuthorizationHistory({
         state: ctx.state(),
         instruction: props.instruction,
-        local: preliminary.local,
         actor: props.actor,
+        preliminary,
       }),
     });
     if (pointer.value !== null)
@@ -103,18 +103,12 @@ async function process<Model extends ILlmSchema.Model>(
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
       } satisfies AutoBeInterfaceAuthorizationEvent;
-
-    const executes: AgenticaExecuteHistory<Model>[] = histories.filter(
-      (h) => h.type === "execute",
-    );
-    if (executes.length === 0)
-      throw new Error("Failed to generate authorization operation."); // unreachable
-
-    orchestratePreliminary(ctx, {
-      executes,
-      preliminary,
-    });
-    continue;
+    else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceAuthorization",
+        histories,
+        preliminary,
+      });
   }
 }
 

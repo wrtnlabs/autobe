@@ -9,7 +9,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
@@ -44,79 +46,97 @@ async function step<Model extends ILlmSchema.Model>(
   if (missed.length === 0) return props.document.components.schemas;
   else if (progress.life === 0) return props.document.components.schemas;
 
-  const pointer: IPointer<Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive
-  > | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceComplement",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value ??= {};
-        Object.assign(
-          pointer.value,
-          (OpenApiV3_1Emender.convertComponents({
-            schemas: next,
-          }).schemas ?? {}) as Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          >,
-        );
-      },
-    }),
-    enforceFunctionCall: true,
-    ...transformInterfaceComplementHistories({
-      state: ctx.state(),
-      instruction: props.instruction,
-      document: props.document,
-      missed,
-    }),
+  const preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  > = new AutoBePreliminaryController({
+    keys: [
+      "analyzeFiles",
+      "prismaSchemas",
+      "interfaceOperations",
+      "interfaceSchemas",
+    ],
+    state: ctx.state(),
   });
-  if (pointer.value === null)
-    // unreachable
-    throw new Error(
-      "Failed to fill missing schema types. No response from agentica.",
-    );
-  ctx.dispatch({
-    type: "interfaceComplement",
-    id: v7(),
-    missed,
-    schemas: pointer.value,
-    metric,
-    tokenUsage,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-
-  const empty: boolean = Object.keys(pointer.value).length === 0;
-  if (empty === true && progress.wasEmpty === true)
-    return props.document.components.schemas;
-
-  const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-    ...pointer.value,
-    ...props.document.components.schemas,
-  };
-  JsonSchemaNamingConvention.schemas(props.document.operations, newSchemas);
-  return step(
-    ctx,
-    {
-      instruction: props.instruction,
-      document: {
-        ...props.document,
-        components: {
-          ...props.document.components,
-          schemas: newSchemas,
+  while (true) {
+    const pointer: IPointer<Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    > | null> = {
+      value: null,
+    };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
+      source: "interfaceComplement",
+      controller: createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value ??= {};
+          Object.assign(
+            pointer.value,
+            (OpenApiV3_1Emender.convertComponents({
+              schemas: next,
+            }).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >,
+          );
         },
-      },
-    },
-    {
-      wasEmpty: empty,
-      life: progress.life - 1,
-    },
-  );
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceComplementHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        preliminary,
+        missed,
+      }),
+    });
+    if (pointer.value !== null) {
+      ctx.dispatch({
+        type: "interfaceComplement",
+        id: v7(),
+        missed,
+        schemas: pointer.value,
+        metric,
+        tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+
+      const empty: boolean = Object.keys(pointer.value).length === 0;
+      if (empty === true && progress.wasEmpty === true)
+        return props.document.components.schemas;
+
+      const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+        ...pointer.value,
+        ...props.document.components.schemas,
+      };
+      JsonSchemaNamingConvention.schemas(props.document.operations, newSchemas);
+      return step(
+        ctx,
+        {
+          instruction: props.instruction,
+          document: {
+            ...props.document,
+            components: {
+              ...props.document.components,
+              schemas: newSchemas,
+            },
+          },
+        },
+        {
+          wasEmpty: empty,
+          life: progress.life - 1,
+        },
+      );
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceComplement",
+        histories,
+        preliminary,
+      });
+  }
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

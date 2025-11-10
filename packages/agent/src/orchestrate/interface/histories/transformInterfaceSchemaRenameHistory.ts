@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformInterfaceSchemaRenameHistories = (props: {
+export const transformInterfaceSchemaRenameHistory = (props: {
   tableNames: string[];
   typeNames: string[];
 }): IAutoBeOrchestrateHistory => {

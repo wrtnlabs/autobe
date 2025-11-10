@@ -1,5 +1,9 @@
-import { AgenticaExecuteHistory } from "@agentica/core";
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
+import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
+import {
+  AutoBeEventOfSerializable,
+  AutoBeOpenApi,
+  AutoBePrisma,
+} from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 import typia from "typia";
@@ -8,52 +12,68 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
 
-export const orchestratePreliminary = <
+export const orchestratePreliminary = async <
   Model extends ILlmSchema.Model,
   Key extends keyof IAutoBePreliminaryApplication,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    executes: AgenticaExecuteHistory<Model>[];
+    type: AutoBeEventOfSerializable.Type;
+    histories: MicroAgenticaHistory<Model>[];
     preliminary: AutoBePreliminaryController<Key>;
   },
-): void => {
+): Promise<void> => {
   ctx; // @todo -> dispatch events
-  for (const exec of props.executes)
-    if (isAnalysisFiles(props.preliminary, exec.operation.function.name))
+  const executes: AgenticaExecuteHistory<Model>[] = props.histories.filter(
+    (h) => h.type === "execute",
+  );
+  if (executes.length === 0) throw new Error("Failed to function calling");
+  for (const exec of executes)
+    if (isAnalysisFiles(props.preliminary, exec.operation.function.name)) {
+      const pa: AutoBePreliminaryController<"analyzeFiles"> = props.preliminary;
       fillRequirementAnalyses({
-        all: props.preliminary.all.analyzeFiles,
-        local: props.preliminary.local.analyzeFiles,
+        all: pa.getAll().analyzeFiles,
+        local: pa.getLocal().analyzeFiles,
         arguments: exec.operation.function.parameters,
       });
-    else if (isPrismaSchemas(props.preliminary, exec.operation.function.name))
+    } else if (
+      isPrismaSchemas(props.preliminary, exec.operation.function.name)
+    ) {
+      const pp: AutoBePreliminaryController<"prismaSchemas"> =
+        props.preliminary;
       fillPrismaSchemas({
-        all: props.preliminary.all.prismaSchemas,
-        local: props.preliminary.local.prismaSchemas,
+        all: pp.getAll().prismaSchemas,
+        local: pp.getLocal().prismaSchemas,
         arguments: exec.operation.function.parameters,
       });
-    else if (
+    } else if (
       isInterfaceOperations(props.preliminary, exec.operation.function.name)
-    )
+    ) {
+      const pi: AutoBePreliminaryController<
+        "interfaceOperations" | "interfaceSchemas"
+      > = props.preliminary;
       fillInterfaceOperations({
         all: {
-          operations: props.preliminary.all.interfaceOperations,
-          schemas: props.preliminary.all.interfaceSchemas,
+          operations: pi.getAll().interfaceOperations,
+          schemas: pi.getAll().interfaceSchemas,
         },
         local: {
-          operations: props.preliminary.local.interfaceOperations,
-          schemas: props.preliminary.local.interfaceSchemas,
+          operations: pi.getLocal().interfaceOperations,
+          schemas: pi.getLocal().interfaceSchemas,
         },
         arguments: exec.operation.function.parameters,
       });
-    else if (
+    } else if (
       isInterfaceSchemas(props.preliminary, exec.operation.function.name)
-    )
+    ) {
+      const ps: AutoBePreliminaryController<"interfaceSchemas"> =
+        props.preliminary;
       fillInterfaceSchemas({
-        all: props.preliminary.all.interfaceSchemas,
-        local: props.preliminary.local.interfaceSchemas,
+        all: ps.getAll().interfaceSchemas,
+        local: ps.getLocal().interfaceSchemas,
         arguments: exec.operation.function.parameters,
       });
+    }
 };
 
 const isAnalysisFiles = (
@@ -61,14 +81,14 @@ const isAnalysisFiles = (
   functionName: string,
 ): preliminary is AutoBePreliminaryController<"analyzeFiles"> =>
   typia.is<"analyzeFiles">(functionName) &&
-  preliminary.all[functionName] !== undefined;
+  preliminary.getAll()[functionName] !== undefined;
 
 const isPrismaSchemas = (
   preliminary: AutoBePreliminaryController<any>,
   functionName: string,
 ): preliminary is AutoBePreliminaryController<"prismaSchemas"> =>
   typia.is<"prismaSchemas">(functionName) &&
-  preliminary.all[functionName] !== undefined;
+  preliminary.getAll()[functionName] !== undefined;
 
 const isInterfaceOperations = (
   preliminary: AutoBePreliminaryController<any>,
@@ -77,14 +97,14 @@ const isInterfaceOperations = (
   "interfaceOperations" | "interfaceSchemas"
 > =>
   typia.is<"interfaceOperations">(functionName) &&
-  preliminary.all[functionName] !== undefined;
+  preliminary.getAll()[functionName] !== undefined;
 
 const isInterfaceSchemas = (
   preliminary: AutoBePreliminaryController<any>,
   functionName: string,
 ): preliminary is AutoBePreliminaryController<"interfaceSchemas"> =>
   typia.is<"interfaceSchemas">(functionName) &&
-  preliminary.all[functionName] !== undefined;
+  preliminary.getAll()[functionName] !== undefined;
 
 const fillRequirementAnalyses = (props: {
   all: AutoBeAnalyzeFile[];

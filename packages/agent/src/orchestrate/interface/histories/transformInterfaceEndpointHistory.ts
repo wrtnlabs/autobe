@@ -8,7 +8,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceEndpointHistories = (props: {
+export const transformInterfaceEndpointHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];

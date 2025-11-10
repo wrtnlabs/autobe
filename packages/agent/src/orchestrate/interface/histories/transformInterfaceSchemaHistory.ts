@@ -6,10 +6,12 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceSchemaHistories = (props: {
+export const transformInterfaceSchemaHistory = (props: {
   operations: AutoBeOpenApi.IOperation[];
   typeNames: string[];
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
+  >;
   instruction: string;
   already: string[];
   remained: Set<string>;

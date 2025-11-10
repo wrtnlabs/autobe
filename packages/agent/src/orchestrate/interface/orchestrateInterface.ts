@@ -22,15 +22,15 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
-import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
+import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
-import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
-import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
-import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
-import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
+import { orchestrateInterfaceEndpoint } from "./orchestrateInterfaceEndpoint";
+import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
+import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
+import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
+import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
-import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 
 export const orchestrateInterface =
@@ -61,7 +61,7 @@ export const orchestrateInterface =
     });
 
     // ENDPOINTS
-    const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroups(
+    const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroup(
       ctx,
       {
         instruction: props.instruction,
@@ -71,7 +71,7 @@ export const orchestrateInterface =
 
     // AUTHORIZATION
     const authorizations: AutoBeInterfaceAuthorization[] =
-      await orchestrateInterfaceAuthorizations(ctx, {
+      await orchestrateInterfaceAuthorization(ctx, {
         instruction: props.instruction,
       });
     const authOperations: AutoBeOpenApi.IOperation[] = authorizations
@@ -80,13 +80,13 @@ export const orchestrateInterface =
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, {
+      await orchestrateInterfaceEndpoint(ctx, {
         groups: init.groups,
         authorizations: authOperations,
         instruction: props.instruction,
       });
     const firstOperations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, {
+      await orchestrateInterfaceOperation(ctx, {
         endpoints,
         instruction: props.instruction,
       });
@@ -115,7 +115,7 @@ export const orchestrateInterface =
       operations,
       components: {
         authorizations: ctx.state().analyze?.actors ?? [],
-        schemas: await orchestrateInterfaceSchemas(ctx, {
+        schemas: await orchestrateInterfaceSchema(ctx, {
           instruction: props.instruction,
           operations,
         }),
@@ -175,7 +175,7 @@ export const orchestrateInterface =
 
     // CONNECT PRE-REQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
-      await orchestrateInterfacePrerequisites(ctx, document);
+      await orchestrateInterfacePrerequisite(ctx, document);
     document.operations.forEach((op) => {
       op.prerequisites =
         prerequisites.find(

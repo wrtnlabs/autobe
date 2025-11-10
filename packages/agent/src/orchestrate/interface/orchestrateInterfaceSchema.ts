@@ -15,14 +15,16 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export async function orchestrateInterfaceSchemas<
+export async function orchestrateInterfaceSchema<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -126,56 +128,69 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(props.oldbie);
-  const pointer: IPointer<Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive
-  > | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceSchema",
-    controller: createController({
-      model: ctx.model,
-      build: async (next) => {
-        pointer.value ??= {};
-        Object.assign(pointer.value, next);
-      },
-      pointer,
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    ...transformInterfaceSchemaHistories({
-      state: ctx.state(),
-      typeNames: Array.from(
-        new Set([...props.remained, ...Object.keys(props.oldbie)]),
-      ),
-      operations: props.operations,
-      instruction: props.instruction,
-      remained: props.remained,
-      already,
-    }),
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
+    state: ctx.state(),
   });
-  if (pointer.value === null) throw new Error("Failed to create components.");
-
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
-    OpenApiV3_1Emender.convertComponents({
-      schemas: pointer.value,
-    }) as AutoBeOpenApi.IComponents
-  ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  ctx.dispatch({
-    type: "interfaceSchema",
-    id: v7(),
-    schemas,
-    metric,
-    tokenUsage,
-    completed: (props.progress.completed += Object.keys(schemas).length),
-    total: (props.progress.total += Object.keys(schemas).filter(
-      (k) => props.remained.has(k) === false,
-    ).length),
-    step: ctx.state().prisma?.step ?? 0,
-    created_at: new Date().toISOString(),
-  } satisfies AutoBeInterfaceSchemaEvent);
-  return schemas;
+  while (true) {
+    const pointer: IPointer<Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    > | null> = {
+      value: null,
+    };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
+      source: "interfaceSchema",
+      controller: createController({
+        model: ctx.model,
+        build: async (next) => {
+          pointer.value ??= {};
+          Object.assign(pointer.value, next);
+        },
+        pointer,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceSchemaHistory({
+        preliminary,
+        typeNames: Array.from(
+          new Set([...props.remained, ...Object.keys(props.oldbie)]),
+        ),
+        operations: props.operations,
+        instruction: props.instruction,
+        remained: props.remained,
+        already,
+      }),
+    });
+    if (pointer.value !== null) {
+      const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+        OpenApiV3_1Emender.convertComponents({
+          schemas: pointer.value,
+        }) as AutoBeOpenApi.IComponents
+      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+      ctx.dispatch({
+        type: "interfaceSchema",
+        id: v7(),
+        schemas,
+        metric,
+        tokenUsage,
+        completed: (props.progress.completed += Object.keys(schemas).length),
+        total: (props.progress.total += Object.keys(schemas).filter(
+          (k) => props.remained.has(k) === false,
+        ).length),
+        step: ctx.state().prisma?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaEvent);
+      return schemas;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceSchema",
+        histories,
+        preliminary,
+      });
+  }
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

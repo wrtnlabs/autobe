@@ -7,12 +7,10 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformInterfaceGroupHistories } from "./histories/transformInterfaceGroupHistories";
+import { transformInterfaceGroupHistory } from "./histories/transformInterfaceGroupHistory";
 import { IAutoBeInterfaceGroupApplication } from "./structures/IAutoBeInterfaceGroupApplication";
 
-export async function orchestrateInterfaceGroups<
-  Model extends ILlmSchema.Model,
->(
+export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
@@ -31,7 +29,7 @@ export async function orchestrateInterfaceGroups<
       },
     }),
     enforceFunctionCall: true,
-    ...transformInterfaceGroupHistories({
+    ...transformInterfaceGroupHistory({
       state: ctx.state(),
       instruction: props.instruction,
     }),

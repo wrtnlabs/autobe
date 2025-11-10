@@ -20,7 +20,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaRenameHistories } from "./histories/transformInterfaceSchemaRenameHistories";
+import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
 export async function orchestrateInterfaceSchemaRename<
@@ -165,7 +165,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       ),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaRenameHistories(props),
+      ...transformInterfaceSchemaRenameHistory(props),
     });
     if (pointer.value === null) {
       props.progress.completed += props.typeNames.length;

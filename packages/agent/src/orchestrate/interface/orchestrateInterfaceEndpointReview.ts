@@ -7,49 +7,64 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformInterfaceEndpointsReviewHistories } from "./histories/transformInterfaceEndpointsReviewHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfaceEndpointReviewHistory } from "./histories/transformInterfaceEndpointReviewHistory";
 import { IAutoBeInterfaceEndpointsReviewApplication } from "./structures/IAutoBeInterfaceEndpointsReviewApplication";
 
-export async function orchestrateInterfaceEndpointsReview<
+export async function orchestrateInterfaceEndpointReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const pointer: IPointer<IAutoBeInterfaceEndpointsReviewApplication.IProps | null> =
-    {
-      value: null,
-    };
-
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceEndpointReview",
-    controller: createController({
-      model: ctx.model,
-      build: (props) => {
-        pointer.value = props;
-      },
-    }),
-    enforceFunctionCall: true,
-    ...transformInterfaceEndpointsReviewHistories(ctx.state(), endpoints),
+  const preliminary: AutoBePreliminaryController<
+    "analyzeFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    keys: ["analyzeFiles", "prismaSchemas"],
+    state: ctx.state(),
   });
-
-  if (pointer.value === null) {
-    return endpoints;
+  while (true) {
+    const pointer: IPointer<IAutoBeInterfaceEndpointsReviewApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
+      source: "interfaceEndpointReview",
+      controller: createController({
+        model: ctx.model,
+        build: (props) => {
+          pointer.value = props;
+        },
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceEndpointReviewHistory({
+        preliminary,
+        endpoints,
+      }),
+    });
+    if (pointer.value !== null) {
+      const response: AutoBeOpenApi.IEndpoint[] =
+        pointer.value?.endpoints ?? [];
+      ctx.dispatch({
+        id: v7(),
+        type: "interfaceEndpointReview",
+        endpoints,
+        content: response,
+        created_at: new Date().toISOString(),
+        review: pointer.value?.review,
+        step: ctx.state().analyze?.step ?? 0,
+        metric,
+        tokenUsage,
+      });
+      return response;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfaceEndpointReview",
+        histories,
+        preliminary,
+      });
   }
-
-  const response = pointer.value?.endpoints ?? [];
-  ctx.dispatch({
-    id: v7(),
-    type: "interfaceEndpointReview",
-    endpoints,
-    content: response,
-    created_at: new Date().toISOString(),
-    review: pointer.value?.review,
-    step: ctx.state().analyze?.step ?? 0,
-    metric,
-    tokenUsage,
-  });
-  return response;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

@@ -11,10 +11,10 @@ export const transformPreliminaryHistories = <
 >(
   prelimary: AutoBePreliminaryController<Key>,
 ): IAgenticaHistoryJson.IAssistantMessage[] =>
-  prelimary.keys.map((key) =>
+  prelimary.getKeys().map((key) =>
     (Transformer as any)[key]({
-      all: prelimary.all[key],
-      local: prelimary.local[key],
+      all: prelimary.getAll()[key],
+      local: prelimary.getLocal()[key],
     }),
   );
 

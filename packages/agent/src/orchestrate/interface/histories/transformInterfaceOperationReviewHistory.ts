@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export function transformInterfaceOperationsReviewHistories(props: {
+export function transformInterfaceOperationReviewHistory(props: {
   preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
   operations: AutoBeOpenApi.IOperation[];
 }): IAutoBeOrchestrateHistory {

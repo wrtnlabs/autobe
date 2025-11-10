@@ -12,10 +12,12 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfacePrerequisitesHistories } from "./histories/transformInterfacePrerequisitesHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
 import { IAutoBeInterfacePrerequisitesApplication } from "./structures/IAutoBeInterfacePrerequisitesApplication";
 
-export async function orchestrateInterfacePrerequisites<
+export async function orchestrateInterfacePrerequisite<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -61,7 +63,6 @@ export async function orchestrateInterfacePrerequisites<
       array: include,
       capacity: capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
-
     await executeCachedBatch(
       matrix.map((ops) => async (promptCacheKey) => {
         const row: AutoBeInterfacePrerequisite[] = await divideAndConquer(ctx, {
@@ -102,12 +103,44 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     prerequisitesNotFound: string;
   },
 ): Promise<AutoBeInterfacePrerequisite[]> {
-  const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
-    value: null,
-  };
-
   try {
-    const { metric, tokenUsage } = await ctx.conversate({
+    return await process(ctx, props);
+  } catch {
+    props.progress.completed += props.includes.length;
+    return [];
+  }
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+    document: AutoBeOpenApi.IDocument;
+    includes: AutoBeOpenApi.IOperation[];
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    prerequisitesNotFound: string;
+  },
+): Promise<AutoBeInterfacePrerequisite[]> {
+  const preliminary: AutoBePreliminaryController<
+    | "analyzeFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  > = new AutoBePreliminaryController({
+    keys: [
+      "analyzeFiles",
+      "prismaSchemas",
+      "interfaceOperations",
+      "interfaceSchemas",
+    ],
+    state: ctx.state(),
+  });
+  while (true) {
+    const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
+      value: null,
+    };
+    const { metric, tokenUsage, histories } = await ctx.conversate({
       source: "interfacePrerequisite",
       controller: createController({
         model: ctx.model,
@@ -121,29 +154,32 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfacePrerequisitesHistories(
-        props.document,
-        props.includes,
-      ),
+      ...transformInterfacePrerequisiteHistory({
+        document: props.document,
+        includes: props.includes,
+        preliminary,
+      }),
     });
-    if (pointer.value === null) return [];
-
-    props.progress.completed += pointer.value.length;
-    ctx.dispatch({
-      type: "interfacePrerequisite",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      metric,
-      tokenUsage,
-      operations: pointer.value,
-      total: props.progress.total,
-      completed: props.progress.completed,
-      step: ctx.state().prisma?.step ?? 0,
-    });
-    return pointer.value;
-  } catch {
-    props.progress.completed += props.includes.length;
-    return [];
+    if (pointer.value !== null) {
+      props.progress.completed += pointer.value.length;
+      ctx.dispatch({
+        type: "interfacePrerequisite",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        metric,
+        tokenUsage,
+        operations: pointer.value,
+        total: props.progress.total,
+        completed: props.progress.completed,
+        step: ctx.state().prisma?.step ?? 0,
+      });
+      return pointer.value;
+    } else
+      await orchestratePreliminary(ctx, {
+        type: "interfacePrerequisite",
+        histories,
+        preliminary,
+      });
   }
 }
 
