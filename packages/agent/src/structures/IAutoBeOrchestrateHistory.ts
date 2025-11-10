@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 
-export interface IAutoBeTransformHistory {
+export interface IAutoBeOrchestrateHistory {
   histories: Array<
     | IAgenticaHistoryJson.ISystemMessage
     | IAgenticaHistoryJson.IAssistantMessage

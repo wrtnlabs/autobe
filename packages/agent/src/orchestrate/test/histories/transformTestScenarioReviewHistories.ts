@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestScenarioApplication } from "../structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
@@ -12,7 +12,7 @@ export function transformTestScenarioReviewHistories(props: {
   state: AutoBeState;
   instruction: string;
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
-}): IAutoBeTransformHistory {
+}): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument | undefined =
     props.state.interface?.document;
   if (document === undefined) {

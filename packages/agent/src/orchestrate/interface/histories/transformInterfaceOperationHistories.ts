@@ -4,14 +4,14 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceOperationHistories = (props: {
   state: AutoBeState;
   endpoints: AutoBeOpenApi.IEndpoint[];
   instruction: string;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return {
     histories: [
@@ -74,6 +74,7 @@ export const transformInterfaceOperationHistories = (props: {
         `,
       },
     ],
-    userMessage: "Create API operation specifications for the given endpoints please",
+    userMessage:
+      "Create API operation specifications for the given endpoints please",
   };
 };

@@ -12,7 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
@@ -25,7 +25,7 @@ export async function transformTestWriteHistories<
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
   },
-): Promise<IAutoBeTransformHistory> {
+): Promise<IAutoBeOrchestrateHistory> {
   return {
     histories: [
       {

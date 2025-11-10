@@ -6,7 +6,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
@@ -14,7 +14,7 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
   scenario: AutoBeAnalyzeScenarioEvent,
   allFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
-): IAutoBeTransformHistory => ({
+): IAutoBeOrchestrateHistory => ({
   histories: [
     ...transformAnalyzeWriteHistories(ctx, {
       scenario,

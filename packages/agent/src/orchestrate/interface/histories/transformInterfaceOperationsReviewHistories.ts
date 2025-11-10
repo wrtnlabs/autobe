@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export function transformInterfaceOperationsReviewHistories<
@@ -13,7 +13,7 @@ export function transformInterfaceOperationsReviewHistories<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-): IAutoBeTransformHistory {
+): IAutoBeOrchestrateHistory {
   return {
     histories: [
       {

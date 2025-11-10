@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceSchemaHistories = (props: {
@@ -14,7 +14,7 @@ export const transformInterfaceSchemaHistories = (props: {
   instruction: string;
   already: string[];
   remained: Set<string>;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   const schemas: Set<string> = new Set();
   for (const op of props.operations) {
     if (op.requestBody) schemas.add(op.requestBody.typeName);

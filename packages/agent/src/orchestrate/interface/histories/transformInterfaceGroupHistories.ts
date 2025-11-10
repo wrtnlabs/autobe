@@ -3,14 +3,14 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 import { transformInterfaceCommonHistories } from "./transformInterfaceCommonHistories";
 
 export const transformInterfaceGroupHistories = (props: {
   state: AutoBeState;
   instruction: string;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   const prerequisite = transformInterfaceCommonHistories(props.state);
   if (prerequisite !== null)
     return {

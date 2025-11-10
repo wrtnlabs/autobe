@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
@@ -14,7 +14,7 @@ export const transformTestScenarioHistories = (props: {
   include: AutoBeOpenApi.IOperation[];
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[];
   instruction: string;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   const authorizations: AutoBeInterfaceAuthorization[] =
     props.state.interface?.authorizations ?? [];
   const authorizationActors: Map<

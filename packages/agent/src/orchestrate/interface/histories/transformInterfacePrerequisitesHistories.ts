@@ -4,13 +4,13 @@ import { OpenApiTypeChecker } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getReferenceIds } from "../../test/utils/getReferenceIds";
 
 export const transformInterfacePrerequisitesHistories = (
   document: AutoBeOpenApi.IDocument,
   include: AutoBeOpenApi.IOperation[],
-): IAutoBeTransformHistory => {
+): IAutoBeOrchestrateHistory => {
   const domainSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     {};
   const visit = (key: string) =>

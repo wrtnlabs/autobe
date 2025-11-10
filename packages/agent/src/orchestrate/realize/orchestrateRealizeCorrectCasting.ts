@@ -144,7 +144,10 @@ const correct = async <Model extends ILlmSchema.Model>(
           },
         }),
         enforceFunctionCall: true,
-        ...transformRealizeCorrectCastingHistories({
+        ...transformRealizeCorrectCastingHistories(ctx, {
+          scenario,
+          authorization,
+          function: func,
           failures: [
             ...props.previousFailures
               .map(

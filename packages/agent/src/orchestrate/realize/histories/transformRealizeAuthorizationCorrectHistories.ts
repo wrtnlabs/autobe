@@ -8,7 +8,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformRealizeAuthorizationCorrectHistories = <
   Model extends ILlmSchema.Model,
@@ -17,7 +17,7 @@ export const transformRealizeAuthorizationCorrectHistories = <
   auth: AutoBeRealizeAuthorization,
   templateFiles: Record<string, string>,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-): IAutoBeTransformHistory => {
+): IAutoBeOrchestrateHistory => {
   return {
     histories: [
       {
@@ -91,6 +91,7 @@ export const transformRealizeAuthorizationCorrectHistories = <
         `,
       },
     ],
-    userMessage: "Fix the compile errors in the authorization components please",
+    userMessage:
+      "Fix the compile errors in the authorization components please",
   };
 };

@@ -222,10 +222,11 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    ...transformRealizeCorrectHistories({
+    ...transformRealizeCorrectHistories(ctx, {
       state: ctx.state(),
       scenario: props.scenario,
       authorization: props.authorization,
+      function: props.function,
       dto,
       failures: [...props.previousFailures, props.failure],
       totalAuthorizations: props.totalAuthorizations,

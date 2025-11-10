@@ -3,7 +3,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
@@ -18,8 +18,8 @@ export const transformTestCorrectHistories = async <
     function: IAutoBeTestFunction;
     failures: IAutoBeTestFunctionFailure[];
   },
-): Promise<IAutoBeTransformHistory> => {
-  const previous: IAutoBeTransformHistory = await transformTestWriteHistories(
+): Promise<IAutoBeOrchestrateHistory> => {
+  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistories(
     ctx,
     {
       instruction: props.instruction,

@@ -3,13 +3,13 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceEndpointsReviewHistories = (
   state: AutoBeState,
   endpoints: AutoBeOpenApi.IEndpoint[],
-): IAutoBeTransformHistory => ({
+): IAutoBeOrchestrateHistory => ({
   histories: [
     {
       type: "systemMessage",

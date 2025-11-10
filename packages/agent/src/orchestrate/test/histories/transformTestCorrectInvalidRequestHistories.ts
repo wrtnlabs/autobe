@@ -3,13 +3,13 @@ import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 
 export const transformTestCorrectInvalidRequestHistories = (
   func: IAutoBeTestFunction,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-): IAutoBeTransformHistory => ({
+): IAutoBeOrchestrateHistory => ({
   histories: [
     {
       id: v7(),

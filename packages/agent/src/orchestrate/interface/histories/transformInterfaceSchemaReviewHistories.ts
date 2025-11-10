@@ -3,7 +3,7 @@ import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceSchemaReviewHistories = (props: {
@@ -13,7 +13,7 @@ export const transformInterfaceSchemaReviewHistories = (props: {
   operations: AutoBeOpenApi.IOperation[];
   everySchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   return {
     histories: [
       {

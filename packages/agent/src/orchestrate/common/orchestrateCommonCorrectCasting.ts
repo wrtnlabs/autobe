@@ -7,7 +7,6 @@ import {
   IAutoBeTokenUsageJson,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -96,13 +95,6 @@ const correct = async <
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: factory.source,
-    histories: transformCommonCorrectCastingHistories(
-      [...failures, event].map((e) => ({
-        diagnostics: (e.result as IAutoBeTypeScriptCompileResult.IFailure)
-          .diagnostics,
-        script: factory.script(e),
-      })),
-    ),
     controller: createController({
       model: ctx.model,
       functionName: factory.functionName,
@@ -114,12 +106,13 @@ const correct = async <
       },
     }),
     enforceFunctionCall: true,
-    userMessage: StringUtil.trim`
-      Fix the TypeScript casting problems to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix or give it up
-      immediately without any hesitation, explanation, and questions.
-    `,
+    ...transformCommonCorrectCastingHistories(
+      [...failures, event].map((e) => ({
+        diagnostics: (e.result as IAutoBeTypeScriptCompileResult.IFailure)
+          .diagnostics,
+        script: factory.script(e),
+      })),
+    ),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event;

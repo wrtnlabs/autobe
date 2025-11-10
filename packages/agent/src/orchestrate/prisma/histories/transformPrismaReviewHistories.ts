@@ -3,14 +3,14 @@ import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformPrismaReviewHistories = (props: {
   analysis: Record<string, string>;
   application: AutoBePrisma.IApplication;
   schemas: Record<string, string>;
   component: AutoBePrisma.IComponent;
-}): IAutoBeTransformHistory => ({
+}): IAutoBeOrchestrateHistory => ({
   histories: [
     {
       id: v7(),

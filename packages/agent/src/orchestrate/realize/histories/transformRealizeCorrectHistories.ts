@@ -1,22 +1,35 @@
-import { AutoBeRealizeAuthorization } from "@autobe/interface";
+import {
+  AutoBeRealizeAuthorization,
+  AutoBeRealizeFunction,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
+import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
 
-export function transformRealizeCorrectHistories(props: {
-  state: AutoBeState;
-  scenario: IAutoBeRealizeScenarioResult;
-  authorization: AutoBeRealizeAuthorization | null;
-  totalAuthorizations: AutoBeRealizeAuthorization[];
-  dto: Record<string, string>;
-  failures: IAutoBeRealizeFunctionFailure[];
-}): IAutoBeTransformHistory {
+export function transformRealizeCorrectHistories<
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    state: AutoBeState;
+    scenario: IAutoBeRealizeScenarioResult;
+    authorization: AutoBeRealizeAuthorization | null;
+    function: AutoBeRealizeFunction;
+    totalAuthorizations: AutoBeRealizeAuthorization[];
+    dto: Record<string, string>;
+    failures: IAutoBeRealizeFunctionFailure[];
+  },
+): IAutoBeOrchestrateHistory {
   const writeHistories = transformRealizeWriteHistories(props);
   return {
     histories: [
@@ -40,6 +53,25 @@ export function transformRealizeCorrectHistories(props: {
         })),
       ),
     ],
-    userMessage: "Fix the compile errors in the implementation please",
+    userMessage: StringUtil.trim`
+      Correct the TypeScript code implementation.
+
+      The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
+      When modifying, modify the entire code, but not the import statement.
+
+      Below is template code you wrote:
+
+      ${getRealizeWriteCodeTemplate({
+        scenario: props.scenario,
+        schemas: ctx.state().interface!.document.components.schemas,
+        operation: props.scenario.operation,
+        authorization: props.authorization ?? null,
+      })}
+
+      Current code is as follows:
+      \`\`\`typescript
+      ${props.function.content}
+      \`\`\`
+    `,
   };
 }

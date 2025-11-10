@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformPrismaComponentsHistories = (
   state: AutoBeState,
@@ -12,7 +12,7 @@ export const transformPrismaComponentsHistories = (
     prefix: string | null;
     instruction: string;
   },
-): IAutoBeTransformHistory => {
+): IAutoBeOrchestrateHistory => {
   if (state.analyze === null)
     // unreachable
     throw new Error("Analyze state is not set.");

@@ -20,10 +20,7 @@ export interface IAutoBeCommonCorrectCastingApplication {
    * - **Optional chaining results**: Uses `=== true` or `??` operators
    * - **"No overlap" errors**: Removes redundant comparisons
    *
-   * @param props - The analysis and correction properties
-   * @param props.think - Analysis of the type casting issue found
-   * @param props.draft - Initial corrected code with type fixes applied
-   * @param props.revise - Review of corrections and final code
+   * @param props The analysis and correction properties
    */
   rewrite(props: IAutoBeCommonCorrectCastingApplication.IProps): void;
 

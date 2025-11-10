@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTransformHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
@@ -16,7 +16,7 @@ export const transformRealizeWriteHistories = (props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   dto: Record<string, string>;
-}): IAutoBeTransformHistory => {
+}): IAutoBeOrchestrateHistory => {
   const payloads = Object.fromEntries(
     props.totalAuthorizations.map((el) => [
       el.payload.location,
@@ -180,6 +180,24 @@ export const transformRealizeWriteHistories = (props: {
         `,
       },
     ],
-    userMessage: `Write implementation for ${operation.method.toUpperCase()} ${operation.path} please`,
+    userMessage: StringUtil.trim`
+      Write implementation for ${operation.method.toUpperCase()} ${operation.path} please.
+
+      Write the complete, production-ready TypeScript code that strictly follows these rules:
+
+      DO NOT:
+      - Use the native \`Date\` type anywhere
+      - Use \`as\` for type assertions
+
+      DO:
+      - Write all date/datetime values as \`string & tags.Format<'date-time'>\`
+      - Generate UUIDs using \`v4()\` and type as \`string & tags.Format<'uuid'>\`
+      - Resolve types properly without assertions
+      - Type all functions with clear parameter and return types
+      6. Do not skip validations or default values where necessary.
+      7. Follow functional, immutable, and consistent code structure.
+
+      Use \`@nestia/e2e\` test structure if relevant.
+    `,
   };
 };
