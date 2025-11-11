@@ -2,8 +2,6 @@ import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeEventSource,
   AutoBeOpenApi,
-  AutoBePreliminaryEvent,
-  AutoBePreliminaryKind,
   AutoBePrisma,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
@@ -37,7 +35,10 @@ export const orchestratePreliminary = async <
     // ANALYSIS
     if (isAnalysisFiles(props.preliminary, exec.operation.function.name)) {
       const pa: AutoBePreliminaryController<"analyzeFiles"> = props.preliminary;
-      fillRequirementAnalyses({
+      fillRequirementAnalyses(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
         all: pa.getAll().analyzeFiles,
         local: pa.getLocal().analyzeFiles,
         arguments: exec.arguments,
@@ -47,7 +48,10 @@ export const orchestratePreliminary = async <
     else if (isPrismaSchemas(props.preliminary, exec.operation.function.name)) {
       const pp: AutoBePreliminaryController<"prismaSchemas"> =
         props.preliminary;
-      fillPrismaSchemas({
+      fillPrismaSchemas(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
         all: pp.getAll().prismaSchemas,
         local: pp.getLocal().prismaSchemas,
         arguments: exec.arguments,
@@ -60,7 +64,10 @@ export const orchestratePreliminary = async <
       const pi: AutoBePreliminaryController<
         "interfaceOperations" | "interfaceSchemas"
       > = props.preliminary;
-      fillInterfaceOperations({
+      fillInterfaceOperations(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
         all: {
           operations: pi.getAll().interfaceOperations,
           schemas: pi.getAll().interfaceSchemas,
@@ -78,25 +85,15 @@ export const orchestratePreliminary = async <
     ) {
       const ps: AutoBePreliminaryController<"interfaceSchemas"> =
         props.preliminary;
-      fillInterfaceSchemas({
+      fillInterfaceSchemas(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
         all: ps.getAll().interfaceSchemas,
         local: ps.getLocal().interfaceSchemas,
         arguments: exec.arguments,
       });
     }
-
-    // DISPATCH EVENT FOR LOGGING
-    if (typia.is<AutoBePreliminaryKind>(exec.operation.function.name))
-      ctx.dispatch({
-        type: "preliminary",
-        id: v7(),
-        source: props.source,
-        source_id: props.source_id,
-        function: exec.operation.function.name,
-        arguments: exec.arguments,
-        trial: props.trial,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBePreliminaryEvent);
   }
 };
 
@@ -130,53 +127,94 @@ const isInterfaceSchemas = (
   typia.is<"interfaceSchemas">(functionName) &&
   preliminary.getAll()[functionName] !== undefined;
 
-const fillRequirementAnalyses = (props: {
-  all: AutoBeAnalyzeFile[];
-  local: AutoBeAnalyzeFile[];
-  arguments: unknown;
-}): void => {
+const fillRequirementAnalyses = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: AutoBeAnalyzeFile[];
+    local: AutoBeAnalyzeFile[];
+    arguments: unknown;
+  },
+): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IRequirementAnalysesProps>(
     props.arguments,
   );
+  const existing: string[] = props.local.map((f) => f.filename);
   for (const filename of props.arguments.filenames)
     if (props.local.find((f) => f.filename === filename) === undefined)
       props.local.push(props.all.find((f) => f.filename === filename)!);
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: "analyzeFiles",
+    source: props.source,
+    source_id: props.source_id,
+    existing,
+    requested: props.arguments.filenames,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
+  });
 };
 
-const fillPrismaSchemas = (props: {
-  all: AutoBePrisma.IModel[];
-  local: AutoBePrisma.IModel[];
-  arguments: unknown;
-}): void => {
+const fillPrismaSchemas = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: AutoBePrisma.IModel[];
+    local: AutoBePrisma.IModel[];
+    arguments: unknown;
+  },
+): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
     props.arguments,
   );
-  // console.log(
-  //   Object.fromEntries(
-  //     props.arguments.schemaNames.map((name) => [
-  //       name,
-  //       props.local.find((m) => m.name === name) !== undefined,
-  //     ]),
-  //   ),
-  // );
+  const existing: string[] = props.local.map((m) => m.name);
   for (const name of props.arguments.schemaNames)
     if (props.local.find((m) => m.name === name) === undefined)
       props.local.push(props.all.find((m) => m.name === name)!);
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: "prismaSchemas",
+    source: props.source,
+    source_id: props.source_id,
+    existing,
+    requested: props.arguments.schemaNames,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
+  });
 };
 
-const fillInterfaceOperations = (props: {
-  all: {
-    operations: AutoBeOpenApi.IOperation[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  };
-  local: {
-    operations: AutoBeOpenApi.IOperation[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  };
-  arguments: unknown;
-}): void => {
+const fillInterfaceOperations = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: {
+      operations: AutoBeOpenApi.IOperation[];
+      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    };
+    local: {
+      operations: AutoBeOpenApi.IOperation[];
+      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    };
+    arguments: unknown;
+  },
+): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
     props.arguments,
+  );
+
+  const existing: AutoBeOpenApi.IEndpoint[] = props.local.operations.map(
+    (o) => ({
+      method: o.method,
+      path: o.path,
+    }),
   );
 
   const typeNames: Set<string> = new Set();
@@ -194,23 +232,51 @@ const fillInterfaceOperations = (props: {
     if (operation.requestBody) typeNames.add(operation.requestBody.typeName);
     if (operation.responseBody) typeNames.add(operation.responseBody.typeName);
   }
-  fillInterfaceSchemas({
-    all: props.all.schemas,
-    local: props.local.schemas,
-    arguments: {
-      typeNames: Array.from(typeNames),
-    } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: "interfaceOperations",
+    source: props.source,
+    source_id: props.source_id,
+    existing,
+    requested: props.arguments.endpoints,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
   });
+
+  fillInterfaceSchemas(
+    ctx,
+    {
+      source: props.source,
+      source_id: props.source_id,
+      trial: props.trial,
+      all: props.all.schemas,
+      local: props.local.schemas,
+      arguments: {
+        typeNames: Array.from(typeNames),
+      } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
+    },
+    false,
+  );
 };
 
-const fillInterfaceSchemas = (props: {
-  all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  arguments: unknown;
-}): void => {
+const fillInterfaceSchemas = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    arguments: unknown;
+  },
+  dispatch: boolean = true,
+): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(
     props.arguments,
   );
+
+  const existing: string[] = Object.keys(props.local);
 
   const collected: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const key of props.arguments.typeNames) {
@@ -229,4 +295,17 @@ const fillInterfaceSchemas = (props: {
     });
     Object.assign(props.all, collected);
   }
+
+  if (dispatch === true)
+    ctx.dispatch({
+      type: "preliminary",
+      id: v7(),
+      function: "interfaceSchemas",
+      source: props.source,
+      source_id: props.source_id,
+      existing,
+      requested: props.arguments.typeNames,
+      trial: props.trial,
+      created_at: new Date().toISOString(),
+    });
 };

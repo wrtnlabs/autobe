@@ -110,10 +110,10 @@ namespace PreliminaryApplicationValidator {
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
-    const again = (key: string) =>
-      `The prisma schema model ${JSON.stringify(
-        key,
-      )} is already mounted. Please do not request it again.`;
+    // const again = (key: string) =>
+    //   `The prisma schema model ${JSON.stringify(
+    //     key,
+    //   )} is already mounted. Please do not request it again.`;
 
     return (
       input: unknown,
@@ -133,13 +133,13 @@ namespace PreliminaryApplicationValidator {
             expected: quoted.join(" | "),
             description,
           });
-        else if (oldbie.has(key) === true)
-          errors.push({
-            path: `$input.schemas[${i}]`,
-            value: key,
-            expected: quoted.join(" | "),
-            description: again(key),
-          });
+        // else if (oldbie.has(key) === true)
+        //   errors.push({
+        //     path: `$input.schemas[${i}]`,
+        //     value: key,
+        //     expected: quoted.join(" | "),
+        //     description: again(key),
+        //   });
       });
       return finalize(result, errors);
     };

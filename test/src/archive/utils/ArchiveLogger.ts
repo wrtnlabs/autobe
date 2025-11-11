@@ -56,7 +56,8 @@ export namespace ArchiveLogger {
         `  - source_id: ${event.source_id}`,
         `  - function: ${event.function}`,
         `  - trial: ${event.trial}`,
-        `  - arguments: ${JSON.stringify(event.arguments)}`,
+        `  - existing: ${JSON.stringify(event.existing)}`,
+        `  - requested: ${JSON.stringify(event.requested)}`,
       );
     // VALIDATIONS
     else if (event.type === "analyzeScenario")

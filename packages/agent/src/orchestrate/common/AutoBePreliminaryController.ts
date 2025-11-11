@@ -12,7 +12,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
-import { createPreliminaryValidate } from "./internal/createPreliminaryValidator";
+import { createPreliminaryValidate } from "./internal/createPreliminaryValidate";
 import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
