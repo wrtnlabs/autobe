@@ -9,7 +9,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
+import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
@@ -33,7 +33,7 @@ export const transformRealizeCorrectCastingHistories = <
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.COMMON_CORRECT_CASTING,
       },
-      ...transformPreviousAndLatestCorrectHistories(
+      ...transformPreviousAndLatestCorrectHistory(
         props.failures.map((f) => ({
           script: f.function.content,
           diagnostics: f.diagnostics,

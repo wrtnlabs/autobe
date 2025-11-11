@@ -6,13 +6,13 @@ import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryApplication } from "../structures/IAutoBePreliminaryApplication";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
-export function transformPreliminaryHistories<
+export function transformPreliminaryHistory<
   Key extends keyof IAutoBePreliminaryApplication,
 >(
   prelimary: AutoBePreliminaryController<Key>,
 ): IAgenticaHistoryJson.IAssistantMessage[] {
   return prelimary.getKeys().map((key) =>
-    transformPreliminaryHistories[key]({
+    transformPreliminaryHistory[key]({
       all: prelimary.getAll() as IAutoBePreliminaryCollection,
       local: prelimary.getLocal() as IAutoBePreliminaryCollection,
     }),
@@ -24,7 +24,7 @@ export function transformPreliminaryHistories<
  *
  * @internal
  */
-export namespace transformPreliminaryHistories {
+export namespace transformPreliminaryHistory {
   export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
     all: Pick<IAutoBePreliminaryCollection, Key>;
     local: Pick<IAutoBePreliminaryCollection, Key>;
@@ -38,14 +38,15 @@ export namespace transformPreliminaryHistories {
 
       ### List of Analysis Files
 
-      The complete list of available analysis documents. Checkmarks (✅) indicate which ones are currently loaded into your context.
+      The complete list of available analysis documents. 
+      
+      Checkmarks (✅) indicate which ones are currently loaded into your context.
 
-      No | FileName | Document Type | Selected
-      ---|----------|---------------|----------
+      FileName | Document Type | Selected
+      ---------|---------------|----------
       ${props.all.analyzeFiles
-        .map((f, i) =>
+        .map((f) =>
           [
-            i + 1,
             JSON.stringify(f.filename),
             f.documentType,
             props.local.analyzeFiles.find((l) => l.filename === f.filename)
@@ -57,10 +58,16 @@ export namespace transformPreliminaryHistories {
 
       ### Currently Selected Analysis Files
 
-      The full content of documents currently loaded into your context. Need additional documents? Call \`analyzeFiles()\` with their filenames.
+      The full content of documents currently loaded into your context. 
+      
+      Need additional documents? Call \`analyzeFiles()\` with their filenames.
 
       \`\`\`json
-      ${JSON.stringify(props.local.analyzeFiles)}
+      ${JSON.stringify(
+        Object.fromEntries(
+          props.local.analyzeFiles.map((f) => [f.filename, f]),
+        ),
+      )}
       \`\`\`
     `;
     return {
@@ -83,17 +90,16 @@ export namespace transformPreliminaryHistories {
       
       Checkmarks (✅) indicate which ones are currently loaded into your context.
 
-      No | Schema Name | Summary | Selected
-      ---|--------------|---------|----------
+      Selected | Schema Name | Summary  
+      ---------|-------------|---------
       ${props.all.prismaSchemas
-        .map((s, i) =>
+        .map((s) =>
           [
-            i + 1,
-            JSON.stringify(s.name),
-            s.description.split("\n")[0] || "",
             props.local.prismaSchemas.find((l) => l.name === s.name)
               ? "✅"
               : "❌",
+            s.name,
+            getSummary(s.description),
           ].join(" | "),
         )
         .join("\n")}
@@ -105,7 +111,9 @@ export namespace transformPreliminaryHistories {
       Need additional models? Call \`prismaSchemas()\` with their schema names.
 
       \`\`\`json
-      ${JSON.stringify(props.local.prismaSchemas)}
+      ${JSON.stringify(
+        Object.fromEntries(props.local.prismaSchemas.map((s) => [s.name, s])),
+      )}
       \`\`\`
     `;
     return {
@@ -128,20 +136,19 @@ export namespace transformPreliminaryHistories {
       
       Checkmarks (✅) indicate which ones are currently loaded into your context.
 
-      No | Path | Method | Summary | Selected
-      ---|------|--------|---------|----------
+      Selected | Path | Method | Summary  
+      ---------|------|--------|---------
       ${props.all.interfaceOperations
-        .map((o, i) =>
+        .map((o) =>
           [
-            i + 1,
-            o.path,
-            o.method,
-            o.summary,
             props.local.interfaceOperations.find(
               (l) => l.path === o.path && l.method === o.method,
             )
               ? "✅"
               : "❌",
+            o.path,
+            o.method,
+            o.summary,
           ].join(" | "),
         )
         .join("\n")}
@@ -176,15 +183,14 @@ export namespace transformPreliminaryHistories {
       
       Checkmarks (✅) indicate which ones are currently loaded into your context.
 
-      No | Schema Name | Summary | Selected
-      ---|-------------|---------|----------
+      Selected | Schema Name | Summary 
+      ---------|-------------|---------
       ${Object.entries(props.all.interfaceSchemas)
-        .map(([k, v], i) =>
+        .map(([k, v]) =>
           [
-            i + 1,
-            k,
-            v.description.split("\n")[0] || "",
             props.local.interfaceSchemas[k] ? "✅" : "❌",
+            k,
+            getSummary(v.description),
           ].join(" | "),
         )
         .join("\n")}
@@ -205,5 +211,15 @@ export namespace transformPreliminaryHistories {
       text,
       created_at: new Date().toISOString(),
     };
+  };
+
+  const getSummary = (description: string): string => {
+    const newLineIndex: number = description.indexOf("\n");
+    const dotIndex: number = description.indexOf(".");
+    const index: number = Math.min(
+      newLineIndex === -1 ? Infinity : newLineIndex,
+      dotIndex === -1 ? Infinity : dotIndex + 1,
+    );
+    return index === Infinity ? "" : description.slice(0, index).trim();
   };
 }

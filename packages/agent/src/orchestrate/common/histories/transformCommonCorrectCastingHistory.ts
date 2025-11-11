@@ -4,9 +4,9 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformPreviousAndLatestCorrectHistories } from "./transformPreviousAndLatestCorrectHistories";
+import { transformPreviousAndLatestCorrectHistory } from "./transformPreviousAndLatestCorrectHistory";
 
-export const transformCommonCorrectCastingHistories = (
+export const transformCommonCorrectCastingHistory = (
   failures: IFailure[],
 ): IAutoBeOrchestrateHistory => ({
   histories: [
@@ -16,7 +16,7 @@ export const transformCommonCorrectCastingHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.COMMON_CORRECT_CASTING,
     },
-    ...transformPreviousAndLatestCorrectHistories(failures),
+    ...transformPreviousAndLatestCorrectHistory(failures),
   ],
   userMessage: StringUtil.trim`
     Fix the TypeScript casting problems to resolve the compilation error.

@@ -10,7 +10,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
+import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
@@ -46,7 +46,7 @@ export function transformRealizeCorrectHistories<
         text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
         created_at: new Date().toISOString(),
       },
-      ...transformPreviousAndLatestCorrectHistories(
+      ...transformPreviousAndLatestCorrectHistory(
         props.failures.map((f) => ({
           script: f.function.content,
           diagnostics: f.diagnostics,

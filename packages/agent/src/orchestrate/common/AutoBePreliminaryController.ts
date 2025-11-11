@@ -4,11 +4,12 @@ import {
 } from "@agentica/core";
 import { AutoBeEventSource } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
-import { transformPreliminaryHistories } from "./histories/transformPreliminaryHistories";
+import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
 import { createPreliminaryValidate } from "./internal/createPreliminaryValidator";
@@ -20,11 +21,13 @@ import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCol
 export class AutoBePreliminaryController<
   Key extends keyof IAutoBePreliminaryApplication,
 > {
+  private readonly source_id: string;
   private readonly keys: Key[];
   private readonly all: Pick<IAutoBePreliminaryCollection, Key>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Key>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Key>) {
+    this.source_id = v7();
     this.keys = props.keys;
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
@@ -39,7 +42,7 @@ export class AutoBePreliminaryController<
   }
 
   public createHistories(): IAgenticaHistoryJson.IAssistantMessage[] {
-    return transformPreliminaryHistories(this);
+    return transformPreliminaryHistory(this);
   }
 
   public getKeys(): Key[] {
@@ -73,9 +76,11 @@ export class AutoBePreliminaryController<
       if (result.value !== null) return result.value;
       else
         await orchestratePreliminary(ctx, {
+          source_id: this.source_id,
           source: source,
           preliminary: this,
           histories: result.histories,
+          trial: i + 1,
         });
     }
     throw new Error(

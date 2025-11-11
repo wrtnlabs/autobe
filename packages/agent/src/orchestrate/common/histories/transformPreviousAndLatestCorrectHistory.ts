@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 
 import { printErrorHints } from "../../realize/utils/printErrorHints";
 
-export const transformPreviousAndLatestCorrectHistories = (
+export const transformPreviousAndLatestCorrectHistory = (
   array: Array<{
     script: string;
     diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];

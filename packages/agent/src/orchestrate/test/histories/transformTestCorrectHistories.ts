@@ -4,7 +4,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
+import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
@@ -37,7 +37,7 @@ export const transformTestCorrectHistories = async <
         text: AutoBeSystemPromptConstant.TEST_CORRECT,
       },
       previous.histories.at(-1)!,
-      ...transformPreviousAndLatestCorrectHistories(
+      ...transformPreviousAndLatestCorrectHistory(
         props.failures.map((f) => ({
           script: f.function.script,
           diagnostics: f.failure.diagnostics,

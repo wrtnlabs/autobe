@@ -2,6 +2,7 @@ import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeEventSource,
   AutoBeOpenApi,
+  AutoBePreliminaryEvent,
   AutoBePreliminaryKind,
   AutoBePrisma,
 } from "@autobe/interface";
@@ -20,9 +21,11 @@ export const orchestratePreliminary = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
+    source_id: string;
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     histories: MicroAgenticaHistory<Model>[];
     preliminary: AutoBePreliminaryController<Key>;
+    trial: number;
   },
 ): Promise<void> => {
   ctx; // @todo -> dispatch events
@@ -88,10 +91,12 @@ export const orchestratePreliminary = async <
         type: "preliminary",
         id: v7(),
         source: props.source,
+        source_id: props.source_id,
         function: exec.operation.function.name,
         arguments: exec.arguments,
+        trial: props.trial,
         created_at: new Date().toISOString(),
-      });
+      } satisfies AutoBePreliminaryEvent);
   }
 };
 
@@ -149,6 +154,11 @@ const fillPrismaSchemas = (props: {
   for (const name of props.arguments.schemaNames)
     if (props.local.find((m) => m.name === name) === undefined)
       props.local.push(props.all.find((m) => m.name === name)!);
+  console.log(
+    "fillPrismaSchemas",
+    props.arguments,
+    props.local.map((m) => m.name),
+  );
 };
 
 const fillInterfaceOperations = (props: {
