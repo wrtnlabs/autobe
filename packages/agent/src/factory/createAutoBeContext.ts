@@ -192,6 +192,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               type: "jsonValidateError",
               id: v7(),
               source: next.source,
+              function: event.operation.function.name,
               result: event.result,
               life: event.life,
               created_at: event.created_at,

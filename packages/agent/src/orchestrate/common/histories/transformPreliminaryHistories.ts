@@ -6,25 +6,31 @@ import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryApplication } from "../structures/IAutoBePreliminaryApplication";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
-export const transformPreliminaryHistories = <
+export function transformPreliminaryHistories<
   Key extends keyof IAutoBePreliminaryApplication,
 >(
   prelimary: AutoBePreliminaryController<Key>,
-): IAgenticaHistoryJson.IAssistantMessage[] =>
-  prelimary.getKeys().map((key) =>
-    (Transformer as any)[key]({
-      all: prelimary.getAll()[key],
-      local: prelimary.getLocal()[key],
+): IAgenticaHistoryJson.IAssistantMessage[] {
+  return prelimary.getKeys().map((key) =>
+    transformPreliminaryHistories[key]({
+      all: prelimary.getAll() as IAutoBePreliminaryCollection,
+      local: prelimary.getLocal() as IAutoBePreliminaryCollection,
     }),
   );
+}
 
-namespace Transformer {
+/**
+ * Export for type testing
+ *
+ * @internal
+ */
+export namespace transformPreliminaryHistories {
   export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
     all: Pick<IAutoBePreliminaryCollection, Key>;
     local: Pick<IAutoBePreliminaryCollection, Key>;
   }
 
-  export const analyzeFile = (
+  export const analyzeFiles = (
     props: IProps<"analyzeFiles">,
   ): IAgenticaHistoryJson.IAssistantMessage => {
     const text: string = StringUtil.trim`
