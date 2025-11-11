@@ -13,7 +13,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaContentReviewApplication } from "./structures/IAutoBeInterfaceSchemaContentReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
@@ -129,59 +128,61 @@ async function process<Model extends ILlmSchema.Model>(
       interfaceSchemas: props.reviewSchemas,
     },
   });
-  while (true) {
-    const pointer: IPointer<IAutoBeInterfaceSchemaContentReviewApplication.IProps | null> =
-      {
-        value: null,
-      };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
-      source: "interfaceSchemaReview",
-      controller: createController({
-        preliminary,
-        pointer,
-        model: ctx.model,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaReviewHistory({
-        state: ctx.state(),
-        systemPrompt: config.systemPrompt,
-        instruction: props.instruction,
-        reviewOperations: props.reviewOperations,
-        reviewSchemas: props.reviewSchemas,
-        preliminary,
-      }),
-    });
-    if (pointer.value !== null) {
-      const content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
-        OpenApiV3_1Emender.convertComponents({
-          schemas: pointer.value.content,
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-
-      ctx.dispatch({
-        type: "interfaceSchemaReview",
-        kind: config.kind,
-        id: v7(),
-        schemas: props.reviewSchemas,
-        review: pointer.value.think.review,
-        plan: pointer.value.think.plan,
-        content,
-        metric,
-        tokenUsage,
-        step: ctx.state().analyze?.step ?? 0,
-        total: props.progress.total,
-        completed: ++props.progress.completed,
-        created_at: new Date().toISOString(),
+  return await preliminary.orchestrate(
+    ctx,
+    "interfaceSchemaReview",
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaContentReviewApplication.IProps | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: "interfaceSchemaReview",
+        controller: createController({
+          preliminary,
+          pointer,
+          model: ctx.model,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceSchemaReviewHistory({
+          state: ctx.state(),
+          systemPrompt: config.systemPrompt,
+          instruction: props.instruction,
+          reviewOperations: props.reviewOperations,
+          reviewSchemas: props.reviewSchemas,
+          preliminary,
+        }),
       });
-      return content;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceSchemaReview",
-        histories,
-        preliminary,
-      });
-  }
+      if (pointer.value !== null) {
+        const content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+          OpenApiV3_1Emender.convertComponents({
+            schemas: pointer.value.content,
+          }) as AutoBeOpenApi.IComponents
+        ).schemas ?? {}) as Record<
+          string,
+          AutoBeOpenApi.IJsonSchemaDescriptive
+        >;
+        ctx.dispatch({
+          type: "interfaceSchemaReview",
+          kind: config.kind,
+          id: v7(),
+          schemas: props.reviewSchemas,
+          review: pointer.value.think.review,
+          plan: pointer.value.think.plan,
+          content,
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          step: ctx.state().analyze?.step ?? 0,
+          total: props.progress.total,
+          completed: ++props.progress.completed,
+          created_at: new Date().toISOString(),
+        });
+        return out(result)(content);
+      }
+      return out(result)(null);
+    },
+  );
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

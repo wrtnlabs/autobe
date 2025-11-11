@@ -8,7 +8,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceEndpointReviewHistory } from "./histories/transformInterfaceEndpointReviewHistory";
 import { IAutoBeInterfaceEndpointReviewApplication } from "./structures/IAutoBeInterfaceEndpointReviewApplication";
 
@@ -24,48 +23,52 @@ export async function orchestrateInterfaceEndpointReview<
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  while (true) {
-    const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
-      {
-        value: null,
-      };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
-      source: "interfaceEndpointReview",
-      controller: createController({
-        preliminary,
-        model: ctx.model,
-        build: (props) => {
-          pointer.value = props;
-        },
-      }),
-      enforceFunctionCall: true,
-      ...transformInterfaceEndpointReviewHistory({
-        preliminary,
-        endpoints,
-      }),
-    });
-    if (pointer.value !== null) {
-      const response: AutoBeOpenApi.IEndpoint[] =
-        pointer.value?.endpoints ?? [];
-      ctx.dispatch({
-        id: v7(),
-        type: "interfaceEndpointReview",
-        endpoints,
-        content: response,
-        created_at: new Date().toISOString(),
-        review: pointer.value?.review,
-        step: ctx.state().analyze?.step ?? 0,
-        metric,
-        tokenUsage,
+  return await preliminary.orchestrate(
+    ctx,
+    "interfaceEndpointReview",
+    async () => {
+      const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: "interfaceEndpointReview",
+        controller: createController({
+          preliminary,
+          model: ctx.model,
+          build: (props) => {
+            pointer.value = props;
+          },
+        }),
+        enforceFunctionCall: true,
+        ...transformInterfaceEndpointReviewHistory({
+          preliminary,
+          endpoints,
+        }),
       });
-      return response;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceEndpointReview",
-        histories,
-        preliminary,
+      const out = (value: AutoBeOpenApi.IEndpoint[] | null) => ({
+        ...result,
+        value,
       });
-  }
+      if (pointer.value !== null) {
+        const response: AutoBeOpenApi.IEndpoint[] =
+          pointer.value?.endpoints ?? [];
+        ctx.dispatch({
+          id: v7(),
+          type: "interfaceEndpointReview",
+          endpoints,
+          content: response,
+          created_at: new Date().toISOString(),
+          review: pointer.value?.review,
+          step: ctx.state().analyze?.step ?? 0,
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+        });
+        return out(response);
+      }
+      return out(null);
+    },
+  );
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

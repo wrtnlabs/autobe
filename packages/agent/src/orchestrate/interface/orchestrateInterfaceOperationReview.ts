@@ -12,7 +12,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
 import { OperationValidator } from "./utils/OperationValidator";
@@ -37,64 +36,68 @@ async function process<Model extends ILlmSchema.Model>(
   operations: AutoBeOpenApi.IOperation[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
+  const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
     "analyzeFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  while (true) {
-    const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
-    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IProps | null> =
-      {
-        value: null,
-      };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
-      source: "interfaceOperationReview",
-      controller: createReviewController({
-        preliminary,
-        model: ctx.model,
-        prismaSchemas: files,
-        build: (next: IAutoBeInterfaceOperationReviewApplication.IProps) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: false,
-      ...transformInterfaceOperationReviewHistory({
-        preliminary,
-        operations,
-      }),
-    });
-
-    if (pointer.value !== null) {
-      const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
-        (op) => ({
-          ...op,
-          authorizationType: null,
+  return await preliminary.orchestrate(
+    ctx,
+    "interfaceOperationReview",
+    async () => {
+      const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IProps | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: "interfaceOperationReview",
+        controller: createReviewController({
+          preliminary,
+          model: ctx.model,
+          prismaSchemas: files,
+          build: (next: IAutoBeInterfaceOperationReviewApplication.IProps) => {
+            pointer.value = next;
+          },
         }),
-      );
-      ctx.dispatch({
-        type: "interfaceOperationReview",
-        id: v7(),
-        operations: content,
-        review: pointer.value.think.review,
-        plan: pointer.value.think.plan,
-        content,
-        metric,
-        tokenUsage,
-        created_at: new Date().toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        total: progress.total,
-        completed: ++progress.completed,
-      } satisfies AutoBeInterfaceOperationReviewEvent);
-      return content;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceOperationReview",
-        histories,
-        preliminary,
+        enforceFunctionCall: false,
+        ...transformInterfaceOperationReviewHistory({
+          preliminary,
+          operations,
+        }),
       });
-  }
+      const out = (value: AutoBeOpenApi.IOperation[] | null) => ({
+        ...result,
+        value,
+      });
+
+      if (pointer.value !== null) {
+        const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
+          (op) => ({
+            ...op,
+            authorizationType: null,
+          }),
+        );
+        ctx.dispatch({
+          type: "interfaceOperationReview",
+          id: v7(),
+          operations: content,
+          review: pointer.value.think.review,
+          plan: pointer.value.think.plan,
+          content,
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          created_at: new Date().toISOString(),
+          step: ctx.state().analyze?.step ?? 0,
+          total: progress.total,
+          completed: ++progress.completed,
+        } satisfies AutoBeInterfaceOperationReviewEvent);
+        return out(content);
+      }
+      return out(null);
+    },
+  );
 }
 
 function createReviewController<Model extends ILlmSchema.Model>(props: {

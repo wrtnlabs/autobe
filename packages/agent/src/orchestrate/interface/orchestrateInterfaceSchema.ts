@@ -16,7 +16,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
@@ -134,14 +133,14 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
     state: ctx.state(),
   });
-  while (true) {
+  return await preliminary.orchestrate(ctx, "interfaceSchema", async (out) => {
     const pointer: IPointer<Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
     > | null> = {
       value: null,
     };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "interfaceSchema",
       controller: createController({
         model: ctx.model,
@@ -175,8 +174,8 @@ async function process<Model extends ILlmSchema.Model>(
         type: "interfaceSchema",
         id: v7(),
         schemas,
-        metric,
-        tokenUsage,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
         completed: (props.progress.completed += Object.keys(schemas).length),
         total: (props.progress.total += Object.keys(schemas).filter(
           (k) => props.remained.has(k) === false,
@@ -184,14 +183,10 @@ async function process<Model extends ILlmSchema.Model>(
         step: ctx.state().prisma?.step ?? 0,
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaEvent);
-      return schemas;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceSchema",
-        histories,
-        preliminary,
-      });
-  }
+      return out(result)(schemas);
+    }
+    return out(result)(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

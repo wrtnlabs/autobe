@@ -17,7 +17,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
@@ -124,11 +123,11 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  while (true) {
+  return await preliminary.orchestrate(ctx, "interfaceOperation", async () => {
     const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
       value: null,
     };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "interfaceOperation",
       controller: createController({
         preliminary,
@@ -185,25 +184,25 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
     });
+    const out = (value: AutoBeOpenApi.IOperation[] | null) => ({
+      ...result,
+      value,
+    });
     if (pointer.value !== null) {
       ctx.dispatch({
         type: "interfaceOperation",
         id: v7(),
         operations: pointer.value,
-        metric,
-        tokenUsage,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
         ...props.progress,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceOperationEvent);
-      return pointer.value;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceOperation",
-        histories,
-        preliminary,
-      });
-  }
+      return out(pointer.value);
+    }
+    return out(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

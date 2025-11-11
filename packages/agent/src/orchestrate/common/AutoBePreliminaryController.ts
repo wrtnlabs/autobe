@@ -1,9 +1,18 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
+import {
+  IAgenticaHistoryJson,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
+import { AutoBeEventOfSerializable } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistories } from "./histories/transformPreliminaryHistories";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
 import { createPreliminaryValidate } from "./internal/createPreliminaryValidator";
+import { orchestratePreliminary } from "./orchestratePreliminary";
+import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
@@ -39,6 +48,35 @@ export class AutoBePreliminaryController<
   public getLocal(): Pick<IAutoBePreliminaryCollection, Key> {
     return this.local;
   }
+
+  public async orchestrate<Model extends ILlmSchema.Model, T>(
+    ctx: AutoBeContext<Model>,
+    type: AutoBeEventOfSerializable.Type,
+    process: (
+      out: (
+        result: AutoBeContext.IResult<Model>,
+      ) => (value: T | null) => IAutoBeOrchestrateResult<Model, T>,
+    ) => Promise<IAutoBeOrchestrateResult<Model, T>>,
+  ): Promise<T | never> {
+    for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
+      const result: IAutoBeOrchestrateResult<Model, T> = await process(
+        (x) => (value) => ({
+          ...x,
+          value,
+        }),
+      );
+      if (result.value !== null) return result.value;
+      else
+        await orchestratePreliminary(ctx, {
+          type,
+          preliminary: this,
+          histories: result.histories,
+        });
+    }
+    throw new Error(
+      "Preliminary process exceeded the maximum number of retries.",
+    );
+  }
 }
 export namespace AutoBePreliminaryController {
   export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
@@ -46,5 +84,9 @@ export namespace AutoBePreliminaryController {
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Key>>;
     local?: Partial<Pick<IAutoBePreliminaryCollection, Key>>;
+  }
+  export interface IProcessResult<T> {
+    value: T | undefined;
+    histories: IMicroAgenticaHistoryJson[];
   }
 }

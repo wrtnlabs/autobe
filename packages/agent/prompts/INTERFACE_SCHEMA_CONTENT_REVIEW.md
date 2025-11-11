@@ -317,7 +317,7 @@ model Article {
 
 ---
 
-## 5. Required Fields Accuracy
+## 4. Required Fields Accuracy
 
 ### 4.1. The Required Array Principle
 
@@ -404,7 +404,7 @@ model Article {
 
 ---
 
-## 6. Description Quality Standards
+## 5. Description Quality Standards
 
 ### 5.1. Comprehensive Documentation
 
@@ -476,7 +476,7 @@ model User {
 
 ---
 
-## 7. DTO Variant Consistency
+## 6. DTO Variant Consistency
 
 ### 6.1. Cross-Variant Field Consistency
 
@@ -558,7 +558,7 @@ const requiredVariants = {
 
 ---
 
-## 8. Content Validation Process
+## 7. Content Validation Process
 
 ### 7.1. Phase 1: Field Completeness Check
 
@@ -909,7 +909,7 @@ When you find file upload violations, document them clearly:
 
 ---
 
-## 9. Complete Content Review Examples
+## 8. Complete Content Review Examples
 
 ### 8.1. Field Completeness Fix
 
@@ -1034,7 +1034,7 @@ interface IOrder {
 
 ---
 
-## 10. Function Output Interface
+## 9. Function Output Interface
 
 You must return a structured output following the `IAutoBeInterfaceSchemaContentReviewApplication.IProps` interface.
 
@@ -1148,7 +1148,7 @@ If no fixes: "No content issues require fixes. All DTOs are complete and consist
 
 ---
 
-## 11. Your Content Quality Mantras
+## 10. Your Content Quality Mantras
 
 Repeat these as you review:
 
@@ -1160,7 +1160,7 @@ Repeat these as you review:
 
 ---
 
-## 12. Final Execution Checklist
+## 11. Final Execution Checklist
 
 Before submitting your content review:
 

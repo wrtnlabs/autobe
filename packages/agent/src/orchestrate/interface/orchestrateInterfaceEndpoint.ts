@@ -15,7 +15,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfaceEndpointHistory } from "./histories/transformInterfaceEndpointHistory";
 import { orchestrateInterfaceEndpointReview } from "./orchestrateInterfaceEndpointReview";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
@@ -74,55 +73,55 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  while (true) {
-    const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
-      value: null,
-    };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
-      source: "interfaceEndpoint",
-      controller: createController({
-        model: ctx.model,
-        build: (endpoints) => {
-          pointer.value ??= endpoints;
-          pointer.value.push(...endpoints);
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceEndpointHistory({
-        state: ctx.state(),
-        group: props.group,
-        authorizations: props.authorizations,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value !== null) {
-      const event: AutoBeInterfaceEndpointEvent = {
-        type: "interfaceEndpoint",
-        id: v7(),
-        endpoints: new HashSet(
-          pointer.value,
-          AutoBeOpenApiEndpointComparator.hashCode,
-          AutoBeOpenApiEndpointComparator.equals,
-        ).toJSON(),
-        metric,
-        tokenUsage,
-        created_at: start.toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
+  return await preliminary.orchestrate(
+    ctx,
+    "interfaceEndpoint",
+    async (out) => {
+      const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
+        value: null,
       };
-      ctx.dispatch(event);
-      return pointer.value;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfaceEndpoint",
-        histories,
-        preliminary,
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: "interfaceEndpoint",
+        controller: createController({
+          model: ctx.model,
+          build: (endpoints) => {
+            pointer.value ??= endpoints;
+            pointer.value.push(...endpoints);
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceEndpointHistory({
+          state: ctx.state(),
+          group: props.group,
+          authorizations: props.authorizations,
+          instruction: props.instruction,
+          preliminary,
+        }),
       });
-  }
+      if (pointer.value !== null) {
+        const event: AutoBeInterfaceEndpointEvent = {
+          type: "interfaceEndpoint",
+          id: v7(),
+          endpoints: new HashSet(
+            pointer.value,
+            AutoBeOpenApiEndpointComparator.hashCode,
+            AutoBeOpenApiEndpointComparator.equals,
+          ).toJSON(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          created_at: start.toISOString(),
+          step: ctx.state().analyze?.step ?? 0,
+          completed: ++props.progress.completed,
+          total: props.progress.total,
+        };
+        ctx.dispatch(event);
+        return out(result)(pointer.value);
+      }
+      return out(result)(null);
+    },
+  );
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

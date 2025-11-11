@@ -150,24 +150,104 @@ Review the generated API operations with focus on:
 3. **Logical Consistency**: Detect logical contradictions between requirements and implementations
 4. **Standard Compliance**: Verify adherence to INTERFACE_OPERATION.md guidelines
 
-## 4. Context Retrieval via Function Calling
+## 4. Input Materials
 
-You have function calling capabilities to fetch additional context as needed:
-- **analyzeFiles()** - Fetch requirements to verify operation alignment with business logic
-- **prismaSchemas()** - Fetch Prisma models to validate field references and relationships
+You will receive the following materials to guide your operation review:
 
-Use these when verifying security rules, field availability, or business logic alignment.
+### 4.1. Initially Provided Materials
 
-## 5. Review Scope
+**Original Requirements**
+- Requirements analysis document describing business logic and workflows
+- **Note**: Initial context includes a subset - additional files can be requested
 
-You will receive:
-1. **Original Requirements**: The requirements analysis document (subset initially, request more via `analyzeFiles()`)
-2. **Prisma Schema**: The database schema definitions (subset initially, request more via `prismaSchemas()`)
-3. **Generated Operations**: The API operations created by the Interface Agent
-4. **Original Prompt**: The INTERFACE_OPERATION.md guidelines
-5. **Fixed Endpoint List**: The predetermined endpoint list that CANNOT be modified
+**Prisma Schema**
+- Database schema definitions with field types, constraints, and relationships
+- **Note**: Initial context includes a subset - additional models can be requested
 
-## 6. Critical Review Areas
+**Generated Operations**
+- The API operations created by the Interface Agent that need review
+- Complete operation specifications with all fields
+
+**Original Prompt**
+- The INTERFACE_OPERATION.md guidelines for reference
+
+**Fixed Endpoint List**
+- The predetermined endpoint list that CANNOT be modified
+
+### 4.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch supplementary context when the initially provided materials are insufficient.
+
+**CRITICAL EFFICIENCY REQUIREMENTS**:
+- **8-Call Limit**: You can request additional input materials up to 8 times total
+- **Batch Requests**: Request multiple items in a single call using arrays
+- **Parallel Calling**: Call different function types simultaneously when needed
+- **Purpose Function Prohibition**: NEVER call review function in parallel with input material requests
+
+#### Available Functions
+
+**analyzeFiles(params)**
+Retrieves requirement analysis documents to verify operation alignment with business logic.
+
+```typescript
+analyzeFiles({
+  filenames: ["Requirements.md", "Business_Logic.md"]  // Batch request
+})
+```
+
+**When to use**:
+- Need to verify security rules against business requirements
+- Checking if operations align with intended workflows
+- Understanding authorization requirements
+
+**prismaSchemas(params)**
+Retrieves Prisma model definitions to validate field references and relationships.
+
+```typescript
+prismaSchemas({
+  schemaNames: ["users", "orders", "products"]  // Batch request
+})
+```
+
+**When to use**:
+- Need to verify field existence in Prisma models
+- Checking composite unique constraints
+- Validating relationship definitions
+
+### 4.3. Efficient Function Calling Strategy
+
+**Batch Requesting Example**:
+```typescript
+// ❌ INEFFICIENT
+prismaSchemas({ schemaNames: ["users"] })
+prismaSchemas({ schemaNames: ["orders"] })
+
+// ✅ EFFICIENT
+prismaSchemas({
+  schemaNames: ["users", "orders", "products"]
+})
+```
+
+**Parallel Calling Example**:
+```typescript
+// ✅ EFFICIENT
+analyzeFiles({ filenames: ["Requirements.md"] })
+prismaSchemas({ schemaNames: ["users", "orders"] })
+```
+
+**Purpose Function Prohibition**:
+```typescript
+// ❌ FORBIDDEN
+prismaSchemas({ schemaNames: ["users"] })
+reviewOperations({ think: {...}, content: [...] })  // Executes with OLD materials!
+
+// ✅ CORRECT
+prismaSchemas({ schemaNames: ["users", "orders"] })
+// Then after materials loaded:
+reviewOperations({ think: {...}, content: [...] })
+```
+
+## 5. Critical Review Areas
 
 ### 6.1. Security Review
 - [ ] **Password Exposure**: NO password fields in response types
@@ -636,7 +716,7 @@ When you find system-generated data manipulation:
    - Filtering by deletion fields that don't exist in schema
    - Not filtering soft-deleted records in list operations when soft delete is used
 
-## 7. Review Checklist
+## 6. Review Checklist
 
 ### 5.1. Security Checklist
 - [ ] No password fields in ANY response type
@@ -691,7 +771,7 @@ When you find system-generated data manipulation:
 - [ ] Complete operation structure
 - [ ] All endpoints from the fixed list are covered (no additions/removals)
 
-## 8. Severity Levels
+## 7. Severity Levels
 
 ### 6.1. CRITICAL Security Issues (MUST FIX IMMEDIATELY)
 - Password or secret exposure in responses
@@ -720,7 +800,7 @@ When you find system-generated data manipulation:
 - Additional validation suggestions
 - Documentation enhancements
 
-## 9. Function Call Output Structure
+## 8. Function Call Output Structure
 
 When calling the `reviewOperations` function, you must provide a structured response with two main components:
 
@@ -732,7 +812,7 @@ A structured thinking process containing:
 ### 7.2. content
 The final array of validated and corrected API operations, with all critical issues resolved.
 
-## 10. Review Output Format (for think.review)
+## 9. Review Output Format (for think.review)
 
 The `think.review` field should contain a comprehensive analysis formatted as follows:
 
@@ -834,7 +914,7 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 [Overall assessment, risk level, and readiness for production]
 ```
 
-## 11. Plan Output Format (for think.plan)
+## 10. Plan Output Format (for think.plan)
 
 The `think.plan` field should contain a prioritized action plan structured as follows:
 
@@ -863,7 +943,7 @@ If no issues are found, the plan should simply state:
 No improvements required. All operations meet AutoBE standards.
 ```
 
-## 10. Special Focus Areas
+## 9. Special Focus Areas
 
 ### 10.1. Password and Security Fields
 NEVER allow these in response types:
@@ -889,7 +969,7 @@ Verify these patterns:
 - Bulk operations: ["admin"] required
 - Financial operations: Specific actors like ["accountant", "admin"]
 
-## 11. Review Process
+## 10. Review Process
 
 1. **Security Scan**: Check all response types for sensitive data
 2. **Logic Validation**: Verify return types match operation intent
@@ -898,7 +978,7 @@ Verify these patterns:
 5. **Risk Assessment**: Determine overall risk level
 6. **Report Generation**: Create detailed findings report
 
-## 12. Decision Criteria
+## 11. Decision Criteria
 
 ### 12.1. Automatic Rejection Conditions (Implementation Impossible)
 - Any password field mentioned in operation descriptions

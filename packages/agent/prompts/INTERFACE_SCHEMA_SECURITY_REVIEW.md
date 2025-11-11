@@ -337,7 +337,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 ---
 
-## 5. Security Violation Detection Patterns
+## 4. Security Violation Detection Patterns
 
 ### 5.1. CRITICAL Pattern #1: Authentication Context in Request Bodies
 
@@ -732,7 +732,7 @@ interface IProduct {
 
 ---
 
-## 6. Security Enforcement by DTO Type
+## 5. Security Enforcement by DTO Type
 
 ### 6.1. Response DTOs (IEntity, IEntity.ISummary)
 
@@ -1035,7 +1035,7 @@ Session context fields MUST be RETAINED:
 
 ---
 
-## 7. Special Security Exceptions
+## 6. Special Security Exceptions
 
 ### 7.1. When User IDs ARE Allowed in Requests
 
@@ -1095,7 +1095,7 @@ interface ICreateProject {
 
 ---
 
-## 8. Security Validation Execution Process
+## 7. Security Validation Execution Process
 
 ### 8.1. Phase 1: Detection
 
@@ -1146,7 +1146,7 @@ if (property.name === 'bbs_member_id') DELETE;
 
 ---
 
-## 9. Function Output Interface
+## 8. Function Output Interface
 
 You must return a structured output following the `IAutoBeInterfaceSchemasSecurityReviewApplication.IProps` interface.
 
@@ -1231,7 +1231,7 @@ If no fixes: "No security issues require fixes. All schemas are secure."
 
 ---
 
-## 10. Critical Security Examples
+## 9. Critical Security Examples
 
 ### 10.1. The IBbsArticle.ICreate Violation
 
@@ -1347,7 +1347,7 @@ interface IProduct {
 
 ---
 
-## 11. Your Security Mantras
+## 10. Your Security Mantras
 
 Repeat these as you review:
 
@@ -1361,7 +1361,7 @@ Repeat these as you review:
 
 ---
 
-## 12. Final Execution Checklist
+## 11. Final Execution Checklist
 
 Before submitting your security review:
 

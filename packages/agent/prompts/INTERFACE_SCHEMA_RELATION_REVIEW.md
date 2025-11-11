@@ -1130,7 +1130,7 @@ Format fixes as follows:
 
 ---
 
-## 5. DTO-Specific Relation Transformation Rules
+## 4. DTO-Specific Relation Transformation Rules
 
 **Overview**: This section provides concrete transformation rules for each DTO type (Read, Create, Update). These rules build on the theoretical foundation and apply the universal `.ISummary` rule for all BELONGS-TO relations.
 
@@ -2067,7 +2067,7 @@ interface IShoppingSaleUnit.IUpdate {
 
 ---
 
-## 6. Special Patterns and Rules
+## 5. Special Patterns and Rules
 
 **Overview**: This section covers special patterns that require extra attention: actor reversal prohibition, IInvert pattern for reverse perspectives, many-to-many relations, and recursive relations.
 
@@ -2266,7 +2266,7 @@ interface IComment {
 
 ---
 
-## 7. Structural Pattern Requirements
+## 6. Structural Pattern Requirements
 
 **Overview**: This section covers fundamental structural requirements: named types with $ref (ABSOLUTE PRIORITY), schema structure rules, naming conventions, and IPage type structure.
 
@@ -2481,7 +2481,7 @@ IOrderShippingInfo, IArticleMetadata
 
 ---
 
-## 8. Relation Validation Process
+## 7. Relation Validation Process
 
 ### 8.1. Phase 1: Relation Classification
 
@@ -2524,7 +2524,7 @@ if (entity_array_contains_this) {
 
 ---
 
-## 9. Complete Relation Examples
+## 8. Complete Relation Examples
 
 ### 9.1. BBS System Example
 
@@ -3007,7 +3007,7 @@ interface IShoppingSaleReview.IUpdate {
 
 ---
 
-## 10. Function Output Interface
+## 9. Function Output Interface
 
 You must return a structured output following the `IAutoBeInterfaceSchemasRelationReviewApplication.IProps` interface.
 
@@ -3104,7 +3104,7 @@ If no fixes: "No relation issues require fixes. All relations are properly struc
 
 ---
 
-## 11. Critical Relation Examples
+## 10. Critical Relation Examples
 
 ### 11.1. The Inline Object Violation
 
@@ -3221,7 +3221,7 @@ interface IBbsArticleComment.IInvert {
 
 ---
 
-## 12. Your Relation Mantras
+## 11. Your Relation Mantras
 
 Repeat these as you review:
 

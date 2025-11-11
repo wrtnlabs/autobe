@@ -13,7 +13,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
 import { IAutoBeInterfacePrerequisiteApplication } from "./structures/IAutoBeInterfacePrerequisiteApplication";
 
@@ -22,7 +21,6 @@ export async function orchestrateInterfacePrerequisite<
 >(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const operations: AutoBeOpenApi.IOperation[] =
     document.operations.filter((op) => op.authorizationType === null) ?? [];
@@ -61,7 +59,7 @@ export async function orchestrateInterfacePrerequisite<
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
       array: include,
-      capacity: capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
+      capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
     await executeCachedBatch(
       matrix.map((ops) => async (promptCacheKey) => {
@@ -136,52 +134,56 @@ async function process<Model extends ILlmSchema.Model>(
     ],
     state: ctx.state(),
   });
-  while (true) {
-    const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
-      value: null,
-    };
-    const { metric, tokenUsage, histories } = await ctx.conversate({
-      source: "interfacePrerequisite",
-      controller: createController({
-        model: ctx.model,
-        document: props.document,
-        dict: props.dict,
-        includes: props.includes,
-        prerequisitesNotFound: props.prerequisitesNotFound,
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfacePrerequisiteHistory({
-        document: props.document,
-        includes: props.includes,
-        preliminary,
-      }),
-    });
-    if (pointer.value !== null) {
-      props.progress.completed += pointer.value.length;
-      ctx.dispatch({
-        type: "interfacePrerequisite",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        metric,
-        tokenUsage,
-        operations: pointer.value,
-        total: props.progress.total,
-        completed: props.progress.completed,
-        step: ctx.state().prisma?.step ?? 0,
+  return await preliminary.orchestrate(
+    ctx,
+    "interfacePrerequisite",
+    async () => {
+      const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
+        value: null,
+      };
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: "interfacePrerequisite",
+        controller: createController({
+          model: ctx.model,
+          document: props.document,
+          dict: props.dict,
+          includes: props.includes,
+          prerequisitesNotFound: props.prerequisitesNotFound,
+          preliminary,
+          build: (next) => {
+            pointer.value = next;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfacePrerequisiteHistory({
+          document: props.document,
+          includes: props.includes,
+          preliminary,
+        }),
       });
-      return pointer.value;
-    } else
-      await orchestratePreliminary(ctx, {
-        type: "interfacePrerequisite",
-        histories,
-        preliminary,
+      const out = (value: AutoBeInterfacePrerequisite[] | null) => ({
+        ...result,
+        value,
       });
-  }
+      if (pointer.value !== null) {
+        props.progress.completed += pointer.value.length;
+        ctx.dispatch({
+          type: "interfacePrerequisite",
+          id: v7(),
+          created_at: new Date().toISOString(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          operations: pointer.value,
+          total: props.progress.total,
+          completed: props.progress.completed,
+          step: ctx.state().prisma?.step ?? 0,
+        });
+        return out(pointer.value);
+      }
+      return out(null);
+    },
+  );
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
