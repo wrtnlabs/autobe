@@ -151,14 +151,17 @@ const fillPrismaSchemas = (props: {
   typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
     props.arguments,
   );
+  console.log(
+    Object.fromEntries(
+      props.arguments.schemaNames.map((name) => [
+        name,
+        props.local.find((m) => m.name === name) !== undefined,
+      ]),
+    ),
+  );
   for (const name of props.arguments.schemaNames)
     if (props.local.find((m) => m.name === name) === undefined)
       props.local.push(props.all.find((m) => m.name === name)!);
-  console.log(
-    "fillPrismaSchemas",
-    props.arguments,
-    props.local.map((m) => m.name),
-  );
 };
 
 const fillInterfaceOperations = (props: {

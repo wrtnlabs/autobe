@@ -1,5 +1,8 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
+import { HashSet } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
@@ -33,34 +36,37 @@ export namespace transformPreliminaryHistory {
   export const analyzeFiles = (
     props: IProps<"analyzeFiles">,
   ): IAgenticaHistoryJson.IAssistantMessage => {
+    const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
+      props.local.analyzeFiles.map((f) => [f.filename, f]),
+    );
+    const newbie: AutoBeAnalyzeFile[] = props.all.analyzeFiles.filter(
+      (f) => oldbie[f.filename] === undefined,
+    );
     const text: string = StringUtil.trim`
-      ## Requirement Analysis Report
+      ## Available Requirement Analysis Documents
 
-      ### List of Analysis Files
+      Below shows unloaded analysis documents containing user requirements, 
+      feature specifications, and business logic descriptions.
 
-      The complete list of available analysis documents. 
-      
-      Checkmarks (✅) indicate which ones are currently loaded into your context.
+      To retrieve additional information needed for your task, call \`analyzeFiles()\` 
+      function with the filenames from this list.
 
-      FileName | Document Type | Selected
-      ---------|---------------|----------
-      ${props.all.analyzeFiles
-        .map((f) =>
-          [
-            JSON.stringify(f.filename),
-            f.documentType,
-            props.local.analyzeFiles.find((l) => l.filename === f.filename)
-              ? "✅"
-              : "❌",
-          ].join(" | "),
-        )
+      Never request documents not listed here, especially those already loaded 
+      in the section below.
+
+      File Name | Document Type
+      ----------|---------------
+      ${newbie
+        .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
         .join("\n")}
 
-      ### Currently Selected Analysis Files
+      ## Already Loaded Analysis Documents
 
-      The full content of documents currently loaded into your context. 
-      
-      Need additional documents? Call \`analyzeFiles()\` with their filenames.
+      The documents below have been previously loaded through \`analyzeFiles()\` 
+      calls and their full content is already in your context.
+
+      Never request these documents again through \`analyzeFiles()\` function 
+      under any circumstances. 
 
       \`\`\`json
       ${JSON.stringify(
@@ -81,34 +87,37 @@ export namespace transformPreliminaryHistory {
   export const prismaSchemas = (
     props: IProps<"prismaSchemas">,
   ): IAgenticaHistoryJson.IAssistantMessage => {
+    const oldbie: Record<string, AutoBePrisma.IModel> = Object.fromEntries(
+      props.local.prismaSchemas.map((s) => [s.name, s]),
+    );
+    const newbie: AutoBePrisma.IModel[] = props.all.prismaSchemas.filter(
+      (s) => oldbie[s.name] === undefined,
+    );
     const text: string = StringUtil.trim`
-      ## Prisma DB Schema
+      ## Available Prisma Database Models
 
-      ### List of Prisma Schemas
+      Below shows unloaded Prisma models defining database structure 
+      including fields, relations, indexes, and constraints.
 
-      The complete list of available Prisma models.
-      
-      Checkmarks (✅) indicate which ones are currently loaded into your context.
+      To retrieve additional information needed for your task, call 
+      \`prismaSchemas()\` function with the schema names from this list.
 
-      Selected | Schema Name | Summary  
-      ---------|-------------|---------
-      ${props.all.prismaSchemas
-        .map((s) =>
-          [
-            props.local.prismaSchemas.find((l) => l.name === s.name)
-              ? "✅"
-              : "❌",
-            s.name,
-            getSummary(s.description),
-          ].join(" | "),
-        )
+      Never request schemas not listed here, especially those already loaded 
+      in the section below.
+
+      Schema Name | Summary
+      ------------|---------
+      ${newbie
+        .map((s) => [s.name, getSummary(s.description)].join(" | "))
         .join("\n")}
 
-      ### Currently Selected Prisma Schemas
+      ## Already Loaded Prisma Models
 
-      The full schema definitions of models currently loaded into your context.
-      
-      Need additional models? Call \`prismaSchemas()\` with their schema names.
+      The models below have been previously loaded through \`prismaSchemas()\` 
+      calls and their full definitions are already in your context.
+
+      Never request these models again through \`prismaSchemas()\` function 
+      under any circumstances. 
 
       \`\`\`json
       ${JSON.stringify(
@@ -127,37 +136,46 @@ export namespace transformPreliminaryHistory {
   export const interfaceOperations = (
     props: IProps<"interfaceOperations">,
   ): IAgenticaHistoryJson.IAssistantMessage => {
+    const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+      props.local.interfaceOperations.map((o) => ({
+        method: o.method,
+        path: o.path,
+      })),
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
+    );
+    const newbie: AutoBeOpenApi.IOperation[] =
+      props.all.interfaceOperations.filter(
+        (o) =>
+          oldbie.has({
+            method: o.method,
+            path: o.path,
+          }) === false,
+      );
     const text: string = StringUtil.trim`
-      ## OpenAPI Operations
+      ## Available API Operations
 
-      ### List of OpenAPI Operations
+      Below shows unloaded API endpoints defining HTTP method, path, parameters, 
+      request/response schemas, and documentation.
 
-      The complete list of available API operations. 
-      
-      Checkmarks (✅) indicate which ones are currently loaded into your context.
+      To retrieve additional information needed for your task, call 
+      \`interfaceOperations()\` function with the endpoints from this list.
 
-      Selected | Path | Method | Summary  
-      ---------|------|--------|---------
-      ${props.all.interfaceOperations
-        .map((o) =>
-          [
-            props.local.interfaceOperations.find(
-              (l) => l.path === o.path && l.method === o.method,
-            )
-              ? "✅"
-              : "❌",
-            o.path,
-            o.method,
-            o.summary,
-          ].join(" | "),
-        )
-        .join("\n")}
+      Never request operations not listed here, especially those already loaded 
+      in the section below.
 
-      ### Currently Selected OpenAPI Operations
+      Path | Method | Summary
+      -----|--------|--------
+      ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
 
-      The full specifications of operations currently loaded into your context. 
-      
-      Need additional operations? Call \`interfaceOperations()\` with their endpoints (method + path).
+      ## Already Loaded API Operations
+
+      The operations below have been previously loaded through 
+      \`interfaceOperations()\` calls and their full specifications 
+      are already in your context.
+
+      Never request these operations again through \`interfaceOperations()\` function 
+      under any circumstances.
 
       \`\`\`json
       ${JSON.stringify(props.local.interfaceOperations)}
@@ -174,32 +192,34 @@ export namespace transformPreliminaryHistory {
   export const interfaceSchemas = (
     props: IProps<"interfaceSchemas">,
   ): IAgenticaHistoryJson.IAssistantMessage => {
+    const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+    for (const [k, v] of Object.entries(props.all.interfaceSchemas))
+      if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
     const text: string = StringUtil.trim`
-      ## OpenAPI Schemas
+      ## Available TypeScript Type Schemas
 
-      ### List of OpenAPI Schemas
+      Below shows unloaded type definitions containing detailed JSON Schema with 
+      properties, validation rules, and constraints.
 
-      The complete list of available schema types. 
-      
-      Checkmarks (✅) indicate which ones are currently loaded into your context.
+      To retrieve additional information needed for your task, call 
+      \`interfaceSchemas()\` function with the type names from this list.
 
-      Selected | Schema Name | Summary 
-      ---------|-------------|---------
-      ${Object.entries(props.all.interfaceSchemas)
-        .map(([k, v]) =>
-          [
-            props.local.interfaceSchemas[k] ? "✅" : "❌",
-            k,
-            getSummary(v.description),
-          ].join(" | "),
-        )
+      Never request schemas not listed here, especially those already loaded 
+      in the section below.
+
+      Type Name | Summary
+      ----------|---------
+      ${Object.entries(newbie)
+        .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
         .join("\n")}
 
-      ### Currently Selected OpenAPI Schemas
+      ## Already Loaded Type Schemas
 
-      The full JSON Schema definitions of types currently loaded into your context.
-      
-      Need additional types? Call \`interfaceSchemas()\` with their type names.
+      The schemas below have been previously loaded through \`interfaceSchemas()\` 
+      calls and their full definitions are already in your context.
+
+      Never request these schemas again through \`interfaceSchemas()\` function 
+      under any circumstances.
 
       \`\`\`json
       ${JSON.stringify(props.local.interfaceSchemas)}

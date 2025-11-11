@@ -1,6 +1,6 @@
 import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
 
@@ -118,6 +118,8 @@ namespace PreliminaryApplicationValidator {
         method: o.method,
         path: o.path,
       })),
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
     const description: string = StringUtil.trim`
       Here are the list of API endpoints you can use.
