@@ -376,33 +376,6 @@ Before calling this function, you MUST check your conversation history for warni
 
 **Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
 
-**interfaceOperations(params)**
-Retrieves additional API operation definitions beyond initially provided operations.
-
-```typescript
-interfaceOperations({
-  endpoints: [
-    { path: "/users", method: "post" },
-    { path: "/products", method: "post" },
-    { path: "/orders", method: "post" }
-  ]  // Batch request
-})
-```
-
-**When to use**:
-- Need to understand related API operations for consistency
-- Finding prerequisite or dependent operations
-- Analyzing API workflow patterns to maintain coherence
-
-**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-
-Before calling this function, you MUST check your conversation history for warning messages like:
-- "⚠️ The following operations have been loaded and are available in your context"
-
-**ABSOLUTE PROHIBITION**: If you see these warnings listing specific operations, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-
-**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
-
 ### 3.3. Efficient Function Calling Strategy
 
 **Batch Requesting Example**:
@@ -435,10 +408,6 @@ prismaSchemas({
 // ✅ EFFICIENT - Different data types requested simultaneously
 analyzeFiles({ filenames: ["E-commerce_Workflow.md", "Payment_Processing.md"] })
 prismaSchemas({ schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"] })
-interfaceOperations({ endpoints: [
-  { path: "/users", method: "post" },
-  { path: "/orders", method: "post" }
-]})
 ```
 
 **Purpose Function Prohibition**:
@@ -468,10 +437,6 @@ prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Authentication_Requirements.md"
 analyzeFiles({ filenames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
-
-// ❌ FORBIDDEN - Re-requesting already loaded operations
-// If your history shows: "⚠️ Operations loaded: POST /auth/user/join"
-interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials not in history warnings
 // If history shows loaded schemas: ["users", "admins", "sellers"]
@@ -1216,16 +1181,25 @@ model erp_enterprise_team_projects {
 
 ## 11. Final Execution Checklist
 
-Before calling the `makeEndpoints()` function, verify ALL of the following items:
+### 11.1. Input Materials & Function Calling
+- [ ] **YOUR PURPOSE**: Call `makeEndpoints()`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **Available Prisma Database Models** list reviewed in conversation history
+- [ ] **Available Requirements Files** list reviewed in conversation history
+- [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
+- [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
+- [ ] **NEVER call with empty arrays**: `prismaSchemas([])`, `analyzeFiles([])` are FORBIDDEN
+- [ ] **NEVER request ALL data**: Do NOT call `prismaSchemas()` for every single table
+- [ ] **CHECK "Already Loaded" sections**: DO NOT re-request schemas/files shown in those sections
+- [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
 
-### 11.1. Requirements Analysis
+### 11.2. Requirements Analysis
 - [ ] Requirements document thoroughly analyzed for user workflows
 - [ ] Implicit data requirements identified (analytics, dashboards, reports)
 - [ ] Requirements keywords identified for computed endpoints
 - [ ] Both table-based AND requirements-driven endpoints discovered
 - [ ] System-managed entities excluded from endpoint generation
 
-### 11.2. Schema Validation
+### 11.3. Schema Validation
 - [ ] Every endpoint references actual Prisma schema models
 - [ ] Field existence verified - no assumed fields (deleted_at, created_by, etc.)
 - [ ] `stance` property checked for each model:
@@ -1238,7 +1212,7 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
   * If `@@unique([code])` → Can use independently with `{entityCode}`
   * Never create independent endpoints for composite unique entities
 
-### 11.3. Path Design
+### 11.4. Path Design
 - [ ] All paths use camelCase for entity names (not kebab-case, not snake_case)
 - [ ] NO domain prefixes (not `/shopping/`, not `/bbs/`)
 - [ ] NO role prefixes (not `/admin/`, not `/my/`)
@@ -1252,7 +1226,7 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
   * NO shortcuts or independent endpoints created
   * Example: `/enterprises/{enterpriseCode}/teams/{teamCode}` (NOT `/teams/{teamCode}`)
 
-### 11.4. HTTP Method Completeness
+### 11.5. HTTP Method Completeness
 - [ ] Standard CRUD pattern applied consistently:
   * PATCH - search/list with query parameters
   * GET - retrieve single resource by identifier
@@ -1263,7 +1237,7 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
 - [ ] Read-only entities (stance: "snapshot") exclude POST/PUT/DELETE
 - [ ] Subsidiary entities only have nested endpoints (no independent operations)
 
-### 11.5. Conservative Generation
+### 11.6. Conservative Generation
 - [ ] Only business-necessary endpoints generated
 - [ ] System-managed tables excluded from API
 - [ ] Pure join tables (many-to-many) excluded from direct endpoints
@@ -1271,7 +1245,7 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
 - [ ] Temporary/cache tables excluded
 - [ ] Internal workflow tables excluded
 
-### 11.6. Computed Endpoints
+### 11.7. Computed Endpoints
 - [ ] Analytics endpoints created when requirements mention: "analyze", "trends", "summary"
 - [ ] Dashboard endpoints created when requirements mention: "dashboard", "overview", "KPIs"
 - [ ] Search endpoints created when requirements mention: "search across", "global search"
@@ -1279,14 +1253,14 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
 - [ ] Enriched data endpoints created when requirements mention: "with details", "complete information"
 - [ ] All computed endpoints use appropriate HTTP methods (usually PATCH for complex queries)
 
-### 11.7. Path Consistency
+### 11.8. Path Consistency
 - [ ] Consistent identifier usage throughout (all code-based OR all ID-based per entity)
 - [ ] NO mixing of independent and nested paths for same entity
 - [ ] Parameter naming consistent: `{entityCode}` or `{entityId}` (not `{id}`, not `{identifier}`)
 - [ ] Deep nesting used where necessary for composite unique constraints
 - [ ] Parent-child relationships reflected in path structure
 
-### 11.8. Quality Standards
+### 11.9. Quality Standards
 - [ ] Every endpoint path is unique (no duplicates)
 - [ ] Every endpoint has exactly one HTTP method
 - [ ] All paths start with `/` (no leading domain)
@@ -1295,7 +1269,7 @@ Before calling the `makeEndpoints()` function, verify ALL of the following items
 - [ ] Parameter names use camelCase and are descriptive
 - [ ] No trailing slashes in paths
 
-### 11.9. Function Call Preparation
+### 11.10. Function Call Preparation
 - [ ] Output array ready with only `path` and `method` properties
 - [ ] NO additional properties in endpoint objects (no description, no parameters)
 - [ ] JSON array properly formatted

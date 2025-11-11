@@ -18,12 +18,15 @@ export function transformPreliminaryHistory<
 >(
   prelimary: AutoBePreliminaryController<Key>,
 ): IAgenticaHistoryJson.IAssistantMessage[] {
-  return prelimary.getKeys().map((key) =>
-    transformPreliminaryHistory[key]({
-      all: prelimary.getAll() as IAutoBePreliminaryCollection,
-      local: prelimary.getLocal() as IAutoBePreliminaryCollection,
-    }),
-  );
+  return prelimary
+    .getKeys()
+    .map((key) =>
+      transformPreliminaryHistory[key]({
+        all: prelimary.getAll() as IAutoBePreliminaryCollection,
+        local: prelimary.getLocal() as IAutoBePreliminaryCollection,
+      }),
+    )
+    .flat();
 }
 
 /**
@@ -39,21 +42,41 @@ export namespace transformPreliminaryHistory {
 
   export const analyzeFiles = (
     props: IProps<"analyzeFiles">,
-  ): IAgenticaHistoryJson.IAssistantMessage => {
+  ): IAgenticaHistoryJson.IAssistantMessage[] => {
     const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
       props.local.analyzeFiles.map((f) => [f.filename, f]),
     );
     const newbie: AutoBeAnalyzeFile[] = props.all.analyzeFiles.filter(
       (f) => oldbie[f.filename] === undefined,
     );
-    if (newbie.length === 0)
-      return createAllLoadedMessage(
-        "Requirement Analysis Documents",
-        "analyzeFiles",
-        oldbie,
-      );
 
-    const text: string = StringUtil.trim`
+    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+      const describe: IAgenticaHistoryJson.IAssistantMessage = {
+        type: "assistantMessage",
+        id: v7(),
+        text,
+        created_at: new Date().toISOString(),
+      };
+      return props.local.analyzeFiles.length === 0
+        ? [describe]
+        : [
+            createFunctionCallingMessage({
+              function: "analyzeFiles",
+              argument: {
+                filenames: props.local.analyzeFiles.map((f) => f.filename),
+              },
+            }),
+          ];
+    };
+    if (newbie.length === 0)
+      return out(
+        createAllLoadedMessage(
+          "Requirement Analysis Documents",
+          "analyzeFiles",
+          oldbie,
+        ),
+      );
+    return out(StringUtil.trim`
       # Requirement Analysis Documents
 
       ## Already Loaded Analysis Documents
@@ -83,32 +106,45 @@ export namespace transformPreliminaryHistory {
       ${newbie
         .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
         .join("\n")}
-    `;
-    return {
-      type: "assistantMessage",
-      id: v7(),
-      text,
-      created_at: new Date().toISOString(),
-    };
+    `);
   };
 
   export const prismaSchemas = (
     props: IProps<"prismaSchemas">,
-  ): IAgenticaHistoryJson.IAssistantMessage => {
+  ): IAgenticaHistoryJson.IAssistantMessage[] => {
     const oldbie: Record<string, AutoBePrisma.IModel> = Object.fromEntries(
       props.local.prismaSchemas.map((s) => [s.name, s]),
     );
     const newbie: AutoBePrisma.IModel[] = props.all.prismaSchemas.filter(
       (s) => oldbie[s.name] === undefined,
     );
+    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+      const describe: IAgenticaHistoryJson.IAssistantMessage = {
+        type: "assistantMessage",
+        id: v7(),
+        text,
+        created_at: new Date().toISOString(),
+      };
+      return props.local.prismaSchemas.length === 0
+        ? [describe]
+        : [
+            createFunctionCallingMessage({
+              function: "prismaSchemas",
+              argument: {
+                schemaNames: props.local.prismaSchemas.map((s) => s.name),
+              },
+            }),
+          ];
+    };
     if (newbie.length === 0)
-      return createAllLoadedMessage(
-        "Prisma Database Models",
-        "prismaSchemas",
-        oldbie,
+      return out(
+        createAllLoadedMessage(
+          "Prisma Database Models",
+          "prismaSchemas",
+          oldbie,
+        ),
       );
-
-    const text: string = StringUtil.trim`
+    return out(StringUtil.trim`
       # Prisma Database Models
 
       ## Already Loaded Prisma Models
@@ -134,18 +170,12 @@ export namespace transformPreliminaryHistory {
       ${newbie
         .map((s) => [s.name, getSummary(s.description)].join(" | "))
         .join("\n")}
-    `;
-    return {
-      type: "assistantMessage",
-      id: v7(),
-      text,
-      created_at: new Date().toISOString(),
-    };
+    `);
   };
 
   export const interfaceOperations = (
     props: IProps<"interfaceOperations">,
-  ): IAgenticaHistoryJson.IAssistantMessage => {
+  ): IAgenticaHistoryJson.IAssistantMessage[] => {
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
       props.local.interfaceOperations.map((o) => ({
         method: o.method,
@@ -162,14 +192,37 @@ export namespace transformPreliminaryHistory {
             path: o.path,
           }) === false,
       );
+    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+      const describe: IAgenticaHistoryJson.IAssistantMessage = {
+        type: "assistantMessage",
+        id: v7(),
+        text,
+        created_at: new Date().toISOString(),
+      };
+      return props.local.interfaceOperations.length === 0
+        ? [describe]
+        : [
+            createFunctionCallingMessage({
+              function: "interfaceOperations",
+              argument: {
+                endpoints: props.local.interfaceOperations.map((o) => ({
+                  method: o.method,
+                  path: o.path,
+                })),
+              },
+            }),
+          ];
+    };
     if (newbie.length === 0)
-      return createAllLoadedMessage(
-        "API Operations",
-        "interfaceOperations",
-        props.local.interfaceOperations,
+      return out(
+        createAllLoadedMessage(
+          "API Operations",
+          "interfaceOperations",
+          props.local.interfaceOperations,
+        ),
       );
 
-    const text: string = StringUtil.trim`
+    return out(StringUtil.trim`
       # API Operations
 
       ## Already Loaded API Operations
@@ -194,29 +247,44 @@ export namespace transformPreliminaryHistory {
       Path | Method | Summary
       -----|--------|--------
       ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
-    `;
-    return {
-      type: "assistantMessage",
-      id: v7(),
-      text,
-      created_at: new Date().toISOString(),
-    };
+    `);
   };
 
   export const interfaceSchemas = (
     props: IProps<"interfaceSchemas">,
-  ): IAgenticaHistoryJson.IAssistantMessage => {
+  ): IAgenticaHistoryJson.IAssistantMessage[] => {
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
     for (const [k, v] of Object.entries(props.all.interfaceSchemas))
       if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
+
+    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+      const describe: IAgenticaHistoryJson.IAssistantMessage = {
+        type: "assistantMessage",
+        id: v7(),
+        text,
+        created_at: new Date().toISOString(),
+      };
+      return Object.keys(props.local.interfaceSchemas).length === 0
+        ? [describe]
+        : [
+            createFunctionCallingMessage({
+              function: "interfaceSchemas",
+              argument: {
+                typeNames: Object.keys(props.local.interfaceSchemas),
+              },
+            }),
+          ];
+    };
     if (Object.keys(newbie).length === 0)
-      return createAllLoadedMessage(
-        "TypeScript Type Schemas",
-        "interfaceSchemas",
-        props.local.interfaceSchemas,
+      return out(
+        createAllLoadedMessage(
+          "TypeScript Type Schemas",
+          "interfaceSchemas",
+          props.local.interfaceSchemas,
+        ),
       );
 
-    const text: string = StringUtil.trim`
+    return out(StringUtil.trim`
       # TypeScript Type Schemas
 
       ## Already Loaded Type Schemas
@@ -242,21 +310,15 @@ export namespace transformPreliminaryHistory {
       ${Object.entries(newbie)
         .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
         .join("\n")}
-    `;
-    return {
-      type: "assistantMessage",
-      id: v7(),
-      text,
-      created_at: new Date().toISOString(),
-    };
+    `);
   };
 
   const createAllLoadedMessage = (
     title: string,
     functionName: AutoBePreliminaryKind,
     oldbie: object,
-  ): IAgenticaHistoryJson.IAssistantMessage => {
-    const text: string = StringUtil.trim`
+  ): string =>
+    StringUtil.trim`
       # ${title}
 
       ALL data has been loaded. The complete data is ALREADY AVAILABLE in your conversation history.
@@ -269,13 +331,30 @@ export namespace transformPreliminaryHistory {
       ${JSON.stringify(oldbie)}
       \`\`\`
     `;
-    return {
-      type: "assistantMessage",
-      id: v7(),
-      text,
-      created_at: new Date().toISOString(),
-    };
-  };
+
+  const createFunctionCallingMessage = <
+    Function extends AutoBePreliminaryKind,
+  >(props: {
+    function: Function;
+    argument: Parameters<IAutoBePreliminaryApplication[Function]>[0];
+  }): IAgenticaHistoryJson.IAssistantMessage => ({
+    type: "assistantMessage",
+    id: v7(),
+    text: StringUtil.trim`
+      Function "${props.function}()" has been called.
+
+      Here is the arguments.
+
+      Note that, never call the same items again. 
+      As they are loaded onto the memory, you never have to 
+      request none of them again.
+
+      \`\`\`json
+      ${JSON.stringify(props.argument)}
+      \`\`\`
+    `,
+    created_at: new Date().toISOString(),
+  });
 
   const getSummary = (description: string): string => {
     const newLineIndex: number = description.indexOf("\n");
