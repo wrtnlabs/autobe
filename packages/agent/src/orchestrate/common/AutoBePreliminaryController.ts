@@ -2,7 +2,7 @@ import {
   IAgenticaHistoryJson,
   IMicroAgenticaHistoryJson,
 } from "@agentica/core";
-import { AutoBeEventOfSerializable } from "@autobe/interface";
+import { AutoBeEventSource } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -56,7 +56,7 @@ export class AutoBePreliminaryController<
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(
     ctx: AutoBeContext<Model>,
-    type: AutoBeEventOfSerializable.Type,
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">,
     process: (
       out: (
         result: AutoBeContext.IResult<Model>,
@@ -73,7 +73,7 @@ export class AutoBePreliminaryController<
       if (result.value !== null) return result.value;
       else
         await orchestratePreliminary(ctx, {
-          type,
+          source: source,
           preliminary: this,
           histories: result.histories,
         });

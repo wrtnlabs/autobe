@@ -1,12 +1,14 @@
 import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
-  AutoBeEventOfSerializable,
+  AutoBeEventSource,
   AutoBeOpenApi,
+  AutoBePreliminaryKind,
   AutoBePrisma,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
@@ -18,7 +20,7 @@ export const orchestratePreliminary = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    type: AutoBeEventOfSerializable.Type;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     histories: MicroAgenticaHistory<Model>[];
     preliminary: AutoBePreliminaryController<Key>;
   },
@@ -28,7 +30,8 @@ export const orchestratePreliminary = async <
     (h) => h.type === "execute",
   );
   if (executes.length === 0) throw new Error("Failed to function calling");
-  for (const exec of executes)
+  for (const exec of executes) {
+    // ANALYSIS
     if (isAnalysisFiles(props.preliminary, exec.operation.function.name)) {
       const pa: AutoBePreliminaryController<"analyzeFiles"> = props.preliminary;
       fillRequirementAnalyses({
@@ -36,9 +39,9 @@ export const orchestratePreliminary = async <
         local: pa.getLocal().analyzeFiles,
         arguments: exec.arguments,
       });
-    } else if (
-      isPrismaSchemas(props.preliminary, exec.operation.function.name)
-    ) {
+    }
+    // PRISMA SCHEMAS
+    else if (isPrismaSchemas(props.preliminary, exec.operation.function.name)) {
       const pp: AutoBePreliminaryController<"prismaSchemas"> =
         props.preliminary;
       fillPrismaSchemas({
@@ -46,7 +49,9 @@ export const orchestratePreliminary = async <
         local: pp.getLocal().prismaSchemas,
         arguments: exec.arguments,
       });
-    } else if (
+    }
+    // INTERFACE OPERATIONS
+    else if (
       isInterfaceOperations(props.preliminary, exec.operation.function.name)
     ) {
       const pi: AutoBePreliminaryController<
@@ -63,7 +68,9 @@ export const orchestratePreliminary = async <
         },
         arguments: exec.arguments,
       });
-    } else if (
+    }
+    // INTERFACE SCHEMAS
+    else if (
       isInterfaceSchemas(props.preliminary, exec.operation.function.name)
     ) {
       const ps: AutoBePreliminaryController<"interfaceSchemas"> =
@@ -74,6 +81,18 @@ export const orchestratePreliminary = async <
         arguments: exec.arguments,
       });
     }
+
+    // DISPATCH EVENT FOR LOGGING
+    if (typia.is<AutoBePreliminaryKind>(exec.operation.function.name))
+      ctx.dispatch({
+        type: "preliminary",
+        id: v7(),
+        source: props.source,
+        function: exec.operation.function.name,
+        arguments: exec.arguments,
+        created_at: new Date().toISOString(),
+      });
+  }
 };
 
 const isAnalysisFiles = (
