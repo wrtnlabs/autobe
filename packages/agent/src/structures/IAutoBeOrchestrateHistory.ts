@@ -1,10 +1,6 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
+import { IMicroAgenticaHistoryJson } from "@agentica/core";
 
 export interface IAutoBeOrchestrateHistory {
-  histories: Array<
-    | IAgenticaHistoryJson.ISystemMessage
-    | IAgenticaHistoryJson.IAssistantMessage
-    | IAgenticaHistoryJson.IUserMessage
-  >;
+  histories: IMicroAgenticaHistoryJson[];
   userMessage: string;
 }

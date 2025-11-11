@@ -1,7 +1,4 @@
-import {
-  IAgenticaHistoryJson,
-  IMicroAgenticaHistoryJson,
-} from "@agentica/core";
+import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeEventSource } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -21,12 +18,14 @@ import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCol
 export class AutoBePreliminaryController<
   Key extends keyof IAutoBePreliminaryApplication,
 > {
+  private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
   private readonly keys: Key[];
   private readonly all: Pick<IAutoBePreliminaryCollection, Key>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Key>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Key>) {
+    this.source = props.source;
     this.source_id = v7();
     this.keys = props.keys;
     this.all = createPreliminaryCollection(props.state, props.all);
@@ -45,8 +44,12 @@ export class AutoBePreliminaryController<
     });
   }
 
-  public createHistories(): IAgenticaHistoryJson.IAssistantMessage[] {
+  public createHistories(): IMicroAgenticaHistoryJson[] {
     return transformPreliminaryHistory(this);
+  }
+
+  public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
+    return this.source;
   }
 
   public getKeys(): Key[] {
@@ -83,8 +86,9 @@ export class AutoBePreliminaryController<
           source_id: this.source_id,
           source: source,
           preliminary: this,
-          histories: result.histories,
           trial: i + 1,
+          histories: result.histories,
+          __histories: result.__agent.getHistories(),
         });
     }
     throw new Error(
@@ -94,6 +98,7 @@ export class AutoBePreliminaryController<
 }
 export namespace AutoBePreliminaryController {
   export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     keys: Key[];
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Key>>;

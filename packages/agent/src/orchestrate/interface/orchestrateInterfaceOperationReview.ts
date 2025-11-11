@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBeInterfaceOperationReviewEvent,
   AutoBeOpenApi,
   AutoBePrisma,
@@ -40,6 +41,7 @@ async function process<Model extends ILlmSchema.Model>(
   const preliminary: AutoBePreliminaryController<
     "analyzeFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
+    source: "interfaceOperationReview",
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
@@ -140,7 +142,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
 
   return {
     protocol: "class",
-    name: "review",
+    name: "interfaceOperationReview" satisfies AutoBeEventSource,
     application,
     execute: {
       reviewOperations: (next) => {

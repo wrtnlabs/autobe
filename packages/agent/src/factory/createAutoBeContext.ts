@@ -245,6 +245,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             histories,
             tokenUsage: aggregate.tokenUsage,
             metric: aggregate.metric,
+            __agent: agent,
           };
         };
         if (result.type === "error") throw result.error;

@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBeInterfaceSchemaReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceSchemaReviewEvent";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -112,6 +116,7 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    source: "interfaceSchemaReview",
     keys: [
       "analyzeFiles",
       "prismaSchemas",
@@ -238,7 +243,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "ContentReviewer",
+    name: "interfaceSchemaReview" satisfies AutoBeEventSource,
     application,
     execute: {
       review: (input) => {

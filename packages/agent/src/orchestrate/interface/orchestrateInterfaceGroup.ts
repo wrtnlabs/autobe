@@ -1,5 +1,8 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeInterfaceGroupEvent } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeInterfaceGroupEvent,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -61,7 +64,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interface",
+    name: "interfaceGroup" satisfies AutoBeEventSource,
     application,
     execute: {
       makeGroups: (next) => {

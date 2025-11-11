@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -126,6 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    source: "interfacePrerequisite",
     keys: [
       "analyzeFiles",
       "prismaSchemas",
@@ -293,7 +298,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interface",
+    name: "interfacePrerequisite" satisfies AutoBeEventSource,
     application,
     execute: {
       makePrerequisite: (next) => {

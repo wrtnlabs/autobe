@@ -24,6 +24,7 @@ export const orchestratePreliminary = async <
     histories: MicroAgenticaHistory<Model>[];
     preliminary: AutoBePreliminaryController<Key>;
     trial: number;
+    __histories: MicroAgenticaHistory<Model>[];
   },
 ): Promise<void> => {
   ctx; // @todo -> dispatch events
@@ -42,6 +43,7 @@ export const orchestratePreliminary = async <
         all: pa.getAll().analyzeFiles,
         local: pa.getLocal().analyzeFiles,
         arguments: exec.arguments,
+        __histories: props.__histories,
       });
     }
     // PRISMA SCHEMAS
@@ -55,6 +57,7 @@ export const orchestratePreliminary = async <
         all: pp.getAll().prismaSchemas,
         local: pp.getLocal().prismaSchemas,
         arguments: exec.arguments,
+        __histories: props.__histories,
       });
     }
     // INTERFACE OPERATIONS
@@ -77,6 +80,7 @@ export const orchestratePreliminary = async <
           schemas: pi.getLocal().interfaceSchemas,
         },
         arguments: exec.arguments,
+        __histories: props.__histories,
       });
     }
     // INTERFACE SCHEMAS
@@ -92,6 +96,7 @@ export const orchestratePreliminary = async <
         all: ps.getAll().interfaceSchemas,
         local: ps.getLocal().interfaceSchemas,
         arguments: exec.arguments,
+        __histories: props.__histories,
       });
     }
   }
@@ -136,6 +141,7 @@ const fillRequirementAnalyses = <Model extends ILlmSchema.Model>(
     all: AutoBeAnalyzeFile[];
     local: AutoBeAnalyzeFile[];
     arguments: unknown;
+    __histories: MicroAgenticaHistory<Model>[];
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IRequirementAnalysesProps>(
@@ -155,6 +161,7 @@ const fillRequirementAnalyses = <Model extends ILlmSchema.Model>(
     requested: props.arguments.filenames,
     trial: props.trial,
     created_at: new Date().toISOString(),
+    __histories: props.__histories.map((h) => h.toJSON()),
   });
 };
 
@@ -167,6 +174,7 @@ const fillPrismaSchemas = <Model extends ILlmSchema.Model>(
     all: AutoBePrisma.IModel[];
     local: AutoBePrisma.IModel[];
     arguments: unknown;
+    __histories: MicroAgenticaHistory<Model>[];
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
@@ -186,6 +194,7 @@ const fillPrismaSchemas = <Model extends ILlmSchema.Model>(
     requested: props.arguments.schemaNames,
     trial: props.trial,
     created_at: new Date().toISOString(),
+    __histories: props.__histories.map((h) => h.toJSON()),
   });
 };
 
@@ -204,6 +213,7 @@ const fillInterfaceOperations = <Model extends ILlmSchema.Model>(
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     };
     arguments: unknown;
+    __histories: MicroAgenticaHistory<Model>[];
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
@@ -242,6 +252,7 @@ const fillInterfaceOperations = <Model extends ILlmSchema.Model>(
     requested: props.arguments.endpoints,
     trial: props.trial,
     created_at: new Date().toISOString(),
+    __histories: props.__histories.map((h) => h.toJSON()),
   });
 
   fillInterfaceSchemas(
@@ -255,6 +266,7 @@ const fillInterfaceOperations = <Model extends ILlmSchema.Model>(
       arguments: {
         typeNames: Array.from(typeNames),
       } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
+      __histories: props.__histories,
     },
     false,
   );
@@ -269,6 +281,7 @@ const fillInterfaceSchemas = <Model extends ILlmSchema.Model>(
     all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     arguments: unknown;
+    __histories: MicroAgenticaHistory<Model>[];
   },
   dispatch: boolean = true,
 ): void => {
@@ -307,5 +320,6 @@ const fillInterfaceSchemas = <Model extends ILlmSchema.Model>(
       requested: props.arguments.typeNames,
       trial: props.trial,
       created_at: new Date().toISOString(),
+      __histories: props.__histories.map((h) => h.toJSON()),
     });
 };

@@ -87,5 +87,6 @@ export namespace AutoBeContext {
     histories: MicroAgenticaHistory<Model>[];
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
     metric: AutoBeFunctionCallingMetric;
+    __agent: MicroAgentica<Model>;
   }
 }

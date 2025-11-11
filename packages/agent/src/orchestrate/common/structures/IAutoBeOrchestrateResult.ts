@@ -1,4 +1,4 @@
-import { MicroAgenticaHistory } from "@agentica/core";
+import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeFunctionCallingMetric,
   IAutoBeTokenUsageJson,
@@ -10,4 +10,5 @@ export interface IAutoBeOrchestrateResult<Model extends ILlmSchema.Model, T> {
   histories: MicroAgenticaHistory<Model>[];
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
   metric: AutoBeFunctionCallingMetric;
+  __agent: MicroAgentica<Model>;
 }

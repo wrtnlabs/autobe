@@ -1,5 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeEventSource, AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -20,6 +20,7 @@ export async function orchestrateInterfaceEndpointReview<
   const preliminary: AutoBePreliminaryController<
     "analyzeFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
+    source: "interfaceEndpointReview",
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
@@ -89,7 +90,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interface",
+    name: "interfaceEndpointReview" satisfies AutoBeEventSource,
     application,
     execute: {
       reviewEndpoints: (next) => {

@@ -1,5 +1,9 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import {
+  IAgenticaHistoryJson,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
+import {
+  AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
   AutoBePrisma,
@@ -15,15 +19,14 @@ import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCo
 
 export function transformPreliminaryHistory<
   Key extends keyof IAutoBePreliminaryApplication,
->(
-  prelimary: AutoBePreliminaryController<Key>,
-): IAgenticaHistoryJson.IAssistantMessage[] {
-  return prelimary
+>(preliminary: AutoBePreliminaryController<Key>): IMicroAgenticaHistoryJson[] {
+  return preliminary
     .getKeys()
-    .map((key) =>
+    .map((key): IMicroAgenticaHistoryJson[] =>
       transformPreliminaryHistory[key]({
-        all: prelimary.getAll() as IAutoBePreliminaryCollection,
-        local: prelimary.getLocal() as IAutoBePreliminaryCollection,
+        source: preliminary.getSource(),
+        all: preliminary.getAll() as IAutoBePreliminaryCollection,
+        local: preliminary.getLocal() as IAutoBePreliminaryCollection,
       }),
     )
     .flat();
@@ -36,21 +39,21 @@ export function transformPreliminaryHistory<
  */
 export namespace transformPreliminaryHistory {
   export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     all: Pick<IAutoBePreliminaryCollection, Key>;
     local: Pick<IAutoBePreliminaryCollection, Key>;
   }
 
   export const analyzeFiles = (
     props: IProps<"analyzeFiles">,
-  ): IAgenticaHistoryJson.IAssistantMessage[] => {
+  ): IMicroAgenticaHistoryJson[] => {
     const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
       props.local.analyzeFiles.map((f) => [f.filename, f]),
     );
     const newbie: AutoBeAnalyzeFile[] = props.all.analyzeFiles.filter(
       (f) => oldbie[f.filename] === undefined,
     );
-
-    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+    const out = (text: string): IMicroAgenticaHistoryJson[] => {
       const describe: IAgenticaHistoryJson.IAssistantMessage = {
         type: "assistantMessage",
         id: v7(),
@@ -61,23 +64,46 @@ export namespace transformPreliminaryHistory {
         ? [describe]
         : [
             createFunctionCallingMessage({
+              controller: props.source,
               function: "analyzeFiles",
               argument: {
                 filenames: props.local.analyzeFiles.map((f) => f.filename),
               },
             }),
+            describe,
           ];
     };
-    if (newbie.length === 0)
-      return out(
-        createAllLoadedMessage(
-          "Requirement Analysis Documents",
-          "analyzeFiles",
-          oldbie,
-        ),
-      );
+    const available: string =
+      newbie.length === 0
+        ? StringUtil.trim`
+        You have taken every analysis documents. 
+        
+        Every analysis documents are loaded onth the memory, 
+        so never call \`analyzeFiles()\` function again.
+      `
+        : StringUtil.trim`
+        Below shows documents NOT YET loaded. 
+      
+        You can request these if needed for your task by calling \`analyzeFiles()\` function.
+
+        By the way, when requesting, never call the same files
+        (that are listed in the below sections) again as they are 
+        already loaded onto the memory.
+
+        **Available files**:
+
+        File Name | Document Type
+        ----------|---------------
+        ${newbie
+          .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
+          .join("\n")}
+      `;
     return out(StringUtil.trim`
       # Requirement Analysis Documents
+
+      ## Available Requirement Analysis Documents
+
+      ${available}
 
       ## Already Loaded Analysis Documents
 
@@ -94,31 +120,26 @@ export namespace transformPreliminaryHistory {
       )}
       \`\`\`
 
-      ## Available Requirement Analysis Documents
+      ## Never Call Again
 
-      Below shows documents NOT YET loaded. You can request these if needed
-      for your task by calling \`analyzeFiles()\` function.
+      Repeat that, they are still stored in memory.
 
-      **Available files**:
+      Never call \`analyzeFiles()\` again about the below files.
 
-      File Name | Document Type
-      ----------|---------------
-      ${newbie
-        .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
-        .join("\n")}
+      ${props.local.analyzeFiles.map((f) => `- ${f.filename}`).join("\n")}
     `);
   };
 
   export const prismaSchemas = (
     props: IProps<"prismaSchemas">,
-  ): IAgenticaHistoryJson.IAssistantMessage[] => {
+  ): IMicroAgenticaHistoryJson[] => {
     const oldbie: Record<string, AutoBePrisma.IModel> = Object.fromEntries(
       props.local.prismaSchemas.map((s) => [s.name, s]),
     );
     const newbie: AutoBePrisma.IModel[] = props.all.prismaSchemas.filter(
       (s) => oldbie[s.name] === undefined,
     );
-    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+    const out = (text: string): IMicroAgenticaHistoryJson[] => {
       const describe: IAgenticaHistoryJson.IAssistantMessage = {
         type: "assistantMessage",
         id: v7(),
@@ -129,23 +150,46 @@ export namespace transformPreliminaryHistory {
         ? [describe]
         : [
             createFunctionCallingMessage({
+              controller: props.source,
               function: "prismaSchemas",
               argument: {
                 schemaNames: props.local.prismaSchemas.map((s) => s.name),
               },
             }),
+            describe,
           ];
     };
-    if (newbie.length === 0)
-      return out(
-        createAllLoadedMessage(
-          "Prisma Database Models",
-          "prismaSchemas",
-          oldbie,
-        ),
-      );
+    const available: string =
+      newbie.length === 0
+        ? StringUtil.trim`
+        You have taken every Prisma models.
+
+        Every Prisma models are loaded onto the memory,
+        so never call \`prismaSchemas()\` function again.
+      `
+        : StringUtil.trim`
+        Below shows models NOT YET loaded.
+
+        You can request these if needed for your task by calling \`prismaSchemas()\` function.
+
+        By the way, when requesting, never call the same models
+        (that are listed in the below sections) again as they are
+        already loaded onto the memory.
+
+        **Available models**:
+
+        Schema Name | Summary
+        ------------|---------
+        ${newbie
+          .map((s) => [s.name, getSummary(s.description)].join(" | "))
+          .join("\n")}
+      `;
     return out(StringUtil.trim`
       # Prisma Database Models
+
+      ## Available Prisma Database Models
+
+      ${available}
 
       ## Already Loaded Prisma Models
 
@@ -158,24 +202,19 @@ export namespace transformPreliminaryHistory {
       ${JSON.stringify(oldbie)}
       \`\`\`
 
-      ## Available Prisma Database Models
+      ## Never Call Again
 
-      Below shows models NOT YET loaded. You can request these if needed
-      for your task by calling \`prismaSchemas()\` function.
+      Repeat that, they are still stored in memory.
 
-      **Available models**:
+      Never call \`prismaSchemas()\` again about the below models.
 
-      Schema Name | Summary
-      ------------|---------
-      ${newbie
-        .map((s) => [s.name, getSummary(s.description)].join(" | "))
-        .join("\n")}
+      ${props.local.prismaSchemas.map((s) => `- ${s.name}`).join("\n")}
     `);
   };
 
   export const interfaceOperations = (
     props: IProps<"interfaceOperations">,
-  ): IAgenticaHistoryJson.IAssistantMessage[] => {
+  ): IMicroAgenticaHistoryJson[] => {
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
       props.local.interfaceOperations.map((o) => ({
         method: o.method,
@@ -192,7 +231,7 @@ export namespace transformPreliminaryHistory {
             path: o.path,
           }) === false,
       );
-    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+    const out = (text: string): IMicroAgenticaHistoryJson[] => {
       const describe: IAgenticaHistoryJson.IAssistantMessage = {
         type: "assistantMessage",
         id: v7(),
@@ -203,6 +242,7 @@ export namespace transformPreliminaryHistory {
         ? [describe]
         : [
             createFunctionCallingMessage({
+              controller: props.source,
               function: "interfaceOperations",
               argument: {
                 endpoints: props.local.interfaceOperations.map((o) => ({
@@ -211,19 +251,38 @@ export namespace transformPreliminaryHistory {
                 })),
               },
             }),
+            describe,
           ];
     };
-    if (newbie.length === 0)
-      return out(
-        createAllLoadedMessage(
-          "API Operations",
-          "interfaceOperations",
-          props.local.interfaceOperations,
-        ),
-      );
+    const available: string =
+      newbie.length === 0
+        ? StringUtil.trim`
+        You have taken every API operations.
 
+        Every API operations are loaded onto the memory,
+        so never call \`interfaceOperations()\` function again.
+      `
+        : StringUtil.trim`
+        Below shows operations NOT YET loaded.
+
+        You can request these if needed for your task by calling \`interfaceOperations()\` function.
+
+        By the way, when requesting, never call the same operations
+        (that are listed in the below sections) again as they are
+        already loaded onto the memory.
+
+        **Available operations**:
+
+        Path | Method | Summary
+        -----|--------|--------
+        ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
+      `;
     return out(StringUtil.trim`
       # API Operations
+
+      ## Available API Operations
+
+      ${available}
 
       ## Already Loaded API Operations
 
@@ -237,27 +296,24 @@ export namespace transformPreliminaryHistory {
       ${JSON.stringify(props.local.interfaceOperations)}
       \`\`\`
 
-      ## Available API Operations
+      ## Never Call Again
 
-      Below shows operations NOT YET loaded. You can request these if needed
-      for your task by calling \`interfaceOperations()\` function.
+      Repeat that, they are still stored in memory.
 
-      **Available operations**:
+      Never call \`interfaceOperations()\` again about the below operations.
 
-      Path | Method | Summary
-      -----|--------|--------
-      ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
+      ${props.local.interfaceOperations.map((o) => `- ${o.method.toUpperCase()} ${o.path}`).join("\n")}
     `);
   };
 
   export const interfaceSchemas = (
     props: IProps<"interfaceSchemas">,
-  ): IAgenticaHistoryJson.IAssistantMessage[] => {
+  ): IMicroAgenticaHistoryJson[] => {
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
     for (const [k, v] of Object.entries(props.all.interfaceSchemas))
       if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
 
-    const out = (text: string): IAgenticaHistoryJson.IAssistantMessage[] => {
+    const out = (text: string): IMicroAgenticaHistoryJson[] => {
       const describe: IAgenticaHistoryJson.IAssistantMessage = {
         type: "assistantMessage",
         id: v7(),
@@ -268,24 +324,46 @@ export namespace transformPreliminaryHistory {
         ? [describe]
         : [
             createFunctionCallingMessage({
+              controller: props.source,
               function: "interfaceSchemas",
               argument: {
                 typeNames: Object.keys(props.local.interfaceSchemas),
               },
             }),
+            describe,
           ];
     };
-    if (Object.keys(newbie).length === 0)
-      return out(
-        createAllLoadedMessage(
-          "TypeScript Type Schemas",
-          "interfaceSchemas",
-          props.local.interfaceSchemas,
-        ),
-      );
+    const available: string =
+      Object.keys(newbie).length === 0
+        ? StringUtil.trim`
+        You have taken every TypeScript type schemas.
 
+        Every TypeScript type schemas are loaded onto the memory,
+        so never call \`interfaceSchemas()\` function again.
+      `
+        : StringUtil.trim`
+        Below shows schemas NOT YET loaded.
+
+        You can request these if needed for your task by calling \`interfaceSchemas()\` function.
+
+        By the way, when requesting, never call the same schemas
+        (that are listed in the below sections) again as they are
+        already loaded onto the memory.
+
+        **Available schemas**:
+
+        Type Name | Summary
+        ----------|---------
+        ${Object.entries(newbie)
+          .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
+          .join("\n")}
+      `;
     return out(StringUtil.trim`
       # TypeScript Type Schemas
+
+      ## Available TypeScript Type Schemas
+
+      ${available}
 
       ## Already Loaded Type Schemas
 
@@ -298,55 +376,48 @@ export namespace transformPreliminaryHistory {
       ${JSON.stringify(props.local.interfaceSchemas)}
       \`\`\`
 
-      ## Available TypeScript Type Schemas
+      ## Never Call Again
 
-      Below shows schemas NOT YET loaded. You can request these if needed
-      for your task by calling \`interfaceSchemas()\` function.
+      Repeat that, they are still stored in memory.
 
-      **Available schemas**:
+      Never call \`interfaceSchemas()\` again about the below schemas.
 
-      Type Name | Summary
-      ----------|---------
-      ${Object.entries(newbie)
-        .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
+      ${Object.keys(props.local.interfaceSchemas)
+        .map((k) => `- ${k}`)
         .join("\n")}
     `);
   };
 
-  const createAllLoadedMessage = (
-    title: string,
-    functionName: AutoBePreliminaryKind,
-    oldbie: object,
-  ): string =>
-    StringUtil.trim`
-      # ${title}
-
-      ALL data has been loaded. The complete data is ALREADY AVAILABLE in your conversation history.
-
-      NEVER call \`${functionName}()\` again - all data is present.
-
-      **Already loaded data**:
-
-      \`\`\`json
-      ${JSON.stringify(oldbie)}
-      \`\`\`
-    `;
-
   const createFunctionCallingMessage = <
     Function extends AutoBePreliminaryKind,
   >(props: {
+    controller: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     function: Function;
     argument: Parameters<IAutoBePreliminaryApplication[Function]>[0];
-  }): IAgenticaHistoryJson.IAssistantMessage => ({
+  }): IMicroAgenticaHistoryJson => ({
+    // type: "execute",
+    // id: v7(),
+    // operation: {
+    //   protocol: "class",
+    //   controller: props.controller,
+    //   function: props.function,
+    //   name: props.function,
+    // },
+    // arguments: props.argument as any,
+    // value: undefined,
+    // success: true,
+    // created_at: new Date().toISOString(),
     type: "assistantMessage",
     id: v7(),
     text: StringUtil.trim`
+      # Function Calling History
+
       Function "${props.function}()" has been called.
 
       Here is the arguments.
 
-      Note that, never call the same items again. 
-      As they are loaded onto the memory, you never have to 
+      Note that, never call the same items again.
+      As they are loaded onto the memory, you never have to
       request none of them again.
 
       \`\`\`json

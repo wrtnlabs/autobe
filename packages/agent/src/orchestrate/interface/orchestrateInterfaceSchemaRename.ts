@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBeInterfaceSchemaRefactor,
   AutoBeInterfaceSchemaRenameEvent,
   AutoBeOpenApi,
@@ -247,7 +248,7 @@ const createController = <Model extends ILlmSchema.Model>(
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "SchemaRenamer",
+    name: "interfaceSchemaRename" satisfies AutoBeEventSource,
     application,
     execute: {
       rename: (props) => {
