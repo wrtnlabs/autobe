@@ -341,24 +341,12 @@ analyzeFiles({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for sections with this exact heading:
-- "## Already Loaded Analysis Documents"
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following requirements have been loaded and are available in your context"
 
-This section contains a JSON object with ALL previously loaded requirement files. The JSON structure is:
-```json
-{
-  "filename.md": { "filename": "...", "documentType": "...", "content": "..." },
-  ...
-}
-```
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific requirement files, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
 
-**ABSOLUTE PROHIBITION**: If you see files listed in the "Already loaded files" JSON, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-
-**Rule**:
-1. Find the "## Already Loaded Analysis Documents" section in your history
-2. Parse the JSON object under "Already loaded files"
-3. Extract the filenames from the JSON keys
-4. Only request files NOT present in that JSON
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
 
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to understand database structure and relationships.
@@ -377,24 +365,12 @@ prismaSchemas({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for sections with this exact heading:
-- "## Already Loaded Prisma Models"
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following Prisma schemas have been loaded and are available in your context"
 
-This section contains a JSON object with ALL previously loaded Prisma schemas. The JSON structure is:
-```json
-{
-  "schema_name": { "name": "schema_name", "description": "...", "fields": [...], ... },
-  ...
-}
-```
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific Prisma model names, you MUST NOT request those models again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
 
-**ABSOLUTE PROHIBITION**: If you see schemas listed in the "Already loaded models" JSON, you MUST NOT request those schemas again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-
-**Rule**:
-1. Find the "## Already Loaded Prisma Models" section in your history
-2. Parse the JSON object under "Already loaded models"
-3. Extract the schema names from the JSON keys
-4. Only request schemas NOT present in that JSON
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
 
 **interfaceOperations(params)**
 Retrieves additional API operation definitions beyond initially provided operations.
@@ -416,24 +392,12 @@ interfaceOperations({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for sections with this exact heading:
-- "## Already Loaded API Operations"
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following operations have been loaded and are available in your context"
 
-This section contains a JSON array with ALL previously loaded operations. The JSON structure is:
-```json
-[
-  { "path": "/users", "method": "post", "name": "...", "summary": "...", ... },
-  ...
-]
-```
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific operations, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
 
-**ABSOLUTE PROHIBITION**: If you see operations listed in the "Already loaded operations" JSON, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-
-**Rule**:
-1. Find the "## Already Loaded API Operations" section in your history
-2. Parse the JSON array under "Already loaded operations"
-3. Extract the path+method combinations from the array
-4. Only request operations NOT present in that JSON
+**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
 ### 3.3. Efficient Function Calling Strategy
 
@@ -491,151 +455,38 @@ makeEndpoints({ endpoints: [...] })
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
 
-**How to Check What's Already Loaded:**
-
-1. **Search your conversation history** for these section headings:
-   - "## Already Loaded Prisma Models"
-   - "## Already Loaded Analysis Documents"
-   - "## Already Loaded API Operations"
-
-2. **Parse the JSON** provided in each section:
-   ```
-   For Prisma schemas: JSON object where KEYS are schema names
-   For Requirements: JSON object where KEYS are filenames
-   For Operations: JSON array with path+method objects
-   ```
-
-3. **Extract loaded items**:
-   ```typescript
-   // Example history content you'll see:
-
-   ## Already Loaded Prisma Models
-
-   **Already loaded models**:
-
-   ```json
-   {
-     "users": { "name": "users", ... },
-     "admins": { "name": "admins", ... },
-     "sellers": { "name": "sellers", ... }
-   }
-   ```
-
-   // Extract: ["users", "admins", "sellers"] from JSON keys
-   ```
-
-**Examples:**
-
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
-// Your history contains:
-// ## Already Loaded Prisma Models
-// { "users": {...}, "admins": {...}, "sellers": {...} }
-
-prismaSchemas({ schemaNames: ["users"] })  // WRONG - "users" is a key in the JSON!
-prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - both are keys in the JSON!
+// If your history shows: "⚠️ Prisma schemas loaded: users, admins, sellers"
+prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
+prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
-// Your history contains:
-// ## Already Loaded Analysis Documents
-// { "Authentication_Requirements.md": {...} }
-
-analyzeFiles({ filenames: ["Authentication_Requirements.md"] })  // WRONG - it's a key in the JSON!
+// If your history shows: "⚠️ Requirements loaded: Authentication_Requirements.md"
+analyzeFiles({ filenames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
-// Your history contains:
-// ## Already Loaded API Operations
-// [{ "path": "/auth/user/join", "method": "post", ... }]
+// If your history shows: "⚠️ Operations loaded: POST /auth/user/join"
+interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] })  // WRONG!
 
-interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] })  // WRONG - exists in array!
-
-// ✅ CORRECT - Only request NEW materials NOT in the JSON
-// History shows: { "users": {...}, "admins": {...}, "sellers": {...} }
-prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - NOT in JSON keys
-
-// History shows: { "Authentication_Requirements.md": {...} }
-analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - NOT in JSON keys
+// ✅ CORRECT - Only request NEW materials not in history warnings
+// If history shows loaded schemas: ["users", "admins", "sellers"]
+// If history shows loaded files: ["Authentication_Requirements.md"]
+prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - new items
+analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
 
 // ✅ CORRECT - Check history first, then request only missing items
-// 1. Find "## Already Loaded Prisma Models" section
-// 2. Parse JSON to get keys: ["users", "admins", "sellers"]
-// 3. Only call functions for materials NOT in those keys
+// Review conversation history for "⚠️ ... have been loaded" warnings
+// Only call functions for materials NOT listed in those warnings
 ```
 
-**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget AND causes validation errors. Always parse the JSON from the "Already Loaded" sections before making any function calls.
+**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
 
 **Strategic Context Gathering**:
 - The initially provided context is intentionally limited to reduce token usage
 - You SHOULD request additional context when it improves endpoint design
 - Balance: Don't request everything, but don't hesitate when genuinely needed
 - Prioritize requests based on complexity and ambiguity of requirements
-
-### 3.4. Step-by-Step: How to Avoid Re-Requesting Materials
-
-Follow this algorithm EVERY TIME before calling `analyzeFiles()`, `prismaSchemas()`, or `interfaceOperations()`:
-
-**Step 1: Identify the Relevant Section**
-```
-For prismaSchemas():       Find "## Already Loaded Prisma Models"
-For analyzeFiles():        Find "## Already Loaded Analysis Documents"
-For interfaceOperations(): Find "## Already Loaded API Operations"
-```
-
-**Step 2: Locate the JSON Data**
-```
-Look for the code block under "Already loaded models/files/operations"
-The JSON will be clearly marked with ```json ... ```
-```
-
-**Step 3: Parse the JSON Structure**
-```
-Prisma schemas:   { "schema_name": { object }, ... } ← Keys are schema names
-Requirements:     { "filename.md": { object }, ... } ← Keys are filenames
-Operations:       [{ "path": "...", "method": "..." }, ...] ← Array of objects
-```
-
-**Step 4: Extract Already-Loaded Items**
-```typescript
-// Pseudocode for extraction:
-
-// For Prisma schemas:
-loadedSchemas = Object.keys(jsonObject)  // ["users", "admins", "sellers"]
-
-// For Requirements:
-loadedFiles = Object.keys(jsonObject)  // ["Auth_Requirements.md", "User_Stories.md"]
-
-// For Operations:
-loadedEndpoints = jsonArray.map(op => ({ path: op.path, method: op.method }))
-```
-
-**Step 5: Filter Your Request**
-```typescript
-// What you want to request:
-desiredSchemas = ["users", "customers", "orders"]
-
-// What's already loaded (from Step 4):
-loadedSchemas = ["users", "admins", "sellers"]
-
-// What to actually request:
-newSchemas = desiredSchemas.filter(s => !loadedSchemas.includes(s))
-// Result: ["customers", "orders"]
-
-// Make the call:
-prismaSchemas({ schemaNames: newSchemas })  // Only request new items
-```
-
-**Step 6: If Everything Is Already Loaded**
-```typescript
-// If all desired items are already in the JSON:
-desiredSchemas = ["users", "admins"]
-loadedSchemas = ["users", "admins", "sellers"]
-
-newSchemas = []  // Everything is already loaded
-
-// DO NOT call the function - proceed directly to your task
-// The data is ALREADY in your context, use it directly
-makeEndpoints({ endpoints: [...] })  // Skip to purpose function
-```
 
 ## 4. Output Method
 

@@ -1,5 +1,9 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBePreliminaryKind,
+  AutoBePrisma,
+} from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
@@ -42,6 +46,13 @@ export namespace transformPreliminaryHistory {
     const newbie: AutoBeAnalyzeFile[] = props.all.analyzeFiles.filter(
       (f) => oldbie[f.filename] === undefined,
     );
+    if (newbie.length === 0)
+      return createAllLoadedMessage(
+        "Requirement Analysis Documents",
+        "analyzeFiles",
+        oldbie,
+      );
+
     const text: string = StringUtil.trim`
       # Requirement Analysis Documents
 
@@ -49,11 +60,6 @@ export namespace transformPreliminaryHistory {
 
       The documents below have been previously loaded through \`analyzeFiles()\`
       calls and their full content is ALREADY AVAILABLE in your conversation history.
-
-      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
-
-      🚫 **CRITICAL**: You MUST NOT call \`analyzeFiles()\` again for these files.
-      Re-requesting will cause validation errors and waste your limited 8-call budget.
 
       **Already loaded files**:
 
@@ -95,6 +101,13 @@ export namespace transformPreliminaryHistory {
     const newbie: AutoBePrisma.IModel[] = props.all.prismaSchemas.filter(
       (s) => oldbie[s.name] === undefined,
     );
+    if (newbie.length === 0)
+      return createAllLoadedMessage(
+        "Prisma Database Models",
+        "prismaSchemas",
+        oldbie,
+      );
+
     const text: string = StringUtil.trim`
       # Prisma Database Models
 
@@ -103,17 +116,10 @@ export namespace transformPreliminaryHistory {
       The models below have been previously loaded through \`prismaSchemas()\`
       calls and their full definitions are ALREADY AVAILABLE in your conversation history.
 
-      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
-
-      🚫 **CRITICAL**: You MUST NOT call \`prismaSchemas()\` again for these models.
-      Re-requesting will cause validation errors and waste your limited 8-call budget.
-
       **Already loaded models**:
 
       \`\`\`json
-      ${JSON.stringify(
-        Object.fromEntries(props.local.prismaSchemas.map((s) => [s.name, s])),
-      )}
+      ${JSON.stringify(oldbie)}
       \`\`\`
 
       ## Available Prisma Database Models
@@ -156,6 +162,13 @@ export namespace transformPreliminaryHistory {
             path: o.path,
           }) === false,
       );
+    if (newbie.length === 0)
+      return createAllLoadedMessage(
+        "API Operations",
+        "interfaceOperations",
+        props.local.interfaceOperations,
+      );
+
     const text: string = StringUtil.trim`
       # API Operations
 
@@ -164,11 +177,6 @@ export namespace transformPreliminaryHistory {
       The operations below have been previously loaded through
       \`interfaceOperations()\` calls and their full specifications
       are ALREADY AVAILABLE in your conversation history.
-
-      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
-
-      🚫 **CRITICAL**: You MUST NOT call \`interfaceOperations()\` again for these endpoints.
-      Re-requesting will cause validation errors and waste your limited 8-call budget.
 
       **Already loaded operations**:
 
@@ -201,6 +209,13 @@ export namespace transformPreliminaryHistory {
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
     for (const [k, v] of Object.entries(props.all.interfaceSchemas))
       if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
+    if (Object.keys(newbie).length === 0)
+      return createAllLoadedMessage(
+        "TypeScript Type Schemas",
+        "interfaceSchemas",
+        props.local.interfaceSchemas,
+      );
+
     const text: string = StringUtil.trim`
       # TypeScript Type Schemas
 
@@ -208,11 +223,6 @@ export namespace transformPreliminaryHistory {
 
       The schemas below have been previously loaded through \`interfaceSchemas()\`
       calls and their full definitions are ALREADY AVAILABLE in your conversation history.
-
-      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
-
-      🚫 **CRITICAL**: You MUST NOT call \`interfaceSchemas()\` again for these types.
-      Re-requesting will cause validation errors and waste your limited 8-call budget.
 
       **Already loaded schemas**:
 
@@ -232,6 +242,32 @@ export namespace transformPreliminaryHistory {
       ${Object.entries(newbie)
         .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
         .join("\n")}
+    `;
+    return {
+      type: "assistantMessage",
+      id: v7(),
+      text,
+      created_at: new Date().toISOString(),
+    };
+  };
+
+  const createAllLoadedMessage = (
+    title: string,
+    functionName: AutoBePreliminaryKind,
+    oldbie: object,
+  ): IAgenticaHistoryJson.IAssistantMessage => {
+    const text: string = StringUtil.trim`
+      # ${title}
+
+      ALL data has been loaded. The complete data is ALREADY AVAILABLE in your conversation history.
+
+      NEVER call \`${functionName}()\` again - all data is present.
+
+      **Already loaded data**:
+
+      \`\`\`json
+      ${JSON.stringify(oldbie)}
+      \`\`\`
     `;
     return {
       type: "assistantMessage",

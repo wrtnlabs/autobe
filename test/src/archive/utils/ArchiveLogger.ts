@@ -36,8 +36,10 @@ export namespace ArchiveLogger {
         `    - life: ${event.life}`,
         ...event.result.errors.map(
           (v) =>
-            `    - ${v.path}: ${v.expected} -> ${JSON.stringify(v.description ?? "no description")}\n` +
-            `    - ${JSON.stringify(v.value)}`,
+            `      - path: ${v.path}\n` +
+            `      - expected: ${v.expected}\n` +
+            `      - description: ${JSON.stringify(v.description ?? "no description")}\n` +
+            `      - value: ${JSON.stringify(v.value)}`,
         ),
       );
     else if (event.type === "jsonParseError")
