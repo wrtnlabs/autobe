@@ -128,6 +128,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "jsonParseError":
     case "jsonValidateError":
     case "consentFunctionCall":
+    case "preliminary":
       return null;
     default:
       back satisfies never;

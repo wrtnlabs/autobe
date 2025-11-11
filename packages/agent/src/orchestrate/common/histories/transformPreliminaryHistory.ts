@@ -43,30 +43,19 @@ export namespace transformPreliminaryHistory {
       (f) => oldbie[f.filename] === undefined,
     );
     const text: string = StringUtil.trim`
-      ## Available Requirement Analysis Documents
-
-      Below shows unloaded analysis documents containing user requirements, 
-      feature specifications, and business logic descriptions.
-
-      To retrieve additional information needed for your task, call \`analyzeFiles()\` 
-      function with the filenames from this list.
-
-      Never request documents not listed here, especially those already loaded 
-      in the section below.
-
-      File Name | Document Type
-      ----------|---------------
-      ${newbie
-        .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
-        .join("\n")}
+      # Requirement Analysis Documents
 
       ## Already Loaded Analysis Documents
 
-      The documents below have been previously loaded through \`analyzeFiles()\` 
-      calls and their full content is already in your context.
+      The documents below have been previously loaded through \`analyzeFiles()\`
+      calls and their full content is ALREADY AVAILABLE in your conversation history.
 
-      Never request these documents again through \`analyzeFiles()\` function 
-      under any circumstances. 
+      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
+
+      🚫 **CRITICAL**: You MUST NOT call \`analyzeFiles()\` again for these files.
+      Re-requesting will cause validation errors and waste your limited 8-call budget.
+
+      **Already loaded files**:
 
       \`\`\`json
       ${JSON.stringify(
@@ -75,6 +64,19 @@ export namespace transformPreliminaryHistory {
         ),
       )}
       \`\`\`
+
+      ## Available Requirement Analysis Documents
+
+      Below shows documents NOT YET loaded. You can request these if needed
+      for your task by calling \`analyzeFiles()\` function.
+
+      **Available files**:
+
+      File Name | Document Type
+      ----------|---------------
+      ${newbie
+        .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
+        .join("\n")}
     `;
     return {
       type: "assistantMessage",
@@ -94,36 +96,38 @@ export namespace transformPreliminaryHistory {
       (s) => oldbie[s.name] === undefined,
     );
     const text: string = StringUtil.trim`
-      ## Available Prisma Database Models
-
-      Below shows unloaded Prisma models defining database structure 
-      including fields, relations, indexes, and constraints.
-
-      To retrieve additional information needed for your task, call 
-      \`prismaSchemas()\` function with the schema names from this list.
-
-      Never request schemas not listed here, especially those already loaded 
-      in the section below.
-
-      Schema Name | Summary
-      ------------|---------
-      ${newbie
-        .map((s) => [s.name, getSummary(s.description)].join(" | "))
-        .join("\n")}
+      # Prisma Database Models
 
       ## Already Loaded Prisma Models
 
-      The models below have been previously loaded through \`prismaSchemas()\` 
-      calls and their full definitions are already in your context.
+      The models below have been previously loaded through \`prismaSchemas()\`
+      calls and their full definitions are ALREADY AVAILABLE in your conversation history.
 
-      Never request these models again through \`prismaSchemas()\` function 
-      under any circumstances. 
+      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
+
+      🚫 **CRITICAL**: You MUST NOT call \`prismaSchemas()\` again for these models.
+      Re-requesting will cause validation errors and waste your limited 8-call budget.
+
+      **Already loaded models**:
 
       \`\`\`json
       ${JSON.stringify(
         Object.fromEntries(props.local.prismaSchemas.map((s) => [s.name, s])),
       )}
       \`\`\`
+
+      ## Available Prisma Database Models
+
+      Below shows models NOT YET loaded. You can request these if needed
+      for your task by calling \`prismaSchemas()\` function.
+
+      **Available models**:
+
+      Schema Name | Summary
+      ------------|---------
+      ${newbie
+        .map((s) => [s.name, getSummary(s.description)].join(" | "))
+        .join("\n")}
     `;
     return {
       type: "assistantMessage",
@@ -153,33 +157,35 @@ export namespace transformPreliminaryHistory {
           }) === false,
       );
     const text: string = StringUtil.trim`
-      ## Available API Operations
-
-      Below shows unloaded API endpoints defining HTTP method, path, parameters, 
-      request/response schemas, and documentation.
-
-      To retrieve additional information needed for your task, call 
-      \`interfaceOperations()\` function with the endpoints from this list.
-
-      Never request operations not listed here, especially those already loaded 
-      in the section below.
-
-      Path | Method | Summary
-      -----|--------|--------
-      ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
+      # API Operations
 
       ## Already Loaded API Operations
 
-      The operations below have been previously loaded through 
-      \`interfaceOperations()\` calls and their full specifications 
-      are already in your context.
+      The operations below have been previously loaded through
+      \`interfaceOperations()\` calls and their full specifications
+      are ALREADY AVAILABLE in your conversation history.
 
-      Never request these operations again through \`interfaceOperations()\` function 
-      under any circumstances.
+      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
+
+      🚫 **CRITICAL**: You MUST NOT call \`interfaceOperations()\` again for these endpoints.
+      Re-requesting will cause validation errors and waste your limited 8-call budget.
+
+      **Already loaded operations**:
 
       \`\`\`json
       ${JSON.stringify(props.local.interfaceOperations)}
       \`\`\`
+
+      ## Available API Operations
+
+      Below shows operations NOT YET loaded. You can request these if needed
+      for your task by calling \`interfaceOperations()\` function.
+
+      **Available operations**:
+
+      Path | Method | Summary
+      -----|--------|--------
+      ${newbie.map((o) => [o.path, o.method, o.summary].join(" | ")).join("\n")}
     `;
     return {
       type: "assistantMessage",
@@ -196,34 +202,36 @@ export namespace transformPreliminaryHistory {
     for (const [k, v] of Object.entries(props.all.interfaceSchemas))
       if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
     const text: string = StringUtil.trim`
+      # TypeScript Type Schemas
+
+      ## Already Loaded Type Schemas
+
+      The schemas below have been previously loaded through \`interfaceSchemas()\`
+      calls and their full definitions are ALREADY AVAILABLE in your conversation history.
+
+      ✅ **YOU CAN USE THIS INFORMATION** - it's already in your context.
+
+      🚫 **CRITICAL**: You MUST NOT call \`interfaceSchemas()\` again for these types.
+      Re-requesting will cause validation errors and waste your limited 8-call budget.
+
+      **Already loaded schemas**:
+
+      \`\`\`json
+      ${JSON.stringify(props.local.interfaceSchemas)}
+      \`\`\`
+
       ## Available TypeScript Type Schemas
 
-      Below shows unloaded type definitions containing detailed JSON Schema with 
-      properties, validation rules, and constraints.
+      Below shows schemas NOT YET loaded. You can request these if needed
+      for your task by calling \`interfaceSchemas()\` function.
 
-      To retrieve additional information needed for your task, call 
-      \`interfaceSchemas()\` function with the type names from this list.
-
-      Never request schemas not listed here, especially those already loaded 
-      in the section below.
+      **Available schemas**:
 
       Type Name | Summary
       ----------|---------
       ${Object.entries(newbie)
         .map(([k, v]) => [k, getSummary(v.description)].join(" | "))
         .join("\n")}
-
-      ## Already Loaded Type Schemas
-
-      The schemas below have been previously loaded through \`interfaceSchemas()\` 
-      calls and their full definitions are already in your context.
-
-      Never request these schemas again through \`interfaceSchemas()\` function 
-      under any circumstances.
-
-      \`\`\`json
-      ${JSON.stringify(props.local.interfaceSchemas)}
-      \`\`\`
     `;
     return {
       type: "assistantMessage",
