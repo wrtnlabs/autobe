@@ -9,6 +9,7 @@ import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistories } from "./histories/transformPreliminaryHistories";
+import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
 import { createPreliminaryValidate } from "./internal/createPreliminaryValidator";
 import { orchestratePreliminary } from "./orchestratePreliminary";
@@ -27,6 +28,10 @@ export class AutoBePreliminaryController<
     this.keys = props.keys;
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
+    complementPreliminaryCollection({
+      all: this.all as IAutoBePreliminaryCollection,
+      local: this.local as IAutoBePreliminaryCollection,
+    });
   }
 
   public createValidate() {
