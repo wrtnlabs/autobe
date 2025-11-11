@@ -100,17 +100,24 @@ Detailed documentation is organized by topic. **Always consult relevant document
 - Specify constraints explicitly
 - Use positive directives ("do X" not "don't do Y")
 
-**After Editing**:
-1. Run `pnpm run build:prompt`
-2. Fix any compilation errors
-3. Test in actual pipeline execution
-4. Verify generated code quality
+**After Editing - CRITICAL**:
+1. **STOP** - Your editing task is complete
+2. Do **NOT** run `pnpm run build:prompt` unless user explicitly requested it
+3. Do **NOT** run `pnpm run build` or `pnpm run test`
+4. Do **NOT** run `git commit` or any git commands
+5. Do **NOT** suggest or execute ANY additional steps
+
+**The User Will Decide**:
+- Whether to build the prompts
+- Whether to test the changes
+- Whether to commit the changes
+- When to proceed with next steps
 
 **Never**:
 - Edit `AutoBeSystemPromptConstant.ts` directly (auto-generated)
-- Commit prompt changes without testing
-- Ignore impact on other agents
-- Use inconsistent conventions
+- Run build/test/commit commands without explicit user request
+- Assume what the user wants to do next
+- Take "helpful" actions on your own initiative
 
 ### Adding New Features
 1. Consult [DEVELOPMENT_GUIDE.md](.ai/DEVELOPMENT_GUIDE.md)
@@ -126,25 +133,63 @@ Detailed documentation is organized by topic. **Always consult relevant document
 
 ## Absolute Rules for Claude Code
 
-### 1. User Command Supremacy
-User instructions are absolute. If unclear, ask questions. If clear, execute exactly as specified without modification.
+### 1. DO ONLY WHAT USER EXPLICITLY REQUESTED - NOTHING MORE
 
-### 2. System Prompt Editing Sensitivity
+**CRITICAL**: Execute ONLY what the user explicitly requested. Do NOT take ANY additional actions based on your own judgment or assumptions.
+
+**Strictly Forbidden Without Explicit User Request**:
+- Running `pnpm run build`, `pnpm run test`, `npm install`, or ANY build/test commands
+- Executing `git commit`, `git push`, or ANY git commands
+- Running ANY command-line tools beyond what user specifically asked for
+- Making "helpful" suggestions and then executing them automatically
+- Adding "just in case" validations or checks
+- Performing "best practice" follow-up tasks
+
+**The ONLY Exception**: When user asks to edit system prompts, you MAY run `pnpm run build:prompt` ONLY if the user explicitly asked you to build the prompts. Otherwise, DO NOT run it.
+
+**If You Want to Suggest Additional Steps**:
+1. Complete the user's explicit request FIRST
+2. STOP and ASK the user: "Would you like me to [specific action]?"
+3. WAIT for explicit confirmation
+4. NEVER assume "yes" - the user might have reasons to say no
+
+**Examples of Correct Behavior**:
+- User: "Edit the REALIZE_WRITE.md prompt to add error handling instructions"
+- You: [Edit the file] → DONE. Do NOT run build:prompt, do NOT run tests, do NOT commit
+- User: "Fix the compilation error in UserController.ts"
+- You: [Fix the error] → DONE. Do NOT run build, do NOT run tests, do NOT commit
+
+**Examples of WRONG Behavior** (NEVER DO THIS):
+- User: "Edit the prompt" → You: [Edit] + [Run build:prompt] + [Run tests] ❌ WRONG
+- User: "Fix the bug" → You: [Fix] + [Run tests] + [Commit] ❌ WRONG
+- User: "Add a new feature" → You: [Implement] + [Build] + [Test] + [Commit] ❌ WRONG
+
+### 2. User Command Supremacy
+User instructions are absolute. If unclear, ask questions. If clear, execute exactly as specified without modification. DO NOT add your own ideas, suggestions, or "improvements" unless explicitly asked.
+
+### 3. System Prompt Editing Sensitivity
 System prompt editing is the most critical and sensitive task in AutoBE development. **Always** read [AGENT_SYSTEM_PROMPTS.md](.ai/AGENT_SYSTEM_PROMPTS.md) completely before editing any prompt.
 
-### 3. Build System Awareness
+**When Editing System Prompts**:
+1. Edit the prompt file(s) as requested
+2. STOP - Your task is complete
+3. Do NOT run `pnpm run build:prompt` unless user explicitly asked
+4. Do NOT run any build, test, or git commands
+5. Do NOT suggest or perform "next steps"
+
+### 4. Build System Awareness
 - `packages/agent/src/constants/AutoBeSystemPromptConstant.ts` is auto-generated
 - Edit source files in `packages/agent/prompts/*.md`
 - Run `pnpm run build:prompt` after changes
 - Never commit without testing
 
-### 4. Type Safety First
+### 5. Type Safety First
 - All types defined in `@autobe/interface`
 - Use discriminated unions with mapper pattern
 - Never use `any` type
 - Leverage Typia for runtime validation
 
-### 5. Event-Driven Architecture
+### 6. Event-Driven Architecture
 - All state changes emit events
 - 65+ event types cover entire pipeline
 - Events enable real-time progress tracking
