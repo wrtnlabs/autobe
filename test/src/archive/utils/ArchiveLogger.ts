@@ -32,6 +32,7 @@ export namespace ArchiveLogger {
       content.push(
         "  - typia.validate<T>()",
         `    - source: ${event.source}`,
+        `    - function: ${event.function}`,
         `    - life: ${event.life}`,
         ...event.result.errors.map(
           (v) =>
@@ -42,9 +43,15 @@ export namespace ArchiveLogger {
     else if (event.type === "jsonParseError")
       content.push(
         `  - source: ${event.source}`,
+        `  - function: ${event.function}`,
         `  - invalid json: ${event.errorMessage}`,
         `  - life: ${event.life}`,
         `  - arguments: ${event.arguments}`,
+      );
+    else if (event.type === "preliminary")
+      content.push(
+        `  - source: ${event.source}`,
+        `  - function: ${event.function}`,
       );
     // VALIDATIONS
     else if (event.type === "analyzeScenario")

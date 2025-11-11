@@ -10,6 +10,7 @@ export const test_typing_rpc_listener_functions = () => {
     | "jsonValidateError"
     | "jsonParseError"
     | "consentFunctionCall"
+    | "preliminary"
   > = "interfaceSchema" as any;
   x = y;
   y = x;

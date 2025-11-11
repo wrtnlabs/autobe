@@ -181,6 +181,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           void props
             .dispatch({
               ...event,
+              function: event.operation.function.name,
               source: next.source,
             })
             .catch(() => {});

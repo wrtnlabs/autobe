@@ -34,7 +34,7 @@ export const orchestratePreliminary = async <
       fillRequirementAnalyses({
         all: pa.getAll().analyzeFiles,
         local: pa.getLocal().analyzeFiles,
-        arguments: exec.operation.function.parameters,
+        arguments: exec.arguments,
       });
     } else if (
       isPrismaSchemas(props.preliminary, exec.operation.function.name)
@@ -44,7 +44,7 @@ export const orchestratePreliminary = async <
       fillPrismaSchemas({
         all: pp.getAll().prismaSchemas,
         local: pp.getLocal().prismaSchemas,
-        arguments: exec.operation.function.parameters,
+        arguments: exec.arguments,
       });
     } else if (
       isInterfaceOperations(props.preliminary, exec.operation.function.name)
@@ -61,7 +61,7 @@ export const orchestratePreliminary = async <
           operations: pi.getLocal().interfaceOperations,
           schemas: pi.getLocal().interfaceSchemas,
         },
-        arguments: exec.operation.function.parameters,
+        arguments: exec.arguments,
       });
     } else if (
       isInterfaceSchemas(props.preliminary, exec.operation.function.name)
@@ -71,7 +71,7 @@ export const orchestratePreliminary = async <
       fillInterfaceSchemas({
         all: ps.getAll().interfaceSchemas,
         local: ps.getLocal().interfaceSchemas,
-        arguments: exec.operation.function.parameters,
+        arguments: exec.arguments,
       });
     }
 };
