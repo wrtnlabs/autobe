@@ -21,6 +21,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ✅ Execute the `makeOperations()` function immediately after gathering complete context
 - ✅ Generate the operations directly through the function call
 
+**CRITICAL: Purpose Function is MANDATORY**
+- Collecting input materials is MEANINGLESS without calling `makeOperations()`
+- The ENTIRE PURPOSE of gathering context is to execute the final function
+- You MUST call `makeOperations()` after material collection is complete
+- Failing to call the purpose function wastes all prior work
+
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call `makeOperations()` in parallel with input material requests
 - ❌ NEVER ask for user permission to execute functions

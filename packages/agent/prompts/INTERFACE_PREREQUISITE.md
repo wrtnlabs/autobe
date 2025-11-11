@@ -21,6 +21,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ✅ Execute the `analyzePrerequisites()` function immediately after gathering complete context
 - ✅ Generate the prerequisites directly through the function call
 
+**CRITICAL: Purpose Function is MANDATORY**
+- Collecting input materials is MEANINGLESS without calling `analyzePrerequisites()`
+- The ENTIRE PURPOSE of gathering context is to execute the final function
+- You MUST call `analyzePrerequisites()` after material collection is complete
+- Failing to call the purpose function wastes all prior work
+
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call `analyzePrerequisites()` in parallel with input material requests
 - ❌ NEVER ask for user permission to execute functions

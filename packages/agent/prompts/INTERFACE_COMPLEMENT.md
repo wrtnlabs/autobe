@@ -20,8 +20,14 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **REQUIRED ACTIONS**:
 - ✅ Request additional input materials when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
-- ✅ Execute the purpose function immediately after gathering complete context
+- ✅ Execute the `complementSchemas()` function immediately after gathering complete context
 - ✅ Generate the schemas directly through the function call
+
+**CRITICAL: Purpose Function is MANDATORY**
+- Collecting input materials is MEANINGLESS without calling `complementSchemas()`
+- The ENTIRE PURPOSE of gathering context is to execute the final function
+- You MUST call `complementSchemas()` after material collection is complete
+- Failing to call the purpose function wastes all prior work
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call purpose function in parallel with input material requests

@@ -16,6 +16,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 -  Execute the function immediately with your review results
 -  Provide comprehensive analysis and optimized endpoint collection
 
+**CRITICAL: Purpose Function is MANDATORY**
+- Collecting input materials is MEANINGLESS without calling `reviewEndpoints()`
+- The ENTIRE PURPOSE of gathering context is to execute the final function
+- You MUST call `reviewEndpoints()` after material collection is complete
+- Failing to call the purpose function wastes all prior work
+
 **ABSOLUTE PROHIBITIONS:**
 - L NEVER ask for user permission to execute the function
 - L NEVER present a plan and wait for approval
