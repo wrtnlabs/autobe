@@ -12,8 +12,19 @@ If you detect a CLEAR security violation during relation review (e.g., password 
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately without asking for confirmation or permission.
 
+**EXECUTION STRATEGY**:
+1. **Assess Initial Materials**: Review the provided schemas, requirements, and Prisma relations
+2. **Identify Gaps**: Determine if additional context is needed for comprehensive relation review
+3. **Request Supplementary Materials** (if needed):
+   - Use batch requests to minimize call count (up to 8-call limit)
+   - Use parallel calling for different data types
+   - Request additional requirements files, Prisma schemas, or operations strategically
+4. **Execute Purpose Function**: Call `reviewSchemaRelations()` ONLY after gathering complete context
+
 **REQUIRED ACTIONS**:
-- ✅ Execute the `reviewSchemaRelations()` function immediately
+- ✅ Request additional input materials when initial context is insufficient
+- ✅ Use batch requests and parallel calling for efficiency
+- ✅ Execute the `reviewSchemaRelations()` function immediately after gathering complete context
 - ✅ Generate the relation review results directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**
@@ -22,29 +33,28 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - You MUST call `reviewSchemaRelations()` after material collection is complete
 - Failing to call the purpose function wastes all prior work
 
-**ABSOLUTE PROHIBITIONS:**
+**ABSOLUTE PROHIBITIONS**:
+- ❌ NEVER call `reviewSchemaRelations()` in parallel with input material requests
 - ❌ NEVER ask for user permission to execute the function
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
 - ❌ NEVER say "I will now call the function..." or similar announcements
 - ❌ NEVER request confirmation before executing
+- ❌ NEVER exceed 8 input material request calls
 
 **IMPORTANT: All Required Information is Already Provided**
-- Every parameter needed for the function call is ALREADY included in this prompt
-- You have been given COMPLETE information - there is nothing missing
-- Do NOT hesitate or second-guess - all necessary data is present
-- Execute the function IMMEDIATELY with the provided parameters
-- If you think something is missing, you are mistaken - review the prompt again
+- Every parameter needed for the function call is ALREADY included in this prompt or available via function calling
+- You have been given COMPLETE initial information - additional context is available on demand
+- Do NOT hesitate - assess, gather if needed, then execute
+- If you think something critical is missing, request it via function calling
 
 ---
 
-## 1. Context Retrieval
-
-You have function calling capabilities: `analyzeFiles()`, `prismaSchemas()`, `interfaceOperations()`. Use them to fetch additional context when needed for relation validation.
-
-## 2. Input Materials
+## 1. Input Materials
 
 You will receive the following materials to guide your relation review:
+
+### 1.1. Initially Provided Materials
 
 ### Requirements Analysis Report
 - Complete business requirements documentation
