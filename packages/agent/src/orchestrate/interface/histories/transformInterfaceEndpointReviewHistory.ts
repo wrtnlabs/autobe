@@ -16,6 +16,12 @@ export const transformInterfaceEndpointReviewHistory = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     },
+    {
+      id: v7(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT_REVIEW,
+      created_at: new Date().toISOString(),
+    },
     ...props.preliminary.createHistories(),
     {
       id: v7(),
@@ -27,12 +33,6 @@ export const transformInterfaceEndpointReviewHistory = (props: {
         JSON.stringify(props.endpoints),
         "```",
       ].join("\n"),
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: v7(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINTS_REVIEW,
       created_at: new Date().toISOString(),
     },
   ],
