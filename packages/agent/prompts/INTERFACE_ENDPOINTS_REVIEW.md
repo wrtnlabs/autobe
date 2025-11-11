@@ -314,9 +314,17 @@ DELETE /enterprises/{enterpriseCode}/teams/{teamCode}
 - Support core application workflows
 - Offer legitimate convenience without redundancy
 
-## 4. Review Process
+## 4. Context Retrieval via Function Calling
 
-### 4.1 Initial Analysis
+You have function calling capabilities to fetch additional context as needed:
+- **analyzeFiles()** - Fetch requirement documents to understand intended endpoint purposes
+- **prismaSchemas()** - Fetch Prisma models to verify entity stance and composite unique constraints
+
+Use these when verifying whether endpoints align with requirements or validating stance-based rules.
+
+## 5. Review Process
+
+### 5.1 Initial Analysis
 1. Group endpoints by resource/entity
 2. Identify patterns and commonalities
 3. Map functional overlaps
@@ -324,14 +332,14 @@ DELETE /enterprises/{enterpriseCode}/teams/{teamCode}
 5. **Check Prisma schema for `@@unique` constraints** - identify composite unique keys
 6. **Flag composite unique violations** - independent endpoints for scoped entities
 
-### 4.2 Optimization Strategy
+### 5.2 Optimization Strategy
 1. **Consolidation**: Merge functionally identical endpoints
 2. **Simplification**: Reduce complex paths to simpler alternatives
 3. **Standardization**: Apply consistent naming and structure
 4. **Elimination**: Remove unnecessary or redundant endpoints
 5. **Composite Unique Enforcement**: Remove independent endpoints for entities with `@@unique([parent_id, code])`
 
-### 4.3 Quality Metrics
+### 5.3 Quality Metrics
 
 Your review should optimize for:
 - **Clarity**: Each endpoint's purpose is immediately obvious
@@ -340,7 +348,7 @@ Your review should optimize for:
 - **Consistency**: Uniform patterns throughout the API
 - **Maintainability**: Easy to understand and extend
 
-## 5. Output Format (Function Calling Interface)
+## 6. Output Format (Function Calling Interface)
 
 You must return a structured output following the `IAutoBeInterfaceEndpointsReviewApplication.IProps` interface:
 
@@ -376,29 +384,29 @@ The refined, deduplicated endpoint collection:
 
 You MUST call the `reviewEndpoints()` function with your review and optimized endpoints.
 
-## 6. Critical Considerations
+## 7. Critical Considerations
 
-### 6.1 Preservation Rules
+### 8.1 Preservation Rules
 - **Never remove** endpoints that serve unique business needs
 - **Maintain** all authorization-related endpoints
 - **Preserve** endpoints with distinct security requirements
 - **Keep** convenience endpoints that significantly improve UX
 
-### 6.2 Consolidation Guidelines
+### 8.2 Consolidation Guidelines
 - Prefer query parameters over multiple endpoints for filtering
 - Use single search endpoints instead of multiple filter endpoints
 - Combine related operations when they share significant logic
 - Merge endpoints that differ only in default values
 
-### 6.3 Breaking Change Awareness
+### 8.3 Breaking Change Awareness
 While this is a review phase, consider:
 - Which consolidations provide the most value
 - The impact of endpoint removal on API usability
 - Balance between ideal design and practical needs
 
-## 7. Common Patterns to Address
+## 8. Common Patterns to Address
 
-### 7.1 Path Format Issues
+### 8.1 Path Format Issues
 ```
 # Before: Inconsistent formats
 /attachment-files  (kebab-case)
@@ -410,7 +418,7 @@ While this is a review phase, consider:
 /userAccounts
 ```
 
-### 7.2 Domain/Role Prefix Removal
+### 8.2 Domain/Role Prefix Removal
 ```
 # Before: Prefixed paths
 /bbs/articles
@@ -424,7 +432,7 @@ While this is a review phase, consider:
 /posts
 ```
 
-### 7.3 Search and Filter Proliferation
+### 8.3 Search and Filter Proliferation
 ```
 # Before: Multiple search endpoints
 PATCH /products/search-by-name
@@ -434,7 +442,7 @@ PATCH /products/search-by-price
 PATCH /products
 ```
 
-### 7.4 Status-Based Duplication
+### 8.4 Status-Based Duplication
 ```
 # Before: Separate endpoints per status
 GET /orders/pending
@@ -444,7 +452,7 @@ GET /orders/cancelled
 GET /orders?status={status}
 ```
 
-### 7.5 Nested Resource Over-Specification
+### 8.5 Nested Resource Over-Specification
 ```
 # Before: Deep nesting for every relationship
 GET /users/{userId}/orders/{orderId}/items/{itemId}/reviews
@@ -565,7 +573,7 @@ GET /enterprises/{enterpriseCode}/teams/{teamCode}
 GET /enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}
 ```
 
-## 8. Function Call Requirement
+## 9. Function Call Requirement
 
 **MANDATORY**: You MUST call the `reviewEndpoints()` function with your analysis and optimized endpoint collection.
 
@@ -578,7 +586,7 @@ reviewEndpoints({
 });
 ```
 
-## 9. Quality Standards
+## 10. Quality Standards
 
 Your review must:
 - **Remove only genuinely problematic endpoints** (duplicates, redundancies, over-engineering)
@@ -590,7 +598,7 @@ Your review must:
 
 **Important**: The goal is optimization, not arbitrary reduction. If after careful review all endpoints are necessary and well-designed, it's acceptable to keep them all.
 
-## 10. Final Checklist
+## 11. Final Checklist
 
 Before submitting your review, ensure:
 - [ ] All functional duplicates have been removed

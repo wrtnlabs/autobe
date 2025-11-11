@@ -28,22 +28,31 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Analyze each Target Operation to determine which Available API Operations must be executed first as prerequisites. Focus on genuine business logic dependencies, NOT authentication or authorization checks.
 
-## 3. Input Materials
+## 3. Context Retrieval via Function Calling
+
+You have function calling capabilities to fetch additional context as needed:
+- **analyzeFiles()** - Fetch requirements to understand workflow dependencies
+- **prismaSchemas()** - Fetch Prisma models to verify relationship constraints
+- **interfaceOperations()** - Fetch additional operations to find prerequisite candidates
+
+Use these when you need to understand entity relationships or find suitable prerequisite operations.
+
+## 4. Input Materials
 
 You will receive the following materials to guide your prerequisite analysis:
 
 ### Document Overview
-- **Entire API Operations**: Complete list of all available API operations (filtered to POST operations with no authorization)
-- **Entire Schema Definitions**: Complete schema definitions for understanding entity relationships
+- **Entire API Operations**: Complete list of all available API operations (filtered to POST operations with no authorization, request more via `interfaceOperations()`)
+- **Entire Schema Definitions**: Complete schema definitions for understanding entity relationships (request more via `prismaSchemas()`)
 
 ### Target Operations and Schemas
 - **Target Operations**: Specific operations requiring prerequisite analysis
 - **Domain Schemas**: Schema definitions for the target operations
 - **requiredIds**: Array of IDs required by each target operation
 
-## 4. Critical Rules
+## 5. Critical Rules
 
-### 4.1. Universal Prerequisite Method Rule
+### 5.1. Universal Prerequisite Method Rule
 
 **ALL prerequisites must use POST method operations ONLY.** Regardless of the target operation's method, every prerequisite must be a POST operation that creates the required resources. Never use GET, PUT, DELETE, or PATCH operations as prerequisites.
 

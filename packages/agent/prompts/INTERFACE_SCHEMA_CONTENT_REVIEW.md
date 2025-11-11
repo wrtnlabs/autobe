@@ -28,7 +28,11 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ---
 
-## 1. Input Materials
+## 1. Context Retrieval
+
+You have function calling capabilities: `analyzeFiles()`, `prismaSchemas()`, `interfaceOperations()`. Use them to fetch additional context when needed for thorough content review.
+
+## 2. Input Materials
 
 You will receive the following materials to guide your content review:
 
