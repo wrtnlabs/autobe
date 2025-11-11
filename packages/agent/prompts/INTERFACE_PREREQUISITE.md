@@ -100,6 +100,10 @@ analyzeFiles({
 - Business logic dependencies are unclear from initial context
 - Want to verify prerequisite chains against user workflows
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following requirements have been loaded and are available in your context". If you see these warnings listing specific requirement files, you MUST NOT request those files again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to verify relationship constraints.
 
@@ -113,6 +117,10 @@ prismaSchemas({
 - Need to understand entity relationship constraints
 - Verifying foreign key dependencies
 - Analyzing database schema structure for prerequisite determination
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following Prisma schemas have been loaded and are available in your context". If you see these warnings listing specific Prisma model names, you MUST NOT request those models again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
 
 **interfaceOperations(params)**
 Retrieves additional API operation definitions to find prerequisite candidates.
@@ -131,6 +139,10 @@ interfaceOperations({
 - Need to find suitable POST operations as prerequisite candidates
 - Looking for resource creation operations
 - Analyzing operation response types for prerequisite matching
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following operations have been loaded and are available in your context". If you see these warnings listing specific operations, you MUST NOT request those operations again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
 ### 3.3. Efficient Function Calling Strategy
 
@@ -193,6 +205,22 @@ interfaceOperations({ endpoints: [
 // Then: After materials are loaded, call purpose function
 analyzePrerequisites({ operations: [...] })
 ```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
+// If history shows: "⚠️ Prisma schemas loaded: orders, users"
+prismaSchemas({ schemaNames: ["orders"] })  // WRONG!
+// If history shows: "⚠️ Requirements loaded: Order_Workflow.md"
+analyzeFiles({ filenames: ["Order_Workflow.md"] })  // WRONG!
+// If history shows: "⚠️ Operations loaded: POST /users"
+interfaceOperations({ endpoints: [{ path: "/users", method: "post" }] })  // WRONG!
+
+// ✅ CORRECT - Only request NEW materials
+prismaSchemas({ schemaNames: ["products", "categories"] })  // OK - new items
+analyzeFiles({ filenames: ["Product_Management.md"] })  // OK - new file
+```
+**Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 
 **Strategic Context Gathering**:
 - The initially provided context is intentionally limited to reduce token usage

@@ -380,6 +380,15 @@ analyzeFiles({
 - Understanding intended API workflows and use cases
 - Clarifying feature-specific endpoint purposes
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following requirements have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific requirement files, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to verify entity stance and composite unique constraints.
 
@@ -393,6 +402,15 @@ prismaSchemas({
 - Need to verify stance-based rules (PRIMARY, SUBSIDIARY, SNAPSHOT)
 - Checking for composite unique constraints (@@unique([parent_id, code]))
 - Understanding entity relationships for endpoint validation
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following Prisma schemas have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific Prisma model names, you MUST NOT request those models again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
 
 ### 4.3. Efficient Function Calling Strategy
 
@@ -426,6 +444,31 @@ prismaSchemas({ schemaNames: ["teams", "enterprises"] })
 // Then after materials loaded:
 reviewEndpoints({ review: "...", endpoints: [...] })
 ```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
+// If your history shows: "⚠️ Prisma schemas loaded: users, orders, products"
+prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
+prismaSchemas({ schemaNames: ["orders", "products"] })  // WRONG - already loaded!
+
+// ❌ FORBIDDEN - Re-requesting already loaded requirements
+// If your history shows: "⚠️ Requirements loaded: API_Requirements.md, Feature_Specs.md"
+analyzeFiles({ filenames: ["API_Requirements.md"] })  // WRONG - already loaded!
+
+// ✅ CORRECT - Only request NEW materials not in history warnings
+// If history shows loaded schemas: ["users", "orders", "products"]
+// If history shows loaded files: ["API_Requirements.md"]
+prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
+analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+
+// ✅ CORRECT - Check history first, then request only missing items
+// Review conversation history for "⚠️ ... have been loaded" warnings
+// Only call functions for materials NOT listed in those warnings
+```
+
+**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
 
 ## 5. Review Process
 

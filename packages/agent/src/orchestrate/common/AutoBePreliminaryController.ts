@@ -38,7 +38,11 @@ export class AutoBePreliminaryController<
   }
 
   public createValidate() {
-    return createPreliminaryValidate(this.keys, this.all);
+    return createPreliminaryValidate({
+      keys: this.keys,
+      all: this.all,
+      local: this.local,
+    });
   }
 
   public createHistories(): IAgenticaHistoryJson.IAssistantMessage[] {

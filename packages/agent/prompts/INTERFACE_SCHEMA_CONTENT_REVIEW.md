@@ -115,6 +115,15 @@ analyzeFiles({
 - Understanding entity business rules and validation requirements
 - Clarifying field purposes and documentation needs
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following requirements have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific requirement files, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to verify field completeness and type mappings.
 
@@ -129,6 +138,15 @@ prismaSchemas({
 - Checking field types, nullability, and constraints
 - Understanding entity relationships and foreign keys
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following Prisma schemas have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific Prisma model names, you MUST NOT request those models again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
+
 **interfaceOperations(params)**
 Retrieves API operations to understand how schemas are used.
 
@@ -142,6 +160,15 @@ interfaceOperations({
 - Need to verify schemas contain all fields required by operations
 - Understanding request/response body requirements
 - Validating parameter types and validation rules
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following operations have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific operations, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
 ### 1.3. Efficient Function Calling Strategy
 
@@ -176,6 +203,37 @@ prismaSchemas({ schemaNames: ["users", "orders"] })
 // Then after materials loaded:
 reviewSchemaContent({ think: {...}, content: [...] })
 ```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
+// If your history shows: "⚠️ Prisma schemas loaded: users, orders, products"
+prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
+prismaSchemas({ schemaNames: ["orders", "products"] })  // WRONG - already loaded!
+
+// ❌ FORBIDDEN - Re-requesting already loaded requirements
+// If your history shows: "⚠️ Requirements loaded: Requirements.md, Entity_Specs.md"
+analyzeFiles({ filenames: ["Requirements.md"] })  // WRONG - already loaded!
+
+// ❌ FORBIDDEN - Re-requesting already loaded operations
+// If your history shows: "⚠️ Operations loaded: createUser, updateUser"
+interfaceOperations({ operationIds: ["createUser"] })  // WRONG - already loaded!
+
+// ✅ CORRECT - Only request NEW materials not in history warnings
+// If history shows loaded schemas: ["users", "orders", "products"]
+// If history shows loaded files: ["Requirements.md"]
+// If history shows loaded operations: ["createUser", "updateUser"]
+prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
+analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+interfaceOperations({ operationIds: ["deleteUser"] })  // OK - new operation
+
+// ✅ CORRECT - Check history first, then request only missing items
+// Review conversation history for "⚠️ ... have been loaded" warnings
+// Only call functions for materials NOT listed in those warnings
+```
+
+**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
 
 ---
 

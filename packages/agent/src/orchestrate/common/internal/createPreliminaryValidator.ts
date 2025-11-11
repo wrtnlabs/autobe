@@ -1,5 +1,4 @@
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
@@ -15,28 +14,35 @@ type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
 
 export function createPreliminaryValidate<
   Key extends keyof IAutoBePreliminaryApplication,
->(
-  keys: Key[],
-  collection: Pick<IAutoBePreliminaryCollection, Key>,
-): Validator<Key> {
+>(props: {
+  keys: Key[];
+  all: Pick<IAutoBePreliminaryCollection, Key>;
+  local: Pick<IAutoBePreliminaryCollection, Key>;
+}): Validator<Key> {
   const result: Validator<Key> = {} as any;
-  for (const k of keys)
-    result[k] = PreliminaryApplicationValidator[k](
-      collection as IAutoBePreliminaryCollection,
-    );
+  for (const k of props.keys)
+    result[k] = PreliminaryApplicationValidator[k]({
+      all: props.all as IAutoBePreliminaryCollection,
+      local: props.local as IAutoBePreliminaryCollection,
+    });
   return result;
 }
 
 namespace PreliminaryApplicationValidator {
   export const analyzeFiles = (props: {
-    analyzeFiles: AutoBeAnalyzeFile[];
+    all: Pick<IAutoBePreliminaryCollection, "analyzeFiles">;
+    local: Pick<IAutoBePreliminaryCollection, "analyzeFiles">;
   }) => {
-    const dict: Set<string> = new Set(
-      props.analyzeFiles.map((f) => f.filename),
+    const everything: Set<string> = new Set(
+      props.all.analyzeFiles.map((f) => f.filename),
     );
-    const quoted: string[] = props.analyzeFiles.map((f) =>
-      JSON.stringify(f.filename),
+    const oldbie: Set<string> = new Set(
+      props.local.analyzeFiles.map((f) => f.filename),
     );
+    const quoted: string[] = props.all.analyzeFiles
+      .filter((f) => oldbie.has(f.filename) === false)
+      .map((f) => JSON.stringify(f.filename));
+
     const description: string = StringUtil.trim`
       Here are the list of analysis requirement document files you can use.
 
@@ -44,10 +50,14 @@ namespace PreliminaryApplicationValidator {
 
       Filename | Document Type
       ---------|---------------
-      ${props.analyzeFiles
+      ${props.all.analyzeFiles
         .map((f) => [f.filename, f.documentType].join(" | "))
         .join("\n")}
     `;
+    const again = (key: string) =>
+      `The file ${JSON.stringify(
+        key,
+      )} is already mounted. Please do not request it again.`;
 
     return (
       input: unknown,
@@ -60,25 +70,39 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.filenames.forEach((key, i) => {
-        if (dict.has(key) === true) return;
-        errors.push({
-          path: `$input.filenames[${i}]`,
-          value: key,
-          expected: quoted.join(" | "),
-          description,
-        });
+        if (everything.has(key) === false)
+          errors.push({
+            path: `$input.filenames[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description,
+          });
+        else if (oldbie.has(key) === true)
+          errors.push({
+            path: `$input.filenames[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description: again(key),
+          });
       });
       return finalize(result, errors);
     };
   };
 
   export const prismaSchemas = (props: {
-    prismaSchemas: AutoBePrisma.IModel[];
+    all: Pick<IAutoBePreliminaryCollection, "prismaSchemas">;
+    local: Pick<IAutoBePreliminaryCollection, "prismaSchemas">;
   }) => {
-    const dict: Set<string> = new Set(props.prismaSchemas.map((s) => s.name));
-    const quoted: string[] = props.prismaSchemas.map((s) =>
-      JSON.stringify(s.name),
+    const everything: Set<string> = new Set(
+      props.all.prismaSchemas.map((s) => s.name),
     );
+    const oldbie: Set<string> = new Set(
+      props.local.prismaSchemas.map((s) => s.name),
+    );
+    const quoted: string[] = props.all.prismaSchemas
+      .filter((s) => oldbie.has(s.name) === false)
+      .map((s) => JSON.stringify(s.name));
+
     const description = StringUtil.trim`
       Here are the list of prisma schema models you can use.
 
@@ -86,6 +110,10 @@ namespace PreliminaryApplicationValidator {
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
+    const again = (key: string) =>
+      `The prisma schema model ${JSON.stringify(
+        key,
+      )} is already mounted. Please do not request it again.`;
 
     return (
       input: unknown,
@@ -98,29 +126,46 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.schemaNames.forEach((key, i) => {
-        if (dict.has(key) === true) return;
-        errors.push({
-          path: `$input.schemas[${i}]`,
-          value: key,
-          expected: quoted.join(" | "),
-          description,
-        });
+        if (everything.has(key) === false)
+          errors.push({
+            path: `$input.schemas[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description,
+          });
+        else if (oldbie.has(key) === true)
+          errors.push({
+            path: `$input.schemas[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description: again(key),
+          });
       });
       return finalize(result, errors);
     };
   };
 
   export const interfaceOperations = (props: {
-    interfaceOperations: AutoBeOpenApi.IOperation[];
+    all: Pick<IAutoBePreliminaryCollection, "interfaceOperations">;
+    local: Pick<IAutoBePreliminaryCollection, "interfaceOperations">;
   }) => {
-    const dict: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.interfaceOperations.map((o) => ({
+    const everything: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+      props.all.interfaceOperations.map((o) => ({
         method: o.method,
         path: o.path,
       })),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
+    const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+      props.local.interfaceOperations.map((o) => ({
+        method: o.method,
+        path: o.path,
+      })),
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
+    );
+
     const description: string = StringUtil.trim`
       Here are the list of API endpoints you can use.
 
@@ -128,9 +173,17 @@ namespace PreliminaryApplicationValidator {
 
       Method | Path 
       -------|------
-      ${props.interfaceOperations.map((o) => [o.method, o.path].join(" | ")).join("\n")}
+      ${props.all.interfaceOperations
+        .map((o) => [o.method, o.path].join(" | "))
+        .join("\n")}
       }
     `;
+    const again = (key: AutoBeOpenApi.IEndpoint) =>
+      `The endpoint (method: ${JSON.stringify(
+        key.method,
+      )}, path: ${JSON.stringify(
+        key.path,
+      )}) is already mounted. Please do not request it again.`;
 
     return (
       input: unknown,
@@ -143,24 +196,33 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.endpoints.forEach((key, i) => {
-        if (dict.has(key) === true) return;
-        errors.push({
-          path: `$input.endpoints[${i}]`,
-          value: key,
-          expected: "AutoBeOpenApi.IEndpoint",
-          description,
-        });
+        if (everything.has(key) === false)
+          errors.push({
+            path: `$input.endpoints[${i}]`,
+            value: key,
+            expected: "AutoBeOpenApi.IEndpoint",
+            description,
+          });
+        else if (oldbie.has(key) === true)
+          errors.push({
+            path: `$input.endpoints[${i}]`,
+            value: key,
+            expected: "AutoBeOpenApi.IEndpoint",
+            description: again(key),
+          });
       });
       return finalize(result, errors);
     };
   };
 
   export const interfaceSchemas = (props: {
-    interfaceSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    all: Pick<IAutoBePreliminaryCollection, "interfaceSchemas">;
+    local: Pick<IAutoBePreliminaryCollection, "interfaceSchemas">;
   }) => {
-    const quoted: string[] = Object.keys(props.interfaceSchemas).map((k) =>
-      JSON.stringify(k),
-    );
+    const quoted: string[] = Object.keys(props.all.interfaceSchemas)
+      .filter((k) => props.local.interfaceSchemas[k] === undefined)
+      .map((k) => JSON.stringify(k));
+
     const description: string = StringUtil.trim`
       Here are the list of interface schemas you can use.
 
@@ -168,6 +230,11 @@ namespace PreliminaryApplicationValidator {
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
+    const again = (key: string) =>
+      `The interface schema ${JSON.stringify(
+        key,
+      )} is already mounted. Please do not request it again.`;
+
     return (
       input: unknown,
     ): IValidation<IAutoBePreliminaryApplication.IInterfaceSchemasProps> => {
@@ -179,13 +246,20 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.typeNames.forEach((key, i) => {
-        if (props.interfaceSchemas[key] !== undefined) return;
-        errors.push({
-          path: `$input.typeNames[${i}]`,
-          value: key,
-          expected: quoted.join(" | "),
-          description,
-        });
+        if (props.all.interfaceSchemas[key] === undefined)
+          errors.push({
+            path: `$input.typeNames[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description,
+          });
+        else if (props.local.interfaceSchemas[key] !== undefined)
+          errors.push({
+            path: `$input.typeNames[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description: again(key),
+          });
       });
       return finalize(result, errors);
     };

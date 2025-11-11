@@ -133,6 +133,10 @@ analyzeFiles({
 - Entity relationships or validation rules unclear from operations alone
 - Want to reference specific requirement details in schema descriptions
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following requirements have been loaded and are available in your context". If you see these warnings listing specific requirement files, you MUST NOT request those files again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
 **prismaSchemas(params)**
 Retrieves Prisma database model definitions by schema name.
 
@@ -147,6 +151,10 @@ prismaSchemas({
 - Want to reference Prisma schema comments in DTO descriptions
 - Need to verify relationships between entities for proper $ref usage
 - Generating schemas for entities whose Prisma models aren't yet loaded
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following Prisma schemas have been loaded and are available in your context". If you see these warnings listing specific Prisma model names, you MUST NOT request those models again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
 
 **interfaceOperations(params)**
 Retrieves OpenAPI operation specifications by endpoint (method + path).
@@ -165,6 +173,10 @@ interfaceOperations({
 - Want to verify request/response patterns for related operations
 - Need to check authorizationActor to properly exclude actor identity fields
 - Understanding operation flow to design appropriate schema variants
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following operations have been loaded and are available in your context". If you see these warnings listing specific operations, you MUST NOT request those operations again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
 ### 2.3. Efficient Function Calling Strategy
 
@@ -199,6 +211,22 @@ prismaSchemas({ schemaNames: ["sales", "orders"] })
 // Then after materials loaded:
 generateSchemas({ schemas: {...} })
 ```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
+// If history shows: "⚠️ Prisma schemas loaded: sales, orders"
+prismaSchemas({ schemaNames: ["sales"] })  // WRONG!
+// If history shows: "⚠️ Requirements loaded: Business_Requirements.md"
+analyzeFiles({ filenames: ["Business_Requirements.md"] })  // WRONG!
+// If history shows: "⚠️ Operations loaded: POST /sales"
+interfaceOperations({ endpoints: [{ path: "/sales", method: "post" }] })  // WRONG!
+
+// ✅ CORRECT - Only request NEW materials
+prismaSchemas({ schemaNames: ["products", "reviews"] })  // OK - new items
+analyzeFiles({ filenames: ["Entity_Specs.md"] })  // OK - new file
+```
+**Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 
 **Strategic Context Gathering**:
 - The initially provided context is intentionally limited to reduce token usage

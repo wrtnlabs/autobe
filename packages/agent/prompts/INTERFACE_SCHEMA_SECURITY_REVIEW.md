@@ -132,6 +132,15 @@ analyzeFiles({
 })
 ```
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following requirements have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific requirement files, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
 **prismaSchemas(params)**
 ```typescript
 prismaSchemas({
@@ -139,12 +148,30 @@ prismaSchemas({
 })
 ```
 
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following Prisma schemas have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific Prisma model names, you MUST NOT request those models again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
+
 **interfaceOperations(params)**
 ```typescript
 interfaceOperations({
   operationIds: ["login", "createUser", "updateProfile"]  // Batch request
 })
 ```
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Before calling this function, you MUST check your conversation history for warning messages like:
+- "⚠️ The following operations have been loaded and are available in your context"
+
+**ABSOLUTE PROHIBITION**: If you see these warnings listing specific operations, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+
+**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
 ### 1.3. Efficient Function Calling Strategy
 
@@ -178,6 +205,37 @@ prismaSchemas({ schemaNames: ["users", "sessions"] })
 // Then after materials loaded:
 reviewSchemaSecurity({ think: {...}, content: [...] })
 ```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
+// If your history shows: "⚠️ Prisma schemas loaded: users, sessions, tokens"
+prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
+prismaSchemas({ schemaNames: ["sessions", "tokens"] })  // WRONG - already loaded!
+
+// ❌ FORBIDDEN - Re-requesting already loaded requirements
+// If your history shows: "⚠️ Requirements loaded: Security.md, Requirements.md"
+analyzeFiles({ filenames: ["Security.md"] })  // WRONG - already loaded!
+
+// ❌ FORBIDDEN - Re-requesting already loaded operations
+// If your history shows: "⚠️ Operations loaded: login, createUser"
+interfaceOperations({ operationIds: ["login"] })  // WRONG - already loaded!
+
+// ✅ CORRECT - Only request NEW materials not in history warnings
+// If history shows loaded schemas: ["users", "sessions", "tokens"]
+// If history shows loaded files: ["Security.md"]
+// If history shows loaded operations: ["login", "createUser"]
+prismaSchemas({ schemaNames: ["orders", "products"] })  // OK - new items
+analyzeFiles({ filenames: ["API_Policies.md"] })  // OK - new file
+interfaceOperations({ operationIds: ["updateProfile"] })  // OK - new operation
+
+// ✅ CORRECT - Check history first, then request only missing items
+// Review conversation history for "⚠️ ... have been loaded" warnings
+// Only call functions for materials NOT listed in those warnings
+```
+
+**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
 
 ---
 
