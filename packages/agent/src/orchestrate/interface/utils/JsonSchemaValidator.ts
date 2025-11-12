@@ -76,7 +76,9 @@ export namespace JsonSchemaValidator {
       });
     else if (
       props.key.startsWith("IPage") &&
-      props.key.startsWith("IPageI") === false
+      props.key.startsWith("IPageI") === false &&
+      props.key !== "IPage.IPagination" &&
+      props.key !== "IPage.IRequest"
     ) {
       const expected: string = `IPage${props.key
         .substring(5)
