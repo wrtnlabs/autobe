@@ -74,9 +74,9 @@ namespace PreliminaryApplicationValidator {
 
     return (
       input: unknown,
-    ): IValidation<IAutoBePreliminaryApplication.IRequirementAnalysesProps> => {
-      const result: IValidation<IAutoBePreliminaryApplication.IRequirementAnalysesProps> =
-        typia.validate<IAutoBePreliminaryApplication.IRequirementAnalysesProps>(
+    ): IValidation<IAutoBePreliminaryApplication.IAnalysisFilesProps> => {
+      const result: IValidation<IAutoBePreliminaryApplication.IAnalysisFilesProps> =
+        typia.validate<IAutoBePreliminaryApplication.IAnalysisFilesProps>(
           input,
         );
       if (result.success === false) return result;

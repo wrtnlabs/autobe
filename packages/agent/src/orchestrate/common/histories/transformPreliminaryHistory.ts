@@ -6,6 +6,7 @@ import {
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
+  // AutoBePreliminaryKind,
   AutoBePrisma,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
@@ -21,16 +22,19 @@ import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCo
 export function transformPreliminaryHistory<
   Key extends keyof IAutoBePreliminaryApplication,
 >(preliminary: AutoBePreliminaryController<Key>): IMicroAgenticaHistoryJson[] {
-  return preliminary
-    .getKinds()
-    .map((key): IMicroAgenticaHistoryJson[] =>
-      transformPreliminaryHistory[key]({
-        source: preliminary.getSource(),
-        all: preliminary.getAll() as IAutoBePreliminaryCollection,
-        local: preliminary.getLocal() as IAutoBePreliminaryCollection,
-      }),
-    )
-    .flat();
+  return [
+    ...preliminary
+      .getKinds()
+      .map((key): IMicroAgenticaHistoryJson[] =>
+        transformPreliminaryHistory[key]({
+          source: preliminary.getSource(),
+          all: preliminary.getAll() as IAutoBePreliminaryCollection,
+          local: preliminary.getLocal() as IAutoBePreliminaryCollection,
+        }),
+      )
+      .flat(),
+    ...(preliminary.getEmpties() ?? []).map(getEmptyMessage),
+  ];
 }
 
 /**
@@ -72,13 +76,13 @@ export namespace transformPreliminaryHistory {
     return props.local.analyzeFiles.length === 0
       ? [assistant, system]
       : [
-          createFunctionCallingMessage({
-            controller: props.source,
-            function: "analyzeFiles",
-            argument: {
-              fileNames: props.local.analyzeFiles.map((f) => f.filename),
-            },
-          }),
+          // createFunctionCallingMessage({
+          //   controller: props.source,
+          //   function: "analyzeFiles",
+          //   argument: {
+          //     fileNames: props.local.analyzeFiles.map((f) => f.filename),
+          //   },
+          // }),
           assistant,
           system,
         ];
@@ -111,13 +115,13 @@ export namespace transformPreliminaryHistory {
     return props.local.prismaSchemas.length === 0
       ? [assistant, system]
       : [
-          createFunctionCallingMessage({
-            controller: props.source,
-            function: "prismaSchemas",
-            argument: {
-              schemaNames: props.local.prismaSchemas.map((s) => s.name),
-            },
-          }),
+          // createFunctionCallingMessage({
+          //   controller: props.source,
+          //   function: "prismaSchemas",
+          //   argument: {
+          //     schemaNames: props.local.prismaSchemas.map((s) => s.name),
+          //   },
+          // }),
           assistant,
           system,
         ];
@@ -163,13 +167,13 @@ export namespace transformPreliminaryHistory {
     return props.local.interfaceOperations.length === 0
       ? [assistant, system]
       : [
-          createFunctionCallingMessage({
-            controller: props.source,
-            function: "interfaceOperations",
-            argument: {
-              endpoints: oldbie.toJSON(),
-            },
-          }),
+          // createFunctionCallingMessage({
+          //   controller: props.source,
+          //   function: "interfaceOperations",
+          //   argument: {
+          //     endpoints: oldbie.toJSON(),
+          //   },
+          // }),
           assistant,
           system,
         ];
@@ -203,59 +207,59 @@ export namespace transformPreliminaryHistory {
     return Object.keys(props.local.interfaceSchemas).length === 0
       ? [assistant, system]
       : [
-          createFunctionCallingMessage({
-            controller: props.source,
-            function: "interfaceSchemas",
-            argument: {
-              typeNames: Object.keys(props.local.interfaceSchemas),
-            },
-          }),
+          // createFunctionCallingMessage({
+          //   controller: props.source,
+          //   function: "interfaceSchemas",
+          //   argument: {
+          //     typeNames: Object.keys(props.local.interfaceSchemas),
+          //   },
+          // }),
           assistant,
           system,
         ];
   };
 
-  // experimenting between assistantMessage and execute types
-  const createFunctionCallingMessage = <
-    Function extends AutoBePreliminaryKind,
-  >(props: {
-    controller: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    function: Function;
-    argument: Parameters<IAutoBePreliminaryApplication[Function]>[0];
-  }):
-    | IAgenticaHistoryJson.IAssistantMessage
-    | IAgenticaHistoryJson.IExecute => ({
-    type: "execute",
-    id: v7(),
-    operation: {
-      protocol: "class",
-      controller: props.controller,
-      function: props.function,
-      name: props.function,
-    },
-    arguments: props.argument as any,
-    value: undefined,
-    success: true,
-    created_at: new Date().toISOString(),
-    // type: "assistantMessage",
-    // id: v7(),
-    // text: StringUtil.trim`
-    //   # Function Calling History
+  // // experimenting between assistantMessage and execute types
+  // const createFunctionCallingMessage = <
+  //   Function extends AutoBePreliminaryKind,
+  // >(props: {
+  //   controller: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+  //   function: Function;
+  //   argument: Parameters<IAutoBePreliminaryApplication[Function]>[0];
+  // }):
+  //   | IAgenticaHistoryJson.IAssistantMessage
+  //   | IAgenticaHistoryJson.IExecute => ({
+  //   type: "execute",
+  //   id: v7(),
+  //   operation: {
+  //     protocol: "class",
+  //     controller: props.controller,
+  //     function: props.function,
+  //     name: props.function,
+  //   },
+  //   arguments: props.argument as any,
+  //   value: undefined,
+  //   success: true,
+  //   created_at: new Date().toISOString(),
+  //   // type: "assistantMessage",
+  //   // id: v7(),
+  //   // text: StringUtil.trim`
+  //   //   # Function Calling History
 
-    //   Function "${props.function}()" has been called.
+  //   //   Function "${props.function}()" has been called.
 
-    //   Here is the arguments.
+  //   //   Here is the arguments.
 
-    //   Note that, never call the same items again.
-    //   As they are loaded onto the memory, you never have to
-    //   request none of them again.
+  //   //   Note that, never call the same items again.
+  //   //   As they are loaded onto the memory, you never have to
+  //   //   request none of them again.
 
-    //   \`\`\`json
-    //   ${JSON.stringify(props.argument)}
-    //   \`\`\`
-    // `,
-    // created_at: new Date().toISOString(),
-  });
+  //   //   \`\`\`json
+  //   //   ${JSON.stringify(props.argument)}
+  //   //   \`\`\`
+  //   // `,
+  //   // created_at: new Date().toISOString(),
+  // });
 
   const createAssistantMessage = (props: {
     prompt: string;
@@ -289,3 +293,47 @@ export namespace transformPreliminaryHistory {
     created_at: new Date().toISOString(),
   });
 }
+
+function getEmptyMessage(
+  kind: AutoBePreliminaryKind,
+): IAgenticaHistoryJson.ISystemMessage {
+  return {
+    id: v7(),
+    type: "systemMessage",
+    text: StringUtil.trim`
+      You have called ${kind}() function with empty list.
+
+      \`\`\`json
+      ${JSON.stringify(getEmptyArgument(kind), null, 2)}
+      \`\`\`
+
+      It means that you no more need to call this ${kind}() function anymore.
+      Try to call another function instead.
+
+      This is absolute instruction you have to follow.
+    `,
+    created_at: new Date().toISOString(),
+  };
+}
+
+const getEmptyArgument = (kind: AutoBePreliminaryKind) => {
+  if (kind === "analyzeFiles")
+    return {
+      fileNames: [],
+    } satisfies IAutoBePreliminaryApplication.IAnalysisFilesProps;
+  else if (kind === "prismaSchemas")
+    return {
+      schemaNames: [],
+    } satisfies IAutoBePreliminaryApplication.IPrismaSchemasProps;
+  else if (kind === "interfaceOperations")
+    return {
+      endpoints: [],
+    } satisfies IAutoBePreliminaryApplication.IInterfaceOperationsProps;
+  else if (kind === "interfaceSchemas")
+    return {
+      typeNames: [],
+    } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps;
+  // unreachable
+  kind satisfies never;
+  throw new Error("Invalid kind.");
+};

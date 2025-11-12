@@ -14,19 +14,23 @@ import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
-export class AutoBePreliminaryController<Key extends AutoBePreliminaryKind> {
+export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
-  private readonly kinds: Key[];
-  private readonly all: Pick<IAutoBePreliminaryCollection, Key>;
-  private readonly local: Pick<IAutoBePreliminaryCollection, Key>;
+  private readonly kinds: Kind[];
+  private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
+  private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
 
-  public constructor(props: AutoBePreliminaryController.IProps<Key>) {
+  private empties: Set<Kind> | null;
+
+  public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
+    this.empties = null;
+
     complementPreliminaryCollection({
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
@@ -50,16 +54,20 @@ export class AutoBePreliminaryController<Key extends AutoBePreliminaryKind> {
     return this.source;
   }
 
-  public getKinds(): Key[] {
+  public getKinds(): Kind[] {
     return this.kinds;
   }
 
-  public getAll(): Pick<IAutoBePreliminaryCollection, Key> {
+  public getAll(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.all;
   }
 
-  public getLocal(): Pick<IAutoBePreliminaryCollection, Key> {
+  public getLocal(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.local;
+  }
+
+  public getEmpties(): Kind[] | null {
+    return this.empties ? Array.from(this.empties) : null;
   }
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(
@@ -78,14 +86,19 @@ export class AutoBePreliminaryController<Key extends AutoBePreliminaryKind> {
         }),
       );
       if (result.value !== null) return result.value;
-      else
-        await orchestratePreliminary(ctx, {
-          source_id: this.source_id,
-          source: this.source,
-          preliminary: this,
-          trial: i + 1,
-          histories: result.histories,
-        });
+
+      await orchestratePreliminary(ctx, {
+        source_id: this.source_id,
+        source: this.source,
+        preliminary: this,
+        trial: i + 1,
+        histories: result.histories,
+        setEmpty: (kind: Kind, value: boolean) => {
+          this.empties ??= new Set<Kind>();
+          if (value === true) this.empties.add(kind);
+          else this.empties.delete(kind);
+        },
+      });
     }
     throw new Error(
       "Preliminary process exceeded the maximum number of retries.",

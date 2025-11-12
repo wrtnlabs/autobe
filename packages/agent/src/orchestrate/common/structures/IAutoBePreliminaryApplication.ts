@@ -11,9 +11,7 @@ export interface IAutoBePreliminaryApplication {
    * Be careful not to request the same documents that have already been loaded
    * into context.
    */
-  analyzeFiles(
-    props: IAutoBePreliminaryApplication.IRequirementAnalysesProps,
-  ): void;
+  analyzeFiles(props: IAutoBePreliminaryApplication.IAnalysisFilesProps): void;
 
   /**
    * Retrieves Prisma database schema models.
@@ -56,7 +54,7 @@ export interface IAutoBePreliminaryApplication {
   ): void;
 }
 export namespace IAutoBePreliminaryApplication {
-  export interface IRequirementAnalysesProps {
+  export interface IAnalysisFilesProps {
     /**
      * Array of requirement analysis document filenames to retrieve.
      *
