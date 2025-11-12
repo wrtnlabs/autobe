@@ -21,7 +21,7 @@ export async function orchestrateInterfaceEndpointReview<
     "analyzeFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
     source: "interfaceEndpointReview",
-    keys: ["analyzeFiles", "prismaSchemas"],
+    kinds: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async () => {

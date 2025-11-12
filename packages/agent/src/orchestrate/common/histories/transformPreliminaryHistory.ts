@@ -22,7 +22,7 @@ export function transformPreliminaryHistory<
   Key extends keyof IAutoBePreliminaryApplication,
 >(preliminary: AutoBePreliminaryController<Key>): IMicroAgenticaHistoryJson[] {
   return preliminary
-    .getKeys()
+    .getKinds()
     .map((key): IMicroAgenticaHistoryJson[] =>
       transformPreliminaryHistory[key]({
         source: preliminary.getSource(),

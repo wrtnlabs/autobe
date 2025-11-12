@@ -117,7 +117,7 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     source: "interfaceSchemaReview",
-    keys: [
+    kinds: [
       "analyzeFiles",
       "prismaSchemas",
       "interfaceOperations",

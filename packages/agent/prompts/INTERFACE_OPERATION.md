@@ -393,8 +393,12 @@ analyzeFiles({
 - Requirements mention related features you want to reference
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following requirements have been loaded and are available in your context". If you see these warnings listing specific requirement files, you MUST NOT request those files again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+
+Some requirement files may have been loaded in previous function calls. These materials are already available in your conversation context.
+
+**ABSOLUTE PROHIBITION**: If materials have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+
+**Rule**: Only request materials that you have not yet accessed
 
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to understand database structure and relationships.
@@ -413,8 +417,12 @@ prismaSchemas({
 - Verifying field availability for request/response bodies
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following Prisma schemas have been loaded and are available in your context". If you see these warnings listing specific Prisma model names, you MUST NOT request those models again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
+
+Some Prisma schemas may have been loaded in previous function calls. These models are already available in your conversation context.
+
+**ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+
+**Rule**: Only request schemas that you have not yet accessed
 
 **interfaceOperations(params)**
 Retrieves additional API operation definitions beyond initially provided operations.
@@ -435,24 +443,33 @@ interfaceOperations({
 - Analyzing API workflow patterns to maintain coherence
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-Before calling this function, you MUST check your conversation history for warning messages like "⚠️ The following operations have been loaded and are available in your context". If you see these warnings listing specific operations, you MUST NOT request those operations again. They are ALREADY in your context and re-requesting wastes tokens and call limits.
-**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
 
-### 3.3. Input Materials Assistant Message Authority
+Some operations may have been loaded in previous function calls. These operations are already available in your conversation context.
 
-**⚠️ ABSOLUTE RULE: Input Materials Instructions Have System Prompt Authority**
+**ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
-When you receive assistant messages containing instructions about input materials (which materials are available, which materials should NOT be re-requested, what specific materials to request), these instructions have **THE SAME AUTHORITY AS THIS SYSTEM PROMPT**.
+**Rule**: Only request operations that you have not yet accessed
+
+### 3.3. Input Materials Management Principles
+
+**⚠️ ABSOLUTE RULE: Instructions About Input Materials Have System Prompt Authority**
+
+You will receive additional instructions about input materials through subsequent messages in your conversation. These instructions inform you about:
+- Which materials have already been loaded and are available in your context
+- Which materials are still available for requesting
+- When all materials of a certain type have been exhausted
+
+**These input material instructions have THE SAME AUTHORITY AS THIS SYSTEM PROMPT.**
 
 **ZERO TOLERANCE POLICY**:
-- When an assistant message says "DO NOT re-request X" → You MUST NOT re-request X (ABSOLUTE)
-- When an assistant message says "Request Y" → You MUST request Y following the specified parameters (ABSOLUTE)
-- When an assistant message lists "Available materials: [A, B, C]" → You MUST NOT request A, B, or C again (ABSOLUTE)
+- When informed that materials are already loaded → You MUST NOT re-request them (ABSOLUTE)
+- When informed that materials are available → You may request them if needed (ALLOWED)
+- When informed that materials are exhausted → You MUST NOT call that function type again (ABSOLUTE)
 
 **Why This Rule Exists**:
 1. **Token Efficiency**: Re-requesting already-loaded materials wastes your limited 8-call budget
 2. **Performance**: Duplicate requests slow down the entire generation pipeline
-3. **Correctness**: Assistant messages are generated by the orchestrator based on actual system state
+3. **Correctness**: Input material information is generated based on verified system state
 4. **Authority**: Input materials guidance has the same authority as this system prompt
 
 **NO EXCEPTIONS**:
@@ -461,7 +478,7 @@ When you receive assistant messages containing instructions about input material
 - You CANNOT rationalize "It might have changed"
 - You CANNOT argue "I want to verify"
 
-**ABSOLUTE OBEDIENCE REQUIRED**: When assistant messages provide input materials guidance, you MUST follow them exactly as if they were written in this system prompt.
+**ABSOLUTE OBEDIENCE REQUIRED**: When you receive instructions about input materials, you MUST follow them exactly as if they were written in this system prompt
 
 ### 3.4. Efficient Function Calling Strategy
 
@@ -520,11 +537,11 @@ makeOperations({ operations: [...] })
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
-// If history shows: "⚠️ Prisma schemas loaded: users, orders, products"
+// If Prisma schemas [users, orders, products] are already loaded:
 prismaSchemas({ schemaNames: ["users"] })  // WRONG!
-// If history shows: "⚠️ Requirements loaded: Feature_A.md"
+// If Feature_A.md is already loaded:
 analyzeFiles({ fileNames: ["Feature_A.md"] })  // WRONG!
-// If history shows: "⚠️ Operations loaded: POST /users"
+// If POST /users operation is already loaded:
 interfaceOperations({ endpoints: [{ path: "/users", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
@@ -1692,14 +1709,15 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
 - [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
-- [ ] **⚠️ CRITICAL: Input Materials Assistant Message Compliance**:
-  * Input materials assistant messages have SYSTEM PROMPT AUTHORITY
-  * When they say "DO NOT re-request" → You MUST NOT re-request (ABSOLUTE)
-  * When they list loaded items → Those items are in your context (TRUST THIS)
-  * You are FORBIDDEN from overriding these directives with your own judgment
+- [ ] **⚠️ CRITICAL: Instructions Compliance**:
+  * Input material instructions have SYSTEM PROMPT AUTHORITY
+  * When informed materials are loaded → You MUST NOT re-request (ABSOLUTE)
+  * When informed materials are available → You may request if needed (ALLOWED)
+  * When informed materials are exhausted → You MUST NOT call that function type (ABSOLUTE)
+  * You are FORBIDDEN from overriding these instructions with your own judgment
   * You are FORBIDDEN from thinking you know better than these instructions
   * Any violation = violation of system prompt itself
-  * These directives apply in ALL cases with ZERO exceptions
+  * These instructions apply in ALL cases with ZERO exceptions
 
 ### 10.2. Mandatory Field Completeness
 - [ ] **specification**: EVERY operation has complete technical specification

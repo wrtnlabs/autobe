@@ -132,7 +132,7 @@ async function process<Model extends ILlmSchema.Model>(
     "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
     source: "interfaceSchema",
-    keys: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
+    kinds: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {

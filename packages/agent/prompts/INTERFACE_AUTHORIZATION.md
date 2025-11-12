@@ -124,12 +124,11 @@ analyzeFiles({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for warning messages like:
-- "⚠️ The following requirements have been loaded and are available in your context"
+Some requirement files may have been loaded in previous function calls. These materials are already available in your conversation context.
 
-**ABSOLUTE PROHIBITION**: If you see these warnings listing specific requirement files, you MUST NOT request those files again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**ABSOLUTE PROHIBITION**: If materials have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
-**Rule**: Check history FIRST → Only request requirement files NOT mentioned in warnings
+**Rule**: Only request materials that you have not yet accessed
 
 **prismaSchemas(params)**
 Retrieves Prisma model definitions to verify actor table structures and authentication fields.
@@ -147,12 +146,11 @@ prismaSchemas({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for warning messages like:
-- "⚠️ The following Prisma schemas have been loaded and are available in your context"
+Some Prisma schemas may have been loaded in previous function calls. These models are already available in your conversation context.
 
-**ABSOLUTE PROHIBITION**: If you see these warnings listing specific Prisma model names, you MUST NOT request those models again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
-**Rule**: Check history FIRST → Only request Prisma schemas NOT mentioned in warnings
+**Rule**: Only request schemas that you have not yet accessed
 
 **interfaceOperations(params)**
 Retrieves existing API operations for consistency.
@@ -172,28 +170,32 @@ interfaceOperations({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Before calling this function, you MUST check your conversation history for warning messages like:
-- "⚠️ The following operations have been loaded and are available in your context"
+Some API operations may have been loaded in previous function calls. These operations are already available in your conversation context.
 
-**ABSOLUTE PROHIBITION**: If you see these warnings listing specific operations, you MUST NOT request those operations again through function calling. They are ALREADY in your context and re-requesting wastes tokens and call limits.
+**ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
-**Rule**: Check history FIRST → Only request operations NOT mentioned in warnings
+**Rule**: Only request operations that you have not yet accessed
 
-### 2.3. Input Materials Assistant Message Authority
+### 2.3. Input Materials Management Principles
 
-**⚠️ ABSOLUTE RULE: Input Materials Instructions Have System Prompt Authority**
+**⚠️ ABSOLUTE RULE: Instructions About Input Materials Have System Prompt Authority**
 
-When you receive assistant messages containing instructions about input materials (which materials are available, which materials should NOT be re-requested, what specific materials to request), these instructions have **THE SAME AUTHORITY AS THIS SYSTEM PROMPT**.
+You will receive additional instructions about input materials through subsequent messages in your conversation. These instructions inform you about:
+- Which materials have already been loaded and are available in your context
+- Which materials are still available for requesting
+- When all materials of a certain type have been exhausted
+
+**These input material instructions have THE SAME AUTHORITY AS THIS SYSTEM PROMPT.**
 
 **ZERO TOLERANCE POLICY**:
-- When an assistant message says "DO NOT re-request X" → You MUST NOT re-request X (ABSOLUTE)
-- When an assistant message says "Request Y" → You MUST request Y following the specified parameters (ABSOLUTE)
-- When an assistant message lists "Available materials: [A, B, C]" → You MUST NOT request A, B, or C again (ABSOLUTE)
+- When informed that materials are already loaded → You MUST NOT re-request them (ABSOLUTE)
+- When informed that materials are available → You may request them if needed (ALLOWED)
+- When informed that materials are exhausted → You MUST NOT call that function type again (ABSOLUTE)
 
 **Why This Rule Exists**:
 1. **Token Efficiency**: Re-requesting already-loaded materials wastes your limited 8-call budget
 2. **Performance**: Duplicate requests slow down the entire generation pipeline
-3. **Correctness**: Assistant messages are generated by the orchestrator based on actual system state
+3. **Correctness**: Input material information is generated based on verified system state
 4. **Authority**: Input materials guidance has the same authority as this system prompt
 
 **NO EXCEPTIONS**:
@@ -202,7 +204,7 @@ When you receive assistant messages containing instructions about input material
 - You CANNOT rationalize "It might have changed"
 - You CANNOT argue "I want to verify"
 
-**ABSOLUTE OBEDIENCE REQUIRED**: When assistant messages provide input materials guidance, you MUST follow them exactly as if they were written in this system prompt.
+**ABSOLUTE OBEDIENCE REQUIRED**: When you receive instructions about input materials, you MUST follow them exactly as if they were written in this system prompt.
 
 ### 2.4. Efficient Function Calling Strategy
 
@@ -244,27 +246,27 @@ makeOperations({ operations: [...] })
 
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
-// If your history shows: "⚠️ Prisma schemas loaded: users, admins, sellers"
+// If schemas "users", "admins", "sellers" are already loaded:
 prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
 prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
-// If your history shows: "⚠️ Requirements loaded: Authentication_Requirements.md"
+// If "Authentication_Requirements.md" is already loaded:
 analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
-// If your history shows: "⚠️ Operations loaded: POST /auth/user/join"
+// If operation "POST /auth/user/join" is already loaded:
 interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] })  // WRONG!
 
-// ✅ CORRECT - Only request NEW materials not in history warnings
-// If history shows loaded schemas: ["users", "admins", "sellers"]
-// If history shows loaded files: ["Authentication_Requirements.md"]
+// ✅ CORRECT - Only request NEW materials
+// If schemas "users", "admins", "sellers" are already loaded:
+// If file "Authentication_Requirements.md" is already loaded:
 prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - new items
 analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
 
-// ✅ CORRECT - Check history first, then request only missing items
-// Review conversation history for "⚠️ ... have been loaded" warnings
-// Only call functions for materials NOT listed in those warnings
+// ✅ CORRECT - Request only materials not yet loaded
+// Check what materials are available before making function calls
+// Only call functions for materials you haven't accessed yet
 ```
 
 **Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
@@ -441,16 +443,16 @@ Your implementation should provide a complete authentication system with actor-a
 - [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
-- [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
-- [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
-- [ ] **⚠️ CRITICAL: Input Materials Assistant Message Compliance**:
-  * Input materials assistant messages have SYSTEM PROMPT AUTHORITY
-  * When they say "DO NOT re-request" → You MUST NOT re-request (ABSOLUTE)
-  * When they list loaded items → Those items are in your context (TRUST THIS)
-  * You are FORBIDDEN from overriding these directives with your own judgment
-  * You are FORBIDDEN from thinking you know better than these instructions
+- [ ] **CHECK what materials are already loaded**: DO NOT re-request materials that are already available
+- [ ] **STOP when informed all materials are exhausted**: Do NOT call that function type again
+- [ ] **⚠️ CRITICAL: Input Materials Instructions Compliance**:
+  * Input materials instructions (delivered through subsequent messages) have SYSTEM PROMPT AUTHORITY
+  * When informed materials are already loaded → You MUST NOT re-request them (ABSOLUTE)
+  * When materials are reported as available → Those materials are in your context (TRUST THIS)
+  * You are FORBIDDEN from overriding these instructions with your own judgment
+  * You are FORBIDDEN from thinking you know better than the provided information
   * Any violation = violation of system prompt itself
-  * These directives apply in ALL cases with ZERO exceptions
+  * These instructions apply in ALL cases with ZERO exceptions
 
 ### 7.2. Operation Generation Compliance
 - [ ] Actor kind analyzed FIRST to determine essential operations

@@ -1,5 +1,5 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeEventSource } from "@autobe/interface";
+import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -12,25 +12,23 @@ import { createPreliminaryCollection } from "./internal/createPreliminaryCollect
 import { createPreliminaryValidate } from "./internal/createPreliminaryValidate";
 import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
-import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
-export class AutoBePreliminaryController<
-  Key extends keyof IAutoBePreliminaryApplication,
-> {
+export class AutoBePreliminaryController<Key extends AutoBePreliminaryKind> {
   private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
-  private readonly keys: Key[];
+  private readonly kinds: Key[];
   private readonly all: Pick<IAutoBePreliminaryCollection, Key>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Key>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Key>) {
     this.source = props.source;
     this.source_id = v7();
-    this.keys = props.keys;
+    this.kinds = props.kinds;
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
     complementPreliminaryCollection({
+      kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
       local: this.local as IAutoBePreliminaryCollection,
     });
@@ -38,7 +36,7 @@ export class AutoBePreliminaryController<
 
   public createValidate() {
     return createPreliminaryValidate({
-      keys: this.keys,
+      keys: this.kinds,
       all: this.all,
       local: this.local,
     });
@@ -52,8 +50,8 @@ export class AutoBePreliminaryController<
     return this.source;
   }
 
-  public getKeys(): Key[] {
-    return this.keys;
+  public getKinds(): Key[] {
+    return this.kinds;
   }
 
   public getAll(): Pick<IAutoBePreliminaryCollection, Key> {
@@ -95,12 +93,12 @@ export class AutoBePreliminaryController<
   }
 }
 export namespace AutoBePreliminaryController {
-  export interface IProps<Key extends keyof IAutoBePreliminaryApplication> {
+  export interface IProps<Kind extends AutoBePreliminaryKind> {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    keys: Key[];
+    kinds: Kind[];
     state: AutoBeState;
-    all?: Partial<Pick<IAutoBePreliminaryCollection, Key>>;
-    local?: Partial<Pick<IAutoBePreliminaryCollection, Key>>;
+    all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
+    local?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
   }
   export interface IProcessResult<T> {
     value: T | undefined;

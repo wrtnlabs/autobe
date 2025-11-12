@@ -52,7 +52,7 @@ async function step<Model extends ILlmSchema.Model>(
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     source: "interfaceComplement",
-    keys: [
+    kinds: [
       "analyzeFiles",
       "prismaSchemas",
       "interfaceOperations",
