@@ -263,7 +263,7 @@ export namespace transformPreliminaryHistory {
   }): IAgenticaHistoryJson.IAssistantMessage => ({
     id: v7(),
     type: "assistantMessage",
-    text: props.prompt.replace(
+    text: props.prompt.replaceAll(
       "{{CONTENT}}",
       StringUtil.trim`
         \`\`\`json
@@ -283,9 +283,9 @@ export namespace transformPreliminaryHistory {
     id: v7(),
     type: "systemMessage",
     text: props.prompt
-      .replace("{{AVAILABLE}}", props.available)
-      .replace("{{LOADED}}", props.loaded)
-      .replace("{{EXHAUSTED}}", props.exhausted),
+      .replaceAll("{{AVAILABLE}}", props.available)
+      .replaceAll("{{LOADED}}", props.loaded)
+      .replaceAll("{{EXHAUSTED}}", props.exhausted),
     created_at: new Date().toISOString(),
   });
 }

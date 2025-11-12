@@ -43,6 +43,8 @@ The following TypeScript type schemas have been ALREADY LOADED into your context
 
 {{LOADED}}
 
+{{EXHAUSTED}}
+
 ### Why This Matters
 
 1. Token Efficiency: Re-requesting wastes your limited function call budget

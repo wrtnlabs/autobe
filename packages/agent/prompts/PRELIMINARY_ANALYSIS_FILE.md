@@ -43,6 +43,8 @@ The following requirement analysis documents have been ALREADY LOADED into your 
 
 {{LOADED}}
 
+{{EXHAUSTED}}
+
 ### Why This Matters
 
 1. Token Efficiency: Re-requesting wastes your limited function call budget
