@@ -390,43 +390,46 @@ export namespace transformPreliminaryHistory {
     `);
   };
 
+  // experimenting between assistantMessage and execute types
   const createFunctionCallingMessage = <
     Function extends AutoBePreliminaryKind,
   >(props: {
     controller: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     function: Function;
     argument: Parameters<IAutoBePreliminaryApplication[Function]>[0];
-  }): IMicroAgenticaHistoryJson => ({
-    // type: "execute",
-    // id: v7(),
-    // operation: {
-    //   protocol: "class",
-    //   controller: props.controller,
-    //   function: props.function,
-    //   name: props.function,
-    // },
-    // arguments: props.argument as any,
-    // value: undefined,
-    // success: true,
-    // created_at: new Date().toISOString(),
-    type: "assistantMessage",
+  }):
+    | IAgenticaHistoryJson.IAssistantMessage
+    | IAgenticaHistoryJson.IExecute => ({
+    type: "execute",
     id: v7(),
-    text: StringUtil.trim`
-      # Function Calling History
-
-      Function "${props.function}()" has been called.
-
-      Here is the arguments.
-
-      Note that, never call the same items again.
-      As they are loaded onto the memory, you never have to
-      request none of them again.
-
-      \`\`\`json
-      ${JSON.stringify(props.argument)}
-      \`\`\`
-    `,
+    operation: {
+      protocol: "class",
+      controller: props.controller,
+      function: props.function,
+      name: props.function,
+    },
+    arguments: props.argument as any,
+    value: undefined,
+    success: true,
     created_at: new Date().toISOString(),
+    // type: "assistantMessage",
+    // id: v7(),
+    // text: StringUtil.trim`
+    //   # Function Calling History
+
+    //   Function "${props.function}()" has been called.
+
+    //   Here is the arguments.
+
+    //   Note that, never call the same items again.
+    //   As they are loaded onto the memory, you never have to
+    //   request none of them again.
+
+    //   \`\`\`json
+    //   ${JSON.stringify(props.argument)}
+    //   \`\`\`
+    // `,
+    // created_at: new Date().toISOString(),
   });
 
   const getSummary = (description: string): string => {

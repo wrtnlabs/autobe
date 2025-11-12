@@ -57,7 +57,7 @@ namespace PreliminaryApplicationValidator {
     const again = (key: string) =>
       `The file ${JSON.stringify(
         key,
-      )} is already mounted. Please do not request it again.`;
+      )} is already mounted. Erase it from the array directly, and never request again.`;
 
     return (
       input: unknown,
@@ -110,10 +110,10 @@ namespace PreliminaryApplicationValidator {
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
-    // const again = (key: string) =>
-    //   `The prisma schema model ${JSON.stringify(
-    //     key,
-    //   )} is already mounted. Please do not request it again.`;
+    const again = (key: string) =>
+      `The prisma schema model ${JSON.stringify(
+        key,
+      )} is already mounted. Erase it from the array directly, and never request again.`;
 
     return (
       input: unknown,
@@ -133,13 +133,13 @@ namespace PreliminaryApplicationValidator {
             expected: quoted.join(" | "),
             description,
           });
-        // else if (oldbie.has(key) === true)
-        //   errors.push({
-        //     path: `$input.schemas[${i}]`,
-        //     value: key,
-        //     expected: quoted.join(" | "),
-        //     description: again(key),
-        //   });
+        else if (oldbie.has(key) === true)
+          errors.push({
+            path: `$input.schemas[${i}]`,
+            value: key,
+            expected: quoted.join(" | "),
+            description: again(key),
+          });
       });
       return finalize(result, errors);
     };
@@ -183,7 +183,7 @@ namespace PreliminaryApplicationValidator {
         key.method,
       )}, path: ${JSON.stringify(
         key.path,
-      )}) is already mounted. Please do not request it again.`;
+      )}) is already mounted. Erase it from the array directly, and never request again.`;
 
     return (
       input: unknown,
@@ -233,7 +233,7 @@ namespace PreliminaryApplicationValidator {
     const again = (key: string) =>
       `The interface schema ${JSON.stringify(
         key,
-      )} is already mounted. Please do not request it again.`;
+      )} is already mounted. Erase it from the array directly, and never request again.`;
 
     return (
       input: unknown,

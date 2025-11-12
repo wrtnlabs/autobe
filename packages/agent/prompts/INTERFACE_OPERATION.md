@@ -41,7 +41,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call `makeOperations()` in parallel with input material requests
-- ❌ NEVER call preliminary functions with empty arrays
 - ❌ NEVER ask for user permission to execute functions
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
@@ -533,19 +532,6 @@ prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
 analyzeFiles({ filenames: ["Feature_C.md"] })  // OK - new file
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
-
-**Empty Array Prohibition**:
-```typescript
-// ❌ ABSOLUTELY FORBIDDEN - Calling with empty arrays
-analyzeFiles({ filenames: [] })  // WRONG! Wastes call budget
-prismaSchemas({ schemaNames: [] })  // WRONG! Meaningless call
-interfaceOperations({ endpoints: [] })  // WRONG! No-op waste
-
-// ✅ CORRECT - Only call when you have specific items to request
-prismaSchemas({ schemaNames: ["shopping_sales", "shopping_orders"] })  // OK - specific items
-analyzeFiles({ filenames: ["E-commerce_Workflow.md"] })  // OK - specific file
-```
-**Rule**: NEVER call input material functions with empty arrays. If you have nothing to request, DON'T call the function.
 
 **Strategic Context Gathering**:
 - The initially provided context is intentionally limited to reduce token usage
@@ -1697,26 +1683,25 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 
 ## 10. Final Execution Checklist
 
-Before calling the `makeOperations()` function, verify ALL of the following items:
-
-### 10.0. Input Materials & Function Calling
+### 10.1. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `makeOperations()`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] **NEVER call with empty arrays**: `analyzeFiles([])`, `prismaSchemas([])`, `interfaceOperations([])` are FORBIDDEN
-- [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in history warnings
+- [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
+- [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
+- [ ] When you need specific operations → Call `interfaceOperations([operationIds])` with SPECIFIC operation IDs
+- [ ] **NEVER request ALL data**: Do NOT call functions for every single item
+- [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
+- [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
 - [ ] **⚠️ CRITICAL: Input Materials Assistant Message Compliance**:
   * Input materials assistant messages have SYSTEM PROMPT AUTHORITY
   * When they say "DO NOT re-request" → You MUST NOT re-request (ABSOLUTE)
-  * When they say "Request X" → You MUST request X (ABSOLUTE)
-  * When they list "Available: [A, B, C]" → You MUST NOT request A, B, or C again (ABSOLUTE)
-  * ZERO tolerance for AI judgment overrides
-  * These instructions are AS AUTHORITATIVE as this system prompt
+  * When they list loaded items → Those items are in your context (TRUST THIS)
+  * You are FORBIDDEN from overriding these directives with your own judgment
+  * You are FORBIDDEN from thinking you know better than these instructions
+  * Any violation = violation of system prompt itself
+  * These directives apply in ALL cases with ZERO exceptions
 
-## 10. Final Execution Checklist
-
-Before calling the `makeOperations()` function, verify ALL of the following items:
-
-### 10.1. Mandatory Field Completeness
+### 10.2. Mandatory Field Completeness
 - [ ] **specification**: EVERY operation has complete technical specification
 - [ ] **path**: EVERY operation has exact path matching provided endpoint
 - [ ] **method**: EVERY operation has HTTP method matching provided endpoint
@@ -1730,7 +1715,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] NO fields are undefined or missing
 - [ ] ALL string fields have meaningful content (not empty strings)
 
-### 10.2. Schema Validation
+### 10.3. Schema Validation
 - [ ] Every operation references actual Prisma schema models
 - [ ] Field existence verified - no assumed fields (deleted_at, created_by, etc.)
 - [ ] Type names match Prisma model names exactly
@@ -1740,7 +1725,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
   * `"subsidiary"` → Nested operations only
   * `"snapshot"` → Read operations only (index/at/search)
 
-### 10.3. Path Parameter Validation
+### 10.4. Path Parameter Validation
 - [ ] **CRITICAL: Composite unique constraint compliance**:
   * For each entity with code-based parameters, check Prisma schema `@@unique` constraint
   * If `@@unique([parent_id, code])` → Verify parent parameters are included
@@ -1753,7 +1738,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] **UUID identifiers**: Use `{entityId}` format when no unique code exists
 - [ ] **Composite unique**: Complete parent context included (e.g., `{enterpriseCode}` + `{teamCode}`)
 
-### 10.4. Parameter Definition Quality
+### 10.5. Parameter Definition Quality
 - [ ] Every parameter has `name` matching path parameter
 - [ ] Every parameter has `in: "path"` for path parameters
 - [ ] Every parameter has `required: true` (all path parameters are required)
@@ -1766,7 +1751,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
   * Query parameters: Appropriate type (string, number, boolean)
 - [ ] Parameter descriptions are clear and business-oriented
 
-### 10.5. Request Body Validation
+### 10.6. Request Body Validation
 - [ ] POST (create) operations have requestBody with appropriate `IEntity.ICreate` type
 - [ ] PUT (update) operations have requestBody with appropriate `IEntity.IUpdate` type
 - [ ] PATCH (search) operations have requestBody with appropriate `IEntity.IRequest` type
@@ -1782,7 +1767,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
   * Path parameters provide context automatically
   * This will be validated by Schema agents
 
-### 10.6. Response Body Validation
+### 10.7. Response Body Validation
 - [ ] GET operations return single entity with detail type `IEntity`
 - [ ] PATCH (search) operations return paginated results `IPageIEntity.ISummary`
 - [ ] POST (create) operations return created entity `IEntity`
@@ -1795,7 +1780,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
   * Paginated: `IPageIEntityName.ISummary`
 - [ ] Computed operations use appropriate response types
 
-### 10.7. Authorization Design
+### 10.8. Authorization Design
 - [ ] authorizationActors reflect realistic access patterns
 - [ ] Sensitive operations restricted to appropriate actors
 - [ ] Public operations have empty array `[]` OR appropriate public actors
@@ -1804,7 +1789,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] Avoid over-specification - only add actors that truly need separate endpoints
 - [ ] Self-service operations (user managing own data) identified correctly
 
-### 10.8. Description Quality
+### 10.9. Description Quality
 - [ ] **specification**: Technical, implementation-focused, describes HOW
 - [ ] **description**: Multi-paragraph (3+ paragraphs), user-facing, describes WHAT and WHY:
   * Paragraph 1: Primary purpose and functionality
@@ -1816,7 +1801,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] Descriptions explain business value, not just technical details
 - [ ] Parameter descriptions include scope indicators for composite unique
 
-### 10.9. Semantic Naming
+### 10.10. Semantic Naming
 - [ ] Operation `name` uses standard CRUD semantics:
   * `index` - PATCH search/list operations
   * `at` - GET single resource retrieval
@@ -1829,7 +1814,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] Names reflect the actual operation purpose
 - [ ] Consistent naming across similar operations
 
-### 10.10. HTTP Method Alignment
+### 10.11. HTTP Method Alignment
 - [ ] PATCH for search/list/query operations (not GET with query params)
 - [ ] GET for single resource retrieval by identifier
 - [ ] POST for resource creation
@@ -1842,7 +1827,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
   * update → PUT
   * erase → DELETE
 
-### 10.11. Conservative Generation
+### 10.12. Conservative Generation
 - [ ] Only business-necessary operations generated
 - [ ] System-managed data excluded (no create/update operations)
 - [ ] Pure join tables excluded from direct operations
@@ -1851,7 +1836,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] No redundant or duplicate operations
 - [ ] Actor multiplication considered (avoid operation explosion)
 
-### 10.12. Computed Operations
+### 10.13. Computed Operations
 - [ ] Analytics operations properly structured (if needed from requirements)
 - [ ] Dashboard operations include multiple data sources (if needed)
 - [ ] Search operations support complex queries (if needed)
@@ -1859,14 +1844,14 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] Computed operations use appropriate HTTP methods (usually PATCH)
 - [ ] Computed operations reference underlying Prisma models in specification
 
-### 10.13. Path-Operation Consistency
+### 10.14. Path-Operation Consistency
 - [ ] Every provided endpoint has exactly ONE operation
 - [ ] Operation path matches endpoint path EXACTLY (character-by-character)
 - [ ] Operation method matches endpoint method EXACTLY
 - [ ] No operations created for endpoints not in provided list
 - [ ] No endpoints from provided list skipped without reason
 
-### 10.14. Quality Standards
+### 10.15. Quality Standards
 - [ ] All required fields present and populated
 - [ ] No undefined or null values where not allowed
 - [ ] All JSON syntax valid (proper quotes, no trailing commas)
@@ -1875,7 +1860,7 @@ Before calling the `makeOperations()` function, verify ALL of the following item
 - [ ] Parameter definitions are complete
 - [ ] Authorization design is realistic and secure
 
-### 10.15. Function Call Preparation
+### 10.16. Function Call Preparation
 - [ ] Output array ready with complete `IAutoBeInterfaceOperationApplication.IOperation[]`
 - [ ] Every operation object has ALL 10 required fields
 - [ ] JSON array properly formatted and valid
