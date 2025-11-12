@@ -24,52 +24,48 @@ export async function orchestrateInterfaceEndpointReview<
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(
-    ctx,
-    "interfaceEndpointReview",
-    async () => {
-      const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
-        {
-          value: null,
-        };
-      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-        source: "interfaceEndpointReview",
-        controller: createController({
-          preliminary,
-          model: ctx.model,
-          build: (props) => {
-            pointer.value = props;
-          },
-        }),
-        enforceFunctionCall: true,
-        ...transformInterfaceEndpointReviewHistory({
-          preliminary,
-          endpoints,
-        }),
+  return await preliminary.orchestrate(ctx, async () => {
+    const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "interfaceEndpointReview",
+      controller: createController({
+        preliminary,
+        model: ctx.model,
+        build: (props) => {
+          pointer.value = props;
+        },
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceEndpointReviewHistory({
+        preliminary,
+        endpoints,
+      }),
+    });
+    const out = (value: AutoBeOpenApi.IEndpoint[] | null) => ({
+      ...result,
+      value,
+    });
+    if (pointer.value !== null) {
+      const response: AutoBeOpenApi.IEndpoint[] =
+        pointer.value?.endpoints ?? [];
+      ctx.dispatch({
+        id: v7(),
+        type: "interfaceEndpointReview",
+        endpoints,
+        content: response,
+        created_at: new Date().toISOString(),
+        review: pointer.value?.review,
+        step: ctx.state().analyze?.step ?? 0,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
       });
-      const out = (value: AutoBeOpenApi.IEndpoint[] | null) => ({
-        ...result,
-        value,
-      });
-      if (pointer.value !== null) {
-        const response: AutoBeOpenApi.IEndpoint[] =
-          pointer.value?.endpoints ?? [];
-        ctx.dispatch({
-          id: v7(),
-          type: "interfaceEndpointReview",
-          endpoints,
-          content: response,
-          created_at: new Date().toISOString(),
-          review: pointer.value?.review,
-          step: ctx.state().analyze?.step ?? 0,
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-        });
-        return out(response);
-      }
-      return out(null);
-    },
-  );
+      return out(response);
+    }
+    return out(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

@@ -125,7 +125,7 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(ctx, "interfaceOperation", async () => {
+  return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
       value: null,
     };
@@ -186,10 +186,6 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
     });
-    const out = (value: AutoBeOpenApi.IOperation[] | null) => ({
-      ...result,
-      value,
-    });
     if (pointer.value !== null) {
       ctx.dispatch({
         type: "interfaceOperation",
@@ -201,9 +197,9 @@ async function process<Model extends ILlmSchema.Model>(
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceOperationEvent);
-      return out(pointer.value);
+      return out(result)(pointer.value);
     }
-    return out(null);
+    return out(result)(null);
   });
 }
 

@@ -60,89 +60,81 @@ async function step<Model extends ILlmSchema.Model>(
     ],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(
-    ctx,
-    "interfaceComplement",
-    async (out) => {
-      const pointer: IPointer<Record<
-        string,
-        AutoBeOpenApi.IJsonSchemaDescriptive
-      > | null> = {
-        value: null,
-      };
-      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-        source: "interfaceComplement",
-        controller: createController({
-          model: ctx.model,
-          build: (next) => {
-            pointer.value ??= {};
-            Object.assign(
-              pointer.value,
-              (OpenApiV3_1Emender.convertComponents({
-                schemas: next,
-              }).schemas ?? {}) as Record<
-                string,
-                AutoBeOpenApi.IJsonSchemaDescriptive
-              >,
-            );
-          },
-          preliminary,
-        }),
-        enforceFunctionCall: true,
-        ...transformInterfaceComplementHistory({
-          state: ctx.state(),
-          instruction: props.instruction,
-          preliminary,
-          missed,
-        }),
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    > | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "interfaceComplement",
+      controller: createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value ??= {};
+          Object.assign(
+            pointer.value,
+            (OpenApiV3_1Emender.convertComponents({
+              schemas: next,
+            }).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >,
+          );
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceComplementHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        preliminary,
+        missed,
+      }),
+    });
+    if (pointer.value !== null) {
+      ctx.dispatch({
+        type: "interfaceComplement",
+        id: v7(),
+        missed,
+        schemas: pointer.value,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
       });
-      if (pointer.value !== null) {
-        ctx.dispatch({
-          type: "interfaceComplement",
-          id: v7(),
-          missed,
-          schemas: pointer.value,
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          step: ctx.state().analyze?.step ?? 0,
-          created_at: new Date().toISOString(),
-        });
-        const empty: boolean = Object.keys(pointer.value).length === 0;
-        if (empty === true && progress.wasEmpty === true)
-          return out(result)(props.document.components.schemas);
+      const empty: boolean = Object.keys(pointer.value).length === 0;
+      if (empty === true && progress.wasEmpty === true)
+        return out(result)(props.document.components.schemas);
 
-        const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+        ...pointer.value,
+        ...props.document.components.schemas,
+      };
+      JsonSchemaNamingConvention.schemas(props.document.operations, newSchemas);
+      return out(result)(
+        await step(
+          ctx,
           {
-            ...pointer.value,
-            ...props.document.components.schemas,
-          };
-        JsonSchemaNamingConvention.schemas(
-          props.document.operations,
-          newSchemas,
-        );
-        return out(result)(
-          await step(
-            ctx,
-            {
-              instruction: props.instruction,
-              document: {
-                ...props.document,
-                components: {
-                  ...props.document.components,
-                  schemas: newSchemas,
-                },
+            instruction: props.instruction,
+            document: {
+              ...props.document,
+              components: {
+                ...props.document.components,
+                schemas: newSchemas,
               },
             },
-            {
-              wasEmpty: empty,
-              life: progress.life - 1,
-            },
-          ),
-        );
-      }
-      return out(result)(null);
-    },
-  );
+          },
+          {
+            wasEmpty: empty,
+            life: progress.life - 1,
+          },
+        ),
+      );
+    }
+    return out(result)(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

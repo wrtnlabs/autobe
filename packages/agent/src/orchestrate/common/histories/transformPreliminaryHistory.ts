@@ -76,28 +76,30 @@ export namespace transformPreliminaryHistory {
     const available: string =
       newbie.length === 0
         ? StringUtil.trim`
-        You have taken every analysis documents. 
-        
-        Every analysis documents are loaded onth the memory, 
-        so never call \`analyzeFiles()\` function again.
-      `
+            You have taken every analysis documents. 
+            
+            Every analysis documents are loaded onth the memory, 
+            so never call \`analyzeFiles()\` function again.
+          `
         : StringUtil.trim`
-        Below shows documents NOT YET loaded. 
-      
-        You can request these if needed for your task by calling \`analyzeFiles()\` function.
+            Below shows documents NOT YET loaded. 
+          
+            You can request these if needed for your task by calling \`analyzeFiles()\` function.
 
-        By the way, when requesting, never call the same files
-        (that are listed in the below sections) again as they are 
-        already loaded onto the memory.
+            By the way, when requesting, never call the same files
+            (that are listed in the below sections) again as they are 
+            already loaded onto the memory.
 
-        **Available files**:
+            **Available files**:
 
-        File Name | Document Type
-        ----------|---------------
-        ${newbie
-          .map((f) => [JSON.stringify(f.filename), f.documentType].join(" | "))
-          .join("\n")}
-      `;
+            File Name | Document Type
+            ----------|---------------
+            ${newbie
+              .map((f) =>
+                [JSON.stringify(f.filename), f.documentType].join(" | "),
+              )
+              .join("\n")}
+          `;
     return out(StringUtil.trim`
       # Requirement Analysis Documents
 

@@ -75,55 +75,51 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(
-    ctx,
-    "interfaceEndpoint",
-    async (out) => {
-      const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
-        value: null,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "interfaceEndpoint",
+      controller: createController({
+        model: ctx.model,
+        build: (endpoints) => {
+          pointer.value ??= endpoints;
+          pointer.value.push(...endpoints);
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceEndpointHistory({
+        state: ctx.state(),
+        group: props.group,
+        authorizations: props.authorizations,
+        instruction: props.instruction,
+        preliminary,
+      }),
+    });
+    if (pointer.value !== null) {
+      const event: AutoBeInterfaceEndpointEvent = {
+        type: "interfaceEndpoint",
+        id: v7(),
+        endpoints: new HashSet(
+          pointer.value,
+          AutoBeOpenApiEndpointComparator.hashCode,
+          AutoBeOpenApiEndpointComparator.equals,
+        ).toJSON(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        created_at: start.toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
       };
-      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-        source: "interfaceEndpoint",
-        controller: createController({
-          model: ctx.model,
-          build: (endpoints) => {
-            pointer.value ??= endpoints;
-            pointer.value.push(...endpoints);
-          },
-          preliminary,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformInterfaceEndpointHistory({
-          state: ctx.state(),
-          group: props.group,
-          authorizations: props.authorizations,
-          instruction: props.instruction,
-          preliminary,
-        }),
-      });
-      if (pointer.value !== null) {
-        const event: AutoBeInterfaceEndpointEvent = {
-          type: "interfaceEndpoint",
-          id: v7(),
-          endpoints: new HashSet(
-            pointer.value,
-            AutoBeOpenApiEndpointComparator.hashCode,
-            AutoBeOpenApiEndpointComparator.equals,
-          ).toJSON(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          created_at: start.toISOString(),
-          step: ctx.state().analyze?.step ?? 0,
-          completed: ++props.progress.completed,
-          total: props.progress.total,
-        };
-        ctx.dispatch(event);
-        return out(result)(pointer.value);
-      }
-      return out(result)(null);
-    },
-  );
+      ctx.dispatch(event);
+      return out(result)(pointer.value);
+    }
+    return out(result)(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

@@ -68,50 +68,46 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(
-    ctx,
-    "interfaceAuthorization",
-    async (out) => {
-      const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
-        {
-          value: null,
-        };
-      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-        source: "interfaceAuthorization",
-        controller: createController({
-          model: ctx.model,
-          actor: props.actor,
-          build: (next) => {
-            pointer.value = next;
-          },
-          preliminary,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformInterfaceAuthorizationHistory({
-          state: ctx.state(),
-          instruction: props.instruction,
-          actor: props.actor,
-          preliminary,
-        }),
-      });
-      return out(result)(
-        pointer.value !== null
-          ? ({
-              type: "interfaceAuthorization",
-              id: v7(),
-              operations: pointer.value.operations,
-              completed: ++props.progress.completed,
-              metric: result.metric,
-              tokenUsage: result.tokenUsage,
-              created_at: new Date().toISOString(),
-              step: ctx.state().analyze?.step ?? 0,
-              total: props.progress.total,
-            } satisfies AutoBeInterfaceAuthorizationEvent)
-          : null,
-      );
-    },
-  );
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "interfaceAuthorization",
+      controller: createController({
+        model: ctx.model,
+        actor: props.actor,
+        build: (next) => {
+          pointer.value = next;
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceAuthorizationHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        actor: props.actor,
+        preliminary,
+      }),
+    });
+    return out(result)(
+      pointer.value !== null
+        ? ({
+            type: "interfaceAuthorization",
+            id: v7(),
+            operations: pointer.value.operations,
+            completed: ++props.progress.completed,
+            metric: result.metric,
+            tokenUsage: result.tokenUsage,
+            created_at: new Date().toISOString(),
+            step: ctx.state().analyze?.step ?? 0,
+            total: props.progress.total,
+          } satisfies AutoBeInterfaceAuthorizationEvent)
+        : null,
+    );
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

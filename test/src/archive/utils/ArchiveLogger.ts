@@ -1,4 +1,4 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
+// import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import {
   AutoBeEvent,
   IAutoBeTokenUsageJson,
@@ -60,27 +60,27 @@ export namespace ArchiveLogger {
         `  - existing: ${JSON.stringify(event.existing)}`,
         `  - requested: ${JSON.stringify(event.requested)}`,
       );
-      if (
-        event.existing.length === event.requested.length &&
-        event.existing.every((v, i) => v === event.requested[i])
-      ) {
-        const histories: IMicroAgenticaHistoryJson[] = (event.__histories ??
-          []) as IMicroAgenticaHistoryJson[];
-        console.log("==============================================");
-        console.log({
-          source: event.source,
-          existing: event.existing,
-          requested: event.requested,
-          length: event.__histories?.length ?? null,
-        });
-        for (const h of histories) {
-          if (h.type === "assistantMessage") {
-            console.log("---------------------------------");
-            console.log(h.text.substring(0, 100));
-          }
-        }
-        console.log("==============================================");
-      }
+      // if (
+      //   event.existing.length === event.requested.length &&
+      //   event.existing.every((v, i) => v === event.requested[i])
+      // ) {
+      //   const histories: IMicroAgenticaHistoryJson[] = (event.__histories ??
+      //     []) as IMicroAgenticaHistoryJson[];
+      //   console.log("==============================================");
+      //   console.log({
+      //     source: event.source,
+      //     existing: event.existing,
+      //     requested: event.requested,
+      //     length: event.__histories?.length ?? null,
+      //   });
+      //   for (const h of histories) {
+      //     if (h.type === "assistantMessage") {
+      //       console.log("---------------------------------");
+      //       console.log(h.text.substring(0, 100));
+      //     }
+      //   }
+      //   console.log("==============================================");
+      // }
     }
     // VALIDATIONS
     else if (event.type === "analyzeScenario")

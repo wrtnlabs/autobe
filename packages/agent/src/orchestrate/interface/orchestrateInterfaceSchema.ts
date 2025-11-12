@@ -135,7 +135,7 @@ async function process<Model extends ILlmSchema.Model>(
     keys: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(ctx, "interfaceSchema", async (out) => {
+  return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive

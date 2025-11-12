@@ -66,7 +66,6 @@ export class AutoBePreliminaryController<
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(
     ctx: AutoBeContext<Model>,
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">,
     process: (
       out: (
         result: AutoBeContext.IResult<Model>,
@@ -84,11 +83,10 @@ export class AutoBePreliminaryController<
       else
         await orchestratePreliminary(ctx, {
           source_id: this.source_id,
-          source: source,
+          source: this.source,
           preliminary: this,
           trial: i + 1,
           histories: result.histories,
-          __histories: result.__agent.getHistories(),
         });
     }
     throw new Error(

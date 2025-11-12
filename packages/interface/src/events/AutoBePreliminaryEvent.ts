@@ -16,5 +16,4 @@ export interface AutoBePreliminaryEvent<
     ? AutoBeOpenApi.IEndpoint[]
     : string[];
   trial: number;
-  __histories?: unknown[];
 }
