@@ -1,6 +1,9 @@
 import { AutoBePrisma } from "@autobe/interface";
 
-export interface IAutoBePrismaCorrectApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBePrismaCorrectApplication
+  extends Pick<IAutoBePreliminaryApplication, "prismaSchemas"> {
   /**
    * Fixes validation errors in specific AutoBePrisma models while preserving
    * ALL existing business logic and model descriptions.

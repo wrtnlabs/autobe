@@ -1,7 +1,10 @@
 import { AutoBePrisma } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBePrismaSchemaApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBePrismaSchemaApplication
+  extends Pick<IAutoBePreliminaryApplication, "analyzeFiles"> {
   /**
    * Generates comprehensive Prisma schema files based on detailed requirements
    * analysis.

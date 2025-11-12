@@ -1,6 +1,12 @@
 import { AutoBePrisma } from "@autobe/interface";
 
-export interface IAutoBePrismaReviewApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBePrismaReviewApplication
+  extends Pick<
+    IAutoBePreliminaryApplication,
+    "analyzeFiles" | "prismaSchemas"
+  > {
   /**
    * Reviews and validates Prisma schema modifications to ensure compliance with
    * database design best practices and business requirements.

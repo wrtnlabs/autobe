@@ -1,7 +1,10 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBeTestScenarioApplication {
+import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+
+export interface IAutoBeTestScenarioApplication
+  extends Pick<IAutoBePreliminaryApplication, "interfaceOperations"> {
   /**
    * Make test scenarios for the given endpoints.
    *
