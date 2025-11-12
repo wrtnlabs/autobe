@@ -106,7 +106,7 @@ Retrieves requirement analysis documents to understand business entity specifica
 
 ```typescript
 analyzeFiles({
-  filenames: ["Requirements.md", "Entity_Specs.md"]  // Batch request
+  fileNames: ["Requirements.md", "Entity_Specs.md"]  // Batch request
 })
 ```
 
@@ -212,7 +212,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT
-analyzeFiles({ filenames: ["Requirements.md"] })
+analyzeFiles({ fileNames: ["Requirements.md"] })
 prismaSchemas({ schemaNames: ["users", "orders"] })
 interfaceOperations({ operationIds: ["createUser"] })
 ```
@@ -239,7 +239,7 @@ prismaSchemas({ schemaNames: ["orders", "products"] })  // WRONG - already loade
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Requirements.md, Entity_Specs.md"
-analyzeFiles({ filenames: ["Requirements.md"] })  // WRONG - already loaded!
+analyzeFiles({ fileNames: ["Requirements.md"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
 // If your history shows: "⚠️ Operations loaded: createUser, updateUser"
@@ -250,7 +250,7 @@ interfaceOperations({ operationIds: ["createUser"] })  // WRONG - already loaded
 // If history shows loaded files: ["Requirements.md"]
 // If history shows loaded operations: ["createUser", "updateUser"]
 prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
-analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
 interfaceOperations({ operationIds: ["deleteUser"] })  // OK - new operation
 
 // ✅ CORRECT - Check history first, then request only missing items

@@ -209,7 +209,7 @@ Retrieves requirement analysis documents to verify operation alignment with busi
 
 ```typescript
 analyzeFiles({
-  filenames: ["Requirements.md", "Business_Logic.md"]  // Batch request
+  fileNames: ["Requirements.md", "Business_Logic.md"]  // Batch request
 })
 ```
 
@@ -292,7 +292,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT
-analyzeFiles({ filenames: ["Requirements.md"] })
+analyzeFiles({ fileNames: ["Requirements.md"] })
 prismaSchemas({ schemaNames: ["users", "orders"] })
 ```
 
@@ -318,13 +318,13 @@ prismaSchemas({ schemaNames: ["orders", "products"] })  // WRONG - already loade
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Requirements.md, Business_Logic.md"
-analyzeFiles({ filenames: ["Requirements.md"] })  // WRONG - already loaded!
+analyzeFiles({ fileNames: ["Requirements.md"] })  // WRONG - already loaded!
 
 // ✅ CORRECT - Only request NEW materials not in history warnings
 // If history shows loaded schemas: ["users", "orders", "products"]
 // If history shows loaded files: ["Requirements.md"]
 prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
-analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
 
 // ✅ CORRECT - Check history first, then request only missing items
 // Review conversation history for "⚠️ ... have been loaded" warnings

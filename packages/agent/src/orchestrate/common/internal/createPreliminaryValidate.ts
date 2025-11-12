@@ -69,17 +69,17 @@ namespace PreliminaryApplicationValidator {
       if (result.success === false) return result;
 
       const errors: IValidation.IError[] = [];
-      result.data.filenames.forEach((key, i) => {
+      result.data.fileNames.forEach((key, i) => {
         if (everything.has(key) === false)
           errors.push({
-            path: `$input.filenames[${i}]`,
+            path: `$input.fileNames[${i}]`,
             value: key,
             expected: quoted.join(" | "),
             description,
           });
         else if (oldbie.has(key) === true)
           errors.push({
-            path: `$input.filenames[${i}]`,
+            path: `$input.fileNames[${i}]`,
             value: key,
             expected: quoted.join(" | "),
             description: again(key),
@@ -128,14 +128,14 @@ namespace PreliminaryApplicationValidator {
       result.data.schemaNames.forEach((key, i) => {
         if (everything.has(key) === false)
           errors.push({
-            path: `$input.schemas[${i}]`,
+            path: `$input.schemaNames[${i}]`,
             value: key,
             expected: quoted.join(" | "),
             description,
           });
         else if (oldbie.has(key) === true)
           errors.push({
-            path: `$input.schemas[${i}]`,
+            path: `$input.schemaNames[${i}]`,
             value: key,
             expected: quoted.join(" | "),
             description: again(key),

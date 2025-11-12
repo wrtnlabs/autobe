@@ -61,19 +61,23 @@ export namespace IAutoBePreliminaryApplication {
      * Array of requirement analysis document filenames to retrieve.
      *
      * **CRITICAL RULES**:
-     * - NEVER include filenames already shown in "Already Loaded Analysis Documents" section
-     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this function
+     *
+     * - NEVER include filenames already shown in "Already Loaded Analysis
+     *   Documents" section
+     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this
+     *   function
      * - NEVER include duplicates within this array
      * - If you see "ALL data has been loaded" message, do NOT call this function
      *
      * **Source Constraint**:
+     *
      * - Must select from actual analysis files in current application
      * - Available filenames are listed in conversation history context
      * - Never use arbitrary or imagined filenames
      *
      * **Examples**: "business_requirements.md", "feature_specifications.md"
      */
-    filenames: string[];
+    fileNames: string[];
   }
 
   export interface IPrismaSchemasProps {
@@ -81,13 +85,17 @@ export namespace IAutoBePreliminaryApplication {
      * Array of Prisma model names to retrieve.
      *
      * **CRITICAL RULES**:
-     * - NEVER include model names already shown in "Already Loaded Prisma Models" section
-     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this function
+     *
+     * - NEVER include model names already shown in "Already Loaded Prisma Models"
+     *   section
+     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this
+     *   function
      * - NEVER include duplicates within this array
      * - If you see "ALL data has been loaded" message, do NOT call this function
      * - Do NOT request ALL models - only request what you specifically need
      *
      * **Source Constraint**:
+     *
      * - Must select from actual Prisma schema in current application
      * - Available model names are listed in conversation history context
      * - Never assume or imagine non-existing models
@@ -102,17 +110,23 @@ export namespace IAutoBePreliminaryApplication {
      * Array of API endpoint identifiers to retrieve.
      *
      * **CRITICAL RULES**:
-     * - NEVER include endpoints already shown in "Already Loaded API Operations" section
-     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this function
+     *
+     * - NEVER include endpoints already shown in "Already Loaded API Operations"
+     *   section
+     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this
+     *   function
      * - NEVER include duplicates within this array
      * - If you see "ALL data has been loaded" message, do NOT call this function
      *
      * **Source Constraint**:
+     *
      * - Must select from actual OpenAPI operations in current application
-     * - Available method-path combinations are listed in conversation history context
+     * - Available method-path combinations are listed in conversation history
+     *   context
      * - Never assume or imagine non-existing endpoints
      *
      * **Endpoint Format**: Each consists of HTTP method + path
+     *
      * - Example: `{ method: "GET", path: "/shopping/customer/sales/{id}" }`
      */
     endpoints: AutoBeOpenApi.IEndpoint[];
@@ -123,22 +137,29 @@ export namespace IAutoBePreliminaryApplication {
      * Array of TypeScript type names to retrieve from interface schemas.
      *
      * **CRITICAL RULES**:
-     * - NEVER include type names already shown in "Already Loaded Type Schemas" section
-     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this function
+     *
+     * - NEVER include type names already shown in "Already Loaded Type Schemas"
+     *   section
+     * - NEVER pass empty array `[]` - if nothing new to load, do NOT call this
+     *   function
      * - NEVER include duplicates within this array
      * - If you see "ALL data has been loaded" message, do NOT call this function
      *
      * **Source Constraint**:
+     *
      * - Must select from actual schema definitions in OpenAPI components/schemas
      * - Available schema names are listed in conversation history context
      * - Never assume or imagine non-existing types
      *
      * **Type Granularity**: Each type name is independent
+     *
      * - "IBbsArticle" and "IBbsArticle.ICreate" are DIFFERENT types
-     * - Requesting "IBbsArticle" does NOT automatically load "IBbsArticle.ICreate"
+     * - Requesting "IBbsArticle" does NOT automatically load
+     *   "IBbsArticle.ICreate"
      * - Must explicitly request each nested type you need
      *
-     * **Examples**: "IBbsArticle", "IBbsArticle.ICreate", "IPageIShoppingSale.ISummary"
+     * **Examples**: "IBbsArticle", "IBbsArticle.ICreate",
+     * "IPageIShoppingSale.ISummary"
      */
     typeNames: string[];
   }

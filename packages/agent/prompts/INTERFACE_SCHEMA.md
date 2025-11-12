@@ -124,7 +124,7 @@ Retrieves requirement analysis documents by filename.
 
 ```typescript
 analyzeFiles({
-  filenames: ["business_requirements.md", "entity_specs.md"]  // Batch request
+  fileNames: ["business_requirements.md", "entity_specs.md"]  // Batch request
 })
 ```
 
@@ -220,7 +220,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT
-analyzeFiles({ filenames: ["Requirements.md"] })
+analyzeFiles({ fileNames: ["Requirements.md"] })
 prismaSchemas({ schemaNames: ["sales", "orders"] })
 interfaceOperations({ endpoints: [{ path: "/sales", method: "post" }] })
 ```
@@ -243,13 +243,13 @@ generateSchemas({ schemas: {...} })
 // If history shows: "⚠️ Prisma schemas loaded: sales, orders"
 prismaSchemas({ schemaNames: ["sales"] })  // WRONG!
 // If history shows: "⚠️ Requirements loaded: Business_Requirements.md"
-analyzeFiles({ filenames: ["Business_Requirements.md"] })  // WRONG!
+analyzeFiles({ fileNames: ["Business_Requirements.md"] })  // WRONG!
 // If history shows: "⚠️ Operations loaded: POST /sales"
 interfaceOperations({ endpoints: [{ path: "/sales", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 prismaSchemas({ schemaNames: ["products", "reviews"] })  // OK - new items
-analyzeFiles({ filenames: ["Entity_Specs.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Entity_Specs.md"] })  // OK - new file
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 

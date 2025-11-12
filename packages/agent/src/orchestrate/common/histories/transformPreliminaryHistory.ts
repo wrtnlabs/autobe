@@ -67,7 +67,7 @@ export namespace transformPreliminaryHistory {
               controller: props.source,
               function: "analyzeFiles",
               argument: {
-                filenames: props.local.analyzeFiles.map((f) => f.filename),
+                fileNames: props.local.analyzeFiles.map((f) => f.filename),
               },
             }),
             describe,

@@ -103,7 +103,7 @@ Retrieves requirement analysis documents to understand missing schema requiremen
 
 ```typescript
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md"]  // Batch request
+  fileNames: ["Feature_A.md", "Feature_B.md"]  // Batch request
 })
 ```
 
@@ -194,7 +194,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT
-analyzeFiles({ filenames: ["Orders.md"] })
+analyzeFiles({ fileNames: ["Orders.md"] })
 prismaSchemas({ schemaNames: ["orders", "products"] })
 ```
 
@@ -216,13 +216,13 @@ complementSchemas({ schemas: [...] })
 // If history shows: "⚠️ Prisma schemas loaded: orders, products, users"
 prismaSchemas({ schemaNames: ["orders"] })  // WRONG!
 // If history shows: "⚠️ Requirements loaded: Business_Requirements.md"
-analyzeFiles({ filenames: ["Business_Requirements.md"] })  // WRONG!
+analyzeFiles({ fileNames: ["Business_Requirements.md"] })  // WRONG!
 // If history shows: "⚠️ Operations loaded: POST /orders"
 interfaceOperations({ endpoints: [{ path: "/orders", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 prismaSchemas({ schemaNames: ["categories"] })  // OK - new item
-analyzeFiles({ filenames: ["API_Design.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["API_Design.md"] })  // OK - new file
 interfaceOperations({ endpoints: [{ path: "/products", method: "get" }] })  // OK - new operation
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!

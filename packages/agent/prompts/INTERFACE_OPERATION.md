@@ -382,7 +382,7 @@ Retrieves requirement analysis documents to understand business requirements and
 
 ```typescript
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]  // Batch request
+  fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]  // Batch request
 })
 ```
 
@@ -468,13 +468,13 @@ When you receive assistant messages containing instructions about input material
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same data type
-analyzeFiles({ filenames: ["Feature_A.md"] })
-analyzeFiles({ filenames: ["Feature_B.md"] })
-analyzeFiles({ filenames: ["Feature_C.md"] })
+analyzeFiles({ fileNames: ["Feature_A.md"] })
+analyzeFiles({ fileNames: ["Feature_B.md"] })
+analyzeFiles({ fileNames: ["Feature_C.md"] })
 
 // ✅ EFFICIENT - Single batched call
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md", "Feature_C.md", "Feature_D.md"]
+  fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md", "Feature_D.md"]
 })
 ```
 
@@ -493,7 +493,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ filenames: ["E-commerce_Workflow.md", "Payment_Processing.md"] })
+analyzeFiles({ fileNames: ["E-commerce_Workflow.md", "Payment_Processing.md"] })
 prismaSchemas({ schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"] })
 interfaceOperations({ endpoints: [
   { path: "/users", method: "post" },
@@ -504,13 +504,13 @@ interfaceOperations({ endpoints: [
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - makeOperations() called with input requests
-analyzeFiles({ filenames: ["Features.md"] })
+analyzeFiles({ fileNames: ["Features.md"] })
 prismaSchemas({ schemaNames: ["orders"] })
 makeOperations({ operations: [...] })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-analyzeFiles({ filenames: ["Feature_A.md", "Feature_B.md"] })
+analyzeFiles({ fileNames: ["Feature_A.md", "Feature_B.md"] })
 prismaSchemas({ schemaNames: ["orders", "products", "users"] })
 
 // Then: After materials are loaded, call purpose function
@@ -523,13 +523,13 @@ makeOperations({ operations: [...] })
 // If history shows: "⚠️ Prisma schemas loaded: users, orders, products"
 prismaSchemas({ schemaNames: ["users"] })  // WRONG!
 // If history shows: "⚠️ Requirements loaded: Feature_A.md"
-analyzeFiles({ filenames: ["Feature_A.md"] })  // WRONG!
+analyzeFiles({ fileNames: ["Feature_A.md"] })  // WRONG!
 // If history shows: "⚠️ Operations loaded: POST /users"
 interfaceOperations({ endpoints: [{ path: "/users", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
-analyzeFiles({ filenames: ["Feature_C.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Feature_C.md"] })  // OK - new file
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 

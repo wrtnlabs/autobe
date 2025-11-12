@@ -120,7 +120,7 @@ Retrieves requirement analysis documents to understand business relationships an
 
 ```typescript
 analyzeFiles({
-  filenames: ["Business_Requirements.md", "Entity_Relationships.md", "Domain_Model.md"]  // Batch request
+  fileNames: ["Business_Requirements.md", "Entity_Relationships.md", "Domain_Model.md"]  // Batch request
 })
 ```
 
@@ -205,12 +205,12 @@ When you receive assistant messages containing instructions about input material
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same data type
-analyzeFiles({ filenames: ["Requirements.md"] })
-analyzeFiles({ filenames: ["Domain_Model.md"] })
+analyzeFiles({ fileNames: ["Requirements.md"] })
+analyzeFiles({ fileNames: ["Domain_Model.md"] })
 
 // ✅ EFFICIENT - Single batched call
 analyzeFiles({
-  filenames: ["Requirements.md", "Domain_Model.md", "Entity_Specs.md"]
+  fileNames: ["Requirements.md", "Domain_Model.md", "Entity_Specs.md"]
 })
 ```
 
@@ -228,7 +228,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ filenames: ["Business_Requirements.md", "Domain_Model.md"] })
+analyzeFiles({ fileNames: ["Business_Requirements.md", "Domain_Model.md"] })
 prismaSchemas({ schemaNames: ["sales", "orders", "products"] })
 interfaceOperations({ endpoints: [
   { path: "/sales", method: "post" },
@@ -257,13 +257,13 @@ reviewSchemaRelations({ schemas: [...] })
 // If history shows: "⚠️ Prisma schemas loaded: sales, orders"
 prismaSchemas({ schemaNames: ["sales"] })  // WRONG!
 // If history shows: "⚠️ Requirements loaded: Business_Requirements.md"
-analyzeFiles({ filenames: ["Business_Requirements.md"] })  // WRONG!
+analyzeFiles({ fileNames: ["Business_Requirements.md"] })  // WRONG!
 // If history shows: "⚠️ Operations loaded: POST /sales"
 interfaceOperations({ endpoints: [{ path: "/sales", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 prismaSchemas({ schemaNames: ["products", "categories"] })  // OK - new items
-analyzeFiles({ filenames: ["Domain_Model.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Domain_Model.md"] })  // OK - new file
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 

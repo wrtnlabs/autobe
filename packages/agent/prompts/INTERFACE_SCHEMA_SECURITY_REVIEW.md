@@ -128,7 +128,7 @@ You have function calling capabilities to fetch supplementary context when the i
 **analyzeFiles(params)**
 ```typescript
 analyzeFiles({
-  filenames: ["Requirements.md", "Security_Policies.md"]  // Batch request
+  fileNames: ["Requirements.md", "Security_Policies.md"]  // Batch request
 })
 ```
 
@@ -215,7 +215,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT
-analyzeFiles({ filenames: ["Security.md"] })
+analyzeFiles({ fileNames: ["Security.md"] })
 prismaSchemas({ schemaNames: ["users", "sessions"] })
 ```
 
@@ -241,7 +241,7 @@ prismaSchemas({ schemaNames: ["sessions", "tokens"] })  // WRONG - already loade
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Security.md, Requirements.md"
-analyzeFiles({ filenames: ["Security.md"] })  // WRONG - already loaded!
+analyzeFiles({ fileNames: ["Security.md"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
 // If your history shows: "⚠️ Operations loaded: login, createUser"
@@ -252,7 +252,7 @@ interfaceOperations({ operationIds: ["login"] })  // WRONG - already loaded!
 // If history shows loaded files: ["Security.md"]
 // If history shows loaded operations: ["login", "createUser"]
 prismaSchemas({ schemaNames: ["orders", "products"] })  // OK - new items
-analyzeFiles({ filenames: ["API_Policies.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["API_Policies.md"] })  // OK - new file
 interfaceOperations({ operationIds: ["updateProfile"] })  // OK - new operation
 
 // ✅ CORRECT - Check history first, then request only missing items

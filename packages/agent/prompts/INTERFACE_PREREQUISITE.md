@@ -91,7 +91,7 @@ Retrieves requirement analysis documents to understand workflow dependencies.
 
 ```typescript
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]  // Batch request
+  fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]  // Batch request
 })
 ```
 
@@ -204,7 +204,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ filenames: ["Order_Workflow.md", "Product_Management.md"] })
+analyzeFiles({ fileNames: ["Order_Workflow.md", "Product_Management.md"] })
 prismaSchemas({ schemaNames: ["orders", "products", "users"] })
 interfaceOperations({ endpoints: [
   { path: "/users", method: "post" },
@@ -237,13 +237,13 @@ analyzePrerequisites({ operations: [...] })
 // If history shows: "⚠️ Prisma schemas loaded: orders, users"
 prismaSchemas({ schemaNames: ["orders"] })  // WRONG!
 // If history shows: "⚠️ Requirements loaded: Order_Workflow.md"
-analyzeFiles({ filenames: ["Order_Workflow.md"] })  // WRONG!
+analyzeFiles({ fileNames: ["Order_Workflow.md"] })  // WRONG!
 // If history shows: "⚠️ Operations loaded: POST /users"
 interfaceOperations({ endpoints: [{ path: "/users", method: "post" }] })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 prismaSchemas({ schemaNames: ["products", "categories"] })  // OK - new items
-analyzeFiles({ filenames: ["Product_Management.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Product_Management.md"] })  // OK - new file
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget. Check history first!
 

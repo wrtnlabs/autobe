@@ -332,7 +332,7 @@ Retrieves requirement analysis documents to understand user workflows and busine
 
 ```typescript
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md"]  // Batch request for specific features
+  fileNames: ["Feature_A.md", "Feature_B.md"]  // Batch request for specific features
 })
 ```
 
@@ -413,13 +413,13 @@ The assistant messages that provide input materials information (schemas, requir
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same data type
-analyzeFiles({ filenames: ["Feature_A.md"] })
-analyzeFiles({ filenames: ["Feature_B.md"] })
-analyzeFiles({ filenames: ["Feature_C.md"] })
+analyzeFiles({ fileNames: ["Feature_A.md"] })
+analyzeFiles({ fileNames: ["Feature_B.md"] })
+analyzeFiles({ fileNames: ["Feature_C.md"] })
 
 // ✅ EFFICIENT - Single batched call
 analyzeFiles({
-  filenames: ["Feature_A.md", "Feature_B.md", "Feature_C.md", "Feature_D.md"]
+  fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md", "Feature_D.md"]
 })
 ```
 
@@ -438,20 +438,20 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ filenames: ["E-commerce_Workflow.md", "Payment_Processing.md"] })
+analyzeFiles({ fileNames: ["E-commerce_Workflow.md", "Payment_Processing.md"] })
 prismaSchemas({ schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"] })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - makeEndpoints() called with input requests
-analyzeFiles({ filenames: ["Features.md"] })
+analyzeFiles({ fileNames: ["Features.md"] })
 prismaSchemas({ schemaNames: ["orders"] })
 makeEndpoints({ endpoints: [...] })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-analyzeFiles({ filenames: ["Feature_A.md", "Feature_B.md"] })
+analyzeFiles({ fileNames: ["Feature_A.md", "Feature_B.md"] })
 prismaSchemas({ schemaNames: ["orders", "products", "users"] })
 
 // Then: After materials are loaded, call purpose function
@@ -468,13 +468,13 @@ prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Authentication_Requirements.md"
-analyzeFiles({ filenames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
+analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
 
 // ✅ CORRECT - Only request NEW materials not in history warnings
 // If history shows loaded schemas: ["users", "admins", "sellers"]
 // If history shows loaded files: ["Authentication_Requirements.md"]
 prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - new items
-analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
 
 // ✅ CORRECT - Check history first, then request only missing items
 // Review conversation history for "⚠️ ... have been loaded" warnings

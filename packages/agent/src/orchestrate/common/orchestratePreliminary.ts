@@ -148,7 +148,7 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
     props.arguments,
   );
   const existing: string[] = props.local.map((f) => f.filename);
-  for (const filename of props.arguments.filenames)
+  for (const filename of props.arguments.fileNames)
     if (props.local.find((f) => f.filename === filename) === undefined)
       props.local.push(props.all.find((f) => f.filename === filename)!);
   ctx.dispatch({
@@ -158,7 +158,7 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
     source: props.source,
     source_id: props.source_id,
     existing,
-    requested: props.arguments.filenames,
+    requested: props.arguments.fileNames,
     trial: props.trial,
     created_at: new Date().toISOString(),
   });

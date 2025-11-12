@@ -113,7 +113,7 @@ Retrieves requirement analysis documents to understand authorization workflows.
 
 ```typescript
 analyzeFiles({
-  filenames: ["Authentication_Requirements.md", "User_Management.md"]  // Batch request
+  fileNames: ["Authentication_Requirements.md", "User_Management.md"]  // Batch request
 })
 ```
 
@@ -221,7 +221,7 @@ prismaSchemas({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ filenames: ["Authentication_Requirements.md"] })
+analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })
 prismaSchemas({ schemaNames: ["users", "admins"] })
 ```
 
@@ -234,7 +234,7 @@ makeOperations({ operations: [...] })  // This executes with OLD materials!
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
 prismaSchemas({ schemaNames: ["users", "admins"] })
-analyzeFiles({ filenames: ["Authentication_Requirements.md"] })
+analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })
 
 // Then: After materials are loaded, call purpose function
 makeOperations({ operations: [...] })
@@ -250,7 +250,7 @@ prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If your history shows: "⚠️ Requirements loaded: Authentication_Requirements.md"
-analyzeFiles({ filenames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
+analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
 // If your history shows: "⚠️ Operations loaded: POST /auth/user/join"
@@ -260,7 +260,7 @@ interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] }
 // If history shows loaded schemas: ["users", "admins", "sellers"]
 // If history shows loaded files: ["Authentication_Requirements.md"]
 prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - new items
-analyzeFiles({ filenames: ["Security_Policies.md"] })  // OK - new file
+analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
 
 // ✅ CORRECT - Check history first, then request only missing items
 // Review conversation history for "⚠️ ... have been loaded" warnings
