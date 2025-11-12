@@ -3,6 +3,7 @@ import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBePreliminaryApplication } from "../structures/IAutoBePreliminaryApplication";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
@@ -53,6 +54,12 @@ namespace PreliminaryApplicationValidator {
       ${props.all.analyzeFiles
         .map((f) => [f.filename, f.documentType].join(" | "))
         .join("\n")}
+
+      ${
+        newbie.size === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
+          : ""
+      }
     `;
     const again = (key: string) =>
       StringUtil.trim`
@@ -113,6 +120,12 @@ namespace PreliminaryApplicationValidator {
       Here are the list of prisma schema models you can use.
 
       Please select from the below. Never assume non-existing models.
+
+      ${
+        newbie.size === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
+          : ""
+      }
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
@@ -190,11 +203,16 @@ namespace PreliminaryApplicationValidator {
 
       Please select from the below. Never assume non-existing endpoints.
 
-      Method | Path 
+      Method | Path
       -------|------
       ${props.all.interfaceOperations
         .map((o) => [o.method, o.path].join(" | "))
         .join("\n")}
+      
+      ${
+        newbie.size() === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED
+          : ""
       }
     `;
     const again = (key: AutoBeOpenApi.IEndpoint) =>
@@ -254,6 +272,12 @@ namespace PreliminaryApplicationValidator {
       Please select from the below. Never assume non-existing schemas.
 
       ${quoted.map((q) => `- ${q}`).join("\n")}
+
+      ${
+        newbie.size === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED
+          : ""
+      }
     `;
 
     const again = (key: string) =>

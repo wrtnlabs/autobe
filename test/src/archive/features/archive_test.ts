@@ -73,7 +73,7 @@ export let archive_test = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      [`test.json`]: JSON.stringify(agent.getHistories()),
+      [`test.histories.json`]: JSON.stringify(agent.getHistories()),
       [`test.snapshots.json`]: JSON.stringify(
         snapshots.map((s) => ({
           event: s.event,

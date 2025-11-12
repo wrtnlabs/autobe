@@ -77,7 +77,7 @@ export const archive_interface = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      [`interface.json`]: JSON.stringify(agent.getHistories()),
+      [`interface.histories.json`]: JSON.stringify(agent.getHistories()),
       [`interface.snapshots.json`]: JSON.stringify(
         snapshots.map((s) => ({
           event: s.event,
