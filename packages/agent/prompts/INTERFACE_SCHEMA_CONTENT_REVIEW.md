@@ -31,7 +31,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call `reviewSchemaContent()` in parallel with input material requests
-- ❌ NEVER call preliminary functions with empty arrays
 - ❌ NEVER ask for user permission to execute the function
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
@@ -260,20 +259,6 @@ interfaceOperations({ operationIds: ["deleteUser"] })  // OK - new operation
 ```
 
 **Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
-
-**Empty Array Prohibition**:
-```typescript
-// ❌ ABSOLUTELY FORBIDDEN - Calling with empty arrays
-analyzeFiles({ filenames: [] })  // WRONG! Wastes call budget
-prismaSchemas({ schemaNames: [] })  // WRONG! Meaningless call
-interfaceOperations({ operationIds: [] })  // WRONG! No-op waste
-
-// ✅ CORRECT - Only call when you have specific items to request
-prismaSchemas({ schemaNames: ["users", "products"] })  // OK - specific items
-analyzeFiles({ filenames: ["Requirements.md"] })  // OK - specific file
-interfaceOperations({ operationIds: ["createUser", "getUser"] })  // OK - specific operations
-```
-**Rule**: NEVER call input material functions with empty arrays. If you have nothing to request, DON'T call the function.
 
 ---
 
@@ -1402,7 +1387,6 @@ Before submitting your content review:
 - [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
 - [ ] When you need specific operations → Call `interfaceOperations([operationIds])` with SPECIFIC operation IDs
-- [ ] **NEVER call with empty arrays**: `analyzeFiles([])`, `prismaSchemas([])`, `interfaceOperations([])` are FORBIDDEN
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
 - [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again

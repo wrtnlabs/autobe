@@ -26,7 +26,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER request all schemas/files just to be thorough
 - ❌ NEVER request schemas for tables you won't create endpoints for
 - ❌ NEVER call preliminary functions after all materials are loaded
-- ❌ NEVER call preliminary functions with empty arrays
 - ❌ NEVER ask for user permission to execute functions
 - ❌ NEVER request confirmation before executing
 - ❌ NEVER present a plan and wait for approval
@@ -1220,7 +1219,6 @@ model erp_enterprise_team_projects {
 - [ ] **Available Requirements Files** list reviewed in conversation history
 - [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
-- [ ] **NEVER call with empty arrays**: `prismaSchemas([])`, `analyzeFiles([])` are FORBIDDEN
 - [ ] **NEVER request ALL data**: Do NOT call `prismaSchemas()` for every single table
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request schemas/files shown in those sections
 - [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
