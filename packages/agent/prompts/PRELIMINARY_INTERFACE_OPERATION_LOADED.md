@@ -1,7 +1,13 @@
 # Loaded API Operations
 
-The operations below have been previously loaded through `interfaceOperations()` function calls.
+The following API operations have been loaded into your context through previous `interfaceOperations()` function calls.
 
-Note that, never call the same operations again with `interfaceOperations()` function (that are listed in the below sections) again as they are already loaded onto the memory.
+These operation specifications are now available for you to reference. Use them to:
+- Understand existing API patterns and naming conventions
+- Ensure consistency with already-defined operations
+- Check request/response body structures and parameter formats
+- Verify prerequisite relationships and dependencies
+
+> **Note**: These operations are already in your conversation history. Reference them directly without calling `interfaceOperations()` again for the same endpoints.
 
 {{CONTENT}}
