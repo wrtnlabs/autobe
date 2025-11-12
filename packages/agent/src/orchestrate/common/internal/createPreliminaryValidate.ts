@@ -81,7 +81,7 @@ namespace PreliminaryApplicationValidator {
       });
       controller.setEmpty(
         "analyzeFiles",
-        result.data.fileNames.length === 0 &&
+        result.data.fileNames.length === 0 ||
           result.data.fileNames.every((k) => oldbie.has(k)),
       );
       return finalize(result, errors);

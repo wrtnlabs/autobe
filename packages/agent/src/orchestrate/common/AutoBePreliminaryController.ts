@@ -106,10 +106,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         preliminary: this,
         trial: i + 1,
         histories: result.histories,
-        setEmpty: (kind: Kind, value: boolean) => {
-          if (value === true) this.empties.add(kind);
-          else this.empties.delete(kind);
-        },
       });
     }
     throw new Error(

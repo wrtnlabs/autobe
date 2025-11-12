@@ -25,7 +25,6 @@ export const orchestratePreliminary = async <
     histories: MicroAgenticaHistory<Model>[];
     preliminary: AutoBePreliminaryController<Kind>;
     trial: number;
-    setEmpty: (kind: Kind, value: boolean) => void;
   },
 ): Promise<void> => {
   ctx; // @todo -> dispatch events
@@ -44,11 +43,6 @@ export const orchestratePreliminary = async <
         all: pa.getAll().analyzeFiles,
         local: pa.getLocal().analyzeFiles,
         arguments: exec.arguments,
-        setEmpty: (value) =>
-          props.setEmpty(
-            "analyzeFiles" satisfies AutoBePreliminaryKind as any,
-            value,
-          ),
       });
     }
     // PRISMA SCHEMAS
@@ -62,11 +56,6 @@ export const orchestratePreliminary = async <
         all: pp.getAll().prismaSchemas,
         local: pp.getLocal().prismaSchemas,
         arguments: exec.arguments,
-        setEmpty: (value) =>
-          props.setEmpty(
-            "prismaSchemas" satisfies AutoBePreliminaryKind as any,
-            value,
-          ),
       });
     }
     // INTERFACE OPERATIONS
@@ -89,11 +78,6 @@ export const orchestratePreliminary = async <
           schemas: pi.getLocal().interfaceSchemas,
         },
         arguments: exec.arguments,
-        setEmpty: (value) =>
-          props.setEmpty(
-            "interfaceOperations" satisfies AutoBePreliminaryKind as any,
-            value,
-          ),
       });
     }
     // INTERFACE SCHEMAS
@@ -109,11 +93,6 @@ export const orchestratePreliminary = async <
         all: ps.getAll().interfaceSchemas,
         local: ps.getLocal().interfaceSchemas,
         arguments: exec.arguments,
-        setEmpty: (value) =>
-          props.setEmpty(
-            "interfaceSchemas" satisfies AutoBePreliminaryKind as any,
-            value,
-          ),
       });
     }
   }
@@ -164,13 +143,11 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
     all: AutoBeAnalyzeFile[];
     local: AutoBeAnalyzeFile[];
     arguments: unknown;
-    setEmpty: (value: boolean) => void;
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IAnalysisFilesProps>(
     props.arguments,
   );
-  props.setEmpty(props.arguments.fileNames.length === 0);
 
   const existing: string[] = props.local.map((f) => f.filename);
   for (const filename of props.arguments.fileNames)
@@ -198,13 +175,11 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
     all: AutoBePrisma.IModel[];
     local: AutoBePrisma.IModel[];
     arguments: unknown;
-    setEmpty: (value: boolean) => void;
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
     props.arguments,
   );
-  props.setEmpty(props.arguments.schemaNames.length === 0);
 
   const existing: string[] = props.local.map((m) => m.name);
   for (const name of props.arguments.schemaNames)
@@ -238,13 +213,11 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     };
     arguments: unknown;
-    setEmpty: (value: boolean) => void;
   },
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
     props.arguments,
   );
-  props.setEmpty(props.arguments.endpoints.length === 0);
 
   const existing: AutoBeOpenApi.IEndpoint[] = props.local.operations.map(
     (o) => ({
@@ -291,7 +264,6 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       arguments: {
         typeNames: Array.from(typeNames),
       } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
-      setEmpty: null,
     },
     false,
   );
@@ -306,15 +278,12 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
     all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     arguments: unknown;
-    setEmpty: ((value: boolean) => void) | null;
   },
   dispatch: boolean = true,
 ): void => {
   typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(
     props.arguments,
   );
-  if (props.setEmpty !== null)
-    props.setEmpty(props.arguments.typeNames.length === 0);
 
   const existing: string[] = Object.keys(props.local);
 
