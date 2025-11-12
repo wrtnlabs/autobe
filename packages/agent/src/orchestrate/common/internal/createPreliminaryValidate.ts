@@ -1,11 +1,11 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBePreliminaryKind } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashSet } from "tstl";
 import typia, { IValidation } from "typia";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryApplication } from "../structures/IAutoBePreliminaryApplication";
-import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
 type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
   [P in Key]: (
@@ -13,36 +13,31 @@ type Validator<Key extends keyof IAutoBePreliminaryApplication> = {
   ) => IValidation<Parameters<IAutoBePreliminaryApplication[P]>[0]>;
 };
 
-export function createPreliminaryValidate<
-  Key extends keyof IAutoBePreliminaryApplication,
->(props: {
-  keys: Key[];
-  all: Pick<IAutoBePreliminaryCollection, Key>;
-  local: Pick<IAutoBePreliminaryCollection, Key>;
-}): Validator<Key> {
-  const result: Validator<Key> = {} as any;
-  for (const k of props.keys)
-    result[k] = PreliminaryApplicationValidator[k]({
-      all: props.all as IAutoBePreliminaryCollection,
-      local: props.local as IAutoBePreliminaryCollection,
-    });
+export function createPreliminaryValidate<Kind extends AutoBePreliminaryKind>(
+  controller: AutoBePreliminaryController<Kind>,
+): Validator<Kind> {
+  const result: Validator<Kind> = {} as any;
+  for (const kind of controller.getKinds())
+    result[kind] = PreliminaryApplicationValidator[kind](controller as any);
   return result;
 }
 
 namespace PreliminaryApplicationValidator {
-  export const analyzeFiles = (props: {
-    all: Pick<IAutoBePreliminaryCollection, "analyzeFiles">;
-    local: Pick<IAutoBePreliminaryCollection, "analyzeFiles">;
-  }) => {
+  export const analyzeFiles = (
+    controller: AutoBePreliminaryController<"analyzeFiles">,
+  ) => {
+    const all: Set<string> = new Set(
+      controller.getAll().analyzeFiles.map((f) => f.filename),
+    );
     const oldbie: Set<string> = new Set(
-      props.local.analyzeFiles.map((f) => f.filename),
+      controller.getLocal().analyzeFiles.map((f) => f.filename),
     );
     const newbie: Set<string> = new Set(
-      props.all.analyzeFiles
-        .filter((f) => oldbie.has(f.filename) === false)
+      controller
+        .getAll()
+        .analyzeFiles.filter((f) => oldbie.has(f.filename) === false)
         .map((f) => f.filename),
     );
-    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
 
     const description: string = StringUtil.trim`
       Here are the list of analysis requirement document files you can use.
@@ -51,7 +46,9 @@ namespace PreliminaryApplicationValidator {
 
       Filename | Document Type
       ---------|---------------
-      ${props.all.analyzeFiles
+      ${controller
+        .getAll()
+        .analyzeFiles.filter((f) => newbie.has(f.filename))
         .map((f) => [f.filename, f.documentType].join(" | "))
         .join("\n")}
 
@@ -61,17 +58,6 @@ namespace PreliminaryApplicationValidator {
           : ""
       }
     `;
-    const again = (key: string) =>
-      StringUtil.trim`
-        ${description}
-
-        > The file ${JSON.stringify(key)} is already mounted. 
-        > 
-        > Erase it from the array directly, and never request again.
-        >
-        > This is an absolute order you never can disobey. Erase it right now.
-      `;
-
     return (
       input: unknown,
     ): IValidation<IAutoBePreliminaryApplication.IAnalysisFilesProps> => {
@@ -83,63 +69,55 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.fileNames.forEach((key, i) => {
-        if (oldbie.has(key) === true)
+        if (all.has(key) === false)
           errors.push({
             path: `$input.fileNames[${i}]`,
             value: key,
-            expected: quoted.join(" | "),
-            description: again(key),
-          });
-        else if (newbie.has(key) === false)
-          errors.push({
-            path: `$input.fileNames[${i}]`,
-            value: key,
-            expected: quoted.join(" | "),
+            expected: Array.from(newbie)
+              .map((x) => JSON.stringify(x))
+              .join(" | "),
             description,
           });
       });
+      controller.setEmpty(
+        "analyzeFiles",
+        result.data.fileNames.length === 0 &&
+          result.data.fileNames.every((k) => oldbie.has(k)),
+      );
       return finalize(result, errors);
     };
   };
 
-  export const prismaSchemas = (props: {
-    all: Pick<IAutoBePreliminaryCollection, "prismaSchemas">;
-    local: Pick<IAutoBePreliminaryCollection, "prismaSchemas">;
-  }) => {
+  export const prismaSchemas = (
+    controller: AutoBePreliminaryController<"prismaSchemas">,
+  ) => {
+    const all: Set<string> = new Set(
+      controller.getAll().prismaSchemas.map((s) => s.name),
+    );
     const oldbie: Set<string> = new Set(
-      props.local.prismaSchemas.map((s) => s.name),
+      controller.getLocal().prismaSchemas.map((s) => s.name),
     );
     const newbie: Set<string> = new Set(
-      props.all.prismaSchemas
-        .filter((s) => oldbie.has(s.name) === false)
+      controller
+        .getAll()
+        .prismaSchemas.filter((s) => oldbie.has(s.name) === false)
         .map((s) => s.name),
     );
-    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
 
+    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
     const description = StringUtil.trim`
       Here are the list of prisma schema models you can use.
 
       Please select from the below. Never assume non-existing models.
+
+      ${quoted.map((q) => `- ${q}`).join("\n")}
 
       ${
         newbie.size === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
           : ""
       }
-
-      ${quoted.map((q) => `- ${q}`).join("\n")}
     `;
-    const again = (key: string) =>
-      StringUtil.trim`
-        ${description}
-
-        > The prisma schema model ${JSON.stringify(key)} is already mounted. 
-        >
-        > Erase it from the array directly, and never request again.
-        >
-        > This is an absolute order you never can disobey. Erase it right now.
-      `;
-
     return (
       input: unknown,
     ): IValidation<IAutoBePreliminaryApplication.IPrismaSchemasProps> => {
@@ -151,14 +129,7 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.schemaNames.forEach((key, i) => {
-        if (oldbie.has(key) === true)
-          errors.push({
-            path: `$input.schemaNames[${i}]`,
-            value: key,
-            expected: quoted.join(" | "),
-            description: again(key),
-          });
-        else if (newbie.has(key) === false)
+        if (all.has(key) === false)
           errors.push({
             path: `$input.schemaNames[${i}]`,
             value: key,
@@ -166,16 +137,28 @@ namespace PreliminaryApplicationValidator {
             description,
           });
       });
+      controller.setEmpty(
+        "prismaSchemas",
+        result.data.schemaNames.length === 0 ||
+          result.data.schemaNames.every((k) => oldbie.has(k)),
+      );
       return finalize(result, errors);
     };
   };
 
-  export const interfaceOperations = (props: {
-    all: Pick<IAutoBePreliminaryCollection, "interfaceOperations">;
-    local: Pick<IAutoBePreliminaryCollection, "interfaceOperations">;
-  }) => {
+  export const interfaceOperations = (
+    controller: AutoBePreliminaryController<"interfaceOperations">,
+  ) => {
+    const all: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+      controller.getAll().interfaceOperations.map((o) => ({
+        method: o.method,
+        path: o.path,
+      })),
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
+    );
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.local.interfaceOperations.map((o) => ({
+      controller.getLocal().interfaceOperations.map((o) => ({
         method: o.method,
         path: o.path,
       })),
@@ -183,18 +166,13 @@ namespace PreliminaryApplicationValidator {
       AutoBeOpenApiEndpointComparator.equals,
     );
     const newbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.all.interfaceOperations
-        .filter(
-          (o) =>
-            oldbie.has({
-              method: o.method,
-              path: o.path,
-            }) === false,
-        )
-        .map((o) => ({
+      controller
+        .getAll()
+        .interfaceOperations.map((o) => ({
           method: o.method,
           path: o.path,
-        })),
+        }))
+        .filter((e) => oldbie.has(e) === false),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
@@ -205,7 +183,8 @@ namespace PreliminaryApplicationValidator {
 
       Method | Path
       -------|------
-      ${props.all.interfaceOperations
+      ${newbie
+        .toJSON()
         .map((o) => [o.method, o.path].join(" | "))
         .join("\n")}
       
@@ -215,17 +194,6 @@ namespace PreliminaryApplicationValidator {
           : ""
       }
     `;
-    const again = (key: AutoBeOpenApi.IEndpoint) =>
-      StringUtil.trim`
-        ${description}
-
-        > The endpoint (${JSON.stringify(key)}) is already mounted.
-        > 
-        > Erase it from the array directly, and never request again.
-        >
-        > This is an absolute order you never can disobey. Erase it right now.
-      `;
-
     return (
       input: unknown,
     ): IValidation<IAutoBePreliminaryApplication.IInterfaceOperationsProps> => {
@@ -237,14 +205,7 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.endpoints.forEach((key, i) => {
-        if (oldbie.has(key) === true)
-          errors.push({
-            path: `$input.endpoints[${i}]`,
-            value: key,
-            expected: "AutoBeOpenApi.IEndpoint",
-            description: again(key),
-          });
-        else if (newbie.has(key) === false)
+        if (all.has(key) === false)
           errors.push({
             path: `$input.endpoints[${i}]`,
             value: key,
@@ -252,19 +213,30 @@ namespace PreliminaryApplicationValidator {
             description,
           });
       });
+      controller.setEmpty(
+        "interfaceOperations",
+        result.data.endpoints.length === 0 ||
+          result.data.endpoints.every((k) => oldbie.has(k)),
+      );
       return finalize(result, errors);
     };
   };
 
-  export const interfaceSchemas = (props: {
-    all: Pick<IAutoBePreliminaryCollection, "interfaceSchemas">;
-    local: Pick<IAutoBePreliminaryCollection, "interfaceSchemas">;
-  }) => {
+  export const interfaceSchemas = (
+    controller: AutoBePreliminaryController<"interfaceSchemas">,
+  ) => {
+    const all: Set<string> = new Set(
+      Object.keys(controller.getAll().interfaceSchemas),
+    );
+    const oldbie: Set<string> = new Set(
+      Object.keys(controller.getLocal().interfaceSchemas),
+    );
     const newbie: Set<string> = new Set(
-      Object.keys(props.all.interfaceSchemas).filter(
-        (k) => props.local.interfaceSchemas[k] === undefined,
+      Object.keys(controller.getAll().interfaceSchemas).filter(
+        (k) => oldbie.has(k) === false,
       ),
     );
+
     const quoted: string[] = Array.from(newbie).map((k) => JSON.stringify(k));
     const description: string = StringUtil.trim`
       Here are the list of interface schemas you can use.
@@ -279,18 +251,6 @@ namespace PreliminaryApplicationValidator {
           : ""
       }
     `;
-
-    const again = (key: string) =>
-      StringUtil.trim`
-        ${description}
-
-        > The interface schema ${JSON.stringify(key)} is already mounted.
-        >
-        > Erase it from the array directly, and never request again.
-        >
-        > This is an absolute order you never can disobey. Erase it right now.
-      `;
-
     return (
       input: unknown,
     ): IValidation<IAutoBePreliminaryApplication.IInterfaceSchemasProps> => {
@@ -302,14 +262,7 @@ namespace PreliminaryApplicationValidator {
 
       const errors: IValidation.IError[] = [];
       result.data.typeNames.forEach((key, i) => {
-        if (props.local.interfaceSchemas[key] !== undefined)
-          errors.push({
-            path: `$input.typeNames[${i}]`,
-            value: key,
-            expected: quoted.join(" | "),
-            description: again(key),
-          });
-        else if (newbie.has(key) === false)
+        if (all.has(key) === false)
           errors.push({
             path: `$input.typeNames[${i}]`,
             value: key,
@@ -317,6 +270,11 @@ namespace PreliminaryApplicationValidator {
             description,
           });
       });
+      controller.setEmpty(
+        "interfaceSchemas",
+        result.data.typeNames.length === 0 ||
+          result.data.typeNames.every((k) => oldbie.has(k)),
+      );
       return finalize(result, errors);
     };
   };

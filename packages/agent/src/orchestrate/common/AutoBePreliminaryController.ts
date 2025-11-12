@@ -47,15 +47,16 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   public createValidate() {
-    return createPreliminaryValidate({
-      keys: this.kinds,
-      all: this.all,
-      local: this.local,
-    });
+    return createPreliminaryValidate(this);
   }
 
   public createHistories(): IMicroAgenticaHistoryJson[] {
     return transformPreliminaryHistory(this);
+  }
+
+  public setEmpty(kind: Kind, value: boolean): void {
+    if (value === true) this.empties.add(kind);
+    else this.empties.delete(kind);
   }
 
   public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
