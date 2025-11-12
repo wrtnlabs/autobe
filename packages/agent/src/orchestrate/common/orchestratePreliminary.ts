@@ -150,9 +150,14 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
   );
 
   const existing: string[] = props.local.map((f) => f.filename);
-  for (const filename of props.arguments.fileNames)
-    if (props.local.find((f) => f.filename === filename) === undefined)
-      props.local.push(props.all.find((f) => f.filename === filename)!);
+  for (const filename of props.arguments.fileNames) {
+    const file: AutoBeAnalyzeFile | undefined = props.all.find(
+      (f) => f.filename === filename,
+    );
+    if (file === undefined) continue;
+    else if (props.local.find((x) => x.filename === filename) === undefined)
+      props.local.push(file);
+  }
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
@@ -182,9 +187,14 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
   );
 
   const existing: string[] = props.local.map((m) => m.name);
-  for (const name of props.arguments.schemaNames)
-    if (props.local.find((m) => m.name === name) === undefined)
-      props.local.push(props.all.find((m) => m.name === name)!);
+  for (const name of props.arguments.schemaNames) {
+    const model: AutoBePrisma.IModel | undefined = props.all.find(
+      (m) => m.name === name,
+    );
+    if (model === undefined) continue;
+    else if (props.local.find((m) => m.name === name) === undefined)
+      props.local.push(model);
+  }
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
@@ -233,13 +243,19 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
         (v) => v.method === endpoint.method && v.path === endpoint.path,
       ) !== undefined
     )
-      continue;
-    const operation: AutoBeOpenApi.IOperation = props.all.operations.find(
-      (v) => v.method === endpoint.method && v.path === endpoint.path,
-    )!;
+      continue; // duplicated
+
+    const operation: AutoBeOpenApi.IOperation | undefined =
+      props.all.operations.find(
+        (v) => v.method === endpoint.method && v.path === endpoint.path,
+      );
+    if (operation === undefined) continue; // not found (???)
+
     props.local.operations.push(operation);
-    if (operation.requestBody) typeNames.add(operation.requestBody.typeName);
-    if (operation.responseBody) typeNames.add(operation.responseBody.typeName);
+    if (operation.requestBody !== null)
+      typeNames.add(operation.requestBody.typeName);
+    if (operation.responseBody !== null)
+      typeNames.add(operation.responseBody.typeName);
   }
   ctx.dispatch({
     type: "preliminary",

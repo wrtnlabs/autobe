@@ -137,27 +137,11 @@ export const orchestrateInterface =
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: Math.ceil(
-        Object.keys(document.components.schemas).length /
+        (Object.keys(document.components.schemas).length * REVIEWERS.length) /
           AutoBeConfigConstant.INTERFACE_CAPACITY,
       ),
     };
-    for (const config of [
-      {
-        kind: "security" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-      },
-      {
-        kind: "relation" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-      },
-      {
-        kind: "content" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
-      },
-    ])
+    for (const config of REVIEWERS)
       assign(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
@@ -199,3 +183,18 @@ export const orchestrateInterface =
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceCompleteEvent);
   };
+
+const REVIEWERS = [
+  {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+  },
+  {
+    kind: "relation" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+  },
+  {
+    kind: "content" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+  },
+];
