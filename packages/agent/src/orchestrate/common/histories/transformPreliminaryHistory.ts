@@ -33,7 +33,9 @@ export function transformPreliminaryHistory<
         }),
       )
       .flat(),
-    ...(preliminary.getEmpties() ?? []).map(getEmptyMessage),
+    ...preliminary
+      .getEmpties()
+      .map((kind) => getEmptyMessage(preliminary.getFunctions(), kind)),
   ];
 }
 
@@ -295,23 +297,27 @@ export namespace transformPreliminaryHistory {
 }
 
 function getEmptyMessage(
+  functions: string[],
   kind: AutoBePreliminaryKind,
 ): IAgenticaHistoryJson.ISystemMessage {
   return {
     id: v7(),
     type: "systemMessage",
-    text: StringUtil.trim`
-      You have called ${kind}() function with empty list.
-
-      \`\`\`json
-      ${JSON.stringify(getEmptyArgument(kind), null, 2)}
-      \`\`\`
-
-      It means that you no more need to call this ${kind}() function anymore.
-      Try to call another function instead.
-
-      This is absolute instruction you have to follow.
-    `,
+    text: AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_EMPTY.replaceAll(
+      "{{FUNCTION}}",
+      kind,
+    )
+      .replaceAll(
+        "{{ARGUMENT}}",
+        JSON.stringify(getEmptyArgument(kind), null, 2),
+      )
+      .replaceAll(
+        "{{OTHER_FUNCTIONS}}",
+        functions
+          .filter((f) => f !== kind)
+          .map((f) => `- ${f}`)
+          .join("\n"),
+      ),
     created_at: new Date().toISOString(),
   };
 }

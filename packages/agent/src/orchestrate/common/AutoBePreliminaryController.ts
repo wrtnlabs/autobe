@@ -15,21 +15,29 @@ import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult"
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
 export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
+  // METADATA
   private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
   private readonly kinds: Kind[];
+  private readonly functions: string[];
+
+  // PRELIMINARY DATA
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
 
-  private empties: Set<Kind> | null;
+  // STATE
+  private readonly empties: Set<Kind>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
+    this.functions = props.functions;
+
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
-    this.empties = null;
+
+    this.empties = new Set();
 
     complementPreliminaryCollection({
       kinds: props.kinds,
@@ -58,6 +66,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.kinds;
   }
 
+  public getFunctions(): string[] {
+    return this.functions;
+  }
+
   public getAll(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.all;
   }
@@ -66,8 +78,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.local;
   }
 
-  public getEmpties(): Kind[] | null {
-    return this.empties ? Array.from(this.empties) : null;
+  public getEmpties(): Kind[] {
+    return Array.from(this.empties);
   }
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(
@@ -94,7 +106,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         trial: i + 1,
         histories: result.histories,
         setEmpty: (kind: Kind, value: boolean) => {
-          this.empties ??= new Set<Kind>();
           if (value === true) this.empties.add(kind);
           else this.empties.delete(kind);
         },
@@ -108,6 +119,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 export namespace AutoBePreliminaryController {
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    functions: string[];
     kinds: Kind[];
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;

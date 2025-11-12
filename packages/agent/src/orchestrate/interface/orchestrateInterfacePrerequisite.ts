@@ -130,6 +130,9 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    functions: typia.json
+      .application<IAutoBeInterfacePrerequisiteApplication>()
+      .functions.map((f) => f.name),
     source: "interfacePrerequisite",
     kinds: [
       "analyzeFiles",

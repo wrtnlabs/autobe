@@ -53,6 +53,9 @@ async function step<Model extends ILlmSchema.Model>(
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    functions: typia.json
+      .application<IAutoBeInterfaceComplementApplication>()
+      .functions.map((f) => f.name),
     source: "interfaceComplement",
     kinds: [
       "analyzeFiles",
