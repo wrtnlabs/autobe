@@ -136,12 +136,13 @@ export const orchestrateInterface =
 
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
-      total: Math.ceil(
+      total: 0,
+    };
+    for (const config of REVIEWERS) {
+      reviewProgress.total = Math.ceil(
         (Object.keys(document.components.schemas).length * REVIEWERS.length) /
           AutoBeConfigConstant.INTERFACE_CAPACITY,
-      ),
-    };
-    for (const config of REVIEWERS)
+      );
       assign(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
@@ -149,6 +150,7 @@ export const orchestrateInterface =
           progress: reviewProgress,
         }),
       );
+    }
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
     await orchestrateInterfaceSchemaRename(ctx, document);
