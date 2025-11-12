@@ -10,7 +10,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
 ): Array<IAgenticaHistoryJson.ISystemMessage> => {
   if (operation.authorizationType === null) return [];
   const text: string = PROMPTS[operation.authorizationType].replace(
-    "${PAYLOAD}",
+    "{{PAYLOAD}}",
     JSON.stringify(payload),
   );
   const history: IAgenticaHistoryJson.ISystemMessage = {
