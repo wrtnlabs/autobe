@@ -289,12 +289,11 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
 
   const collected: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const key of props.arguments.typeNames) {
-    const schema: AutoBeOpenApi.IJsonSchemaDescriptive = props.all[key];
     OpenApiTypeChecker.visit({
       components: {
         schemas: props.all,
       },
-      schema,
+      schema: { $ref: `#/components/schemas/${key}` },
       closure: (next) => {
         if (OpenApiTypeChecker.isReference(next)) {
           const last: string = next.$ref.split("/").pop()!;
@@ -302,8 +301,8 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
         }
       },
     });
-    Object.assign(props.all, collected);
   }
+  Object.assign(props.local, collected);
 
   if (dispatch === true)
     ctx.dispatch({
