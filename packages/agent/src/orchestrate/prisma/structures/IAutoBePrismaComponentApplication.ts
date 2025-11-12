@@ -1,10 +1,7 @@
 import { AutoBePrisma } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
-
-export interface IAutoBePrismaComponentApplication
-  extends Pick<IAutoBePreliminaryApplication, "analyzeFiles"> {
+export interface IAutoBePrismaComponentApplication {
   /**
    * Organizes database tables into domain-based components for Prisma schema
    * generation.
