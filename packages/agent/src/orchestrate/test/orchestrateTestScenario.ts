@@ -32,7 +32,6 @@ import { getPrerequisites } from "./utils/getPrerequisites";
 export const orchestrateTestScenario = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   instruction: string,
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<AutoBeTestScenario[]> => {
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
@@ -83,7 +82,7 @@ export const orchestrateTestScenario = async <Model extends ILlmSchema.Model>(
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
       array: include,
-      capacity: capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
+      capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
     await executeCachedBatch(
       matrix.map((include) => async (promptCacheKey) => {
@@ -141,11 +140,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
-  // try {
-  return await process(ctx, props);
-  // } catch {
-  //   return [];
-  // }
+  try {
+    return await process(ctx, props);
+  } catch {
+    return [];
+  }
 };
 
 const process = async <Model extends ILlmSchema.Model>(
