@@ -53,7 +53,7 @@ async function step<Model extends ILlmSchema.Model>(
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceComplementApplication>(),
-    source: "interfaceComplement",
+    source: SOURCE,
     kinds: [
       "analysisFiles",
       "prismaSchemas",
@@ -74,7 +74,7 @@ async function step<Model extends ILlmSchema.Model>(
       value: null,
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "interfaceComplement",
+      source: SOURCE,
       controller: createController({
         model: ctx.model,
         build: (next) => {
@@ -101,7 +101,7 @@ async function step<Model extends ILlmSchema.Model>(
     });
     if (pointer.value !== null) {
       ctx.dispatch({
-        type: "interfaceComplement",
+        type: SOURCE,
         id: v7(),
         missed,
         schemas: pointer.value,
@@ -206,7 +206,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfaceComplement" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -240,3 +240,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceComplementApplication.IProps>;
+
+const SOURCE = "interfaceComplement" satisfies AutoBeEventSource;

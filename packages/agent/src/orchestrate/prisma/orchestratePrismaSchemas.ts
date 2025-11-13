@@ -1,5 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeEventSource, AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -60,7 +60,7 @@ async function process<Model extends ILlmSchema.Model>(
   const preliminary: AutoBePreliminaryController<"analysisFiles"> =
     new AutoBePreliminaryController({
       application: typia.json.application<IAutoBePrismaSchemaApplication>(),
-      source: "prismaSchema",
+      source: SOURCE,
       kinds: ["analysisFiles"],
       state: ctx.state(),
     });
@@ -69,7 +69,7 @@ async function process<Model extends ILlmSchema.Model>(
       value: null,
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "prismaSchema",
+      source: SOURCE,
       controller: createController(ctx, {
         preliminary,
         targetComponent: props.component,
@@ -95,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
     });
     if (pointer.value !== null)
       return out(result)({
-        type: "prismaSchema",
+        type: SOURCE,
         id: v7(),
         created_at: props.start.toISOString(),
         plan: pointer.value.plan,
@@ -191,7 +191,7 @@ function createController<Model extends ILlmSchema.Model>(
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Prisma Generator",
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -219,3 +219,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBePrismaSchemaApplication.IProps>;
+
+const SOURCE = "prismaSchema" satisfies AutoBeEventSource;

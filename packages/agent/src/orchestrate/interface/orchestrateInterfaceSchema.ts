@@ -132,7 +132,7 @@ async function process<Model extends ILlmSchema.Model>(
     "analysisFiles" | "prismaSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
-    source: "interfaceSchema",
+    source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas", "interfaceOperations"],
     state: ctx.state(),
   });
@@ -144,7 +144,7 @@ async function process<Model extends ILlmSchema.Model>(
       value: null,
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "interfaceSchema",
+      source: SOURCE,
       controller: createController({
         model: ctx.model,
         build: async (next) => {
@@ -174,7 +174,7 @@ async function process<Model extends ILlmSchema.Model>(
         }) as AutoBeOpenApi.IComponents
       ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
       ctx.dispatch({
-        type: "interfaceSchema",
+        type: SOURCE,
         id: v7(),
         schemas,
         metric: result.metric,
@@ -257,7 +257,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfaceSchema" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       process: async (next) => {
@@ -292,3 +292,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceSchemaApplication.IProps>;
+
+const SOURCE = "interfaceSchema" satisfies AutoBeEventSource;

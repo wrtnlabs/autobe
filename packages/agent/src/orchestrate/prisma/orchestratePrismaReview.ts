@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBePrisma, AutoBeProgressEventBase } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBePrisma,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePrismaReviewEvent";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -55,7 +59,7 @@ async function step<Model extends ILlmSchema.Model>(
     "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaReviewApplication>(),
-    source: "prismaReview",
+    source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
     all: {
@@ -79,7 +83,7 @@ async function step<Model extends ILlmSchema.Model>(
       value: null,
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "prismaReview",
+      source: SOURCE,
       controller: createController(ctx, {
         preliminary,
         build: (next) => {
@@ -95,7 +99,7 @@ async function step<Model extends ILlmSchema.Model>(
     });
     if (pointer.value !== null) {
       const event: AutoBePrismaReviewEvent = {
-        type: "prismaReview",
+        type: SOURCE,
         id: v7(),
         created_at: start.toISOString(),
         filename: props.component.filename,
@@ -147,7 +151,7 @@ function createController<Model extends ILlmSchema.Model>(
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Prisma Schema Review",
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -181,3 +185,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBePrismaReviewApplication.IProps>;
+
+const SOURCE = "prismaReview" satisfies AutoBeEventSource;

@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBePrisma,
   AutoBePrismaCorrectEvent,
   IAutoBeCompiler,
@@ -118,7 +119,7 @@ async function execute<Model extends ILlmSchema.Model>(
     "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaCorrectApplication>(),
-    source: "prismaCorrect",
+    source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
     all: {
@@ -143,7 +144,7 @@ async function execute<Model extends ILlmSchema.Model>(
         value: null,
       };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "prismaCorrect",
+      source: SOURCE,
       controller: createController({
         preliminary,
         model: ctx.model,
@@ -171,7 +172,7 @@ async function execute<Model extends ILlmSchema.Model>(
         })),
       };
       ctx.dispatch({
-        type: "prismaCorrect",
+        type: SOURCE,
         id: v7(),
         failure,
         planning: pointer.value.planning,
@@ -227,7 +228,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Prisma Compiler",
+    name: SOURCE satisfies AutoBeEventSource,
     application,
     execute: {
       process: (next) => {
@@ -261,3 +262,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBePrismaCorrectApplication.IProps>;
+
+const SOURCE = "prismaCorrect" satisfies AutoBeEventSource;

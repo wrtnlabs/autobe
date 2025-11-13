@@ -22,7 +22,7 @@ export async function orchestrateInterfaceEndpointReview<
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceEndpointReviewApplication>(),
-    source: "interfaceEndpointReview",
+    source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
   });
@@ -32,7 +32,7 @@ export async function orchestrateInterfaceEndpointReview<
         value: null,
       };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "interfaceEndpointReview",
+      source: SOURCE,
       controller: createController({
         preliminary,
         model: ctx.model,
@@ -55,7 +55,7 @@ export async function orchestrateInterfaceEndpointReview<
         pointer.value?.endpoints ?? [];
       ctx.dispatch({
         id: v7(),
-        type: "interfaceEndpointReview",
+        type: SOURCE,
         endpoints,
         content: response,
         created_at: new Date().toISOString(),
@@ -98,7 +98,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfaceEndpointReview" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -134,3 +134,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceEndpointReviewApplication.IProps>;
+
+const SOURCE = "interfaceEndpointReview" satisfies AutoBeEventSource;

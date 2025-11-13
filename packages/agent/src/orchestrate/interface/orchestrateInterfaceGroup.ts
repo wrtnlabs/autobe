@@ -24,7 +24,7 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
     value: null,
   };
   const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceGroup",
+    source: SOURCE,
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -39,7 +39,7 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {
-    type: "interfaceGroup",
+    type: SOURCE,
     id: v7(),
     created_at: start.toISOString(),
     groups: pointer.value.groups,
@@ -64,7 +64,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfaceGroup" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       makeGroups: (next) => {
@@ -79,3 +79,5 @@ const collection = {
   claude: typia.llm.application<IAutoBeInterfaceGroupApplication, "claude">(),
   gemini: typia.llm.application<IAutoBeInterfaceGroupApplication, "gemini">(),
 };
+
+const SOURCE = "interfaceGroup" satisfies AutoBeEventSource;

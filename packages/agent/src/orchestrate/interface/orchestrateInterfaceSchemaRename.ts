@@ -159,7 +159,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         value: null,
       };
     const { metric, tokenUsage } = await ctx.conversate({
-      source: "interfaceSchemaRename",
+      source: SOURCE,
       controller: createController<Model>(
         ctx.model,
         (value) => (pointer.value = value),
@@ -175,7 +175,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
 
     pointer.value.refactors = uniqueRefactors(pointer.value.refactors);
     ctx.dispatch({
-      type: "interfaceSchemaRename",
+      type: SOURCE,
       id: v7(),
       refactors: pointer.value.refactors,
       total: props.progress.total,
@@ -248,7 +248,7 @@ const createController = <Model extends ILlmSchema.Model>(
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfaceSchemaRename" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       rename: (props) => {
@@ -272,3 +272,5 @@ const collection = {
     "gemini"
   >(),
 };
+
+const SOURCE = "interfaceSchemaRename" satisfies AutoBeEventSource;

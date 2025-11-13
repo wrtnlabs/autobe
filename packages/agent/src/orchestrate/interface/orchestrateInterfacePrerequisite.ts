@@ -132,7 +132,7 @@ async function process<Model extends ILlmSchema.Model>(
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfacePrerequisiteApplication>(),
-    source: "interfacePrerequisite",
+    source: SOURCE,
     kinds: [
       "analysisFiles",
       "prismaSchemas",
@@ -153,7 +153,7 @@ async function process<Model extends ILlmSchema.Model>(
       value: null,
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
-      source: "interfacePrerequisite",
+      source: SOURCE,
       controller: createController({
         model: ctx.model,
         document: props.document,
@@ -176,7 +176,7 @@ async function process<Model extends ILlmSchema.Model>(
     if (pointer.value !== null) {
       props.progress.completed += pointer.value.length;
       ctx.dispatch({
-        type: "interfacePrerequisite",
+        type: SOURCE,
         id: v7(),
         created_at: new Date().toISOString(),
         metric: result.metric,
@@ -305,7 +305,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interfacePrerequisite" satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -340,3 +340,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfacePrerequisiteApplication.IProps>;
+
+const SOURCE = "interfacePrerequisite" satisfies AutoBeEventSource;
