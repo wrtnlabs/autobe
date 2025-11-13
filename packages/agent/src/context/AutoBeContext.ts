@@ -8,6 +8,7 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageEvent,
   AutoBeAssistantMessageHistory,
+  AutoBeDescribeHistory,
   AutoBeEvent,
   AutoBeEventSource,
   AutoBeFunctionCallingMetric,
@@ -18,6 +19,7 @@ import {
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
+  AutoBeUserMessageContent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
@@ -69,6 +71,7 @@ export namespace AutoBeContext {
     : null;
   export type DispatchHistoryMap = {
     assistantMessage: AutoBeAssistantMessageHistory;
+    describeComplete: AutoBeDescribeHistory;
     analyzeComplete: AutoBeAnalyzeHistory;
     prismaComplete: AutoBePrismaHistory;
     interfaceComplete: AutoBeInterfaceHistory;
@@ -80,7 +83,7 @@ export namespace AutoBeContext {
     controller: ILlmController<Model>;
     histories: Array<IMicroAgenticaHistoryJson>;
     enforceFunctionCall: boolean;
-    userMessage: string;
+    userMessage: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
     promptCacheKey?: string;
   }
   export interface IResult<Model extends ILlmSchema.Model> {

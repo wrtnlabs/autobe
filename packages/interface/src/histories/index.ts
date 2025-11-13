@@ -3,6 +3,7 @@ export * from "./contents";
 export * from "./AutoBeHistory";
 export * from "./AutoBeUserMessageHistory";
 export * from "./AutoBeAssistantMessageHistory";
+export * from "./AutoBeDescribeHistory";
 export * from "./AutoBeAnalyzeHistory";
 export * from "./AutoBeInterfaceHistory";
 export * from "./AutoBePrismaHistory";

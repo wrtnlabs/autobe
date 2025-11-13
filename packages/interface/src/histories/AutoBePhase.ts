@@ -1,4 +1,5 @@
 export type AutoBePhase =
+  | "describe"
   | "analyze"
   | "prisma"
   | "interface"
