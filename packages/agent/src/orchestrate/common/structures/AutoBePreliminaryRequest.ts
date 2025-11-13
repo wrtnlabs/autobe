@@ -1,0 +1,17 @@
+import { AutoBePreliminaryKind } from "@autobe/interface";
+
+import { IAutoBePreliminaryGetAnalysisFiles } from "./IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "./IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPrismaSchemas } from "./IAutoBePreliminaryGetPrismaSchemas";
+
+export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
+  request: Mapper[Kind];
+}
+
+type Mapper = {
+  analysisFiles: IAutoBePreliminaryGetAnalysisFiles;
+  prismaSchemas: IAutoBePreliminaryGetPrismaSchemas;
+  interfaceOperations: IAutoBePreliminaryGetInterfaceOperations;
+  interfaceSchemas: IAutoBePreliminaryGetInterfaceSchemas;
+};

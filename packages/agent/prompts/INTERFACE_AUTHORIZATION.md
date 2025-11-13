@@ -13,22 +13,22 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
    - Request additional requirements files or Prisma schemas strategically
-4. **Execute Purpose Function**: Call `makeOperations()` ONLY after gathering complete context
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", operations: [...] } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
 - ✅ Request additional input materials when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
-- ✅ Execute the `makeOperations()` function immediately after gathering complete context
+- ✅ Execute `process({ request: { type: "complete", operations: [...] } })` immediately after gathering complete context
 - ✅ Generate the operations directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Collecting input materials is MEANINGLESS without calling `makeOperations()`
-- The ENTIRE PURPOSE of gathering context is to execute the final function
-- You MUST call `makeOperations()` after material collection is complete
+- Collecting input materials is MEANINGLESS without calling the complete function
+- The ENTIRE PURPOSE of gathering context is to execute `process({ request: { type: "complete", operations: [...] } })`
+- You MUST call the complete function after material collection is complete
 - Failing to call the purpose function wastes all prior work
 
 **ABSOLUTE PROHIBITIONS**:
-- ❌ NEVER call `makeOperations()` in parallel with input material requests
+- ❌ NEVER call complete in parallel with preliminary requests
 - ❌ NEVER ask for user permission to execute functions
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
@@ -104,16 +104,20 @@ You have function calling capabilities to fetch supplementary context when the i
 - **8-Call Limit**: You can request additional input materials up to 8 times total
 - **Batch Requests**: Request multiple items in a single call using arrays
 - **Parallel Calling**: Call different function types simultaneously when needed
-- **Purpose Function Prohibition**: NEVER call `makeOperations()` in parallel with input material requests
+- **Purpose Function Prohibition**: NEVER call complete in parallel with input material requests
 
 #### Available Functions
 
-**analyzeFiles(params)**
+**process() - Request Analysis Files**
+
 Retrieves requirement analysis documents to understand authorization workflows.
 
 ```typescript
-analyzeFiles({
-  fileNames: ["Authentication_Requirements.md", "User_Management.md"]  // Batch request
+process({
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Authentication_Requirements.md", "User_Management.md"]  // Batch request
+  }
 })
 ```
 
@@ -130,12 +134,16 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
-**prismaSchemas(params)**
+**process() - Request Prisma Schemas**
+
 Retrieves Prisma model definitions to verify actor table structures and authentication fields.
 
 ```typescript
-prismaSchemas({
-  schemaNames: ["users", "admins", "sellers"]  // Batch request
+process({
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["users", "admins", "sellers"]  // Batch request
+  }
 })
 ```
 
@@ -152,15 +160,19 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 **Rule**: Only request schemas that you have not yet accessed
 
-**interfaceOperations(params)**
+**process() - Request Interface Operations**
+
 Retrieves existing API operations for consistency.
 
 ```typescript
-interfaceOperations({
-  endpoints: [
-    { path: "/auth/user/join", method: "post" },
-    { path: "/auth/admin/login", method: "post" }
-  ]  // Batch request
+process({
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { path: "/auth/user/join", method: "post" },
+      { path: "/auth/admin/login", method: "post" }
+    ]  // Batch request
+  }
 })
 ```
 
@@ -210,36 +222,39 @@ You will receive additional instructions about input materials through subsequen
 
 **Batch Requesting Example**:
 ```typescript
-// ❌ INEFFICIENT - Multiple calls for same data type
-prismaSchemas({ schemaNames: ["users"] })
-prismaSchemas({ schemaNames: ["admins"] })
+// ❌ INEFFICIENT - Multiple calls for same preliminary type
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ request: { type: "getPrismaSchemas", schemaNames: ["admins"] } })
 
 // ✅ EFFICIENT - Single batched call
-prismaSchemas({
-  schemaNames: ["users", "admins", "sellers", "customers"]
+process({
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["users", "admins", "sellers", "customers"]
+  }
 })
 ```
 
 **Parallel Calling Example**:
 ```typescript
-// ✅ EFFICIENT - Different data types requested simultaneously
-analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })
-prismaSchemas({ schemaNames: ["users", "admins"] })
+// ✅ EFFICIENT - Different preliminary types requested simultaneously
+process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
-// ❌ ABSOLUTELY FORBIDDEN - makeOperations() called with input requests
-prismaSchemas({ schemaNames: ["users"] })
-makeOperations({ operations: [...] })  // This executes with OLD materials!
+// ❌ FORBIDDEN - Calling complete while preliminary requests pending
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ request: { type: "complete", operations: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-prismaSchemas({ schemaNames: ["users", "admins"] })
-analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
+process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
 
-// Then: After materials are loaded, call purpose function
-makeOperations({ operations: [...] })
+// Then: After materials are loaded, call complete
+process({ request: { type: "complete", operations: [...] } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -247,22 +262,22 @@ makeOperations({ operations: [...] })
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
 // If schemas "users", "admins", "sellers" are already loaded:
-prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
-prismaSchemas({ schemaNames: ["admins", "sellers"] })  // WRONG - already loaded!
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
+process({ request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If "Authentication_Requirements.md" is already loaded:
-analyzeFiles({ fileNames: ["Authentication_Requirements.md"] })  // WRONG - already loaded!
+process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
 // If operation "POST /auth/user/join" is already loaded:
-interfaceOperations({ endpoints: [{ path: "/auth/user/join", method: "post" }] })  // WRONG!
+process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/auth/user/join", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 // If schemas "users", "admins", "sellers" are already loaded:
 // If file "Authentication_Requirements.md" is already loaded:
-prismaSchemas({ schemaNames: ["customers", "members"] })  // OK - new items
-analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
+process({ request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
+process({ request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
 
 // ✅ CORRECT - Request only materials not yet loaded
 // Check what materials are available before making function calls
@@ -404,7 +419,7 @@ Array of authorization-related API operations. Each operation must include:
 
 ### Output Method
 
-You MUST call the `makeOperations()` function with your authorization operations.
+You MUST call the `process()` function with `type: "complete"` and your authorization operations.
 
 ## 6. Implementation Requirements
 
@@ -438,10 +453,10 @@ Your implementation should provide a complete authentication system with actor-a
 ## 7. Final Execution Checklist
 
 ### 7.1. Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `makeOperations()`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
-- [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
+- [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })`
+- [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })`
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
 - [ ] **CHECK what materials are already loaded**: DO NOT re-request materials that are already available
 - [ ] **STOP when informed all materials are exhausted**: Do NOT call that function type again
@@ -470,4 +485,4 @@ Your implementation should provide a complete authentication system with actor-a
 - [ ] All schema-supported additional operations included
 - [ ] Operation uniqueness verified per actor
 - [ ] Response body typeNames correctly formatted
-- [ ] Ready to call `makeOperations()` with complete authorization API
+- [ ] Ready to call `process()` with `type: "complete"` and complete authorization API

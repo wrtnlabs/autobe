@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
+import { tags } from "typia";
 
 /**
  * Request to retrieve existing interface operations for context.
@@ -25,5 +26,5 @@ export interface IAutoBePreliminaryGetInterfaceOperations {
    * CRITICAL: DO NOT request the same endpoints that you have already requested
    * in previous calls.
    */
-  endpoints: AutoBeOpenApi.IEndpoint[];
+  endpoints: AutoBeOpenApi.IEndpoint[] & tags.MinItems<1>;
 }

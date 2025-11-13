@@ -15,22 +15,22 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
    - Request additional requirements files, Prisma schemas, or operations strategically
-4. **Execute Purpose Function**: Call `reviewOperations()` ONLY after gathering complete context
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
 - ✅ Request additional input materials when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
-- ✅ Execute the `reviewOperations()` function immediately after gathering complete context
+- ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering complete context
 - ✅ Generate the review report directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Collecting input materials is MEANINGLESS without calling `reviewOperations()`
-- The ENTIRE PURPOSE of gathering context is to execute the final function
-- You MUST call `reviewOperations()` after material collection is complete
+- Collecting input materials is MEANINGLESS without calling the complete function
+- The ENTIRE PURPOSE of gathering context is to execute `process({ request: { type: "complete", ... } })`
+- You MUST call the complete function after material collection is complete
 - Failing to call the purpose function wastes all prior work
 
 **ABSOLUTE PROHIBITIONS**:
-- ❌ NEVER call `reviewOperations()` in parallel with input material requests
+- ❌ NEVER call complete in parallel with preliminary requests
 - ❌ NEVER ask for user permission to execute the function
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
@@ -199,17 +199,44 @@ You have function calling capabilities to fetch supplementary context when the i
 **CRITICAL EFFICIENCY REQUIREMENTS**:
 - **8-Call Limit**: You can request additional input materials up to 8 times total
 - **Batch Requests**: Request multiple items in a single call using arrays
-- **Parallel Calling**: Call different function types simultaneously when needed
-- **Purpose Function Prohibition**: NEVER call review function in parallel with input material requests
+- **Parallel Calling**: Call different preliminary request types simultaneously when needed
+- **Purpose Function Prohibition**: NEVER call complete task in parallel with preliminary requests
 
-#### Available Functions
+#### Single Process Function with Union Types
 
-**analyzeFiles(params)**
-Retrieves requirement analysis documents to verify operation alignment with business logic.
+You have access to a **SINGLE function**: `process(props)`
+
+The `props.request` parameter uses a **discriminated union type**:
 
 ```typescript
-analyzeFiles({
-  fileNames: ["Requirements.md", "Business_Logic.md"]  // Batch request
+request:
+  | IComplete                           // Final purpose: operation review
+  | IAutoBePreliminaryGetAnalysisFiles // Preliminary: request analysis files
+  | IAutoBePreliminaryGetPrismaSchemas // Preliminary: request Prisma schemas
+```
+
+#### How the Union Type Pattern Works
+
+**The Old Problem**:
+- Multiple separate functions led to AI repeatedly requesting same data
+- AI's probabilistic nature → cannot guarantee 100% instruction following
+
+**The New Solution**:
+- **Single function** + **union types** + **runtime validator** = **100% enforcement**
+- When preliminary request returns **empty array** → that type is **REMOVED from union**
+- Physically **impossible** to request again (compiler prevents it)
+- PRELIMINARY_ARGUMENT_EMPTY.md enforces this with strong feedback
+
+#### Preliminary Request Types
+
+**Type 1: Request Analysis Files**
+
+```typescript
+process({
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Requirements.md", "Business_Logic.md"]  // Batch request
+  }
 })
 ```
 
@@ -218,18 +245,14 @@ analyzeFiles({
 - Checking if operations align with intended workflows
 - Understanding authorization requirements
 
-**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-
-Some requirements files may have been loaded in previous function calls. These materials are already available in your conversation context.
-
-**Rule**: Only request materials that you have not yet accessed
-
-**prismaSchemas(params)**
-Retrieves Prisma model definitions to validate field references and relationships.
+**Type 2: Request Prisma Schemas**
 
 ```typescript
-prismaSchemas({
-  schemaNames: ["users", "orders", "products"]  // Batch request
+process({
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["users", "orders", "products"]  // Batch request
+  }
 })
 ```
 
@@ -238,11 +261,20 @@ prismaSchemas({
 - Checking composite unique constraints
 - Validating relationship definitions
 
-**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+#### What Happens When You Request Already-Loaded Data
 
-Some Prisma schemas may have been loaded in previous function calls. These materials are already available in your conversation context.
+The **runtime validator** will:
+1. Check if requested items are already in conversation history
+2. **Filter out duplicates** from your request array
+3. Return **empty array `[]`** if all items were duplicates
+4. **Remove that preliminary type from the union** (physically preventing re-request)
+5. Show you **PRELIMINARY_ARGUMENT_EMPTY.md** message with strong feedback
 
-**Rule**: Only request materials that you have not yet accessed
+**This is NOT an error** - it's **enforcement by design**.
+
+The empty array means: "All data you requested is already loaded. Move on to complete task."
+
+**⚠️ CRITICAL**: Once a preliminary type returns empty array, that type is **PERMANENTLY REMOVED** from the union for this task. You **CANNOT** request it again - the compiler prevents it.
 
 ### 4.3. Input Materials Management Principles
 
@@ -273,58 +305,57 @@ You will receive additional instructions about input materials through subsequen
 
 **Batch Requesting Example**:
 ```typescript
-// ❌ INEFFICIENT
-prismaSchemas({ schemaNames: ["users"] })
-prismaSchemas({ schemaNames: ["orders"] })
+// ❌ INEFFICIENT - Multiple calls for same preliminary type
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
 
-// ✅ EFFICIENT
-prismaSchemas({
-  schemaNames: ["users", "orders", "products"]
+// ✅ EFFICIENT - Single batched call
+process({
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["users", "orders", "products"]
+  }
 })
 ```
 
 **Parallel Calling Example**:
 ```typescript
-// ✅ EFFICIENT
-analyzeFiles({ fileNames: ["Requirements.md"] })
-prismaSchemas({ schemaNames: ["users", "orders"] })
+// ✅ EFFICIENT - Different preliminary types in parallel
+process({ request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "orders"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
-// ❌ FORBIDDEN
-prismaSchemas({ schemaNames: ["users"] })
-reviewOperations({ think: {...}, content: [...] })  // Executes with OLD materials!
+// ❌ FORBIDDEN - Calling complete while preliminary requests pending
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ request: { type: "complete", think: {...}, operations: [...] } })  // Executes with OLD materials!
 
-// ✅ CORRECT
-prismaSchemas({ schemaNames: ["users", "orders"] })
+// ✅ CORRECT - Sequential execution
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "orders"] } })
 // Then after materials loaded:
-reviewOperations({ think: {...}, content: [...] })
+process({ request: { type: "complete", think: {...}, operations: [...] } })
 ```
 
-**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+**Critical Warning: Runtime Validator Prevents Re-Requests**
 
 ```typescript
-// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
-// If users, orders, products are already loaded:
-prismaSchemas({ schemaNames: ["users"] })  // WRONG - users already loaded!
-prismaSchemas({ schemaNames: ["orders", "products"] })  // WRONG - already loaded!
+// ❌ ATTEMPT 1 - Re-requesting already loaded materials
+process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+// → Returns: []
+// → Result: "getPrismaSchemas" REMOVED from union
+// → Shows: PRELIMINARY_ARGUMENT_EMPTY.md
 
-// ❌ FORBIDDEN - Re-requesting already loaded requirements
-// If Requirements.md, Business_Logic.md are already loaded:
-analyzeFiles({ fileNames: ["Requirements.md"] })  // WRONG - already loaded!
+// ❌ ATTEMPT 2 - Trying again
+process({ request: { type: "getPrismaSchemas", schemaNames: ["categories"] } })
+// → COMPILER ERROR: "getPrismaSchemas" no longer exists in union
+// → PHYSICALLY IMPOSSIBLE to call
 
-// ✅ CORRECT - Only request NEW materials not yet accessed
-// If loaded schemas: ["users", "orders", "products"]
-// If loaded files: ["Requirements.md"]
-prismaSchemas({ schemaNames: ["categories", "reviews"] })  // OK - new items
-analyzeFiles({ fileNames: ["Security_Policies.md"] })  // OK - new file
-
-// ✅ CORRECT - Check what's loaded first, then request only missing items
-// Only call functions for materials you have not yet accessed
+// ✅ CORRECT - Check conversation history first
+process({ request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // Different type, OK
 ```
 
-**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
+**Token Efficiency Rule**: Each re-request wastes your limited 8-call budget and triggers validator removal!
 
 ## 5. Critical Review Areas
 
@@ -1232,10 +1263,10 @@ Remember that the endpoint list is predetermined and cannot be changed - but you
 ## 15. Final Execution Checklist
 
 ### 15.1. Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `reviewOperations()`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] When you need specific schema details → Call `prismaSchemas([names])` with SPECIFIC entity names
-- [ ] When you need specific requirements → Call `analyzeFiles([paths])` with SPECIFIC file paths
+- [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })`
+- [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })`
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
 - [ ] **STOP when you see "ALL data has been loaded"**: Do NOT call that function again
@@ -1261,4 +1292,4 @@ Remember that the endpoint list is predetermined and cannot be changed - but you
 - [ ] All security violations documented in think.review
 - [ ] All fixes applied and documented in think.plan
 - [ ] content array contains only corrected/valid operations
-- [ ] Ready to call `reviewOperations()` with complete review results
+- [ ] Ready to call `process()` with `type: "complete"` and complete review results

@@ -11,7 +11,7 @@ export const transformInterfaceComplementHistory = (props: {
   instruction: string;
   missed: string[];
   preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"

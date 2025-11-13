@@ -3,22 +3,13 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-/**
- * Application interface for reviewing and validating API operations.
- *
- * Provides functionality to systematically review generated API operations
- * against business requirements, technical specifications, and OpenAPI
- * standards. The review process outputs a structured thinking process with
- * analytical findings and actionable improvements, along with the final
- * enhanced operations ready for implementation.
- */
 export interface IAutoBeInterfaceOperationReviewApplication {
   /**
    * Process operation review task or preliminary data requests.
    *
-   * Analyzes operations for security vulnerabilities, schema compliance, logical
-   * consistency, and standard adherence. Outputs structured thinking process and
-   * production-ready operations.
+   * Analyzes operations for security vulnerabilities, schema compliance,
+   * logical consistency, and standard adherence. Outputs structured thinking
+   * process and production-ready operations.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -32,9 +23,9 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas) or final operation review (complete).
-     * When preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getPrismaSchemas) or final operation review
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -46,8 +37,9 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    * Request to review and validate API operations.
    *
    * Executes systematic operation review for quality and correctness, analyzing
-   * security vulnerabilities, schema compliance, logical consistency, and standard
-   * adherence. Outputs structured thinking process and enhanced operations.
+   * security vulnerabilities, schema compliance, logical consistency, and
+   * standard adherence. Outputs structured thinking process and enhanced
+   * operations.
    */
   export interface IComplete {
     /**

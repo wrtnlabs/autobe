@@ -39,17 +39,16 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
-    "analyzeFiles" | "prismaSchemas"
+    "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfaceOperationReviewApplication>()
-      .functions.map((f) => f.name),
+    application:
+      typia.json.application<IAutoBeInterfaceOperationReviewApplication>(),
     source: "interfaceOperationReview",
-    kinds: ["analyzeFiles", "prismaSchemas"],
+    kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IProps | null> =
+    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -59,7 +58,7 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
         model: ctx.model,
         prismaSchemas: files,
-        build: (next: IAutoBeInterfaceOperationReviewApplication.IProps) => {
+        build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
           pointer.value = next;
         },
       }),
@@ -98,9 +97,11 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   prismaSchemas: AutoBePrisma.IFile[];
-  build: (reviews: IAutoBeInterfaceOperationReviewApplication.IProps) => void;
+  build: (
+    reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
+  ) => void;
 }): IAgenticaController.IClass<Model> {
   const validate = (
     next: unknown,
@@ -108,11 +109,15 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      }) as any;
 
     const errors: IValidation.IError[] = [];
     OperationValidator.validate({
-      path: "$input.content",
-      operations: result.data.content,
+      path: "$input.request.content",
+      operations: result.data.request.content,
       errors,
     });
     if (errors.length !== 0)
@@ -129,51 +134,45 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ]({
-    preliminary: props.preliminary,
+  ](
     validate,
-  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
     name: "interfaceOperationReview" satisfies AutoBeEventSource,
     application,
     execute: {
-      reviewOperations: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceOperationReviewApplication,
   };
 }
 
 const collection = {
-  chatgpt: (props: CustomValidateProps) =>
+  chatgpt: (validate: Validator) =>
     typia.llm.application<
       IAutoBeInterfaceOperationReviewApplication,
       "chatgpt"
     >({
       validate: {
-        reviewOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
-  claude: (props: CustomValidateProps) =>
+  claude: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "claude">(
       {
         validate: {
-          reviewOperations: props.validate,
-          ...props.preliminary.createValidate(),
+          process: validate,
         },
       },
     ),
-  gemini: (props: CustomValidateProps) =>
+  gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "gemini">(
       {
         validate: {
-          reviewOperations: props.validate,
-          ...props.preliminary.createValidate(),
+          process: validate,
         },
       },
     ),
@@ -182,8 +181,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceOperationReviewApplication.IProps>;
-
-interface CustomValidateProps {
-  validate: Validator;
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
-}

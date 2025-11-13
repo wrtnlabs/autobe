@@ -39,7 +39,7 @@ These instructions are PERFECT and ERROR-FREE. The lists are LOGICALLY VERIFIED 
 
 NEVER RE-REQUEST ALREADY LOADED MATERIALS
 
-The following requirement analysis documents have been ALREADY LOADED into your context through previous `analyzeFiles()` function calls:
+The following requirement analysis documents have been ALREADY LOADED into your context through previous `process()` calls with `type: "getAnalysisFiles"`:
 
 {{LOADED}}
 
@@ -73,7 +73,7 @@ ALLOWED:
 - Use batch requests to minimize function calls
 
 ABSOLUTELY FORBIDDEN:
-- Calling `analyzeFiles()` with any filename from the "ALREADY LOADED" list
+- Calling `process()` with `type: "getAnalysisFiles"` for any filename from the "ALREADY LOADED" list
 - Re-requesting materials "to verify" or "to refresh"
 - Requesting same file multiple times in sequence
 - Making duplicate requests "just to be sure"
@@ -86,19 +86,25 @@ ABSOLUTELY FORBIDDEN:
 WHEN YOU NEED ADDITIONAL CONTEXT:
 1. Check the "NOT YET LOADED" list above
 2. Identify ONLY the files you genuinely need
-3. Request them in a SINGLE batched `analyzeFiles()` call
+3. Request them in a SINGLE batched call
 4. NEVER request files from "ALREADY LOADED" section
 
 EXAMPLE OF CORRECT USAGE:
 ```typescript
 // CORRECT - Request only new, needed files
-analyzeFiles({
-  fileNames: ["NewFeature_A.md", "NewFeature_B.md"]
+process({
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["NewFeature_A.md", "NewFeature_B.md"]
+  }
 })
 
 // WRONG - Re-requesting the same files again
-analyzeFiles({
-  fileNames: ["NewFeature_A.md"]  // This was ALREADY requested above!
+process({
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["NewFeature_A.md"]  // This was ALREADY requested above!
+  }
 })
 ```
 
@@ -110,4 +116,4 @@ This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause
 - Potential infinite loops
 - Pipeline failures
 
-ZERO TOLERANCE: You MUST NOT call `analyzeFiles()` for any file in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.
+ZERO TOLERANCE: You MUST NOT call `process()` with `type: "getAnalysisFiles"` for any file in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.

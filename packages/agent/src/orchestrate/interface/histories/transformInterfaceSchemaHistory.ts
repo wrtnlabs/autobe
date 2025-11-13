@@ -10,7 +10,7 @@ export const transformInterfaceSchemaHistory = (props: {
   operations: AutoBeOpenApi.IOperation[];
   typeNames: string[];
   preliminary: AutoBePreliminaryController<
-    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
+    "analysisFiles" | "prismaSchemas" | "interfaceOperations"
   >;
   instruction: string;
   already: string[];

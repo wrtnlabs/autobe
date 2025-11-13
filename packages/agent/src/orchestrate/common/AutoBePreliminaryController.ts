@@ -1,6 +1,7 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import { IJsonSchemaApplication } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -9,8 +10,9 @@ import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
-import { createPreliminaryValidate } from "./internal/createPreliminaryValidate";
+import { validatePreliminary } from "./internal/validatePreliminary";
 import { orchestratePreliminary } from "./orchestratePreliminary";
+import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
@@ -19,27 +21,62 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
   private readonly kinds: Kind[];
-  private readonly functions: string[];
+  private readonly argumentTypeNames: string[];
 
   // PRELIMINARY DATA
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
 
-  // STATE
-  private readonly empties: Map<Kind, number>;
-  private trial: number;
-
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
-    this.functions = props.functions;
+    this.argumentTypeNames = (() => {
+      const func = props.application.functions.find(
+        (f) => f.name === "process",
+      );
+      if (func === undefined)
+        throw new Error("Unable to find 'process' function in application.");
+
+      const param = func.parameters[0]?.schema;
+      if (
+        param === undefined ||
+        OpenApiTypeChecker.isReference(param) === false
+      )
+        throw new Error(
+          "'process' function parameter is not a reference type.",
+        );
+      const schema =
+        props.application.components.schemas?.[param.$ref.split("/").pop()!];
+      if (schema === undefined || OpenApiTypeChecker.isObject(schema) === false)
+        throw new Error(
+          "'process' function parameter reference is not an object type.",
+        );
+      const request = schema.properties?.request;
+      if (
+        request === undefined ||
+        OpenApiTypeChecker.isOneOf(request) === false
+      )
+        throw new Error(
+          "'process' function parameter.request is not a oneOf type.",
+        );
+      else if (
+        request.oneOf.length === 0 ||
+        request.oneOf.every(
+          (sch) => OpenApiTypeChecker.isReference(sch) === false,
+        )
+      )
+        throw new Error(
+          "'process' function parameter.request oneOf does not contain any reference type.",
+        );
+      return request.oneOf.map((sch) => {
+        const ref = (sch as any).$ref;
+        return ref.split("/").pop()!;
+      });
+    })();
 
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
-
-    this.empties = new Map();
-    this.trial = 0;
 
     complementPreliminaryCollection({
       kinds: props.kinds,
@@ -48,17 +85,14 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     });
   }
 
-  public createValidate() {
-    return createPreliminaryValidate(this);
+  public validate(
+    input: IAutoBePreliminaryRequest<Kind>,
+  ): IValidation<IAutoBePreliminaryRequest<Kind>> {
+    return validatePreliminary(this, input);
   }
 
   public createHistories(): IMicroAgenticaHistoryJson[] {
     return transformPreliminaryHistory(this);
-  }
-
-  public setEmpty(kind: Kind, value: boolean): void {
-    if (value === true) this.empties.set(kind, this.trial);
-    else this.empties.delete(kind);
   }
 
   public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
@@ -69,8 +103,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.kinds;
   }
 
-  public getFunctions(): string[] {
-    return this.functions;
+  public getArgumentTypeNames(): string[] {
+    return this.argumentTypeNames;
   }
 
   public getAll(): Pick<IAutoBePreliminaryCollection, Kind> {
@@ -81,10 +115,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.local;
   }
 
-  public getEmpties(): Kind[] {
-    return Array.from(this.empties.keys());
-  }
-
   public async orchestrate<Model extends ILlmSchema.Model, T>(
     ctx: AutoBeContext<Model>,
     process: (
@@ -93,14 +123,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<Model, T>,
     ) => Promise<IAutoBeOrchestrateResult<Model, T>>,
   ): Promise<T | never> {
-    for (
-      this.trial = 0;
-      this.trial < AutoBeConfigConstant.RAG_LIMIT;
-      ++this.trial
-    ) {
-      for (const [key, value] of this.empties.entries())
-        if (value < this.trial - 1) this.empties.delete(key);
-
+    for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
       const result: IAutoBeOrchestrateResult<Model, T> = await process(
         (x) => (value) => ({
           ...x,
@@ -113,7 +136,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         source_id: this.source_id,
         source: this.source,
         preliminary: this,
-        trial: this.trial + 1,
+        trial: i + 1,
         histories: result.histories,
       });
     }
@@ -125,7 +148,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 export namespace AutoBePreliminaryController {
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    functions: string[];
+    application: IJsonSchemaApplication;
     kinds: Kind[];
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;

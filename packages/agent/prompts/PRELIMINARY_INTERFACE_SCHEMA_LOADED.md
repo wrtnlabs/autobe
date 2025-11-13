@@ -1,6 +1,6 @@
 # Loaded Type Schemas
 
-The following TypeScript type schemas have been loaded into your context through previous `interfaceSchemas()` function calls.
+The following TypeScript type schemas have been loaded into your context through previous `process()` calls with `type: "getInterfaceSchemas"`.
 
 These schema definitions are now available for you to reference. Use them to:
 - Verify property names, types, and required fields
@@ -9,6 +9,6 @@ These schema definitions are now available for you to reference. Use them to:
 - Ensure type consistency across related operations
 - Validate references to shared schema components
 
-> **Note**: These schemas are already in your conversation history. Reference them directly without calling `interfaceSchemas()` again for the same type names.
+> **Note**: These schemas are already in your conversation history. Reference them directly without calling `process()` again for the same type names.
 
 {{CONTENT}}

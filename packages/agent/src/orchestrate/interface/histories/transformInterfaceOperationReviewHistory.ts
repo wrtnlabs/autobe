@@ -7,7 +7,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export function transformInterfaceOperationReviewHistory(props: {
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   operations: AutoBeOpenApi.IOperation[];
 }): IAutoBeOrchestrateHistory {
   return {

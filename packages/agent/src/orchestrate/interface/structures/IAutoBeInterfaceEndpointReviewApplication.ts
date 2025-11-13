@@ -3,20 +3,13 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-/**
- * Interface for reviewing and refining API endpoints through holistic analysis.
- *
- * This application performs comprehensive review of all endpoints generated
- * through divide-and-conquer strategy, ensuring consistency, eliminating
- * redundancy, and preventing over-engineering across the entire API surface.
- */
 export interface IAutoBeInterfaceEndpointReviewApplication {
   /**
    * Process endpoint review task or preliminary data requests.
    *
    * Consolidates all endpoints generated independently and performs holistic
-   * review to ensure consistency, remove duplicates, eliminate over-engineering,
-   * and verify REST API design principles.
+   * review to ensure consistency, remove duplicates, eliminate
+   * over-engineering, and verify REST API design principles.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -31,8 +24,8 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
      *
      * Determines which action to perform: preliminary data retrieval
      * (getAnalysisFiles, getPrismaSchemas) or final endpoint review (complete).
-     * When preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -43,9 +36,9 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
   /**
    * Request to review and refine API endpoints.
    *
-   * Executes comprehensive endpoint review to consolidate independently generated
-   * endpoints, ensure consistency, eliminate redundancy, and create a clean,
-   * maintainable API structure following REST best practices.
+   * Executes comprehensive endpoint review to consolidate independently
+   * generated endpoints, ensure consistency, eliminate redundancy, and create a
+   * clean, maintainable API structure following REST best practices.
    */
   export interface IComplete {
     /**

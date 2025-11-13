@@ -125,17 +125,16 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfacePrerequisiteApplication>()
-      .functions.map((f) => f.name),
+    application:
+      typia.json.application<IAutoBeInterfacePrerequisiteApplication>(),
     source: "interfacePrerequisite",
     kinds: [
-      "analyzeFiles",
+      "analysisFiles",
       "prismaSchemas",
       "interfaceOperations",
       "interfaceSchemas",
@@ -193,7 +192,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   includes: AutoBeOpenApi.IOperation[];
   prerequisitesNotFound: string;
   preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
@@ -208,8 +207,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> =
       typia.validate<IAutoBeInterfacePrerequisiteApplication.IProps>(next);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      }) as any;
 
-    const operations: AutoBeInterfacePrerequisite[] = result.data.operations;
+    const operations: AutoBeInterfacePrerequisite[] =
+      result.data.request.operations;
     const filteredOperations: AutoBeInterfacePrerequisite[] = [];
     const errors: IValidation.IError[] = [];
 
@@ -243,7 +247,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         if (props.dict.has(p.endpoint) === false) {
           errors.push({
             value: p.endpoint,
-            path: `$input.operations[${i}].prerequisites[${j}].endpoint`,
+            path: `$input.request.operations[${i}].prerequisites[${j}].endpoint`,
             expected: "AutoBeOpenApi.IEndpoint",
             description: props.prerequisitesNotFound,
           });
@@ -255,7 +259,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         ) {
           errors.push({
             value: p.endpoint,
-            path: `$input.operations[${i}].prerequisites[${j}].endpoint`,
+            path: `$input.request.operations[${i}].prerequisites[${j}].endpoint`,
             expected: "AutoBeOpenApi.IEndpoint",
             description: "Self-reference is not allowed.",
           });
@@ -265,10 +269,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     return errors.length === 0
       ? {
-          ...result,
+          success: true,
           data: {
-            ...result.data,
-            operations: filteredOperations,
+            request: {
+              ...result.data.request,
+              operations: filteredOperations,
+            },
           },
         }
       : {
@@ -287,46 +293,39 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ]({
-    preliminary: props.preliminary,
+  ](
     validate,
-  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interfacePrerequisite" satisfies AutoBeEventSource,
     application,
     execute: {
-      makePrerequisite: (next) => {
-        props.build(next.operations);
+      process: (next) => {
+        if (next.request.type === "complete")
+          props.build(next.request.operations);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
-      interfaceOperations: () => {},
-      interfaceSchemas: () => {},
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };
 }
 
 const collection = {
-  chatgpt: (props: CustomValidateProps) =>
+  chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "chatgpt">({
       validate: {
-        makePrerequisite: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
-  claude: (props: CustomValidateProps) =>
+  claude: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "claude">({
       validate: {
-        makePrerequisite: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
-  gemini: (props: CustomValidateProps) =>
+  gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfacePrerequisiteApplication, "gemini">({
       validate: {
-        makePrerequisite: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
 };
@@ -334,13 +333,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfacePrerequisiteApplication.IProps>;
-
-interface CustomValidateProps {
-  validate: Validator;
-  preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
-    | "prismaSchemas"
-    | "interfaceOperations"
-    | "interfaceSchemas"
-  >;
-}

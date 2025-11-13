@@ -46,17 +46,16 @@ async function step<Model extends ILlmSchema.Model>(
   else if (progress.life === 0) return props.document.components.schemas;
 
   const preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfaceComplementApplication>()
-      .functions.map((f) => f.name),
+    application:
+      typia.json.application<IAutoBeInterfaceComplementApplication>(),
     source: "interfaceComplement",
     kinds: [
-      "analyzeFiles",
+      "analysisFiles",
       "prismaSchemas",
       "interfaceOperations",
       "interfaceSchemas",
@@ -143,7 +142,7 @@ async function step<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
@@ -154,23 +153,34 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const validate = (
+  const validate: Validator = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    JsonSchemaFactory.fixPage("schemas", next);
+    if (
+      typia.is<{
+        request: {
+          type: "complete";
+          schemas: object;
+        };
+      }>(next)
+    )
+      JsonSchemaFactory.fixPage("schemas", next.request);
 
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    }
+    } else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      }) as any;
 
     const errors: IValidation.IError[] = [];
     JsonSchemaValidator.validateSchemas({
       errors,
-      schemas: result.data.schemas,
-      path: "$input.schemas",
+      schemas: result.data.request.schemas,
+      path: "$input.request.schemas",
     });
     if (errors.length !== 0)
       return {
@@ -187,46 +197,38 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ]({
-    preliminary: props.preliminary,
+  ](
     validate,
-  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interfaceComplement" satisfies AutoBeEventSource,
     application,
     execute: {
-      complementComponents: (next) => {
-        props.build(next.schemas);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request.schemas);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
-      interfaceOperations: () => {},
-      interfaceSchemas: () => {},
     } satisfies IAutoBeInterfaceComplementApplication,
   };
 }
 
 const collection = {
-  chatgpt: (props: CustomValidateProps) =>
+  chatgpt: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "chatgpt">({
       validate: {
-        complementComponents: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validator,
       },
     }),
-  claude: (props: CustomValidateProps) =>
+  claude: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "claude">({
       validate: {
-        complementComponents: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validator,
       },
     }),
-  gemini: (props: CustomValidateProps) =>
+  gemini: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "gemini">({
       validate: {
-        complementComponents: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validator,
       },
     }),
 };
@@ -234,13 +236,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceComplementApplication.IProps>;
-
-interface CustomValidateProps {
-  validate: Validator;
-  preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
-    | "prismaSchemas"
-    | "interfaceOperations"
-    | "interfaceSchemas"
-  >;
-}

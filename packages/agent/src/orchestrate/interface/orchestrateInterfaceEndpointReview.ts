@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeEventSource, AutoBeOpenApi } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -18,17 +18,16 @@ export async function orchestrateInterfaceEndpointReview<
   endpoints: AutoBeOpenApi.IEndpoint[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const preliminary: AutoBePreliminaryController<
-    "analyzeFiles" | "prismaSchemas"
+    "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfaceEndpointReviewApplication>()
-      .functions.map((f) => f.name),
+    application:
+      typia.json.application<IAutoBeInterfaceEndpointReviewApplication>(),
     source: "interfaceEndpointReview",
-    kinds: ["analyzeFiles", "prismaSchemas"],
+    kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async () => {
-    const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IProps | null> =
+    const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -73,10 +72,20 @@ export async function orchestrateInterfaceEndpointReview<
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
-  build: (props: IAutoBeInterfaceEndpointReviewApplication.IProps) => void;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  build: (props: IAutoBeInterfaceEndpointReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
+
+  const validate: Validator = (input) => {
+    const result =
+      typia.validate<IAutoBeInterfaceEndpointReviewApplication.IProps>(input);
+    if (result.success === false || result.data.request.type === "complete")
+      return result;
+    return props.preliminary.validate({
+      request: result.data.request,
+    }) as any;
+  };
 
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt"
@@ -85,41 +94,43 @@ function createController<Model extends ILlmSchema.Model>(props: {
         ? "gemini"
         : "claude"
   ](
-    props.preliminary,
+    validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interfaceEndpointReview" satisfies AutoBeEventSource,
     application,
     execute: {
-      reviewEndpoints: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceEndpointReviewApplication,
   };
 }
 
 const collection = {
-  chatgpt: (
-    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
-  ) =>
+  chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "chatgpt">(
       {
-        validate: preliminary.createValidate(),
+        validate: {
+          process: validate,
+        },
       },
     ),
-  claude: (
-    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
-  ) =>
+  claude: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "claude">({
-      validate: preliminary.createValidate(),
+      validate: {
+        process: validate,
+      },
     }),
-  gemini: (
-    preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">,
-  ) =>
+  gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceEndpointReviewApplication, "gemini">({
-      validate: preliminary.createValidate(),
+      validate: {
+        process: validate,
+      },
     }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceEndpointReviewApplication.IProps>;

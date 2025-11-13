@@ -9,7 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceOperationHistory = (props: {
   prefix: string;
   endpoints: AutoBeOpenApi.IEndpoint[];
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   return {

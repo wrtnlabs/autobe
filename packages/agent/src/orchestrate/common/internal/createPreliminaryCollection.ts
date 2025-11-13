@@ -7,13 +7,13 @@ export function createPreliminaryCollection(
 ): IAutoBePreliminaryCollection {
   if (state === null)
     return {
-      analyzeFiles: defined?.analyzeFiles ?? [],
+      analysisFiles: defined?.analysisFiles ?? [],
       prismaSchemas: defined?.prismaSchemas ?? [],
       interfaceOperations: defined?.interfaceOperations ?? [],
       interfaceSchemas: defined?.interfaceSchemas ?? {},
     };
   return {
-    analyzeFiles: defined?.analyzeFiles ?? state.analyze?.files ?? [],
+    analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
     prismaSchemas:
       defined?.prismaSchemas ??
       state.prisma?.result.data.files.map((f) => f.models).flat() ??

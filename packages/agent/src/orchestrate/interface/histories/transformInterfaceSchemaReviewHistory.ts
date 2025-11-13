@@ -11,7 +11,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   systemPrompt: string;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    | "analyzeFiles"
+    | "analysisFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"

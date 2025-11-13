@@ -119,13 +119,11 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
-    "analyzeFiles" | "prismaSchemas"
+    "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfaceOperationApplication>()
-      .functions.map((f) => f.name),
+    application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: "interfaceOperation",
-    kinds: ["analyzeFiles", "prismaSchemas"],
+    kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -209,7 +207,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actors: string[];
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
   ) => void;
@@ -222,12 +220,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      }) as any;
 
     const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
-      result.data.operations;
+      result.data.request.operations;
     const errors: IValidation.IError[] = [];
     OperationValidator.validate({
-      path: "$input.operations",
+      path: "$input.request.operations",
       errors,
       operations,
     });
@@ -239,7 +241,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         op.authorizationActors.forEach((actor, j) => {
           if (props.actors.includes(actor) === true) return;
           errors.push({
-            path: `$input.operations[${i}].authorizationActors[${j}]`,
+            path: `$input.request.operations[${i}].authorizationActors[${j}]`,
             expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
             description: StringUtil.trim`
               Actor "${actor}" is not defined in the roles list.
@@ -266,45 +268,40 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ]({
-    preliminary: props.preliminary,
+  ](
     validate,
-  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
     name: "interfaceOperation" satisfies AutoBeEventSource,
     application,
     execute: {
-      makeOperations: (next) => {
-        props.build(next.operations);
+      process: (next) => {
+        if (next.request.type === "complete")
+          props.build(next.request.operations);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceOperationApplication,
   };
 }
 
 const collection = {
-  chatgpt: (props: CustomValidateProps) =>
+  chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "chatgpt">({
       validate: {
-        makeOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
-  claude: (props: CustomValidateProps) =>
+  claude: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "claude">({
       validate: {
-        makeOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
-  gemini: (props: CustomValidateProps) =>
+  gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceOperationApplication, "gemini">({
       validate: {
-        makeOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validate,
       },
     }),
 };
@@ -312,8 +309,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceOperationApplication.IProps>;
-
-interface CustomValidateProps {
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
-  validate: Validator;
-}

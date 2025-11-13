@@ -62,17 +62,16 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const preliminary: AutoBePreliminaryController<
-    "analyzeFiles" | "prismaSchemas"
+    "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
-    functions: typia.json
-      .application<IAutoBeInterfaceAuthorizationsApplication>()
-      .functions.map((f) => f.name),
+    application:
+      typia.json.application<IAutoBeInterfaceAuthorizationsApplication>(),
     source: "interfaceAuthorization",
-    kinds: ["analyzeFiles", "prismaSchemas"],
+    kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IComplete | null> =
       {
         value: null,
       };
@@ -116,8 +115,8 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actor: AutoBeAnalyzeActor;
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
-  build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  build: (next: IAutoBeInterfaceAuthorizationsApplication.IComplete) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -127,16 +126,19 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
     if (result.success === false) return result;
-
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      }) as any;
     // remove login operation for guest role
-    if (props.actor.kind === "guest") {
-      result.data.operations = result.data.operations.filter(
+    else if (props.actor.kind === "guest") {
+      result.data.request.operations = result.data.request.operations.filter(
         (op) => op.authorizationType !== "login",
       );
     }
 
     const errors: IValidation.IError[] = [];
-    result.data.operations.forEach((op, i) => {
+    result.data.request.operations.forEach((op, i) => {
       // validate authorizationActor
       if (op.authorizationActor !== null) {
         op.authorizationActor = props.actor.name;
@@ -146,7 +148,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       if (op.authorizationType === null) return;
       else if (op.responseBody === null)
         errors.push({
-          path: `$input.operations.${i}.responseBody`,
+          path: `$input.request.operations.${i}.responseBody`,
           expected:
             "Response body with I{RoleName(PascalCase)}.IAuthorized type is required",
           value: op.responseBody,
@@ -160,7 +162,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         });
       else if (!op.responseBody.typeName.endsWith(".IAuthorized"))
         errors.push({
-          path: `$input.operations.${i}.responseBody.typeName`,
+          path: `$input.request.operations.${i}.responseBody.typeName`,
           expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
           value: op.responseBody?.typeName,
           description: StringUtil.trim`
@@ -179,7 +181,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       AutoBeOpenApi.IOperation["authorizationType"]
     >;
     const authorizationTypes: Set<AuthorizationType> = new Set(
-      result.data.operations
+      result.data.request.operations
         .map((o) => o.authorizationType)
         .filter((v) => v !== null),
     );
@@ -187,11 +189,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
       if (props.actor.kind === "guest" && type === "login") continue;
       else if (authorizationTypes.has(type) === false)
         errors.push({
-          path: "$input.operations[].authorizationType",
+          path: "$input.request.operations[].authorizationType",
           expected: StringUtil.trim`{
-          ...(AutoBeOpenApi.IOperation data),
-          authorizationType: "${type}"
-        }`,
+            ...(AutoBeOpenApi.IOperation data),
+            authorizationType: "${type}"
+          }`,
           value: `No authorizationType "${type}" found in any operation`,
           description: StringUtil.trim`
             There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
@@ -219,47 +221,41 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ]({
+  ](
     validate,
-    preliminary: props.preliminary,
-  }) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
     name: "interfaceAuthorization" satisfies AutoBeEventSource,
     application,
     execute: {
-      makeOperations: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
-      analyzeFiles: () => {},
-      prismaSchemas: () => {},
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
 }
 
 const collection = {
-  chatgpt: (props: CustomValidateProps) =>
+  chatgpt: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "chatgpt">(
       {
         validate: {
-          makeOperations: props.validate,
-          ...props.preliminary.createValidate(),
+          process: validator,
         },
       },
     ),
-  claude: (props: CustomValidateProps) =>
+  claude: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "claude">({
       validate: {
-        makeOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validator,
       },
     }),
-  gemini: (props: CustomValidateProps) =>
+  gemini: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "gemini">({
       validate: {
-        makeOperations: props.validate,
-        ...props.preliminary.createValidate(),
+        process: validator,
       },
     }),
 };
@@ -267,8 +263,3 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps>;
-
-interface CustomValidateProps {
-  validate: Validator;
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
-}

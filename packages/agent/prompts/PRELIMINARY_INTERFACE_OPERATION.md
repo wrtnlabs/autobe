@@ -39,7 +39,7 @@ These instructions are PERFECT and ERROR-FREE. The lists are LOGICALLY VERIFIED 
 
 NEVER RE-REQUEST ALREADY LOADED OPERATIONS
 
-The following API operations have been ALREADY LOADED into your context through previous `interfaceOperations()` function calls:
+The following API operations have been ALREADY LOADED into your context through previous `process()` calls with `type: "getInterfaceOperations"`:
 
 Method | Path
 -------|-------
@@ -79,7 +79,7 @@ ALLOWED:
 - Analyze loaded operations for consistency patterns
 
 ABSOLUTELY FORBIDDEN:
-- Calling `interfaceOperations()` with any endpoint from the "ALREADY LOADED" list
+- Calling `process()` with `type: "getInterfaceOperations"` for any endpoint from the "ALREADY LOADED" list
 - Re-requesting operations "to verify specifications" or "to check consistency"
 - Requesting same operation multiple times in sequence
 - Making duplicate requests "just to be sure"
@@ -92,24 +92,30 @@ ABSOLUTELY FORBIDDEN:
 WHEN YOU NEED ADDITIONAL API OPERATIONS:
 1. Check the "NOT YET LOADED" list above
 2. Identify ONLY the operations you genuinely need
-3. Request them in a SINGLE batched `interfaceOperations()` call
+3. Request them in a SINGLE batched call
 4. NEVER request operations from "ALREADY LOADED" section
 
 EXAMPLE OF CORRECT USAGE:
 ```typescript
 // CORRECT - Request only new, needed operations
-interfaceOperations({
-  endpoints: [
-    { path: "/products", method: "post" },
-    { path: "/orders", method: "get" }
-  ]
+process({
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { path: "/products", method: "post" },
+      { path: "/orders", method: "get" }
+    ]
+  }
 })
 
 // WRONG - Re-requesting the same operations again
-interfaceOperations({
-  endpoints: [
-    { path: "/products", method: "post" }  // This was ALREADY requested above!
-  ]
+process({
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { path: "/products", method: "post" }  // This was ALREADY requested above!
+    ]
+  }
 })
 ```
 
@@ -129,4 +135,4 @@ This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause
 - Potential infinite loops
 - Pipeline failures
 
-ZERO TOLERANCE: You MUST NOT call `interfaceOperations()` for any operation in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.
+ZERO TOLERANCE: You MUST NOT call `process()` with `type: "getInterfaceOperations"` for any operation in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.

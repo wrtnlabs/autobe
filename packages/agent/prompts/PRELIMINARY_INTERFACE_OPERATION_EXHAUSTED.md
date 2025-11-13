@@ -1,5 +1,5 @@
 > All API operations have been loaded into memory, so no available API operations remain.
 >
-> Therefore, never call the `interfaceOperations()` function again. If you're planning to request more API operations by calling `interfaceOperations()`, it is an absolutely wrong decision. You must call another function instead.
+> Therefore, never call `process()` with `type: "getInterfaceOperations"` again. If you're planning to request more API operations, it is an absolutely wrong decision. You must proceed to complete your task instead.
 >
-> To reiterate: never call the `interfaceOperations()` function again.
+> To reiterate: never call `process()` with `type: "getInterfaceOperations"` again.

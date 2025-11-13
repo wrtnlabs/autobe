@@ -39,7 +39,7 @@ These instructions are PERFECT and ERROR-FREE. The lists are LOGICALLY VERIFIED 
 
 NEVER RE-REQUEST ALREADY LOADED SCHEMAS
 
-The following TypeScript type schemas have been ALREADY LOADED into your context through previous `interfaceSchemas()` function calls:
+The following TypeScript type schemas have been ALREADY LOADED into your context through previous `process()` calls with `type: "getInterfaceSchemas"`:
 
 {{LOADED}}
 
@@ -75,7 +75,7 @@ ALLOWED:
 - Verify type compatibility using already-loaded schema definitions
 
 ABSOLUTELY FORBIDDEN:
-- Calling `interfaceSchemas()` with any type name from the "ALREADY LOADED" list
+- Calling `process()` with `type: "getInterfaceSchemas"` for any type name from the "ALREADY LOADED" list
 - Re-requesting schemas "to verify properties" or "to check field types"
 - Requesting same schema multiple times in sequence
 - Making duplicate requests "just to be sure"
@@ -88,19 +88,25 @@ ABSOLUTELY FORBIDDEN:
 WHEN YOU NEED ADDITIONAL TYPE SCHEMAS:
 1. Check the "NOT YET LOADED" list above
 2. Identify ONLY the schemas you genuinely need
-3. Request them in a SINGLE batched `interfaceSchemas()` call
+3. Request them in a SINGLE batched call
 4. NEVER request schemas from "ALREADY LOADED" section
 
 EXAMPLE OF CORRECT USAGE:
 ```typescript
 // CORRECT - Request only new, needed schemas
-interfaceSchemas({
-  typeNames: ["IShoppingProduct.ICreate", "IShoppingOrder.ISummary"]
+process({
+  request: {
+    type: "getInterfaceSchemas",
+    typeNames: ["IShoppingProduct.ICreate", "IShoppingOrder.ISummary"]
+  }
 })
 
 // WRONG - Re-requesting the same schemas again
-interfaceSchemas({
-  typeNames: ["IShoppingProduct.ICreate"]  // This was ALREADY requested above!
+process({
+  request: {
+    type: "getInterfaceSchemas",
+    typeNames: ["IShoppingProduct.ICreate"]  // This was ALREADY requested above!
+  }
 })
 ```
 
@@ -121,4 +127,4 @@ This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause
 - Potential infinite loops
 - Pipeline failures
 
-ZERO TOLERANCE: You MUST NOT call `interfaceSchemas()` for any type in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.
+ZERO TOLERANCE: You MUST NOT call `process()` with `type: "getInterfaceSchemas"` for any type in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.

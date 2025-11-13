@@ -12,7 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
-import { IAutoBePreliminaryApplication } from "./structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 
 export const orchestratePreliminary = async <
   Model extends ILlmSchema.Model,
@@ -35,13 +35,14 @@ export const orchestratePreliminary = async <
   for (const exec of executes) {
     // ANALYSIS
     if (isAnalysisFiles(props.preliminary, exec.operation.function.name)) {
-      const pa: AutoBePreliminaryController<"analyzeFiles"> = props.preliminary;
+      const pa: AutoBePreliminaryController<"analysisFiles"> =
+        props.preliminary;
       orchestrateAnalyzeFiles(ctx, {
         source: props.source,
         source_id: props.source_id,
         trial: props.trial,
-        all: pa.getAll().analyzeFiles,
-        local: pa.getLocal().analyzeFiles,
+        all: pa.getAll().analysisFiles,
+        local: pa.getLocal().analysisFiles,
         arguments: exec.arguments,
       });
     }
@@ -104,8 +105,8 @@ export const orchestratePreliminary = async <
 const isAnalysisFiles = (
   preliminary: AutoBePreliminaryController<any>,
   functionName: string,
-): preliminary is AutoBePreliminaryController<"analyzeFiles"> =>
-  typia.is<"analyzeFiles">(functionName) &&
+): preliminary is AutoBePreliminaryController<"analysisFiles"> =>
+  typia.is<"analysisFiles">(functionName) &&
   preliminary.getAll()[functionName] !== undefined;
 
 const isPrismaSchemas = (
@@ -146,14 +147,13 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
   },
 ): void => {
   if (
-    typia.is<IAutoBePreliminaryApplication.IAnalysisFilesProps>(
-      props.arguments,
-    ) === false
+    typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(props.arguments) ===
+    false
   )
     return; // unreachable
 
   const existing: string[] = props.local.map((f) => f.filename);
-  for (const filename of props.arguments.fileNames) {
+  for (const filename of props.arguments.request.fileNames) {
     const file: AutoBeAnalyzeFile | undefined = props.all.find(
       (f) => f.filename === filename,
     );
@@ -164,11 +164,11 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
-    function: "analyzeFiles",
+    function: "analysisFiles",
     source: props.source,
     source_id: props.source_id,
     existing,
-    requested: props.arguments.fileNames,
+    requested: props.arguments.request.fileNames,
     trial: props.trial,
     created_at: new Date().toISOString(),
   });
@@ -186,14 +186,13 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
   },
 ): void => {
   if (
-    typia.is<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
-      props.arguments,
-    ) === false
+    typia.is<IAutoBePreliminaryRequest<"prismaSchemas">>(props.arguments) ===
+    false
   )
     return; // unreachable
 
   const existing: string[] = props.local.map((m) => m.name);
-  for (const name of props.arguments.schemaNames) {
+  for (const name of props.arguments.request.schemaNames) {
     const model: AutoBePrisma.IModel | undefined = props.all.find(
       (m) => m.name === name,
     );
@@ -208,7 +207,7 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
     source: props.source,
     source_id: props.source_id,
     existing,
-    requested: props.arguments.schemaNames,
+    requested: props.arguments.request.schemaNames,
     trial: props.trial,
     created_at: new Date().toISOString(),
   });
@@ -232,7 +231,7 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
   },
 ): void => {
   if (
-    typia.is<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
+    typia.is<IAutoBePreliminaryRequest<"interfaceOperations">>(
       props.arguments,
     ) === false
   )
@@ -246,7 +245,7 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
   );
 
   const typeNames: Set<string> = new Set();
-  for (const endpoint of props.arguments.endpoints) {
+  for (const endpoint of props.arguments.request.endpoints) {
     if (
       props.local.operations.find(
         (v) => v.method === endpoint.method && v.path === endpoint.path,
@@ -273,7 +272,7 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
     source: props.source,
     source_id: props.source_id,
     existing,
-    requested: props.arguments.endpoints,
+    requested: props.arguments.request.endpoints,
     trial: props.trial,
     created_at: new Date().toISOString(),
   });
@@ -287,8 +286,11 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       all: props.all.schemas,
       local: props.local.schemas,
       arguments: {
-        typeNames: Array.from(typeNames),
-      } satisfies IAutoBePreliminaryApplication.IInterfaceSchemasProps,
+        request: {
+          type: "getInterfaceSchemas",
+          typeNames: Array.from(typeNames),
+        },
+      } satisfies IAutoBePreliminaryRequest<"interfaceSchemas">,
     },
     false,
   );
@@ -307,16 +309,15 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
   dispatch: boolean = true,
 ): void => {
   if (
-    typia.is<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(
-      props.arguments,
-    ) == false
+    typia.is<IAutoBePreliminaryRequest<"interfaceSchemas">>(props.arguments) ==
+    false
   )
     return; // unreachable
 
   const existing: string[] = Object.keys(props.local);
 
   const collected: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-  for (const key of props.arguments.typeNames) {
+  for (const key of props.arguments.request.typeNames) {
     OpenApiTypeChecker.visit({
       components: {
         schemas: props.all,
@@ -340,7 +341,7 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
       source: props.source,
       source_id: props.source_id,
       existing,
-      requested: props.arguments.typeNames,
+      requested: props.arguments.request.typeNames,
       trial: props.trial,
       created_at: new Date().toISOString(),
     });

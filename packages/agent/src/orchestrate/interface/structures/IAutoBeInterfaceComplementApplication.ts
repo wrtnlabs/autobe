@@ -3,12 +3,6 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-/**
- * Complements missing schema types in OpenAPI document.
- *
- * Fills in schema definitions that are referenced via $ref but not yet defined
- * in components.schemas section.
- */
 export interface IAutoBeInterfaceComplementApplication {
   /**
    * Process schema complement task or preliminary data requests.

@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 /**
  * Request to retrieve requirements analysis files for context.
  *
@@ -23,5 +25,5 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
    * CRITICAL: DO NOT request the same file names that you have already
    * requested in previous calls.
    */
-  fileNames: string[];
+  fileNames: string[] & tags.MinItems<1>;
 }

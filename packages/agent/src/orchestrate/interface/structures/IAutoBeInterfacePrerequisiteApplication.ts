@@ -5,14 +5,6 @@ import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structure
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-/**
- * Interface Prerequisite Agent application for analyzing and generating API
- * operation dependencies.
- *
- * Analyzes Target Operations to determine which Available API Operations must
- * be executed as prerequisites based on resource creation dependencies and
- * existence validations.
- */
 export interface IAutoBeInterfacePrerequisiteApplication {
   /**
    * Process prerequisite analysis task or preliminary data requests.

@@ -1,5 +1,5 @@
 export type AutoBePreliminaryKind =
-  | "analyzeFiles"
+  | "analysisFiles"
   | "prismaSchemas"
   | "interfaceOperations"
   | "interfaceSchemas";

@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 /**
  * Request to retrieve Prisma database schema definitions for context.
  *
@@ -23,5 +25,5 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
    * CRITICAL: DO NOT request the same schema names that you have already
    * requested in previous calls.
    */
-  schemaNames: string[];
+  schemaNames: string[] & tags.MinItems<1>;
 }

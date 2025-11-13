@@ -6,7 +6,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceEndpointReviewHistory = (props: {
-  preliminary: AutoBePreliminaryController<"analyzeFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   endpoints: AutoBeOpenApi.IEndpoint[];
 }): IAutoBeOrchestrateHistory => ({
   histories: [

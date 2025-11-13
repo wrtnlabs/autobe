@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 /**
  * Request to retrieve OpenAPI schema type definitions for context.
  *
@@ -23,5 +25,5 @@ export interface IAutoBePreliminaryGetInterfaceSchemas {
    * CRITICAL: DO NOT request the same type names that you have already
    * requested in previous calls.
    */
-  typeNames: string[];
+  typeNames: string[] & tags.MinItems<1>;
 }
