@@ -1,31 +1,56 @@
 import { AutoBeOpenApi, CamelCasePattern } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceOperationApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas"
-  > {
+export interface IAutoBeInterfaceOperationApplication {
   /**
-   * Generate detailed API operations from path/method combinations.
+   * Process operation generation task or preliminary data requests.
    *
-   * This function creates complete API operations following REST principles and
-   * quality standards. Each generated operation includes specification, path,
-   * method, detailed multi-paragraph description, concise summary, parameters,
-   * and appropriate request/response bodies.
+   * Creates complete API operations following REST principles and quality
+   * standards. Processes operations with progress tracking to ensure iterative
+   * completion.
    *
-   * The function processes as many operations as possible in a single call,
-   * with progress tracking to ensure iterative completion of all required
-   * endpoints.
-   *
-   * @param props Properties containing the operations to generate.
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makeOperations(props: IAutoBeInterfaceOperationApplication.IProps): void;
+  process(props: IAutoBeInterfaceOperationApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceOperationApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final operation generation
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to generate detailed API operations.
+   *
+   * Executes operation generation to create complete API operations following
+   * REST principles and quality standards. Each operation includes specification,
+   * path, method, detailed description, summary, parameters, and request/response
+   * bodies.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Array of API operations to generate.
      *

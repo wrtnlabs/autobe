@@ -1,28 +1,60 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceComplementApplication
-  extends IAutoBePreliminaryApplication {
+/**
+ * Complements missing schema types in OpenAPI document.
+ *
+ * Fills in schema definitions that are referenced via $ref but not yet defined
+ * in components.schemas section.
+ */
+export interface IAutoBeInterfaceComplementApplication {
   /**
-   * Complements missing schema types
+   * Process schema complement task or preliminary data requests.
    *
-   * This method fills in schema definitions that are referenced via $ref but
-   * not yet defined in the `components.schemas` section. For example, if an API
-   * operation references `{ "$ref": "#/components/schemas/UserProfile" }` but
-   * `UserProfile` type is not defined in `components.schemas`, this method will
-   * add the missing schema definition.
+   * Adds missing schema definitions to ensure OpenAPI document is complete and
+   * all referenced schemas are properly defined.
    *
-   * This function is designed to be called via AI function calling mechanism to
-   * ensure the OpenAPI document is complete and all referenced schemas are
-   * properly defined.
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  complementComponents(
-    props: IAutoBeInterfaceComplementApplication.IProps,
-  ): void;
+  process(props: IAutoBeInterfaceComplementApplication.IProps): void;
 }
+
 export namespace IAutoBeInterfaceComplementApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final schema complementation
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to add missing schema definitions.
+   *
+   * Executes schema complementation to fill in referenced but undefined schema
+   * types in the OpenAPI document's components.schemas section. Ensures all
+   * $ref references resolve to valid schema definitions.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * A collection of missing schema definitions that need to be added to the
      * OpenAPI document's `components.schemas` section.

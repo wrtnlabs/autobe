@@ -1,30 +1,56 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceEndpointApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas"
-  > {
+export interface IAutoBeInterfaceEndpointApplication {
   /**
-   * Create Restful API endpoints.
+   * Process endpoint generation task or preliminary data requests.
    *
-   * Create Restful API endpoints referencing the given documents; requirement
-   * analysis documents, and Prisma schema files with ERD descriptions. The API
-   * endpoints must cover every requirements and every entities in the ERD.
+   * Creates Restful API endpoints referencing requirement analysis documents and
+   * Prisma schema files with ERD descriptions. Ensures endpoints cover all
+   * requirements and entities.
    *
-   * Also, each combination of {@link AutoBeOpenApi.IEndpoint.path} and
-   * {@link AutoBeOpenApi.IEndpoint.method} must be unique to avoid duplicates.
-   * Please don't make any duplicates.
-   *
-   * @param props Properties containing the endpoints
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makeEndpoints(props: IAutoBeInterfaceEndpointApplication.IProps): void;
+  process(props: IAutoBeInterfaceEndpointApplication.IProps): void;
 }
+
 export namespace IAutoBeInterfaceEndpointApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final endpoint generation
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to create Restful API endpoints.
+   *
+   * Executes endpoint generation to create comprehensive API endpoints covering
+   * all requirements and entities. Each combination of path and method must be
+   * unique to avoid duplicates.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /** The endpoints to generate. */
     endpoints: AutoBeOpenApi.IEndpoint[] & tags.MinItems<1>;
   }

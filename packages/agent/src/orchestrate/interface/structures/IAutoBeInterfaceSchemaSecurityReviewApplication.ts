@@ -1,40 +1,58 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceSchemaSecurityReviewApplication
-  extends IAutoBePreliminaryApplication {
+export interface IAutoBeInterfaceSchemaSecurityReviewApplication {
   /**
-   * Reviews and validates OpenAPI schema definitions for security compliance.
+   * Process schema security review task or preliminary data requests.
    *
-   * This specialized security review function focuses exclusively on
-   * authentication boundaries, data protection, and system integrity. It
-   * enforces strict security policies to prevent authentication bypass, data
-   * exposure, and unauthorized access.
+   * Reviews and validates OpenAPI schema definitions for security compliance,
+   * enforcing strict policies to prevent authentication bypass, data exposure,
+   * and unauthorized access.
    *
-   * The review process identifies and removes:
-   *
-   * - Authentication context fields in request DTOs (e.g., bbs_member_id)
-   * - Password and token fields in response DTOs
-   * - System-managed fields in request DTOs
-   * - Phantom fields that don't exist in Prisma schema
-   *
-   * @param props Security review results including violations found, fixes
-   *   applied, and modified schemas
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  review: (
-    props: IAutoBeInterfaceSchemaSecurityReviewApplication.IProps,
-  ) => void;
+  process(props: IAutoBeInterfaceSchemaSecurityReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceSchemaSecurityReviewApplication {
-  /**
-   * Output structure for the security review function.
-   *
-   * Contains the security analysis, remediation actions, and schemas modified
-   * for security compliance during the validation process.
-   */
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceSchemas) or final schema
+     * security review (complete). When preliminary returns empty array, that
+     * type is removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceSchemas;
+  }
+
+  /**
+   * Request to review and validate schema security.
+   *
+   * Executes security review to ensure schemas comply with authentication
+   * boundaries, data protection, and system integrity policies. Identifies and
+   * removes authentication context, passwords, tokens, system-managed fields, and
+   * phantom fields.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /** Security analysis and remediation planning information. */
     think: IThink;
 
@@ -58,6 +76,12 @@ export namespace IAutoBeInterfaceSchemaSecurityReviewApplication {
     content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 
+  /**
+   * Structured thinking process for schema security review.
+   *
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the schemas.
+   */
   export interface IThink {
     /**
      * Security violation findings from the review process.

@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
  * Interface Prerequisite Agent application for analyzing and generating API
@@ -10,19 +13,55 @@ import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePr
  * be executed as prerequisites based on resource creation dependencies and
  * existence validations.
  */
-export interface IAutoBeInterfacePrerequisiteApplication
-  extends IAutoBePreliminaryApplication {
+export interface IAutoBeInterfacePrerequisiteApplication {
   /**
-   * Generate prerequisites for the provided operations.
+   * Process prerequisite analysis task or preliminary data requests.
    *
-   * Analyzes each operation's dependencies and returns the complete list with
-   * their required prerequisite chains based on resource relationships.
+   * Analyzes each operation's dependencies and returns complete list with
+   * required prerequisite chains based on resource relationships.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makePrerequisite(props: IAutoBeInterfacePrerequisiteApplication.IProps): void;
+  process(props: IAutoBeInterfacePrerequisiteApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfacePrerequisiteApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * getInterfaceSchemas) or final prerequisite analysis (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas;
+  }
+
+  /**
+   * Request to analyze and generate API operation prerequisites.
+   *
+   * Executes prerequisite analysis to determine which Available API Operations
+   * must be executed before each Target Operation based on resource creation
+   * dependencies and existence validations.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Target operations requiring prerequisite analysis.
      *

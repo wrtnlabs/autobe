@@ -1,35 +1,58 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceSchemaApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
-  > {
+export interface IAutoBeInterfaceSchemaApplication {
   /**
-   * Generate OpenAPI components containing named schema types.
+   * Process schema generation task or preliminary data requests.
    *
-   * This method receives a complete set of schema components and integrates
-   * them into the final OpenAPI specification. It processes all entity schemas,
-   * their variants, and related type definitions to ensure a comprehensive and
+   * Generates OpenAPI components containing named schema types and integrates
+   * them into the final OpenAPI specification. Processes all entity schemas,
+   * their variants, and related type definitions to ensure comprehensive and
    * consistent API design.
    *
-   * The provided components should include schemas for all entities identified
-   * in the previous phases of API path/method definition and operation
-   * creation. This ensures that the final OpenAPI document has complete type
-   * coverage for all operations.
-   *
-   * DO: Follow established naming conventions (IEntityName,
-   * IEntityName.ICreate, etc.) DO: Document thoroughly with descriptions that
-   * reference the original Prisma schema comments.
-   *
-   * @param props Properties containing components to generate.
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makeComponents(props: IAutoBeInterfaceSchemaApplication.IProps): void;
+  process(props: IAutoBeInterfaceSchemaApplication.IProps): void;
 }
+
 export namespace IAutoBeInterfaceSchemaApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations) or final
+     * schema generation (complete). When preliminary returns empty array, that
+     * type is removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations;
+  }
+
+  /**
+   * Request to generate OpenAPI schema components.
+   *
+   * Executes schema generation to create comprehensive type definitions for all
+   * entities in the system. Ensures complete type coverage for all operations in
+   * the OpenAPI specification.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Complete set of schema components for the OpenAPI specification.
      *

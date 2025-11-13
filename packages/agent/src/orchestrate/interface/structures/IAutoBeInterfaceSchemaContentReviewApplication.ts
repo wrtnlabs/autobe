@@ -1,43 +1,57 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceSchemaContentReviewApplication
-  extends IAutoBePreliminaryApplication {
+export interface IAutoBeInterfaceSchemaContentReviewApplication {
   /**
-   * Reviews and validates DTO content completeness and consistency in OpenAPI
-   * schemas.
+   * Process schema content review task or preliminary data requests.
    *
-   * This specialized content review function focuses exclusively on ensuring
-   * DTOs accurately and completely represent their business entities. It
-   * validates field completeness, type accuracy, required field settings, and
-   * documentation quality.
+   * Reviews and validates DTO content completeness and consistency, ensuring
+   * DTOs accurately represent business entities with proper field completeness,
+   * type accuracy, and documentation quality.
    *
-   * The review process validates and corrects:
-   *
-   * - Field completeness against Prisma schema
-   * - Data type accuracy (Prisma to OpenAPI type mappings)
-   * - Required field arrays matching Prisma nullability
-   * - Description quality and comprehensiveness
-   * - Consistency across DTO variants (IEntity, ICreate, IUpdate, ISummary)
-   * - Missing variant detection and creation
-   *
-   * @param props Content review results including completeness issues found,
-   *   fixes applied, and modified schemas
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  review: (
-    props: IAutoBeInterfaceSchemaContentReviewApplication.IProps,
-  ) => void;
+  process(props: IAutoBeInterfaceSchemaContentReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceSchemaContentReviewApplication {
-  /**
-   * Output structure for the content review function.
-   *
-   * Contains the content analysis, completeness fixes, and schemas modified for
-   * content quality during the validation process.
-   */
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceSchemas) or final schema
+     * content review (complete). When preliminary returns empty array, that type
+     * is removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceSchemas;
+  }
+
+  /**
+   * Request to review and validate schema content.
+   *
+   * Executes content review to ensure DTOs accurately and completely represent
+   * business entities. Validates field completeness, type accuracy, required
+   * fields, descriptions, variant consistency, and missing variants.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /** Content analysis and completeness planning information. */
     think: IThink;
 
@@ -63,6 +77,12 @@ export namespace IAutoBeInterfaceSchemaContentReviewApplication {
     content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 
+  /**
+   * Structured thinking process for schema content review.
+   *
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the schemas.
+   */
   export interface IThink {
     /**
      * Content completeness and quality findings from the review process.

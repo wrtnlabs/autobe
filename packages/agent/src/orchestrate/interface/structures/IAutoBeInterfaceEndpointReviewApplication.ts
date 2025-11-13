@@ -1,6 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
  * Interface for reviewing and refining API endpoints through holistic analysis.
@@ -9,34 +10,53 @@ import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePr
  * through divide-and-conquer strategy, ensuring consistency, eliminating
  * redundancy, and preventing over-engineering across the entire API surface.
  */
-export interface IAutoBeInterfaceEndpointReviewApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas"
-  > {
+export interface IAutoBeInterfaceEndpointReviewApplication {
   /**
-   * Reviews and refines the complete collection of API endpoints.
+   * Process endpoint review task or preliminary data requests.
    *
-   * This method consolidates all endpoints generated independently by different
-   * groups and performs holistic review to:
+   * Consolidates all endpoints generated independently and performs holistic
+   * review to ensure consistency, remove duplicates, eliminate over-engineering,
+   * and verify REST API design principles.
    *
-   * - Ensure naming consistency across all endpoints
-   * - Remove duplicate or overlapping endpoints
-   * - Eliminate over-engineered solutions
-   * - Standardize path structures and HTTP methods
-   * - Verify REST API design principles
-   *
-   * The review process examines the entire API as a cohesive system rather than
-   * individual endpoints, ensuring the final API is intuitive, maintainable,
-   * and follows best practices.
-   *
-   * @param next - The review results and refined endpoint collection
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  reviewEndpoints(next: IAutoBeInterfaceEndpointReviewApplication.IProps): void;
+  process(props: IAutoBeInterfaceEndpointReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceEndpointReviewApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final endpoint review (complete).
+     * When preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to review and refine API endpoints.
+   *
+   * Executes comprehensive endpoint review to consolidate independently generated
+   * endpoints, ensure consistency, eliminate redundancy, and create a clean,
+   * maintainable API structure following REST best practices.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Comprehensive review analysis of all collected endpoints.
      *

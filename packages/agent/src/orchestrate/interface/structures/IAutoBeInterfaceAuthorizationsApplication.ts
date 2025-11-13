@@ -1,25 +1,56 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceAuthorizationsApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas"
-  > {
+export interface IAutoBeInterfaceAuthorizationsApplication {
   /**
-   * Creates an authorization Operations for the given roles
+   * Process authorization operations generation task or preliminary data
+   * requests.
    *
-   * This method generates an OpenAPI interface that defines the authorization
-   * requirements for the given roles. It ensures that the interface reflects
-   * the correct permissions and access levels for each role.
+   * Generates authorization operations for the given roles and ensures the
+   * interface reflects correct permissions and access levels.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makeOperations(props: IAutoBeInterfaceAuthorizationsApplication.IProps): void;
+  process(props: IAutoBeInterfaceAuthorizationsApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceAuthorizationsApplication {
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final authorization operations
+     * generation (complete). When preliminary returns empty array, that type is
+     * removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to generate authorization operations.
+   *
+   * Executes authorization operations generation to define the authorization
+   * requirements for the given roles. Ensures operations reflect correct
+   * permissions and access levels for each role.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Array of API operations to generate authorization operation for.
      *

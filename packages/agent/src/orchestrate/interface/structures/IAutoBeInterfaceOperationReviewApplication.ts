@@ -1,6 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePreliminaryApplication";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
  * Application interface for reviewing and validating API operations.
@@ -11,36 +12,53 @@ import { IAutoBePreliminaryApplication } from "../../common/structures/IAutoBePr
  * analytical findings and actionable improvements, along with the final
  * enhanced operations ready for implementation.
  */
-export interface IAutoBeInterfaceOperationReviewApplication
-  extends Pick<
-    IAutoBePreliminaryApplication,
-    "analyzeFiles" | "prismaSchemas"
-  > {
+export interface IAutoBeInterfaceOperationReviewApplication {
   /**
-   * Reviews a batch of API operations for quality and correctness.
+   * Process operation review task or preliminary data requests.
    *
-   * Analyzes operations for security vulnerabilities, schema compliance,
-   * logical consistency, and standard adherence. Outputs a structured thinking
-   * process containing review findings and improvement plans, plus the final
-   * production-ready operations with all critical issues resolved.
+   * Analyzes operations for security vulnerabilities, schema compliance, logical
+   * consistency, and standard adherence. Outputs structured thinking process and
+   * production-ready operations.
    *
-   * @param input Properties containing the thinking process (review & plan) and
-   *   the enhanced operations content
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  reviewOperations(
-    input: IAutoBeInterfaceOperationReviewApplication.IProps,
-  ): void;
+  process(props: IAutoBeInterfaceOperationReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceOperationReviewApplication {
-  /**
-   * Properties for API operation review and improvement process.
-   *
-   * Contains both the input operations to be reviewed and the outputs generated
-   * by the Interface Operations Review Agent, which will be published as part
-   * of the AutoBeInterfaceOperationReviewEvent.
-   */
   export interface IProps {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final operation review (complete).
+     * When preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to review and validate API operations.
+   *
+   * Executes systematic operation review for quality and correctness, analyzing
+   * security vulnerabilities, schema compliance, logical consistency, and standard
+   * adherence. Outputs structured thinking process and enhanced operations.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Comprehensive thinking process for API operation review.
      *
@@ -74,12 +92,10 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Structured thinking process for comprehensive API operation review.
+   * Structured thinking process for operation review.
    *
-   * Combines analytical review findings with actionable improvement planning to
-   * guide the systematic enhancement of API operations. This thinking structure
-   * ensures all aspects of API quality are evaluated and addressed before
-   * producing the final operations.
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the operations.
    */
   export interface IThink {
     /**
