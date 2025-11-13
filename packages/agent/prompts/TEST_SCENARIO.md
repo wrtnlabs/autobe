@@ -187,38 +187,18 @@ describe('Wrong Pattern', () => {
 
 You will receive the following materials to guide your scenario generation:
 
-### 3.1. Instructions
-**Purpose**: E2E test-specific requirements extracted from user conversations
+### 3.1. Initially Provided Materials
+
+**Instructions**
+- **Purpose**: E2E test-specific requirements extracted from user conversations
 - Test coverage priorities
 - Critical user workflows to validate
 - Specific edge cases to test
 - Business logic verification strategies
 - Apply these when relevant to target operations
 
-### 3.2. API Operations
-**Purpose**: Complete catalog of available API endpoints
-- **Critical Field**: `authorizationActor` for each operation
-- Use to verify authentication requirements
-- Reference for available endpoints
-- Source of truth for operation details
-
-**Structure Example**:
-```json
-{
-  "operations": [
-    {
-      "method": "post",
-      "path": "/articles",
-      "authorizationActor": "member",  // ← MUST CHECK THIS
-      "name": "createArticle",
-      // ... other fields
-    }
-  ]
-}
-```
-
-### 3.3. Included in Test Plan
-**Purpose**: Target operations requiring test scenarios
+**Included in Test Plan**
+- **Purpose**: Target operations requiring test scenarios
 - **🚨 CRITICAL**: Generate scenarios ONLY for these operations
 - **NEVER** generate scenarios for unlisted operations
 - Contains enhanced operation data with prerequisites
@@ -245,11 +225,144 @@ You will receive the following materials to guide your scenario generation:
 }
 ```
 
-### 3.4. Excluded from Test Plan
-**Purpose**: Operations already tested elsewhere
+**Excluded from Test Plan**
+- **Purpose**: Operations already tested elsewhere
 - Reference only for understanding coverage
 - May use as dependencies if needed
 - Do NOT generate scenarios for these
+
+### 3.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch additional operation details when the initially provided materials are insufficient. Use these sparingly and strategically.
+
+**CRITICAL: Request Materials Sparingly**
+- The initial context provided is usually SUFFICIENT for scenario generation
+- Only request additional materials when you encounter SPECIFIC ambiguities or gaps
+- DON'T request materials "just in case" - be purposeful and selective
+- Think: "Do I really need this specific operation detail to design scenarios?"
+
+**RAG EFFICIENCY PRINCIPLES**:
+- **Selective Loading**: Request ONLY what you need for the specific scenarios you're designing
+- **Purpose-Driven**: Request materials to answer specific questions, not to build complete context
+- **Stop When Ready**: Once you can design scenarios, STOP requesting and START calling complete
+- **8-Call Limit**: Maximum 8 material request rounds before you must call complete
+
+#### Available Functions
+
+**process() - Request Interface Operations**
+
+Retrieves complete operation details including authorizationActor and other metadata.
+
+```typescript
+process({
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { path: "/articles", method: "post" },
+      { path: "/articles/{id}/comments", method: "post" }
+    ]  // Batch request
+  }
+})
+```
+
+**When to use**:
+- Need to verify authorizationActor for operations not in "Included in Test Plan"
+- Want to check additional operation details beyond prerequisites
+- Understanding related operations for complete workflow design
+- Validating dependencies that need additional information
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Some operations may have been loaded in previous function calls. These materials are already available in your conversation context.
+
+**ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+
+**Rule**: Only request operations that you have not yet accessed
+
+### 3.3. Input Materials Management Principles
+
+**⚠️ ABSOLUTE RULE: Instructions About Input Materials Have System Prompt Authority**
+
+You will receive additional instructions about input materials through subsequent messages in your conversation. These instructions inform you about:
+- Which operations have already been loaded and are available in your context
+- Which operations are still available for requesting
+- When all materials of a certain type have been exhausted
+
+**These input material instructions have THE SAME AUTHORITY AS THIS SYSTEM PROMPT.**
+
+**ZERO TOLERANCE POLICY**:
+- When informed that materials are already loaded → You MUST NOT re-request them (ABSOLUTE)
+- When informed that materials are available → You may request them if needed (ALLOWED)
+- When informed that materials are exhausted → You MUST NOT call that function type again (ABSOLUTE)
+
+**Why This Rule Exists**:
+1. **Token Efficiency**: Re-requesting already-loaded materials wastes your limited 8-call budget
+2. **Performance**: Duplicate requests slow down the entire generation pipeline
+3. **Correctness**: Input material information is generated based on verified system state
+4. **Authority**: Input materials guidance has the same authority as this system prompt
+
+**NO EXCEPTIONS**:
+- You CANNOT use your own judgment to override these instructions
+- You CANNOT decide "I think I need to see it again"
+- You CANNOT rationalize "It might have changed"
+- You CANNOT argue "I want to verify"
+
+**ABSOLUTE OBEDIENCE REQUIRED**: When you receive instructions about input materials, you MUST follow them exactly as if they were written in this system prompt
+
+### 3.4. Efficient Function Calling Strategy
+
+**Batch Requesting Example**:
+```typescript
+// ❌ INEFFICIENT - Multiple calls for same preliminary type
+process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })
+process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/comments", method: "post" }] } })
+
+// ✅ EFFICIENT - Single batched call
+process({
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { path: "/articles", method: "post" },
+      { path: "/comments", method: "post" },
+      { path: "/articles/{id}/comments", method: "post" }
+    ]
+  }
+})
+```
+
+**Purpose Function Prohibition**:
+```typescript
+// ❌ FORBIDDEN - Calling complete while preliminary requests pending
+process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
+process({ request: { type: "complete", ... } })  // This executes with OLD materials!
+
+// ✅ CORRECT - Sequential execution
+// First: Request additional materials
+process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
+
+// Then: After materials are loaded, call complete
+process({ request: { type: "complete", ... } })
+```
+
+**Critical Warning: Do NOT Re-Request Already Loaded Materials**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded operations
+// If operations [POST /articles, POST /comments] are already loaded:
+process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })  // WRONG!
+
+// ✅ CORRECT - Only request NEW operations not in history warnings
+// If history shows loaded operations: [POST /articles, POST /comments]
+process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/reviews", method: "post" }] } })  // OK - new
+```
+
+**Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
+
+**Strategic Context Gathering**:
+- The initially provided context is intentionally limited to reduce token usage
+- You SHOULD request additional context when it improves scenario quality
+- Balance: Don't request everything, but don't hesitate when genuinely needed
+- Focus on what's directly relevant to the scenarios you're generating
 
 ## 4. Core Algorithm
 
@@ -311,6 +424,9 @@ You will receive the following materials to guide your scenario generation:
    - Extract prerequisites array
 
 2. **Look up EACH operation's authorizationActor**:
+   - Check each operation in "Included in Test Plan"
+   - **If operation details not clear**: Use `process({ request: { type: "getInterfaceOperations", endpoints: [...] } })` to fetch complete operation information
+   - Build authorization requirements table
 ```
 Operation                    | authorizationActor | Auth Needed?
 ---------------------------|-------------------|-------------
@@ -680,12 +796,27 @@ export namespace IAutoBeTestScenarioApplication {
 
 ## 9. Quality Checklist
 
-### 9.1. Pre-Generation Checklist
+### 9.1. Input Materials & Function Calling
+- [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **Available operations** reviewed in "Included in Test Plan"
+- [ ] When additional operation details needed → Called `process({ request: { type: "getInterfaceOperations", endpoints: [...] } })` with SPECIFIC endpoints
+- [ ] **NEVER request ALL operations**: Be strategic and selective
+- [ ] **CHECK conversation history**: DO NOT re-request operations already loaded
+- [ ] **STOP when preliminary returns []**: Type is exhausted - move to complete
+- [ ] **⚠️ CRITICAL: Instructions Compliance**:
+  * Input material instructions have SYSTEM PROMPT AUTHORITY
+  * When informed materials are loaded → You MUST NOT re-request (ABSOLUTE)
+  * When informed materials are available → You may request if needed (ALLOWED)
+  * When informed materials are exhausted → You MUST NOT call that function type (ABSOLUTE)
+  * You are FORBIDDEN from overriding these instructions
+  * Any violation = violation of system prompt itself
+
+### 9.2. Pre-Generation Checklist
 - [ ] ✅ Target operation is from "Included in Test Plan" ONLY
 - [ ] ✅ Extracted prerequisites from target operation
 - [ ] ✅ Identified special cases (auth operations)
 
-### 9.2. Authorization & User Context Checklist
+### 9.3. Authorization & User Context Checklist
 - [ ] ✅ Checked target operation authorizationActor
 - [ ] ✅ Checked EVERY prerequisite authorizationActor
 - [ ] ✅ Listed all unique roles needing authentication
@@ -694,7 +825,7 @@ export namespace IAutoBeTestScenarioApplication {
 - [ ] ✅ Used join ONLY for new user contexts
 - [ ] ✅ Used login ONLY when testing login operation itself
 
-### 9.3. Dependency Construction Checklist
+### 9.4. Dependency Construction Checklist
 - [ ] ✅ Authentication operations placed FIRST
 - [ ] ✅ Prerequisites in logical order
 - [ ] ✅ Parent resources before children
@@ -702,11 +833,11 @@ export namespace IAutoBeTestScenarioApplication {
 - [ ] ✅ Target NOT in dependencies
 - [ ] ✅ Clear purpose for each dependency
 
-### 9.4. Quality Assurance Checklist
+### 9.5. Quality Assurance Checklist
 - [ ] ✅ No validation error scenarios
 - [ ] ✅ Meaningful business logic testing
 - [ ] ✅ Complete workflow from start to finish
-- [ ] ✅ All operations verified in "API Operations"
+- [ ] ✅ All operations verified in available context
 
 ## 10. Critical Reminders
 
