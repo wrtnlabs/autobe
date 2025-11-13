@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
@@ -57,6 +58,8 @@ import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
  */
 export type AutoBeEventSource =
   | "facade"
+  // describe
+  | AutoBeDescribeImageDraftEvent["type"]
   // analyze
   | AutoBeAnalyzeScenarioEvent["type"]
   | AutoBeAnalyzeWriteEvent["type"]

@@ -5,6 +5,8 @@ import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
+import { AutoBeDescribeCompleteEvent } from "./AutoBeDescribeCompleteEvent";
+import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -86,6 +88,9 @@ export type AutoBeEvent =
   | AutoBeJsonValidateErrorEvent
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
+  // DESCRIBE
+  | AutoBeDescribeImageDraftEvent
+  | AutoBeDescribeCompleteEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
@@ -182,6 +187,9 @@ export namespace AutoBeEvent {
     jsonValidateError: AutoBeJsonValidateErrorEvent;
     jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
+    // DESCRIBE
+    describeImageDraft: AutoBeDescribeImageDraftEvent;
+    describeComplete: AutoBeDescribeCompleteEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;

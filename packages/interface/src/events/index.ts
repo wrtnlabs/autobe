@@ -1,3 +1,7 @@
+// DESCRIBE
+export * from "./AutoBeDescribeImageDraftEvent";
+export * from "./AutoBeDescribeCompleteEvent";
+
 // FACADE
 export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeEvent";
