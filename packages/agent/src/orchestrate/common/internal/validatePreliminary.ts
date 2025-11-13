@@ -80,7 +80,13 @@ namespace PreliminaryApplicationValidator {
               k !== typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>(),
           )
           .join(" | "),
-        description: "@todo",
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetAnalysisFiles["type"]
+            >()[0],
+          ),
       });
     return finalize(input, errors);
   };
@@ -138,7 +144,13 @@ namespace PreliminaryApplicationValidator {
               k !== typia.reflect.name<IAutoBePreliminaryGetPrismaSchemas>(),
           )
           .join(" | "),
-        description: "@todo",
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetPrismaSchemas["type"]
+            >()[0],
+          ),
       });
     return finalize(input, errors);
   };
@@ -215,7 +227,13 @@ namespace PreliminaryApplicationValidator {
               typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>(),
           )
           .join(" | "),
-        description: "@todo",
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetInterfaceOperations["type"]
+            >()[0],
+          ),
       });
     return finalize(input, errors);
   };
@@ -272,7 +290,13 @@ namespace PreliminaryApplicationValidator {
               k !== typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>(),
           )
           .join(" | "),
-        description: "@todo",
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetInterfaceSchemas["type"]
+            >()[0],
+          ),
       });
     return finalize(input, errors);
   };
