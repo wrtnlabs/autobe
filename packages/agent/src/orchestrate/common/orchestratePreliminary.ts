@@ -145,9 +145,12 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
     arguments: unknown;
   },
 ): void => {
-  typia.assertGuard<IAutoBePreliminaryApplication.IAnalysisFilesProps>(
-    props.arguments,
-  );
+  if (
+    typia.is<IAutoBePreliminaryApplication.IAnalysisFilesProps>(
+      props.arguments,
+    ) === false
+  )
+    return; // unreachable
 
   const existing: string[] = props.local.map((f) => f.filename);
   for (const filename of props.arguments.fileNames) {
@@ -182,9 +185,12 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
     arguments: unknown;
   },
 ): void => {
-  typia.assertGuard<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
-    props.arguments,
-  );
+  if (
+    typia.is<IAutoBePreliminaryApplication.IPrismaSchemasProps>(
+      props.arguments,
+    ) === false
+  )
+    return; // unreachable
 
   const existing: string[] = props.local.map((m) => m.name);
   for (const name of props.arguments.schemaNames) {
@@ -225,9 +231,12 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
     arguments: unknown;
   },
 ): void => {
-  typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
-    props.arguments,
-  );
+  if (
+    typia.is<IAutoBePreliminaryApplication.IInterfaceOperationsProps>(
+      props.arguments,
+    ) === false
+  )
+    return; // unreachable
 
   const existing: AutoBeOpenApi.IEndpoint[] = props.local.operations.map(
     (o) => ({
@@ -297,9 +306,12 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
   },
   dispatch: boolean = true,
 ): void => {
-  typia.assertGuard<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(
-    props.arguments,
-  );
+  if (
+    typia.is<IAutoBePreliminaryApplication.IInterfaceSchemasProps>(
+      props.arguments,
+    ) == false
+  )
+    return; // unreachable
 
   const existing: string[] = Object.keys(props.local);
 

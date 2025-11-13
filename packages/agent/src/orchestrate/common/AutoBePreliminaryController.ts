@@ -26,7 +26,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
 
   // STATE
-  private readonly empties: Set<Kind>;
+  private readonly empties: Map<Kind, number>;
+  private trial: number;
 
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
@@ -37,7 +38,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
-    this.empties = new Set();
+    this.empties = new Map();
+    this.trial = 0;
 
     complementPreliminaryCollection({
       kinds: props.kinds,
@@ -55,7 +57,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   public setEmpty(kind: Kind, value: boolean): void {
-    if (value === true) this.empties.add(kind);
+    if (value === true) this.empties.set(kind, this.trial);
     else this.empties.delete(kind);
   }
 
@@ -80,7 +82,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   public getEmpties(): Kind[] {
-    return Array.from(this.empties);
+    return Array.from(this.empties.keys());
   }
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(
@@ -91,7 +93,14 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<Model, T>,
     ) => Promise<IAutoBeOrchestrateResult<Model, T>>,
   ): Promise<T | never> {
-    for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
+    for (
+      this.trial = 0;
+      this.trial < AutoBeConfigConstant.RAG_LIMIT;
+      ++this.trial
+    ) {
+      for (const [key, value] of this.empties.entries())
+        if (value < this.trial - 1) this.empties.delete(key);
+
       const result: IAutoBeOrchestrateResult<Model, T> = await process(
         (x) => (value) => ({
           ...x,
@@ -104,7 +113,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         source_id: this.source_id,
         source: this.source,
         preliminary: this,
-        trial: i + 1,
+        trial: this.trial + 1,
         histories: result.histories,
       });
     }

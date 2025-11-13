@@ -22,6 +22,8 @@ import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCo
 export function transformPreliminaryHistory<
   Key extends keyof IAutoBePreliminaryApplication,
 >(preliminary: AutoBePreliminaryController<Key>): IMicroAgenticaHistoryJson[] {
+  if (preliminary.getEmpties().length !== 0)
+    console.log(preliminary.getEmpties());
   return [
     ...preliminary
       .getKinds()
