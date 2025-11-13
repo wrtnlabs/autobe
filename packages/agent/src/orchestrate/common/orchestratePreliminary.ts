@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
+import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
 export const orchestratePreliminary = async <
   Model extends ILlmSchema.Model,
@@ -27,14 +28,13 @@ export const orchestratePreliminary = async <
     trial: number;
   },
 ): Promise<void> => {
-  ctx; // @todo -> dispatch events
   const executes: AgenticaExecuteHistory<Model>[] = props.histories.filter(
     (h) => h.type === "execute",
   );
   if (executes.length === 0) throw new Error("Failed to function calling");
   for (const exec of executes) {
     // ANALYSIS
-    if (isAnalysisFiles(props.preliminary, exec.operation.function.name)) {
+    if (isAnalysisFiles(props.preliminary, exec.arguments)) {
       const pa: AutoBePreliminaryController<"analysisFiles"> =
         props.preliminary;
       orchestrateAnalyzeFiles(ctx, {
@@ -47,7 +47,7 @@ export const orchestratePreliminary = async <
       });
     }
     // PRISMA SCHEMAS
-    else if (isPrismaSchemas(props.preliminary, exec.operation.function.name)) {
+    else if (isPrismaSchemas(props.preliminary, exec.arguments)) {
       const pp: AutoBePreliminaryController<"prismaSchemas"> =
         props.preliminary;
       orchestratePrismaSchemas(ctx, {
@@ -60,9 +60,7 @@ export const orchestratePreliminary = async <
       });
     }
     // INTERFACE OPERATIONS
-    else if (
-      isInterfaceOperations(props.preliminary, exec.operation.function.name)
-    ) {
+    else if (isInterfaceOperations(props.preliminary, exec.arguments)) {
       const pi: AutoBePreliminaryController<
         "interfaceOperations" | "interfaceSchemas"
       > = props.preliminary;
@@ -82,9 +80,7 @@ export const orchestratePreliminary = async <
       });
     }
     // INTERFACE SCHEMAS
-    else if (
-      isInterfaceSchemas(props.preliminary, exec.operation.function.name)
-    ) {
+    else if (isInterfaceSchemas(props.preliminary, exec.arguments)) {
       const ps: AutoBePreliminaryController<"interfaceSchemas"> =
         props.preliminary;
       orchestrateInterfaceSchemas(ctx, {
@@ -104,33 +100,49 @@ export const orchestratePreliminary = async <
 ----------------------------------------------------------- */
 const isAnalysisFiles = (
   preliminary: AutoBePreliminaryController<any>,
-  functionName: string,
+  input: unknown,
 ): preliminary is AutoBePreliminaryController<"analysisFiles"> =>
-  typia.is<"analysisFiles">(functionName) &&
-  preliminary.getAll()[functionName] !== undefined;
+  typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "analysisFiles">
+    >()[0]
+  ] !== undefined;
 
 const isPrismaSchemas = (
   preliminary: AutoBePreliminaryController<any>,
-  functionName: string,
+  input: unknown,
 ): preliminary is AutoBePreliminaryController<"prismaSchemas"> =>
-  typia.is<"prismaSchemas">(functionName) &&
-  preliminary.getAll()[functionName] !== undefined;
+  typia.is<IAutoBePreliminaryRequest<"prismaSchemas">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "prismaSchemas">
+    >()[0]
+  ] !== undefined;
 
 const isInterfaceOperations = (
   preliminary: AutoBePreliminaryController<any>,
-  functionName: string,
+  input: unknown,
 ): preliminary is AutoBePreliminaryController<
   "interfaceOperations" | "interfaceSchemas"
 > =>
-  typia.is<"interfaceOperations">(functionName) &&
-  preliminary.getAll()[functionName] !== undefined;
+  typia.is<IAutoBePreliminaryRequest<"interfaceOperations">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "interfaceOperations">
+    >()[0]
+  ] !== undefined;
 
 const isInterfaceSchemas = (
   preliminary: AutoBePreliminaryController<any>,
-  functionName: string,
+  input: unknown,
 ): preliminary is AutoBePreliminaryController<"interfaceSchemas"> =>
-  typia.is<"interfaceSchemas">(functionName) &&
-  preliminary.getAll()[functionName] !== undefined;
+  typia.is<IAutoBePreliminaryRequest<"interfaceSchemas">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "interfaceSchemas">
+    >()[0]
+  ] !== undefined;
 
 /* -----------------------------------------------------------
   ORCHESTRATORS
