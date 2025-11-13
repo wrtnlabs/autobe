@@ -41,8 +41,6 @@ NEVER RE-REQUEST ALREADY LOADED OPERATIONS
 
 The following API operations have been ALREADY LOADED into your context through previous `process()` calls with `type: "getInterfaceOperations"`:
 
-Method | Path
--------|-------
 {{LOADED}}
 
 {{EXHAUSTED}}
@@ -64,8 +62,6 @@ ALREADY LOADED AND AVAILABLE:
 
 NOT YET LOADED (Available on request):
 
-Method | Path
--------|-------
 {{AVAILABLE}}
 
 {{EXHAUSTED}}
