@@ -21,6 +21,7 @@ import {
   AutoBeTestCompleteEvent,
   AutoBeTestHistory,
   AutoBeTestStartEvent,
+  AutoBeUserMessageContent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
@@ -37,7 +38,6 @@ import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
-import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
@@ -201,10 +201,25 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         if (closure) closure(agent);
 
         // DO CONVERSATE
-        const message: string =
+        const message:
+          | string
+          | AutoBeUserMessageContent
+          | AutoBeUserMessageContent[] =
           next.enforceFunctionCall === true
-            ? StringUtil.trim`
-                ${next.userMessage}
+            ? [
+                ...(typeof next.userMessage === "string"
+                  ? [
+                      {
+                        type: "text",
+                        text: next.userMessage,
+                      } satisfies AutoBeUserMessageContent,
+                    ]
+                  : Array.isArray(next.userMessage)
+                    ? next.userMessage
+                    : [next.userMessage]),
+                {
+                  type: "text",
+                  text: StringUtil.trim`
 
                 > You have to call function(s) of below to accomplish my request.
                 >
@@ -219,7 +234,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
                 ${next.controller.application.functions
                   .map((f) => `> - ${f.name}`)
                   .join("\n")}
-              `
+              `,
+                },
+              ]
             : next.userMessage;
         const result: TimedConversation.IResult<Model> =
           await TimedConversation.process({
@@ -494,4 +511,16 @@ const forceRetry = async <T>(
   throw error;
 };
 
-const STAGES = typia.misc.literals<keyof IAutoBeFacadeApplication>();
+const STAGES =
+  typia.misc.literals<
+    keyof Pick<
+      IAutoBeTokenUsageJson,
+      | "describe"
+      | "facade"
+      | "analyze"
+      | "prisma"
+      | "interface"
+      | "test"
+      | "realize"
+    >
+  >();
