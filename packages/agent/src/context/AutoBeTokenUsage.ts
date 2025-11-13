@@ -1,6 +1,5 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
-import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
 
 /**
