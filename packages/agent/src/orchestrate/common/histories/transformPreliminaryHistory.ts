@@ -206,8 +206,8 @@ namespace Transformer {
             [
               o.method,
               o.path,
-              o.authorizationActor,
-              o.authorizationType,
+              o.authorizationActor ?? "-",
+              o.authorizationType ?? "-",
               getSummary(o.summary),
             ].join(" | "),
           )
