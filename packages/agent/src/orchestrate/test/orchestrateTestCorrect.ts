@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
@@ -163,7 +163,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...(await transformTestCorrectHistories(ctx, {
+    ...(await transformTestCorrectHistory(ctx, {
       instruction: props.instruction,
       function: props.function,
       failures: [

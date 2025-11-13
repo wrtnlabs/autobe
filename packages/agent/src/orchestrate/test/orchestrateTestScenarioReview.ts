@@ -14,7 +14,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformTestScenarioReviewHistories } from "./histories/transformTestScenarioReviewHistories";
+import { transformTestScenarioReviewHistory } from "./histories/transformTestScenarioReviewHistory";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestScenarioReviewApplication";
 
@@ -89,7 +89,7 @@ const process = async <Model extends ILlmSchema.Model>(
         preliminary,
       }),
       enforceFunctionCall: true,
-      ...transformTestScenarioReviewHistories({
+      ...transformTestScenarioReviewHistory({
         state: ctx.state(),
         groups: props.groups,
         instruction: props.instruction,

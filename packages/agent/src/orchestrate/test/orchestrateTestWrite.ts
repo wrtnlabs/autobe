@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
-import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
+import { transformTestWriteHistory } from "./histories/transformTestWriteHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
@@ -89,11 +89,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...await transformTestWriteHistories(ctx, {
+    ...(await transformTestWriteHistory(ctx, {
       scenario,
       artifacts,
       instruction: props.instruction,
-    }),
+    })),
   });
   if (pointer.value === null) {
     ++progress.completed;

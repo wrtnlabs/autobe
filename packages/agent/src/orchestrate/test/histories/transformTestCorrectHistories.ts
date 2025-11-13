@@ -7,9 +7,9 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { transformTestWriteHistories } from "./transformTestWriteHistories";
+import { transformTestWriteHistory } from "./transformTestWriteHistory";
 
-export const transformTestCorrectHistories = async <
+export const transformTestCorrectHistory = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -19,7 +19,7 @@ export const transformTestCorrectHistories = async <
     failures: IAutoBeTestFunctionFailure[];
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
-  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistories(
+  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistory(
     ctx,
     {
       instruction: props.instruction,

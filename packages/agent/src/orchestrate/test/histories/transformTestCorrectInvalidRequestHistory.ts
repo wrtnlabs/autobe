@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 
-export const transformTestCorrectInvalidRequestHistories = (
+export const transformTestCorrectInvalidRequestHistory = (
   func: IAutoBeTestFunction,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): IAutoBeOrchestrateHistory => ({

@@ -23,7 +23,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
+import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioAuthorizationActor } from "./structures/IAutoBeTestScenarioAuthorizationActor";
@@ -141,11 +141,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
-  try {
-    return await process(ctx, props);
-  } catch {
-    return [];
-  }
+  // try {
+  return await process(ctx, props);
+  // } catch {
+  //   return [];
+  // }
 };
 
 const process = async <Model extends ILlmSchema.Model>(
@@ -220,7 +220,7 @@ const process = async <Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioHistories({
+      ...transformTestScenarioHistory({
         state: ctx.state(),
         include: props.include,
         exclude: props.exclude,

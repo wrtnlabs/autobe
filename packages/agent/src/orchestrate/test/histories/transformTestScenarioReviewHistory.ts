@@ -9,7 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 import { IAutoBeTestScenarioApplication } from "../structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
-export function transformTestScenarioReviewHistories(props: {
+export function transformTestScenarioReviewHistory(props: {
   state: AutoBeState;
   instruction: string;
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[];

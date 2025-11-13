@@ -9,7 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
-export const transformTestScenarioHistories = (props: {
+export const transformTestScenarioHistory = (props: {
   state: AutoBeState;
   include: AutoBeOpenApi.IOperation[];
   exclude: AutoBeOpenApi.IEndpoint[];
