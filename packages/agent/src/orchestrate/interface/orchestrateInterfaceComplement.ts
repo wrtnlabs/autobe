@@ -45,14 +45,15 @@ async function step<Model extends ILlmSchema.Model>(
   if (missed.length === 0) return props.document.components.schemas;
   else if (progress.life === 0) return props.document.components.schemas;
 
-  console.log("MISSED DTO SCHEMA TYPE NAMES", missed);
-
   const preliminary: AutoBePreliminaryController<
     | "analyzeFiles"
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    functions: typia.json
+      .application<IAutoBeInterfaceComplementApplication>()
+      .functions.map((f) => f.name),
     source: "interfaceComplement",
     kinds: [
       "analyzeFiles",

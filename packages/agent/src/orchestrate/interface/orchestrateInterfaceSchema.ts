@@ -131,6 +131,9 @@ async function process<Model extends ILlmSchema.Model>(
   const preliminary: AutoBePreliminaryController<
     "analyzeFiles" | "prismaSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
+    functions: typia.json
+      .application<IAutoBeInterfaceSchemaApplication>()
+      .functions.map((f) => f.name),
     source: "interfaceSchema",
     kinds: ["analyzeFiles", "prismaSchemas", "interfaceOperations"],
     state: ctx.state(),

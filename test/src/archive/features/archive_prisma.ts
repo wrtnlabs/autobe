@@ -135,7 +135,7 @@ export const archive_prisma = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      [`prisma.json`]: JSON.stringify(agent.getHistories()),
+      [`prisma.histories.json`]: JSON.stringify(agent.getHistories()),
       [`prisma.snapshots.json`]: JSON.stringify(
         snapshots.map((s) => ({
           event: s.event,

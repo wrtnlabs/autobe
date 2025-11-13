@@ -136,28 +136,13 @@ export const orchestrateInterface =
 
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
-      total: Math.ceil(
-        Object.keys(document.components.schemas).length /
-          AutoBeConfigConstant.INTERFACE_CAPACITY,
-      ),
+      total: 0,
     };
-    for (const config of [
-      {
-        kind: "security" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-      },
-      {
-        kind: "relation" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-      },
-      {
-        kind: "content" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
-      },
-    ])
+    for (const config of REVIEWERS) {
+      reviewProgress.total = Math.ceil(
+        (Object.keys(document.components.schemas).length * REVIEWERS.length) /
+          AutoBeConfigConstant.INTERFACE_CAPACITY,
+      );
       assign(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
@@ -165,6 +150,7 @@ export const orchestrateInterface =
           progress: reviewProgress,
         }),
       );
+    }
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
     await orchestrateInterfaceSchemaRename(ctx, document);
@@ -199,3 +185,18 @@ export const orchestrateInterface =
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceCompleteEvent);
   };
+
+const REVIEWERS = [
+  {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+  },
+  {
+    kind: "relation" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+  },
+  {
+    kind: "content" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+  },
+];

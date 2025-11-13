@@ -74,7 +74,7 @@ export const archive_realize = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      [`realize.json`]: JSON.stringify(agent.getHistories()),
+      [`realize.histories.json`]: JSON.stringify(agent.getHistories()),
       [`realize.snapshots.json`]: JSON.stringify(
         snapshots.map((s) => ({
           event: s.event,

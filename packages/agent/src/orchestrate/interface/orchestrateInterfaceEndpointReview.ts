@@ -20,6 +20,9 @@ export async function orchestrateInterfaceEndpointReview<
   const preliminary: AutoBePreliminaryController<
     "analyzeFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
+    functions: typia.json
+      .application<IAutoBeInterfaceEndpointReviewApplication>()
+      .functions.map((f) => f.name),
     source: "interfaceEndpointReview",
     kinds: ["analyzeFiles", "prismaSchemas"],
     state: ctx.state(),
