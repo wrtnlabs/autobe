@@ -140,6 +140,13 @@ async function process<Model extends ILlmSchema.Model>(
       "interfaceSchemas",
     ],
     state: ctx.state(),
+    all: {
+      interfaceOperations: props.document.operations,
+      interfaceSchemas: props.document.components.schemas,
+    },
+    local: {
+      interfaceOperations: props.includes,
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {

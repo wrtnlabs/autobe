@@ -61,6 +61,10 @@ async function step<Model extends ILlmSchema.Model>(
       "interfaceSchemas",
     ],
     state: ctx.state(),
+    all: {
+      interfaceOperations: props.document.operations,
+      interfaceSchemas: props.document.components.schemas,
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<Record<
