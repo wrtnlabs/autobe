@@ -17,7 +17,7 @@ export const transformPrismaCorrectHistory = (props: {
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_CORRECT,
     },
-    ...props.preliminary.createHistories(),
+    ...props.preliminary.getHistories(),
     {
       id: v7(),
       created_at: new Date().toISOString(),

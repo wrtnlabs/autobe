@@ -1,107 +1,144 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeProgressEventBase, AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+  AutoBeTestScenario,
+} from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { HashMap, IPointer, Pair } from "tstl";
+import { HashMap, HashSet, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioReviewHistories } from "./histories/transformTestScenarioReviewHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestScenarioReviewApplication";
 
-export async function orchestrateTestScenarioReview<
+export const orchestrateTestScenarioReview = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    instruction: string;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
+    instruction: string;
   },
-): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  const res: IAutoBeTestScenarioApplication.IScenarioGroup[] = await review(
-    ctx,
-    props,
-  );
-  return res;
-}
+): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
+  try {
+    return await process(ctx, props);
+  } catch {
+    props.progress.completed += props.groups.length;
+    return props.groups;
+  }
+};
 
-async function review<Model extends ILlmSchema.Model>(
+const process = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    instruction: string;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
+    instruction: string;
   },
-): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  try {
-    const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
+): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document!;
+  const preliminary: AutoBePreliminaryController<"interfaceOperations"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBeTestScenarioApplication>(),
+      source: SOURCE,
+      kinds: ["interfaceOperations"],
+      state: ctx.state(),
+      local: {
+        interfaceOperations: (() => {
+          const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+            AutoBeOpenApiEndpointComparator.hashCode,
+            AutoBeOpenApiEndpointComparator.equals,
+          );
+          for (const group of props.groups) {
+            unique.insert(group.endpoint);
+            for (const scenario of group.scenarios)
+              for (const dependency of scenario.dependencies)
+                unique.insert(dependency.endpoint);
+          }
+          return unique
+            .toJSON()
+            .map((endpoint) =>
+              document.operations.find(
+                (op) =>
+                  op.method === endpoint.method && op.path === endpoint.path,
+              ),
+            )
+            .filter((op): op is AutoBeOpenApi.IOperation => op !== undefined);
+        })(),
+      },
+    });
+  return preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null> =
       {
         value: null,
       };
-    const { metric, tokenUsage } = await ctx.conversate({
-      source: "testScenarioReview",
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: SOURCE,
       controller: createController({
         model: ctx.model,
-        pointer,
         originalGroups: props.groups,
+        pointer,
+        preliminary,
       }),
       enforceFunctionCall: true,
       ...transformTestScenarioReviewHistories({
         state: ctx.state(),
         groups: props.groups,
         instruction: props.instruction,
+        preliminary,
       }),
     });
-    if (pointer.value === null) {
-      // unreachable
-      throw new Error("Failed to get review result.");
+    if (pointer.value !== null) {
+      props.progress.total = Math.max(
+        props.progress.total,
+        (props.progress.completed += pointer.value.scenarioGroups.length),
+      );
+      ctx.dispatch({
+        type: SOURCE,
+        id: v7(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        total: props.progress.total,
+        completed: props.progress.completed,
+        scenarios: pointer.value.scenarioGroups
+          .map((group) => {
+            return group.scenarios.map((s) => {
+              return {
+                ...s,
+                endpoint: group.endpoint,
+              } satisfies AutoBeTestScenario;
+            });
+          })
+          .flat(),
+        step: ctx.state().interface?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+      // @todo michael: need to investigate scenario removal more gracefully
+      return out(result)(
+        pointer.value.pass
+          ? // || pointer.value.scenarioGroups.length < props.groups.length
+            props.groups
+          : pointer.value.scenarioGroups,
+      );
     }
+    return out(result)(null);
+  });
+};
 
-    props.progress.total = Math.max(
-      props.progress.total,
-      (props.progress.completed += pointer.value.scenarioGroups.length),
-    );
-
-    ctx.dispatch({
-      type: "testScenarioReview",
-      id: v7(),
-      metric,
-      tokenUsage,
-      total: props.progress.total,
-      completed: props.progress.completed,
-      scenarios: pointer.value.scenarioGroups
-        .map((group) => {
-          return group.scenarios.map((s) => {
-            return {
-              ...s,
-              endpoint: group.endpoint,
-            } satisfies AutoBeTestScenario;
-          });
-        })
-        .flat(),
-      step: ctx.state().interface?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
-    // @todo michael: need to investigate scenario removal more gracefully
-    return pointer.value.pass
-      ? // || pointer.value.scenarioGroups.length < props.groups.length
-        props.groups
-      : pointer.value.scenarioGroups;
-  } catch {
-    props.progress.completed += props.groups.length;
-    return props.groups;
-  }
-}
-
-function createController<Model extends ILlmSchema.Model>(props: {
+const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
-  pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null>;
+  pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null>;
   originalGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
-}): IAgenticaController.IClass<Model> {
+  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+}): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 
   const validate: Validator = (
@@ -110,10 +147,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeTestScenarioReviewApplication.IProps> =
       typia.validate<IAutoBeTestScenarioReviewApplication.IProps>(next);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      });
 
     // merge to unique scenario groups
     const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
-      uniqueScenarioGroups(result.data.scenarioGroups);
+      uniqueScenarioGroups(result.data.request.scenarioGroups);
 
     const errors: IValidation.IError[] = [];
 
@@ -135,8 +176,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
         return [...acc, matchingGroup];
       }, []);
-
-    result.data.scenarioGroups = filteredScenarioGroups;
+    result.data.request.scenarioGroups = filteredScenarioGroups;
 
     if (errors.length > 0) {
       return {
@@ -145,7 +185,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
         data: result.data,
       };
     }
-
     return result;
   };
 
@@ -161,15 +200,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   return {
     protocol: "class",
-    name: "Test Scenario Reviewer",
+    name: SOURCE,
     application,
     execute: {
-      review: (input) => {
-        props.pointer.value = input;
+      process: (input) => {
+        if (input.request.type === "complete")
+          props.pointer.value = input.request;
       },
     } satisfies IAutoBeTestScenarioReviewApplication,
   };
-}
+};
 
 const uniqueScenarioGroups = (
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
@@ -186,19 +226,19 @@ const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioReviewApplication, "chatgpt">({
       validate: {
-        review: validate,
+        process: validate,
       },
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioReviewApplication, "claude">({
       validate: {
-        review: validate,
+        process: validate,
       },
     }),
   gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioReviewApplication, "gemini">({
       validate: {
-        review: validate,
+        process: validate,
       },
     }),
 };
@@ -206,3 +246,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeTestScenarioReviewApplication.IProps>;
+
+const SOURCE = "testScenarioReview" satisfies AutoBeEventSource;

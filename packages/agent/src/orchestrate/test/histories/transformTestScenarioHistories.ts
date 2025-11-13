@@ -5,16 +5,18 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
 export const transformTestScenarioHistories = (props: {
   state: AutoBeState;
-  document: AutoBeOpenApi.IDocument;
   include: AutoBeOpenApi.IOperation[];
-  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[];
+  exclude: AutoBeOpenApi.IEndpoint[];
+  preliminary: AutoBePreliminaryController<"interfaceOperations">;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
+  const document: AutoBeOpenApi.IDocument = props.state.interface!.document!;
   const authorizations: AutoBeInterfaceAuthorization[] =
     props.state.interface?.authorizations ?? [];
   const authorizationActors: Map<
@@ -47,6 +49,7 @@ export const transformTestScenarioHistories = (props: {
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.TEST_SCENARIO,
       },
+      ...props.preliminary.getHistories(),
       {
         id: v7(),
         created_at: new Date().toISOString(),
@@ -70,22 +73,6 @@ export const transformTestScenarioHistories = (props: {
 
           ${props.instruction}
 
-          ## API Operations
-
-          Below are the complete API operations.
-          Use this information to understand capabilities and dependency relationships.
-          Generate scenarios only for endpoints listed in "Included in Test Plan".
-          Other operations may be referenced as dependencies only.
-
-          You may write multiple scenarios for a single included endpoint.
-          Focus on business-logic-oriented E2E flows rather than trivial CRUD.
-
-          \`\`\`json
-          ${JSON.stringify({
-            operations: props.document.operations,
-          })}
-          \`\`\`
-
           ## Included in Test Plan
 
           Below are the endpoints that have been included in the test plan.
@@ -96,10 +83,11 @@ export const transformTestScenarioHistories = (props: {
           \`\`\`json
           ${JSON.stringify(
             props.include.map((el) => ({
-              ...el,
+              method: el.method,
+              path: el.path,
               prerequisites: getPrerequisites({
-                document: props.document,
                 endpoint: el,
+                document,
               }),
               authorizationActors: Array.from(
                 authorizationActors.values(),

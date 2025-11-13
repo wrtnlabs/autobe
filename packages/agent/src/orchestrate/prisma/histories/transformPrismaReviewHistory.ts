@@ -23,7 +23,7 @@ export const transformPrismaReviewHistory = (props: {
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_REVIEW,
     },
-    ...props.preliminary.createHistories(),
+    ...props.preliminary.getHistories(),
     {
       id: v7(),
       created_at: new Date().toISOString(),

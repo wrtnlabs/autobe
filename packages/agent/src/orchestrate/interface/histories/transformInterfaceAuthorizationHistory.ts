@@ -22,7 +22,7 @@ export const transformInterfaceAuthorizationHistory = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
       },
-      ...props.preliminary.createHistories(),
+      ...props.preliminary.getHistories(),
       {
         type: "systemMessage",
         id: v7(),

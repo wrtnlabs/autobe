@@ -1,11 +1,18 @@
+import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBeTestScenarioApplication } from "./IAutoBeTestScenarioApplication";
 
 export interface IAutoBeTestScenarioReviewApplication {
-  review: (props: IAutoBeTestScenarioReviewApplication.IProps) => void;
+  process(props: IAutoBeTestScenarioReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeTestScenarioReviewApplication {
   export interface IProps {
+    request: IComplete | IAutoBePreliminaryGetInterfaceOperations;
+  }
+
+  export interface IComplete {
+    type: "complete";
+
     /**
      * Concise review summary focusing on critical findings and key
      * improvements.

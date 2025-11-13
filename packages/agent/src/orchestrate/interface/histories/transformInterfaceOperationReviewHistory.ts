@@ -18,7 +18,7 @@ export function transformInterfaceOperationReviewHistory(props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
-      ...props.preliminary.createHistories(),
+      ...props.preliminary.getHistories(),
       {
         type: "systemMessage",
         id: v7(),

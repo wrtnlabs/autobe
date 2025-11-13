@@ -29,7 +29,7 @@ export const transformInterfaceSchemaHistory = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
       },
-      ...props.preliminary.createHistories(),
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),

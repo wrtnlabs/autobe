@@ -46,7 +46,7 @@ export const transformInterfacePrerequisiteHistory = (props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_PREREQUISITE,
       },
-      ...props.preliminary.createHistories(),
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),

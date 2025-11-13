@@ -5,6 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { IAutoBeTestScenarioApplication } from "../structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
@@ -12,6 +13,7 @@ export function transformTestScenarioReviewHistories(props: {
   state: AutoBeState;
   instruction: string;
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+  preliminary: AutoBePreliminaryController<"interfaceOperations">;
 }): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument | undefined =
     props.state.interface?.document;
@@ -20,7 +22,6 @@ export function transformTestScenarioReviewHistories(props: {
       "Cannot review test scenarios because there are no operations.",
     );
   }
-
   return {
     histories: [
       {
@@ -35,6 +36,7 @@ export function transformTestScenarioReviewHistories(props: {
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.TEST_SCENARIO_REVIEW,
       },
+      ...props.preliminary.getHistories(),
       {
         id: v7(),
         created_at: new Date().toISOString(),
@@ -57,15 +59,6 @@ export function transformTestScenarioReviewHistories(props: {
           follow them precisely even if you believe you have better alternatives.
 
           ${props.instruction}
-
-          ## Available API Operations for Reference
-
-          Below are all available API operations and interface schemas for validation purposes.
-          Match each operation with its corresponding schema.
-
-          \`\`\`json
-          ${JSON.stringify({ operations: document.operations })}
-          \`\`\`
 
           ## Test Scenario Groups to Review
 

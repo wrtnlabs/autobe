@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -11,7 +12,7 @@ import {
   StringUtil,
 } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { HashMap, IPointer, Pair } from "tstl";
+import { HashMap, HashSet, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
@@ -21,16 +22,18 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioAuthorizationActor } from "./structures/IAutoBeTestScenarioAuthorizationActor";
+import { getPrerequisites } from "./utils/getPrerequisites";
 
-export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
+export const orchestrateTestScenario = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   instruction: string,
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
-): Promise<AutoBeTestScenario[]> {
+): Promise<AutoBeTestScenario[]> => {
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
   if (document === undefined) {
@@ -88,7 +91,6 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
           ...(await divideAndConquer(ctx, {
             dict,
             endpointNotFound,
-            document,
             include,
             exclude: exclude.map((x) => x.endpoint),
             progress,
@@ -124,14 +126,13 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       } satisfies AutoBeTestScenario;
     });
   });
-}
+};
 
 const divideAndConquer = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     endpointNotFound: string;
-    document: AutoBeOpenApi.IDocument;
     include: AutoBeOpenApi.IOperation[];
     exclude: AutoBeOpenApi.IEndpoint[];
     progress: AutoBeProgressEventBase;
@@ -140,20 +141,73 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
-  const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
-    value: [],
-  };
+  try {
+    return await process(ctx, props);
+  } catch {
+    return [];
+  }
+};
+
+const process = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+    endpointNotFound: string;
+    include: AutoBeOpenApi.IOperation[];
+    exclude: AutoBeOpenApi.IEndpoint[];
+    progress: AutoBeProgressEventBase;
+    reviewProgress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
+): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
-
-  try {
-    const { metric, tokenUsage } = await ctx.conversate({
-      source: "testScenario",
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document!;
+  const preliminary: AutoBePreliminaryController<"interfaceOperations"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBeTestScenarioApplication>(),
+      source: SOURCE,
+      kinds: ["interfaceOperations"],
+      state: ctx.state(),
+      local: {
+        interfaceOperations: (() => {
+          const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+            AutoBeOpenApiEndpointComparator.hashCode,
+            AutoBeOpenApiEndpointComparator.equals,
+          );
+          for (const op of props.include) {
+            unique.insert({ method: op.method, path: op.path });
+            for (const pr of getPrerequisites({
+              document,
+              endpoint: op,
+            }))
+              unique.insert(pr.endpoint);
+          }
+          return unique
+            .toJSON()
+            .map((endpoint) =>
+              document.operations.find(
+                (op) =>
+                  op.method === endpoint.method && op.path === endpoint.path,
+              ),
+            )
+            .filter((op) => op !== undefined);
+        })(),
+      },
+    });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
+      value: [],
+    };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: SOURCE,
       controller: createController({
         model: ctx.model,
         endpointNotFound: props.endpointNotFound,
         dict: props.dict,
         authorizations,
+        preliminary,
         build: (next) => {
           next.scenarioGroups.forEach((sg) =>
             sg.scenarios.forEach((s) => {
@@ -168,58 +222,61 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       promptCacheKey: props.promptCacheKey,
       ...transformTestScenarioHistories({
         state: ctx.state(),
-        document: props.document,
         include: props.include,
         exclude: props.exclude,
         instruction: props.instruction,
+        preliminary,
       }),
     });
-    if (pointer.value.length === 0) return [];
-
-    props.progress.total = Math.max(
-      props.progress.total,
-      (props.progress.completed += pointer.value.length),
-    );
-    ctx.dispatch({
-      type: "testScenario",
-      id: v7(),
-      metric,
-      tokenUsage,
-      scenarios: pointer.value
-        .map((v) =>
-          v.scenarios.map(
-            (s) =>
-              ({
-                endpoint: v.endpoint,
-                draft: s.draft,
-                functionName: s.functionName,
-                dependencies: s.dependencies,
-              }) satisfies AutoBeTestScenario,
-          ),
-        )
-        .flat(),
-      completed: props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().interface?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
-    return await orchestrateTestScenarioReview(ctx, {
-      instruction: props.instruction,
-      groups: pointer.value,
-      progress: props.reviewProgress,
-    });
-  } catch {
-    return [];
-  }
+    if (pointer.value !== null) {
+      if (pointer.value.length === 0) return out(result)([]);
+      props.progress.total = Math.max(
+        props.progress.total,
+        (props.progress.completed += pointer.value.length),
+      );
+      ctx.dispatch({
+        type: SOURCE,
+        id: v7(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        scenarios: pointer.value
+          .map((v) =>
+            v.scenarios.map(
+              (s) =>
+                ({
+                  endpoint: v.endpoint,
+                  draft: s.draft,
+                  functionName: s.functionName,
+                  dependencies: s.dependencies,
+                }) satisfies AutoBeTestScenario,
+            ),
+          )
+          .flat(),
+        completed: props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().interface?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+      return out(result)(
+        await orchestrateTestScenarioReview(ctx, {
+          instruction: props.instruction,
+          groups: pointer.value,
+          progress: props.reviewProgress,
+        }),
+      );
+    }
+    return out(result)(null);
+  });
 };
 
-function createController<Model extends ILlmSchema.Model>(props: {
+const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
-  build: (next: IAutoBeTestScenarioApplication.IProps) => void;
-}): IAgenticaController.IClass<Model> {
+  build: (next: IAutoBeTestScenarioApplication.IComplete) => void;
+  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+}): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 
   const validate = (
@@ -228,10 +285,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      });
 
     // merge to unique scenario groups
     const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
-      uniqueScenarioGroups(result.data.scenarioGroups);
+      uniqueScenarioGroups(result.data.request.scenarioGroups);
 
     // validate endpoints
     const errors: IValidation.IError[] = [];
@@ -239,7 +300,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       if (props.dict.has(group.endpoint) === false)
         errors.push({
           value: group.endpoint,
-          path: `$input.scenarioGroups[${i}].endpoint`,
+          path: `$input.request.scenarioGroups[${i}].endpoint`,
           expected: "AutoBeOpenApi.IEndpoint",
           description: props.endpointNotFound,
         });
@@ -248,7 +309,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
           if (props.dict.has(dep.endpoint) === false)
             errors.push({
               value: dep.endpoint,
-              path: `$input.scenarioGroups[${i}].scenarios[${j}].dependencies[${k}].endpoint`,
+              path: `$input.request.scenarioGroups[${i}].scenarios[${j}].dependencies[${k}].endpoint`,
               expected: "AutoBeOpenApi.IEndpoint",
               description: props.endpointNotFound,
             });
@@ -375,17 +436,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
       });
     });
     return errors.length === 0
-      ? {
-          success: true,
-          data: {
-            scenarioGroups,
-          },
-        }
+      ? result
       : {
           success: false,
-          data: {
-            scenarioGroups,
-          },
+          data: result.data,
           errors,
         };
   };
@@ -400,15 +454,15 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Make test plans",
+    name: SOURCE,
     application,
     execute: {
-      makeScenario: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeTestScenarioApplication,
   };
-}
+};
 
 const uniqueScenarioGroups = (
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
@@ -425,19 +479,19 @@ const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioApplication, "chatgpt">({
       validate: {
-        makeScenario: validate,
+        process: validate,
       },
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioApplication, "claude">({
       validate: {
-        makeScenario: validate,
+        process: validate,
       },
     }),
   gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeTestScenarioApplication, "gemini">({
       validate: {
-        makeScenario: validate,
+        process: validate,
       },
     }),
 };
@@ -445,3 +499,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeTestScenarioApplication.IProps>;
+
+const SOURCE = "testScenario" satisfies AutoBeEventSource;

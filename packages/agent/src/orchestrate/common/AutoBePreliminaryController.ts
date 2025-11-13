@@ -91,7 +91,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return validatePreliminary(this, input);
   }
 
-  public createHistories(): IMicroAgenticaHistoryJson[] {
+  public getHistories(): IMicroAgenticaHistoryJson[] {
     return transformPreliminaryHistory(this);
   }
 

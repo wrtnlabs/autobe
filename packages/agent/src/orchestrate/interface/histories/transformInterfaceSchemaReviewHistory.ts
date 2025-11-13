@@ -27,7 +27,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         created_at: new Date().toISOString(),
         text: props.systemPrompt,
       },
-      ...props.preliminary.createHistories(),
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),

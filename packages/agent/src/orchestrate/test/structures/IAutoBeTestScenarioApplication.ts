@@ -1,18 +1,24 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
+
 export interface IAutoBeTestScenarioApplication {
   /**
    * Make test scenarios for the given endpoints.
    *
    * @param props Properties containing the endpoints and test scenarios.
    */
-  makeScenario(props: IAutoBeTestScenarioApplication.IProps): void;
+  process(props: IAutoBeTestScenarioApplication.IProps): void;
 }
 
 export namespace IAutoBeTestScenarioApplication {
   export interface IProps {
-    /** Array of test scenario groups. */
+    request: IComplete | IAutoBePreliminaryGetInterfaceOperations;
+  }
+
+  export interface IComplete {
+    type: "complete";
     scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
   }
 
