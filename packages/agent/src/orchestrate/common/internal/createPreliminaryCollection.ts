@@ -7,10 +7,12 @@ export function createPreliminaryCollection(
 ): IAutoBePreliminaryCollection {
   if (state === null)
     return {
-      analysisFiles: defined?.analysisFiles ?? [],
-      prismaSchemas: defined?.prismaSchemas ?? [],
-      interfaceOperations: defined?.interfaceOperations ?? [],
-      interfaceSchemas: defined?.interfaceSchemas ?? {},
+      analysisFiles: (defined?.analysisFiles ?? []).slice(),
+      prismaSchemas: (defined?.prismaSchemas ?? []).slice(),
+      interfaceOperations: (defined?.interfaceOperations ?? []).slice(),
+      interfaceSchemas: Object.fromEntries(
+        Object.entries(defined?.interfaceSchemas ?? {}),
+      ),
     };
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],

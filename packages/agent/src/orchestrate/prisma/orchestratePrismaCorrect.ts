@@ -121,6 +121,21 @@ async function execute<Model extends ILlmSchema.Model>(
     source: "prismaCorrect",
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
+    all: {
+      prismaSchemas: failure.data.files.map((f) => f.models).flat(),
+    },
+    local: {
+      prismaSchemas: Array.from(
+        new Set(failure.errors.map((e) => e.table).filter((t) => t !== null)),
+      )
+        .map((table: string): AutoBePrisma.IModel | undefined =>
+          failure.data.files
+            .map((f) => f.models)
+            .flat()
+            .find((m) => m.name === table),
+        )
+        .filter((m) => m !== undefined),
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaCorrectApplication.IComplete | null> =

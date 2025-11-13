@@ -16,7 +16,6 @@ import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReview
 export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
-  schemas: Record<string, string>,
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
   const progress: AutoBeProgressEventBase = {
@@ -29,7 +28,6 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
         try {
           return await step(ctx, {
             application,
-            schemas,
             component,
             progress,
             promptCacheKey,
@@ -47,7 +45,6 @@ async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     application: AutoBePrisma.IApplication;
-    schemas: Record<string, string>;
     component: AutoBePrisma.IComponent;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
@@ -61,6 +58,21 @@ async function step<Model extends ILlmSchema.Model>(
     source: "prismaReview",
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
+    all: {
+      prismaSchemas: props.application.files.map((f) => f.models).flat(),
+    },
+    local: {
+      prismaSchemas: ((): AutoBePrisma.IModel[] => {
+        const file: AutoBePrisma.IFile | undefined =
+          props.application.files.find(
+            (f) => f.filename === props.component.filename,
+          );
+        if (file === undefined) return [];
+        return props.component.tables
+          .map((table) => file.models.find((m) => m.name === table))
+          .filter((m) => m !== undefined);
+      })(),
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaReviewApplication.IComplete | null> = {

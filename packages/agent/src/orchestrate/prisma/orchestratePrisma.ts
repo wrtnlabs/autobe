@@ -9,6 +9,7 @@ import {
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
+import { writePrismaApplication } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -60,15 +61,9 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   };
 
   // REVIEW
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  const reviewSchemas: Record<string, string> = await compiler.prisma.write(
-    application,
-    "postgres",
-  );
   const reviewEvents: AutoBePrismaReviewEvent[] = await orchestratePrismaReview(
     ctx,
     application,
-    reviewSchemas,
     componentEvent.components,
   );
   for (const event of reviewEvents) {
@@ -90,12 +85,13 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     ctx,
     application,
   );
-  const finalSchemas: Record<string, string> = await compiler.prisma.write(
-    result.data,
-    "postgres",
-  );
+  const finalSchemas: Record<string, string> = writePrismaApplication({
+    dbms: "postgres",
+    application: result.data,
+  });
 
   // PROPAGATE
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   return ctx.dispatch({
     type: "prismaComplete",
     id: v7(),
