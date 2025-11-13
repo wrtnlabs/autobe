@@ -5,14 +5,15 @@ import {
   IAutoBeCompiler,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
 
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
@@ -102,6 +103,7 @@ async function process<Model extends ILlmSchema.Model>(
     else failure = result;
   }
   return {
+    type: "complete",
     planning: plannings.join("\n\n"),
     models: Object.values(models),
     correction,
@@ -112,74 +114,69 @@ async function execute<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   failure: IAutoBePrismaValidation.IFailure,
 ): Promise<IExecutionResult> {
-  // PREPARE AGENTICA
-  const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
+  const preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "prismaSchemas"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBePrismaCorrectApplication>(),
     source: "prismaCorrect",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    ...transformPrismaCorrectHistories(failure),
+    kinds: ["analysisFiles", "prismaSchemas"],
+    state: ctx.state(),
   });
-  if (pointer.value === null)
-    throw new Error(
-      "Unreachable error: PrismaCompilerAgent.pointer.value is null",
-    );
-  const correction: AutoBePrisma.IApplication = {
-    files: failure.data.files.map((file) => ({
-      filename: file.filename,
-      namespace: file.namespace,
-      models: file.models.map((model) => {
-        const newbie = pointer.value?.models.find((m) => m.name === model.name);
-        return newbie ?? model;
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBePrismaCorrectApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "prismaCorrect",
+      controller: createController({
+        preliminary,
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
       }),
-    })),
-  };
-  ctx.dispatch({
-    type: "prismaCorrect",
-    id: v7(),
-    failure,
-    planning: pointer.value.planning,
-    correction: correction,
-    metric,
-    tokenUsage,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  } satisfies AutoBePrismaCorrectEvent);
-  return {
-    ...pointer.value,
-    correction,
-  };
+      enforceFunctionCall: true,
+      ...transformPrismaCorrectHistory({
+        preliminary,
+        result: failure,
+      }),
+    });
+    if (pointer.value !== null) {
+      const correction: AutoBePrisma.IApplication = {
+        files: failure.data.files.map((file) => ({
+          filename: file.filename,
+          namespace: file.namespace,
+          models: file.models.map((model) => {
+            const newbie = pointer.value?.models.find(
+              (m) => m.name === model.name,
+            );
+            return newbie ?? model;
+          }),
+        })),
+      };
+      ctx.dispatch({
+        type: "prismaCorrect",
+        id: v7(),
+        failure,
+        planning: pointer.value.planning,
+        correction: correction,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBePrismaCorrectEvent);
+      return out(result)({
+        ...pointer.value,
+        correction,
+      });
+    }
+    return out(result)(null);
+  });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  build: (next: IAutoBePrismaCorrectApplication.IProps) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  return {
-    protocol: "class",
-    name: "Prisma Compiler",
-    application,
-    execute: {
-      correctPrismaSchemaFiles: (next) => {
-        props.build(next);
-      },
-    } satisfies IAutoBePrismaCorrectApplication,
-  };
+interface IExecutionResult extends IAutoBePrismaCorrectApplication.IComplete {
+  correction: AutoBePrisma.IApplication;
 }
 
 const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
@@ -189,12 +186,63 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
   return unique.size;
 };
 
+function createController<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+  const validate: Validator = (input) => {
+    const result =
+      typia.validate<IAutoBePrismaCorrectApplication.IProps>(input);
+    if (result.success === false || result.data.request.type === "complete")
+      return result;
+    return props.preliminary.validate({
+      request: result.data.request,
+    });
+  };
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "Prisma Compiler",
+    application,
+    execute: {
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
+      },
+    } satisfies IAutoBePrismaCorrectApplication,
+  };
+}
+
 const collection = {
-  chatgpt: typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">(),
-  claude: typia.llm.application<IAutoBePrismaCorrectApplication, "claude">(),
-  gemini: typia.llm.application<IAutoBePrismaCorrectApplication, "gemini">(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">({
+      validate: {
+        process: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBePrismaCorrectApplication, "claude">({
+      validate: {
+        process: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBePrismaCorrectApplication, "gemini">({
+      validate: {
+        process: validate,
+      },
+    }),
 };
 
-interface IExecutionResult extends IAutoBePrismaCorrectApplication.IProps {
-  correction: AutoBePrisma.IApplication;
-}
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBePrismaCorrectApplication.IProps>;

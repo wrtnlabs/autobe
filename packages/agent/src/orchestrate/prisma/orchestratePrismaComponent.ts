@@ -7,7 +7,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaComponentsHistories } from "./histories/transformPrismaComponentsHistories";
+import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
 
 export async function orchestratePrismaComponents<
@@ -30,7 +30,7 @@ export async function orchestratePrismaComponents<
       },
     }),
     enforceFunctionCall: true,
-    ...transformPrismaComponentsHistories(ctx.state(), {
+    ...transformPrismaComponentsHistory(ctx.state(), {
       instruction,
       prefix,
     }),

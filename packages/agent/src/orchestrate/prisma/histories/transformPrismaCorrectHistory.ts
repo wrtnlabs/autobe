@@ -4,10 +4,12 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformPrismaCorrectHistories = (
-  result: IAutoBePrismaValidation.IFailure,
-): IAutoBeOrchestrateHistory => ({
+export const transformPrismaCorrectHistory = (props: {
+  result: IAutoBePrismaValidation.IFailure;
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+}): IAutoBeOrchestrateHistory => ({
   histories: [
     {
       id: v7(),
@@ -15,18 +17,7 @@ export const transformPrismaCorrectHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_CORRECT,
     },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        Here is the Prisma application data what you made:
-        
-        \`\`\`json
-        ${JSON.stringify(result.data)}
-        \`\`\`
-      `,
-    },
+    ...props.preliminary.createHistories(),
     {
       id: v7(),
       created_at: new Date().toISOString(),
@@ -35,7 +26,7 @@ export const transformPrismaCorrectHistories = (
         Below are the list of errors what you have to fix:
         
         \`\`\`json
-        ${JSON.stringify(result.errors)}
+        ${JSON.stringify(props.result.errors)}
         \`\`\`
       `,
     },

@@ -129,7 +129,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         request: result.data.request,
-      }) as any;
+      });
     // remove login operation for guest role
     else if (props.actor.kind === "guest") {
       result.data.request.operations = result.data.request.operations.filter(

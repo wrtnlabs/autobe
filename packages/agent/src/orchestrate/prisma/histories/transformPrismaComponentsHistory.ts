@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformPrismaComponentsHistories = (
+export const transformPrismaComponentsHistory = (
   state: AutoBeState,
   props: {
     prefix: string | null;

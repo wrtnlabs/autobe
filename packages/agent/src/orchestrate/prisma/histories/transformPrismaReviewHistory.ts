@@ -4,11 +4,10 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformPrismaReviewHistories = (props: {
-  analysis: Record<string, string>;
-  application: AutoBePrisma.IApplication;
-  schemas: Record<string, string>;
+export const transformPrismaReviewHistory = (props: {
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
   component: AutoBePrisma.IComponent;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
@@ -24,32 +23,7 @@ export const transformPrismaReviewHistories = (props: {
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_REVIEW,
     },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        Here is the requirement analysis report given by the user:
-        
-        \`\`\`json
-        ${JSON.stringify(props.analysis)}
-        \`\`\`
-        
-        Reading the requirement analysis report, you AI made 
-        below AST definition for the database design:
-        
-        \`\`\`json
-        ${JSON.stringify(props.application)}
-        \`\`\`
-        
-        And here are the Prisma schema files generated (compiled) 
-        from the above AST:
-        
-        \`\`\`json
-        ${JSON.stringify(props.schemas)}
-        \`\`\`
-      `,
-    },
+    ...props.preliminary.createHistories(),
     {
       id: v7(),
       created_at: new Date().toISOString(),

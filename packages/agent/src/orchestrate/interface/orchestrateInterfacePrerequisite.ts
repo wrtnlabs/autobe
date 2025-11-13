@@ -210,7 +210,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         request: result.data.request,
-      }) as any;
+      });
 
     const operations: AutoBeInterfacePrerequisite[] =
       result.data.request.operations;

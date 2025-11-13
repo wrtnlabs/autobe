@@ -84,7 +84,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       return result;
     return props.preliminary.validate({
       request: result.data.request,
-    }) as any;
+    });
   };
 
   const application: ILlmApplication<Model> = collection[

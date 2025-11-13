@@ -10,7 +10,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformPrismaSchemaHistories } from "./histories/transformPrismaSchemaHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
@@ -56,60 +57,71 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBePrismaSchemaEvent> {
-  const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "prismaSchema",
-    controller: createController(ctx, {
-      targetComponent: props.component,
-      otherTables: props.otherTables,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    ...transformPrismaSchemaHistories({
-      analysis:
-        ctx
-          .state()
-          .analyze?.files.map((file) => ({ [file.filename]: file.content }))
-          .reduce((acc, cur) => {
-            return Object.assign(acc, cur);
-          }, {}) ?? {},
-      targetComponent: props.component,
-      otherTables: props.otherTables,
-      instruction: props.instruction,
-    }),
+  const preliminary: AutoBePreliminaryController<"analysisFiles"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBePrismaSchemaApplication>(),
+      source: "prismaSchema",
+      kinds: ["analysisFiles"],
+      state: ctx.state(),
+    });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBePrismaSchemaApplication.IComplete | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "prismaSchema",
+      controller: createController(ctx, {
+        preliminary,
+        targetComponent: props.component,
+        otherTables: props.otherTables,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformPrismaSchemaHistory({
+        analysis:
+          ctx
+            .state()
+            .analyze?.files.map((file) => ({ [file.filename]: file.content }))
+            .reduce((acc, cur) => {
+              return Object.assign(acc, cur);
+            }, {}) ?? {},
+        targetComponent: props.component,
+        otherTables: props.otherTables,
+        instruction: props.instruction,
+      }),
+    });
+    if (pointer.value !== null)
+      return out(result)({
+        type: "prismaSchema",
+        id: v7(),
+        created_at: props.start.toISOString(),
+        plan: pointer.value.plan,
+        models: pointer.value.models,
+        file: {
+          filename: props.component.filename,
+          namespace: props.component.namespace,
+          models: pointer.value.models,
+        },
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: (props.completed.value += props.component.tables.length),
+        total: props.total,
+        step: ctx.state().analyze?.step ?? 0,
+      } satisfies AutoBePrismaSchemaEvent);
+    return out(result)(null);
   });
-  if (pointer.value === null)
-    throw new Error("Unreachable code: Prisma Schema not generated");
-  return {
-    type: "prismaSchema",
-    id: v7(),
-    created_at: props.start.toISOString(),
-    plan: pointer.value.plan,
-    models: pointer.value.models,
-    file: {
-      filename: props.component.filename,
-      namespace: props.component.namespace,
-      models: pointer.value.models,
-    },
-    metric,
-    tokenUsage,
-    completed: (props.completed.value += props.component.tables.length),
-    total: props.total,
-    step: ctx.state().analyze?.step ?? 0,
-  } satisfies AutoBePrismaSchemaEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    preliminary: AutoBePreliminaryController<"analysisFiles">;
     targetComponent: AutoBePrisma.IComponent;
     otherTables: string[];
-    build: (next: IAutoBePrismaSchemaApplication.IProps) => void;
+    build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
   },
 ): IAgenticaController.IClass<Model> {
   assertSchemaModel(ctx.model);
@@ -120,8 +132,12 @@ function createController<Model extends ILlmSchema.Model>(
     const result: IValidation<IAutoBePrismaSchemaApplication.IProps> =
       typia.validate<IAutoBePrismaSchemaApplication.IProps>(input);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        request: result.data.request,
+      });
 
-    const actual: AutoBePrisma.IModel[] = result.data.models;
+    const actual: AutoBePrisma.IModel[] = result.data.request.models;
     const expected: string[] = props.targetComponent.tables;
     const missed: string[] = expected.filter(
       (x) => actual.some((a) => a.name === x) === false,
@@ -141,8 +157,8 @@ function createController<Model extends ILlmSchema.Model>(
       data: result.data,
       errors: [
         {
-          path: "$input.models",
-          value: result.data.models,
+          path: "$input.request.models",
+          value: result.data.request.models,
           expected: `Array<AutoBePrisma.IModel>`,
           description: StringUtil.trim`
             You missed some tables from the current domain's component.
@@ -178,8 +194,8 @@ function createController<Model extends ILlmSchema.Model>(
     name: "Prisma Generator",
     application,
     execute: {
-      makePrismaSchemaFile: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBePrismaSchemaApplication,
   };
@@ -189,13 +205,13 @@ const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBePrismaSchemaApplication, "chatgpt">({
       validate: {
-        makePrismaSchemaFile: validate,
+        process: validate,
       },
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBePrismaSchemaApplication, "claude">({
       validate: {
-        makePrismaSchemaFile: validate,
+        process: validate,
       },
     }),
 };

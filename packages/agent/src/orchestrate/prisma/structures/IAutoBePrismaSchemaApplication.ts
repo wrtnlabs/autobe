@@ -1,100 +1,106 @@
 import { AutoBePrisma } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+
 export interface IAutoBePrismaSchemaApplication {
   /**
-   * Generates comprehensive Prisma schema files based on detailed requirements
-   * analysis.
+   * Process schema generation task or preliminary data requests.
    *
-   * Creates multiple organized schema files following enterprise patterns
-   * including proper domain separation, relationship modeling, snapshot
-   * patterns, inheritance, materialized views, and comprehensive documentation.
-   * The generated schemas implement best practices for scalability,
-   * maintainability, and data integrity.
+   * Generates Prisma models for the target component following normalization
+   * principles and database design best practices.
    *
-   * @param props Properties containing the file
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  makePrismaSchemaFile(props: IAutoBePrismaSchemaApplication.IProps): void;
+  process(props: IAutoBePrismaSchemaApplication.IProps): void;
 }
 export namespace IAutoBePrismaSchemaApplication {
   export interface IProps {
     /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles) or final schema generation (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles;
+  }
+
+  /**
+   * Request to generate Prisma schema models.
+   *
+   * Executes schema generation to create production-ready database models
+   * following normalization principles, relationship patterns, and indexing
+   * strategies.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
+    /**
      * Strategic database design analysis and planning.
      *
-     * AI analyzes the target component and business requirements to formulate a
-     * comprehensive database design strategy. This planning phase is crucial
-     * for creating well-structured, normalized schemas that align with business
-     * objectives. The AI must define table structures, relationships, indexing
-     * strategies, and data integrity constraints before proceeding to schema
+     * Contains the database architecture strategy including table structures,
+     * relationships, normalization approach, indexing strategies, and business
+     * requirement mapping. This planning phase defines the blueprint for schema
      * implementation.
      *
-     * **Key Considerations:**
+     * Key planning aspects:
      *
-     * - **Assignment Validation**: Extract targetComponent.tables as the complete
+     * - Assignment validation: Extract targetComponent.tables as complete
      *   specification
-     * - **Table Count**: Must create exactly targetComponent.tables.length models
-     * - **Other Components**: Identify already-created tables for foreign key
-     *   references only
-     * - **Normalization**: Strict adherence to 1NF, 2NF, 3NF principles
-     * - **Snapshot Architecture**: Design for historical data preservation and
-     *   audit trails
-     * - **Junction Tables**: Plan M:N relationships with proper naming
+     * - Table count: Must create exactly targetComponent.tables.length models
+     * - Component references: Identify existing tables for foreign key
+     *   relationships
+     * - Normalization: Strict adherence to 1NF, 2NF, 3NF principles
+     * - Snapshot architecture: Design for historical data preservation
+     * - Junction tables: Plan M:N relationships with proper naming
      *   ({table1}_{table2})
-     * - **Materialized Views**: Identify needs for mv_ prefixed denormalized
-     *   tables
-     *
-     * Workflow: Component analysis → Strategic planning → Design rationale
+     * - Materialized views: Identify needs for mv_ prefixed denormalized tables
      */
     plan: string;
 
     /**
-     * Production-ready Prisma schema models generated based on the strategic
-     * plan.
+     * Production-ready Prisma schema models.
      *
-     * Contains a structured Abstract Syntax Tree (AST) representation of all
-     * database tables for the target component. Each model implements the
-     * planned table structure, relationships, indexes, and constraints using
-     * the AutoBePrisma.IModel interface. These models are designed to be
-     * production-ready from the initial generation, following all best
-     * practices and normalization principles.
+     * Complete AST representation of all database tables for the target
+     * component. Each model implements the planned structure, relationships,
+     * indexes, and constraints following best practices.
      *
-     * **Implementation Requirements:**
+     * Implementation requirements:
      *
-     * - **Model Count**: Exactly matches targetComponent.tables.length (plus any
-     *   junction tables)
-     * - **Table Names**: EXACT names from targetComponent.tables - no
-     *   modifications allowed
-     * - **Primary Keys**: Always UUID type with field name "id"
-     * - **Foreign Keys**: Proper IRelation configurations for all relationships
-     * - **Business Fields**: Only raw data fields - no calculated or derived
-     *   values
-     * - **Data Types**: Limited to: uuid, string, int, double, datetime, boolean,
-     *   uri
-     * - **Relationships**: Correct patterns for 1:1, 1:N, and M:N relationships
-     * - **Indexes**:
+     * - Model count: Exactly matches targetComponent.tables.length (plus junction
+     *   tables)
+     * - Table names: EXACT names from targetComponent.tables - no modifications
+     * - Primary keys: Always UUID type with field name "id"
+     * - Foreign keys: Proper IRelation configurations for all relationships
+     * - Business fields: Only raw data fields - no calculated or derived values
+     * - Data types: Limited to uuid, string, int, double, datetime, boolean, uri
+     * - Relationships: Correct patterns for 1:1, 1:N, and M:N
+     * - Indexes:
      *
      *   - UniqueIndexes: Business constraints and composite unique keys
-     *   - PlainIndexes: Multi-column query optimization (never single FK indexes)
+     *   - PlainIndexes: Multi-column query optimization (never single FK)
      *   - GinIndexes: Full-text search on appropriate string fields
-     * - **Materialized Views**: Tables prefixed with "mv_" have material flag set
-     *   to true
-     * - **Documentation**: Comprehensive English descriptions with business
-     *   context
+     * - Materialized views: Tables prefixed with "mv_" have material flag set
+     * - Documentation: Comprehensive English descriptions with business context
      *
-     * **Quality Standards:**
+     * Quality standards:
      *
-     * - **Normalization**: Strict adherence to 3NF (Third Normal Form)
-     * - **No Denormalization**: Except in materialized views (mv_ tables)
-     * - **Referential Integrity**: All foreign keys reference valid existing
-     *   tables
-     * - **Temporal Fields**: Consistent created_at, updated_at, deleted_at
-     *   patterns
-     * - **Snapshot Support**: Proper historical data preservation where needed
-     * - **Performance Ready**: Optimized index strategy for expected query
-     *   patterns
-     *
-     * The generated models will undergo review by a separate specialized agent
-     * to ensure compliance with all requirements and best practices.
+     * - Strict adherence to 3NF (Third Normal Form)
+     * - No denormalization except in materialized views (mv_ tables)
+     * - All foreign keys reference valid existing tables
+     * - Consistent created_at, updated_at, deleted_at patterns
+     * - Proper historical data preservation where needed
+     * - Optimized index strategy for expected query patterns
      */
     models: AutoBePrisma.IModel[] & tags.MinItems<1>;
   }

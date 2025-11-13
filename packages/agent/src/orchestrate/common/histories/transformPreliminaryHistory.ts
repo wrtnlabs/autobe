@@ -10,7 +10,11 @@ import {
   AutoBePrisma,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
-import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  StringUtil,
+  writePrismaApplication,
+} from "@autobe/utils";
 import { HashSet } from "tstl";
 import { v7 } from "uuid";
 
@@ -54,7 +58,7 @@ namespace Transformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
-        content: oldbie,
+        content: toJsonBlock(oldbie),
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
@@ -98,7 +102,28 @@ namespace Transformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
-        content: oldbie,
+        content: StringUtil.trim`
+          ## Prisma AST Data
+          
+          ${toJsonBlock(oldbie)}
+
+          ## Prisma Schema Files
+
+          \`\`\`prisma
+          ${writePrismaApplication({
+            dbms: "postgres",
+            application: {
+              files: [
+                {
+                  filename: "all.prisma",
+                  namespace: "All",
+                  models: Object.values(oldbie),
+                },
+              ],
+            },
+          })}
+          \`\`\
+        `,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
@@ -153,7 +178,7 @@ namespace Transformer {
       createAssistantMessage({
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_LOADED,
-        content: props.local.interfaceOperations,
+        content: toJsonBlock(props.local.interfaceOperations),
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION,
@@ -192,7 +217,7 @@ namespace Transformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_LOADED,
-        content: props.local.interfaceSchemas,
+        content: toJsonBlock(props.local.interfaceSchemas),
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA,
@@ -269,18 +294,11 @@ namespace Transformer {
 
   const createAssistantMessage = (props: {
     prompt: string;
-    content: object;
+    content: string;
   }): IAgenticaHistoryJson.IAssistantMessage => ({
     id: v7(),
     type: "assistantMessage",
-    text: props.prompt.replaceAll(
-      "{{CONTENT}}",
-      StringUtil.trim`
-        \`\`\`json
-        ${JSON.stringify(props.content)}
-        \`\`\`
-      `,
-    ),
+    text: props.prompt.replaceAll("{{CONTENT}}", props.content),
     created_at: new Date().toISOString(),
   });
 
@@ -298,4 +316,11 @@ namespace Transformer {
       .replaceAll("{{EXHAUSTED}}", props.exhausted),
     created_at: new Date().toISOString(),
   });
+
+  const toJsonBlock = (obj: any): string =>
+    StringUtil.trim`
+      \`\`\`json
+      ${JSON.stringify(obj)}
+      \`\`\`
+    `;
 }

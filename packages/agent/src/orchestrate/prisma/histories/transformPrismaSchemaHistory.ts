@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformPrismaSchemaHistories = (props: {
+export const transformPrismaSchemaHistory = (props: {
   analysis: Record<string, string>;
   targetComponent: AutoBePrisma.IComponent;
   otherTables: string[];
