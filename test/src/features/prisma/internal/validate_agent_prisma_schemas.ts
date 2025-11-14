@@ -1,4 +1,4 @@
-import { orchestratePrismaSchemas } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchemas";
+import { orchestratePrismaSchema } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchema";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBePrismaComponentEvent,
@@ -44,7 +44,7 @@ export const validate_agent_prisma_schemas = async (props: {
     console.log("    - actual:", event.actual.map((m) => m.name).join(", "));
   });
 
-  const result: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchemas(
+  const result: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchema(
     agent.getContext(),
     "Design database without violation of normalization and integrity rules.",
     components.components,

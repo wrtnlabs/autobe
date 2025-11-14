@@ -130,7 +130,7 @@ function createController<Model extends ILlmSchema.Model>(
     input: unknown,
   ): IValidation<IAutoBePrismaSchemaApplication.IProps> => {
     const result: IValidation<IAutoBePrismaSchemaApplication.IProps> =
-      typia.validate<IAutoBePrismaSchemaApplication.IProps>(input);
+      defaultValidate(input);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
@@ -229,5 +229,8 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBePrismaSchemaApplication.IProps>;
+
+const defaultValidate: Validator =
+  typia.createValidate<IAutoBePrismaSchemaApplication.IProps>();
 
 const SOURCE = "prismaSchema" satisfies AutoBeEventSource;
