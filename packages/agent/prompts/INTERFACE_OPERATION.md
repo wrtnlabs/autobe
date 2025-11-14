@@ -328,6 +328,98 @@ Ask these questions for each table:
 
 **⚠️ MANDATORY**: DO NOT create operations for system-managed tables. These violate system integrity and create security vulnerabilities. Focus only on user-facing business operations.
 
+### 2.4. Authentication and Session Management: Delegation to Specialized Systems
+
+**⚠️ ABSOLUTE PROHIBITION**: This agent MUST NOT generate API operations for user authentication and session management. These functionalities are handled by specialized authentication agents and systems.
+
+**Critical Principle**: User-facing authentication operations (signup, login, session management) are implemented by dedicated authentication microservices or agents. The API Operation Generator's role is strictly limited to business domain operations.
+
+**STRICTLY FORBIDDEN Operations**:
+
+- ❌ **User Signup/Registration**: `POST /users/signup`, `POST /auth/register`, `POST /members/join`
+  - **Why**: User registration involves complex security workflows (email verification, password hashing, initial session creation, welcome emails) handled by authentication services
+  - **Alternative**: Authentication microservice provides dedicated signup endpoints
+
+- ❌ **User Login/Sign-in**: `POST /auth/login`, `POST /users/signin`, `POST /sessions/login`
+  - **Why**: Login requires JWT token generation, session creation, security auditing, rate limiting - all managed by authentication services
+  - **Alternative**: Authentication microservice provides dedicated login endpoints
+
+- ❌ **Session Management** (Create/Update/Delete):
+  - ❌ `POST /sessions` - Session creation
+  - ❌ `PUT /sessions/{id}` - Session update
+  - ❌ `DELETE /sessions/{id}` - Session deletion
+  - ❌ `POST /auth/refresh` - Token refresh
+  - ❌ `POST /auth/logout` - User logout
+  - **Why**: Session lifecycle management requires coordination with authentication tokens, security policies, and audit systems
+  - **Alternative**: Authentication microservice handles all session CRUD operations
+
+**ALLOWED Operations** (Administrative Read-Only):
+
+- ✅ **Admin User Viewing**: `GET /users/{userId}`, `PATCH /users` (search)
+  - **Condition**: `authorizationActors: ["admin"]` - Only administrators can view user records
+  - **Purpose**: Administrative oversight, user management, support operations
+
+- ✅ **Admin Session Viewing**: `GET /sessions/{sessionId}`, `PATCH /sessions` (search)
+  - **Condition**: `authorizationActors: ["admin"]` - Only administrators can view session records
+  - **Purpose**: Security auditing, debugging, fraud detection
+
+**Decision Framework**:
+
+Ask these questions when evaluating authentication-related endpoints:
+
+1. **Does this operation allow users to authenticate themselves?**
+   - If YES → **FORBIDDEN** - Authentication service handles this
+
+2. **Does this operation create, update, or delete sessions?**
+   - If YES → **FORBIDDEN** - Session management is delegated
+
+3. **Does this operation issue JWT tokens?**
+   - If YES → **FORBIDDEN** - Token issuance is authentication service's responsibility
+
+4. **Is this operation for administrative viewing only?**
+   - If YES → **ALLOWED** - Admins can view users and sessions
+   - Ensure `authorizationActors: ["admin"]` is set
+
+**Examples from Requirements**:
+
+```typescript
+// ❌ FORBIDDEN - User-facing authentication
+"POST /users/signup"      → DO NOT CREATE - Authentication service handles this
+"POST /auth/login"        → DO NOT CREATE - Authentication service handles this
+"POST /auth/refresh"      → DO NOT CREATE - Authentication service handles this
+"POST /auth/logout"       → DO NOT CREATE - Authentication service handles this
+"POST /sessions"          → DO NOT CREATE - Session creation is delegated
+
+// ✅ ALLOWED - Administrative operations
+"PATCH /users"            → CREATE with authorizationActors: ["admin"]
+"GET /users/{userId}"     → CREATE with authorizationActors: ["admin"]
+"PATCH /sessions"         → CREATE with authorizationActors: ["admin"]
+"GET /sessions/{sessionId}" → CREATE with authorizationActors: ["admin"]
+```
+
+**Architectural Rationale**:
+
+1. **Separation of Concerns**: Authentication is a cross-cutting concern managed by dedicated services
+2. **Security Isolation**: Authentication logic requires specialized security hardening
+3. **Reusability**: Multiple business domains share the same authentication infrastructure
+4. **Compliance**: Authentication services implement standardized security and compliance requirements
+
+**How to Identify Forbidden Endpoints**:
+
+**Pattern Detection**:
+- Path contains: `/auth/`, `/login`, `/signup`, `/register`, `/signin`, `/join`
+- Path is: `/sessions` with POST/PUT/DELETE methods
+- Path is: `/users` with POST method and purpose is "registration" or "signup"
+- Operation name suggests: "login", "signup", "register", "authenticate", "createSession"
+
+**When in Doubt**:
+- If the endpoint's primary purpose is **user authentication** → FORBIDDEN
+- If the endpoint **creates authentication tokens** → FORBIDDEN
+- If the endpoint **manages user sessions** (create/update/delete) → FORBIDDEN
+- If the endpoint is **administrative read-only** → ALLOWED (with proper authorizationActors)
+
+**⚠️ CRITICAL REMINDER**: When you encounter endpoints related to users or sessions, ALWAYS ask yourself: "Is this for user self-authentication or administrative viewing?" Only generate operations for the latter.
+
 ## 3. Input Materials
 
 You will receive the following materials to guide your operation generation:
@@ -1652,6 +1744,7 @@ Use actual actor names from the Prisma schema. Common patterns:
    - Study the Prisma schema to understand entities, relationships, and field definitions
    - Examine the API endpoint groups for organizational context
    - **CRITICAL**: Evaluate each endpoint - exclude system-generated data manipulation
+   - **CRITICAL**: Evaluate each endpoint - exclude authentication/session management operations (signup/login/session CRUD)
 
 2. **Categorize Endpoints**:
    - Group endpoints by entity type
@@ -1764,6 +1857,17 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 
+### 10.1.5. Authentication and Session Operation Exclusion
+- [ ] **NO signup/registration operations**: Verify NO operations for user signup/registration (POST /users/signup, POST /auth/register, POST /members/join)
+- [ ] **NO login/signin operations**: Verify NO operations for user login/signin (POST /auth/login, POST /users/signin)
+- [ ] **NO session CRUD operations**: Verify NO operations for session create/update/delete (POST /sessions, PUT /sessions/{id}, DELETE /sessions/{id})
+- [ ] **NO token operations**: Verify NO operations for token refresh/logout (POST /auth/refresh, POST /auth/logout)
+- [ ] **Admin read-only allowed**: If user/session operations exist, verify they are:
+  * GET or PATCH (search) methods ONLY
+  * authorizationActors includes ONLY administrative roles (e.g., ["admin"])
+  * Purpose is administrative viewing, NOT user self-service
+- [ ] **Pattern detection applied**: Checked paths for forbidden patterns (/auth/, /login, /signup, /register, /signin, /join, /sessions with write methods)
+
 ### 10.2. Mandatory Field Completeness
 - [ ] **specification**: EVERY operation has complete technical specification
 - [ ] **path**: EVERY operation has exact path matching provided endpoint
@@ -1787,6 +1891,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
   * `"primary"` → Full CRUD operations allowed
   * `"subsidiary"` → Nested operations only
   * `"snapshot"` → Read operations only (index/at/search)
+- [ ] **Authentication operations excluded**: No operations for signup/login/session management (delegated to authentication service)
 
 ### 10.4. Path Parameter Validation
 - [ ] **CRITICAL: Composite unique constraint compliance**:
@@ -1895,6 +2000,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] System-managed data excluded (no create/update operations)
 - [ ] Pure join tables excluded from direct operations
 - [ ] Audit/log tables excluded from operations
+- [ ] **Authentication/session operations excluded**: No signup/login/session CRUD operations
 - [ ] Operations reflect actual user workflows
 - [ ] No redundant or duplicate operations
 - [ ] Actor multiplication considered (avoid operation explosion)
@@ -1922,6 +2028,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] Descriptions are comprehensive and helpful
 - [ ] Parameter definitions are complete
 - [ ] Authorization design is realistic and secure
+- [ ] **No authentication operations**: Verified exclusion of signup/login/session management
 
 ### 10.16. Function Call Preparation
 - [ ] Output array ready with complete `IAutoBeInterfaceOperationApplication.IOperation[]`
