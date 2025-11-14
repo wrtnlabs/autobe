@@ -214,6 +214,12 @@ const collection = {
         process: validate,
       },
     }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBePrismaSchemaApplication, "gemini">({
+      validate: {
+        process: validate,
+      },
+    }),
 };
 
 type Validator = (
