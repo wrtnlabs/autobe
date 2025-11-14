@@ -263,9 +263,32 @@ You will receive the following materials to guide your scenario generation:
 
 ### 3.2. Additional Context Available via Function Calling
 
-You have function calling capabilities to fetch operation details that are DELIBERATELY NOT PROVIDED in initial context.
+You have function calling capabilities to fetch additional materials beyond the initial context.
 
-**CRITICAL: Why You Need Function Calling**
+#### 3.2.1. Request Analysis Files (`getAnalysisFiles`)
+
+**Purpose**: Retrieve requirements analysis documents to understand business rules, validation logic, and edge cases.
+
+**When to use**:
+- Need to understand business rule constraints for test scenario design
+- Want to identify edge cases mentioned in requirements
+- Need validation logic details for comprehensive test coverage
+
+**Example**:
+```typescript
+process({
+  request: {
+    type: "getAnalysisFiles",
+    filenames: ["shopping_requirements.md", "user_authentication.md"]
+  }
+})
+```
+
+#### 3.2.2. Request Interface Operations (`getInterfaceOperations`)
+
+**Purpose**: Fetch complete API operation specifications including authorizationActor and detailed metadata.
+
+**CRITICAL: Why You Need This**
 
 The initial context in "Included in Test Plan" shows:
 - ✅ Endpoint paths (method + path)
@@ -277,16 +300,11 @@ The initial context in "Included in Test Plan" shows:
 - Design correct authentication flows
 - Include proper join/login operations in dependencies
 
-**Therefore, you MUST use function calling to get operation details.**
+**Therefore, you MUST use this function to get operation details.**
 
-#### Available Functions
-
-**process() - Request Interface Operations**
-
-Retrieves complete operation details including authorizationActor and other metadata.
-
+**Example**:
 ```typescript
-// Example: Batch request for multiple operations
+// Batch request for multiple operations
 process({
   request: {
     type: "getInterfaceOperations",
@@ -328,6 +346,37 @@ Action: Call getInterfaceOperations with both endpoints
 - You MUST request operation details to get authorizationActor
 - Do NOT guess - request the information
 - Do NOT call complete without authorizationActor information
+
+#### 3.2.3. Request Interface Schemas (`getInterfaceSchemas`)
+
+**Purpose**: Get DTO schema definitions for request/response structures to understand data requirements for test scenarios.
+
+**When to use**:
+- Need to understand DTO field structures for test data generation
+- Want to know enum values or validation constraints
+- Need to understand nested object structures in request/response bodies
+
+**Example**:
+```typescript
+process({
+  request: {
+    type: "getInterfaceSchemas",
+    schemaNames: ["ArticleCreateDto", "CommentUpdateDto"]
+  }
+})
+```
+
+#### Decision Guide: Which Function to Call?
+
+**Need to understand...**
+- Business rules & validation logic → `getAnalysisFiles`
+- Authorization requirements → `getInterfaceOperations`
+- Data structures & DTO fields → `getInterfaceSchemas`
+
+**Common patterns**:
+- Most scenarios need `getInterfaceOperations` for authorizationActor
+- Complex test scenarios benefit from `getAnalysisFiles` for edge cases
+- All three can be requested in same turn (batched)
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
@@ -547,7 +596,9 @@ process({
 
 2. **Look up EACH operation's authorizationActor**:
    - Check each operation in "Included in Test Plan"
-   - **If operation details not clear**: Use `process({ request: { type: "getInterfaceOperations", endpoints: [...] } })` to fetch complete operation information
+   - **If additional context needed**: Use preliminary functions strategically:
+     * `getInterfaceOperations`: For authorization actors and operation specifications
+     * `getAnalysisFiles`: For business rules that affect authentication requirements
    - Build authorization requirements table
 ```
 Operation                    | authorizationActor | Auth Needed?

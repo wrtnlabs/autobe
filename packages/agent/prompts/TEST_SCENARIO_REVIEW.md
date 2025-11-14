@@ -161,20 +161,39 @@ You will receive:
 
 ### 4.2. Additional Context Available via Function Calling
 
-You have function calling capabilities to fetch additional operation details if needed.
+You have function calling capabilities to fetch additional materials for comprehensive review.
 
-**Function Calling for Additional Context**
+#### 4.2.1. Request Analysis Files (`getAnalysisFiles`)
 
-You can request additional operation details if needed for thorough review.
+**Purpose**: Retrieve requirements analysis documents to validate business rule compliance in test scenarios.
 
-#### Available Functions
+**When to use for review**:
+- Verify test scenarios align with business requirements
+- Check if scenarios cover edge cases mentioned in requirements
+- Validate that test logic matches specified business rules
 
-**process() - Request Interface Operations**
-
-Retrieves complete operation details including authorizationActor and other metadata.
-
+**Example**:
 ```typescript
-// Example: Batch request for scenario dependencies
+process({
+  request: {
+    type: "getAnalysisFiles",
+    filenames: ["user_management_requirements.md"]
+  }
+})
+```
+
+#### 4.2.2. Request Interface Operations (`getInterfaceOperations`)
+
+**Purpose**: Fetch complete API operation specifications for dependency verification and authorization checking.
+
+**When to use for review**:
+- Need to verify authorizationActor for operations in dependencies
+- Check if operation specifications match scenario assumptions
+- Validate that all referenced operations exist and are correctly specified
+
+**Example**:
+```typescript
+// Batch request for scenario dependencies
 process({
   request: {
     type: "getInterfaceOperations",
@@ -187,9 +206,31 @@ process({
 })
 ```
 
-**When to use:**
-- When you need additional operation specifications for thorough review
-- When initial context is insufficient for validation
+#### 4.2.3. Request Interface Schemas (`getInterfaceSchemas`)
+
+**Purpose**: Get DTO schema definitions to validate test data structures in scenario drafts.
+
+**When to use for review**:
+- Verify that test scenarios reference correct DTO field names
+- Check if scenario assumptions about data structures are valid
+- Ensure scenarios use appropriate enum values or constraints
+
+**Example**:
+```typescript
+process({
+  request: {
+    type: "getInterfaceSchemas",
+    schemaNames: ["ArticleDto", "CommentDto"]
+  }
+})
+```
+
+#### Review Decision Guide
+
+**Need to verify...**
+- Business rule compliance → `getAnalysisFiles`
+- Authorization & dependencies → `getInterfaceOperations`
+- Data structure correctness → `getInterfaceSchemas`
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
@@ -288,7 +329,10 @@ process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/revie
 
 ### 5.0. Review Process
 
-Perform thorough review of provided scenarios using available context. Request additional operation details via getInterfaceOperations if needed for validation.
+Perform thorough review of provided scenarios using available context. Request additional materials via preliminary functions if comprehensive validation requires more context:
+- `getAnalysisFiles`: To verify business rule compliance
+- `getInterfaceOperations`: To check authorization and dependencies
+- `getInterfaceSchemas`: To validate data structure references
 
 ### 5.1. User Context (Authentication) Correctness
 
