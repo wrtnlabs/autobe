@@ -185,7 +185,11 @@ function createController<Model extends ILlmSchema.Model>(
     };
   };
   const application: ILlmApplication<Model> = collection[
-    ctx.model === "chatgpt" ? "chatgpt" : "claude"
+    ctx.model === "chatgpt"
+      ? "chatgpt"
+      : ctx.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
