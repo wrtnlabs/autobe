@@ -5,6 +5,12 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
+  AutoBeDescribeCompleteEvent,
+  AutoBeDescribeImageDraftEvent,
+  AutoBeDescribeImageDraftGroupEvent,
+  AutoBeDescribeImageDraftIntegrationEvent,
+  AutoBeDescribeImageDocumentEvent,
+  AutoBeDescribeStartEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
@@ -100,6 +106,63 @@ export interface IAutoBeRpcListener {
    * @param value `true` to enable conversation, `false` to disable.
    */
   enable(value: boolean): Promise<void>;
+
+  /* -----------------------------------------------------------
+    DESCRIBE PHASE EVENTS
+  ----------------------------------------------------------- */
+  /**
+   * Optional handler for describe phase start events.
+   *
+   * Called when the Describe agent begins the image analysis and planning
+   * document generation process, enabling client applications to show describe
+   * phase initiation and prepare progress indicators for visual interpretation.
+   */
+  describeStart?(event: AutoBeDescribeStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for image draft generation events.
+   *
+   * Called when the Describe agent analyzes batches of UI screenshots, mockups,
+   * or design documents and generates planning drafts. Each event represents
+   * analysis of a batch of images with extracted requirements and metadata.
+   */
+  describeImageDraft?(event: AutoBeDescribeImageDraftEvent): Promise<void>;
+
+  /**
+   * Optional handler for image draft grouping events.
+   *
+   * Called when the Describe agent groups related image drafts by their cluster
+   * keys, organizing drafts that belong to the same functional area or feature
+   * set for consolidated processing.
+   */
+  describeImageDraftGroup?(event: AutoBeDescribeImageDraftGroupEvent): Promise<void>;
+
+  /**
+   * Optional handler for image draft integration events.
+   *
+   * Called when the Describe agent integrates multiple drafts from each group
+   * into consolidated section documents, creating coherent specifications for
+   * each functional area of the system.
+   */
+  describeImageDraftIntegration?(event: AutoBeDescribeImageDraftIntegrationEvent): Promise<void>;
+
+  /**
+   * Optional handler for image analysis document generation events.
+   *
+   * Called when all integrated sections are assembled into a complete B2B SaaS
+   * requirements document, providing a comprehensive specification derived from
+   * the analyzed images.
+   */
+  describeImageDocument?(event: AutoBeDescribeImageDocumentEvent): Promise<void>;
+
+  /**
+   * Mandatory handler for describe phase completion events.
+   *
+   * Called when the describe phase completes successfully, providing the
+   * finalized planning documentation generated from image analysis that can
+   * be used as input for the analyze phase.
+   */
+  describeComplete?(event: AutoBeDescribeCompleteEvent): Promise<void>;
 
   /* -----------------------------------------------------------
     ANALYZE PHASE EVENTS
