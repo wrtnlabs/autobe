@@ -6,6 +6,10 @@ export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeAnalyzeActor";
 
+export * from "./AutoBeDescribeImageDraft";
+export * from "./AutoBeDescribeImageDraftGroup";
+export * from "./AutoBeDescribeImageDocument";
+
 export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceSchemaRefactor";
 
