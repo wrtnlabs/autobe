@@ -1,5 +1,9 @@
 // DESCRIBE
+export * from "./AutoBeDescribeStartEvent";
 export * from "./AutoBeDescribeImageDraftEvent";
+export * from "./AutoBeDescribeImageDraftGroupEvent";
+export * from "./AutoBeDescribeImageDraftIntegrationEvent";
+export * from "./AutoBeDescribeImageDocumentEvent";
 export * from "./AutoBeDescribeCompleteEvent";
 
 // FACADE

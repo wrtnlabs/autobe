@@ -7,6 +7,10 @@ import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDescribeCompleteEvent } from "./AutoBeDescribeCompleteEvent";
 import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
+import { AutoBeDescribeImageDraftGroupEvent } from "./AutoBeDescribeImageDraftGroupEvent";
+import { AutoBeDescribeImageDraftIntegrationEvent } from "./AutoBeDescribeImageDraftIntegrationEvent";
+import { AutoBeDescribeImageDocumentEvent } from "./AutoBeDescribeImageDocumentEvent";
+import { AutoBeDescribeStartEvent } from "./AutoBeDescribeStartEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -89,7 +93,11 @@ export type AutoBeEvent =
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
   // DESCRIBE
+  | AutoBeDescribeStartEvent
   | AutoBeDescribeImageDraftEvent
+  | AutoBeDescribeImageDraftGroupEvent
+  | AutoBeDescribeImageDraftIntegrationEvent
+  | AutoBeDescribeImageDocumentEvent
   | AutoBeDescribeCompleteEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
@@ -188,7 +196,11 @@ export namespace AutoBeEvent {
     jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
     // DESCRIBE
+    describeStart: AutoBeDescribeStartEvent;
     describeImageDraft: AutoBeDescribeImageDraftEvent;
+    describeImageDraftGroup: AutoBeDescribeImageDraftGroupEvent;
+    describeImageDraftIntegration: AutoBeDescribeImageDraftIntegrationEvent;
+    describeImageDocument: AutoBeDescribeImageDocumentEvent;
     describeComplete: AutoBeDescribeCompleteEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
