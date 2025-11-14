@@ -194,10 +194,10 @@ gantt
   Image Understanding    : active, 2025-11-17, 13d
 
   section RAG Optimization
-  Prisma   : done,   2025-11-10,  7d
-  Interface: done,   2025-11-17, 13d
-  Test     : active, 2025-11-24, 13d
-  Realize  : active, 2025-11-24, 13d
+  Prisma   : done, 2025-11-10,  7d
+  Interface: done, 2025-11-17, 13d
+  Test     : done, 2025-11-24, 13d
+  Realize  : done, 2025-11-24, 13d
 
   section Modularization
   (Test) Authorization    : planned, 2025-11-10, 14d

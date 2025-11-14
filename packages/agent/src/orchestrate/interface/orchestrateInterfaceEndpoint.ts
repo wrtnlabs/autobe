@@ -3,6 +3,7 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceEndpointEvent,
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
@@ -68,6 +69,13 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
+  const prismaSchemas: Map<string, AutoBePrisma.IModel> = new Map(
+    ctx
+      .state()
+      .prisma!.result.data.files.map((f) => f.models)
+      .flat()
+      .map((m) => [m.name, m]),
+  );
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "prismaSchemas"
   > = new AutoBePreliminaryController({
@@ -75,6 +83,11 @@ async function process<Model extends ILlmSchema.Model>(
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
     state: ctx.state(),
+    local: {
+      prismaSchemas: props.group.prismaSchemas
+        .map((key) => prismaSchemas.get(key))
+        .filter((m) => m !== undefined),
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {

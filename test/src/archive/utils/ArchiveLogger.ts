@@ -87,6 +87,9 @@ export namespace ArchiveLogger {
         `  - refactors:`,
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
+    // GENERATIONS
+    else if (event.type === "interfaceEndpoint")
+      content.push(`  - endpoints: ${event.endpoints.length}`);
     // PRINT
     console.log(content.join("\n"));
   };
