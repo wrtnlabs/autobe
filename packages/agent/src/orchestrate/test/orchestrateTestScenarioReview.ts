@@ -1,13 +1,12 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
-  AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { HashMap, HashSet, IPointer, Pair } from "tstl";
+import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -23,6 +22,7 @@ export const orchestrateTestScenarioReview = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
+    preliminary: AutoBePreliminaryController<"interfaceOperations">;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
     instruction: string;
@@ -36,46 +36,16 @@ export const orchestrateTestScenarioReview = async <
   }
 };
 
-const process = async <Model extends ILlmSchema.Model>(
+const process = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    preliminary: AutoBePreliminaryController<"interfaceOperations">;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
     instruction: string;
   },
-): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
-  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document!;
-  const preliminary: AutoBePreliminaryController<"interfaceOperations"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeTestScenarioApplication>(),
-      source: SOURCE,
-      kinds: ["interfaceOperations"],
-      state: ctx.state(),
-      local: {
-        interfaceOperations: (() => {
-          const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-            AutoBeOpenApiEndpointComparator.hashCode,
-            AutoBeOpenApiEndpointComparator.equals,
-          );
-          for (const group of props.groups) {
-            unique.insert(group.endpoint);
-            for (const scenario of group.scenarios)
-              for (const dependency of scenario.dependencies)
-                unique.insert(dependency.endpoint);
-          }
-          return unique
-            .toJSON()
-            .map((endpoint) =>
-              document.operations.find(
-                (op) =>
-                  op.method === endpoint.method && op.path === endpoint.path,
-              ),
-            )
-            .filter((op): op is AutoBeOpenApi.IOperation => op !== undefined);
-        })(),
-      },
-    });
-  return preliminary.orchestrate(ctx, async (out) => {
+): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> =>
+  props.preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null> =
       {
         value: null,
@@ -86,14 +56,14 @@ const process = async <Model extends ILlmSchema.Model>(
         model: ctx.model,
         originalGroups: props.groups,
         pointer,
-        preliminary,
+        preliminary: props.preliminary,
       }),
       enforceFunctionCall: true,
       ...transformTestScenarioReviewHistory({
         state: ctx.state(),
         groups: props.groups,
         instruction: props.instruction,
-        preliminary,
+        preliminary: props.preliminary,
       }),
     });
     if (pointer.value !== null) {
@@ -131,7 +101,6 @@ const process = async <Model extends ILlmSchema.Model>(
     }
     return out(result)(null);
   });
-};
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;

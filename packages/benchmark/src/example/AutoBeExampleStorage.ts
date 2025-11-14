@@ -177,13 +177,10 @@ const PROMPT_TEMPLATE = {
 const TEST_ROOT: string = `${__dirname}/../../../../test`;
 
 const examples = new Singleton(() => {
-  const location: string = `${TEST_ROOT}/repositories/autobe-examples`;
+  const location: string = `${TEST_ROOT}/../../autobe-examples`;
   if (fs.existsSync(location) === false) {
-    try {
-      fs.mkdirSync(`${TEST_ROOT}/repositories`);
-    } catch {}
     cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
-      cwd: `${TEST_ROOT}/repositories`,
+      cwd: `${TEST_ROOT}/../../`,
       stdio: "inherit",
     });
   }

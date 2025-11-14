@@ -2,18 +2,18 @@
 # ANTHROPIC
 ################################################
 # anthropic/claude-sonnet-4.5
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project todo > archive.claude-sonnet-4.5.todo.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project bbs > archive.claude-sonnet-4.5.bbs.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project reddit > archive.claude-sonnet-4.5.reddit.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project shopping > archive.claude-sonnet-4.5.shopping.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project todo > archive.claude-sonnet-4.5.todo.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project bbs > archive.claude-sonnet-4.5.bbs.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project reddit > archive.claude-sonnet-4.5.reddit.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project shopping > archive.claude-sonnet-4.5.shopping.log
 
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project chat > archive.claude-sonnet-4.5.chat.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project chat > archive.claude-sonnet-4.5.chat.log
 
 # anthropic/claude-haiku-4.5
-pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project todo > archive.claude-haiku-4.5.todo.log
-pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project bbs > archive.claude-haiku-4.5.bbs.log
-pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project reddit > archive.claude-haiku-4.5.reddit.log
-pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project shopping > archive.claude-haiku-4.5.shopping.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --project todo > archive.claude-haiku-4.5.todo.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --project bbs > archive.claude-haiku-4.5.bbs.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --project reddit > archive.claude-haiku-4.5.reddit.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --project shopping > archive.claude-haiku-4.5.shopping.log
 
 ################################################
 # GOOGLE
@@ -67,52 +67,52 @@ pnpm run archive --vendor openai/gpt-oss-120b --project shopping > archive.gpt-o
 # GROK
 ################################################
 # x-ai/grok-4-fast
-pnpm run archive --vendor x-ai/grok-4-fast --project todo --schema claude > archive.x-ai-grok-4-fast.todo.log
-pnpm run archive --vendor x-ai/grok-4-fast --project bbs --schema claude > archive.x-ai-grok-4-fast.bbs.log
-pnpm run archive --vendor x-ai/grok-4-fast --project reddit --schema claude > archive.x-ai-grok-4-fast.reddit.log
-pnpm run archive --vendor x-ai/grok-4-fast --project shopping --schema claude > archive.x-ai-grok-4-fast.shopping.log
+pnpm run archive --vendor x-ai/grok-4-fast --project todo > archive.x-ai-grok-4-fast.todo.log
+pnpm run archive --vendor x-ai/grok-4-fast --project bbs > archive.x-ai-grok-4-fast.bbs.log
+pnpm run archive --vendor x-ai/grok-4-fast --project reddit > archive.x-ai-grok-4-fast.reddit.log
+pnpm run archive --vendor x-ai/grok-4-fast --project shopping > archive.x-ai-grok-4-fast.shopping.log
 
 # x-ai/grok-code-fast-1
-pnpm run archive --vendor x-ai/grok-code-fast-1 --project todo --schema claude > archive.x-ai-grok-code-fast-1.todo.log
-pnpm run archive --vendor x-ai/grok-code-fast-1 --project bbs --schema claude > archive.x-ai-grok-code-fast-1.bbs.log
-pnpm run archive --vendor x-ai/grok-code-fast-1 --project reddit --schema claude > archive.x-ai-grok-code-fast-1.reddit.log
-pnpm run archive --vendor x-ai/grok-code-fast-1 --project shopping --schema claude > archive.x-ai-grok-code-fast-1.shopping.log
+pnpm run archive --vendor x-ai/grok-code-fast-1 --project todo > archive.x-ai-grok-code-fast-1.todo.log
+pnpm run archive --vendor x-ai/grok-code-fast-1 --project bbs > archive.x-ai-grok-code-fast-1.bbs.log
+pnpm run archive --vendor x-ai/grok-code-fast-1 --project reddit > archive.x-ai-grok-code-fast-1.reddit.log
+pnpm run archive --vendor x-ai/grok-code-fast-1 --project shopping > archive.x-ai-grok-code-fast-1.shopping.log
 
 ################################################
 # DEEPSEEK
 ################################################
 # deepseek/deepseek-v3.1-terminus:exacto
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project todo > archive.deepseek-v3.1-terminus.todo.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project bbs > archive.deepseek-v3.1-terminus.bbs.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project reddit > archive.deepseek-v3.1-terminus.reddit.log
-pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --schema claude --project shopping > archive.deepseek-v3.1-terminus.shopping.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --project todo > archive.deepseek-v3.1-terminus.todo.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --project bbs > archive.deepseek-v3.1-terminus.bbs.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --project reddit > archive.deepseek-v3.1-terminus.reddit.log
+pnpm run archive --vendor deepseek/deepseek-v3.1-terminus:exacto --project shopping > archive.deepseek-v3.1-terminus.shopping.log
 
 # deepseek/deepseek-v3.2-exp
-pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project todo --schema claude > archive.deepseek-v3.2-exp.todo.log
-pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project bbs --schema claude > archive.deepseek-v3.2-exp.bbs.log
-pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project reddit --schema claude > archive.deepseek-v3.2-exp.reddit.log
-pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project shopping --schema claude > archive.deepseek-v3.2-exp.shopping.log
+pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project todo > archive.deepseek-v3.2-exp.todo.log
+pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project bbs > archive.deepseek-v3.2-exp.bbs.log
+pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project reddit > archive.deepseek-v3.2-exp.reddit.log
+pnpm run archive --vendor deepseek/deepseek-v3.2-exp --project shopping > archive.deepseek-v3.2-exp.shopping.log
 
 ################################################
 # LLAMA
 ################################################
 # meta-llama/llama-4-maverick
-pnpm run archive --vendor meta-llama/llama-4-maverick --project todo --schema claude > archive.meta-llama-llama-4-maverick.todo.log
-pnpm run archive --vendor meta-llama/llama-4-maverick --project bbs --schema claude > archive.meta-llama-llama-4-maverick.bbs.log
-pnpm run archive --vendor meta-llama/llama-4-maverick --project reddit --schema claude > archive.meta-llama-llama-4-maverick.reddit.log
-pnpm run archive --vendor meta-llama/llama-4-maverick --project shopping --schema claude > archive.meta-llama-llama-4-maverick.shopping.log
+pnpm run archive --vendor meta-llama/llama-4-maverick --project todo > archive.meta-llama-llama-4-maverick.todo.log
+pnpm run archive --vendor meta-llama/llama-4-maverick --project bbs > archive.meta-llama-llama-4-maverick.bbs.log
+pnpm run archive --vendor meta-llama/llama-4-maverick --project reddit > archive.meta-llama-llama-4-maverick.reddit.log
+pnpm run archive --vendor meta-llama/llama-4-maverick --project shopping > archive.meta-llama-llama-4-maverick.shopping.log
 
 # meta-llama/llama-4-scout
-pnpm run archive --vendor meta-llama/llama-4-scout --project todo --schema claude > archive.meta-llama-llama-4-scout.todo.log
-pnpm run archive --vendor meta-llama/llama-4-scout --project bbs --schema claude > archive.meta-llama-llama-4-scout.bbs.log
-pnpm run archive --vendor meta-llama/llama-4-scout --project reddit --schema claude > archive.meta-llama-llama-4-scout.reddit.log
-pnpm run archive --vendor meta-llama/llama-4-scout --project shopping --schema claude > archive.meta-llama-llama-4-scout.shopping.log
+pnpm run archive --vendor meta-llama/llama-4-scout --project todo > archive.meta-llama-llama-4-scout.todo.log
+pnpm run archive --vendor meta-llama/llama-4-scout --project bbs > archive.meta-llama-llama-4-scout.bbs.log
+pnpm run archive --vendor meta-llama/llama-4-scout --project reddit > archive.meta-llama-llama-4-scout.reddit.log
+pnpm run archive --vendor meta-llama/llama-4-scout --project shopping > archive.meta-llama-llama-4-scout.shopping.log
 
 # meta-llama/llama-3.3-70b-instruct
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project todo --schema claude > archive.meta-llama-llama-3.3-70b-instruct.todo.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project bbs --schema claude > archive.meta-llama-llama-3.3-70b-instruct.bbs.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project reddit --schema claude > archive.meta-llama-llama-3.3-70b-instruct.reddit.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project shopping --schema claude > archive.meta-llama-llama-3.3-70b-instruct.shopping.log
+pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project todo > archive.meta-llama-llama-3.3-70b-instruct.todo.log
+pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project bbs > archive.meta-llama-llama-3.3-70b-instruct.bbs.log
+pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project reddit > archive.meta-llama-llama-3.3-70b-instruct.reddit.log
+pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project shopping > archive.meta-llama-llama-3.3-70b-instruct.shopping.log
 
 ################################################
 # QWEN3
@@ -157,16 +157,16 @@ pnpm run archive --vendor qwen/qwen3-coder --project shopping > archive.qwen-qwe
 # MISTRAL
 ################################################
 # mistralai/codestral-2508
-pnpm run archive --vendor mistralai/codestral-2508 --project todo --schema claude > archive.mistralai-codestral-2508.todo.log
-pnpm run archive --vendor mistralai/codestral-2508 --project bbs --schema claude > archive.mistralai-codestral-2508.bbs.log
-pnpm run archive --vendor mistralai/codestral-2508 --project reddit --schema claude > archive.mistralai-codestral-2508.reddit.log
-pnpm run archive --vendor mistralai/codestral-2508 --project shopping --schema claude > archive.mistralai-codestral-2508.shopping.log
+pnpm run archive --vendor mistralai/codestral-2508 --project todo > archive.mistralai-codestral-2508.todo.log
+pnpm run archive --vendor mistralai/codestral-2508 --project bbs > archive.mistralai-codestral-2508.bbs.log
+pnpm run archive --vendor mistralai/codestral-2508 --project reddit > archive.mistralai-codestral-2508.reddit.log
+pnpm run archive --vendor mistralai/codestral-2508 --project shopping > archive.mistralai-codestral-2508.shopping.log
 
 # mistralai/devstral-medium
-pnpm run archive --vendor mistralai/devstral-medium --project todo --schema claude > archive.mistralai-devstral-medium.todo.log
-pnpm run archive --vendor mistralai/devstral-medium --project bbs --schema claude > archive.mistralai-devstral-medium.bbs.log
-pnpm run archive --vendor mistralai/devstral-medium --project reddit --schema claude > archive.mistralai-devstral-medium.reddit.log
-pnpm run archive --vendor mistralai/devstral-medium --project shopping --schema claude > archive.mistralai-devstral-medium.shopping.log
+pnpm run archive --vendor mistralai/devstral-medium --project todo > archive.mistralai-devstral-medium.todo.log
+pnpm run archive --vendor mistralai/devstral-medium --project bbs > archive.mistralai-devstral-medium.bbs.log
+pnpm run archive --vendor mistralai/devstral-medium --project reddit > archive.mistralai-devstral-medium.reddit.log
+pnpm run archive --vendor mistralai/devstral-medium --project shopping > archive.mistralai-devstral-medium.shopping.log
 
 ################################################
 # GLM
@@ -181,7 +181,7 @@ pnpm run archive --vendor z-ai/glm-4.6:exacto --project shopping > archive.z-ai-
 # KIMI
 ################################################
 # moonshotai/kimi-k2-0905:exacto
-pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project todo --schema claude > archive.moonshotai-kimi-k2-0905.todo.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project bbs --schema claude > archive.moonshotai-kimi-k2-0905.bbs.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project reddit --schema claude > archive.moonshotai-kimi-k2-0905.reddit.log
-pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project shopping --schema claude > archive.moonshotai-kimi-k2-0905.shopping.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project todo > archive.moonshotai-kimi-k2-0905.todo.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project bbs > archive.moonshotai-kimi-k2-0905.bbs.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project reddit > archive.moonshotai-kimi-k2-0905.reddit.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905:exacto --project shopping > archive.moonshotai-kimi-k2-0905.shopping.log

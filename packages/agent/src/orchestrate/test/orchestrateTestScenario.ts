@@ -258,6 +258,7 @@ const process = async <Model extends ILlmSchema.Model>(
       });
       return out(result)(
         await orchestrateTestScenarioReview(ctx, {
+          preliminary,
           instruction: props.instruction,
           groups: pointer.value,
           progress: props.reviewProgress,
