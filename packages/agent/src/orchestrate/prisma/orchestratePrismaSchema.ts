@@ -14,7 +14,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 
-export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
+export async function orchestratePrismaSchema<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   instruction: string,
   componentList: AutoBePrisma.IComponent[],

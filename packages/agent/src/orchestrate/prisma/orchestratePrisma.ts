@@ -19,7 +19,7 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaReview } from "./orchestratePrismaReview";
-import { orchestratePrismaSchemas } from "./orchestratePrismaSchemas";
+import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 
 export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -50,12 +50,11 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
-  const schemaEvents: AutoBePrismaSchemaEvent[] =
-    await orchestratePrismaSchemas(
-      ctx,
-      props.instruction,
-      componentEvent.components,
-    );
+  const schemaEvents: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchema(
+    ctx,
+    props.instruction,
+    componentEvent.components,
+  );
   const application: AutoBePrisma.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };

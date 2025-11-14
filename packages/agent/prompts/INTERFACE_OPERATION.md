@@ -659,15 +659,49 @@ The `specification` field must:
 
 ### 5.2. Description Requirements
 
-**CRITICAL**: The `description` field MUST be extensively detailed and MUST reference the description comments from the related Prisma DB schema tables and columns. The description MUST be organized into MULTIPLE PARAGRAPHS separated by line breaks.
+**CRITICAL**: The `description` field MUST be clear, comprehensive, and extensively detailed.
 
-Include separate paragraphs for:
-- The purpose and overview of the API operation
-- Security considerations and user permissions
-- Relationship to underlying database entities
-- Validation rules and business logic
-- Related API operations that might be used together
-- Expected behavior and error handling
+**Writing Style Rules:**
+- **First line**: Brief summary sentence capturing the operation's core purpose
+- **Detail level**: Write descriptions as DETAILED and COMPREHENSIVE as possible
+- **Line length**: Keep each sentence reasonably short (avoid overly long single lines)
+- **Multiple paragraphs**: If description requires multiple paragraphs for clarity, separate them with TWO line breaks (one blank line)
+
+**Style Examples:**
+
+```typescript
+// EXCELLENT: Detailed operation description with proper spacing
+{
+  method: "post",
+  path: "/sales",
+  description: `Create a new product sale listing in the shopping marketplace.
+
+This operation allows authenticated sellers to create new product listings for sale.
+Each sale must reference an existing product and specify pricing, inventory, and availability details.
+The seller's identity is automatically extracted from the JWT authentication token.
+
+Security: Only authenticated sellers can create sales. The seller_id field is automatically populated from the token.
+The operation validates that the referenced product exists and belongs to an accessible category.
+Rate limiting applies to prevent spam listings.
+
+The created sale becomes immediately visible in product search results.
+Inventory tracking begins automatically upon creation.
+Related operations: Update sale (PUT /sales/{id}), List sales (PATCH /sales).`,
+  // ...
+}
+
+// WRONG: Too brief, no structure, missing blank lines
+{
+  method: "post",
+  path: "/sales",
+  description: "Creates a sale. Requires authentication. Returns the created sale object.",
+  // ...
+}
+```
+
+**Deletion Operations - Avoid Comparative Language:**
+
+When describing DELETE operations, state the behavior directly without comparing to alternatives:
 
 - ❌ "This would normally be a soft-delete, but we intentionally perform permanent deletion here"
 - ❌ "Unlike soft-delete operations, this permanently removes the record"

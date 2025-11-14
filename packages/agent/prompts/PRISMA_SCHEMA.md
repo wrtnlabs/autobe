@@ -709,17 +709,8 @@ bbs_article_comments: {
 **Writing Style Rules:**
 - **First line**: Brief summary sentence (one-liner that captures the essence)
 - **Detail level**: Write descriptions as DETAILED and COMPREHENSIVE as possible
-- **Body paragraphs**: Break into multiple paragraphs explaining different aspects
-- **Paragraph separation**: ALWAYS use TWO line breaks (one blank line) between paragraphs
 - **Line length**: Keep each sentence reasonably short (avoid overly long single lines)
-- **Content depth**: Include business purpose, relationships, constraints, lifecycle, and usage patterns
-
-**Required Elements:**
-- Business purpose: What does this table store and why?
-- Data lifecycle: How is data created, updated, and managed?
-- Key relationships: How does it relate to other entities?
-- Business constraints: What rules or validations apply?
-- Usage context: When and how is this entity used?
+- **Multiple paragraphs**: If description requires multiple paragraphs for clarity, separate them with TWO line breaks (one blank line)
 
 **Style Examples:**
 
@@ -748,20 +739,37 @@ Soft deletion is supported to maintain audit trails while allowing content moder
 }
 ```
 
-**Format Template:**
-```
-[One-line summary of what this table represents]
+### Field Description Requirements
 
-[Paragraph 1: Primary purpose, what data it stores, and initial context]
-[Additional details about data creation and ownership]
+**Property/Field Descriptions**:
+- Write clear, detailed descriptions for each field
+- Keep sentences reasonably short (avoid overly long single lines)
+- If needed for clarity, break into multiple sentences or short paragraphs
+- Explain the field's purpose, constraints, and business context
 
+**Examples:**
 
-[Paragraph 2: Key relationships with other entities]
-[How this entity interacts with related tables]
+```typescript
+// GOOD: Clear, concise
+{
+  name: "email",
+  type: "string",
+  description: "Customer email address used for authentication and communication. Must be unique across all customers."
+}
 
+// GOOD: Multiple sentences when needed
+{
+  name: "status",
+  type: "string",
+  description: "Current order status. Valid values: pending, processing, shipped, delivered, cancelled. Status transitions follow business workflow rules."
+}
 
-[Paragraph 3: Business rules, constraints, and lifecycle management]
-[Additional important details about usage patterns or special considerations]
+// WRONG: Overly long single line
+{
+  name: "description",
+  type: "string",
+  description: "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"
+}
 ```
 
 ### Field Classification

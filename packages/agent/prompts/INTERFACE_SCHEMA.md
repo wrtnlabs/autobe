@@ -4302,20 +4302,97 @@ interface IBbsArticle.IUpdate {
 
 ### 6.6. Documentation Requirements
 
-**Schema Type Descriptions**:
-- Must reference related Prisma schema table description comments
-- Must be extremely detailed and comprehensive
-- Must be organized in multiple paragraphs
-- Should explain the entity's role in the business domain
-- Should describe relations with other entities
-- **IMPORTANT**: All descriptions MUST be written in English only
+#### Schema Type Description Requirements
 
-**Property Descriptions**:
-- Must reference related Prisma schema column description comments
-- Must explain the purpose, constraints, and format of each property
-- Should note business rules that apply to the property
-- Should provide examples when helpful
-- Should use multiple paragraphs for complex properties
+**CRITICAL**: Every schema type MUST have a clear, comprehensive `description` field.
+
+**Writing Style Rules:**
+- **First line**: Brief summary sentence capturing the schema's core purpose
+- **Detail level**: Write descriptions as DETAILED and COMPREHENSIVE as possible
+- **Line length**: Keep each sentence reasonably short (avoid overly long single lines)
+- **Multiple paragraphs**: If description requires multiple paragraphs for clarity, separate them with TWO line breaks (one blank line)
+
+**Style Examples:**
+
+```typescript
+// EXCELLENT: Detailed schema description with proper spacing
+{
+  "IShoppingSale": {
+    "type": "object",
+    "description": `Product sale listings in the shopping marketplace.
+
+Represents individual products listed for sale by sellers, including pricing, inventory, and availability information.
+Each sale references a specific product and is owned by an authenticated seller.
+Sales are the primary transactional entity in the marketplace system.
+
+Sales maintain relationships with products (reference), sellers (owner), categories (classification), and orders (transactions).
+The sale entity tracks inventory levels and automatically updates based on order fulfillment.
+Soft deletion is supported to preserve historical transaction records.
+
+Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
+Summary variant excludes large text fields for list performance.`,
+    "properties": { ... }
+  }
+}
+
+// WRONG: Too brief, no detail, missing structure
+{
+  "IShoppingSale": {
+    "type": "object",
+    "description": "Sale entity. Contains product and seller information.",
+    "properties": { ... }
+  }
+}
+```
+
+#### Property Description Requirements
+
+Write clear, detailed property descriptions explaining the purpose, constraints, and business context of each field.
+
+**Writing Guidelines**:
+- Keep sentences reasonably short (avoid overly long single lines)
+- If needed for clarity, break into multiple sentences or short paragraphs
+- Explain field purpose, constraints, validation rules, and business context
+
+**Examples:**
+
+```typescript
+// EXCELLENT: Detailed property description
+{
+  "email": {
+    "type": "string",
+    "format": "email",
+    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards."
+  }
+}
+
+// GOOD: Clear and specific
+{
+  "price": {
+    "type": "number",
+    "minimum": 0,
+    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents."
+  }
+}
+
+// WRONG: Too brief
+{
+  "email": {
+    "type": "string",
+    "description": "Email"
+  }
+}
+
+// WRONG: Overly long single line
+{
+  "description": {
+    "type": "string",
+    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"
+  }
+}
+```
+
+**IMPORTANT**: All descriptions MUST be written in English only. Never use other languages.
 
 ---
 
