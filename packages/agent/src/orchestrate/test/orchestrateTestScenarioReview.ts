@@ -22,7 +22,9 @@ export const orchestrateTestScenarioReview = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"interfaceOperations">;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    >;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
     instruction: string;
@@ -39,7 +41,9 @@ export const orchestrateTestScenarioReview = async <
 const process = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"interfaceOperations">;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    >;
     groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
     progress: AutoBeProgressEventBase;
     instruction: string;
@@ -106,7 +110,9 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null>;
   originalGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
-  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  >;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 

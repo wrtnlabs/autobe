@@ -1,7 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 
 export interface IAutoBeTestScenarioApplication {
   /**
@@ -23,11 +25,16 @@ export namespace IAutoBeTestScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getInterfaceOperations) or final test scenario generation (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas) or
+     * final test scenario generation (complete). When preliminary returns
+     * empty array, that type is removed from the union, physically
+     * preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetInterfaceOperations;
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas;
   }
 
   /**

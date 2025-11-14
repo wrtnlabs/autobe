@@ -92,58 +92,78 @@ export const archive_prisma = async (props: {
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
 
-  // REQUEST PRISMA GENERATION
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.every((h) => h.type !== "prisma")) {
-    histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.every((h) => h.type !== "prisma"))
-      throw new Error("History type must be prisma.");
-  }
-
-  const prisma: AutoBePrismaHistory = histories.find(
-    (h) => h.type === "prisma",
-  )!;
-  if (prisma.compiled.type !== "success") {
-    await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/prisma-error`,
-      files: {
-        "result.json": JSON.stringify(prisma.result),
-        ...prisma.schemas,
-        ...(prisma.compiled.type === "failure"
-          ? {
-              "reason.log": prisma.compiled.reason,
-            }
-          : {
-              "error.json": JSON.stringify(prisma.compiled.error),
-            }),
-      },
-    });
-    throw new Error("Prisma validation failed.");
-  }
-
-  // REPORT RESULT
   try {
-    await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/prisma`,
+    // REQUEST PRISMA GENERATION
+    let histories: AutoBeHistory[] = await go(userMessage.contents);
+    if (histories.every((h) => h.type !== "prisma")) {
+      histories = await go(
+        "Don't ask me to do that, and just do it right now.",
+      );
+      if (histories.every((h) => h.type !== "prisma"))
+        throw new Error("History type must be prisma.");
+    }
+
+    const prisma: AutoBePrismaHistory = histories.find(
+      (h) => h.type === "prisma",
+    )!;
+    if (prisma.compiled.type !== "success") {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/prisma-error`,
+        files: {
+          "result.json": JSON.stringify(prisma.result),
+          ...prisma.schemas,
+          ...(prisma.compiled.type === "failure"
+            ? {
+                "reason.log": prisma.compiled.reason,
+              }
+            : {
+                "error.json": JSON.stringify(prisma.compiled.error),
+              }),
+        },
+      });
+      throw new Error("Prisma validation failed.");
+    }
+
+    // REPORT RESULT
+    try {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/prisma`,
+        files: {
+          ...(await agent.getFiles()),
+          "autobe/instruction.md": prisma.instruction,
+        },
+      });
+    } catch {}
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
       files: {
-        ...(await agent.getFiles()),
-        "autobe/instruction.md": prisma.instruction,
+        [`prisma.histories.json`]: JSON.stringify(agent.getHistories()),
+        [`prisma.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .increment(zero)
+              .toJSON(),
+          })),
+        ),
       },
     });
-  } catch {}
-  await AutoBeExampleStorage.save({
-    vendor: props.vendor,
-    project: props.project,
-    files: {
-      [`prisma.histories.json`]: JSON.stringify(agent.getHistories()),
-      [`prisma.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-    },
-  });
+  } catch (error) {
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`prisma.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .increment(zero)
+              .toJSON(),
+          })),
+        ),
+      },
+    });
+    throw error;
+  }
 };

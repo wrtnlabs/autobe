@@ -13,7 +13,9 @@ export const transformTestScenarioHistory = (props: {
   state: AutoBeState;
   include: AutoBeOpenApi.IOperation[];
   exclude: AutoBeOpenApi.IEndpoint[];
-  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   const document: AutoBeOpenApi.IDocument = props.state.interface!.document!;

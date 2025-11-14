@@ -49,44 +49,64 @@ export const archive_interface = async (props: {
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
 
-  // REQUEST INTERFACE GENERATION
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.every((h) => h.type !== "interface")) {
-    histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.every((h) => h.type !== "interface")) {
-      console.log(histories.map((h) => h.type));
-      throw new Error("History type must be interface.");
-    }
-  }
-  const result: AutoBeInterfaceHistory = histories.find(
-    (h) => h.type === "interface",
-  )!;
-
-  // REPORT RESULT
   try {
-    await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.project, false)}/${props.project}/interface`,
+    // REQUEST INTERFACE GENERATION
+    let histories: AutoBeHistory[] = await go(userMessage.contents);
+    if (histories.every((h) => h.type !== "interface")) {
+      histories = await go(
+        "Don't ask me to do that, and just do it right now.",
+      );
+      if (histories.every((h) => h.type !== "interface")) {
+        console.log(histories.map((h) => h.type));
+        throw new Error("History type must be interface.");
+      }
+    }
+    const result: AutoBeInterfaceHistory = histories.find(
+      (h) => h.type === "interface",
+    )!;
+
+    // REPORT RESULT
+    try {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.project, false)}/${props.project}/interface`,
+        files: {
+          ...(await agent.getFiles()),
+          "pnpm-workspace.yaml": "",
+          "autobe/instruction.md": result.instruction,
+        },
+      });
+    } catch {}
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
       files: {
-        ...(await agent.getFiles()),
-        "pnpm-workspace.yaml": "",
-        "autobe/instruction.md": result.instruction,
+        [`interface.histories.json`]: JSON.stringify(agent.getHistories()),
+        [`interface.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .increment(zero)
+              .toJSON(),
+          })),
+        ),
       },
     });
-  } catch {}
-  await AutoBeExampleStorage.save({
-    vendor: props.vendor,
-    project: props.project,
-    files: {
-      [`interface.histories.json`]: JSON.stringify(agent.getHistories()),
-      [`interface.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-    },
-  });
-  TestValidator.equals("missed", result.missed, []);
+    TestValidator.equals("missed", result.missed, []);
+  } catch (error) {
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`interface.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .increment(zero)
+              .toJSON(),
+          })),
+        ),
+      },
+    });
+    throw error;
+  }
 };

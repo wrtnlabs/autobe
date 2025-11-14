@@ -163,38 +163,39 @@ const process = async <Model extends ILlmSchema.Model>(
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document!;
-  const preliminary: AutoBePreliminaryController<"interfaceOperations"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeTestScenarioApplication>(),
-      source: SOURCE,
-      kinds: ["interfaceOperations"],
-      state: ctx.state(),
-      local: {
-        interfaceOperations: (() => {
-          const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-            AutoBeOpenApiEndpointComparator.hashCode,
-            AutoBeOpenApiEndpointComparator.equals,
-          );
-          for (const op of props.include) {
-            unique.insert({ method: op.method, path: op.path });
-            for (const pr of getPrerequisites({
-              document,
-              endpoint: op,
-            }))
-              unique.insert(pr.endpoint);
-          }
-          return unique
-            .toJSON()
-            .map((endpoint) =>
-              document.operations.find(
-                (op) =>
-                  op.method === endpoint.method && op.path === endpoint.path,
-              ),
-            )
-            .filter((op) => op !== undefined);
-        })(),
-      },
-    });
+  const preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBeTestScenarioApplication>(),
+    source: SOURCE,
+    kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
+    state: ctx.state(),
+    local: {
+      interfaceOperations: (() => {
+        const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+          AutoBeOpenApiEndpointComparator.hashCode,
+          AutoBeOpenApiEndpointComparator.equals,
+        );
+        for (const op of props.include) {
+          unique.insert({ method: op.method, path: op.path });
+          for (const pr of getPrerequisites({
+            document,
+            endpoint: op,
+          }))
+            unique.insert(pr.endpoint);
+        }
+        return unique
+          .toJSON()
+          .map((endpoint) =>
+            document.operations.find(
+              (op) =>
+                op.method === endpoint.method && op.path === endpoint.path,
+            ),
+          )
+          .filter((op) => op !== undefined);
+      })(),
+    },
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
       value: [],
@@ -275,7 +276,9 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
   build: (next: IAutoBeTestScenarioApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  >;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 

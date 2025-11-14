@@ -37,10 +37,20 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes scenario review requirements and generated scenario groups
-- Additional interface operations can be requested via function calling when needed
+- Additional analysis files, interface operations, and interface schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific API operations, request them via `getInterfaceOperations`
+- Request specific materials via these preliminary functions:
+  - `getAnalysisFiles`: Retrieve requirements analysis documents for business logic validation
+  - `getInterfaceOperations`: Fetch detailed API operation specifications for dependency verification
+  - `getInterfaceSchemas`: Get DTO schema definitions for data structure validation
+
+**Preliminary Data Request Strategy for Review**:
+- **Analysis Files**: Request when you need to verify business rule compliance in scenarios
+- **Interface Operations**: Request when validating dependencies or checking authorization actors
+- **Interface Schemas**: Request when verifying test data structures align with DTO definitions
+- Use batch requests to gather multiple materials efficiently
+- Maximum 8 preliminary function calls allowed
 
 ## 2. Output Format (Function Calling Interface)
 
@@ -430,7 +440,10 @@ Before finalizing review:
 
 ### 8.1. Input Materials & Function Calling (if needed)
 - [ ] **YOUR PURPOSE**: Call review function with complete findings. Gathering input materials is intermediate step.
-- [ ] Requested additional operation details when initial context insufficient for thorough review
+- [ ] Requested additional context when initial materials insufficient for thorough review:
+  * `getAnalysisFiles`: For business rule validation
+  * `getInterfaceOperations`: For dependency verification
+  * `getInterfaceSchemas`: For data structure validation
 - [ ] Used batch requests for efficiency
 - [ ] Verified authorizationActor for all reviewed operations
 - [ ] Did NOT re-request already-loaded materials

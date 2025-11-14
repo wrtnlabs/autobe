@@ -13,7 +13,9 @@ export function transformTestScenarioReviewHistory(props: {
   state: AutoBeState;
   instruction: string;
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
-  preliminary: AutoBePreliminaryController<"interfaceOperations">;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  >;
 }): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument | undefined =
     props.state.interface?.document;
