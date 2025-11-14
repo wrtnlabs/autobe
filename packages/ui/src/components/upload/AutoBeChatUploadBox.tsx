@@ -102,7 +102,8 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
     const newFiles: IAutoBeBucket[] = [];
     const errorFileNames: string[] = [];
 
-    for (const file of fileList) {
+    const files = Array.from(fileList);
+    for (const file of files) {
       try {
         newFiles.push(
           await AutoBeFileUploader.compose(props.uploadConfig ?? {}, file),
