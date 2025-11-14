@@ -702,10 +702,76 @@ bbs_article_comments: {
 
 ## 10. AST Structure Requirements
 
+### Model Description Requirements
+
+**CRITICAL**: Every model MUST have a clear, comprehensive `description` field.
+
+**Writing Style Rules:**
+- **First line**: Brief summary sentence (one-liner that captures the essence)
+- **Detail level**: Write descriptions as DETAILED and COMPREHENSIVE as possible
+- **Body paragraphs**: Break into multiple paragraphs explaining different aspects
+- **Paragraph separation**: ALWAYS use TWO line breaks (one blank line) between paragraphs
+- **Line length**: Keep each sentence reasonably short (avoid overly long single lines)
+- **Content depth**: Include business purpose, relationships, constraints, lifecycle, and usage patterns
+
+**Required Elements:**
+- Business purpose: What does this table store and why?
+- Data lifecycle: How is data created, updated, and managed?
+- Key relationships: How does it relate to other entities?
+- Business constraints: What rules or validations apply?
+- Usage context: When and how is this entity used?
+
+**Style Examples:**
+
+```typescript
+// EXCELLENT: Detailed, well-structured with proper spacing
+{
+  name: "shopping_sale_questions",
+  description: `Customer questions about products listed for sale.
+
+Stores inquiries from customers seeking additional product information before making a purchase decision.
+Each question is associated with a specific product sale and created by an authenticated customer through their active session.
+
+Questions remain attached to the sale even if the product details change, providing historical context.
+Customers can ask multiple questions per sale, and each question can receive one answer from the seller.
+
+The question content includes title and body fields for structured inquiry formatting.
+Soft deletion is supported to maintain audit trails while allowing content moderation.`,
+  stance: "primary"
+}
+
+// WRONG: Too brief, no detail, missing blank lines
+{
+  name: "shopping_sale_questions",
+  description: "Customer questions about products. Each question links to a sale and customer.",
+  stance: "primary"
+}
+```
+
+**Format Template:**
+```
+[One-line summary of what this table represents]
+
+[Paragraph 1: Primary purpose, what data it stores, and initial context]
+[Additional details about data creation and ownership]
+
+
+[Paragraph 2: Key relationships with other entities]
+[How this entity interacts with related tables]
+
+
+[Paragraph 3: Business rules, constraints, and lifecycle management]
+[Additional important details about usage patterns or special considerations]
+```
+
 ### Field Classification
 
 ```typescript
 interface IModel {
+  // Model Identification (REQUIRED)
+  name: string  // Table name from targetComponent.tables
+  description: string  // REQUIRED: Clear business purpose and context (summary + paragraphs)
+
   // Model Stance (REQUIRED)
   stance: "primary" | "subsidiary" | "snapshot"
 
@@ -827,6 +893,11 @@ FINAL DESIGN PLANNING:
 
 Generate AutoBePrisma.IModel[] array based on the strategic plan:
 - Create model objects for each table with exact names from targetComponent.tables (or adjusted list)
+- **CRITICAL: Write clear, comprehensive `description` for EVERY model following the style guide:**
+  - Start with a one-line summary
+  - Break body into short, readable paragraphs with line breaks
+  - Avoid overly long single-line descriptions
+  - Explain business purpose, context, and key relationships
 - Include all fields, relationships, and indexes
 - Assign appropriate stance classification to each model
 - Follow AST structure requirements
@@ -853,8 +924,11 @@ Your response must be a valid IAutoBePrismaSchemaApplication.IProps object:
   plan: "Strategic database design analysis including stance classification...",
   models: [
     {
-      name: "exact_table_name",
-      description: "Business purpose and context...",
+      name: "exact_table_name",  // REQUIRED
+      description: `Summary sentence.
+
+Detailed explanation with proper line breaks.
+Additional context and relationships.`,  // REQUIRED: Follow style guide (summary + paragraphs)
       material: false,
       stance: "primary" | "subsidiary" | "snapshot",  // REQUIRED
       primaryField: { ... },
@@ -894,6 +968,7 @@ Before executing the function call, ensure:
 - [ ] Polymorphic ownership uses main entity + subtype entities pattern
 - [ ] All table modifications documented in plan with rationale
 - [ ] Each model has correct `stance` classification assigned
+- [ ] Each model has clear, comprehensive `description` field following the style guide (summary + paragraphs)
 - [ ] All foreign keys reference existing tables (from otherTables or current models)
 - [ ] No duplicate fields, relations, or models
 - [ ] No duplicated domain prefixes in table names
