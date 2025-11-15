@@ -1,7 +1,9 @@
 import { AutoBeOpenApi, AutoBePreliminaryKind } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@samchon/openapi";
+import pluralize from "pluralize";
 import { HashMap, HashSet, Pair } from "tstl";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
@@ -82,12 +84,12 @@ export const complementPreliminaryCollection = (props: {
 
     if (props.kinds.includes("prismaSchemas") === true) {
       const prisma: Set<string> = new Set();
-      for (const dto of Object.values(props.local.interfaceSchemas))
+      for (const [key, value] of Object.entries(props.local.interfaceSchemas)) {
         OpenApiTypeChecker.visit({
           components: {
             schemas: props.all.interfaceSchemas,
           },
-          schema: dto,
+          schema: value,
           closure: (next) => {
             if (OpenApiTypeChecker.isObject(next) === false) return;
             const name: string | null | undefined = (
@@ -101,13 +103,21 @@ export const complementPreliminaryCollection = (props: {
               prisma.add(name);
           },
         });
-      for (const name of prisma)
+        const candidate: string = pluralize(NamingConvention.snake(key));
+        if (
+          props.all.prismaSchemas.find((m) => m.name === candidate) !==
+          undefined
+        )
+          prisma.add(candidate);
+      }
+      for (const name of prisma) {
         if (
           props.local.prismaSchemas.find((m) => m.name === name) === undefined
         )
           props.local.prismaSchemas.push(
             props.all.prismaSchemas.find((m) => m.name === name)!,
           );
+      }
     }
   }
 };

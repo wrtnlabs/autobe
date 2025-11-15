@@ -34,6 +34,7 @@
     "@prisma/internals": "catalog:prisma",
     "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
+    "pluralize": "^8.0.0",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",
     "uuid": "^11.1.0"
@@ -44,6 +45,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
+    "@types/pluralize": "^0.0.33",
     "@types/uuid": "^10.0.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.40.1",

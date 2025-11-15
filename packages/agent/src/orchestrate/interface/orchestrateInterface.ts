@@ -125,15 +125,6 @@ export const orchestrateInterface =
     const assign = (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
     ) => Object.assign(document.components.schemas, schemas);
-    const complement = async () =>
-      assign(
-        await orchestrateInterfaceComplement(ctx, {
-          instruction: props.instruction,
-          document,
-        }),
-      );
-    await complement();
-
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
@@ -147,11 +138,54 @@ export const orchestrateInterface =
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
           document,
+          schemas: document.components.schemas,
           progress: reviewProgress,
         }),
       );
     }
-    if (missedOpenApiSchemas(document).length !== 0) await complement();
+
+    const complementProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: 0,
+    };
+    const complement = async () => {
+      const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        await orchestrateInterfaceComplement(ctx, {
+          instruction: props.instruction,
+          progress: complementProgress,
+          document,
+        });
+      const oldbie: Set<string> = new Set(
+        Object.keys(document.components.schemas),
+      );
+      const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        Object.fromEntries(
+          Object.keys(complemented)
+            .filter((key) => oldbie.has(key) === false)
+            .map((key) => [key, complemented[key]]),
+        );
+      if (Object.keys(newbie).length === 0) return;
+      assign(complemented);
+
+      for (const config of REVIEWERS) {
+        reviewProgress.total = Math.ceil(
+          (Object.keys(document.components.schemas).length * REVIEWERS.length) /
+            AutoBeConfigConstant.INTERFACE_CAPACITY,
+        );
+        assign(
+          await orchestrateInterfaceSchemaReview(ctx, config, {
+            instruction: props.instruction,
+            document,
+            schemas: newbie,
+            progress: reviewProgress,
+          }),
+        );
+      }
+    };
+    for (let i: number = 0; i < ctx.retry; ++i) {
+      if (missedOpenApiSchemas(document).length === 0) break;
+      await complement();
+    }
 
     await orchestrateInterfaceSchemaRename(ctx, document);
     JsonSchemaFactory.finalize({

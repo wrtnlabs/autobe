@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeEventSource, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { missedOpenApiSchemas } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -24,6 +28,7 @@ export const orchestrateInterfaceComplement = <Model extends ILlmSchema.Model>(
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
   step(ctx, props, {
@@ -36,6 +41,7 @@ async function step<Model extends ILlmSchema.Model>(
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
   },
   state: {
     wasEmpty: boolean;
@@ -46,10 +52,12 @@ async function step<Model extends ILlmSchema.Model>(
   if (missed.length === 0) return props.document.components.schemas;
   else if (state.life === 0) return props.document.components.schemas;
 
+  props.progress.total += missed.length;
   const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     await divideAndConquer(ctx, {
       instruction: props.instruction,
       document: props.document,
+      progress: props.progress,
       missed,
     });
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
@@ -68,6 +76,7 @@ async function step<Model extends ILlmSchema.Model>(
           schemas,
         },
       },
+      progress: props.progress,
     },
     {
       wasEmpty: Object.keys(newbie).length === 0,
@@ -82,6 +91,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     missed: string[];
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const matrix: string[][] = divideArray({
@@ -94,6 +104,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       await process(ctx, {
         instruction: props.instruction,
         document: props.document,
+        progress: props.progress,
         missed,
       });
     Object.assign(x, row);
@@ -107,6 +118,7 @@ async function process<Model extends ILlmSchema.Model>(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     missed: string[];
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const preliminary: AutoBePreliminaryController<
@@ -165,6 +177,9 @@ async function process<Model extends ILlmSchema.Model>(
     });
     if (pointer.value === null) return out(result)(null);
 
+    props.progress.completed += Object.keys(pointer.value).length;
+    props.progress.total +=
+      Object.keys(pointer.value).length - props.missed.length;
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -173,6 +188,8 @@ async function process<Model extends ILlmSchema.Model>(
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
+      completed: props.progress.completed,
+      total: props.progress.total,
       created_at: new Date().toISOString(),
     });
     return out(result)(pointer.value);
