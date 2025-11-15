@@ -30,12 +30,11 @@ export async function orchestrateInterfaceOperation<
   props: {
     instruction: string;
     endpoints: AutoBeOpenApi.IEndpoint[];
-    capacity?: number;
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
     array: props.endpoints,
-    capacity: props.capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
   });
   const progress: AutoBeProgressEventBase = {
     total: matrix.flat().length,

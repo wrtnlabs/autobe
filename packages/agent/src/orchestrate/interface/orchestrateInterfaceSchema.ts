@@ -31,7 +31,6 @@ export async function orchestrateInterfaceSchema<
   props: {
     operations: AutoBeOpenApi.IOperation[];
     instruction: string;
-    capacity?: number;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // fix operation type names
@@ -49,7 +48,7 @@ export async function orchestrateInterfaceSchema<
   // divide and conquer
   const matrix: string[][] = divideArray({
     array: Array.from(typeNames),
-    capacity: props.capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
   });
   const progress: AutoBeProgressEventBase = {
     total: typeNames.size,
