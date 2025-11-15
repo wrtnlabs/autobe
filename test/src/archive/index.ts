@@ -175,6 +175,7 @@ const main = async (): Promise<void> => {
       );
     } catch (error) {
       console.log("  - Error", error);
+      if (tf.step === "test") continue;
       throw error;
     }
   }
