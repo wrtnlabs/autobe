@@ -74,7 +74,7 @@ export namespace ArchiveLogger {
       content.push(`  - kind: ${event.kind}`);
     else if (event.type === "interfaceComplement")
       content.push(
-        `  - count: ${Object.keys(event.schemas).length}`,
+        `  - count: ${Object.keys(event.schemas).join(", ")}`,
         `  - missed: ${event.missed.join(", ")}`,
       );
     else if (event.type === "interfaceSchemaReview")
@@ -88,8 +88,22 @@ export namespace ArchiveLogger {
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
     // GENERATIONS
+    else if (event.type === "prismaComponent")
+      content.push(
+        `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
+      );
+    else if (event.type === "prismaSchema")
+      content.push(
+        `  - schemas: ${event.models.map((m) => m.name).join(", ")}`,
+      );
     else if (event.type === "interfaceEndpoint")
       content.push(`  - endpoints: ${event.endpoints.length}`);
+    else if (event.type === "interfaceOperation")
+      content.push(
+        `  - operations: ${event.operations.map((o) => `${o.method.toUpperCase()} ${o.path}`)}`,
+      );
+    else if (event.type === "interfaceSchema")
+      content.push(`  - schemas: ${Object.keys(event.schemas).join(", ")}`);
     // PRINT
     console.log(content.join("\n"));
   };

@@ -193,8 +193,12 @@ const main = async (): Promise<void> => {
   });
 };
 
-global.process.on("uncaughtException", () => {});
-global.process.on("unhandledRejection", () => {});
+global.process.on("uncaughtException", (error) => {
+  console.log("uncaughtException", error);
+});
+global.process.on("unhandledRejection", (error) => {
+  console.log("unhandledRejection", error);
+});
 main().catch((error) => {
   console.log("---------------------------------------------");
   console.log("                FATAL ERROR                  ");
