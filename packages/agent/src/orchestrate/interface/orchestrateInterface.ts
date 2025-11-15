@@ -149,15 +149,15 @@ export const orchestrateInterface =
       total: 0,
     };
     const complement = async () => {
+      const oldbie: Set<string> = new Set(
+        Object.keys(document.components.schemas),
+      );
       const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceComplement(ctx, {
           instruction: props.instruction,
           progress: complementProgress,
           document,
         });
-      const oldbie: Set<string> = new Set(
-        Object.keys(document.components.schemas),
-      );
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         Object.fromEntries(
           Object.keys(complemented)

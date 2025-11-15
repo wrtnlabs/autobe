@@ -12,7 +12,7 @@
     "start": "pnpm run build:prompt && pnpm run start:go",
     "start:go": "ts-node src",
     "archive": "pnpm run build:prompt && pnpm run archive:go",
-    "archive:go": "ts-node src/archive",
+    "archive:go": "ts-node src/archive --max-old-space-size=8000",
     "archive:failures": "ts-node src/archive/failures.ts > failures.log",
     "archive:commit": "ts-node src/archive/commit.ts",
     "archive:local": "ts-node src/archive/local.ts",
