@@ -1,11 +1,5 @@
-import {
-  AutoBeOpenApi,
-  AutoBeRealizeAuthorization,
-  AutoBeTestFile,
-} from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
 
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 
 /**
@@ -28,31 +22,19 @@ import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenar
  * @returns A scenario object containing all structural information needed to
  *   generate the function
  */
-export function generateRealizeScenario<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export function generateRealizeScenario(
   operation: AutoBeOpenApi.IOperation,
   authorizations: AutoBeRealizeAuthorization[],
 ): IAutoBeRealizeScenarioResult {
   const authorization = authorizations.find(
     (el) => el.actor.name === operation.authorizationActor,
   );
-
-  const testFiles: AutoBeTestFile[] =
-    ctx
-      .state()
-      .test?.files.filter(
-        (el) =>
-          el.scenario.endpoint.method === operation.method &&
-          el.scenario.endpoint.path === operation.path,
-      ) ?? [];
-
   const functionName: string = transformFunctionName(operation);
 
   return {
     operation: operation,
     functionName: functionName,
     location: `src/providers/${functionName}.ts`,
-    testFiles: testFiles,
     decoratorEvent: authorization,
   };
 }

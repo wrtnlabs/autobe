@@ -143,7 +143,7 @@ export const orchestrateRealize =
     // SCENARIOS
     const entireScenarios: IAutoBeRealizeScenarioResult[] =
       document.operations.map((operation) =>
-        generateRealizeScenario(ctx, operation, authorizations),
+        generateRealizeScenario(operation, authorizations),
       );
     let bucket: IBucket = await process(entireScenarios);
     for (let i: number = 0; i < 2; ++i) {
