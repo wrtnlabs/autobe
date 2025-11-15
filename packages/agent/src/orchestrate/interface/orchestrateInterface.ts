@@ -194,15 +194,15 @@ export const orchestrateInterface =
 
 const REVIEWERS = [
   {
-    kind: "security" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-  },
-  {
     kind: "relation" as const,
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
   },
   {
     kind: "content" as const,
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+  },
+  {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
   },
 ];

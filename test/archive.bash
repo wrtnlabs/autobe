@@ -108,12 +108,6 @@ pnpm run archive --vendor meta-llama/llama-4-scout --project bbs > archive.meta-
 pnpm run archive --vendor meta-llama/llama-4-scout --project reddit > archive.meta-llama-llama-4-scout.reddit.log
 pnpm run archive --vendor meta-llama/llama-4-scout --project shopping > archive.meta-llama-llama-4-scout.shopping.log
 
-# meta-llama/llama-3.3-70b-instruct
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project todo > archive.meta-llama-llama-3.3-70b-instruct.todo.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project bbs > archive.meta-llama-llama-3.3-70b-instruct.bbs.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project reddit > archive.meta-llama-llama-3.3-70b-instruct.reddit.log
-pnpm run archive --vendor meta-llama/llama-3.3-70b-instruct --project shopping > archive.meta-llama-llama-3.3-70b-instruct.shopping.log
-
 ################################################
 # QWEN3
 ################################################
