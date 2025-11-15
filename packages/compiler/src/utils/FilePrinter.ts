@@ -18,7 +18,10 @@ export namespace FilePrinter {
           .split("\r\n")
           .join("\n")
           .split("\n")
-          .map((str) => ` * ${str.split("*/").join("*\\/")}`),
+          .map(
+            (str) =>
+              ` * ${str.split("*/").join("*\\\\/").split("*\\/").join("*\\\\/")}`,
+          ),
         "",
       ].join("\n"),
       true,

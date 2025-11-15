@@ -158,6 +158,12 @@ export const orchestrateInterface =
       document,
       application: ctx.state().prisma!.result.data,
     });
+    Object.assign(
+      document.components.schemas,
+      JsonSchemaFactory.presets(
+        new Set(Object.keys(document.components.schemas)),
+      ),
+    );
 
     // CONNECT PRE-REQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
