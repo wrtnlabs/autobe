@@ -130,21 +130,25 @@ export const orchestrateInterface =
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
     ) => {
       Object.assign(document.components.schemas, schemas);
+      console.log(
+        "missed schemas before enhancement",
+        missedOpenApiSchemas(document),
+      );
       JsonSchemaNamingConvention.schemas(
         document.operations,
         document.components.schemas,
       );
-      // @todo => required, but needs pre-validation
-      // JsonSchemaFactory.finalize({
-      //   document,
-      //   application: ctx.state().prisma!.result.data,
-      // });
-      // Object.assign(
-      //   document.components.schemas,
-      //   JsonSchemaFactory.presets(
-      //     new Set(Object.keys(document.components.schemas)),
-      //   ),
-      // );
+      JsonSchemaFactory.finalize({
+        document,
+        application: ctx.state().prisma!.result.data,
+      });
+      Object.assign(
+        document.components.schemas,
+        JsonSchemaFactory.presets(
+          new Set(Object.keys(document.components.schemas)),
+        ),
+      );
+      JsonSchemaFactory.authorize(document.components.schemas);
     };
 
     // INITIAL SCHEMAS
@@ -206,17 +210,6 @@ export const orchestrateInterface =
           "Failed to complement schemas",
           missedOpenApiSchemas(document),
         );
-        Object.assign(
-          document.components.schemas,
-          JsonSchemaFactory.presets(
-            new Set(Object.keys(document.components.schemas)),
-          ),
-        );
-        JsonSchemaFactory.finalize({
-          document,
-          application: ctx.state().prisma!.result.data,
-        });
-        JsonSchemaFactory.authorize(document.components.schemas);
       }
       assign(complemented);
 
