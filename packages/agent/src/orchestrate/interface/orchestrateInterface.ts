@@ -134,6 +134,13 @@ export const orchestrateInterface =
         "missed schemas before enhancement",
         missedOpenApiSchemas(document),
       );
+      JsonSchemaFactory.authorize(document.components.schemas);
+      Object.assign(
+        document.components.schemas,
+        JsonSchemaFactory.presets(
+          new Set(Object.keys(document.components.schemas)),
+        ),
+      );
       JsonSchemaNamingConvention.schemas(
         document.operations,
         document.components.schemas,
@@ -142,13 +149,6 @@ export const orchestrateInterface =
         document,
         application: ctx.state().prisma!.result.data,
       });
-      Object.assign(
-        document.components.schemas,
-        JsonSchemaFactory.presets(
-          new Set(Object.keys(document.components.schemas)),
-        ),
-      );
-      JsonSchemaFactory.authorize(document.components.schemas);
     };
 
     // INITIAL SCHEMAS
