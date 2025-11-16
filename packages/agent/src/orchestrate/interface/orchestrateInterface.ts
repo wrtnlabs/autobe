@@ -32,6 +32,7 @@ import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
+import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -124,7 +125,13 @@ export const orchestrateInterface =
 
     const assign = (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    ) => Object.assign(document.components.schemas, schemas);
+    ) => {
+      Object.assign(document.components.schemas, schemas);
+      JsonSchemaNamingConvention.schemas(
+        document.operations,
+        document.components.schemas,
+      );
+    };
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
@@ -148,6 +155,10 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
+    console.log(
+      "missed schemas before complement",
+      missedOpenApiSchemas(document),
+    );
     while (missedOpenApiSchemas(document).length !== 0) {
       const oldbie: Set<string> = new Set(
         Object.keys(document.components.schemas),
@@ -164,7 +175,12 @@ export const orchestrateInterface =
             .filter((key) => oldbie.has(key) === false)
             .map((key) => [key, complemented[key]]),
         );
-      if (Object.keys(newbie).length === 0) break;
+      if (Object.keys(newbie).length === 0) {
+        console.log(
+          "Failed to complement schemas",
+          missedOpenApiSchemas(document),
+        );
+      }
 
       assign(complemented);
       for (const config of REVIEWERS) {
@@ -193,6 +209,10 @@ export const orchestrateInterface =
       JsonSchemaFactory.presets(
         new Set(Object.keys(document.components.schemas)),
       ),
+    );
+    console.log(
+      "missed schemas after emension",
+      missedOpenApiSchemas(document),
     );
 
     // CONNECT PRE-REQUISITES
