@@ -148,7 +148,7 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
-    const complement = async () => {
+    while (missedOpenApiSchemas(document).length !== 0) {
       const oldbie: Set<string> = new Set(
         Object.keys(document.components.schemas),
       );
@@ -164,9 +164,9 @@ export const orchestrateInterface =
             .filter((key) => oldbie.has(key) === false)
             .map((key) => [key, complemented[key]]),
         );
-      if (Object.keys(newbie).length === 0) return;
-      assign(complemented);
+      if (Object.keys(newbie).length === 0) break;
 
+      assign(complemented);
       for (const config of REVIEWERS) {
         reviewProgress.total = Math.ceil(
           (Object.keys(document.components.schemas).length * REVIEWERS.length) /
@@ -181,10 +181,6 @@ export const orchestrateInterface =
           }),
         );
       }
-    };
-    for (let i: number = 0; i < ctx.retry; ++i) {
-      if (missedOpenApiSchemas(document).length === 0) break;
-      await complement();
     }
 
     await orchestrateInterfaceSchemaRename(ctx, document);
