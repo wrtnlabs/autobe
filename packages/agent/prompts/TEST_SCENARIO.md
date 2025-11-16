@@ -48,6 +48,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER ask for user permission to execute functions
 - ❌ NEVER present a plan and wait for approval
 - ❌ NEVER respond with assistant messages when all requirements are met
+
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
 - ❌ NEVER say "I will now call the function..." or similar announcements
 - ❌ NEVER request confirmation before executing
 - ❌ NEVER exceed 8 input material request calls
@@ -277,6 +318,7 @@ You have function calling capabilities to fetch additional materials beyond the 
 **Example**:
 ```typescript
 process({
+  thinking: "Need business rules from shopping and auth requirements for comprehensive test coverage.",
   request: {
     type: "getAnalysisFiles",
     filenames: ["shopping_requirements.md", "user_authentication.md"]
@@ -306,6 +348,7 @@ The initial context in "Included in Test Plan" shows:
 ```typescript
 // Batch request for multiple operations
 process({
+  thinking: "Need authorizationActor details for target operation and all prerequisites.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -359,6 +402,7 @@ Action: Call getInterfaceOperations with both endpoints
 **Example**:
 ```typescript
 process({
+  thinking: "Need DTO schemas to understand data structures for test data generation.",
   request: {
     type: "getInterfaceSchemas",
     schemaNames: ["ArticleCreateDto", "CommentUpdateDto"]
@@ -464,11 +508,12 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/comments", method: "post" }] } })
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })
+process({ thinking: "Still missing operation details. Need more.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/comments", method: "post" }] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing operation specs for test scenario design. Don't have them.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -483,15 +528,15 @@ process({
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
-process({ request: { type: "complete", ... } })  // This executes with OLD materials!
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [...] } })
+process({ thinking: "All scenarios designed", request: { type: "complete", ... } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
+process({ thinking: "Missing operation authz actors for test flow design. Don't have them.", request: { type: "getInterfaceOperations", endpoints: [...] } })
 
 // Then: After materials are loaded, call complete
-process({ request: { type: "complete", ... } })
+process({ thinking: "Loaded operation specs, designed complete test scenarios", request: { type: "complete", ... } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -499,11 +544,11 @@ process({ request: { type: "complete", ... } })
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded operations
 // If operations [POST /articles, POST /comments] are already loaded:
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })  // WRONG!
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW operations not in history warnings
 // If history shows loaded operations: [POST /articles, POST /comments]
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/reviews", method: "post" }] } })  // OK - new
+process({ thinking: "Missing additional operation specs. Don't have them yet.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/reviews", method: "post" }] } })  // OK - new
 ```
 
 **Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.
@@ -542,6 +587,7 @@ Don't just gather minimal context - actively explore and discover ALL operations
 ```typescript
 // Turn 1: Request operation details
 process({
+  thinking: "Missing authorizationActor data for test flow design. Don't have it.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -554,6 +600,7 @@ process({
 
 // Turn 2: After receiving authorizationActor data, generate scenarios
 process({
+  thinking: "Loaded authz actors, designed complete test scenarios with dependencies",
   request: {
     type: "complete",
     scenarioGroups: [

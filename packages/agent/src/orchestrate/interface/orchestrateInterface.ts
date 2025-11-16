@@ -61,6 +61,9 @@ export const orchestrateInterface =
       step: ctx.state().analyze?.step ?? 0,
     });
 
+    //------------------------------------------------
+    // OPERATIONS
+    //------------------------------------------------
     // ENDPOINTS
     const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroup(
       ctx,
@@ -111,18 +114,18 @@ export const orchestrateInterface =
       .toJSON()
       .map((it) => it.second);
 
-    // TYPE SCHEMAS
+    // THE DOCUMENT
     const document: AutoBeOpenApi.IDocument = {
       operations,
       components: {
         authorizations: ctx.state().analyze?.actors ?? [],
-        schemas: await orchestrateInterfaceSchema(ctx, {
-          instruction: props.instruction,
-          operations,
-        }),
+        schemas: {},
       },
     };
 
+    //------------------------------------------------
+    // DTO SCHEMAS
+    //------------------------------------------------
     const assign = (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
     ) => {
@@ -131,7 +134,28 @@ export const orchestrateInterface =
         document.operations,
         document.components.schemas,
       );
+      // @todo => required, but needs pre-validation
+      // JsonSchemaFactory.finalize({
+      //   document,
+      //   application: ctx.state().prisma!.result.data,
+      // });
+      // Object.assign(
+      //   document.components.schemas,
+      //   JsonSchemaFactory.presets(
+      //     new Set(Object.keys(document.components.schemas)),
+      //   ),
+      // );
     };
+
+    // INITIAL SCHEMAS
+    assign(
+      await orchestrateInterfaceSchema(ctx, {
+        instruction: props.instruction,
+        operations,
+      }),
+    );
+
+    // REVIEW GENERATED
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
@@ -151,6 +175,7 @@ export const orchestrateInterface =
       );
     }
 
+    // COMPLEMENTATION
     const complementProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
@@ -160,6 +185,7 @@ export const orchestrateInterface =
       missedOpenApiSchemas(document),
     );
     while (missedOpenApiSchemas(document).length !== 0) {
+      // COMPLEMENT OMITTED
       const oldbie: Set<string> = new Set(
         Object.keys(document.components.schemas),
       );
@@ -181,8 +207,9 @@ export const orchestrateInterface =
           missedOpenApiSchemas(document),
         );
       }
-
       assign(complemented);
+
+      // REVIEW COMPLEMENTED
       for (const config of REVIEWERS) {
         reviewProgress.total = Math.ceil(
           (Object.keys(document.components.schemas).length * REVIEWERS.length) /
@@ -198,8 +225,14 @@ export const orchestrateInterface =
         );
       }
     }
+    console.log(
+      "missed schemas after complement",
+      missedOpenApiSchemas(document),
+    );
 
     await orchestrateInterfaceSchemaRename(ctx, document);
+    console.log("missed schemas after rename", missedOpenApiSchemas(document));
+
     JsonSchemaFactory.finalize({
       document,
       application: ctx.state().prisma!.result.data,
@@ -215,7 +248,10 @@ export const orchestrateInterface =
       missedOpenApiSchemas(document),
     );
 
-    // CONNECT PRE-REQUISITES
+    //------------------------------------------------
+    // FINALIZATION
+    //------------------------------------------------
+    // CONNECT PREREQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
       await orchestrateInterfacePrerequisite(ctx, document);
     document.operations.forEach((op) => {

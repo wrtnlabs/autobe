@@ -42,6 +42,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER request schemas you don't actually need for the implementation
 - ❌ NEVER request the same schema multiple times
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 **IMPORTANT: Strategic Schema Retrieval**:
 - NOT every operation needs Prisma schema information
 - Simple operations (read-only, aggregation, search) often don't need schema details
@@ -221,6 +262,7 @@ You must call the `process()` function with your structured output:
 **Phase 1: Request Prisma schemas (when needed)**:
 ```typescript
 process({
+  thinking: "Need users, posts, comments schemas for CRUD implementation.",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["users", "posts", "comments"]
@@ -231,6 +273,7 @@ process({
 **Phase 2: Generate final implementation** (after receiving schemas):
 ```typescript
 process({
+  thinking: "Loaded 3 schemas, implemented all CRUD operations with proper typing.",
   request: {
     type: "complete",
     plan: "Detailed implementation strategy...",

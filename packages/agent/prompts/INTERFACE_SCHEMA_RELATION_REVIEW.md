@@ -49,6 +49,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific documents, table schemas, or interface schemas, request them via `getPrismaSchemas`, `getAnalysisFiles`, or `getInterfaceSchemas`
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 ---
 
 ## 1. Input Materials
@@ -344,11 +385,12 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
-process({ request: { type: "getAnalysisFiles", fileNames: ["Domain_Model.md"] } })
+process({ thinking: "Missing requirements. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
+process({ thinking: "Still missing domain context. Need more.", request: { type: "getAnalysisFiles", fileNames: ["Domain_Model.md"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing business context for relationship validation. Don't have it.",
   request: {
     type: "getAnalysisFiles",
     fileNames: ["Requirements.md", "Domain_Model.md", "Entity_Specs.md"]
@@ -358,11 +400,12 @@ process({
 
 ```typescript
 // ❌ INEFFICIENT - Requesting Prisma schemas one by one
-process({ request: { type: "getPrismaSchemas", schemaNames: ["sales"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["sales"] } })
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing related entity structures for relationship verification. Don't have them.",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["sales", "orders", "sale_units", "order_items"]
@@ -373,9 +416,9 @@ process({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
-process({ request: { type: "getAnalysisFiles", fileNames: ["Business_Requirements.md", "Domain_Model.md"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["sales", "orders", "products"] } })
-process({ request: { type: "getInterfaceOperations", endpoints: [
+process({ thinking: "Missing business domain model for relationships. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Requirements.md", "Domain_Model.md"] } })
+process({ thinking: "Missing entity structures for relation patterns. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["sales", "orders", "products"] } })
+process({ thinking: "Missing operation specs for DTO usage context. Don't have them.", request: { type: "getInterfaceOperations", endpoints: [
   { path: "/sales", method: "post" },
   { path: "/orders", method: "get" }
 ]} })
@@ -384,33 +427,33 @@ process({ request: { type: "getInterfaceOperations", endpoints: [
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
-process({ request: { type: "complete", think: {...}, content: {...} } })  // This executes with OLD materials!
+process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "Relation review complete", request: { type: "complete", think: {...}, content: {...} } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders", "sales", "products"] } })
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/orders", method: "post" }] } })
+process({ thinking: "Missing entity relationship patterns. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["orders", "sales", "products"] } })
+process({ thinking: "Missing operation context for scope validation. Don't have it.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/orders", method: "post" }] } })
 
 // Then: After materials are loaded, call complete
-process({ request: { type: "complete", think: {...}, content: {...} } })
+process({ thinking: "Verified all relationships, validated scopes, ready to complete", request: { type: "complete", think: {...}, content: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
 ```typescript
 // ❌ ATTEMPT 1 - Re-requesting already loaded materials
-process({ request: { type: "getPrismaSchemas", schemaNames: ["sales"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["sales"] } })
 // → Returns: []
 // → Result: "getPrismaSchemas" REMOVED from union
 // → Shows: PRELIMINARY_ARGUMENT_EMPTY.md
 
 // ❌ ATTEMPT 2 - Trying again
-process({ request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
 // → COMPILER ERROR: "getPrismaSchemas" no longer exists in union
 // → PHYSICALLY IMPOSSIBLE to call
 
 // ✅ CORRECT - Check conversation history first
-process({ request: { type: "getAnalysisFiles", fileNames: ["Domain_Model.md"] } })  // Different type, OK
+process({ thinking: "Missing domain model context. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Domain_Model.md"] } })  // Different type, OK
 ```
 **Token Efficiency Rule**: Each re-request wastes your limited 8-call budget and triggers validator removal!
 

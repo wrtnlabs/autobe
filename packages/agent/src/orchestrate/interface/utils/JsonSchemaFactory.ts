@@ -58,31 +58,36 @@ export namespace JsonSchemaFactory {
   };
 
   const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
-    const used: Set<string> = new Set();
-    const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
-      OpenApiTypeChecker.visit({
-        components: { schemas: document.components.schemas },
-        schema,
-        closure: (next) => {
-          if (OpenApiTypeChecker.isReference(next)) {
-            const key: string = next.$ref.split("/").pop()!;
-            used.add(key);
-          }
-        },
-      });
+    while (true) {
+      const used: Set<string> = new Set();
+      const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
+        OpenApiTypeChecker.visit({
+          components: { schemas: document.components.schemas },
+          schema,
+          closure: (next) => {
+            if (OpenApiTypeChecker.isReference(next)) {
+              const key: string = next.$ref.split("/").pop()!;
+              used.add(key);
+            }
+          },
+        });
 
-    for (const op of document.operations) {
-      if (op.requestBody !== null)
-        visit({
-          $ref: `#/components/schemas/${op.requestBody.typeName}`,
-        });
-      if (op.responseBody !== null)
-        visit({
-          $ref: `#/components/schemas/${op.responseBody.typeName}`,
-        });
+      for (const op of document.operations) {
+        if (op.requestBody !== null)
+          visit({
+            $ref: `#/components/schemas/${op.requestBody.typeName}`,
+          });
+        if (op.responseBody !== null)
+          visit({
+            $ref: `#/components/schemas/${op.responseBody.typeName}`,
+          });
+      }
+      if (used.size === Object.keys(document.components.schemas).length) break;
+      else {
+        for (const key of Object.keys(document.components.schemas))
+          if (used.has(key) === false) delete document.components.schemas[key];
+      }
     }
-    for (const key of Object.keys(document.components.schemas))
-      if (used.has(key) === false) delete document.components.schemas[key];
   };
 
   const removeDuplicated = (document: AutoBeOpenApi.IDocument): void => {

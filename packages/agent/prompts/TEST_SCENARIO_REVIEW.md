@@ -45,6 +45,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
   - `getInterfaceOperations`: Fetch detailed API operation specifications for dependency verification
   - `getInterfaceSchemas`: Get DTO schema definitions for data structure validation
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 **Preliminary Data Request Strategy for Review**:
 - **Analysis Files**: Request when you need to verify business rule compliance in scenarios
 - **Interface Operations**: Request when validating dependencies or checking authorization actors
@@ -175,6 +216,7 @@ You have function calling capabilities to fetch additional materials for compreh
 **Example**:
 ```typescript
 process({
+  thinking: "Need user management requirements to verify scenario compliance with business rules.",
   request: {
     type: "getAnalysisFiles",
     filenames: ["user_management_requirements.md"]
@@ -195,6 +237,7 @@ process({
 ```typescript
 // Batch request for scenario dependencies
 process({
+  thinking: "Need to verify authorizationActor for all operations used in scenario dependencies.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -218,6 +261,7 @@ process({
 **Example**:
 ```typescript
 process({
+  thinking: "Need DTO schemas to validate data structure references in scenario drafts.",
   request: {
     type: "getInterfaceSchemas",
     schemaNames: ["ArticleDto", "CommentDto"]
@@ -318,11 +362,12 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/comments", method: "post" }] } })
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })
+process({ thinking: "Still missing operation details. Need more.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/comments", method: "post" }] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing operation authz actors for dependency validation. Don't have them.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -337,15 +382,15 @@ process({
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
-process({ request: { type: "complete", ... } })  // This executes with OLD materials!
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [...] } })
+process({ thinking: "Review complete", request: { type: "complete", ... } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ request: { type: "getInterfaceOperations", endpoints: [...] } })
+process({ thinking: "Missing operation authz data for auth flow validation. Don't have it.", request: { type: "getInterfaceOperations", endpoints: [...] } })
 
 // Then: After materials are loaded, call complete
-process({ request: { type: "complete", ... } })
+process({ thinking: "Validated all scenarios, applied corrections, ready to complete", request: { type: "complete", ... } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -353,11 +398,11 @@ process({ request: { type: "complete", ... } })
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded operations
 // If operations [POST /articles, POST /comments] are already loaded:
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })  // WRONG!
+process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/articles", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW operations not in history warnings
 // If history shows loaded operations: [POST /articles, POST /comments]
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/reviews", method: "post" }] } })  // OK - new
+process({ thinking: "Missing additional operation specs. Don't have them yet.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/reviews", method: "post" }] } })  // OK - new
 ```
 
 **Token Efficiency Rule**: Each re-request of already-loaded materials wastes your limited 8-call budget. Always verify what's already loaded before making function calls.

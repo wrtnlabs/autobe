@@ -40,6 +40,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific analysis documents or table schemas, request them via `getPrismaSchemas` or `getAnalysisFiles`
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 ## 2. Your Mission
 
 Analyze the provided information and generate a comprehensive array of API endpoints that addresses the functional requirements. Be thorough in covering user workflows while being thoughtful about system-managed entities. You will call the `process()` function with `type: "complete"` and an array of endpoint definitions that contain ONLY path and method properties.
@@ -334,6 +375,7 @@ Retrieves requirement analysis documents to understand user workflows and busine
 
 ```typescript
 process({
+  thinking: "Missing analytics workflow details for endpoint design. Don't have them.",
   request: {
     type: "getAnalysisFiles",
     fileNames: ["Feature_A.md", "Feature_B.md"]  // Batch request for specific features
@@ -361,6 +403,7 @@ Retrieves Prisma model definitions to understand database structure and relation
 
 ```typescript
 process({
+  thinking: "Need shopping_sales and shopping_orders schemas to verify stance properties",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["shopping_sales", "shopping_orders"]  // Only specific schemas needed
@@ -460,12 +503,13 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md"] } })
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature_B.md"] } })
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature_C.md"] } })
+process({ thinking: "Missing feature details. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md"] } })
+process({ thinking: "Still missing workflow info. Need more.", request: { type: "getAnalysisFiles", fileNames: ["Feature_B.md"] } })
+process({ thinking: "Need additional context. Don't have it.", request: { type: "getAnalysisFiles", fileNames: ["Feature_C.md"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing feature workflow details for comprehensive endpoint design. Don't have them.",
   request: {
     type: "getAnalysisFiles",
     fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md", "Feature_D.md"]
@@ -475,12 +519,13 @@ process({
 
 ```typescript
 // ❌ INEFFICIENT - Requesting Prisma schemas one by one
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
+process({ thinking: "Missing entity structure. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "Additional schema needed. Don't have it.", request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing entity structures for stance and code field verification. Don't have them.",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["users", "orders", "products", "order_items", "payments"]
@@ -491,24 +536,24 @@ process({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
-process({ request: { type: "getAnalysisFiles", fileNames: ["E-commerce_Workflow.md", "Payment_Processing.md"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"] } })
+process({ thinking: "Missing workflow context for analytics endpoints. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["E-commerce_Workflow.md", "Payment_Processing.md"] } })
+process({ thinking: "Missing schema structures for CRUD design. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ request: { type: "getAnalysisFiles", fileNames: ["Features.md"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
-process({ request: { type: "complete", endpoints: [...] } })  // This executes with OLD materials!
+process({ thinking: "Missing feature details. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Features.md"] } })
+process({ thinking: "Missing schema info. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "All endpoints designed", request: { type: "complete", endpoints: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md", "Feature_B.md"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["orders", "products", "users"] } })
+process({ thinking: "Missing workflow details for endpoint coverage. Don't have them.", request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md", "Feature_B.md"] } })
+process({ thinking: "Missing entity structures for proper CRUD design. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["orders", "products", "users"] } })
 
 // Then: After materials are loaded, call complete
-process({ request: { type: "complete", endpoints: [...] } })
+process({ thinking: "Loaded all required materials, designed comprehensive endpoints", request: { type: "complete", endpoints: [...] } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -516,18 +561,18 @@ process({ request: { type: "complete", endpoints: [...] } })
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
 // If Prisma schemas [users, admins, sellers] are already loaded:
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
-process({ request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
+process({ thinking: "Missing schema details. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
+process({ thinking: "Still need more schemas. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If Authentication_Requirements.md is already loaded:
-process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
+process({ thinking: "Missing auth requirements. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
 
 // ✅ CORRECT - Only request NEW materials not in history warnings
 // If history shows loaded schemas: ["users", "admins", "sellers"]
 // If history shows loaded files: ["Authentication_Requirements.md"]
-process({ request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
-process({ request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
+process({ thinking: "Missing additional entity schemas. Don't have them yet.", request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
+process({ thinking: "Missing security policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
 
 // ✅ CORRECT - Check history first, then request only missing items
 // Review conversation history for "⚠️ ... have been loaded" warnings

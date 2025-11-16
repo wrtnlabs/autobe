@@ -43,6 +43,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific analysis documents or table schemas, request them via `getPrismaSchemas` or `getAnalysisFiles`
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 ### Authentication Scope Definition
 
 **INCLUDE (Authentication/Authorization Operations):**
@@ -115,6 +156,7 @@ Retrieves requirement analysis documents to understand authorization workflows.
 
 ```typescript
 process({
+  thinking: "I need Authentication_Requirements and User_Management to understand actor auth flows. Don't have them yet.",
   request: {
     type: "getAnalysisFiles",
     fileNames: ["Authentication_Requirements.md", "User_Management.md"]  // Batch request
@@ -141,6 +183,7 @@ Retrieves Prisma model definitions to verify actor table structures and authenti
 
 ```typescript
 process({
+  thinking: "I need users, admins, and sellers schemas to verify actor auth fields. Don't have them yet.",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["users", "admins", "sellers"]  // Batch request
@@ -167,6 +210,7 @@ Retrieves existing API operations for consistency.
 
 ```typescript
 process({
+  thinking: "I need user join and admin login operations for consistency. Don't have them yet.",
   request: {
     type: "getInterfaceOperations",
     endpoints: [
@@ -267,11 +311,12 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["admins"] } })
+process({ thinking: "Missing actor table structure. Don't have it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more actor schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["admins"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
+  thinking: "Missing actor table structures for auth field verification. Don't have them yet.",
   request: {
     type: "getPrismaSchemas",
     schemaNames: ["users", "admins", "sellers", "customers"]
@@ -282,23 +327,23 @@ process({
 **Parallel Calling Example**:
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
-process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
+process({ thinking: "Missing auth workflow details. Not in current context.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
+process({ thinking: "Missing actor table details for field verification. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ request: { type: "complete", operations: [...] } })  // This executes with OLD materials!
+process({ thinking: "Missing actor auth details. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Generated all auth operations", request: { type: "complete", operations: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
-process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
+process({ thinking: "Missing actor field info for auth operations. Don't have it.", request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
+process({ thinking: "Missing password policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
 
 // Then: After materials are loaded, call complete
-process({ request: { type: "complete", operations: [...] } })
+process({ thinking: "Loaded actor schemas, designed all auth ops, ready to complete", request: { type: "complete", operations: [...] } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -306,22 +351,22 @@ process({ request: { type: "complete", operations: [...] } })
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
 // If schemas "users", "admins", "sellers" are already loaded:
-process({ request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
-process({ request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
+process({ thinking: "Missing actor details for verification. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
+process({ thinking: "Still missing actor schemas. Need more.", request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If "Authentication_Requirements.md" is already loaded:
-process({ request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
+process({ thinking: "Missing password policy info. Need it.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded operations
 // If operation "POST /auth/user/join" is already loaded:
-process({ request: { type: "getInterfaceOperations", endpoints: [{ path: "/auth/user/join", method: "post" }] } })  // WRONG!
+process({ thinking: "Missing join operation reference. Need it.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/auth/user/join", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 // If schemas "users", "admins", "sellers" are already loaded:
 // If file "Authentication_Requirements.md" is already loaded:
-process({ request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
-process({ request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
+process({ thinking: "Missing additional actor schemas. Don't have them yet.", request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
+process({ thinking: "Missing 2FA policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
 
 // ✅ CORRECT - Request only materials not yet loaded
 // Check what materials are available before making function calls

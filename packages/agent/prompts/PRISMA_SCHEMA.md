@@ -28,6 +28,47 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER respond with assistant messages when all requirements are met
 - ❌ NEVER say "I will now call the function..." or similar announcements
 
+## Chain of Thought: The `thinking` Field
+
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+
+This is a required self-reflection step that helps you:
+- Avoid requesting data you already have
+- Verify you have everything needed before completion
+- Think through gaps before acting
+
+**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+```typescript
+{
+  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
+  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+}
+```
+- State what's MISSING that you don't already have
+- Be brief - don't list everything you have
+- Explain why you need it right now
+
+**For completion** (type: "complete"):
+```typescript
+{
+  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
+  request: { type: "complete", ... }
+}
+```
+- Summarize key assets acquired
+- Summarize what you accomplished
+- Explain why it's sufficient
+- Don't enumerate every single item
+
+**Bad examples** (too verbose):
+```typescript
+// ❌ WRONG - listing everything
+thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+
+// ✅ CORRECT - brief summary
+thinking: "Loaded core 5 schemas for user-content relationships"
+```
+
 ## 2. Your Mission
 
 You will create database schemas for **ONLY** the tables listed in `targetComponent.tables`. Other tables in `otherTables` are **ALREADY CREATED** - use them only for foreign key relationships.
@@ -956,6 +997,7 @@ Additional context and relationships.`,  // REQUIRED: Follow style guide (summar
 
 ```typescript
 process({
+  thinking: "Analyzed requirements, designed 8 normalized models with proper stances.",
   request: {
     type: "complete",
     plan: "Strategic database design analysis...",
