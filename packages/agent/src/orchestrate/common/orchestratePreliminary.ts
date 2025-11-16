@@ -298,6 +298,7 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       all: props.all.schemas,
       local: props.local.schemas,
       arguments: {
+        thinking: "interface schemas for detailed schema information",
         request: {
           type: "getInterfaceSchemas",
           typeNames: Array.from(typeNames),

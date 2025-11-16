@@ -21,6 +21,27 @@ export interface IAutoBeInterfacePrerequisiteApplication {
 export namespace IAutoBeInterfacePrerequisiteApplication {
   export interface IProps {
     /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval

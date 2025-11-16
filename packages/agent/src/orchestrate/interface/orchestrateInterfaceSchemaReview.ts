@@ -220,6 +220,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       return result;
     } else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
+        thinking: result.data.thinking,
         request: result.data.request,
       });
 

@@ -6,6 +6,7 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "./IAutoBePreliminaryGetIn
 import { IAutoBePreliminaryGetPrismaSchemas } from "./IAutoBePreliminaryGetPrismaSchemas";
 
 export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
+  thinking: string;
   request: Mapper[Kind];
 }
 

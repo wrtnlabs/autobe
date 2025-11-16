@@ -90,6 +90,7 @@ namespace Transformer {
             controller: props.source,
             kind: "analysisFiles",
             arguments: {
+              thinking: "analysis files for detailed requirements' analyses",
               request: {
                 type: "getAnalysisFiles",
                 fileNames: props.local.analysisFiles.map((f) => f.filename),
@@ -159,6 +160,7 @@ namespace Transformer {
             controller: props.source,
             kind: "prismaSchemas",
             arguments: {
+              thinking: "prisma schemas for DB schema information",
               request: {
                 type: "getPrismaSchemas",
                 schemaNames: props.local.prismaSchemas.map((s) => s.name),
@@ -233,6 +235,8 @@ namespace Transformer {
             controller: props.source,
             kind: "interfaceOperations",
             arguments: {
+              thinking:
+                "interface operations for detailed endpoint information",
               request: {
                 type: "getInterfaceOperations",
                 endpoints: oldbie.toJSON(),
@@ -282,6 +286,7 @@ namespace Transformer {
             controller: props.source,
             kind: "interfaceSchemas",
             arguments: {
+              thinking: "interface schemas for detailed schema information",
               request: {
                 type: "getInterfaceSchemas",
                 typeNames: Object.keys(props.local.interfaceSchemas),

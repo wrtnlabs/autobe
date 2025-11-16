@@ -134,6 +134,7 @@ function createController<Model extends ILlmSchema.Model>(
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
+        thinking: result.data.thinking,
         request: result.data.request,
       });
 
