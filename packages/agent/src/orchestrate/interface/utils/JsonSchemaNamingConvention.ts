@@ -67,7 +67,11 @@ class Convention {
 
   public emplace(key: string, setter: (v: string) => void): void {
     this.closures.push({ value: key, setter });
-    MapUtil.take(this.dict, key.toLowerCase(), () => new Set()).add(key);
+    MapUtil.take(
+      this.dict,
+      key.split(".")[0]!.toLowerCase(),
+      () => new Set(),
+    ).add(key.split(".")[0]!);
   }
 
   public execute(): void {
@@ -80,8 +84,10 @@ class Convention {
         )[0]!,
       );
     for (const closure of this.closures) {
-      const value: string = mapping.get(closure.value.toLowerCase())!;
-      closure.setter(value);
+      const value: string = mapping.get(
+        closure.value.split(".")[0]!.toLowerCase(),
+      )!;
+      closure.setter([value, ...closure.value.split(".").slice(1)].join("."));
     }
   }
 }
