@@ -95,6 +95,7 @@ export class AutoBeListener {
         this.dict_.delete("interfaceOperationReview");
         this.dict_.delete("interfaceSchema");
         this.dict_.delete("interfaceSchemaReview");
+        this.dict_.delete("interfaceComplement");
         this.dict_.delete("interfaceSchemaRename");
         this.dict_.delete("interfacePrerequisite");
         this.insert(event);
@@ -127,7 +128,7 @@ export class AutoBeListener {
         this.accumulate(event);
       },
       interfaceComplement: async (event) => {
-        this.insert(event);
+        this.accumulate(event);
       },
       interfacePrerequisite: async (event) => {
         this.accumulate(event);
@@ -140,6 +141,7 @@ export class AutoBeListener {
         this.dict_.delete("interfaceSchema");
         this.dict_.delete("interfaceSchemaReview");
         this.dict_.delete("interfaceSchemaRename");
+        this.dict_.delete("interfaceComplement");
         this.dict_.delete("interfacePrerequisite");
         this.state_.setInterface(event);
         this.insert(event);

@@ -67,6 +67,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "interfaceAuthorization":
     case "interfaceSchema":
     case "interfaceSchemaReview":
+    case "interfaceComplement":
     case "interfaceSchemaRename":
     case "interfacePrerequisite":
     case "testWrite":
@@ -79,7 +80,6 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     // VALIDATE EVENTS
     case "prismaInsufficient":
     case "prismaValidate":
-    case "interfaceComplement":
     case "testValidate":
     case "realizeValidate":
     case "realizeAuthorizationValidate":
