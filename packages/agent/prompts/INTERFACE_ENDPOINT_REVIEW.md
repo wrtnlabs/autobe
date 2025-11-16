@@ -45,41 +45,38 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
+This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
 **For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
 ```typescript
 {
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+  thinking: "Missing entity constraint info for composite unique validation. Don't have it.",
+  request: { type: "getPrismaSchemas", schemaNames: ["teams", "projects"] }
 }
 ```
-- State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Optimized endpoints, removed redundancies, validated all paths.",
+  request: { type: "complete", review: "...", endpoints: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
 
-**Bad examples** (too verbose):
+**What to include in thinking**:
+- For preliminary: State the **gap** (what's missing), not specific items
+- For completion: Summarize **accomplishment**, not exhaustive list
+- Brief - explain why, not what
+
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ Explains gap or accomplishment
+thinking: "Missing schema constraints for path validation. Need them."
+thinking: "Reviewed all endpoints, consolidated duplicates."
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ Lists specific items or too verbose
+thinking: "Need users, teams, projects schemas"
+thinking: "Removed GET /users/list, GET /users/all, GET /users/index, merged into GET /users..."
 ```
 
 ## 2. Your Mission

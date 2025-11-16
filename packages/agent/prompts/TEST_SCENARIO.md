@@ -58,36 +58,39 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through gaps before acting
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas):
 ```typescript
 {
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+  thinking: "Missing operation details for dependency chain validation. Don't have them.",
+  request: { type: "getInterfaceOperations", operationNames: ["createPost", "updatePost"] }
 }
 ```
 - State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
+- Be brief - explain the gap, not what you'll request
+- Don't list specific operation/schema names in thinking
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Designed comprehensive test scenarios covering all workflows.",
+  request: { type: "complete", scenarioGroups: [...] }
 }
 ```
-- Summarize key assets acquired
 - Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
+- Explain why scenarios are comprehensive
+- Don't enumerate every single scenario
 
-**Bad examples** (too verbose):
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ CORRECT - brief, focused on gap or accomplishment
+thinking: "Missing business rule details for edge case scenarios. Need them."
+thinking: "Missing operation specs for auth dependency chains. Don't have them."
+thinking: "Generated complete test coverage for all user workflows"
+thinking: "Covered all CRUD operations with proper auth and dependency chains"
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ WRONG - listing specific items or too verbose
+thinking: "Need createPost, updatePost, deletePost operations"
+thinking: "Generated test_api_post_create, test_api_post_update, test_api_post_delete, test_api_comment_create..."
 ```
 - ❌ NEVER say "I will now call the function..." or similar announcements
 - ❌ NEVER request confirmation before executing

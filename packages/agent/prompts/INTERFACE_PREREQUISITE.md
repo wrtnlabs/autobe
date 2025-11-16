@@ -197,41 +197,38 @@ You will receive additional instructions about input materials through subsequen
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
+This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
 **For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
 ```typescript
 {
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+  thinking: "Missing operation specs for prerequisite chain analysis. Don't have them.",
+  request: { type: "getInterfaceOperations", endpoints: [{path: "/orders", method: "post"}] }
 }
 ```
-- State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Mapped all prerequisites, validated dependency chains.",
+  request: { type: "complete", operations: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
 
-**Bad examples** (too verbose):
+**What to include in thinking**:
+- For preliminary: State the **gap** (what's missing), not specific items
+- For completion: Summarize **accomplishment**, not exhaustive list
+- Brief - explain why, not what
+
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ Explains gap or accomplishment
+thinking: "Missing operation authz data for prereq validation. Need it."
+thinking: "Analyzed all prerequisites, dependencies complete."
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ Lists specific items or too verbose
+thinking: "Need POST /users, POST /products operations"
+thinking: "Added prerequisite POST /users before POST /orders, added POST /products before..."
 ```
 
 ### 3.4. ABSOLUTE PROHIBITION: Never Work from Imagination
