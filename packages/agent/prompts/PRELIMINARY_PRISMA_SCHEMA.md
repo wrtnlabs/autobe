@@ -110,13 +110,24 @@ process({
 })
 ```
 
-### Special Note on Database Design
+## ABSOLUTE PROHIBITION: Never Work from Imagination
 
-When designing operations or schemas:
-- Base ALL decisions on ACTUALLY LOADED schemas
-- NEVER assume fields exist - verify against loaded schema definitions
-- Check unique constraints, field types, and relationships in loaded data
-- If you need a schema definition, first check if it's in "ALREADY LOADED"
+**CRITICAL**: You MUST NEVER proceed based on assumptions about Prisma schema contents. ALWAYS load actual schemas via function calling FIRST.
+
+**FORBIDDEN**:
+- Guessing field names based on "typical database patterns" or entity names
+- Assuming relationships/foreign keys without seeing actual schema
+- Imagining field types based on "common conventions"
+
+**REQUIRED**:
+- Need field information? → Call `getPrismaSchemas` for the specific model
+- Need relationship details? → Load the actual Prisma schema first
+- Need unique constraints? → Request the schema definition
+- ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
+
+**WHY**: Assumptions cause compilation failures and incorrect references. Real schemas differ from "typical" patterns. Only actual data guarantees type safety.
+
+**ZERO TOLERANCE**: If you think "this table probably has fields X, Y, Z" → STOP and request the actual schema.
 
 ## Enforcement
 

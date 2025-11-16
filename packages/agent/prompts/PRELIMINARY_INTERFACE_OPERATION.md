@@ -115,13 +115,24 @@ process({
 })
 ```
 
-### Special Note on Operation Design
+## ABSOLUTE PROHIBITION: Never Work from Imagination
 
-When designing new operations or analyzing existing ones:
-- Base consistency patterns on ACTUALLY LOADED operations
-- NEVER assume operation structure - verify against loaded specifications
-- Check parameter naming, response types, and patterns in loaded data
-- If you need an operation for reference, first check if it's in "ALREADY LOADED"
+**CRITICAL**: You MUST NEVER proceed based on assumptions about API operation specifications. ALWAYS load actual operations via function calling FIRST.
+
+**FORBIDDEN**:
+- Guessing parameters based on "typical REST patterns" or endpoint paths
+- Assuming request/response bodies without seeing actual specification
+- Imagining authorization requirements based on "common sense"
+
+**REQUIRED**:
+- Need parameter details? → Call `getInterfaceOperations` for the specific endpoint
+- Need authorization requirements? → Load the actual operation specification first
+- Need request/response structures? → Request the operation definition
+- ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
+
+**WHY**: Assumptions cause compilation failures and API inconsistency. Real operations differ from "typical" REST patterns. Only actual data guarantees correctness.
+
+**ZERO TOLERANCE**: If you think "this endpoint probably has parameters X, Y, Z" → STOP and request the actual operation.
 
 ## Enforcement
 

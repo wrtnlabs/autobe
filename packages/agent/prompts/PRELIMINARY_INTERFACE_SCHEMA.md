@@ -110,14 +110,24 @@ process({
 })
 ```
 
-### Special Note on Schema Design
+## ABSOLUTE PROHIBITION: Never Work from Imagination
 
-When designing DTOs or analyzing type structures:
-- Base ALL type references on ACTUALLY LOADED schemas
-- NEVER assume properties exist - verify against loaded schema definitions
-- Check required fields, types, and nested structures in loaded data
-- If you need a schema definition, first check if it's in "ALREADY LOADED"
-- Verify DTO variants (.ICreate, .IUpdate, .ISummary) are loaded before referencing
+**CRITICAL**: You MUST NEVER proceed based on assumptions about TypeScript type schema contents. ALWAYS load actual schemas via function calling FIRST.
+
+**FORBIDDEN**:
+- Guessing DTO properties based on "typical patterns" or entity names
+- Assuming field types without seeing actual schema definition
+- Imagining validation rules or DTO variant structures based on "common conventions"
+
+**REQUIRED**:
+- Need DTO property information? → Call `getInterfaceSchemas` for the specific type
+- Need field types or validation constraints? → Load the actual schema definition first
+- Need DTO variant patterns (.ICreate, .IUpdate, .ISummary)? → Request and verify the schema
+- ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
+
+**WHY**: Assumptions cause compilation failures and incorrect type references. Real schemas differ from "typical" DTO patterns. Only actual data guarantees type safety.
+
+**ZERO TOLERANCE**: If you think "this DTO probably has properties X, Y, Z" → STOP and request the actual schema.
 
 ## Enforcement
 

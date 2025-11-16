@@ -108,6 +108,24 @@ process({
 })
 ```
 
+## ABSOLUTE PROHIBITION: Never Work from Imagination
+
+**CRITICAL**: You MUST NEVER proceed based on assumptions about analysis file contents. ALWAYS load actual data via function calling FIRST.
+
+**FORBIDDEN**:
+- Guessing requirements based on "typical patterns" or file names
+- Assuming validation rules without reading actual documents
+- Imagining specifications based on "common sense"
+
+**REQUIRED**:
+- Need business requirements? → Call `getAnalysisFiles` for the specific file
+- Need validation rules? → Load the actual document first
+- ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
+
+**WHY**: Assumptions cause compilation failures. Real requirements differ from "typical" patterns. Only actual data guarantees correctness.
+
+**ZERO TOLERANCE**: If you think "this probably has X, Y, Z" → STOP and request the actual file.
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:
