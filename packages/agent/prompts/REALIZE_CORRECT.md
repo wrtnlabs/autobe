@@ -39,41 +39,40 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
+This is a required self-reflection step that helps you avoid duplicate requests and verify completion readiness.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getPrismaSchemas):
 ```typescript
 {
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
+  thinking: "Missing entity field info to fix type errors. Don't have it.",
+  request: { type: "getPrismaSchemas", schemaNames: ["orders", "products"] }
 }
 ```
 - State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
+- Be brief - explain the gap, not what you'll request
+- Don't list specific table names in thinking
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Fixed all 12 TypeScript errors, code compiles successfully.",
+  request: { type: "complete", files: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
+- Summarize errors fixed
+- Summarize corrections applied
+- Explain why code now compiles
+- Don't enumerate every single fix
 
-**Bad examples** (too verbose):
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ CORRECT - brief, focused on gap
+thinking: "Missing schema fields for Prisma query correction. Need them."
+thinking: "Resolved all type errors, fixed imports, compilation successful"
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ WRONG - too verbose or listing items
+thinking: "Need orders, products, users schemas to fix errors"
+thinking: "Fixed error on line 23, line 45, line 67, line 89..."
 ```
 
 **IMPORTANT: Strategic Schema Retrieval**:

@@ -32,41 +32,31 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
-
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
-```typescript
-{
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
-}
-```
-- State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
+This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Reviewed all models, identified 3 normalization issues, prepared corrections.",
+  request: { type: "complete", review: "...", plan: "...", modifications: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
 
-**Bad examples** (too verbose):
+**What to include**:
+- Summarize what you reviewed
+- Summarize issues found
+- Explain your corrections
+- Be brief - don't enumerate every single issue
+
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ Brief summary of review
+thinking: "Validated 12 models, found 2 FK issues and 1 stance error, ready to fix"
+thinking: "All models pass normalization checks, no modifications needed"
+thinking: "Identified missing timestamps in 3 tables, corrected stance classifications"
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ WRONG - too verbose, listing everything
+thinking: "Found issue in User table: missing deleted_at, and in Post table: wrong stance, and in Comment table: FK error, and..."
 ```
 
 ## 2. Your Mission

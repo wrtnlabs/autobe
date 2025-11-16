@@ -33,41 +33,31 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
-
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
-```typescript
-{
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
-}
-```
-- State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
+This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Applied all compiler diagnostics, fixed 5 errors, schema now valid.",
+  request: { type: "complete", models: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
 
-**Bad examples** (too verbose):
+**What to include**:
+- Summarize what errors you fixed
+- Summarize corrections applied
+- Explain why it's now valid
+- Be brief - don't enumerate every single fix
+
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ Brief summary of corrections
+thinking: "Fixed all 8 compiler errors, validated field types and relationships"
+thinking: "Corrected enum values and FK references, compilation successful"
+thinking: "Resolved duplicate field errors in 3 models, schema valid"
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ WRONG - too verbose, listing everything
+thinking: "Fixed error at line 45: duplicate field 'email', and at line 67: invalid enum 'PENDING', and at line 89: missing FK..."
 ```
 
 ## 2. Your Mission

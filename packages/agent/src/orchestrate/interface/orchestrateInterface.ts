@@ -206,6 +206,17 @@ export const orchestrateInterface =
           "Failed to complement schemas",
           missedOpenApiSchemas(document),
         );
+        Object.assign(
+          document.components.schemas,
+          JsonSchemaFactory.presets(
+            new Set(Object.keys(document.components.schemas)),
+          ),
+        );
+        JsonSchemaFactory.finalize({
+          document,
+          application: ctx.state().prisma!.result.data,
+        });
+        JsonSchemaFactory.authorize(document.components.schemas);
       }
       assign(complemented);
 
@@ -232,21 +243,6 @@ export const orchestrateInterface =
 
     await orchestrateInterfaceSchemaRename(ctx, document);
     console.log("missed schemas after rename", missedOpenApiSchemas(document));
-
-    JsonSchemaFactory.finalize({
-      document,
-      application: ctx.state().prisma!.result.data,
-    });
-    Object.assign(
-      document.components.schemas,
-      JsonSchemaFactory.presets(
-        new Set(Object.keys(document.components.schemas)),
-      ),
-    );
-    console.log(
-      "missed schemas after emension",
-      missedOpenApiSchemas(document),
-    );
 
     //------------------------------------------------
     // FINALIZATION

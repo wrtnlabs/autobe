@@ -46,41 +46,31 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through gaps before acting
-
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
-```typescript
-{
-  thinking: "I need Post schema to implement user's post relationship. Don't have it yet.",
-  request: { type: "getPrismaSchemas", schemaNames: ["Post"] }
-}
-```
-- State what's MISSING that you don't already have
-- Be brief - don't list everything you have
-- Explain why you need it right now
+This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Loaded 5 schemas, implemented all CRUD operations, validation complete.",
-  request: { type: "complete", ... }
+  thinking: "Implemented all 15 operations with proper validation and error handling.",
+  request: { type: "complete", files: [...] }
 }
 ```
-- Summarize key assets acquired
-- Summarize what you accomplished
-- Explain why it's sufficient
-- Don't enumerate every single item
 
-**Bad examples** (too verbose):
+**What to include**:
+- Summarize what operations you implemented
+- Summarize key features (validation, auth, error handling)
+- Explain why implementation is complete
+- Be brief - don't enumerate every single operation
+
+**Good examples**:
 ```typescript
-// ❌ WRONG - listing everything
-thinking: "I have User, Post, Comment, Like, Follow, Message, ... (800 items)"
+// ✅ Brief summary of implementation
+thinking: "Implemented 8 CRUD operations, all with Typia validation and proper auth"
+thinking: "Generated complete controller with error handling and transaction support"
+thinking: "All operations follow NestJS patterns, properly typed with Typia"
 
-// ✅ CORRECT - brief summary
-thinking: "Loaded core 5 schemas for user-content relationships"
+// ❌ WRONG - too verbose, listing everything
+thinking: "Implemented POST /users with validation, GET /users with pagination, PUT /users/{id} with auth, DELETE /users/{id} with..."
 ```
 
 **IMPORTANT: Strategic Schema Retrieval**:

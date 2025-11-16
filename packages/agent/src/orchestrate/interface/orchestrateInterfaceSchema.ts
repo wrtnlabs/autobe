@@ -74,13 +74,8 @@ export async function orchestrateInterfaceSchema<
         });
       return row;
     }),
-  )) {
-    JsonSchemaNamingConvention.schemas(props.operations, x, y);
+  ))
     Object.assign(x, y);
-  }
-  Object.assign(x, presets);
-  JsonSchemaNamingConvention.schemas(props.operations, x);
-  JsonSchemaFactory.authorize(x);
   return x;
 }
 

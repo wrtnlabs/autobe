@@ -74,8 +74,8 @@ export namespace ArchiveLogger {
       content.push(`  - kind: ${event.kind}`);
     else if (event.type === "interfaceComplement")
       content.push(
-        `  - count: ${Object.keys(event.schemas).join(", ")}`,
         `  - missed: ${event.missed.join(", ")}`,
+        `  - filled: ${Object.keys(event.schemas).join(", ")}`,
       );
     else if (event.type === "interfaceSchemaReview")
       content.push(
