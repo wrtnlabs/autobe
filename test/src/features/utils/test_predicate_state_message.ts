@@ -8,6 +8,7 @@ type Step = "analyze" | "prisma" | "interface" | "test" | "realize";
 export const test_predicate_state_message = (): void => {
   typia.misc.literals<Step>().forEach((y) => {
     const state: AutoBeState = {
+      describe: null,
       analyze: null,
       prisma: null,
       interface: null,
@@ -23,6 +24,7 @@ export const test_predicate_state_message = (): void => {
   typia.misc.literals<Step>().forEach((x, i, array) => {
     typia.misc.literals<Step>().forEach((y, j) => {
       const state: AutoBeState = {
+        describe: null,
         analyze: null,
         prisma: null,
         interface: null,
