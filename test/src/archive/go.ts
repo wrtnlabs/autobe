@@ -72,7 +72,7 @@ const main = async (): Promise<void> => {
   const start: Date = new Date();
   await AutoBeExampleBenchmark.execute(
     {
-      createAgent: async (histories) =>
+      createAgent: async (next) =>
         new AutoBeAgent({
           model: TestGlobal.schemaModel,
           vendor: TestGlobal.getVendorConfig(),
@@ -84,7 +84,8 @@ const main = async (): Promise<void> => {
                 : null,
           },
           compiler: (listener) => new AutoBeCompiler(listener),
-          histories,
+          histories: next.histories,
+          tokenUsage: next.tokenUsage,
         }),
     },
     {

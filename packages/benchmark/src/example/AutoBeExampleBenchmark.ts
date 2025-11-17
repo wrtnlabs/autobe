@@ -1,7 +1,6 @@
 import {
   AutoBeEvent,
   AutoBeExampleProject,
-  AutoBeHistory,
   AutoBePhase,
   IAutoBeAgent,
 } from "@autobe/interface";
@@ -11,7 +10,9 @@ import { AutoBeExampleArchiver } from "./AutoBeExampleArchiver";
 
 export namespace AutoBeExampleBenchmark {
   export interface IContext {
-    createAgent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
+    createAgent: (
+      props: AutoBeExampleArchiver.IAgentProps,
+    ) => Promise<IAutoBeAgent>;
   }
 
   export const execute = async (
@@ -101,7 +102,7 @@ export namespace AutoBeExampleBenchmark {
           const success: boolean = await getArchiver(phase)({
             vendor: props.vendor,
             project: props.projectState.name,
-            agent: (histories) => ctx.createAgent(histories),
+            agent: (next) => ctx.createAgent(next),
             on: (s) => {
               phaseState.snapshot = s;
               props.report();

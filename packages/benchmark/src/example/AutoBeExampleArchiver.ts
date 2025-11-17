@@ -26,8 +26,13 @@ export namespace AutoBeExampleArchiver {
   export interface IContext {
     vendor: string;
     project: AutoBeExampleProject;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
+    agent: (props: IAgentProps) => Promise<IAutoBeAgent>;
     on: (snapshot: AutoBeEventSnapshot) => void;
+  }
+
+  export interface IAgentProps {
+    histories: AutoBeHistory[];
+    tokenUsage: IAutoBeTokenUsageJson;
   }
 
   export const archiveAnalyze = (ctx: IContext): Promise<boolean> =>
@@ -130,12 +135,12 @@ export namespace AutoBeExampleArchiver {
     },
   ): Promise<boolean> => {
     // INITIALIZE AGENT
-    const asset: IAsset = await getAsset({
+    const asset: IAgentProps = await getAsset({
       vendor: ctx.vendor,
       project: ctx.project,
       phase: props.phase,
     });
-    const agent: IAutoBeAgent = await ctx.agent(asset.histories);
+    const agent: IAutoBeAgent = await ctx.agent(asset);
     const snapshots: AutoBeEventSnapshot[] = [];
     for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>()) {
       agent.on(type, (e) => {
@@ -286,7 +291,7 @@ export namespace AutoBeExampleArchiver {
     vendor: string;
     project: AutoBeExampleProject;
     phase: AutoBePhase;
-  }): Promise<IAsset> => {
+  }): Promise<IAgentProps> => {
     const previous: AutoBePhase | null =
       PHASES[PHASES.indexOf(props.phase) - 1] ?? null;
     if (previous === null)
@@ -318,11 +323,6 @@ export namespace AutoBeExampleArchiver {
       tokenUsage,
     };
   };
-
-  interface IAsset {
-    histories: AutoBeHistory[];
-    tokenUsage: IAutoBeTokenUsageJson;
-  }
 }
 
 const PHASES: AutoBePhase[] = [

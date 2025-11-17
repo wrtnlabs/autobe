@@ -119,7 +119,7 @@ const main = async (): Promise<void> => {
   const printer = new Singleton(printState);
   await AutoBeExampleBenchmark.execute(
     {
-      createAgent: async (histories) =>
+      createAgent: async (next) =>
         new AutoBeAgent({
           model: TestGlobal.schemaModel,
           vendor: TestGlobal.getVendorConfig(),
@@ -131,7 +131,8 @@ const main = async (): Promise<void> => {
                 : null,
           },
           compiler: (listener) => compiler.get(listener),
-          histories,
+          histories: next.histories,
+          tokenUsage: next.tokenUsage,
         }),
     },
     {
