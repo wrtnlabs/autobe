@@ -24,7 +24,7 @@ export const executeCachedBatch = async <Model extends ILlmSchema.Model, T>(
     .map((task, index) => new Pair(task, index));
   const tail: Pair<T, number>[] = [];
   await Promise.all(
-    new Array(semaphore).map(async () => {
+    new Array(semaphore).fill(0).map(async () => {
       while (remained.length !== 0) {
         const batch: Pair<Task<T>, number> = remained.splice(0, 1)[0]!;
         const result: T = await batch.first(promptCacheKey!);
