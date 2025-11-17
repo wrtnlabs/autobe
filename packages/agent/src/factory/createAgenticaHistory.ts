@@ -27,6 +27,12 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   else if (props.history.type === "describe")
     return {
       ...props.history,
+      contents: [
+        {
+          type: "text",
+          text: props.history.document,
+        },
+      ],
       type: "userMessage",
       toJSON: () => props.history as AutoBeUserMessageHistory,
     };
