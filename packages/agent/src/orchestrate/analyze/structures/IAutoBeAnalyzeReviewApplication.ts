@@ -1,3 +1,5 @@
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+
 export interface IAutoBeAnalyzeReviewApplication {
   /**
    * Enhances and finalizes planning documentation.
@@ -7,11 +9,18 @@ export interface IAutoBeAnalyzeReviewApplication {
    *
    * @param props - Document content, plan, and review criteria
    */
-  review(props: IAutoBeAnalyzeReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeAnalyzeReviewApplication {
   export interface IProps {
+    thinking: string;
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles;
+  }
+
+  export interface IComplete {
+    type: "complete";
+
     /**
      * Step 1 (CoT: Review Phase) - Enhancement Criteria
      *
