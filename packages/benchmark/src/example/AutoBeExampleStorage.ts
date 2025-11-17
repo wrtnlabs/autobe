@@ -26,7 +26,7 @@ export namespace AutoBeExampleStorage {
   export const save = async (props: {
     vendor: string;
     project: AutoBeExampleProject;
-    files: Record<string, string>;
+    files: Record<string, string | null>;
   }): Promise<void> => {
     await saveWithGzip({
       root: `${getDirectory(props)}`,
@@ -190,7 +190,7 @@ export namespace AutoBeExampleStorage {
 
   const saveWithGzip = async (props: {
     root: string;
-    files: Record<string, string>;
+    files: Record<string, string | null>;
     overwrite?: boolean;
   }): Promise<void> => {
     if (props.overwrite !== true && fs.existsSync(props.root))
@@ -207,7 +207,12 @@ export namespace AutoBeExampleStorage {
     for (const [key, value] of Object.entries(props.files)) {
       const file: string = path.resolve(`${props.root}/${key}.gz`);
       await directory.get(path.dirname(file));
-      await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
+      if (value !== null)
+        await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
+      else
+        try {
+          await fs.promises.unlink(file);
+        } catch {}
     }
   };
 }

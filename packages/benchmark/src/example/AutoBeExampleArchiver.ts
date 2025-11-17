@@ -16,18 +16,20 @@ import typia from "typia";
 import { AutoBeExampleStorage } from "./AutoBeExampleStorage";
 
 export namespace AutoBeExampleArchiver {
-  export const archiveAnalyze = (props: {
+  export interface IContext {
     vendor: string;
     project: AutoBeExampleProject;
     agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-  }): Promise<void> =>
-    archive({
-      ...props,
+    on: (snapshot: AutoBeEventSnapshot) => void;
+  }
+
+  export const archiveAnalyze = (ctx: IContext): Promise<boolean> =>
+    archive(ctx, {
       phase: "analyze",
       trial: async (conversate): Promise<boolean> =>
         (await conversate(
           await AutoBeExampleStorage.getUserMessage({
-            project: props.project,
+            project: ctx.project,
             phase: "analyze",
           }).then((r) => r.contents),
         )) ||
@@ -41,16 +43,11 @@ export namespace AutoBeExampleArchiver {
         histories.some((h) => h.type === "analyze"),
     });
 
-  export const archivePrisma = (props: {
-    vendor: string;
-    project: AutoBeExampleProject;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-  }): Promise<void> =>
-    archive({
-      ...props,
+  export const archivePrisma = (ctx: IContext): Promise<boolean> =>
+    archive(ctx, {
       phase: "prisma",
       trial: getTrial({
-        project: props.project,
+        project: ctx.project,
         phase: "prisma",
       }),
       predicate: (histories): boolean => {
@@ -61,16 +58,11 @@ export namespace AutoBeExampleArchiver {
       },
     });
 
-  export const archiveInterface = (props: {
-    vendor: string;
-    project: AutoBeExampleProject;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-  }): Promise<void> =>
-    archive({
-      ...props,
+  export const archiveInterface = (ctx: IContext): Promise<boolean> =>
+    archive(ctx, {
       phase: "interface",
       trial: getTrial({
-        project: props.project,
+        project: ctx.project,
         phase: "interface",
       }),
       predicate: (histories): boolean => {
@@ -83,16 +75,11 @@ export namespace AutoBeExampleArchiver {
       },
     });
 
-  export const archiveTest = (props: {
-    vendor: string;
-    project: AutoBeExampleProject;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-  }): Promise<void> =>
-    archive({
-      ...props,
+  export const archiveTest = (ctx: IContext): Promise<boolean> =>
+    archive(ctx, {
       phase: "test",
       trial: getTrial({
-        project: props.project,
+        project: ctx.project,
         phase: "test",
       }),
       predicate: (histories): boolean => {
@@ -105,16 +92,11 @@ export namespace AutoBeExampleArchiver {
       },
     });
 
-  export const archiveRealize = (props: {
-    vendor: string;
-    project: AutoBeExampleProject;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-  }): Promise<void> =>
-    archive({
-      ...props,
+  export const archiveRealize = (ctx: IContext): Promise<boolean> =>
+    archive(ctx, {
       phase: "realize",
       trial: getTrial({
-        project: props.project,
+        project: ctx.project,
         phase: "realize",
       }),
       predicate: (histories): boolean => {
@@ -128,70 +110,99 @@ export namespace AutoBeExampleArchiver {
       },
     });
 
-  const archive = async (props: {
-    vendor: string;
-    project: AutoBeExampleProject;
-    phase: AutoBePhase;
-    agent: (histories: AutoBeHistory[]) => Promise<IAutoBeAgent>;
-    trial: (
-      conversate: (
-        input: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
-      ) => Promise<boolean>,
-    ) => Promise<boolean>;
-    predicate: (histories: AutoBeHistory[]) => boolean;
-  }): Promise<void> => {
-    const preliminary: IPreliminary = await getPreliminary(props);
-    const agent: IAutoBeAgent = await props.agent(preliminary.histories);
+  const archive = async (
+    ctx: IContext,
+    props: {
+      phase: AutoBePhase;
+      trial: (
+        conversate: (
+          input: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+        ) => Promise<boolean>,
+      ) => Promise<boolean>;
+      predicate: (histories: AutoBeHistory[]) => boolean;
+    },
+  ): Promise<boolean> => {
+    // INITIALIZE AGENT
+    const asset: IAsset = await getAsset({
+      vendor: ctx.vendor,
+      project: ctx.project,
+      phase: props.phase,
+    });
+    const agent: IAutoBeAgent = await ctx.agent(asset.histories);
     const snapshots: AutoBeEventSnapshot[] = [];
     for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>()) {
       agent.on(type, (e) => {
-        snapshots.push({
+        const s: AutoBeEventSnapshot = {
           event: e,
           tokenUsage: agent.getTokenUsage(),
-        });
+        };
+        ctx.on(s);
+        snapshots.push(s);
       });
     }
 
-    const go = async (
-      c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
-    ): Promise<boolean> => {
-      const result: AutoBeHistory[] = await agent.conversate(c);
-      return result.some((h) => h.type === props.phase);
-    };
-    const done: boolean = await props.trial(go);
-    if (done === false)
-      throw new Error(
-        `Failed to function calling in the "${props.phase}" phase of the "${props.project}" project.`,
-      );
-
-    const histories: AutoBeHistory[] = agent.getHistories();
     try {
-      await FileSystemIterator.save({
-        root: `${AutoBeExampleStorage.TEST_ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/${props.phase}`,
+      // CONVERSATE
+      const go = async (
+        c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+      ): Promise<boolean> => {
+        const result: AutoBeHistory[] = await agent.conversate(c);
+        return result.some((h) => h.type === props.phase);
+      };
+      const done: boolean = await props.trial(go);
+      if (done === false)
+        throw new Error(
+          `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.`,
+        );
+
+      // AGGREGATE
+      const histories: AutoBeHistory[] = agent.getHistories();
+      try {
+        await FileSystemIterator.save({
+          root: `${AutoBeExampleStorage.TEST_ROOT}/results/${AutoBeExampleStorage.slugModel(ctx.vendor, false)}/${ctx.project}/${props.phase}`,
+          files: {
+            ...(await agent.getFiles()),
+            ...Object.fromEntries(
+              histories
+                .filter(
+                  (h) =>
+                    h.type === "prisma" ||
+                    h.type === "interface" ||
+                    h.type === "test" ||
+                    h.type === "realize",
+                )
+                .map((h) => [`autobe/${h.type}.instruction.md`, h.instruction]),
+            ),
+          },
+        });
+      } catch {}
+      await AutoBeExampleStorage.save({
+        vendor: ctx.vendor,
+        project: ctx.project,
         files: {
-          ...(await agent.getFiles()),
-          ...Object.fromEntries(
-            histories
-              .filter(
-                (h) =>
-                  h.type === "prisma" ||
-                  h.type === "interface" ||
-                  h.type === "test" ||
-                  h.type === "realize",
-              )
-              .map((h) => [`autobe/${h.type}.instruction.md`, h.instruction]),
-          ),
+          [`${props.phase}.histories.json`]: JSON.stringify(histories),
+          [`${props.phase}.snapshots.json`]: JSON.stringify(snapshots),
+          [`${props.phase}.error.json`]: null,
         },
       });
-    } catch {}
-    await AutoBeExampleStorage.save({
-      vendor: props.vendor,
-      project: props.project,
-      files: {
-        [`${props.phase}.histories.json`]: JSON.stringify(histories),
-        [`${props.phase}.snapshots.json`]: JSON.stringify(snapshots),
-      },
-    });
+      return props.predicate(histories);
+    } catch (error) {
+      if (error instanceof Error)
+        await AutoBeExampleStorage.save({
+          vendor: ctx.vendor,
+          project: ctx.project,
+          files: {
+            [`${props.phase}.snapshots.json`]: JSON.stringify(snapshots),
+            [`${props.phase}.error.json`]: JSON.stringify({
+              ...error,
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }),
+          },
+        });
+      throw error;
+    }
   };
 
   const getTrial =
@@ -213,11 +224,11 @@ export namespace AutoBeExampleArchiver {
         `I already told you to do ${props.phase} process. Never ask me anything, and just do it right now. Go go go!`,
       ));
 
-  const getPreliminary = async (props: {
+  const getAsset = async (props: {
     vendor: string;
     project: AutoBeExampleProject;
     phase: AutoBePhase;
-  }): Promise<IPreliminary> => {
+  }): Promise<IAsset> => {
     const previous: AutoBePhase | null =
       PHASES[PHASES.indexOf(props.phase) - 1] ?? null;
     if (previous === null)
@@ -242,7 +253,7 @@ export namespace AutoBeExampleArchiver {
     };
   };
 
-  interface IPreliminary {
+  interface IAsset {
     histories: AutoBeHistory[];
     tokenUsage: IAutoBeTokenUsageJson;
   }
