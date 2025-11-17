@@ -1,4 +1,5 @@
 import {
+  AutoBeEvent,
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
@@ -20,6 +21,7 @@ export namespace AutoBeExampleBenchmark {
       projects?: AutoBeExampleProject[];
       phases?: AutoBePhase[];
       progress: (state: IAutoBeExampleBenchmarkState) => void;
+      on?: (event: AutoBeEvent) => void;
     },
   ): Promise<void> => {
     const state: IAutoBeExampleBenchmarkState = {
@@ -46,6 +48,7 @@ export namespace AutoBeExampleBenchmark {
         executeVendor(ctx, {
           phases: props.phases,
           vendorState: vendor,
+          on: props.on,
           report,
         }),
       ),
@@ -56,14 +59,16 @@ export namespace AutoBeExampleBenchmark {
     ctx: IContext,
     props: {
       vendorState: IAutoBeExampleBenchmarkState.IOfVendor;
-      report: () => void;
       phases?: AutoBePhase[];
+      report: () => void;
+      on?: (event: AutoBeEvent) => void;
     },
   ): Promise<void> => {
     for (const project of props.vendorState.projects)
       await executeProject(ctx, {
         vendor: props.vendorState.name,
         report: props.report,
+        on: props.on,
         projectState: project,
       });
   };
@@ -75,6 +80,7 @@ export namespace AutoBeExampleBenchmark {
       projectState: IAutoBeExampleBenchmarkState.IOfProject;
       phases?: AutoBePhase[];
       report: () => void;
+      on?: (event: AutoBeEvent) => void;
     },
   ): Promise<void> => {
     for (const phase of PHASE_SEQUENCE) {
@@ -95,9 +101,10 @@ export namespace AutoBeExampleBenchmark {
             vendor: props.vendor,
             project: props.projectState.name,
             agent: (histories) => ctx.createAgent(histories),
-            on: (snapshot) => {
-              phaseState.snapshot = snapshot;
+            on: (s) => {
+              phaseState.snapshot = s;
               props.report();
+              if (props.on) props.on(s.event);
             },
           });
           phaseState.success = success;
