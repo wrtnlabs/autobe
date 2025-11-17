@@ -70,7 +70,6 @@ const main = async (): Promise<void> => {
   console.log("");
 
   const start: Date = new Date();
-  if (1 == <any>1) return
   await AutoBeExampleBenchmark.execute(
     {
       createAgent: async (histories) =>
