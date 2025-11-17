@@ -1,9 +1,11 @@
+
 bin/
 lib/
 node_modules/
 playground-result/
 temporary/
 
+assets/describe/
 repositories/
 apps/**/README.md
 internals/**/README.md
