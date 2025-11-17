@@ -88,15 +88,8 @@ export namespace JsonSchemaFactory {
           (key) => used.has(key) === true,
         );
       if (complete === true) break;
-      else {
-        console.log(
-          "remove unused",
-          used.size,
-          Object.keys(document.components.schemas).length,
-        );
-        for (const key of Object.keys(document.components.schemas))
-          if (used.has(key) === false) delete document.components.schemas[key];
-      }
+      for (const key of Object.keys(document.components.schemas))
+        if (used.has(key) === false) delete document.components.schemas[key];
     }
   };
 
