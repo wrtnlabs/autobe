@@ -15,6 +15,7 @@ import {
   IAutoBeAgent,
   IAutoBeCompilerListener,
 } from "@autobe/interface";
+import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore, Singleton } from "tstl";
 import { v7 } from "uuid";
@@ -24,7 +25,6 @@ import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
-import { AutoBeProcessAggregateFactory } from "./factory/AutoBeProcessAggregateFactory";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";

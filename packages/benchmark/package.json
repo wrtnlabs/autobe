@@ -33,7 +33,6 @@
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
-    "@autobe/agent": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/utils": "workspace:^",

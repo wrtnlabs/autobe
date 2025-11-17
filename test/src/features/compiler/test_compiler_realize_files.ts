@@ -1,8 +1,8 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
+import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 import cp from "child_process";
 import OpenAI from "openai";
 import { v7 } from "uuid";

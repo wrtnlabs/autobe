@@ -1,55 +1,90 @@
-import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { AutoBeExampleStorage, AutoBeReplayComputer } from "@autobe/benchmark";
 import {
+  AutoBeAggregateEventBase,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
-  AutoBeInterfaceComplementEvent,
-  AutoBeProgressEventBase,
+  AutoBeHistory,
+  AutoBePhase,
+  AutoBeProcessAggregateCollection,
+  IAutoBePlaygroundReplay,
 } from "@autobe/interface";
+import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 import typia from "typia";
 
-const fix = async (props: {
-  vendor: string;
-  project: AutoBeExampleProject;
-}): Promise<void> => {
-  try {
-    const snapshots: AutoBeEventSnapshot[] =
-      await AutoBeExampleStorage.getSnapshots({
-        vendor: props.vendor,
-        project: props.project,
-        phase: "interface",
-      });
-    const complements: AutoBeInterfaceComplementEvent[] = snapshots
-      .map((s) => s.event)
-      .filter(
-        (e) => e.type === "interfaceComplement",
-      ) as AutoBeInterfaceComplementEvent[];
-    if (complements.length === 0) return;
-    else if (complements[0].total !== undefined) return;
-
-    const progress: AutoBeProgressEventBase = {
-      total: complements
-        .map((c) => Object.keys(c.schemas).length)
-        .reduce((a, b) => a + b, 0),
-      completed: 0,
-    };
-    complements.forEach((c) => {
-      c.total = progress.total;
-      c.completed += Object.keys(c.schemas).length;
-      Object.assign(c, progress);
-    });
-    await AutoBeExampleStorage.save({
-      vendor: props.vendor,
-      project: props.project,
-      files: {
-        [`interface.snapshots.json`]: JSON.stringify(snapshots),
-      },
-    });
-  } catch {}
-};
+const PHASES = ["analyze", "prisma", "interface", "test", "realize"] as const;
 
 const main = async (): Promise<void> => {
   for (const vendor of await AutoBeExampleStorage.getVendorModels())
-    for (const project of typia.misc.literals<AutoBeExampleProject>())
-      await fix({ vendor, project });
+    for (const project of typia.misc.literals<AutoBeExampleProject>()) {
+      for (const phase of PHASES.slice().reverse()) {
+        if (
+          (await AutoBeExampleStorage.has({
+            vendor,
+            project,
+            phase,
+          })) === false
+        )
+          continue;
+        try {
+          const getSnapshots = (phase: AutoBePhase) =>
+            AutoBeExampleStorage.getSnapshots({
+              vendor,
+              project,
+              phase,
+            });
+          const histories: AutoBeHistory[] =
+            await AutoBeExampleStorage.getHistories({
+              vendor,
+              project,
+              phase,
+            });
+          const replay: IAutoBePlaygroundReplay = {
+            vendor,
+            project,
+            histories,
+            analyze: null,
+            prisma: null,
+            interface: null,
+            test: null,
+            realize: null,
+          };
+          const index: number = PHASES.indexOf(phase);
+          for (let i: number = 0; i <= index; ++i)
+            replay[PHASES[i]] = await getSnapshots(PHASES[i]);
+
+          const summary: IAutoBePlaygroundReplay.ISummary =
+            AutoBeReplayComputer.summarize(replay);
+          if (phase !== "realize") {
+            try {
+              const aggregates: AutoBeProcessAggregateCollection =
+                AutoBeProcessAggregateFactory.createCollection();
+              const snapshots: AutoBeEventSnapshot[] = await getSnapshots(
+                PHASES[index + 1],
+              );
+              for (const { event } of snapshots) {
+                if (typia.is<AutoBeAggregateEventBase>(event) === false)
+                  continue;
+                AutoBeProcessAggregateFactory.emplaceEvent(aggregates, event);
+              }
+              summary[PHASES[index + 1]] = {
+                aggregates,
+                success: false,
+                elapsed: 0,
+                commodity: {},
+              };
+            } catch {}
+          }
+          await AutoBeExampleStorage.save({
+            vendor,
+            project,
+            files: {
+              ["summary.json"]: JSON.stringify(summary),
+            },
+          });
+        } finally {
+          break;
+        }
+      }
+    }
 };
 main().catch(console.error);

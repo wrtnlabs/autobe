@@ -5,64 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  agentica:
-    '@agentica/core':
-      specifier: ^0.34.2
-      version: 0.34.2
-  libs:
-    openai:
-      specifier: ^6.7.0
-      version: 6.7.0
-  prisma:
-    '@prisma/adapter-pg':
-      specifier: ^6.16.2
-      version: 6.16.2
-    '@prisma/client':
-      specifier: ^6.16.2
-      version: 6.16.2
-    '@prisma/internals':
-      specifier: ^6.16.2
-      version: 6.16.2
-    prisma:
-      specifier: ^6.16.2
-      version: 6.16.2
   samchon:
-    '@nestia/core':
-      specifier: ^9.0.3
-      version: 9.0.3
-    '@nestia/e2e':
-      specifier: ^9.0.3
-      version: 9.0.3
-    '@nestia/fetcher':
-      specifier: ^9.0.3
-      version: 9.0.3
-    '@nestia/migrate':
-      specifier: ^9.0.3
-      version: 9.0.3
-    '@nestia/sdk':
-      specifier: ^9.0.3
-      version: 9.0.3
-    '@samchon/openapi':
-      specifier: ^5.0.1
-      version: 5.0.1
-    embed-eslint:
-      specifier: ^2.0.1
-      version: 2.0.1
-    embed-prisma:
-      specifier: ^1.1.2
-      version: 1.1.2
-    embed-typescript:
-      specifier: ^2.0.1
-      version: 2.0.1
-    nestia:
-      specifier: ^9.0.3
-      version: 9.0.3
-    prisma-markdown:
-      specifier: ^3.0.0
-      version: 3.0.1
-    tgrid:
-      specifier: ^1.2.0
-      version: 1.2.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
@@ -70,40 +13,12 @@ catalogs:
       specifier: ^10.0.2
       version: 10.0.2
   typescript:
-    '@typescript-eslint/eslint-plugin':
-      specifier: 8.40.0
-      version: 8.40.0
-    '@typescript-eslint/parser':
-      specifier: 8.40.0
-      version: 8.40.0
-    eslint:
-      specifier: 9.34.0
-      version: 9.34.0
-    ts-node:
-      specifier: ^10.9.2
-      version: 10.9.2
     ts-patch:
       specifier: ^3.3.0
       version: 3.3.0
     typescript:
       specifier: ~5.9.3
       version: 5.9.3
-  ui:
-    '@types/react':
-      specifier: ^19.1.10
-      version: 19.1.12
-    '@types/react-dom':
-      specifier: ^19.1.5
-      version: 19.1.9
-    react:
-      specifier: ^19.1.1
-      version: 19.1.1
-    react-dom:
-      specifier: ^19.1.1
-      version: 19.1.1
-    vite:
-      specifier: ^6.3.5
-      version: 6.3.5
 
 importers:
 
@@ -808,9 +723,6 @@ importers:
 
   packages/benchmark:
     dependencies:
-      '@autobe/agent':
-        specifier: workspace:^
-        version: link:../agent
       '@autobe/filesystem':
         specifier: workspace:^
         version: link:../filesystem

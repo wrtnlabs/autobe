@@ -1,3 +1,5 @@
+export * from "./aggregate";
+
 export * from "./prisma";
 export * from "./interface";
 export * from "./test";

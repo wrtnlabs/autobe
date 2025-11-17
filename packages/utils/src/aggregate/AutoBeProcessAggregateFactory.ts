@@ -5,14 +5,25 @@ import {
   AutoBeProcessAggregateCollection,
 } from "@autobe/interface";
 
-import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
-import { TokenUsageComputer } from "../utils/TokenUsageComputer";
 import { AutoBeFunctionCallingMetricFactory } from "./AutoBeFunctionCallingMetricFactory";
+import { TokenUsageComputer } from "./TokenUsageComputer";
 
 export namespace AutoBeProcessAggregateFactory {
   export const createAggregate = (): AutoBeProcessAggregate => ({
     metric: AutoBeFunctionCallingMetricFactory.create(),
-    tokenUsage: new AutoBeTokenUsageComponent().toJSON(),
+    tokenUsage: {
+      total: 0,
+      input: {
+        total: 0,
+        cached: 0,
+      },
+      output: {
+        total: 0,
+        reasoning: 0,
+        accepted_prediction: 0,
+        rejected_prediction: 0,
+      },
+    },
   });
 
   export const createCollection = <

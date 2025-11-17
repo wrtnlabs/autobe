@@ -1,4 +1,3 @@
-import { AutoBeProcessAggregateFactory } from "@autobe/agent/src/factory/AutoBeProcessAggregateFactory";
 import {
   AutoBeExampleProject,
   AutoBeHistory,
@@ -6,6 +5,7 @@ import {
   IAutoBePlaygroundBenchmarkScore,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
+import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 
 export namespace AutoBeReplayComputer {
   export const SIGNIFICANT_PROJECTS: AutoBeExampleProject[] = [

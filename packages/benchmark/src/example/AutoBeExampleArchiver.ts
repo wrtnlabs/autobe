@@ -1,17 +1,22 @@
-import { AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
+  AutoBeAggregateEventBase,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
   AutoBePrismaHistory,
+  AutoBeProcessAggregateCollection,
   AutoBeUserMessageContent,
   IAutoBeAgent,
   IAutoBePlaygroundReplay,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import {
+  AutoBeProcessAggregateFactory,
+  TokenUsageComputer,
+} from "@autobe/utils";
 import typia from "typia";
 
 import { AutoBeReplayComputer } from "../replay";
@@ -170,9 +175,14 @@ export namespace AutoBeExampleArchiver {
       const summary: IAutoBePlaygroundReplay.ISummary =
         AutoBeReplayComputer.summarize(replay);
       if (error === true) {
-        // @todo
+        const aggregates: AutoBeProcessAggregateCollection =
+          AutoBeProcessAggregateFactory.createCollection();
+        for (const { event } of snapshots) {
+          if (typia.is<AutoBeAggregateEventBase>(event) === false) continue;
+          AutoBeProcessAggregateFactory.emplaceEvent(aggregates, event);
+        }
         summary[props.phase] = {
-          aggregates: {},
+          aggregates,
           success: false,
           elapsed: 0,
           commodity: {},
@@ -282,7 +292,15 @@ export namespace AutoBeExampleArchiver {
     if (previous === null)
       return {
         histories: [],
-        tokenUsage: new AutoBeTokenUsage().toJSON(),
+        tokenUsage: {
+          aggregate: TokenUsageComputer.zero(),
+          facade: TokenUsageComputer.zero(),
+          analyze: TokenUsageComputer.zero(),
+          prisma: TokenUsageComputer.zero(),
+          interface: TokenUsageComputer.zero(),
+          test: TokenUsageComputer.zero(),
+          realize: TokenUsageComputer.zero(),
+        },
       };
     const histories: AutoBeHistory[] = await AutoBeExampleStorage.getHistories({
       vendor: props.vendor,

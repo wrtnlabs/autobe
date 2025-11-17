@@ -1,6 +1,20 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 export namespace TokenUsageComputer {
+  export const zero = (): IAutoBeTokenUsageJson.IComponent => ({
+    total: 0,
+    input: {
+      total: 0,
+      cached: 0,
+    },
+    output: {
+      total: 0,
+      reasoning: 0,
+      accepted_prediction: 0,
+      rejected_prediction: 0,
+    },
+  });
+
   export const plus = (
     x: IAutoBeTokenUsageJson.IComponent,
     y: IAutoBeTokenUsageJson.IComponent,
