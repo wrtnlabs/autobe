@@ -31,7 +31,7 @@ const main = async (): Promise<void> => {
   typia.assertGuard<AutoBeExampleProject>(project);
 
   const phases: AutoBePhase[] = (() => {
-    const from: string | null = TestGlobal.getArguments("phases")?.[0] ?? null;
+    const from: string | null = TestGlobal.getArguments("from")?.[0] ?? null;
     const to: string | null = TestGlobal.getArguments("to")?.[0] ?? null;
     if (from === null && to === null) return PHASES;
     const fromIndex: number = from ? PHASES.indexOf(from as AutoBePhase) : 0;
@@ -70,6 +70,7 @@ const main = async (): Promise<void> => {
   console.log("");
 
   const start: Date = new Date();
+  if (1 == <any>1) return
   await AutoBeExampleBenchmark.execute(
     {
       createAgent: async (histories) =>
