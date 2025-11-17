@@ -7,6 +7,7 @@ import {
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeDescribeHistory,
   AutoBeHistory,
   AutoBePhase,
   AutoBeProcessAggregateCollection,
@@ -24,6 +25,7 @@ import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
+import { describeImages } from "./describe/image/describeImages";
 import { AutoBeProcessAggregateFactory } from "./factory/AutoBeProcessAggregateFactory";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
@@ -302,11 +304,21 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
             : [content],
       created_at: new Date().toISOString(),
     };
-    this.histories_.push(userMessageHistory);
     this.dispatch(userMessageHistory).catch(() => {});
+    const describeHistory: AutoBeDescribeHistory | null =
+      userMessageHistory.contents.some((c) => c.type === "image") === true
+        ? await describeImages(this.context_, { content })
+        : null;
+    if (describeHistory)
+      this.dispatch({
+        type: "assistantMessage",
+        id: v7(),
+        text: describeHistory.document,
+        created_at: new Date().toISOString(),
+      });
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(content);
+      await this.agentica_.conversate(describeHistory?.document ?? content);
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>
@@ -321,6 +333,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         throw v;
       }
     }
+
+    this.histories_.push(userMessageHistory);
+    if (describeHistory !== null) this.histories_.push(describeHistory);
     return this.histories_.slice(index);
   }
 
