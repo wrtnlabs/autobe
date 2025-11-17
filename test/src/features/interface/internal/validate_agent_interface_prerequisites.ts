@@ -1,4 +1,4 @@
-import { orchestrateInterfacePrerequisites } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisites";
+import { orchestrateInterfacePrerequisite } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEventOfSerializable, AutoBeOpenApi } from "@autobe/interface";
@@ -57,7 +57,7 @@ export const validate_agent_interface_prerequisites = async (props: {
 
   // GENERATE OPERATIONS
   const prerequisites: AutoBeInterfacePrerequisite[] =
-    await orchestrateInterfacePrerequisites(agent.getContext(), document);
+    await orchestrateInterfacePrerequisite(agent.getContext(), document);
   typia.assert(prerequisites);
 
   // REPORT RESULT

@@ -1,15 +1,15 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
+export const transformAnalyzeSceHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-): Array<IMicroAgenticaHistoryJson> {
-  return [
+): IAutoBeOrchestrateHistory => ({
+  histories: [
     ...ctx
       .histories()
       .filter((h) => h.type === "userMessage" || h.type === "assistantMessage"),
@@ -33,5 +33,11 @@ export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
       `,
       created_at: new Date().toISOString(),
     },
-  ];
-}
+  ],
+  userMessage: StringUtil.trim`
+    Design a complete list of documents and user actors for this project.
+    Define user actors that can authenticate via API and create appropriate documentation files.
+    You must respect the number of documents specified by the user.
+    Note that the user's locale is in ${ctx.locale}.
+  `,
+});

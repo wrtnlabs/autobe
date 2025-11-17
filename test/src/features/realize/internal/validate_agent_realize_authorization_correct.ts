@@ -57,7 +57,7 @@ export const validate_agent_realize_authorization_correct = async (props: {
   })).reduce((acc, cur) => Object.assign(acc, cur), {});
 
   const prisma = ctx.state().prisma?.compiled;
-  const prismaClients: Record<string, string> =
+  const prismaClient: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
   const authorizations: AutoBeRealizeAuthorization[] = [
@@ -165,13 +165,11 @@ export const validate_agent_realize_authorization_correct = async (props: {
 
   const results: AutoBeRealizeAuthorization[] = await Promise.all(
     authorizations.map(async (authorization) => {
-      const auth = await orchestrateRealizeAuthorizationCorrect(
-        ctx,
+      const auth = await orchestrateRealizeAuthorizationCorrect(ctx, {
         authorization,
-        prismaClients,
-        templateFiles,
-      );
-
+        prismaClient,
+        template: templateFiles,
+      });
       return auth;
     }),
   );
@@ -182,7 +180,7 @@ export const validate_agent_realize_authorization_correct = async (props: {
     ...InternalFileSystem.DEFAULT.map((key) => ({
       [key]: templateFiles[key],
     })).reduce((acc, cur) => Object.assign(acc, cur), {}),
-    ...prismaClients,
+    ...prismaClient,
     ...results.reduce(
       (acc, curr) => {
         acc[curr.decorator.location] = curr.decorator.content;

@@ -1,5 +1,4 @@
 import {
-  AutoBeInterfaceComplementEvent,
   AutoBeInterfaceOperationReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
@@ -15,7 +14,6 @@ export type ValidateEvent =
   | AutoBePrismaInsufficientEvent
   | AutoBePrismaValidateEvent
   | AutoBeInterfaceOperationReviewEvent
-  | AutoBeInterfaceComplementEvent
   | AutoBeTestValidateEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeAuthorizationValidateEvent;
@@ -47,8 +45,6 @@ export const ValidateEventGroup = (props: IValidateEventGroupProps) => {
       case "realizeAuthorizationValidate":
         return event.result.type !== "success";
       case "interfaceOperationReview":
-      case "interfaceComplement":
-        return false;
       default:
         return false;
     }

@@ -6,7 +6,6 @@ import {
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -22,11 +21,10 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
-import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
+import { transformRealizeCorrectCastingHistory } from "./histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteCodeTemplate } from "./utils/getRealizeWriteCodeTemplate";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /** Result of attempting to correct a single function */
@@ -115,6 +113,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   props.progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
+    ctx,
     locations.map((location) => async (): Promise<CorrectionResult> => {
       const func: AutoBeRealizeFunction = props.functions.find(
         (f) => f.location === location,
@@ -135,7 +134,21 @@ const correct = async <Model extends ILlmSchema.Model>(
       };
       const { metric, tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
-        histories: transformRealizeCorrectCastingHistories({
+        controller: createController({
+          model: ctx.model,
+          functionName: scenario.functionName,
+          then: (next) => {
+            pointer.value = next;
+          },
+          reject: () => {
+            pointer.value = false;
+          },
+        }),
+        enforceFunctionCall: true,
+        ...transformRealizeCorrectCastingHistory(ctx, {
+          scenario,
+          authorization,
+          function: func,
           failures: [
             ...props.previousFailures
               .map(
@@ -151,58 +164,6 @@ const correct = async <Model extends ILlmSchema.Model>(
             },
           ],
         }),
-        controller: createController({
-          model: ctx.model,
-          functionName: scenario.functionName,
-          then: (next) => {
-            pointer.value = next;
-          },
-          reject: () => {
-            pointer.value = false;
-          },
-        }),
-        enforceFunctionCall: true,
-        message: StringUtil.trim`
-          Fix the TypeScript casting problems to resolve the compilation error.
-
-          Most casting errors are caused by type mismatches between Date types and
-          string & tags.Format<'date-time'>. To fix these:
-          - Use ONLY the pre-provided toISOStringSafe() function to convert Date to string
-          - Do NOT use .toISOString() method directly (use toISOStringSafe instead)
-          - Never use Date type directly in declarations or return values
-
-          You don't need to explain me anything, but just fix or give it up
-          immediately without any hesitation, explanation, and questions.
-
-          The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
-          When modifying, modify the entire code, but not the import statement.
-
-          Below is template code you wrote:
-
-          ${getRealizeWriteCodeTemplate({
-            scenario,
-            schemas: ctx.state().interface!.document.components.schemas,
-            operation: scenario.operation,
-            authorization: authorization ?? null,
-          })}
-
-          Current code is as follows:
-
-          \`\`\`typescript
-          ${func.content}
-          \`\`\`
-
-          Also, never use typia.assert and typia.assertGuard like functions
-          to the Prisma types. Your mission is to fix the casting problem of
-          primitive types like string or number. Prisma type is not your scope.
-
-          If you take a mistake that casting the Prisma type with the typia.assert
-          function, it would be fallen into the infinite compilation due to extremely
-          complicated Prisma type. Note that, the typia.assert function is allowed
-          only in the individual property level string or literal type.
-
-          I repeat that, never assert the Prisma type. It's not your mission.
-        `,
       });
       ++props.progress.completed;
 
@@ -405,7 +366,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -435,6 +400,16 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeCommonCorrectCastingApplication, "claude">({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeCommonCorrectCastingApplication, "gemini">({
       validate: {
         rewrite: validate,
         reject: () => ({

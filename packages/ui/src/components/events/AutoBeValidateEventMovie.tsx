@@ -1,5 +1,4 @@
 import {
-  AutoBeInterfaceComplementEvent,
   AutoBeInterfaceOperationReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
@@ -16,7 +15,6 @@ export interface IAutoBeValidateEventMovieProps {
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
     | AutoBeInterfaceOperationReviewEvent
-    | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent
     | AutoBeRealizeAuthorizationValidateEvent;
@@ -275,42 +273,6 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
                 ? `${event.review.substring(0, 200)}...`
                 : event.review}
             </div>
-          </>
-        ),
-        isError: false,
-        isSuccess: true,
-        step: event.step,
-      };
-    case "interfaceComplement":
-      return {
-        title: "Interface Schema Complement",
-        description: (
-          <>
-            Missing schema definitions are being added to complete the API
-            specification.
-            <br />
-            <br />
-            <strong>Missing Schemas:</strong> {event.missed.length}
-            <br />
-            <strong>Added Schemas:</strong> {Object.keys(event.schemas).length}
-            <br />
-            <br />
-            {event.missed.length > 0 && (
-              <>
-                <strong>Complemented Types:</strong>
-                <br />
-                {event.missed.slice(0, 5).map((schema: string, idx: number) => (
-                  <div key={idx} style={{ marginTop: "0.25rem" }}>
-                    • {schema}
-                  </div>
-                ))}
-                {event.missed.length > 5 && (
-                  <div style={{ marginTop: "0.25rem" }}>
-                    ... and {event.missed.length - 5} more
-                  </div>
-                )}
-              </>
-            )}
           </>
         ),
         isError: false,

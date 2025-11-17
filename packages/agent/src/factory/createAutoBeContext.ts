@@ -181,6 +181,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           void props
             .dispatch({
               ...event,
+              function: event.operation.function.name,
               source: next.source,
             })
             .catch(() => {});
@@ -192,6 +193,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               type: "jsonValidateError",
               id: v7(),
               source: next.source,
+              function: event.operation.function.name,
               result: event.result,
               life: event.life,
               created_at: event.created_at,
@@ -204,7 +206,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         const message: string =
           next.enforceFunctionCall === true
             ? StringUtil.trim`
-                ${next.message}
+                ${next.userMessage}
 
                 > You have to call function(s) of below to accomplish my request.
                 >
@@ -220,7 +222,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
                   .map((f) => `> - ${f.name}`)
                   .join("\n")}
               `
-            : next.message;
+            : next.userMessage;
         const result: TimedConversation.IResult<Model> =
           await TimedConversation.process({
             timeout: config.timeout,
@@ -243,6 +245,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             histories,
             tokenUsage: aggregate.tokenUsage,
             metric: aggregate.metric,
+            __agent: agent,
           };
         };
         if (result.type === "error") throw result.error;

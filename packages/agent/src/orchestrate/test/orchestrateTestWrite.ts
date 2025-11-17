@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
-import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
+import { transformTestWriteHistory } from "./histories/transformTestWriteHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
@@ -33,6 +33,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
     completed: 0,
   };
   const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
+    ctx,
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
@@ -79,11 +80,6 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
-    histories: await transformTestWriteHistories(ctx, {
-      scenario,
-      artifacts,
-      instruction: props.instruction,
-    }),
     controller: createController({
       model: ctx.model,
       functionName: props.scenario.functionName,
@@ -94,7 +90,11 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    message: "Create e2e test functions.",
+    ...(await transformTestWriteHistory(ctx, {
+      scenario,
+      artifacts,
+      instruction: props.instruction,
+    })),
   });
   if (pointer.value === null) {
     ++progress.completed;
@@ -155,7 +155,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
@@ -180,6 +184,12 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeTestWriteApplication, "claude">({
+      validate: {
+        write: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteApplication, "gemini">({
       validate: {
         write: validate,
       },

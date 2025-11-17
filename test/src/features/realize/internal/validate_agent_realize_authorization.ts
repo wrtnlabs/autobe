@@ -1,4 +1,4 @@
-import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
+import { orchestrateRealizeAuthorizationWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorizationWrite";
 import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -47,7 +47,7 @@ export const validate_agent_realize_authorization = async (props: {
   const ctx = agent.getContext();
 
   const authorizations: AutoBeRealizeAuthorization[] =
-    await orchestrateRealizeAuthorization(ctx);
+    await orchestrateRealizeAuthorizationWrite(ctx);
 
   const prisma = ctx.state().prisma?.compiled;
   const prismaClients: Record<string, string> =

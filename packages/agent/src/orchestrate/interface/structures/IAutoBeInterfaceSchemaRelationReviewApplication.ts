@@ -1,39 +1,78 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+
 export interface IAutoBeInterfaceSchemaRelationReviewApplication {
   /**
-   * Reviews and validates DTO relations and structural patterns in OpenAPI
-   * schemas.
+   * Process schema relation review task or preliminary data requests.
    *
-   * This specialized relation review function focuses exclusively on data
-   * relations, foreign key transformations, and structural integrity. It
-   * ensures proper modeling of business domains while preventing circular
-   * references and enabling efficient code generation.
+   * Reviews and validates DTO relations and structural patterns, ensuring proper
+   * modeling of business domains with correct relation classifications, foreign
+   * key transformations, and structural integrity.
    *
-   * The review process validates and corrects:
-   *
-   * - Relation classifications (Composition vs Association vs Aggregation)
-   * - Foreign key to object transformations in response DTOs
-   * - Actor reversal violations (e.g., User containing articles array)
-   * - Inline object extractions to named types with $ref
-   * - IInvert pattern applications for alternative perspectives
-   *
-   * @param props Relation review results including violations found, fixes
-   *   applied, and modified schemas
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  review: (
-    props: IAutoBeInterfaceSchemaRelationReviewApplication.IProps,
-  ) => void;
+  process(props: IAutoBeInterfaceSchemaRelationReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceSchemaRelationReviewApplication {
-  /**
-   * Output structure for the relation review function.
-   *
-   * Contains the relation analysis, structural fixes, and schemas modified for
-   * proper relations during the validation process.
-   */
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceSchemas) or final schema
+     * relation review (complete). When preliminary returns empty array, that
+     * type is removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceSchemas;
+  }
+
+  /**
+   * Request to review and validate schema relations.
+   *
+   * Executes relation review to ensure proper data relations, foreign key
+   * transformations, and structural integrity. Validates relation classifications,
+   * prevents circular references, and enables efficient code generation.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /** Relation analysis and structural planning information. */
     think: IThink;
 
@@ -58,6 +97,12 @@ export namespace IAutoBeInterfaceSchemaRelationReviewApplication {
     content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 
+  /**
+   * Structured thinking process for schema relation review.
+   *
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the schemas.
+   */
   export interface IThink {
     /**
      * Relation and structural violation findings from the review process.

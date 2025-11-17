@@ -80,7 +80,7 @@ export namespace AutoBeContext {
     controller: ILlmController<Model>;
     histories: Array<IMicroAgenticaHistoryJson>;
     enforceFunctionCall: boolean;
-    message: string;
+    userMessage: string;
     promptCacheKey?: string;
   }
   export interface IResult<Model extends ILlmSchema.Model> {

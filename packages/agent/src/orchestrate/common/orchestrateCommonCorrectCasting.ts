@@ -7,7 +7,6 @@ import {
   IAutoBeTokenUsageJson,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -20,7 +19,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { transformCommonCorrectCastingHistories } from "./histories/transformCommonCorrectCastingHistories";
+import { transformCommonCorrectCastingHistory } from "./histories/transformCommonCorrectCastingHistory";
 import { IAutoBeCommonCorrectCastingApplication } from "./structures/IAutoBeCommonCorrectCastingApplication";
 
 interface IFactoryProps<
@@ -96,13 +95,6 @@ const correct = async <
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: factory.source,
-    histories: transformCommonCorrectCastingHistories(
-      [...failures, event].map((e) => ({
-        diagnostics: (e.result as IAutoBeTypeScriptCompileResult.IFailure)
-          .diagnostics,
-        script: factory.script(e),
-      })),
-    ),
     controller: createController({
       model: ctx.model,
       functionName: factory.functionName,
@@ -114,12 +106,13 @@ const correct = async <
       },
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
-      Fix the TypeScript casting problems to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix or give it up
-      immediately without any hesitation, explanation, and questions.
-    `,
+    ...transformCommonCorrectCastingHistory(
+      [...failures, event].map((e) => ({
+        diagnostics: (e.result as IAutoBeTypeScriptCompileResult.IFailure)
+          .diagnostics,
+        script: factory.script(e),
+      })),
+    ),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event;
@@ -170,7 +163,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -200,6 +197,16 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeCommonCorrectCastingApplication, "claude">({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeCommonCorrectCastingApplication, "gemini">({
       validate: {
         rewrite: validate,
         reject: () => ({

@@ -6,7 +6,6 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -32,14 +31,8 @@ export const orchestrateAnalyzeScenario = async <
       model: ctx.model,
       build: (value) => (pointer.value = value),
     }),
-    histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
-    message: StringUtil.trim`
-      Design a complete list of documents and user actors for this project.
-      Define user actors that can authenticate via API and create appropriate documentation files.
-      You must respect the number of documents specified by the user.
-      Note that the user's locale is in ${ctx.locale}.
-    `,
+    ...transformAnalyzeSceHistories(ctx),
   });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
@@ -72,7 +65,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -86,17 +83,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeAnalyzeScenarioApplication,
-  "claude"
->();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeAnalyzeScenarioApplication,
     "chatgpt"
   >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<IAutoBeAnalyzeScenarioApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBeAnalyzeScenarioApplication, "gemini">(),
 };

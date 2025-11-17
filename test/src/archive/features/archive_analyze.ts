@@ -57,48 +57,66 @@ export const archive_analyze = async (props: {
     return histories.some((h) => h.type === "analyze");
   };
 
-  if ((await go(userMessage.contents)) === false)
-    if (
-      (await go(
-        "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
-      )) === false
-    )
+  try {
+    if ((await go(userMessage.contents)) === false)
       if (
         (await go(
-          "I already told you to publish the analysis report. Never ask me anything, and just do it right now.",
+          "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
         )) === false
       )
-        throw new Error("Some history type must be analyze.");
+        if (
+          (await go(
+            "I already told you to publish the analysis report. Never ask me anything, and just do it right now.",
+          )) === false
+        )
+          throw new Error("Some history type must be analyze.");
 
-  // REPORT RESULT
-  try {
-    await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/analyze`,
-      files: await agent.getFiles(),
+    // REPORT RESULT
+    try {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${props.project}/analyze`,
+        files: await agent.getFiles(),
+      });
+    } catch {}
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`analyze.histories.json`]: JSON.stringify(agent.getHistories()),
+        [`analyze.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .decrement(zero)
+              .toJSON(),
+          })),
+        ),
+        // [`${project}.analyze.writes.json`]: JSON.stringify(
+        //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeWrite"),
+        // ),
+        // [`${project}.analyze.reviews.json`]: JSON.stringify(
+        //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeReview"),
+        // ),
+        // [`${project}.analyze.scenario.json`]: JSON.stringify(
+        //   snapshots.map((s) => s.event).find((e) => e.type === "analyzeScenario")!,
+        // ),
+      },
     });
-  } catch {}
-  await AutoBeExampleStorage.save({
-    vendor: props.vendor,
-    project: props.project,
-    files: {
-      [`analyze.histories.json`]: JSON.stringify(agent.getHistories()),
-      [`analyze.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .decrement(zero)
-            .toJSON(),
-        })),
-      ),
-      // [`${project}.analyze.writes.json`]: JSON.stringify(
-      //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeWrite"),
-      // ),
-      // [`${project}.analyze.reviews.json`]: JSON.stringify(
-      //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeReview"),
-      // ),
-      // [`${project}.analyze.scenario.json`]: JSON.stringify(
-      //   snapshots.map((s) => s.event).find((e) => e.type === "analyzeScenario")!,
-      // ),
-    },
-  });
+  } catch (error) {
+    await AutoBeExampleStorage.save({
+      vendor: props.vendor,
+      project: props.project,
+      files: {
+        [`analyze.snapshots.json`]: JSON.stringify(
+          snapshots.map((s) => ({
+            event: s.event,
+            tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+              .decrement(zero)
+              .toJSON(),
+          })),
+        ),
+      },
+    });
+    throw error;
+  }
 };

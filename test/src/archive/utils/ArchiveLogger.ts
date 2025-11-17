@@ -1,3 +1,4 @@
+// import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import {
   AutoBeEvent,
   IAutoBeTokenUsageJson,
@@ -32,20 +33,34 @@ export namespace ArchiveLogger {
       content.push(
         "  - typia.validate<T>()",
         `    - source: ${event.source}`,
+        `    - function: ${event.function}`,
         `    - life: ${event.life}`,
         ...event.result.errors.map(
           (v) =>
-            `    - ${v.path}: ${v.expected} -> ${JSON.stringify(v.description ?? "no description")}\n` +
-            `    - ${JSON.stringify(v.value)}`,
+            `      - path: ${v.path}\n` +
+            `      - expected: ${v.expected}\n` +
+            `      - description: ${JSON.stringify(v.description ?? "no description")}\n` +
+            `      - value: ${JSON.stringify(v.value)}`,
         ),
       );
     else if (event.type === "jsonParseError")
       content.push(
         `  - source: ${event.source}`,
+        `  - function: ${event.function}`,
         `  - invalid json: ${event.errorMessage}`,
         `  - life: ${event.life}`,
         `  - arguments: ${event.arguments}`,
       );
+    else if (event.type === "preliminary") {
+      content.push(
+        `  - source: ${event.source}`,
+        `  - source_id: ${event.source_id}`,
+        `  - function: ${event.function}`,
+        `  - trial: ${event.trial}`,
+        `  - existing: ${event.existing.length}, ${JSON.stringify(event.existing)}`,
+        `  - requested: ${event.requested.length}, ${JSON.stringify(event.requested)}`,
+      );
+    }
     // VALIDATIONS
     else if (event.type === "analyzeScenario")
       content.push(`  - prefix: ${event.prefix}`);
@@ -59,8 +74,8 @@ export namespace ArchiveLogger {
       content.push(`  - kind: ${event.kind}`);
     else if (event.type === "interfaceComplement")
       content.push(
-        `  - count: ${Object.keys(event.schemas).length}`,
         `  - missed: ${event.missed.join(", ")}`,
+        `  - filled: ${Object.keys(event.schemas).join(", ")}`,
       );
     else if (event.type === "interfaceSchemaReview")
       content.push(
@@ -72,6 +87,23 @@ export namespace ArchiveLogger {
         `  - refactors:`,
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
+    // GENERATIONS
+    else if (event.type === "prismaComponent")
+      content.push(
+        `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
+      );
+    else if (event.type === "prismaSchema")
+      content.push(
+        `  - schemas: ${event.models.map((m) => m.name).join(", ")}`,
+      );
+    else if (event.type === "interfaceEndpoint")
+      content.push(`  - endpoints: ${event.endpoints.length}`);
+    else if (event.type === "interfaceOperation")
+      content.push(
+        `  - operations: ${event.operations.map((o) => `${o.method.toUpperCase()} ${o.path}`)}`,
+      );
+    else if (event.type === "interfaceSchema")
+      content.push(`  - schemas: ${Object.keys(event.schemas).join(", ")}`);
     // PRINT
     console.log(content.join("\n"));
   };

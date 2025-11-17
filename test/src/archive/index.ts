@@ -175,6 +175,7 @@ const main = async (): Promise<void> => {
       );
     } catch (error) {
       console.log("  - Error", error);
+      if (tf.step === "test") continue;
       throw error;
     }
   }
@@ -193,9 +194,17 @@ const main = async (): Promise<void> => {
   });
 };
 
-global.process.on("uncaughtException", () => {});
-global.process.on("unhandledRejection", () => {});
+global.process.on("uncaughtException", (error) => {
+  console.log("uncaughtException", error);
+});
+global.process.on("unhandledRejection", (error) => {
+  console.log("unhandledRejection", error);
+});
 main().catch((error) => {
+  console.log("---------------------------------------------");
+  console.log("                FATAL ERROR                  ");
+  console.log("---------------------------------------------");
   console.log(error);
+  console.log("---------------------------------------------");
   process.exit(-1);
 });

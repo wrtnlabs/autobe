@@ -166,6 +166,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   jsonParseError: 0,
   jsonValidateError: 0,
   consentFunctionCall: 0,
+  preliminary: 0,
   // ANALYZE
   analyzeStart: 1_000,
   analyzeScenario: 1_000,

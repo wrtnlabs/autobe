@@ -1,17 +1,70 @@
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+
 export interface IAutoBeRealizeCorrectApplication {
   /**
-   * Systematically analyze and correct TypeScript compilation errors.
+   * Process provider correction task or preliminary data requests.
    *
-   * Implements a three-phase workflow (think → draft → revise) that balances
-   * efficiency for simple errors with thoroughness for complex problems.
+   * Systematically analyzes and corrects TypeScript compilation errors through
+   * three-phase workflow (think → draft → revise). Maintains business logic
+   * integrity while resolving all compilation issues.
    *
-   * @param props Three-phase correction properties
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  correct(props: IAutoBeRealizeCorrectApplication.IProps): void;
+  process(props: IAutoBeRealizeCorrectApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeCorrectApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getPrismaSchemas) or final error correction (complete). When preliminary
+     * returns empty array, that type is removed from the union, physically
+     * preventing repeated calls.
+     */
+    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to correct provider implementation errors.
+   *
+   * Executes three-phase error correction to resolve TypeScript compilation
+   * issues in provider functions. Applies systematic fixes following think →
+   * draft → revise pattern to ensure error-free production code.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Initial error analysis and correction strategy.
      *

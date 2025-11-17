@@ -2,16 +2,13 @@ import { ILlmSchema } from "@samchon/openapi";
 
 export function assertSchemaModel<Model extends ILlmSchema.Model>(
   model: Model,
-): asserts model is Exclude<Model, "gemini" | "3.0"> {
-  if (model === "gemini")
+): asserts model is Exclude<Model, "3.0"> {
+  if (model === "3.0")
     throw new Error(
       [
-        "Error on AutoBeAgent.constructor(): gemini is not supported",
-        "because it does not follow standard JSON schema specification.",
-        "@autobe requires union type (`oneOf` or `anyOf`) for backend code generation,",
-        "but gemini has banned them. Please wait until when `@agentica`",
-        "supports prompt based function calling which can detour gemini's",
-        "restriction of JSON schema specification.",
+        "Error on AutoBeAgent.constructor(): schema version 3.0 is not supported",
+        "due to limitations in the JSON schema specification for function calling.",
+        "Please use a different model that supports modern JSON schema features.",
       ].join(" "),
     );
 }

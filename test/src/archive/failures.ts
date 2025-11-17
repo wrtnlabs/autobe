@@ -1,11 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { FileSystemIterator } from "@autobe/filesystem";
+// import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeHistory, AutoBePhase } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import fs from "fs";
+// import fs from "fs";
 import OpenAI from "openai";
 import path from "path";
 import typia from "typia";
@@ -13,10 +13,10 @@ import typia from "typia";
 import { TestGlobal } from "../TestGlobal";
 
 const main = async (): Promise<void> => {
-  if (fs.existsSync(`${TestGlobal.ROOT}/results`) === true)
-    await fs.promises.rm(`${TestGlobal.ROOT}/results`, {
-      recursive: true,
-    });
+  // if (fs.existsSync(`${TestGlobal.ROOT}/results`) === true)
+  //   await fs.promises.rm(`${TestGlobal.ROOT}/results`, {
+  //     recursive: true,
+  //   });
 
   type VendorModel =
     | "openai/gpt-4.1"
@@ -110,13 +110,14 @@ const main = async (): Promise<void> => {
         const files: Record<string, string> = await agent.getFiles({
           dbms: "sqlite",
         });
-        await FileSystemIterator.save({
-          root: `${TestGlobal.ROOT}/results/${vendor}/${project}/${phase}`,
-          files: {
-            ...files,
-            "pnpm-workspace.yaml": "",
-          },
-        });
+        files;
+        // await FileSystemIterator.save({
+        //   root: `${TestGlobal.ROOT}/results/${vendor}/${project}/${phase}`,
+        //   files: {
+        //     ...files,
+        //     "pnpm-workspace.yaml": "",
+        //   },
+        // });
       }
 };
 main().catch(console.error);

@@ -7,8 +7,8 @@ settings:
 catalogs:
   agentica:
     '@agentica/core':
-      specifier: ^0.33.2
-      version: 0.33.2
+      specifier: ^0.34.2
+      version: 0.34.2
   libs:
     openai:
       specifier: ^6.7.0
@@ -28,23 +28,23 @@ catalogs:
       version: 6.16.2
   samchon:
     '@nestia/core':
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     '@nestia/e2e':
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     '@nestia/fetcher':
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     '@nestia/migrate':
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     '@nestia/sdk':
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     '@samchon/openapi':
-      specifier: ^4.7.2
-      version: 4.7.2
+      specifier: ^5.0.1
+      version: 5.0.1
     embed-eslint:
       specifier: ^2.0.1
       version: 2.0.1
@@ -55,8 +55,8 @@ catalogs:
       specifier: ^2.0.1
       version: 2.0.1
     nestia:
-      specifier: ^8.0.7
-      version: 8.0.7
+      specifier: ^9.0.3
+      version: 9.0.3
     prisma-markdown:
       specifier: ^3.0.0
       version: 3.0.1
@@ -67,8 +67,8 @@ catalogs:
       specifier: ^3.0.0
       version: 3.0.0
     typia:
-      specifier: ^9.7.2
-      version: 9.7.2
+      specifier: ^10.0.2
+      version: 10.0.2
   typescript:
     '@typescript-eslint/eslint-plugin':
       specifier: 8.40.0
@@ -86,8 +86,8 @@ catalogs:
       specifier: ^3.3.0
       version: 3.3.0
     typescript:
-      specifier: ~5.9.2
-      version: 5.9.2
+      specifier: ~5.9.3
+      version: 5.9.3
   ui:
     '@types/react':
       specifier: ^19.1.10
@@ -126,7 +126,7 @@ importers:
         version: 1.3.3(prettier@3.6.2)
       prisma:
         specifier: catalog:prisma
-        version: 6.16.2(typescript@5.9.2)
+        version: 6.16.2(typescript@5.9.3)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -138,10 +138,10 @@ importers:
         version: link:../../packages/interface
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
@@ -150,14 +150,14 @@ importers:
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.49.0)
       '@rollup/plugin-typescript':
         specifier: ^12.1.2
-        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.2)
+        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.3)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -166,7 +166,7 @@ importers:
         version: 4.49.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   apps/hackathon-server:
     dependencies:
@@ -193,13 +193,13 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
+        version: 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
       '@nestia/e2e':
-        specifier: ^8.0.5
-        version: 8.0.5
+        specifier: catalog:samchon
+        version: 9.0.3
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/core@8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2)))(@types/node@24.3.1)(typescript@5.9.2)
+        version: 9.0.3(@nestia/core@9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3)))(@types/node@24.3.1)(typescript@5.9.3)
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -214,10 +214,10 @@ importers:
         version: 6.16.2
       '@prisma/client':
         specifier: catalog:prisma
-        version: 6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)
+        version: 6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
@@ -238,7 +238,7 @@ importers:
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
       prisma:
         specifier: catalog:prisma
-        version: 6.16.2(typescript@5.9.2)
+        version: 6.16.2(typescript@5.9.3)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -247,7 +247,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -281,7 +281,7 @@ importers:
         version: 8.2.5
       nestia:
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       pm2:
         specifier: ^6.0.10
         version: 6.0.10
@@ -290,16 +290,16 @@ importers:
         version: 6.0.1
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@24.3.1)(typescript@5.9.2)
+        version: 10.9.2(@types/node@24.3.1)(typescript@5.9.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       typescript-transform-paths:
         specifier: ^3.5.5
-        version: 3.5.5(typescript@5.9.2)
+        version: 3.5.5(typescript@5.9.3)
 
   apps/hackathon-ui:
     dependencies:
@@ -320,7 +320,7 @@ importers:
         version: 7.3.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       react:
         specifier: catalog:ui
         version: 19.1.1
@@ -335,7 +335,7 @@ importers:
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -354,16 +354,16 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-react':
         specifier: ^4.5.0
-        version: 4.7.0(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
+        version: 4.7.0(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:ui
-        version: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+        version: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
 
   apps/playground-api:
     dependencies:
@@ -372,23 +372,23 @@ importers:
         version: link:../../packages/interface
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.49.0)
       '@rollup/plugin-typescript':
         specifier: ^12.1.2
-        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.2)
+        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.3)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -397,7 +397,7 @@ importers:
         version: 4.49.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   apps/playground-server:
     dependencies:
@@ -427,7 +427,7 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
+        version: 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -439,7 +439,7 @@ importers:
         version: 11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
@@ -451,26 +451,26 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/core@8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2)))(@types/node@24.3.1)(typescript@5.9.2)
+        version: 9.0.3(@nestia/core@9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3)))(@types/node@24.10.1)(typescript@5.9.3)
       nestia:
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@24.3.1)(typescript@5.9.2)
+        version: 10.9.2(@types/node@24.10.1)(typescript@5.9.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   apps/playground-ui:
     dependencies:
@@ -491,7 +491,7 @@ importers:
         version: 7.3.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       '@stackblitz/sdk':
         specifier: ^1.11.0
         version: 1.11.0
@@ -503,7 +503,7 @@ importers:
         version: 19.1.1(react@19.1.1)
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -522,16 +522,16 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-react':
         specifier: ^4.5.0
-        version: 4.7.0(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
+        version: 4.7.0(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:ui
-        version: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+        version: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
 
   apps/vscode-extension:
     devDependencies:
@@ -552,10 +552,10 @@ importers:
         version: link:interface
       '@ryoppippi/unplugin-typia':
         specifier: ^2.6.5
-        version: 2.6.5(rollup@4.49.0)(typescript@5.9.2)(typia@9.7.2(typescript@5.9.2))(vite@6.3.5(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
+        version: 2.6.5(rollup@4.49.0)(typescript@5.9.3)(typia@10.0.2(typescript@5.9.3))(vite@6.3.5(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       '@types/node':
         specifier: 22.x
         version: 22.18.0
@@ -579,16 +579,16 @@ importers:
         version: 1.2.0
       ts-loader:
         specifier: ^9.5.2
-        version: 9.5.4(typescript@5.9.2)(webpack@5.101.3)
+        version: 9.5.4(typescript@5.9.3)(webpack@5.101.3)
       tsdown:
         specifier: ^0.14.0
-        version: 0.14.2(typescript@5.9.2)
+        version: 0.14.2(typescript@5.9.3)
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
 
   apps/vscode-extension/interface:
     devDependencies:
@@ -597,13 +597,13 @@ importers:
         version: link:../../../packages/interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   apps/vscode-extension/webview-ui:
     devDependencies:
@@ -618,10 +618,10 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       '@tailwindcss/vite':
         specifier: ^4.1.11
-        version: 4.1.12(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
+        version: 4.1.12(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
       '@types/react':
         specifier: catalog:ui
         version: 19.1.12
@@ -642,10 +642,10 @@ importers:
         version: 4.1.12
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:ui
-        version: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+        version: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
 
   apps/vscode-extension/worker:
     dependencies:
@@ -663,26 +663,26 @@ importers:
         version: link:../../../packages/rpc
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
+      typia:
+        specifier: catalog:samchon
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@ryoppippi/unplugin-typia':
         specifier: ^2.6.5
-        version: 2.6.5(rollup@4.49.0)(typescript@5.9.2)(typia@9.7.2(typescript@5.9.2))(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
+        version: 2.6.5(rollup@4.49.0)(typescript@5.9.3)(typia@10.0.2(typescript@5.9.3))(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))
       ts-patch:
         specifier: ^3.3.0
         version: 3.3.0
       tsdown:
         specifier: ^0.14.0
-        version: 0.14.2(typescript@5.9.2)
-      typia:
-        specifier: ^9.7.2
-        version: 9.7.2(typescript@5.9.2)
+        version: 0.14.2(typescript@5.9.3)
 
   internals/website-examples:
     dependencies:
@@ -700,13 +700,13 @@ importers:
         version: link:../../packages/rpc
       '@nestia/core':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
+        version: 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -715,7 +715,7 @@ importers:
         version: 11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
@@ -724,23 +724,23 @@ importers:
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^22.15.17
         version: 22.18.0
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.2)
+        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.3)
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/agent:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.33.2(@samchon/openapi@4.7.2)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@9.7.2(typescript@5.9.2))
+        version: 0.34.2(@samchon/openapi@5.0.1)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@10.0.2(typescript@5.9.3))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -749,19 +749,22 @@ importers:
         version: link:../utils
       '@prisma/internals':
         specifier: catalog:prisma
-        version: 6.16.2(typescript@5.9.2)
+        version: 6.16.2(typescript@5.9.3)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -780,7 +783,10 @@ importers:
         version: 0.4.4(rollup@4.49.0)
       '@rollup/plugin-typescript':
         specifier: ^12.1.2
-        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.2)
+        version: 12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.3)
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -792,13 +798,13 @@ importers:
         version: 4.49.0
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@24.3.1)(typescript@5.9.2)
+        version: 10.9.2(@types/node@24.10.1)(typescript@5.9.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/benchmark:
     dependencies:
@@ -819,7 +825,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -835,7 +841,7 @@ importers:
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/compiler:
     dependencies:
@@ -850,31 +856,31 @@ importers:
         version: link:../utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
+        version: 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^5.2.2
         version: 5.2.2(prettier@3.6.2)
       '@typescript-eslint/eslint-plugin':
         specifier: catalog:typescript
-        version: 8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+        version: 8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       '@typescript-eslint/parser':
         specifier: catalog:typescript
-        version: 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+        version: 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       embed-eslint:
         specifier: catalog:samchon
-        version: 2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+        version: 2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       embed-prisma:
         specifier: catalog:samchon
-        version: 1.1.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)
+        version: 1.1.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3)
       embed-typescript:
         specifier: catalog:samchon
-        version: 2.0.1(typescript@5.9.2)
+        version: 2.0.1(typescript@5.9.3)
       eslint:
         specifier: catalog:typescript
         version: 9.34.0(jiti@2.5.1)
@@ -889,7 +895,7 @@ importers:
         version: 1.3.3(prettier@3.6.2)
       prisma-markdown:
         specifier: catalog:samchon
-        version: 3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2))(prisma@6.16.2(typescript@5.9.2))
+        version: 3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3))(prisma@6.16.2(typescript@5.9.3))
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -898,7 +904,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^22.15.3
@@ -911,13 +917,13 @@ importers:
         version: 6.1.0
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.2)
+        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/filesystem:
     dependencies:
@@ -926,7 +932,7 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -945,26 +951,26 @@ importers:
         version: 6.0.1
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/interface:
     dependencies:
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/rpc:
     dependencies:
@@ -973,10 +979,10 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -986,7 +992,7 @@ importers:
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   packages/ui:
     dependencies:
@@ -1011,7 +1017,7 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       '@types/react':
         specifier: catalog:ui
         version: 19.1.12
@@ -1032,10 +1038,10 @@ importers:
         version: 19.1.1(react@19.1.1)
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@types/node@24.3.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1)
+        version: 2.1.9(@types/node@24.10.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1)
 
   packages/utils:
     dependencies:
@@ -1044,14 +1050,17 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
     devDependencies:
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.10.1
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1060,13 +1069,13 @@ importers:
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   test:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.33.2(@samchon/openapi@4.7.2)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@9.7.2(typescript@5.9.2))
+        version: 0.34.2(@samchon/openapi@5.0.1)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@10.0.2(typescript@5.9.3))
       '@autobe/agent':
         specifier: workspace:^
         version: link:../packages/agent
@@ -1093,19 +1102,19 @@ importers:
         version: link:../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
+        version: 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 8.0.7
+        version: 9.0.3
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 4.7.2
+        version: 5.0.1
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -1115,6 +1124,9 @@ importers:
       openai:
         specifier: catalog:libs
         version: 6.7.0(ws@8.18.3)(zod@3.25.76)
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -1123,7 +1135,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 10.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -1131,6 +1143,9 @@ importers:
       '@types/node':
         specifier: ^22.15.17
         version: 22.18.0
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -1142,13 +1157,13 @@ importers:
         version: 6.0.1
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.2)
+        version: 10.9.2(@types/node@22.18.0)(typescript@5.9.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
 
   website:
     dependencies:
@@ -1163,10 +1178,10 @@ importers:
         version: 15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nextra:
         specifier: ^4.2.17
-        version: 4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.2)
+        version: 4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
       nextra-theme-docs:
         specifier: ^4.2.17
-        version: 4.4.0(@types/react@18.3.24)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))
+        version: 4.4.0(@types/react@18.3.24)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -1184,7 +1199,7 @@ importers:
         version: 3.0.0
       typescript:
         specifier: catalog:typescript
-        version: 5.9.2
+        version: 5.9.3
     devDependencies:
       '@types/node':
         specifier: ^18.11.10
@@ -1203,23 +1218,23 @@ importers:
         version: 1.3.0
       puppeteer:
         specifier: ^24.23.0
-        version: 24.23.0(typescript@5.9.2)
+        version: 24.23.0(typescript@5.9.3)
       rimraf:
         specifier: ^5.0.0
         version: 5.0.10
       typedoc:
         specifier: ^0.28.9
-        version: 0.28.11(typescript@5.9.2)
+        version: 0.28.11(typescript@5.9.3)
 
 packages:
 
-  '@agentica/core@0.33.2':
-    resolution: {integrity: sha512-udA8j0v008tDddzQeY5yeVO+67sbX2nTdkMqXv8T8YYLSB3XzWUU6VkaZpaCevwpRwHKibQp2vBfTvtRpRBcHQ==}
+  '@agentica/core@0.34.2':
+    resolution: {integrity: sha512-YEIocJBPR/ViMSZtkGq54Z+xuWWhrJU+kJ+uIR2rtEgH1Hd1GiVrtF8BQxNNha2jj7ecJ2Ma8eXgIEaHIvC+Hw==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.12.0
-      '@samchon/openapi': ^4.7.2
+      '@samchon/openapi': ^5.0.1
       openai: ^6.7.0
-      typia: ^9.7.2
+      typia: ^10.0.2
     peerDependenciesMeta:
       '@modelcontextprotocol/sdk':
         optional: true
@@ -2230,35 +2245,31 @@ packages:
   '@napi-rs/wasm-runtime@1.0.7':
     resolution: {integrity: sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw==}
 
-  '@nestia/core@8.0.7':
-    resolution: {integrity: sha512-zP/u905vuR/VjnRm7AjxB4OElsusAoimIq888x2NiyCKQtJQYqu3vt31GRjln/fLeORicSv5+iku/OAktbBHlA==}
+  '@nestia/core@9.0.3':
+    resolution: {integrity: sha512-djEdpfUpSDV5FsPYF5epuNKG/MmL+wbUCkfLn4ZjHSzJE8KjxGN//K7dsBItwljsOZz6aJhacF0mn0waUzSDZQ==}
     peerDependencies:
-      '@nestia/fetcher': '>=8.0.7'
+      '@nestia/fetcher': '>=9.0.3'
       '@nestjs/common': '>=7.0.1'
       '@nestjs/core': '>=7.0.1'
-      '@samchon/openapi': '>=4.5.0 <5.0.0'
       reflect-metadata: '>=0.1.12'
       rxjs: '>=6.0.3'
-      typia: ^9.6.1
+      typia: ^10.0.0
 
-  '@nestia/e2e@8.0.5':
-    resolution: {integrity: sha512-7iQt09Mtv7MJEmy3+uajVSZFjva4dct7ysmhZoTkNbxl3tSM/1ZM5nJQJi+CKlIRtuXbyoZbOLtTlBzLN3MpRg==}
+  '@nestia/e2e@9.0.3':
+    resolution: {integrity: sha512-hu3MMyIzD0gX9RhZGoInZMwA59WmTuwwjJgPj0mGaghwvDLgX7jwWqMhYjMkaYP8l/b7FWFuLRpx1sM7hgmnyg==}
 
-  '@nestia/e2e@8.0.7':
-    resolution: {integrity: sha512-u4EBk4B5Ty0PcjAWZNmyg6/1ADgyHiE91/JsDhxbv8rZgzy/eF1vowZYfcKBLoonkM2PgsUK9T3hPM89ixwLKA==}
+  '@nestia/fetcher@9.0.3':
+    resolution: {integrity: sha512-5st2MoZXwOz2ulEZawb9GNUHrPhZz7BUnG/VK06h4yUSvlUvWHmp9B9aHVo1D8Yllow8qMnlasK4yc7Z7ZHQVQ==}
 
-  '@nestia/fetcher@8.0.7':
-    resolution: {integrity: sha512-qSsoyY2kXsxIdQ8O0RSxuPsW5DZWHJlb20oP8usrz8eL71gQBBCSD2uGGmbecqSSM5SJGskOJoTTT0rk5qoWHA==}
-
-  '@nestia/migrate@8.0.7':
-    resolution: {integrity: sha512-kkAvXSYBK+BzRE9aDpfbhi3Ecuh9eVv44NB4YsyU9/6GNJ+nWAWjH2bx2pRmsslFqwKbj6X64RaQWZiKWmjmrQ==}
+  '@nestia/migrate@9.0.3':
+    resolution: {integrity: sha512-LQeHkbvpEh0+UP3oPoDENegGHSRyC/81hjJn6jB4XQ0NxKhxf/YZI6RCxRVY0V8RoSs9fW8wxwi1gTADqgf8gg==}
     hasBin: true
 
-  '@nestia/sdk@8.0.7':
-    resolution: {integrity: sha512-7LxhQKe0pZjuN0ZLlbPDCiCGfhD7b1a08oEBps3QXgCvsHUucanSfvBEtxYs744bEpgeUu9V5vGOtSCO91mh7Q==}
+  '@nestia/sdk@9.0.3':
+    resolution: {integrity: sha512-FIw3/3kSisDzv2AuQy7Vi228J7tfrO0vtlI238NyTBfWLZylLN0nvzFDnfsNXxqr/tIxJi4ukbHqMUq3qYlUlg==}
     hasBin: true
     peerDependencies:
-      '@nestia/core': '>=8.0.7'
+      '@nestia/core': '>=9.0.3'
 
   '@nestjs/common@11.1.6':
     resolution: {integrity: sha512-krKwLLcFmeuKDqngG2N/RuZHCs2ycsKcxWIDgcm7i1lf3sQ0iG03ci+DsP/r3FcT/eJDFsIHnKtNta2LIi7PzQ==}
@@ -2376,8 +2387,8 @@ packages:
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
 
-  '@oxc-project/types@0.96.0':
-    resolution: {integrity: sha512-r/xkmoXA0xEpU6UGtn18CNVjXH6erU3KCpCDbpLmbVxBFor1U9MqN5Z2uMmCHJuXjJzlnDR+hWY+yPoLo8oHDw==}
+  '@oxc-project/types@0.97.0':
+    resolution: {integrity: sha512-lxmZK4xFrdvU0yZiDwgVQTCvh2gHWBJCBk5ALsrtsBWhs0uDIi+FTOnXRQeQfs304imdvTdaakT/lqwQ8hkOXQ==}
 
   '@pagefind/darwin-arm64@1.3.0':
     resolution: {integrity: sha512-365BEGl6ChOsauRjyVpBjXybflXAOvoMROw3TucAROHIcdBvXk9/2AmEvGFU0r75+vdQI4LJdJdpH4Y6Yqaj4A==}
@@ -2562,85 +2573,85 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@rolldown/binding-android-arm64@1.0.0-beta.47':
-    resolution: {integrity: sha512-vPP9/MZzESh9QtmvQYojXP/midjgkkc1E4AdnPPAzQXo668ncHJcVLKjJKzoBdsQmaIvNjrMdsCwES8vTQHRQw==}
+  '@rolldown/binding-android-arm64@1.0.0-beta.50':
+    resolution: {integrity: sha512-XlEkrOIHLyGT3avOgzfTFSjG+f+dZMw+/qd+Y3HLN86wlndrB/gSimrJCk4gOhr1XtRtEKfszpadI3Md4Z4/Ag==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [android]
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.47':
-    resolution: {integrity: sha512-Lc3nrkxeaDVCVl8qR3qoxh6ltDZfkQ98j5vwIr5ALPkgjZtDK4BGCrrBoLpGVMg+csWcaqUbwbKwH5yvVa0oOw==}
+  '@rolldown/binding-darwin-arm64@1.0.0-beta.50':
+    resolution: {integrity: sha512-+JRqKJhoFlt5r9q+DecAGPLZ5PxeLva+wCMtAuoFMWPoZzgcYrr599KQ+Ix0jwll4B4HGP43avu9My8KtSOR+w==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [darwin]
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.47':
-    resolution: {integrity: sha512-eBYxQDwP0O33plqNVqOtUHqRiSYVneAknviM5XMawke3mwMuVlAsohtOqEjbCEl/Loi/FWdVeks5WkqAkzkYWQ==}
+  '@rolldown/binding-darwin-x64@1.0.0-beta.50':
+    resolution: {integrity: sha512-fFXDjXnuX7/gQZQm/1FoivVtRcyAzdjSik7Eo+9iwPQ9EgtA5/nB2+jmbzaKtMGG3q+BnZbdKHCtOacmNrkIDA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.47':
-    resolution: {integrity: sha512-Ns+kgp2+1Iq/44bY/Z30DETUSiHY7ZuqaOgD5bHVW++8vme9rdiWsN4yG4rRPXkdgzjvQ9TDHmZZKfY4/G11AA==}
+  '@rolldown/binding-freebsd-x64@1.0.0-beta.50':
+    resolution: {integrity: sha512-F1b6vARy49tjmT/hbloplzgJS7GIvwWZqt+tAHEstCh0JIh9sa8FAMVqEmYxDviqKBaAI8iVvUREm/Kh/PD26Q==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [freebsd]
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.47':
-    resolution: {integrity: sha512-4PecgWCJhTA2EFOlptYJiNyVP2MrVP4cWdndpOu3WmXqWqZUmSubhb4YUAIxAxnXATlGjC1WjxNPhV7ZllNgdA==}
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.50':
+    resolution: {integrity: sha512-U6cR76N8T8M6lHj7EZrQ3xunLPxSvYYxA8vJsBKZiFZkT8YV4kjgCO3KwMJL0NOjQCPGKyiXO07U+KmJzdPGRw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.47':
-    resolution: {integrity: sha512-CyIunZ6D9U9Xg94roQI1INt/bLkOpPsZjZZkiaAZ0r6uccQdICmC99M9RUPlMLw/qg4yEWLlQhG73W/mG437NA==}
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.50':
+    resolution: {integrity: sha512-ONgyjofCrrE3bnh5GZb8EINSFyR/hmwTzZ7oVuyUB170lboza1VMCnb8jgE6MsyyRgHYmN8Lb59i3NKGrxrYjw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.47':
-    resolution: {integrity: sha512-doozc/Goe7qRCSnzfJbFINTHsMktqmZQmweull6hsZZ9sjNWQ6BWQnbvOlfZJe4xE5NxM1NhPnY5Giqnl3ZrYQ==}
+  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.50':
+    resolution: {integrity: sha512-L0zRdH2oDPkmB+wvuTl+dJbXCsx62SkqcEqdM+79LOcB+PxbAxxjzHU14BuZIQdXcAVDzfpMfaHWzZuwhhBTcw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.47':
-    resolution: {integrity: sha512-fodvSMf6Aqwa0wEUSTPewmmZOD44rc5Tpr5p9NkwQ6W1SSpUKzD3SwpJIgANDOhwiYhDuiIaYPGB7Ujkx1q0UQ==}
+  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.50':
+    resolution: {integrity: sha512-gyoI8o/TGpQd3OzkJnh1M2kxy1Bisg8qJ5Gci0sXm9yLFzEXIFdtc4EAzepxGvrT2ri99ar5rdsmNG0zP0SbIg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.47':
-    resolution: {integrity: sha512-Rxm5hYc0mGjwLh5sjlGmMygxAaV2gnsx7CNm2lsb47oyt5UQyPDZf3GP/ct8BEcwuikdqzsrrlIp8+kCSvMFNQ==}
+  '@rolldown/binding-linux-x64-musl@1.0.0-beta.50':
+    resolution: {integrity: sha512-zti8A7M+xFDpKlghpcCAzyOi+e5nfUl3QhU023ce5NCgUxRG5zGP2GR9LTydQ1rnIPwZUVBWd4o7NjZDaQxaXA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-beta.47':
-    resolution: {integrity: sha512-YakuVe+Gc87jjxazBL34hbr8RJpRuFBhun7NEqoChVDlH5FLhLXjAPHqZd990TVGVNkemourf817Z8u2fONS8w==}
+  '@rolldown/binding-openharmony-arm64@1.0.0-beta.50':
+    resolution: {integrity: sha512-eZUssog7qljrrRU9Mi0eqYEPm3Ch0UwB+qlWPMKSUXHNqhm3TvDZarJQdTevGEfu3EHAXJvBIe0YFYr0TPVaMA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [openharmony]
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.47':
-    resolution: {integrity: sha512-ak2GvTFQz3UAOw8cuQq8pWE+TNygQB6O47rMhvevvTzETh7VkHRFtRUwJynX5hwzFvQMP6G0az5JrBGuwaMwYQ==}
+  '@rolldown/binding-wasm32-wasi@1.0.0-beta.50':
+    resolution: {integrity: sha512-nmCN0nIdeUnmgeDXiQ+2HU6FT162o+rxnF7WMkBm4M5Ds8qTU7Dzv2Wrf22bo4ftnlrb2hKK6FSwAJSAe2FWLg==}
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.47':
-    resolution: {integrity: sha512-o5BpmBnXU+Cj+9+ndMcdKjhZlPb79dVPBZnWwMnI4RlNSSq5yOvFZqvfPYbyacvnW03Na4n5XXQAPhu3RydZ0w==}
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.50':
+    resolution: {integrity: sha512-7kcNLi7Ua59JTTLvbe1dYb028QEPaJPJQHqkmSZ5q3tJueUeb6yjRtx8mw4uIqgWZcnQHAR3PrLN4XRJxvgIkA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [win32]
 
-  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.47':
-    resolution: {integrity: sha512-FVOmfyYehNE92IfC9Kgs913UerDog2M1m+FADJypKz0gmRg3UyTt4o1cZMCAl7MiR89JpM9jegNO1nXuP1w1vw==}
+  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.50':
+    resolution: {integrity: sha512-lL70VTNvSCdSZkDPPVMwWn/M2yQiYvSoXw9hTLgdIWdUfC3g72UaruezusR6ceRuwHCY1Ayu2LtKqXkBO5LIwg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ia32]
     os: [win32]
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.47':
-    resolution: {integrity: sha512-by/70F13IUE101Bat0oeH8miwWX5mhMFPk1yjCdxoTNHTyTdLgb0THNaebRM6AP7Kz+O3O2qx87sruYuF5UxHg==}
+  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.50':
+    resolution: {integrity: sha512-4qU4x5DXWB4JPjyTne/wBNPqkbQU8J45bl21geERBKtEittleonioACBL1R0PsBu0Aq21SwMK5a9zdBkWSlQtQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
@@ -2648,8 +2659,8 @@ packages:
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
 
-  '@rolldown/pluginutils@1.0.0-beta.47':
-    resolution: {integrity: sha512-8QagwMH3kNCuzD8EWL8R2YPW5e4OrHNSAHRFDdmFqEwEaD/KcNKjVoumo+gP2vW5eKB2UPbM6vTYiGZX0ixLnw==}
+  '@rolldown/pluginutils@1.0.0-beta.50':
+    resolution: {integrity: sha512-5e76wQiQVeL1ICOZVUg4LSOVYg9jyhGCin+icYozhsUzM+fHE7kddi1bdiE0jwVqTfkjba3jUFbEkoC9WkdvyA==}
 
   '@rollup/plugin-json@6.1.0':
     resolution: {integrity: sha512-EGI2te5ENk1coGeADSIwZ7G2Q8CJS2sF120T7jLw4xFw9n7wIOXHo+kIYRAoVpJAN+kmqZSoO3Fp4JtoNF4ReA==}
@@ -2805,8 +2816,8 @@ packages:
       vite:
         optional: true
 
-  '@samchon/openapi@4.7.2':
-    resolution: {integrity: sha512-yj6kGWHtKK85wfJXrSmWqLWjfCd98SAvCTsVDlej2s7OfXXHqA4hmgPRNrAPIQRVi00xn26qL1PChjq1MhzlRQ==}
+  '@samchon/openapi@5.0.1':
+    resolution: {integrity: sha512-u5UYYBLDeCOFKaTm2hE4tRuxR1reNy/PrEZSQyBPUC+/O+IRa6jSHkiXMgtPVSxJK1s9fyhuJhfw+z5OT3myoQ==}
 
   '@secretlint/config-creator@10.2.2':
     resolution: {integrity: sha512-BynOBe7Hn3LJjb3CqCHZjeNB09s/vgf0baBaHVw67w7gHF0d25c3ZsZ5+vv8TgwSchRdUCRrbbcq5i2B1fJ2QQ==}
@@ -3345,6 +3356,9 @@ packages:
   '@types/node@22.18.0':
     resolution: {integrity: sha512-m5ObIqwsUp6BZzyiy4RdZpzWGub9bqLJMvZDD0QMXhxjqMHMENlj+SqF5QxoUwaQNFe+8kz8XM8ZQhqkQPTgMQ==}
 
+  '@types/node@24.10.1':
+    resolution: {integrity: sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==}
+
   '@types/node@24.3.1':
     resolution: {integrity: sha512-3vXmQDXy+woz+gnrTvuvNrPzekOi+Ds0ReMxw0LzBiK3a+1k0kQn9f2NWk+lgD4rJehFUmYy2gMhJ2ZI+7YP9g==}
 
@@ -3356,6 +3370,9 @@ packages:
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
+
+  '@types/pluralize@0.0.33':
+    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -6260,8 +6277,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nestia@8.0.7:
-    resolution: {integrity: sha512-IUG1boO/+5gtNx/aF8YH+Mr0lMki/oeaYAatL7qZysH2PyrYLeaXV4DrIqD2T+IOYqI6XE4tRqm2ASTQPjF9Sg==}
+  nestia@9.0.3:
+    resolution: {integrity: sha512-NDxe6z+MtDVlFjQ4ChsVqmILExeB/I2DFytaMsvibMquXAGpuHc5/nxwR5CQMIKJhhyxtakFJen0wLGF4aeSoA==}
     hasBin: true
 
   netmask@2.0.2:
@@ -7120,8 +7137,8 @@ packages:
       vue-tsc:
         optional: true
 
-  rolldown@1.0.0-beta.47:
-    resolution: {integrity: sha512-Mid74GckX1OeFAOYz9KuXeWYhq3xkXbMziYIC+ULVdUzPTG9y70OBSBQDQn9hQP8u/AfhuYw1R0BSg15nBI4Dg==}
+  rolldown@1.0.0-beta.50:
+    resolution: {integrity: sha512-JFULvCNl/anKn99eKjOSEubi0lLmNqQDAjyEMME2T4CwezUDL0i6t1O9xZsu2OMehPnV2caNefWpGF+8TnzB6A==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -7810,13 +7827,13 @@ packages:
     peerDependencies:
       typescript: '>=3.6.5'
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typia@9.7.2:
-    resolution: {integrity: sha512-eLIKd0KHZtSvbsA+FYwX+Y0ZBt0BwVGz3GgODQX+6GfGL4DOzKW02LEx62oUZg6vCQX1BL5xyiPXAIdW+Hc51g==}
+  typia@10.0.2:
+    resolution: {integrity: sha512-KXrBj6bBOaumXhVu2wylu7AFZAjrpjVSz9S/mSG2PdbIlAcVhemGBeCV44BSIdMEX3wU1Ayan78is1JY9XlkDw==}
     hasBin: true
     peerDependencies:
       typescript: '>=4.8.0 <5.10.0'
@@ -7853,6 +7870,9 @@ packages:
 
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
+
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   undici@7.15.0:
     resolution: {integrity: sha512-7oZJCPvvMvTd0OlqWsIxTuItTpJBpU1tcbVl24FMn3xt3+VSunwUasmfPJRE57oNO1KsZ4PgA1xTdAX4hq8NyQ==}
@@ -8311,13 +8331,13 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.33.2(@samchon/openapi@4.7.2)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@9.7.2(typescript@5.9.2))':
+  '@agentica/core@0.34.2(@samchon/openapi@5.0.1)(openai@6.7.0(ws@8.18.3)(zod@3.25.76))(typia@10.0.2(typescript@5.9.3))':
     dependencies:
-      '@samchon/openapi': 4.7.2
+      '@samchon/openapi': 5.0.1
       es-jsonkit: 0.1.6
       openai: 6.7.0(ws@8.18.3)(zod@3.25.76)
       tstl: 3.0.0
-      typia: 9.7.2(typescript@5.9.2)
+      typia: 10.0.2(typescript@5.9.3)
       uuid: 11.1.0
 
   '@alloc/quick-lru@5.2.0': {}
@@ -9269,12 +9289,12 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nestia/core@8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))':
+  '@nestia/core@9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))':
     dependencies:
-      '@nestia/fetcher': 8.0.7
+      '@nestia/fetcher': 9.0.3
       '@nestjs/common': 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@samchon/openapi': 4.7.2
+      '@samchon/openapi': 5.0.1
       detect-ts-node: 1.0.5
       get-function-location: 2.0.0
       glob: 11.0.3
@@ -9283,48 +9303,67 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
       tgrid: 1.2.0
-      typia: 9.7.2(typescript@5.9.2)
+      typia: 10.0.2(typescript@5.9.3)
       ws: 7.5.10
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@nestia/e2e@8.0.5': {}
+  '@nestia/e2e@9.0.3': {}
 
-  '@nestia/e2e@8.0.7': {}
-
-  '@nestia/fetcher@8.0.7':
+  '@nestia/fetcher@9.0.3':
     dependencies:
-      '@samchon/openapi': 4.7.2
+      '@samchon/openapi': 5.0.1
 
-  '@nestia/migrate@8.0.7':
+  '@nestia/migrate@9.0.3':
     dependencies:
-      '@samchon/openapi': 4.7.2
+      '@samchon/openapi': 5.0.1
       commander: 10.0.0
       inquirer: 8.2.5
       prettier: 3.6.2
       prettier-plugin-jsdoc: 1.3.3(prettier@3.6.2)
       tstl: 3.0.0
-      typescript: 5.9.2
-      typia: 9.7.2(typescript@5.9.2)
+      typescript: 5.9.3
+      typia: 10.0.2(typescript@5.9.3)
     transitivePeerDependencies:
       - supports-color
 
-  '@nestia/sdk@8.0.7(@nestia/core@8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2)))(@types/node@24.3.1)(typescript@5.9.2)':
+  '@nestia/sdk@9.0.3(@nestia/core@9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3)))(@types/node@24.10.1)(typescript@5.9.3)':
     dependencies:
-      '@nestia/core': 8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(typescript@5.9.2))
-      '@nestia/fetcher': 8.0.7
-      '@samchon/openapi': 4.7.2
+      '@nestia/core': 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
+      '@nestia/fetcher': 9.0.3
+      '@samchon/openapi': 5.0.1
       cli: 1.0.1
       get-function-location: 2.0.0
       glob: 11.0.3
       path-to-regexp: 6.3.0
       prettier: 3.6.2
-      ts-node: 10.9.2(@types/node@24.3.1)(typescript@5.9.2)
-      tsconfck: 2.1.2(typescript@5.9.2)
+      ts-node: 10.9.2(@types/node@24.10.1)(typescript@5.9.3)
+      tsconfck: 2.1.2(typescript@5.9.3)
       tsconfig-paths: 4.2.0
       tstl: 3.0.0
-      typia: 9.7.2(typescript@5.9.2)
+      typia: 10.0.2(typescript@5.9.3)
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+
+  '@nestia/sdk@9.0.3(@nestia/core@9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3)))(@types/node@24.3.1)(typescript@5.9.3)':
+    dependencies:
+      '@nestia/core': 9.0.3(@nestia/fetcher@9.0.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@10.0.2(typescript@5.9.3))
+      '@nestia/fetcher': 9.0.3
+      '@samchon/openapi': 5.0.1
+      cli: 1.0.1
+      get-function-location: 2.0.0
+      glob: 11.0.3
+      path-to-regexp: 6.3.0
+      prettier: 3.6.2
+      ts-node: 10.9.2(@types/node@24.3.1)(typescript@5.9.3)
+      tsconfck: 2.1.2(typescript@5.9.3)
+      tsconfig-paths: 4.2.0
+      tstl: 3.0.0
+      typia: 10.0.2(typescript@5.9.3)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -9417,7 +9456,7 @@ snapshots:
 
   '@opentelemetry/api@1.9.0': {}
 
-  '@oxc-project/types@0.96.0': {}
+  '@oxc-project/types@0.97.0': {}
 
   '@pagefind/darwin-arm64@1.3.0':
     optional: true
@@ -9503,13 +9542,13 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
-  '@prisma/client-common@6.16.2(typescript@5.9.2)':
+  '@prisma/client-common@6.16.2(typescript@5.9.3)':
     dependencies:
       '@prisma/client-engine-runtime': 6.16.2
       '@prisma/dmmf': 6.16.2
       '@prisma/driver-adapter-utils': 6.16.2
       '@prisma/generator': 6.16.2
-      '@prisma/internals': 6.16.2(typescript@5.9.2)
+      '@prisma/internals': 6.16.2(typescript@5.9.3)
     transitivePeerDependencies:
       - magicast
       - typescript
@@ -9526,18 +9565,18 @@ snapshots:
       ulid: 3.0.0
       uuid: 11.1.0
 
-  '@prisma/client-generator-js@6.16.2(typescript@5.9.2)':
+  '@prisma/client-generator-js@6.16.2(typescript@5.9.3)':
     dependencies:
       '@antfu/ni': 0.21.12
-      '@prisma/client-common': 6.16.2(typescript@5.9.2)
+      '@prisma/client-common': 6.16.2(typescript@5.9.3)
       '@prisma/debug': 6.16.2
       '@prisma/dmmf': 6.16.2
       '@prisma/engines-version': 6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43
       '@prisma/fetch-engine': 6.16.2
       '@prisma/generator': 6.16.2
       '@prisma/get-platform': 6.16.2
-      '@prisma/internals': 6.16.2(typescript@5.9.2)
-      '@prisma/ts-builders': 6.16.2(typescript@5.9.2)
+      '@prisma/internals': 6.16.2(typescript@5.9.3)
+      '@prisma/ts-builders': 6.16.2(typescript@5.9.3)
       ci-info: 4.2.0
       env-paths: 2.2.1
       indent-string: 4.0.0
@@ -9549,10 +9588,10 @@ snapshots:
       - magicast
       - typescript
 
-  '@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)':
+  '@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3)':
     optionalDependencies:
-      prisma: 6.16.2(typescript@5.9.2)
-      typescript: 5.9.2
+      prisma: 6.16.2(typescript@5.9.3)
+      typescript: 5.9.3
 
   '@prisma/config@6.16.2':
     dependencies:
@@ -9610,7 +9649,7 @@ snapshots:
     dependencies:
       '@prisma/debug': 6.16.2
 
-  '@prisma/internals@6.16.2(typescript@5.9.2)':
+  '@prisma/internals@6.16.2(typescript@5.9.3)':
     dependencies:
       '@prisma/config': 6.16.2
       '@prisma/debug': 6.16.2
@@ -9627,7 +9666,7 @@ snapshots:
       arg: 5.0.2
       prompts: 2.4.2
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - magicast
 
@@ -9640,9 +9679,9 @@ snapshots:
       '@prisma/prisma-schema-wasm': 6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43
       fs-extra: 11.3.0
 
-  '@prisma/ts-builders@6.16.2(typescript@5.9.2)':
+  '@prisma/ts-builders@6.16.2(typescript@5.9.3)':
     dependencies:
-      '@prisma/internals': 6.16.2(typescript@5.9.2)
+      '@prisma/internals': 6.16.2(typescript@5.9.3)
     transitivePeerDependencies:
       - magicast
       - typescript
@@ -9714,53 +9753,53 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@rolldown/binding-android-arm64@1.0.0-beta.47':
+  '@rolldown/binding-android-arm64@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.47':
+  '@rolldown/binding-darwin-arm64@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.47':
+  '@rolldown/binding-darwin-x64@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.47':
+  '@rolldown/binding-freebsd-x64@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.47':
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.47':
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.47':
+  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.47':
+  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.47':
+  '@rolldown/binding-linux-x64-musl@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-beta.47':
+  '@rolldown/binding-openharmony-arm64@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.47':
+  '@rolldown/binding-wasm32-wasi@1.0.0-beta.50':
     dependencies:
       '@napi-rs/wasm-runtime': 1.0.7
     optional: true
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.47':
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.47':
+  '@rolldown/binding-win32-ia32-msvc@1.0.0-beta.50':
     optional: true
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.47':
+  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.50':
     optional: true
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
-  '@rolldown/pluginutils@1.0.0-beta.47': {}
+  '@rolldown/pluginutils@1.0.0-beta.50': {}
 
   '@rollup/plugin-json@6.1.0(rollup@4.49.0)':
     dependencies:
@@ -9776,11 +9815,11 @@ snapshots:
     optionalDependencies:
       rollup: 4.49.0
 
-  '@rollup/plugin-typescript@12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.2)':
+  '@rollup/plugin-typescript@12.1.4(rollup@4.49.0)(tslib@2.8.1)(typescript@5.9.3)':
     dependencies:
       '@rollup/pluginutils': 5.2.0(rollup@4.49.0)
       resolve: 1.22.10
-      typescript: 5.9.2
+      typescript: 5.9.3
     optionalDependencies:
       rollup: 4.49.0
       tslib: 2.8.1
@@ -9853,7 +9892,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.49.0':
     optional: true
 
-  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.49.0)(typescript@5.9.2)(typia@9.7.2(typescript@5.9.2))(vite@6.3.5(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
+  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.49.0)(typescript@5.9.3)(typia@10.0.2(typescript@5.9.3))(vite@6.3.5(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@rollup/pluginutils': 5.2.0(rollup@4.49.0)
       bun-only: 0.0.1
@@ -9865,15 +9904,15 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 2.3.0
       type-fest: 4.41.0
-      typescript: 5.9.2
-      typia: 9.7.2(typescript@5.9.2)
+      typescript: 5.9.3
+      typia: 10.0.2(typescript@5.9.3)
       unplugin: 2.3.9
     optionalDependencies:
       vite: 6.3.5(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - rollup
 
-  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.49.0)(typescript@5.9.2)(typia@9.7.2(typescript@5.9.2))(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
+  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.49.0)(typescript@5.9.3)(typia@10.0.2(typescript@5.9.3))(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@rollup/pluginutils': 5.2.0(rollup@4.49.0)
       bun-only: 0.0.1
@@ -9885,15 +9924,15 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 2.3.0
       type-fest: 4.41.0
-      typescript: 5.9.2
-      typia: 9.7.2(typescript@5.9.2)
+      typescript: 5.9.3
+      typia: 10.0.2(typescript@5.9.3)
       unplugin: 2.3.9
     optionalDependencies:
-      vite: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - rollup
 
-  '@samchon/openapi@4.7.2': {}
+  '@samchon/openapi@5.0.1': {}
 
   '@secretlint/config-creator@10.2.2':
     dependencies:
@@ -9995,12 +10034,12 @@ snapshots:
     dependencies:
       '@shikijs/types': 3.12.0
 
-  '@shikijs/twoslash@3.12.0(typescript@5.9.2)':
+  '@shikijs/twoslash@3.12.0(typescript@5.9.3)':
     dependencies:
       '@shikijs/core': 3.12.0
       '@shikijs/types': 3.12.0
-      twoslash: 0.3.4(typescript@5.9.2)
-      typescript: 5.9.2
+      twoslash: 0.3.4(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10161,12 +10200,12 @@ snapshots:
       postcss: 8.5.6
       tailwindcss: 4.1.13
 
-  '@tailwindcss/vite@4.1.12(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
+  '@tailwindcss/vite@4.1.12(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@tailwindcss/node': 4.1.12
       '@tailwindcss/oxide': 4.1.12
       tailwindcss: 4.1.12
-      vite: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
 
   '@tanstack/react-virtual@3.13.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -10506,6 +10545,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@24.10.1':
+    dependencies:
+      undici-types: 7.16.0
+
   '@types/node@24.3.1':
     dependencies:
       undici-types: 7.10.0
@@ -10516,6 +10559,8 @@ snapshots:
 
   '@types/parse-json@4.0.2':
     optional: true
+
+  '@types/pluralize@0.0.33': {}
 
   '@types/prop-types@15.7.15': {}
 
@@ -10583,41 +10628,41 @@ snapshots:
       '@types/node': 22.18.0
     optional: true
 
-  '@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)':
+  '@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.1
-      '@typescript-eslint/parser': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+      '@typescript-eslint/parser': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.40.0
-      '@typescript-eslint/type-utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+      '@typescript-eslint/type-utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.40.0
       eslint: 9.34.0(jiti@2.5.1)
       graphemer: 1.4.0
       ignore: 7.0.5
       natural-compare: 1.4.0
-      ts-api-utils: 2.1.0(typescript@5.9.2)
-      typescript: 5.9.2
+      ts-api-utils: 2.1.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)':
+  '@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.40.0
       '@typescript-eslint/types': 8.40.0
-      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.2)
+      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.40.0
       debug: 4.4.1(supports-color@8.1.1)
       eslint: 9.34.0(jiti@2.5.1)
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.40.0(typescript@5.9.2)':
+  '@typescript-eslint/project-service@8.40.0(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.41.0(typescript@5.9.2)
+      '@typescript-eslint/tsconfig-utils': 8.41.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.41.0
       debug: 4.4.3
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10626,23 +10671,23 @@ snapshots:
       '@typescript-eslint/types': 8.40.0
       '@typescript-eslint/visitor-keys': 8.40.0
 
-  '@typescript-eslint/tsconfig-utils@8.40.0(typescript@5.9.2)':
+  '@typescript-eslint/tsconfig-utils@8.40.0(typescript@5.9.3)':
     dependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
-  '@typescript-eslint/tsconfig-utils@8.41.0(typescript@5.9.2)':
+  '@typescript-eslint/tsconfig-utils@8.41.0(typescript@5.9.3)':
     dependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
-  '@typescript-eslint/type-utils@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)':
+  '@typescript-eslint/type-utils@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 8.40.0
-      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
+      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       debug: 4.4.3
       eslint: 9.34.0(jiti@2.5.1)
-      ts-api-utils: 2.1.0(typescript@5.9.2)
-      typescript: 5.9.2
+      ts-api-utils: 2.1.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10650,10 +10695,10 @@ snapshots:
 
   '@typescript-eslint/types@8.41.0': {}
 
-  '@typescript-eslint/typescript-estree@8.40.0(typescript@5.9.2)':
+  '@typescript-eslint/typescript-estree@8.40.0(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.40.0(typescript@5.9.2)
-      '@typescript-eslint/tsconfig-utils': 8.40.0(typescript@5.9.2)
+      '@typescript-eslint/project-service': 8.40.0(typescript@5.9.3)
+      '@typescript-eslint/tsconfig-utils': 8.40.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.40.0
       '@typescript-eslint/visitor-keys': 8.40.0
       debug: 4.4.3
@@ -10661,19 +10706,19 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.7.2
-      ts-api-utils: 2.1.0(typescript@5.9.2)
-      typescript: 5.9.2
+      ts-api-utils: 2.1.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)':
+  '@typescript-eslint/utils@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@9.34.0(jiti@2.5.1))
       '@typescript-eslint/scope-manager': 8.40.0
       '@typescript-eslint/types': 8.40.0
-      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.2)
+      '@typescript-eslint/typescript-estree': 8.40.0(typescript@5.9.3)
       eslint: 9.34.0(jiti@2.5.1)
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10682,10 +10727,10 @@ snapshots:
       '@typescript-eslint/types': 8.40.0
       eslint-visitor-keys: 4.2.1
 
-  '@typescript/vfs@1.6.1(typescript@5.9.2)':
+  '@typescript/vfs@1.6.1(typescript@5.9.3)':
     dependencies:
       debug: 4.4.3
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10699,7 +10744,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitejs/plugin-react@4.7.0(vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
+  '@vitejs/plugin-react@4.7.0(vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@babel/core': 7.28.3
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.3)
@@ -10707,7 +10752,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.27
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -10718,13 +10763,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.9(vite@5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1))':
+  '@vitest/mocker@2.1.9(vite@5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1))':
     dependencies:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.18
     optionalDependencies:
-      vite: 5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1)
+      vite: 5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1)
 
   '@vitest/pretty-format@2.1.9':
     dependencies:
@@ -10754,7 +10799,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.14
       tinyrainbow: 1.2.0
-      vitest: 2.1.9(@types/node@24.3.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1)
+      vitest: 2.1.9(@types/node@24.10.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1)
 
   '@vitest/utils@2.1.9':
     dependencies:
@@ -11570,14 +11615,14 @@ snapshots:
       yaml: 1.10.2
     optional: true
 
-  cosmiconfig@9.0.0(typescript@5.9.2):
+  cosmiconfig@9.0.0(typescript@5.9.3):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.0
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   create-require@1.1.1: {}
 
@@ -11952,32 +11997,32 @@ snapshots:
 
   email-addresses@5.0.0: {}
 
-  embed-eslint@2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2):
+  embed-eslint@2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
-      '@typescript-eslint/parser': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)
-      embed-typescript: 2.0.1(typescript@5.9.2)
+      '@typescript-eslint/eslint-plugin': 8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
+      embed-typescript: 2.0.1(typescript@5.9.3)
       eslint: 9.34.0(jiti@2.5.1)
       tstl: 3.0.0
     transitivePeerDependencies:
       - typescript
 
-  embed-prisma@1.1.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2):
+  embed-prisma@1.1.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
-      '@prisma/client': 6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)
-      '@prisma/client-generator-js': 6.16.2(typescript@5.9.2)
+      '@prisma/client': 6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3)
+      '@prisma/client-generator-js': 6.16.2(typescript@5.9.3)
       '@prisma/generator-helper': 6.16.2
-      '@prisma/internals': 6.16.2(typescript@5.9.2)
-      prisma-markdown: 3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2))(prisma@6.16.2(typescript@5.9.2))
+      '@prisma/internals': 6.16.2(typescript@5.9.3)
+      prisma-markdown: 3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3))(prisma@6.16.2(typescript@5.9.3))
     transitivePeerDependencies:
       - magicast
       - prisma
       - typescript
 
-  embed-typescript@2.0.1(typescript@5.9.2):
+  embed-typescript@2.0.1(typescript@5.9.3):
     dependencies:
       tstl: 3.0.0
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   emoji-regex@10.5.0: {}
 
@@ -14010,7 +14055,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nestia@8.0.7:
+  nestia@9.0.3:
     dependencies:
       commander: 10.0.1
       comment-json: 4.2.5
@@ -14056,13 +14101,13 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nextra-theme-docs@4.4.0(@types/react@18.3.24)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1)):
+  nextra-theme-docs@4.4.0(@types/react@18.3.24)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1)):
     dependencies:
       '@headlessui/react': 2.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       next: 15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-themes: 0.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      nextra: 4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.2)
+      nextra: 4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
       react: 18.3.1
       react-compiler-runtime: 19.1.0-rc.3(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
@@ -14074,13 +14119,13 @@ snapshots:
       - immer
       - use-sync-external-store
 
-  nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.2):
+  nextra@4.4.0(acorn@8.15.0)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3):
     dependencies:
       '@formatjs/intl-localematcher': 0.6.1
       '@headlessui/react': 2.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mdx-js/mdx': 3.1.0(acorn@8.15.0)
       '@napi-rs/simple-git': 0.1.22
-      '@shikijs/twoslash': 3.12.0(typescript@5.9.2)
+      '@shikijs/twoslash': 3.12.0(typescript@5.9.3)
       '@theguild/remark-mermaid': 0.3.0(react@18.3.1)
       '@theguild/remark-npm2yarn': 0.3.3
       better-react-mathjax: 2.3.0(react@18.3.1)
@@ -14650,18 +14695,18 @@ snapshots:
 
   prettier@3.6.2: {}
 
-  prisma-markdown@3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2))(prisma@6.16.2(typescript@5.9.2)):
+  prisma-markdown@3.0.1(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3))(prisma@6.16.2(typescript@5.9.3)):
     dependencies:
-      '@prisma/client': 6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)
+      '@prisma/client': 6.16.2(prisma@6.16.2(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/generator-helper': 6.15.0
-      prisma: 6.16.2(typescript@5.9.2)
+      prisma: 6.16.2(typescript@5.9.3)
 
-  prisma@6.16.2(typescript@5.9.2):
+  prisma@6.16.2(typescript@5.9.3):
     dependencies:
       '@prisma/config': 6.16.2
       '@prisma/engines': 6.16.2
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - magicast
 
@@ -14750,11 +14795,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.23.0(typescript@5.9.2):
+  puppeteer@24.23.0(typescript@5.9.3):
     dependencies:
       '@puppeteer/browsers': 2.10.10
       chromium-bidi: 9.1.0(devtools-protocol@0.0.1508733)
-      cosmiconfig: 9.0.0(typescript@5.9.2)
+      cosmiconfig: 9.0.0(typescript@5.9.3)
       devtools-protocol: 0.0.1508733
       puppeteer-core: 24.23.0
       typed-query-selector: 2.12.0
@@ -15128,7 +15173,7 @@ snapshots:
 
   robust-predicates@3.0.2: {}
 
-  rolldown-plugin-dts@0.15.10(rolldown@1.0.0-beta.47)(typescript@5.9.2):
+  rolldown-plugin-dts@0.15.10(rolldown@1.0.0-beta.50)(typescript@5.9.3):
     dependencies:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.3
@@ -15138,32 +15183,32 @@ snapshots:
       debug: 4.4.3
       dts-resolver: 2.1.2
       get-tsconfig: 4.10.1
-      rolldown: 1.0.0-beta.47
+      rolldown: 1.0.0-beta.50
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - oxc-resolver
       - supports-color
 
-  rolldown@1.0.0-beta.47:
+  rolldown@1.0.0-beta.50:
     dependencies:
-      '@oxc-project/types': 0.96.0
-      '@rolldown/pluginutils': 1.0.0-beta.47
+      '@oxc-project/types': 0.97.0
+      '@rolldown/pluginutils': 1.0.0-beta.50
     optionalDependencies:
-      '@rolldown/binding-android-arm64': 1.0.0-beta.47
-      '@rolldown/binding-darwin-arm64': 1.0.0-beta.47
-      '@rolldown/binding-darwin-x64': 1.0.0-beta.47
-      '@rolldown/binding-freebsd-x64': 1.0.0-beta.47
-      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-beta.47
-      '@rolldown/binding-linux-arm64-gnu': 1.0.0-beta.47
-      '@rolldown/binding-linux-arm64-musl': 1.0.0-beta.47
-      '@rolldown/binding-linux-x64-gnu': 1.0.0-beta.47
-      '@rolldown/binding-linux-x64-musl': 1.0.0-beta.47
-      '@rolldown/binding-openharmony-arm64': 1.0.0-beta.47
-      '@rolldown/binding-wasm32-wasi': 1.0.0-beta.47
-      '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.47
-      '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.47
-      '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.47
+      '@rolldown/binding-android-arm64': 1.0.0-beta.50
+      '@rolldown/binding-darwin-arm64': 1.0.0-beta.50
+      '@rolldown/binding-darwin-x64': 1.0.0-beta.50
+      '@rolldown/binding-freebsd-x64': 1.0.0-beta.50
+      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-beta.50
+      '@rolldown/binding-linux-arm64-gnu': 1.0.0-beta.50
+      '@rolldown/binding-linux-arm64-musl': 1.0.0-beta.50
+      '@rolldown/binding-linux-x64-gnu': 1.0.0-beta.50
+      '@rolldown/binding-linux-x64-musl': 1.0.0-beta.50
+      '@rolldown/binding-openharmony-arm64': 1.0.0-beta.50
+      '@rolldown/binding-wasm32-wasi': 1.0.0-beta.50
+      '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.50
+      '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.50
+      '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.50
 
   rollup@4.49.0:
     dependencies:
@@ -15796,20 +15841,20 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-api-utils@2.1.0(typescript@5.9.2):
+  ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   ts-dedent@2.2.0: {}
 
-  ts-loader@9.5.4(typescript@5.9.2)(webpack@5.101.3):
+  ts-loader@9.5.4(typescript@5.9.3)(webpack@5.101.3):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.18.3
       micromatch: 4.0.8
       semver: 7.7.2
       source-map: 0.7.6
-      typescript: 5.9.2
+      typescript: 5.9.3
       webpack: 5.101.3
 
   ts-morph@26.0.0:
@@ -15817,7 +15862,7 @@ snapshots:
       '@ts-morph/common': 0.27.0
       code-block-writer: 13.0.3
 
-  ts-node@10.9.2(@types/node@22.18.0)(typescript@5.9.2):
+  ts-node@10.9.2(@types/node@22.18.0)(typescript@5.9.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -15831,11 +15876,29 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.9.2
+      typescript: 5.9.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.2(@types/node@24.3.1)(typescript@5.9.2):
+  ts-node@10.9.2(@types/node@24.10.1)(typescript@5.9.3):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 24.10.1
+      acorn: 8.15.0
+      acorn-walk: 8.3.4
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.9.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
+  ts-node@10.9.2(@types/node@24.3.1)(typescript@5.9.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -15849,7 +15912,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.9.2
+      typescript: 5.9.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -15864,9 +15927,9 @@ snapshots:
 
   ts-pattern@5.6.2: {}
 
-  tsconfck@2.1.2(typescript@5.9.2):
+  tsconfck@2.1.2(typescript@5.9.3):
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   tsconfig-paths@4.2.0:
     dependencies:
@@ -15874,7 +15937,7 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsdown@0.14.2(typescript@5.9.2):
+  tsdown@0.14.2(typescript@5.9.3):
     dependencies:
       ansis: 4.1.0
       cac: 6.7.14
@@ -15883,15 +15946,15 @@ snapshots:
       diff: 8.0.2
       empathic: 2.0.0
       hookable: 5.5.3
-      rolldown: 1.0.0-beta.47
-      rolldown-plugin-dts: 0.15.10(rolldown@1.0.0-beta.47)(typescript@5.9.2)
+      rolldown: 1.0.0-beta.50
+      rolldown-plugin-dts: 0.15.10(rolldown@1.0.0-beta.50)(typescript@5.9.3)
       semver: 7.7.2
       tinyexec: 1.0.1
       tinyglobby: 0.2.14
       tree-kill: 1.2.2
       unconfig: 7.3.3
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - '@typescript/native-preview'
       - oxc-resolver
@@ -15917,11 +15980,11 @@ snapshots:
 
   twoslash-protocol@0.3.4: {}
 
-  twoslash@0.3.4(typescript@5.9.2):
+  twoslash@0.3.4(typescript@5.9.3):
     dependencies:
-      '@typescript/vfs': 1.6.1(typescript@5.9.2)
+      '@typescript/vfs': 1.6.1(typescript@5.9.3)
       twoslash-protocol: 0.3.4
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -15959,32 +16022,32 @@ snapshots:
 
   typedarray@0.0.6: {}
 
-  typedoc@0.28.11(typescript@5.9.2):
+  typedoc@0.28.11(typescript@5.9.3):
     dependencies:
       '@gerrit0/mini-shiki': 3.12.0
       lunr: 2.3.9
       markdown-it: 14.1.0
       minimatch: 9.0.5
-      typescript: 5.9.2
+      typescript: 5.9.3
       yaml: 2.8.1
 
-  typescript-transform-paths@3.5.5(typescript@5.9.2):
+  typescript-transform-paths@3.5.5(typescript@5.9.3):
     dependencies:
       minimatch: 9.0.5
-      typescript: 5.9.2
+      typescript: 5.9.3
 
-  typescript@5.9.2: {}
+  typescript@5.9.3: {}
 
-  typia@9.7.2(typescript@5.9.2):
+  typia@10.0.2(typescript@5.9.3):
     dependencies:
-      '@samchon/openapi': 4.7.2
+      '@samchon/openapi': 5.0.1
       '@standard-schema/spec': 1.0.0
       commander: 10.0.1
       comment-json: 4.2.5
       inquirer: 8.2.5
       package-manager-detector: 0.2.11
       randexp: 0.5.3
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   uc.micro@2.1.0: {}
 
@@ -16012,6 +16075,8 @@ snapshots:
   undici-types@6.21.0: {}
 
   undici-types@7.10.0: {}
+
+  undici-types@7.16.0: {}
 
   undici@7.15.0: {}
 
@@ -16163,13 +16228,13 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-node@2.1.9(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1):
+  vite-node@2.1.9(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1):
     dependencies:
       cac: 6.7.14
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 1.1.2
-      vite: 5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1)
+      vite: 5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -16181,13 +16246,13 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1):
+  vite@5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.6
       rollup: 4.49.0
     optionalDependencies:
-      '@types/node': 24.3.1
+      '@types/node': 24.10.1
       fsevents: 2.3.3
       lightningcss: 1.30.1
       terser: 5.43.1
@@ -16209,7 +16274,7 @@ snapshots:
       yaml: 2.8.1
     optional: true
 
-  vite@6.3.5(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1):
+  vite@6.3.5(@types/node@24.10.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       esbuild: 0.25.9
       fdir: 6.5.0(picomatch@4.0.3)
@@ -16218,17 +16283,17 @@ snapshots:
       rollup: 4.49.0
       tinyglobby: 0.2.14
     optionalDependencies:
-      '@types/node': 24.3.1
+      '@types/node': 24.10.1
       fsevents: 2.3.3
       jiti: 2.5.1
       lightningcss: 1.30.1
       terser: 5.43.1
       yaml: 2.8.1
 
-  vitest@2.1.9(@types/node@24.3.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1):
+  vitest@2.1.9(@types/node@24.10.1)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.43.1):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1))
+      '@vitest/mocker': 2.1.9(vite@5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9
@@ -16244,11 +16309,11 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.1.1
       tinyrainbow: 1.2.0
-      vite: 5.4.20(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1)
-      vite-node: 2.1.9(@types/node@24.3.1)(lightningcss@1.30.1)(terser@5.43.1)
+      vite: 5.4.20(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1)
+      vite-node: 2.1.9(@types/node@24.10.1)(lightningcss@1.30.1)(terser@5.43.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 24.3.1
+      '@types/node': 24.10.1
       '@vitest/ui': 2.1.9(vitest@2.1.9)
       happy-dom: 15.11.7
     transitivePeerDependencies:

@@ -317,6 +317,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       if (errorHistory.value instanceof Error) throw errorHistory.value;
       else {
         const v = new Error();
+        console.log("errorHistory", errorHistory.value);
         Object.assign(v, errorHistory.value);
         throw v;
       }

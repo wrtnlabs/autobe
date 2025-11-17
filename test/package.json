@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@autobe/test",
-  "version": "0.27.0",
+  "version": "0.29.0",
   "description": "AutoBE Test Program",
   "main": "src/index.ts",
   "scripts": {
@@ -12,7 +12,7 @@
     "start": "pnpm run build:prompt && pnpm run start:go",
     "start:go": "ts-node src",
     "archive": "pnpm run build:prompt && pnpm run archive:go",
-    "archive:go": "ts-node src/archive",
+    "archive:go": "ts-node src/archive --max-old-space-size=8000",
     "archive:failures": "ts-node src/archive/failures.ts > failures.log",
     "archive:commit": "ts-node src/archive/commit.ts",
     "archive:local": "ts-node src/archive/local.ts",
@@ -40,6 +40,7 @@
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
+    "pluralize": "^8.0.0",
     "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",
@@ -47,6 +48,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.17",
+    "@types/pluralize": "^0.0.33",
     "@types/uuid": "^10.0.0",
     "chalk": "4.1.2",
     "rimraf": "^6.0.1",

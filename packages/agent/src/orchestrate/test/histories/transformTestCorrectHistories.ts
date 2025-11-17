@@ -1,15 +1,15 @@
-import { IAgenticaHistoryJson } from "@agentica/core";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { transformTestWriteHistories } from "./transformTestWriteHistories";
+import { transformTestWriteHistory } from "./transformTestWriteHistory";
 
-export const transformTestCorrectHistories = async <
+export const transformTestCorrectHistory = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -18,32 +18,32 @@ export const transformTestCorrectHistories = async <
     function: IAutoBeTestFunction;
     failures: IAutoBeTestFunctionFailure[];
   },
-): Promise<
-  Array<
-    IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-  >
-> => {
-  const previous: Array<
-    IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-  > = await transformTestWriteHistories(ctx, {
-    instruction: props.instruction,
-    scenario: props.function.scenario,
-    artifacts: props.function.artifacts,
-  });
-  return [
-    ...previous.slice(0, -1),
+): Promise<IAutoBeOrchestrateHistory> => {
+  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistory(
+    ctx,
     {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_CORRECT,
+      instruction: props.instruction,
+      scenario: props.function.scenario,
+      artifacts: props.function.artifacts,
     },
-    previous.at(-1)!,
-    ...transformPreviousAndLatestCorrectHistories(
-      props.failures.map((f) => ({
-        script: f.function.script,
-        diagnostics: f.failure.diagnostics,
-      })),
-    ),
-  ];
+  );
+  return {
+    histories: [
+      ...previous.histories.slice(0, -1),
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "systemMessage",
+        text: AutoBeSystemPromptConstant.TEST_CORRECT,
+      },
+      previous.histories.at(-1)!,
+      ...transformPreviousAndLatestCorrectHistory(
+        props.failures.map((f) => ({
+          script: f.function.script,
+          diagnostics: f.failure.diagnostics,
+        })),
+      ),
+    ],
+    userMessage: "Fix the compile errors in the test code please",
+  };
 };

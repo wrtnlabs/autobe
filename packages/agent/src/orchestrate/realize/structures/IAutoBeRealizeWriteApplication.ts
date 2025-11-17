@@ -1,18 +1,70 @@
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+
 export interface IAutoBeRealizeWriteApplication {
   /**
-   * Generate complete provider function implementation using Chain of Thinking.
+   * Process provider implementation task or preliminary data requests.
    *
-   * Follows a 3-phase process: plan → draft → revise.
+   * Generates complete provider function implementation through three-phase
+   * workflow (plan → draft → revise). Ensures type safety, proper Prisma usage,
+   * and API contract compliance.
    *
-   * Ensures type safety, proper Prisma usage, and API contract compliance.
-   *
-   * @param props Chain of Thinking properties for implementation
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  write(props: IAutoBeRealizeWriteApplication.IProps): void;
+  process(props: IAutoBeRealizeWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeWriteApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getPrismaSchemas) or final implementation generation (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to generate provider function implementation.
+   *
+   * Executes three-phase generation to create complete provider implementation.
+   * Follows plan → draft → revise pattern to ensure type safety, proper Prisma
+   * usage, and API contract compliance.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Implementation plan and strategy.
      *

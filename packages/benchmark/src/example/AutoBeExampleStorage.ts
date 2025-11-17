@@ -176,20 +176,12 @@ export namespace AutoBeExampleStorage {
     realize: "Implement API functions.",
   };
 
-  const examples = new Singleton(() => {
-    const location: string = `${TEST_ROOT}/repositories/autobe-examples`;
-    if (fs.existsSync(location) === false) {
-      try {
-        fs.mkdirSync(`${TEST_ROOT}/repositories`);
-      } catch {}
-      cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
-        cwd: `${TEST_ROOT}/repositories`,
-        stdio: "inherit",
-      });
-    }
-    cp.execSync("git pull", {
-      cwd: location,
-      stdio: "ignore",
+const examples = new Singleton(() => {
+  const location: string = `${TEST_ROOT}/../../autobe-examples`;
+  if (fs.existsSync(location) === false) {
+    cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
+      cwd: `${TEST_ROOT}/../../`,
+      stdio: "inherit",
     });
     if (fs.existsSync(`${location}/raw`) === false)
       fs.mkdirSync(`${location}/raw`);

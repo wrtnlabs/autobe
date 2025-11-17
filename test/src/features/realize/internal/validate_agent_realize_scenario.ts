@@ -58,11 +58,7 @@ export const validate_agent_realize_scenario = async (props: {
 
   const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
     (operation) => {
-      return generateRealizeScenario(
-        agent.getContext(),
-        operation,
-        authorizations,
-      );
+      return generateRealizeScenario(operation, authorizations);
     },
   );
 

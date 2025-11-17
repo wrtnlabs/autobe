@@ -6,6 +6,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 export interface AutoBeJsonValidateErrorEvent
   extends AutoBeEventBase<"jsonValidateError"> {
   source: AutoBeEventSource;
+  function: string;
   result: IValidation.IFailure;
   life: number;
 }

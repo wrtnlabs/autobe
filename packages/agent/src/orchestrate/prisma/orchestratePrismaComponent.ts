@@ -7,7 +7,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaComponentsHistories } from "./histories/transformPrismaComponentsHistories";
+import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
 
 export async function orchestratePrismaComponents<
@@ -15,7 +15,6 @@ export async function orchestratePrismaComponents<
 >(
   ctx: AutoBeContext<Model>,
   instruction: string,
-  message: string = "Design database from the given requirement analysis documents.",
 ): Promise<AutoBePrismaComponentEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
@@ -24,10 +23,6 @@ export async function orchestratePrismaComponents<
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const { metric, tokenUsage } = await ctx.conversate({
     source: "prismaComponent",
-    histories: transformPrismaComponentsHistories(ctx.state(), {
-      prefix,
-      instruction,
-    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -35,7 +30,10 @@ export async function orchestratePrismaComponents<
       },
     }),
     enforceFunctionCall: true,
-    message,
+    ...transformPrismaComponentsHistory(ctx.state(), {
+      instruction,
+      prefix,
+    }),
   });
   if (pointer.value === null)
     throw new Error("Failed to extract files and tables."); // unreachable
@@ -60,7 +58,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
   assertSchemaModel(props.model);
 
   const application: ILlmApplication<Model> = collection[
-    props.model
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -74,17 +76,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBePrismaComponentApplication,
-  "claude"
->();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBePrismaComponentApplication,
     "chatgpt"
   >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  claude: typia.llm.application<IAutoBePrismaComponentApplication, "claude">(),
+  gemini: typia.llm.application<IAutoBePrismaComponentApplication, "gemini">(),
 };

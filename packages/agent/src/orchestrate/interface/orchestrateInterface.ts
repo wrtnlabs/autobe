@@ -22,16 +22,17 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
-import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
+import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
-import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
-import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
-import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
-import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
+import { orchestrateInterfaceEndpoint } from "./orchestrateInterfaceEndpoint";
+import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
+import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
+import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
+import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
-import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
+import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -60,8 +61,11 @@ export const orchestrateInterface =
       step: ctx.state().analyze?.step ?? 0,
     });
 
+    //------------------------------------------------
+    // OPERATIONS
+    //------------------------------------------------
     // ENDPOINTS
-    const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroups(
+    const init: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroup(
       ctx,
       {
         instruction: props.instruction,
@@ -71,20 +75,22 @@ export const orchestrateInterface =
 
     // AUTHORIZATION
     const authorizations: AutoBeInterfaceAuthorization[] =
-      await orchestrateInterfaceAuthorizations(ctx, props.instruction);
+      await orchestrateInterfaceAuthorization(ctx, {
+        instruction: props.instruction,
+      });
     const authOperations: AutoBeOpenApi.IOperation[] = authorizations
       .map((authorization) => authorization.operations)
       .flat();
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, {
+      await orchestrateInterfaceEndpoint(ctx, {
         groups: init.groups,
         authorizations: authOperations,
         instruction: props.instruction,
       });
     const firstOperations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, {
+      await orchestrateInterfaceOperation(ctx, {
         endpoints,
         instruction: props.instruction,
       });
@@ -108,72 +114,115 @@ export const orchestrateInterface =
       .toJSON()
       .map((it) => it.second);
 
-    // TYPE SCHEMAS
+    // THE DOCUMENT
     const document: AutoBeOpenApi.IDocument = {
       operations,
       components: {
         authorizations: ctx.state().analyze?.actors ?? [],
-        schemas: await orchestrateInterfaceSchemas(ctx, {
-          instruction: props.instruction,
-          operations,
-        }),
+        schemas: {},
       },
     };
 
+    //------------------------------------------------
+    // DTO SCHEMAS
+    //------------------------------------------------
     const assign = (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    ) => Object.assign(document.components.schemas, schemas);
-    const complement = async () =>
-      assign(
-        await orchestrateInterfaceComplement(ctx, {
-          instruction: props.instruction,
-          document,
-        }),
+    ) => {
+      Object.assign(document.components.schemas, schemas);
+      JsonSchemaFactory.authorize(document.components.schemas);
+      Object.assign(
+        document.components.schemas,
+        JsonSchemaFactory.presets(
+          new Set(Object.keys(document.components.schemas)),
+        ),
       );
-    await complement();
+      JsonSchemaNamingConvention.schemas(
+        document.operations,
+        document.components.schemas,
+      );
+      JsonSchemaFactory.finalize({
+        document,
+        application: ctx.state().prisma!.result.data,
+      });
+    };
 
+    // INITIAL SCHEMAS
+    assign(
+      await orchestrateInterfaceSchema(ctx, {
+        instruction: props.instruction,
+        operations,
+      }),
+    );
+
+    // REVIEW GENERATED
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
-      total: Math.ceil(
-        Object.keys(document.components.schemas).length /
-          AutoBeConfigConstant.INTERFACE_CAPACITY,
-      ),
+      total: 0,
     };
-    for (const config of [
-      {
-        kind: "security" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-      },
-      {
-        kind: "relation" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-      },
-      {
-        kind: "content" as const,
-        systemPrompt:
-          AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
-      },
-    ])
+    for (const config of REVIEWERS) {
+      reviewProgress.total = Math.ceil(
+        (Object.keys(document.components.schemas).length * REVIEWERS.length) /
+          AutoBeConfigConstant.INTERFACE_CAPACITY,
+      );
       assign(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
           document,
+          schemas: document.components.schemas,
           progress: reviewProgress,
         }),
       );
-    if (missedOpenApiSchemas(document).length !== 0) await complement();
+    }
 
+    // COMPLEMENTATION
+    const complementProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: 0,
+    };
+    while (missedOpenApiSchemas(document).length !== 0) {
+      // COMPLEMENT OMITTED
+      const oldbie: Set<string> = new Set(
+        Object.keys(document.components.schemas),
+      );
+      const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        await orchestrateInterfaceComplement(ctx, {
+          instruction: props.instruction,
+          progress: complementProgress,
+          document,
+        });
+      const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        Object.fromEntries(
+          Object.keys(complemented)
+            .filter((key) => oldbie.has(key) === false)
+            .map((key) => [key, complemented[key]]),
+        );
+      assign(complemented);
+
+      // REVIEW COMPLEMENTED
+      for (const config of REVIEWERS) {
+        reviewProgress.total = Math.ceil(
+          (Object.keys(document.components.schemas).length * REVIEWERS.length) /
+            AutoBeConfigConstant.INTERFACE_CAPACITY,
+        );
+        assign(
+          await orchestrateInterfaceSchemaReview(ctx, config, {
+            instruction: props.instruction,
+            document,
+            schemas: newbie,
+            progress: reviewProgress,
+          }),
+        );
+      }
+    }
     await orchestrateInterfaceSchemaRename(ctx, document);
-    JsonSchemaFactory.finalize({
-      document,
-      application: ctx.state().prisma!.result.data,
-    });
 
-    // CONNECT PRE-REQUISITES
+    //------------------------------------------------
+    // FINALIZATION
+    //------------------------------------------------
+    // CONNECT PREREQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
-      await orchestrateInterfacePrerequisites(ctx, document);
+      await orchestrateInterfacePrerequisite(ctx, document);
     document.operations.forEach((op) => {
       op.prerequisites =
         prerequisites.find(
@@ -197,3 +246,18 @@ export const orchestrateInterface =
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceCompleteEvent);
   };
+
+const REVIEWERS = [
+  {
+    kind: "relation" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+  },
+  {
+    kind: "content" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+  },
+  {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+  },
+];

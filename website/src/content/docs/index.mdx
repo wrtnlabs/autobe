@@ -2,6 +2,7 @@
 title: AutoBE > Guide Documents
 ---
 import AutoBeDemoMovie from "../../movies/demo/AutoBeDemoMovie";
+import AutoBeGammaRoadmap from "../../template/diagrams/AutoBeGammaRoadmap.mdx";
 
 # AI backend builder for prototype to production
 
@@ -145,36 +146,23 @@ This SDK eliminates the traditional pain points of API integration - no more man
 
 ## Roadmap Schedule
 
-```mermaid
-gantt
-  dateFormat YYYY-MM-DD
-  title AutoBE Roadmap Overview
+<AutoBeGammaRoadmap />
 
-  section Alpha Release
-  Overall Design: done, 2025-05-01, 21d
-  Compiler Development: done, 2025-05-16, 30d
-  Prototype Agents: done, 2025-05-16, 30d
+AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation with **100% compilation success rate**. The current **Gamma Release** represents a strategic evolution based on real-world production experience.
 
-  section Beta Release
-  Compiler Feedback: done, 2025-06-15, 29d
-  Test Agent: done, 2025-06-15, 92d
-  Realize Agent: done, 2025-07-01, 76d
-  Achieve 100% Compilation: done, 2025-07-16, 61d
-  Hackathon Contest: done, 2025-09-01, 21d
+**Production Testing Experience**: Through enterprise development, open-source contests, and hackathons, we validated AutoBE in real production environments. This practical experience revealed both strengths and areas for improvement, directly shaping our development priorities.
 
-  section v1.0 Official Release
-  Debate Enhancement: planned, 2025-09-15, 90d
-  RAG Optimization: planned, 2025-09-15, 90d
-  Achieve 100% Working: active, 2025-09-15, 90d
-```
+**Strategic Shift**: While earlier phases pursued perfection for each feature, Gamma adopts a breadth-first approach - rapidly building foundational prototypes across more features, with quality refinement following through team expansion and incremental improvement.
 
-AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation for production-ready backend generation.
+**Key Focus Areas**:
 
-**The Alpha phase** (May 2025) focused on core architecture design and compiler development, creating the foundational framework for AI-friendly code generation. We built the initial agent system and established the waterfall methodology that ensures reliable, structured development processes.
+- **RAG Optimization**: Transitioning from batch processing to intelligent iterative workflows, where agents selectively request only necessary information, achieving up to 70% token reduction
+- **Modularization**: Generating reusable, maintainable code modules instead of duplicated implementations, making AI-generated code developer-friendly
+- **Complementation**: Enabling incremental updates to generated backends instead of full regeneration, supporting iterative improvement workflows
+- **Multimodal Support**: Extracting requirements from visual artifacts like Figma designs and ERD diagrams, not just natural language
+- **Direct Instruction**: Allowing precise technical specifications for database schemas and API designs when business constraints require it
 
-**The Beta phase** (June 15 - September 14, 2025) achieved our primary goal: 100% compilation success rate. Through extensive testing across diverse application types including e-commerce platforms, discussion boards, and task management systems, we validated that AutoBE's AI-friendly compilers can generate TypeScript and Prisma code that compiles successfully every time.
-
-**The v1.0 Official Release** (starting September 15, 2025) now targets the next milestone: ensuring that AutoBE-generated backend applications not only compile successfully, but also run perfectly in production environments. This means achieving 100% runtime success alongside our existing compilation guarantee, delivering truly production-ready applications without manual intervention.
+This roadmap prioritizes practical developer experience over theoretical perfection, informed by months of real-world usage in enterprise environments.
 
 ## Current Limitations
 

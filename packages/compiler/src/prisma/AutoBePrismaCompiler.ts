@@ -5,10 +5,10 @@ import {
   IAutoBePrismaCompilerProps,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
+import { writePrismaApplication } from "@autobe/utils";
 import { EmbedPrisma } from "embed-prisma";
 
 import { validatePrismaApplication } from "./validatePrismaApplication";
-import { writePrismaApplication } from "./writePrismaApplication";
 
 export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
   public async compile(

@@ -2,7 +2,6 @@ import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -17,7 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectInvalidRequestHistories } from "./histories/transformTestCorrectInvalidRequestHistories";
+import { transformTestCorrectInvalidRequestHistory } from "./histories/transformTestCorrectInvalidRequestHistory";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 
@@ -65,10 +64,6 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectInvalidRequestHistories(
-      null!,
-      event.result.diagnostics,
-    ),
     controller: createController({
       model: ctx.model,
       functionName: write.scenario.functionName,
@@ -80,12 +75,10 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
-      Fix the AutoBeTest.IFunction data to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix or give it up
-      immediately without any hesitation, explanation, and questions.
-    `,
+    ...transformTestCorrectInvalidRequestHistory(
+      null!,
+      event.result.diagnostics,
+    ),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event; // other's responsibility
@@ -155,7 +148,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
@@ -190,6 +187,19 @@ const collection = {
     typia.llm.application<
       IAutoBeTestCorrectInvalidRequestApplication,
       "claude"
+    >({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestCorrectInvalidRequestApplication,
+      "gemini"
     >({
       validate: {
         rewrite: validate,

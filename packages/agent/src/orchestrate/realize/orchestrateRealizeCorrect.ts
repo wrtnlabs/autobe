@@ -1,10 +1,10 @@
 import {
+  AutoBeEventSource,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -19,13 +19,13 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformRealizeCorrectHistory } from "./histories/transformRealizeCorrectHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { filterDiagnostics } from "./utils/filterDiagnostics";
-import { getRealizeWriteCodeTemplate } from "./utils/getRealizeWriteCodeTemplate";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -134,6 +134,7 @@ async function correct<Model extends ILlmSchema.Model>(
   }
 
   const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
+    ctx,
     props.locations.map(
       (location) => async (): Promise<AutoBeRealizeFunction> => {
         const scenario = props.scenarios.find((el) => el.location === location);
@@ -209,90 +210,84 @@ async function step<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCorrectEvent | null> {
-  const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
-    value: null,
-  };
-
-  const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "realizeCorrect",
-    controller: createController({
-      model: ctx.model,
-      functionName: props.scenario.functionName,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    histories: transformRealizeCorrectHistories({
+  const dto: Record<string, string> = await getRealizeWriteDto(
+    ctx,
+    props.scenario.operation,
+  );
+  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+    new AutoBePreliminaryController({
+      source: SOURCE,
+      application: typia.json.application<IAutoBeRealizeCorrectApplication>(),
+      kinds: ["prismaSchemas"],
       state: ctx.state(),
-      scenario: props.scenario,
-      authorization: props.authorization,
-      dto,
-      failures: [...props.previousFailures, props.failure],
-      totalAuthorizations: props.totalAuthorizations,
-    }),
-    enforceFunctionCall: true,
-    message: StringUtil.trim`
-      Correct the TypeScript code implementation.
-
-      The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
-      When modifying, modify the entire code, but not the import statement.
-
-      Below is template code you wrote:
-
-      ${getRealizeWriteCodeTemplate({
-        scenario: props.scenario,
-        schemas: ctx.state().interface!.document.components.schemas,
-        operation: props.scenario.operation,
-        authorization: props.authorization ?? null,
-      })}
-
-      Current code is as follows:
-      \`\`\`typescript
-      ${props.function.content}
-      \`\`\`
-    `,
-  });
-
-  if (pointer.value === null) {
-    return null;
-  }
-
-  pointer.value.draft = await replaceImportStatements(ctx, {
-    operation: props.scenario.operation,
-    schemas: ctx.state().interface!.document.components.schemas,
-    code: pointer.value.draft,
-    decoratorType: props.authorization?.payload.name,
-  });
-  if (pointer.value.revise.final)
-    pointer.value.revise.final = await replaceImportStatements(ctx, {
-      operation: props.scenario.operation,
-      schemas: ctx.state().interface!.document.components.schemas,
-      code: pointer.value.revise.final,
-      decoratorType: props.authorization?.payload.name,
     });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeRealizeCorrectApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "realizeCorrect",
+      controller: createController({
+        model: ctx.model,
+        functionName: props.scenario.functionName,
+        build: (next) => {
+          pointer.value = next;
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      ...transformRealizeCorrectHistory(ctx, {
+        state: ctx.state(),
+        scenario: props.scenario,
+        authorization: props.authorization,
+        function: props.function,
+        dto,
+        failures: [...props.previousFailures, props.failure],
+        totalAuthorizations: props.totalAuthorizations,
+        preliminary,
+      }),
+    });
+    if (pointer.value !== null) {
+      pointer.value.draft = await replaceImportStatements(ctx, {
+        operation: props.scenario.operation,
+        schemas: ctx.state().interface!.document.components.schemas,
+        code: pointer.value.draft,
+        decoratorType: props.authorization?.payload.name,
+      });
+      if (pointer.value.revise.final)
+        pointer.value.revise.final = await replaceImportStatements(ctx, {
+          operation: props.scenario.operation,
+          schemas: ctx.state().interface!.document.components.schemas,
+          code: pointer.value.revise.final,
+          decoratorType: props.authorization?.payload.name,
+        });
 
-  const event: AutoBeRealizeCorrectEvent = {
-    type: "realizeCorrect",
-    kind: "overall",
-    id: v7(),
-    location: props.scenario.location,
-    content: pointer.value.revise.final ?? pointer.value.draft,
-    metric,
-    tokenUsage,
-    completed: ++props.progress.completed,
-    total: props.progress.total,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  };
-  ctx.dispatch(event);
-  return event;
+      const event: AutoBeRealizeCorrectEvent = {
+        type: "realizeCorrect",
+        kind: "overall",
+        id: v7(),
+        location: props.scenario.location,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      ctx.dispatch(event);
+      return out(result)(event);
+    }
+    return out(result)(null);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
-  build: (next: IAutoBeRealizeCorrectApplication.IProps) => void;
+  build: (next: IAutoBeRealizeCorrectApplication.IComplete) => void;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 
@@ -300,10 +295,15 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeRealizeCorrectApplication.IProps> =
       typia.validate<IAutoBeRealizeCorrectApplication.IProps>(input);
     if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: props.functionName,
-      draft: result.data.draft,
-      revise: result.data.revise,
+      draft: result.data.request.draft,
+      revise: result.data.request.revise,
     });
     return errors.length
       ? {
@@ -314,18 +314,22 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
-    name: "Write code",
+    name: SOURCE,
     application,
     execute: {
-      correct: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeRealizeCorrectApplication,
   };
@@ -335,13 +339,19 @@ const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeRealizeCorrectApplication, "chatgpt">({
       validate: {
-        correct: validate,
+        process: validate,
       },
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeRealizeCorrectApplication, "claude">({
       validate: {
-        correct: validate,
+        process: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCorrectApplication, "gemini">({
+      validate: {
+        process: validate,
       },
     }),
 };
@@ -349,3 +359,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeRealizeCorrectApplication.IProps>;
+
+const SOURCE = "realizeCorrect" satisfies AutoBeEventSource;

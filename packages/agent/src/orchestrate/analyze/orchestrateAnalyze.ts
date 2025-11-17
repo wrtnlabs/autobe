@@ -43,6 +43,7 @@ export const orchestrateAnalyze = async <Model extends ILlmSchema.Model>(
     completed: 0,
   };
   const fileList: AutoBeAnalyzeFile[] = await executeCachedBatch(
+    ctx,
     scenario.files.map((file) => async (promptCacheKey) => {
       const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
         ctx,
@@ -63,6 +64,7 @@ export const orchestrateAnalyze = async <Model extends ILlmSchema.Model>(
     completed: 0,
   };
   const newFiles: AutoBeAnalyzeFile[] = await executeCachedBatch(
+    ctx,
     fileList.map((file) => async (promptCacheKey) => {
       try {
         const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(

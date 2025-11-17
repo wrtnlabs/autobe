@@ -5,7 +5,6 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -17,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
@@ -33,6 +32,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
+      ctx,
       props.functions.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
@@ -154,17 +154,6 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectHistories(ctx, {
-      instruction: props.instruction,
-      function: props.function,
-      failures: [
-        ...props.failures,
-        {
-          function: props.function,
-          failure: props.validate.result,
-        },
-      ],
-    }),
     controller: createController({
       model: ctx.model,
       functionName: props.function.scenario.functionName,
@@ -174,13 +163,18 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message: StringUtil.trim`
-      Fix the AutoBeTest.IFunction data to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix it immediately
-      without any hesitation, explanation, and questions.
-    `,
     promptCacheKey: props.promptCacheKey,
+    ...(await transformTestCorrectHistory(ctx, {
+      instruction: props.instruction,
+      function: props.function,
+      failures: [
+        ...props.failures,
+        {
+          function: props.function,
+          failure: props.validate.result,
+        },
+      ],
+    })),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
@@ -266,7 +260,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       : result;
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt" ? "chatgpt" : "claude"
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
@@ -291,6 +289,12 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeTestCorrectApplication, "claude">({
+      validate: {
+        rewrite: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestCorrectApplication, "gemini">({
       validate: {
         rewrite: validate,
       },
