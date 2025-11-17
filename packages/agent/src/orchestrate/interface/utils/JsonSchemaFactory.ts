@@ -57,7 +57,7 @@ export namespace JsonSchemaFactory {
     fixTimestamps(props);
   };
 
-  const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
+  export const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
     while (true) {
       const used: Set<string> = new Set();
       const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
@@ -71,7 +71,6 @@ export namespace JsonSchemaFactory {
             }
           },
         });
-
       for (const op of document.operations) {
         if (op.requestBody !== null)
           visit({
@@ -82,8 +81,19 @@ export namespace JsonSchemaFactory {
             $ref: `#/components/schemas/${op.responseBody.typeName}`,
           });
       }
-      if (used.size === Object.keys(document.components.schemas).length) break;
+
+      const complete: boolean =
+        Object.keys(document.components.schemas).length === 0 ||
+        Object.keys(document.components.schemas).every(
+          (key) => used.has(key) === true,
+        );
+      if (complete === true) break;
       else {
+        console.log(
+          "remove unused",
+          used.size,
+          Object.keys(document.components.schemas).length,
+        );
         for (const key of Object.keys(document.components.schemas))
           if (used.has(key) === false) delete document.components.schemas[key];
       }
