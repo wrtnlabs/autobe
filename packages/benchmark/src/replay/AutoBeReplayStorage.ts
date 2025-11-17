@@ -31,6 +31,7 @@ export namespace AutoBeReplayStorage {
   export const get = async (props: {
     vendor: string;
     project: AutoBeExampleProject;
+    phase?: AutoBePhase;
   }): Promise<IAutoBePlaygroundReplay | null> => {
     const histories: AutoBeHistory[] | null = await getHistories(props);
     if (histories === null) return null;

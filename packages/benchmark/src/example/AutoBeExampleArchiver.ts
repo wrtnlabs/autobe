@@ -9,10 +9,12 @@ import {
   AutoBePrismaHistory,
   AutoBeUserMessageContent,
   IAutoBeAgent,
+  IAutoBePlaygroundReplay,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import typia from "typia";
 
+import { AutoBeReplayComputer } from "../replay";
 import { AutoBeExampleStorage } from "./AutoBeExampleStorage";
 
 export namespace AutoBeExampleArchiver {
@@ -141,6 +143,50 @@ export namespace AutoBeExampleArchiver {
       });
     }
 
+    const summarize = async (
+      histories: AutoBeHistory[],
+      error: boolean,
+    ): Promise<void> => {
+      const replay: IAutoBePlaygroundReplay = {
+        vendor: ctx.vendor,
+        project: ctx.project,
+        histories,
+        analyze: null,
+        prisma: null,
+        interface: null,
+        test: null,
+        realize: null,
+      };
+      for (const phase of PHASES)
+        if (phase === props.phase) {
+          replay[phase] = snapshots;
+          break;
+        } else
+          replay[phase] = await AutoBeExampleStorage.getSnapshots({
+            vendor: ctx.vendor,
+            project: ctx.project,
+            phase,
+          });
+      const summary: IAutoBePlaygroundReplay.ISummary =
+        AutoBeReplayComputer.summarize(replay);
+      if (error === true) {
+        // @todo
+        summary[props.phase] = {
+          aggregates: {},
+          success: false,
+          elapsed: 0,
+          commodity: {},
+        };
+      }
+      await AutoBeExampleStorage.save({
+        vendor: ctx.vendor,
+        project: ctx.project,
+        files: {
+          [`summary.json`]: JSON.stringify(summary),
+        },
+      });
+    };
+
     try {
       // CONVERSATE
       const go = async (
@@ -185,6 +231,7 @@ export namespace AutoBeExampleArchiver {
           [`${props.phase}.error.json`]: null,
         },
       });
+      await summarize([...asset.histories, ...histories], false);
       return props.predicate(histories);
     } catch (error) {
       if (error instanceof Error)
@@ -201,6 +248,7 @@ export namespace AutoBeExampleArchiver {
             }),
           },
         });
+      await summarize(asset.histories, true);
       throw error;
     }
   };
