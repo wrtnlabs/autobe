@@ -75,6 +75,7 @@ export const orchestrateRealize =
     ): Promise<IBucket> => {
       const writes: AutoBeRealizeWriteEvent[] = (
         await executeCachedBatch(
+          ctx,
           artifacts.map((art) => async (promptCacheKey) => {
             const write = async (): Promise<AutoBeRealizeWriteEvent | null> => {
               try {

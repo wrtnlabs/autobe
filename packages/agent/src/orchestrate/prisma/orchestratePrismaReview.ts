@@ -28,6 +28,7 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   };
   return (
     await executeCachedBatch(
+      ctx,
       componentList.map((component) => async (promptCacheKey) => {
         try {
           return await step(ctx, {

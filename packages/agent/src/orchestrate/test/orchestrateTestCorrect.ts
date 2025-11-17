@@ -32,6 +32,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
+      ctx,
       props.functions.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>

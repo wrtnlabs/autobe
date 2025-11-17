@@ -55,6 +55,7 @@ export async function orchestrateInterfaceSchemaRename<
   const refactors: AutoBeInterfaceSchemaRefactor[] = uniqueRefactors(
     (
       await executeCachedBatch(
+        ctx,
         matrix.map(
           (typeNames) => (promptCacheKey) =>
             divideAndConquer(ctx, {

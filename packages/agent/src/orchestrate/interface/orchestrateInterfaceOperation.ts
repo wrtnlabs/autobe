@@ -46,6 +46,7 @@ export async function orchestrateInterfaceOperation<
   };
   return (
     await executeCachedBatch(
+      ctx,
       matrix.map((it) => async (promptCacheKey) => {
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(ctx, {
           endpoints: it,

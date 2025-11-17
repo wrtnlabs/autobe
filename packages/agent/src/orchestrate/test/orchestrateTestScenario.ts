@@ -85,6 +85,7 @@ export const orchestrateTestScenario = async <Model extends ILlmSchema.Model>(
       capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
     await executeCachedBatch(
+      ctx,
       matrix.map((include) => async (promptCacheKey) => {
         exclude.push(
           ...(await divideAndConquer(ctx, {

@@ -113,6 +113,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   props.progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
+    ctx,
     locations.map((location) => async (): Promise<CorrectionResult> => {
       const func: AutoBeRealizeFunction = props.functions.find(
         (f) => f.location === location,

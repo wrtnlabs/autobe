@@ -33,6 +33,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
     completed: 0,
   };
   const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
+    ctx,
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to

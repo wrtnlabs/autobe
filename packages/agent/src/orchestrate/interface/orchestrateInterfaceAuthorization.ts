@@ -35,6 +35,7 @@ export async function orchestrateInterfaceAuthorization<
   };
   const authorizations: AutoBeInterfaceAuthorization[] =
     await executeCachedBatch(
+      ctx,
       actors.map((a) => async (promptCacheKey) => {
         const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
           actor: a,

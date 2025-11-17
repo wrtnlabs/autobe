@@ -38,6 +38,7 @@ export async function orchestrateInterfaceEndpoint<
   };
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
     await executeCachedBatch(
+      ctx,
       props.groups.map(
         (group) => (promptCacheKey) =>
           process(ctx, {

@@ -134,6 +134,7 @@ async function correct<Model extends ILlmSchema.Model>(
   }
 
   const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
+    ctx,
     props.locations.map(
       (location) => async (): Promise<AutoBeRealizeFunction> => {
         const scenario = props.scenarios.find((el) => el.location === location);

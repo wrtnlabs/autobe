@@ -50,6 +50,7 @@ export async function orchestrateRealizeAuthorizationWrite<
     dbms: "sqlite",
   });
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
+    ctx,
     actors.map(
       (a) => (promptCacheKey) =>
         process(ctx, {

@@ -48,6 +48,7 @@ export async function orchestrateInterfaceSchemaReview<
   });
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await executeCachedBatch(
+    ctx,
     matrix.map((it) => async (promptCacheKey) => {
       const reviewOperations: AutoBeOpenApi.IOperation[] =
         props.document.operations.filter(

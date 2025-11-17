@@ -66,6 +66,7 @@ export async function orchestrateInterfacePrerequisite<
       capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
     await executeCachedBatch(
+      ctx,
       matrix.map((ops) => async (promptCacheKey) => {
         const row: AutoBeInterfacePrerequisite[] = await divideAndConquer(ctx, {
           dict: dict,

@@ -58,6 +58,7 @@ export async function orchestrateInterfaceSchema<
     ...presets,
   };
   for (const y of await executeCachedBatch(
+    ctx,
     matrix.map((it) => async (promptCacheKey) => {
       const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
         (op) =>

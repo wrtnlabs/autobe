@@ -25,6 +25,7 @@ export async function orchestratePrismaSchema<Model extends ILlmSchema.Model>(
     .reduce((x, y) => x + y, 0);
   const completed: IPointer<number> = { value: 0 };
   return await executeCachedBatch(
+    ctx,
     componentList.map((component) => async (promptCacheKey) => {
       const otherTables: string[] = componentList
         .filter((y) => component !== y)
