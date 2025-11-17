@@ -30,12 +30,12 @@ export default function AutoBeLandingHeroMovie() {
         {/* CTA Buttons */}
         <div className="flex flex-wrap justify-center gap-6 mb-16">
           <a
-            href="https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz"
+            href="https://autobe.dev/docs/setup"
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105"
           >
-            Try Playground
+            Getting Started
           </a>
           <a
             href="https://autobe.dev/docs"

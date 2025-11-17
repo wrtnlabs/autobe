@@ -31,22 +31,6 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
 
 ## Getting Started
 
-[![Playground StackBlitz](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
-
-https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz
-
-Visit the site above to use AutoBE directly through the StackBlitz website. Simply discuss the topic you want to build, and AutoBE will create a backend application for you.
-
-Here's an example conversation script to use with AutoBE. Following this script will guide AutoBE to create an "Economic/Political Discussion Board":
-
-1. **Requirements Analysis**: "I want to create an economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
-2. **Database Design**: "Design the database schema."
-3. **API Specification**: "Create the API interface specification."
-4. **Testing**: "Make the e2e test functions."
-5. **Implementation**: "Implement API functions."
-
-If you want to use Local LLMs like `qwen3-next-80b-a3b-instruct` or maintain multiple chat sessions for frequent conversations with AutoBE, run the following commands. You can install AutoBE locally, run the playground application directly, and manage your chat sessions:
-
 ```bash
 git clone https://github.com/wrtnlabs/autobe
 cd autobe
@@ -54,9 +38,21 @@ pnpm install
 pnpm run playground
 ```
 
+To use AutoBE, clone the repository and run the playground application locally. This allows you to chat with AutoBE's AI agents, manage multiple sessions, and use various LLM providers including local models like `qwen3-next-80b-a3b-instruct`.
+
+After installation, the playground will be available at http://localhost:5713. You can interact with AutoBE through a chat interface - simply describe what you want to build, and AutoBE will generate the backend application for you.
+
+Here's an example conversation script that guides AutoBE to create an "Economic/Political Discussion Board":
+
+1. **Requirements Analysis**: "I want to create an economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
+2. **Database Design**: "Design the database schema."
+3. **API Specification**: "Create the API interface specification."
+4. **Testing**: "Make the e2e test functions."
+5. **Implementation**: "Implement API functions."
+
 ![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt-4.1.png)
 
-> After installing AutoBE locally and running the playground, you can replay chat sessions from AutoBE development team's testing at http://localhost:5713/replay/index.html.
+> The playground includes a replay feature at http://localhost:5713/replay/index.html where you can view chat sessions from the AutoBE development team's testing and benchmarks.
 
 ## Documentation Resources
 
