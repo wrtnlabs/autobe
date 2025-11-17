@@ -67,9 +67,10 @@ export namespace AutoBeExampleBenchmark {
     for (const project of props.vendorState.projects)
       await executeProject(ctx, {
         vendor: props.vendorState.name,
+        projectState: project,
+        phases: props.phases,
         report: props.report,
         on: props.on,
-        projectState: project,
       });
   };
 
