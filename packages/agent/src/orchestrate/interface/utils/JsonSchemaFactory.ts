@@ -57,7 +57,7 @@ export namespace JsonSchemaFactory {
     fixTimestamps(props);
   };
 
-  export const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
+  const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
     while (true) {
       const used: Set<string> = new Set();
       const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
