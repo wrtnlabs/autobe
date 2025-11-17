@@ -52,6 +52,7 @@ export namespace AutoBeReplayStorage {
       vendor: props.vendor,
       project: props.project,
       histories,
+      describe: await snapshots("describe"),
       analyze: await snapshots("analyze"),
       prisma: await snapshots("prisma"),
       interface: await snapshots("interface"),
@@ -77,4 +78,11 @@ export namespace AutoBeReplayStorage {
   };
 }
 
-const SEQUENCE = ["realize", "test", "interface", "prisma", "analyze"] as const;
+const SEQUENCE = [
+  "realize",
+  "test",
+  "interface",
+  "prisma",
+  "analyze",
+  "describe",
+] as const;
