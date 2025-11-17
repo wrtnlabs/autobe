@@ -140,6 +140,7 @@ export namespace AutoBeExampleStorage {
         });
         return {
           aggregate: component(),
+          describe: component(),
           facade: component(),
           analyze: component(),
           prisma: component(),
@@ -169,6 +170,8 @@ export namespace AutoBeExampleStorage {
 }
 
 const PROMPT_TEMPLATE = {
+  describe:
+    "Analyze the image content and generate a draft of the planning document.",
   prisma: "Design the database schema.",
   interface: "Create the API interface specification.",
   test: "Make the e2e test functions.",
