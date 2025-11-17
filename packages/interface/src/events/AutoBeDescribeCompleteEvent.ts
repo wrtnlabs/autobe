@@ -37,5 +37,21 @@ export interface AutoBeDescribeCompleteEvent
    * logic, and validation rules. These planning documents serve as the primary
    * input for the facade agent to begin the backend generation process.
    */
-  contents: AutoBeUserMessageContent[];
+  document: string;
+
+  /**
+   * Executive summary of the complete system.
+   *
+   * Provides a high-level overview of all functional areas, key features, and
+   * the overall system architecture derived from image analysis.
+   */
+  summary: string;
+
+  /**
+   * List of all functional areas covered in the document.
+   *
+   * Each entry corresponds to a major section in the final document, helping
+   * readers navigate to specific areas of interest.
+   */
+  sections: string[];
 }
