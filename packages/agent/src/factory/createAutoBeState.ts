@@ -5,7 +5,6 @@ import { AutoBeState } from "../context/AutoBeState";
 export const createAutoBeState = (histories: AutoBeHistory[]): AutoBeState => {
   const reversed = histories.slice().reverse();
   return {
-    describe: reversed.find((h) => h.type === "describe") ?? null,
     analyze: reversed.find((h) => h.type === "analyze") ?? null,
     prisma: reversed.find((h) => h.type === "prisma") ?? null,
     interface: reversed.find((h) => h.type === "interface") ?? null,

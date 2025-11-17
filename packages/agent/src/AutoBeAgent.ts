@@ -311,9 +311,14 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         : null;
     if (describeHistory)
       this.dispatch({
-        type: "assistantMessage",
+        type: "userMessage",
         id: v7(),
-        text: describeHistory.document,
+        contents: [
+          {
+            type: "text",
+            text: describeHistory.document,
+          },
+        ],
         created_at: new Date().toISOString(),
       });
 

@@ -8,8 +8,6 @@ import {
   AutoBeUserMessageContent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import fs from "fs";
-import path from "path";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -62,9 +60,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   const document: AutoBeDescribeImageDocumentEvent =
     await orchestrateDescribeImagesDocument(ctx, { integrations });
 
-  // Update context state with the document event
-  ctx.dispatch(document);
-
   // Emit completion event
   const complete: AutoBeDescribeCompleteEvent = {
     type: "describeComplete",
@@ -77,11 +72,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
-
-  await fs.promises.writeFile(
-    path.join(__dirname, "describe-image.json"),
-    JSON.stringify(drafts, null, 2),
-  );
 
   return ctx.dispatch(complete);
 };

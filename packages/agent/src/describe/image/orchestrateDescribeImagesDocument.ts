@@ -59,6 +59,7 @@ export const orchestrateDescribeImagesDocument = async <
     tokenUsage,
     created_at: new Date().toISOString(),
   };
+  ctx.dispatch(event);
 
   return event;
 };

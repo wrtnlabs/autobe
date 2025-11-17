@@ -1,6 +1,5 @@
 import {
   AutoBeAnalyzeHistory,
-  AutoBeDescribeHistory,
   AutoBeInterfaceHistory,
   AutoBePrismaHistory,
   AutoBeRealizeHistory,
@@ -8,7 +7,6 @@ import {
 } from "@autobe/interface";
 
 export interface AutoBeState {
-  describe: AutoBeDescribeHistory | null;
   analyze: AutoBeAnalyzeHistory | null;
   prisma: AutoBePrismaHistory | null;
   interface: AutoBeInterfaceHistory | null;

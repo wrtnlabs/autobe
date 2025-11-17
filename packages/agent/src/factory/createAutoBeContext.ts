@@ -4,9 +4,6 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeStartEvent,
   AutoBeAssistantMessageEvent,
-  AutoBeDescribeCompleteEvent,
-  AutoBeDescribeHistory,
-  AutoBeDescribeStartEvent,
   AutoBeEvent,
   AutoBeFunctionCallingMetric,
   AutoBeHistory,
@@ -365,7 +362,6 @@ const createDispatch = (props: {
   histories: () => AutoBeHistory[];
   dispatch: (event: AutoBeEvent) => Promise<void>;
 }) => {
-  let describeStart: AutoBeDescribeStartEvent | null = null;
   let analyzeStart: AutoBeAnalyzeStartEvent | null = null;
   let prismaStart: AutoBePrismaStartEvent | null = null;
   let interfaceStart: AutoBeInterfaceStartEvent | null = null;
@@ -380,26 +376,7 @@ const createDispatch = (props: {
     else if (event.type === "interfaceStart") interfaceStart = event;
     else if (event.type === "testStart") testStart = event;
     else if (event.type === "realizeStart") realizeStart = event;
-    else if (event.type === "describeStart") describeStart = event;
     // completes
-    else if (event.type === "describeComplete")
-      return transformAndDispatch<AutoBeDescribeCompleteEvent>({
-        dispatch: props.dispatch,
-        histories: props.histories,
-        state: props.state,
-        event,
-        history: {
-          type: "describe",
-          id: v7(),
-          document: event.document,
-          summary: event.summary,
-          sections: event.sections,
-          aggregates: event.aggregates,
-          step: event.step,
-          created_at: describeStart?.created_at ?? new Date().toISOString(),
-          completed_at: event.created_at,
-        } satisfies AutoBeDescribeHistory,
-      }) as AutoBeContext.DispatchHistory<Event>;
     else if (event.type === "analyzeComplete")
       return transformAndDispatch<AutoBeAnalyzeCompleteEvent>({
         dispatch: props.dispatch,
@@ -501,7 +478,6 @@ const createDispatch = (props: {
 
 const transformAndDispatch = <
   Event extends
-    | AutoBeDescribeCompleteEvent
     | AutoBeAnalyzeCompleteEvent
     | AutoBePrismaCompleteEvent
     | AutoBeInterfaceCompleteEvent
