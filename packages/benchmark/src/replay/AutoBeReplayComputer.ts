@@ -102,6 +102,13 @@ export namespace AutoBeReplayComputer {
       AutoBePhase,
       IAutoBePlaygroundReplay.IPhaseState | null
     > = {
+      describe: predicate(
+        "describe",
+        () => true,
+        (h) => ({
+          document: h.document.length,
+        }),
+      ),
       analyze: predicate(
         "analyze",
         () => true,
