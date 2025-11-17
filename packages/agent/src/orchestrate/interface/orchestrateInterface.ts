@@ -149,6 +149,10 @@ export const orchestrateInterface =
         document,
         application: ctx.state().prisma!.result.data,
       });
+      console.log(
+        "missed schemas after enhancement",
+        missedOpenApiSchemas(document),
+      );
     };
 
     // INITIAL SCHEMAS
