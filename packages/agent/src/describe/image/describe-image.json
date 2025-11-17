@@ -1,0 +1,153 @@
+[
+  {
+    "type": "describeImageDraft",
+    "id": "019a9046-9fb2-76fd-8694-6d1ad6c477ae",
+    "draft": "## AI 서포터 기반 대화 추천/온보딩 서비스 기획안\n\n### 개요\n이 서비스는 사용자가 AI 캐릭터(서포터)와 자연스러운 대화를 통해 정보 추천, 예약, 질문 답변 등 다양한 도움을 받을 수 있도록 설계된 대화형 어시스턴트 플랫폼입니다. 주요 화면은 서포터 프로필 생성 및 설정, 홈 대시보드, 추천 질문, 대화 리스트 등으로 구성되며, 사용자는 자신의 취향에 맞는 AI 서포터를 선택하고 대화 서비스를 사용할 수 있습니다.\n\n### 주요 데이터 엔터티\n#### 1. User(사용자)\n- id (UUID, PK)\n- email (string, unique, nullable) -- 게스트/로그인 시\n- nickname (string, max 20자, required)\n- supporterProfileId (UUID, FK) -- 선택한 서포터 프로필\n- createdAt (datetime)\n- updatedAt (datetime)\n\n#### 2. SupporterProfile(서포터 프로필)\n- id (UUID, PK)\n- name (string, 최대 20자, required)\n- characterType (enum: 루이, 바이, 키키, 레미, 티가, 직접등록)\n- avatarUrl (string, nullable) -- 아바타 이미지 URL\n- greetingMessage (string, nullable) -- 서포터 인사말\n- createdAt (datetime)\n- updatedAt (datetime)\n\n#### 3. ChatSession(대화 세션)\n- id (UUID, PK)\n- userId (UUID, FK)\n- supporterProfileId (UUID, FK)\n- startedAt (datetime)\n- endedAt (datetime, nullable)\n- status (enum: active, closed)\n\n#### 4. ChatMessage(대화 메시지)\n- id (UUID, PK)\n- sessionId (UUID, FK)\n- sender (enum: user, supporter)\n- content (text, required)\n- createdAt (datetime)\n\n#### 5. SuggestedPrompt(추천 프롬프트)\n- id (UUID, PK)\n- category (string, required)\n- message (string, required)\n- usageCount (integer, default 0)\n- createdAt (datetime)\n\n### API 엔드포인트\n#### Auth & 사용자 관리\n- POST /api/users/profile\n  - 프로필(닉네임/서포터) 등록\n- PATCH /api/users/profile\n  - 프로필 정보 수정\n- GET /api/users/me\n  - 내 정보/설정 조회\n\n#### 서포터 프로필\n- GET /api/supporters\n  - 서포터 캐릭터 목록 조회\n- POST /api/supporters\n  - 사용자 프로필용 서포터 직접 등록\n\n#### 대화\n- POST /api/chats\n  - 새로운 대화 세션 시작\n- GET /api/chats\n  - 내 대화 목록\n- GET /api/chats/{sessionId}/messages\n  - 대화 메시지 내역 조회\n- POST /api/chats/{sessionId}/messages\n  - 대화 메시지 전송\n\n#### 추천 프롬프트\n- GET /api/prompts\n  - 추천 질문/프롬프트 목록 조회\n- POST /api/prompts/usage\n  - 프롬프트 이용 기록 증가\n\n### 비즈니스/유효성 로직\n- 닉네임, 서포터 이름: 20자 이내, 필수 입력\n- 프로필 생성 시 서포터 캐릭터 반드시 1개 선택\n- 이메일은 선택 입력(로그인 서비스 적용 시)\n- 한 사용자는 1개 이상의 서포터 프로필 등록 가능\n- 채팅 세션 단일 활성화 원칙(동시 다발 대화 제한)\n- 추천 프롬프트 선택 사용 기록 트래킹\n\n### 사용자 역할 및 권한\n- Guest(비로그인): 대화 일부 기능 체험, 프로필 제한\n- User: 전체 AI 대화, 서포터 커스텀 설정 가능\n- Admin: 전체 지원 데이터 관리(지원 프롬프트, 서포터 캐릭터 확장 등)\n\n### 주요 워크플로우\n#### 1. 온보딩 & 프로필 설정 플로우\n1. 사용자는 앱에서 닉네임 및 서포터 캐릭터 선택\n2. 프로필 저장\n3. 홈 화면 전환 및 추천 질문 노출\n\n#### 2. 대화 시작 및 프롬프트 활용\n1. 사용자 입력 또는 추천 질문 선택\n2. 대화 세션 생성 및 AI 답변 노출\n3. 대화 내역 자동 저장, 프롬프트 사용량 집계\n\n#### 3. 서포터 커스텀 등록\n1. 직접 프로필 이미지/이름 등록\n2. 커스텀 서포터 프로필로 대화 가능\n\n### 기타 고려사항\n- 다국어 지원 및 향후 외부 서비스 연동 확장 가능성\n- 모든 입력값에 대한 필드 유효성 검사 필요(예: 이름 중복 체크, 특수문자 제한 등)\n- 대화 및 추천 프롬프트 UI/UX 분석 기반 API 분리 설계",
+    "metadata": {
+      "summary": "AI 기반 대화 어시스턴트 플랫폼의 사용자 온보딩, 홈, 기능 설정 및 추천 대화 흐름 화면입니다. 사용자는 AI '서포터' 프로필을 생성/설정하고, 대화 입력을 통해 다양한 추천을 요청할 수 있습니다.",
+      "topics": [
+        "profile-setup",
+        "chat-recommendation",
+        "support-agent-onboarding",
+        "user-home-interface"
+      ],
+      "clusterKey": "supporter-chat-onboarding"
+    },
+    "completed": 5,
+    "total": 19,
+    "metric": {
+      "attempt": 1,
+      "success": 1,
+      "consent": 0,
+      "validationFailure": 0,
+      "invalidJson": 0
+    },
+    "tokenUsage": {
+      "total": 12722,
+      "input": {
+        "total": 11467,
+        "cached": 0
+      },
+      "output": {
+        "total": 1255,
+        "reasoning": 0,
+        "accepted_prediction": 0,
+        "rejected_prediction": 0
+      }
+    },
+    "created_at": "2025-11-17T05:25:38.866Z"
+  },
+  {
+    "type": "describeImageDraft",
+    "id": "019a9047-86d8-75e9-a582-07715f343f77",
+    "draft": "## 서포터 프로필 설정 시스템\n\n### 개요\n이 기획은 사용자가 서포터(캐릭터) 프로필을 생성 및 설정하는 일련의 화면을 바탕으로 한다. 사용자는 캐릭터 선택, 서포터 이름(최대 20자), 말투 스타일 선택, 닉네임 입력(최대 20자) 등의 과정을 거쳐 자신의 맞춤형 서포터 프로필을 완성한다. 설정은 언제든 변경 가능하다.\n\n### 식별된 데이터 엔터티\n\n#### SupporterProfile\n- id: UUID(PK)\n- ownerId: UUID(사용자, FK)\n- characterType: enum [루이, 비아, 키키, 레미, 티가, 기타 직접 등록]\n- supporterName: string(최대 20자, required)\n- toneStyle: enum [정중한 스타일, 털털한 스타일, 감성 풍부한 스타일, 따뜻한 스타일, 여성스러운 스타일, 남성스러운 스타일]\n- greetingMessage: string(스타일 별 자동 생성, nullable)\n- nickname: string(최대 20자, required)\n- createdAt: datetime\n- updatedAt: datetime\n\n### 주요 API 엔드포인트\n\n- POST /api/supporters\n  - 요청: { characterType, supporterName, toneStyle, nickname }\n  - 응답: { supporterProfile }\n  - 인증: 필요(로그인한 사용자)\n\n- GET /api/supporters/:id\n  - 응답: { supporterProfile }\n  - 인증: 필요\n\n- PATCH /api/supporters/:id\n  - 요청: { characterType?, supporterName?, toneStyle?, nickname? }\n  - 응답: { supporterProfile }\n  - 인증: 필요\n\n- DELETE /api/supporters/:id\n  - 응답: 성공 여부\n  - 인증: 필요\n\n### 비즈니스 로직 및 검증\n- supporterName, nickname은 각 최대 20자 이내, 필수 입력값\n- supporterName 및 nickname은 특수문자 및 금지 단어 사용 불가(서버 검증 필요)\n- toneStyle 선택 시, 해당 스타일의 greetingMessage가 자동으로 제시됨(서버 내 매핑 규칙 필요)\n- characterType은 사전 정의 캐릭터 중 선택 또는 직접 등록(이미지 업로드 등 추가 가능성 있음)\n- 동일 사용자가 동일 nickname으로 여러 서포터 생성 불가(닉네임은 소유자별 유니크)\n\n### 사용자 역할 및 권한\n- 일반 사용자: 자신의 서포터 프로필 생성·수정·삭제·조회\n- 관리자(향후 확장): 전체 서포터 목록 관리, 불건전 닉네임/이름 관리 등\n\n### 주요 플로우\n1. 사용자는 아바타(캐릭터) 선택 또는 직접 등록\n2. supporterName 입력(최대 20자)\n3. toneStyle(말투 스타일) 선택 → 스타일 유형별 미리보기 메시지 노출\n4. nickname 입력(최대 20자)\n5. 완료 시 supporterProfile 저장 및 마이페이지에 반영\n\n이상으로 사용자의 개성을 반영한 서포터 프로필을 편리하게 생성·관리할 수 있는 백엔드 요건 정리 끝.",
+    "metadata": {
+      "summary": "이 화면들은 사용자가 서포터 프로필을 설정하는 플로우를 보여주며, 캐릭터 아바타 선정, 서포터 이름, 말투 스타일, 닉네임 입력을 통해 맞춤형 프로필을 생성하도록 돕는다.",
+      "topics": [
+        "profile-management",
+        "character-selection",
+        "persona-configuration",
+        "nickname-management"
+      ],
+      "clusterKey": "supporter-profile-setup"
+    },
+    "completed": 19,
+    "total": 19,
+    "metric": {
+      "attempt": 1,
+      "success": 1,
+      "consent": 0,
+      "validationFailure": 0,
+      "invalidJson": 0
+    },
+    "tokenUsage": {
+      "total": 13490,
+      "input": {
+        "total": 12657,
+        "cached": 0
+      },
+      "output": {
+        "total": 833,
+        "reasoning": 0,
+        "accepted_prediction": 0,
+        "rejected_prediction": 0
+      }
+    },
+    "created_at": "2025-11-17T05:26:38.040Z"
+  },
+  {
+    "type": "describeImageDraft",
+    "id": "019a9047-8657-74fb-b9e9-e6322765d142",
+    "draft": "## 서포터 프로필 설정 시스템\n\n### 개요\n해당 화면들은 사용자가 서포터 프로필을 생성 및 설정하는 플로우를 보여준다. 사용자는 캐릭터형 프로필 이미지를 고르거나 직접 등록할 수 있고, 서포터의 이름, 말투 스타일, 닉네임 등을 입력 및 선택할 수 있다. 각 말투 스타일에 따라 수동적으로 샘플 문구가 노출되기도 한다. 이 프로세스는 사용자 맞춤형 대화 캐릭터 혹은 AI 서포터의 성격을 세밀하게 조정할 수 있는 기능의 일부로 보인다.\n\n### 데이터 엔티티 및 관계\n\n#### SupporterProfile\n- id (UUID, 기본키)\n- userId (UUID, 외래키, Users)\n- avatarType (enum: custom, 루이, 비아, 키키, 레미, 티가)\n- avatarImageUrl (string, avatarType이 custom일 때 필요)\n- name (string, required, max 20자)\n- styleType (enum: honest, witty, cute, warm, friendlyFemale, friendlyMale)\n- sampleMessage (string, styleType에 따라 다르게 자동 입력 또는 표시)\n- nickname (string, optional, max 20자)\n- createdAt (datetime)\n- updatedAt (datetime)\n\n#### Users\n- id (UUID, 기본키)\n... (기존 사용자 엔티티)\n- supporterProfiles (1:N)\n\n### API 엔드포인트\n\n#### 프로필 조회\n- GET /api/supporter-profiles\n  - response: SupporterProfile[]\n  - 인증 필요 (로그인 필요)\n\n#### 프로필 단건 조회\n- GET /api/supporter-profiles/:id\n  - response: SupporterProfile\n  - 인증 필요\n\n#### 프로필 생성\n- POST /api/supporter-profiles\n  - request: { avatarType, avatarImageUrl?, name, styleType, nickname? }\n  - response: SupporterProfile\n  - 인증 필요, name/닉네임 중복 체크\n\n#### 프로필 수정\n- PUT /api/supporter-profiles/:id\n  - request: { avatarType?, avatarImageUrl?, name?, styleType?, nickname? }\n  - response: SupporterProfile\n  - 인증 필요, name/닉네임 변경 시 중복 체크\n\n#### 프로필 삭제\n- DELETE /api/supporter-profiles/:id\n  - response: { success: boolean }\n  - 인증 필요\n\n### 비즈니스 로직 및 검증 규칙\n- name, nickname 최대 길이 20자 제한\n- name과 nickname은 동일 사용자 내에서 중복 불가\n- avatarType이 'custom' 선택 시 avatarImageUrl 필수\n- styleType(말투 스타일)은 사전정의 enum값 내에서만 선택 가능\n- styleType별 대응 sampleMessage는 서버 내 테이블 또는 코드에 매핑되어 관리 가능\n- 닉네임은 선택 입력이며 미입력시 null 가능\n- 입력값은 반드시 인증된 사용자에 한해 저장 가능\n\n### 사용자 역할 및 권한\n- 일반 사용자: 본인 소유 supporter profile의 조회/생성/수정/삭제 가능\n- 운영자/관리자: 전체 profile 관리(추가, 변경, 삭제 등 가능)\n\n### 주요 워크플로우\n\n#### 서포터 프로필 생성 흐름\n1. 사용자가 프로필 화면 접속\n2. 프로필 이미지(기본 아바타 또는 직접 등록) 선택\n3. 서포터 이름 입력\n4. 말투(스타일) 선택 → 각 스타일별 sample 메시지 미리보기 표시\n5. 필요시 닉네임 입력, 완료 버튼 활성화\n6. 입력 데이터 서버 전송(POST)\n7. 생성된 supporter 프로필 정보 반환받아 저장, 이후 안내 화면 또는 사용자 환경 적용\n\n#### 프로필 수정 흐름\n1. 기존 프로필 데이터 GET\n2. 아바타, 이름, 스타일, 닉네임 등 변경 후 PUT 요청\n3. 변경 성공 시 결과 반영\n\n### 추가 고려사항\n- 추후 스타일(말투) 사전, 아바타 리스트 확장 가능성 고려한 enum/테이블 설계\n- sampleMessage 다국어 혹은 다양한 템플릿 관리 필요 가능\n",
+    "metadata": {
+      "summary": "서포터 프로필 설정을 위한 화면으로, 사용자가 프로필 이미지, 이름, 말투 스타일, 닉네임을 입력 및 선택할 수 있게 한다.",
+      "topics": [
+        "profile-management",
+        "user-preferences",
+        "persona-customization"
+      ],
+      "clusterKey": "supporter-profile-setup"
+    },
+    "completed": 14,
+    "total": 19,
+    "metric": {
+      "attempt": 1,
+      "success": 1,
+      "consent": 0,
+      "validationFailure": 0,
+      "invalidJson": 0
+    },
+    "tokenUsage": {
+      "total": 13683,
+      "input": {
+        "total": 12657,
+        "cached": 2688
+      },
+      "output": {
+        "total": 1026,
+        "reasoning": 0,
+        "accepted_prediction": 0,
+        "rejected_prediction": 0
+      }
+    },
+    "created_at": "2025-11-17T05:26:37.912Z"
+  },
+  {
+    "type": "describeImageDraft",
+    "id": "019a9047-7303-715e-af49-9587a3735191",
+    "draft": "## 인증 및 온보딩 플로우 기획안\n\n### 개요\n이 화면들은 신규 사용자의 회원 가입, 로그인, 계정 설정, 그리고 프로필 커스터마이징까지의 온보딩 및 인증 일련의 흐름을 제공합니다. 본 플로우는 계정 생성부터 시작해 프로필 정보를 입력/수정하는 사용자 여정을 보입니다. 해당 플로우는 서비스 접근 및 기본 기능 이용을 위해 필수적인 인증 절차 전체를 포함합니다.\n\n### 도출 엔터티 및 관계\n\n#### User\n- id: UUID (PK)\n- email: string (unique, required, 로그인 아이디)\n- password: string (hashed, required)\n- nickname: string (unique, required, 최대 20자)\n- createdAt: datetime\n- updatedAt: datetime\n- profile: 1:1(UserProfile)\n- supporterProfile: 1:1(SupporterProfile, optional)\n\n#### UserProfile\n- id: UUID (PK)\n- userId: UUID (FK, unique)\n- avatar: string (URL, 이미지 경로)\n- displayName: string (required)\n\n#### SupporterProfile\n- id: UUID (PK)\n- userId: UUID (FK, unique)\n- supporterName: string (required)\n- styleTag: enum (e.g., \"따뜻한 스타일\", \"유쾌한 스타일\" 등, UI 기준 고정 리스트 제공)\n- avatar: string (URL, 선택한 프로필 이미지)\n\n### 주요 API Endpoints\n\n#### 인증/회원가입\n- `POST /api/auth/signup`\n  - Request: { email, password, nickname }\n  - Response: { user: User }\n  - 비회원 접근 허용\n\n- `POST /api/auth/login`\n  - Request: { email, password }\n  - Response: { token, user: User }\n  - 비회원 접근 허용\n\n- `POST /api/auth/logout`\n  - Request: 토큰 포함\n  - Response: 성공 여부\n  - 인증 필요\n\n- `GET /api/auth/me`\n  - Response: User (본인 정보)\n  - 인증 필요\n\n#### 프로필 설정/수정\n- `PATCH /api/users/profile`\n  - Request: { displayName, avatar }\n  - Response: UserProfile\n  - 인증 필요\n\n#### 서포터 프로필 설정\n- `POST /api/users/supporter-profile`\n  - Request: { supporterName, styleTag, avatar }\n  - Response: SupporterProfile\n  - 인증 필요\n\n- `PATCH /api/users/supporter-profile`\n  - Request: { supporterName?, styleTag?, avatar? }\n  - Response: SupporterProfile\n  - 인증 필요\n\n### 비즈니스 로직 및 검증\n- 이메일 중복 불가, 유효한 이메일 형식만 허용\n- 비밀번호 최소 8자, 영문/숫자/특수문자 조합 권장\n- 닉네임은 20자 이내, 중복 불가\n- 프로필/서포터프로필 이미지 업로드 또는 선택 필수 (서포터의 경우)\n- styleTag는 UI에 제공되는 고정 선택지 중에서만 선택 가능\n- 입력 누락, 중복, 형식 오류 등에 대한 에러 반환\n- 본인만 자신의 프로필/서포터 프로필 수정 가능\n\n### 권한 및 인증 흐름\n- 게스트: 회원가입 및 로그인만 가능\n- 유저: 프로필 설정, 서포터 프로필 생성/수정 가능\n- 인증된 JWT 토큰 사용\n\n### 주요 워크플로우\n\n#### 1. 회원가입 플로우\n1. 이메일, 비밀번호, 닉네임 입력하여 회원가입\n2. 이메일 중복/형식 검증 및 비밀번호 규칙 확인\n3. 계정 생성 성공 시 즉시 로그인 처리(토큰 발급)\n4. 프로필 정보(이미지, 이름) 설정 단계로 이동\n\n#### 2. 로그인 플로우\n1. 이메일/비밀번호 입력\n2. 토큰 발급 및 세션 유지\n\n#### 3. 서포터 프로필 설정 플로우\n1. 프로필 아바타 선택 또는 업로드\n2. 서포터 이름 입력\n3. 스타일 태그(말투) 선택\n4. 저장 시 검증 및 서포터 프로필 생성\n\n#### 4. 비밀번호 찾기/재설정 플로우\n1. 이메일 입력 → 임시 비밀번호 혹은 리셋 링크 발송\n2. 안내에 따라 비밀번호 재설정\n\n### 추가 사항\n- 각 입력 폼은 실시간 검증(중복, 형식 등) 지원\n- 모든 설정은 사용자 본인이 언제든지 수정 가능\n- 실패 시 관련 에러 메시지 반환\n\n---",
+    "metadata": {
+      "summary": "사용자 회원가입, 로그인, 프로필 설정 등 인증 및 초기 유저 온보딩 과정을 포함한 사용자 인증 및 계정 관리 플로우입니다.",
+      "topics": [
+        "user-authentication",
+        "onboarding",
+        "profile-management",
+        "account-settings"
+      ],
+      "clusterKey": "auth-onboarding-flow"
+    },
+    "completed": 9,
+    "total": 19,
+    "metric": {
+      "attempt": 1,
+      "success": 1,
+      "consent": 0,
+      "validationFailure": 0,
+      "invalidJson": 0
+    },
+    "tokenUsage": {
+      "total": 13041,
+      "input": {
+        "total": 11892,
+        "cached": 0
+      },
+      "output": {
+        "total": 1149,
+        "reasoning": 0,
+        "accepted_prediction": 0,
+        "rejected_prediction": 0
+      }
+    },
+    "created_at": "2025-11-17T05:26:32.963Z"
+  }
+]
