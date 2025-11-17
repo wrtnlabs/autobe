@@ -1,5 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
@@ -14,64 +15,86 @@ export namespace JsonSchemaValidator {
     validateAuthorization(props);
     validatePrismaSchema(props.errors);
     validateRecursive(props);
-    for (const key of Object.keys(props.schemas))
+    for (const key of Object.keys(props.schemas)) {
       validateKey({
         errors: props.errors,
-        path: props.path,
+        path: `${props.path}[${JSON.stringify(key)}]`,
         key,
       });
+      OpenApiTypeChecker.visit({
+        components: { schemas: props.schemas },
+        schema: props.schemas[key],
+        closure: (next, accessor) => {
+          if (OpenApiTypeChecker.isReference(next)) {
+            validateKey({
+              errors: props.errors,
+              path: `${accessor}.$ref`,
+              key: next.$ref.split("/").pop()!,
+              transform: (typeName) => `#/components/schemas/${typeName}`,
+            });
+          }
+        },
+        accessor: `${props.path}[${JSON.stringify(key)}]`,
+      });
+    }
   };
 
   export const validateKey = (props: {
     errors: IValidation.IError[];
-    path: string;
     key: string;
+    path: string;
+    transform?: (typeName: string) => string;
   }): void => {
+    const transform = props.transform ?? ((typeName: string) => typeName);
     const elements: string[] = props.key.split(".");
     if (elements.every(Escaper.variable) === false)
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}]`,
-        expected: "Valid variable name",
-        value: props.key,
+        path: props.path,
+        expected: StringUtil.trim`
+          Valid variable name
+
+          ${elements.map((s) => `- ${s}: ${Escaper.variable(s) ? "valid" : "invalid"}`).join("\n")}
+        `,
+        value: transform(props.key),
         description: StringUtil.trim`
           JSON schema type name must be a valid variable name.
 
           Even though JSON schema type name allows dot(.) character, but
           each segment separated by dot(.) must be a valid variable name.
 
-          Current key name ${JSON.stringify(props.key)} is not valid. Change
-          it to a valid variable name at the next time.
+          Current key name ${transform(JSON.stringify(props.key))} is not valid. 
+          Change it to a valid variable name at the next time.
         `,
       });
     if (props.key.endsWith(".IPage")) {
       const expected: string = `IPage${props.key.substring(0, props.key.length - 6)}`;
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}]`,
-        expected: `"IPage" must be followed by another interface name. Use ${JSON.stringify(expected)} instead.`,
-        value: props.key,
+        path: props.path,
+        expected: `"IPage" must be followed by another interface name. Use ${transform(JSON.stringify(expected))} instead.`,
+        value: transform(props.key),
         description: StringUtil.trim`
           "IPage" is a reserved type name for pagination response.
           The pagination data type name must be post-fixed after "IPage".
           
-          However, you've defined ${JSON.stringify(props.key)}, 
+          However, you've defined ${transform(JSON.stringify(props.key))}, 
           post-fixing ".IPage" after the pagination data type name.
 
           Change it to a valid pagination type name to be
-          ${JSON.stringify(expected)} at the next time. Note that,
-          this is not a recommendation, but an instruction you must follow.
+          ${transform(JSON.stringify(expected))} at the next time. 
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     } else if (props.key === "IPageIRequest")
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}]`,
+        path: props.path,
         expected: `"IPageIRequest" is a mistake. Use "IPage.IRequest" instead.`,
-        value: props.key,
+        value: transform(props.key),
         description: StringUtil.trim`
-          You've taken a mistake that defines "IPageIRequest" as a type name.
+          You've taken a mistake that defines "${transform("IPageIRequest")}" as a type name.
           However, as you've intended to define a pagination request type, 
-          the correct type name is "IPage.IRequest" instead of "IPageIRequest".
+          the correct type name is "${transform("IPage.IRequest")}" instead of "${transform("IPageIRequest")}".
 
-          Change it to "IPage.IRequest" at the next time.
+          Change it to "${transform("IPage.IRequest")}" at the next time.
         `,
       });
     else if (
@@ -86,9 +109,9 @@ export namespace JsonSchemaValidator {
         .map((s) => (s.startsWith("I") ? s : `I${s}`))
         .join(".")}`;
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}]`,
+        path: props.path,
         expected: `Interface name starting with 'I' even after 'IPage': ${JSON.stringify(expected)}`,
-        value: props.key,
+        value: transform(props.key),
         description: StringUtil.trim`
           JSON schema type name must be an interface name starting with 'I'.
           Even though JSON schema type name allows dot(.) character, but
@@ -108,18 +131,20 @@ export namespace JsonSchemaValidator {
         .map((s) => (s.startsWith("I") ? s : `I${s}`))
         .join(".");
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}]`,
+        path: props.path,
         expected: `Interface name starting with 'I': ${JSON.stringify(expected)}`,
-        value: props.key,
+        value: transform(props.key),
         description: StringUtil.trim`
           JSON schema type name must be an interface name starting with 'I'.
           Even though JSON schema type name allows dot(.) character, but
           each segment separated by dot(.) must be an interface name starting
           with 'I'.
 
-          Current key name ${JSON.stringify(props.key)} is not valid. Change
-          it to a valid interface name to be ${JSON.stringify(expected)}, 
+          Current key name ${transform(JSON.stringify(props.key))} is not valid. 
+          Change it to a valid interface name to be ${transform(JSON.stringify(expected))}, 
           or change it to another valid interface name at the next time.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     }

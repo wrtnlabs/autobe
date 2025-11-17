@@ -177,5 +177,22 @@ export namespace OperationValidator {
           - ${props.body.typeName[0].toUpperCase()}${props.body.typeName.slice(1)}Value
         `,
       });
+    else if (
+      props.body.typeName === "object" ||
+      props.body.typeName === "any" ||
+      props.body.typeName === "interface"
+    )
+      props.errors.push({
+        path: `${props.path}.typeName`,
+        value: props.body.typeName,
+        expected: "An object reference type",
+        description: StringUtil.trim`
+          Type \`${props.body.typeName}\` is preserved word in the programming languages.
+
+          Change the type name to other one.
+        `,
+      });
+    else if (props.body.typeName.startsWith("I") === false) {
+    }
   };
 }
