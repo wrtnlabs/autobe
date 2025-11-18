@@ -9,6 +9,7 @@ import {
   IAutoBeAgent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
+  IAutoBeGetFilesOptions,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import { Singleton, randint, sleep_for } from "tstl";
@@ -18,6 +19,7 @@ import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { createAutoBeState } from "./factory/createAutoBeState";
+import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 
 /** @internal */
 export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
@@ -27,10 +29,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   private token_usage_: AutoBeTokenUsage;
 
   public constructor(props: AutoBeMockAgent.IProps) {
-    super({
-      compiler: () => this.compiler_.get(),
-      state: () => createAutoBeState(this.histories_),
-    });
+    super();
     this.props_ = props;
     this.histories_ = [];
     this.compiler_ = new Singleton(async () =>
@@ -132,6 +131,18 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
 
   public getTokenUsage(): AutoBeTokenUsage {
     return this.token_usage_;
+  }
+
+  public async getFiles(
+    options?: IAutoBeGetFilesOptions,
+  ): Promise<Record<string, string>> {
+    return await getAutoBeGenerated({
+      compiler: await this.compiler_.get(),
+      state: createAutoBeState(this.histories_),
+      histories: this.getHistories(),
+      tokenUsage: this.getTokenUsage(),
+      options,
+    });
   }
 
   public getPhase(): AutoBePhase | null {

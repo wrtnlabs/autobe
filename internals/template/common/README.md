@@ -111,14 +111,15 @@ When you've created a new backend project through this template project, you can
 
 ### Aggregate
 
-Phase | Generated | Token Consumption | Elapsed Time
-------|-----------|-------------------|---------------
+Phase | Generated | FCSR | Token Consumption | Elapsed Time
+------|-----------|------|-------------------|--------------
 {{BENCHMARK_AGGREGATE}}
 
 This table shows the comprehensive metrics for each phase of the AutoBE generation pipeline. For each phase (Analyze, Prisma, Interface, Test, Realize), it tracks:
 
 - **Phase**: The pipeline phase with success (✅) or failure (❌) indicator
 - **Generated**: Count of artifacts produced (e.g., actors, documents, namespaces, models, operations, schemas, functions)
+- **FCSR**: Function calling success rate
 - **Token Consumption**: Total number of LLM tokens consumed during the phase
 - **Elapsed Time**: Wall-clock time taken to complete the phase, including all AI agent operations and compiler feedback loops
 
@@ -126,7 +127,7 @@ These aggregate metrics provide visibility into the computational cost and time 
 
 ### Function Calling
 
-Type | Trial | Validation Failure | JSON Parse Error | Succcess | Success Rate
+Type | Trial | Validation Failure | JSON Parse Error | Success | Success Rate
 :----|------:|-------------------:|-----------------:|---------:|-------------:
 {{BENCHMARK_FUNCTION_CALLING}}
 
@@ -139,9 +140,9 @@ This table shows the reliability and quality metrics for AI agent function calli
 - **Success**: Calls that completed successfully with valid, validated responses
 - **Success Rate**: Percentage of successful calls out of total attempts
 
-These metrics reveal the effectiveness of AutoBE's self-healing spiral loops, where compiler diagnostics and validation errors feed back to agents for automatic correction.
+These metrics reveal the effectiveness of AutoBE's validation feedback strategy powered by [`typia.llm.application<Class, Model>()`](https://typia.io/docs/llm/application/). When function calls fail type validation, detailed error messages are fed back to the AI agent, enabling iterative correction through self-healing spiral loops.
 
-Success rates vary based on model size and capability - smaller models may have lower initial success rates. However, AutoBE's self-healing spiral loops with validation feedback enable even weaker models to eventually succeed through iterative correction, demonstrating the power of compiler-driven development.
+Success rates vary based on model size and capability - smaller models may have lower initial success rates. However, validation feedback enables even weaker models to achieve high success rates through automatic correction cycles, demonstrating the power of compiler-driven development.
 
 ## License
 

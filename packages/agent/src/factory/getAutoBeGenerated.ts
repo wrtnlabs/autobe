@@ -179,6 +179,11 @@ function writeBenchmarkAggregate(state: AutoBeState): string {
         Object.entries(label(h))
           .map(([k, v]) => `${k}: ${v.toLocaleString()}`)
           .join(", "),
+        (
+          (h.aggregates.total.metric.success /
+            h.aggregates.total.metric.attempt) *
+          100
+        ).toFixed(2) + " %",
         h.aggregates.total.tokenUsage.total.toLocaleString(),
         Math.round(
           (new Date(h.completed_at).getTime() -

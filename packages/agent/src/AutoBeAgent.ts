@@ -14,6 +14,7 @@ import {
   AutoBeUserMessageHistory,
   IAutoBeAgent,
   IAutoBeCompilerListener,
+  IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
@@ -28,6 +29,7 @@ import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
+import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { supportMistral } from "./factory/supportMistral";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
@@ -106,10 +108,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
    */
   public constructor(props: IAutoBeProps<Model>) {
     // INITIALIZE MEMBERS
-    super({
-      compiler: () => this.context_.compiler(),
-      state: () => this.state_,
-    });
+    super();
     this.props_ = props;
     this.histories_ = props.histories?.slice() ?? [];
     this.state_ = createAutoBeState(this.histories_);
@@ -331,6 +330,18 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
 
   public getTokenUsage(): AutoBeTokenUsage {
     return this.usage_;
+  }
+
+  public async getFiles(
+    options?: IAutoBeGetFilesOptions,
+  ): Promise<Record<string, string>> {
+    return await getAutoBeGenerated({
+      compiler: await this.context_.compiler(),
+      state: this.state_,
+      histories: this.getHistories(),
+      tokenUsage: this.getTokenUsage(),
+      options,
+    });
   }
 
   public getAggregates(
