@@ -1,5 +1,5 @@
 import {
-  AutoBeDescribeCompleteEvent,
+  AutoBeDescribeImageCompleteEvent,
   AutoBeDescribeImageDocumentEvent,
   AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroup,
@@ -31,7 +31,7 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   const imageCount: number = imageContents.length;
   if (imageCount === 0) throw new Error("No image content found");
   ctx.dispatch({
-    type: "describeStart",
+    type: "describeImageStart",
     id: v7(),
     imageCount,
     created_at: new Date().toISOString(),
@@ -52,12 +52,15 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
     await orchestrateDescribeImagesDocument(ctx, { integrations });
 
   // Emit completion event
-  const complete: AutoBeDescribeCompleteEvent = {
-    type: "describeComplete",
+  const complete: AutoBeDescribeImageCompleteEvent = {
+    type: "describeImageComplete",
     id: v7(),
-    document: document.document,
-    summary: document.summary,
-    sections: document.sections,
+    contents: imageContents.map((c) =>
+      createAutoBeUserMessageContent({
+        content: c,
+        description: document.document,
+      }),
+    ),
     aggregates: ctx.getCurrentAggregates("describe"),
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
@@ -66,11 +69,5 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   return {
     ...complete,
     type: "userMessage",
-    contents: imageContents.map((c) =>
-      createAutoBeUserMessageContent({
-        content: c,
-        description: document.document,
-      }),
-    ),
   } satisfies AutoBeUserMessageHistory;
 };
