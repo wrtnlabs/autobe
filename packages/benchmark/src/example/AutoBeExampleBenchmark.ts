@@ -111,7 +111,8 @@ export namespace AutoBeExampleBenchmark {
               if (
                 event.type !== "jsonValidateError" &&
                 event.type !== "jsonParseError" &&
-                event.type !== "preliminary"
+                event.type !== "preliminary" &&
+                event.type !== "consentFunctionCall"
               )
                 phaseState.snapshot = s;
               props.report();

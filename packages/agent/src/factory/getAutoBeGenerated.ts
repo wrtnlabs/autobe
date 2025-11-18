@@ -150,7 +150,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
       | AutoBeTestHistory
       | AutoBeRealizeHistory
       | null,
-  ): string => (history ? (success(history) ? "✅" : "❌") : "");
+  ): string => (history ? (success(history) ? "✅" : "❌") : "⬜");
   return readme
     .replaceAll("{{ANALYSIS_EMOJI}}", emoji(state.analyze))
     .replaceAll("{{PRISMA_EMOJI}}", emoji(state.prisma))
@@ -165,16 +165,11 @@ function writeReadMe(state: AutoBeState, readme: string): string {
 }
 
 function writeBenchmarkAggregate(state: AutoBeState): string {
-  return [
-    state.analyze,
-    state.prisma,
-    state.interface,
-    state.test,
-    state.realize,
-  ]
-    .filter((h) => h !== null)
-    .map((h) =>
-      [
+  return (["analyze", "prisma", "interface", "test", "realize"] as const)
+    .map((key) => {
+      const h = state[key];
+      if (h === null) return `⬜ ${key} | | | | `;
+      return [
         `${success(h) ? "✅" : "❌"} ${h.type}`,
         Object.entries(label(h))
           .map(([k, v]) => `${k}: ${v.toLocaleString()}`)
@@ -190,8 +185,8 @@ function writeBenchmarkAggregate(state: AutoBeState): string {
             new Date(h.created_at).getTime()) /
             1_000,
         ) + " sec",
-      ].join(" | "),
-    )
+      ].join(" | ");
+    })
     .join("\n");
 }
 

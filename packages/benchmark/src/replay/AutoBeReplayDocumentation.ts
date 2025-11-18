@@ -15,8 +15,8 @@ export namespace AutoBeReplayDocumentation {
   
       ## Benchmark
   
-      AI Model | Score | FCSR | Status 
-      :--------|------:|-----:|:------:
+      AI Model | Success | Score | FCSR | Status 
+      :--------|---------|------:|-----:|:------:
       ${experiments
         .map((e) =>
           [
@@ -26,6 +26,7 @@ export namespace AutoBeReplayDocumentation {
             )}\`](#${AutoBeExampleStorage.slugModel(e.vendor, false)
               .replaceAll("/", "")
               .replaceAll(".", "")})`,
+            e.replays.filter((r) => r.realize?.success === true).length,
             e.score.aggregate,
             (() => {
               const [x, y] = e.replays

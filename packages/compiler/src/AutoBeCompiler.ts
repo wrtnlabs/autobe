@@ -15,6 +15,7 @@ import { AutoBeInterfaceCompiler } from "./interface/AutoBeInterfaceCompiler";
 import { AutoBePrismaCompiler } from "./prisma/AutoBePrismaCompiler";
 import { AutoBeCompilerCommonTemplate } from "./raw/AutoBeCompilerCommonTemplate";
 import { AutoBeCompilerInterfaceTemplate } from "./raw/AutoBeCompilerInterfaceTemplate";
+import { AutoBeCompilerRealizeTemplate } from "./raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerRealizeTemplateOfPostgres } from "./raw/AutoBeCompilerRealizeTemplateOfPostgres";
 import { AutoBeCompilerRealizeTemplateOfSQLite } from "./raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { AutoBeCompilerTestTemplate } from "./raw/AutoBeCompilerTestTemplate";
@@ -68,9 +69,10 @@ export class AutoBeCompiler implements IAutoBeCompiler {
     if (index >= OF_INTERFACE)
       Object.assign(result, AutoBeCompilerInterfaceTemplate);
     if (index >= OF_TEST) Object.assign(result, AutoBeCompilerTestTemplate);
-    if (options.phase === "realize")
+    if (index >= OF_REALIZE)
       Object.assign(
         result,
+        AutoBeCompilerRealizeTemplate,
         options.dbms === "postgres"
           ? AutoBeCompilerRealizeTemplateOfPostgres
           : AutoBeCompilerRealizeTemplateOfSQLite,
@@ -88,3 +90,4 @@ const PHASES: AutoBePhase[] = [
 ];
 const OF_INTERFACE: number = PHASES.indexOf("interface");
 const OF_TEST: number = PHASES.indexOf("test");
+const OF_REALIZE: number = PHASES.indexOf("realize");
