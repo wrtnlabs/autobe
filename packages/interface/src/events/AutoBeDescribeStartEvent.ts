@@ -21,17 +21,12 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 export interface AutoBeDescribeStartEvent
   extends AutoBeEventBase<"describeStart"> {
   /**
-   * Iteration number of the requirements analysis this describe process is
-   * being started for.
+   * Number of images to be analyzed.
    *
-   * Indicates which version of the requirements analysis this image description
-   * will support. A value of 0 means this is part of the initial requirements
-   * gathering, while higher values represent subsequent revisions where
-   * additional visual specifications are being incorporated.
-   *
-   * This step number ensures proper synchronization between the describe phase
-   * and the overall requirements development process, maintaining consistency
-   * across iterative refinements.
+   * Indicates the number of images that will be analyzed by the describe
+   * agent. This value helps track the progress of the image analysis process
+   * and provides context for the user about the number of images that will be
+   * analyzed.
    */
-  step: number;
+  imageCount: number;
 }
