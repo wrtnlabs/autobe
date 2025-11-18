@@ -7,11 +7,10 @@ import {
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeDescribeHistory,
   AutoBeHistory,
   AutoBePhase,
   AutoBeProcessAggregateCollection,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
   IAutoBeCompilerListener,
@@ -25,9 +24,10 @@ import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
-import { describeImages } from "./describe/image/describeImages";
+import { describe } from "./describe/describe";
 import { AutoBeProcessAggregateFactory } from "./factory/AutoBeProcessAggregateFactory";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
+import { createAgenticaUserMessageContent } from "./factory/createAgenticaUserMessageContent";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
@@ -285,45 +285,25 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     ACCESSORS
   ----------------------------------------------------------- */
   public async conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]> {
     const index: number = this.histories_.length;
-    const userMessageHistory: AutoBeUserMessageHistory = {
-      id: v7(),
-      type: "userMessage",
-      contents:
-        typeof content === "string"
-          ? [
-              {
-                type: "text",
-                text: content,
-              },
-            ]
-          : Array.isArray(content)
-            ? content
-            : [content],
-      created_at: new Date().toISOString(),
-    };
+
+    const userMessageHistory: AutoBeUserMessageHistory = await describe(
+      this.context_,
+      { content },
+    );
     this.dispatch(userMessageHistory).catch(() => {});
-    const describeHistory: AutoBeDescribeHistory | null =
-      userMessageHistory.contents.some((c) => c.type === "image") === true
-        ? await describeImages(this.context_, { content })
-        : null;
-    if (describeHistory)
-      this.dispatch({
-        type: "userMessage",
-        id: v7(),
-        contents: [
-          {
-            type: "text",
-            text: describeHistory.document,
-          },
-        ],
-        created_at: new Date().toISOString(),
-      });
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(describeHistory?.document ?? content);
+      await this.agentica_.conversate(
+        createAgenticaUserMessageContent({
+          content: userMessageHistory.contents,
+        }),
+      );
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>
@@ -340,7 +320,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     }
 
     this.histories_.push(userMessageHistory);
-    if (describeHistory !== null) this.histories_.push(describeHistory);
     return this.histories_.slice(index);
   }
 

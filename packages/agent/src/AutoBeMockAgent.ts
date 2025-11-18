@@ -4,7 +4,7 @@ import {
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBePhase,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
   IAutoBeCompiler,
@@ -17,6 +17,7 @@ import { v7 } from "uuid";
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
+import { createAutoBeUserMessageContent } from "./factory/createAutoBeMessageContent";
 import { createAutoBeState } from "./factory/createAutoBeState";
 
 /** @internal */
@@ -47,23 +48,29 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   }
 
   public async conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]> {
+    const contents: AutoBeUserConversateContent[] =
+      typeof content === "string"
+        ? [
+            {
+              type: "text",
+              text: content,
+            },
+          ]
+        : Array.isArray(content)
+          ? content
+          : [content];
     // THE USER-MESSAGE
     const userMessage: AutoBeUserMessageHistory = {
       id: v7(),
       type: "userMessage",
-      contents:
-        typeof content === "string"
-          ? [
-              {
-                type: "text",
-                text: content,
-              },
-            ]
-          : Array.isArray(content)
-            ? content
-            : [content],
+      contents: contents.map((c) =>
+        createAutoBeUserMessageContent({ content: c }),
+      ),
       created_at: new Date().toISOString(),
     };
     void this.dispatch(userMessage).catch(() => {});
