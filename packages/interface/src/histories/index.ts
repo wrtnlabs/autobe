@@ -11,4 +11,3 @@ export * from "./AutoBeRealizeHistory";
 export * from "./AutoBeTestHistory";
 
 export * from "./AutoBePhase";
-export * from "./AutoBePrePhase";

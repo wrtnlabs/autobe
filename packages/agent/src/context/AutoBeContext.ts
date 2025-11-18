@@ -14,7 +14,6 @@ import {
   AutoBeHistory,
   AutoBeInterfaceHistory,
   AutoBePhase,
-  AutoBePrePhase,
   AutoBePrismaHistory,
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
@@ -46,7 +45,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   state: () => Readonly<AutoBeState>;
   usage: () => AutoBeTokenUsage;
   getCurrentAggregates: (
-    phase: AutoBePhase | AutoBePrePhase,
+    phase: AutoBePhase | "describe",
   ) => AutoBeProcessAggregateCollection;
 
   // events

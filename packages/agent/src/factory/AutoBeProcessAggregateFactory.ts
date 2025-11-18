@@ -1,7 +1,6 @@
 import {
   AutoBeAggregateEventBase,
   AutoBePhase,
-  AutoBePrePhase,
   AutoBeProcessAggregate,
   AutoBeProcessAggregateCollection,
 } from "@autobe/interface";
@@ -57,7 +56,7 @@ export namespace AutoBeProcessAggregateFactory {
     TokenUsageComputer.increment(total.tokenUsage, event.tokenUsage);
   };
 
-  export const filterPhase = <Phase extends AutoBePhase | AutoBePrePhase>(
+  export const filterPhase = <Phase extends AutoBePhase | "describe">(
     collection: AutoBeProcessAggregateCollection,
     phase: Phase,
   ): AutoBeProcessAggregateCollection<Phase> => {
