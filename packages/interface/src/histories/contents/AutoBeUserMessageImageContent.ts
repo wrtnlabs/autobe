@@ -18,9 +18,12 @@ export interface AutoBeUserMessageImageContent
    *
    * Either base64-encoded image data or a URL reference.
    */
-  image:
-    | AutoBeUserMessageImageContent.IBase64
-    | AutoBeUserMessageImageContent.IUrl;
+  images: Array<
+    AutoBeUserMessageImageContent.IBase64 | AutoBeUserMessageImageContent.IUrl
+  >;
+
+  /** Image analysis description. */
+  description: string;
 
   /**
    * Image analysis detail level.
