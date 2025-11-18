@@ -1,7 +1,7 @@
 import {
   AutoBeHistory,
   AutoBePhase,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
   IAutoBeAgent,
   IAutoBeGetFilesOptions,
   IAutoBeRpcListener,
@@ -61,7 +61,10 @@ export class AutoBeRpcService implements IAutoBeRpcService {
   }
 
   public async conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]> {
     if (this.props.onStart) this.props.onStart(content);
 
@@ -130,7 +133,10 @@ export namespace AgenticaRpcService {
     listener: IAutoBeRpcListener;
 
     onStart?: (
-      content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+      content:
+        | string
+        | AutoBeUserConversateContent
+        | AutoBeUserConversateContent[],
     ) => void;
 
     onComplete?: (result: AutoBeHistory[]) => void;
