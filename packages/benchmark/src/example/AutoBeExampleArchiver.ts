@@ -31,6 +31,7 @@ export namespace AutoBeExampleArchiver {
   }
 
   export interface IAgentProps {
+    vendor: string;
     histories: AutoBeHistory[];
     tokenUsage: IAutoBeTokenUsageJson;
   }
@@ -296,6 +297,7 @@ export namespace AutoBeExampleArchiver {
       PHASES[PHASES.indexOf(props.phase) - 1] ?? null;
     if (previous === null)
       return {
+        vendor: props.vendor,
         histories: [],
         tokenUsage: {
           aggregate: TokenUsageComputer.zero(),
@@ -319,6 +321,7 @@ export namespace AutoBeExampleArchiver {
         phase: previous,
       });
     return {
+      vendor: props.vendor,
       histories,
       tokenUsage,
     };

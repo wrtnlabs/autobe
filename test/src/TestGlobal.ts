@@ -27,10 +27,12 @@ export class TestGlobal {
     );
   }
 
-  public static getVendorConfig(): IAutoBeVendor {
+  public static getVendorConfig(
+    vendor: string = TestGlobal.vendorModel,
+  ): IAutoBeVendor {
     const isOpenAi: boolean =
-      TestGlobal.vendorModel.startsWith("openai/") &&
-      TestGlobal.vendorModel.startsWith("openai/gpt-oss-") === false;
+      vendor.startsWith("openai/") &&
+      vendor.startsWith("openai/gpt-oss-") === false;
     return {
       api: new OpenAI({
         apiKey:
@@ -39,9 +41,7 @@ export class TestGlobal {
             : TestGlobal.env.OPENROUTER_API_KEY) ?? "********",
         baseURL: isOpenAi ? undefined : "https://openrouter.ai/api/v1",
       }),
-      model: isOpenAi
-        ? TestGlobal.vendorModel.replace("openai/", "")
-        : TestGlobal.vendorModel,
+      model: isOpenAi ? vendor.replace("openai/", "") : vendor,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
     };
   }

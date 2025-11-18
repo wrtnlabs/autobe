@@ -47,7 +47,7 @@ const main = async (): Promise<void> => {
       createAgent: async (next) =>
         new AutoBeAgent({
           model: TestGlobal.schemaModel,
-          vendor: TestGlobal.getVendorConfig(),
+          vendor: TestGlobal.getVendorConfig(next.vendor),
           config: {
             locale: "en-US",
             timeout:
@@ -87,7 +87,7 @@ const main = async (): Promise<void> => {
       ],
       projects: TestGlobal.getArguments("project")?.filter(
         typia.createIs<AutoBeExampleProject>(),
-      ) ?? ["todo"],
+      ) ?? ["todo", "bbs", "reddit", "shopping"],
       progress: (state) => printer.get(state),
     },
   );

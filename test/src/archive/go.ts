@@ -75,7 +75,7 @@ const main = async (): Promise<void> => {
       createAgent: async (next) =>
         new AutoBeAgent({
           model: TestGlobal.schemaModel,
-          vendor: TestGlobal.getVendorConfig(),
+          vendor: TestGlobal.getVendorConfig(next.vendor),
           config: {
             locale: "en-US",
             timeout:
