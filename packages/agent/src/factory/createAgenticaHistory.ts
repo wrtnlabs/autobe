@@ -33,22 +33,6 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
       ...props.history,
       toJSON: () => props.history as AutoBeAssistantMessageHistory,
     };
-  else if (props.history.type === "describe") {
-    const userMessageHistory: IAgenticaHistoryJson.IUserMessage = {
-      ...props.history,
-      type: "userMessage",
-      contents: [
-        {
-          type: "text",
-          text: props.history.document,
-        },
-      ],
-    };
-    return {
-      ...userMessageHistory,
-      toJSON: () => userMessageHistory,
-    };
-  }
 
   const operation: AgenticaOperation<Model> | undefined = props.operations.find(
     (op) => op.function.name === props.history.type,
