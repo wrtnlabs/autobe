@@ -1,3 +1,6 @@
+// CONTENTS
+export * from "./contents";
+
 // DESCRIBE
 export * from "./AutoBeDescribeStartEvent";
 export * from "./AutoBeDescribeImageDraftEvent";
