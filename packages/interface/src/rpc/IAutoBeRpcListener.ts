@@ -5,12 +5,12 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
-  AutoBeDescribeCompleteEvent,
+  AutoBeDescribeImageCompleteEvent,
+  AutoBeDescribeImageDocumentEvent,
   AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroupEvent,
   AutoBeDescribeImageDraftIntegrationEvent,
-  AutoBeDescribeImageDocumentEvent,
-  AutoBeDescribeStartEvent,
+  AutoBeDescribeImageStartEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
@@ -115,9 +115,10 @@ export interface IAutoBeRpcListener {
    *
    * Called when the Describe agent begins the image analysis and planning
    * document generation process, enabling client applications to show describe
-   * phase initiation and prepare progress indicators for visual interpretation.
+   * phase initiation and prepare progress indicators for visual
+   * interpretation.
    */
-  describeStart?(event: AutoBeDescribeStartEvent): Promise<void>;
+  describeStart?(event: AutoBeDescribeImageStartEvent): Promise<void>;
 
   /**
    * Optional handler for image draft generation events.
@@ -135,7 +136,9 @@ export interface IAutoBeRpcListener {
    * keys, organizing drafts that belong to the same functional area or feature
    * set for consolidated processing.
    */
-  describeImageDraftGroup?(event: AutoBeDescribeImageDraftGroupEvent): Promise<void>;
+  describeImageDraftGroup?(
+    event: AutoBeDescribeImageDraftGroupEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for image draft integration events.
@@ -144,7 +147,9 @@ export interface IAutoBeRpcListener {
    * into consolidated section documents, creating coherent specifications for
    * each functional area of the system.
    */
-  describeImageDraftIntegration?(event: AutoBeDescribeImageDraftIntegrationEvent): Promise<void>;
+  describeImageDraftIntegration?(
+    event: AutoBeDescribeImageDraftIntegrationEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for image analysis document generation events.
@@ -153,16 +158,18 @@ export interface IAutoBeRpcListener {
    * requirements document, providing a comprehensive specification derived from
    * the analyzed images.
    */
-  describeImageDocument?(event: AutoBeDescribeImageDocumentEvent): Promise<void>;
+  describeImageDocument?(
+    event: AutoBeDescribeImageDocumentEvent,
+  ): Promise<void>;
 
   /**
    * Mandatory handler for describe phase completion events.
    *
    * Called when the describe phase completes successfully, providing the
-   * finalized planning documentation generated from image analysis that can
-   * be used as input for the analyze phase.
+   * finalized planning documentation generated from image analysis that can be
+   * used as input for the analyze phase.
    */
-  describeComplete?(event: AutoBeDescribeCompleteEvent): Promise<void>;
+  describeComplete?(event: AutoBeDescribeImageCompleteEvent): Promise<void>;
 
   /* -----------------------------------------------------------
     ANALYZE PHASE EVENTS
