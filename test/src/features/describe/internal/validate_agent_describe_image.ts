@@ -1,6 +1,10 @@
 import { describeImages } from "@autobe/agent/src/describe/describeImages";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, AutoBeUserConversateContent } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeExampleProject,
+  AutoBeUserConversateContent,
+} from "@autobe/interface";
 import fs from "fs";
 import path from "path";
 import typia from "typia";
@@ -12,6 +16,7 @@ import { prepare_agent_describe } from "./prepare_agent_describe";
 export const validate_agent_describe_image = async (props: {
   factory: TestFactory;
   vendor: string;
+  project: AutoBeExampleProject;
 }) => {
   if (
     TestGlobal.env.OPENAI_API_KEY === undefined ||
@@ -44,7 +49,10 @@ export const validate_agent_describe_image = async (props: {
   agent.on("describeImageDocument", enroll);
   agent.on("describeImageComplete", enroll);
 
-  const assetsPath = path.join(TestGlobal.ROOT, "scripts/account/describe");
+  const assetsPath = path.join(
+    TestGlobal.ROOT,
+    `scripts/${props.project}/analyze`,
+  );
   const files = await fs.promises.readdir(assetsPath);
   const imageContents: AutoBeUserConversateContent[] = await Promise.all(
     files.map(async (fileName) => {

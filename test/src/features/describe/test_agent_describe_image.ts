@@ -6,5 +6,6 @@ export const test_agent_describe_image = async (factory: TestFactory) => {
   await validate_agent_describe_image({
     factory,
     vendor: TestGlobal.vendorModel,
+    project: "account",
   });
 };
