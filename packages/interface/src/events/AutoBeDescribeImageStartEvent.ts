@@ -18,14 +18,14 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author michael
  */
-export interface AutoBeDescribeStartEvent
-  extends AutoBeEventBase<"describeStart"> {
+export interface AutoBeDescribeImageStartEvent
+  extends AutoBeEventBase<"describeImageStart"> {
   /**
    * Number of images to be analyzed.
    *
-   * Indicates the number of images that will be analyzed by the describe
-   * agent. This value helps track the progress of the image analysis process
-   * and provides context for the user about the number of images that will be
+   * Indicates the number of images that will be analyzed by the describe agent.
+   * This value helps track the progress of the image analysis process and
+   * provides context for the user about the number of images that will be
    * analyzed.
    */
   imageCount: number;

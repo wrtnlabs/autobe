@@ -2,7 +2,7 @@
 export * from "./contents";
 
 // DESCRIBE
-export * from "./AutoBeDescribeStartEvent";
+export * from "./AutoBeDescribeImageStartEvent";
 export * from "./AutoBeDescribeImageDraftEvent";
 export * from "./AutoBeDescribeImageDraftGroupEvent";
 export * from "./AutoBeDescribeImageDraftIntegrationEvent";
