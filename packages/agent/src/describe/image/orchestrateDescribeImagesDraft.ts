@@ -54,7 +54,6 @@ export const orchestrateDescribeImagesDrafts = async <
   return (
     await executeCachedBatch(
       matrix.map((it) => async (promptCacheKey) => {
-        console.log(`batch size : ${it.length}`);
         const event: AutoBeDescribeImageDraftEvent = await process(ctx, {
           imageContents: it,
           userContents: otherContents,
