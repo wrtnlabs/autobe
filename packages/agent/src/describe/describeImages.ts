@@ -25,7 +25,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeUserMessageHistory> => {
   const start: Date = new Date();
-  const step: number = ctx.state().analyze?.step ?? 0;
 
   const imageContents: AutoBeUserImageConversateContent[] =
     props.content.filter((m) => m.type === "image");
@@ -35,7 +34,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
     type: "describeStart",
     id: v7(),
     imageCount,
-    step,
     created_at: new Date().toISOString(),
   });
 
@@ -61,7 +59,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
     summary: document.summary,
     sections: document.sections,
     aggregates: ctx.getCurrentAggregates("describe"),
-    step,
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
