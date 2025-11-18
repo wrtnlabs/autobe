@@ -10,7 +10,7 @@ import typia from "typia";
 import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
 
-type Step = keyof AutoBeState | "describe";
+type Step = keyof AutoBeState;
 interface ITestFunction {
   name: string;
   step: Step;
@@ -32,7 +32,6 @@ const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
 };
 
 const STEP_INDEXES: Record<Step, number> = {
-  describe: -1,
   analyze: 0,
   prisma: 1,
   interface: 2,
