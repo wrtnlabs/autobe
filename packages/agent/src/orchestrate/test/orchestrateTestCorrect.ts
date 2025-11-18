@@ -192,7 +192,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "testCorrect",
-    kind: "casting",
+    kind: "overall",
     id: v7(),
     created_at: new Date().toISOString(),
     file: props.validate.file,
