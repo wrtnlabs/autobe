@@ -42,7 +42,7 @@ export namespace AutoBeExampleDocumentation {
   const markdownProject = (
     state: IAutoBeExampleBenchmarkState.IOfProject,
   ): string => {
-    // 🟢 🔵 🔴 🟠
+    // yellow circle emoji:
     const phase: IAutoBeExampleBenchmarkState.IOfPhase | undefined =
       state.phases.at(-1);
     return [
@@ -54,7 +54,8 @@ export namespace AutoBeExampleDocumentation {
           : "🔴 failure"
         : phase !== undefined && phase.snapshot !== null
           ? [
-              phase.success === false ? "🟠" : "🔵",
+              // orange or yello, instenad of blue
+              phase.success === false ? "🟠" : "🟡",
               `\`${phase.snapshot.event.type}\``,
               ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
                 ? [
