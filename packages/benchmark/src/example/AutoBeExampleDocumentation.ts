@@ -54,7 +54,7 @@ export namespace AutoBeExampleDocumentation {
           : "🔴 failure"
         : phase !== undefined && phase.snapshot !== null
           ? [
-              phase.success === false ? "🟠" : "🟡",
+              phase.trial !== 1 ? "🟠" : "🟡",
               `\`${phase.snapshot.event.type}\``,
               ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
                 ? [
