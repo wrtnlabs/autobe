@@ -7,7 +7,7 @@ export * from "./AutoBeDescribeImageDraftEvent";
 export * from "./AutoBeDescribeImageDraftGroupEvent";
 export * from "./AutoBeDescribeImageDraftIntegrationEvent";
 export * from "./AutoBeDescribeImageDocumentEvent";
-export * from "./AutoBeDescribeCompleteEvent";
+export * from "./AutoBeDescribeImageCompleteEvent";
 
 // FACADE
 export * from "./AutoBeAssistantMessageEvent";

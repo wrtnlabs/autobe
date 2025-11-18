@@ -1,7 +1,7 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
-import { AutoBeDescribeCompleteEvent } from "./AutoBeDescribeCompleteEvent";
+import { AutoBeDescribeImageCompleteEvent } from "./AutoBeDescribeImageCompleteEvent";
 import { AutoBeDescribeImageDocumentEvent } from "./AutoBeDescribeImageDocumentEvent";
 import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
 import { AutoBeDescribeImageDraftGroupEvent } from "./AutoBeDescribeImageDraftGroupEvent";
@@ -67,7 +67,7 @@ export type AutoBeEventSource =
   | AutoBeDescribeImageDraftGroupEvent["type"]
   | AutoBeDescribeImageDraftIntegrationEvent["type"]
   | AutoBeDescribeImageDocumentEvent["type"]
-  | AutoBeDescribeCompleteEvent["type"]
+  | AutoBeDescribeImageCompleteEvent["type"]
   // analyze
   | AutoBeAnalyzeScenarioEvent["type"]
   | AutoBeAnalyzeWriteEvent["type"]

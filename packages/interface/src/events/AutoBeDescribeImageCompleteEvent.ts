@@ -1,4 +1,7 @@
-import { AutoBeProcessAggregateCollection } from "../histories";
+import {
+  AutoBeProcessAggregateCollection,
+  AutoBeUserMessageContent,
+} from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -20,7 +23,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author michael
  */
-export interface AutoBeDescribeCompleteEvent
+export interface AutoBeDescribeImageCompleteEvent
   extends AutoBeEventBase<"describeComplete"> {
   /**
    * The input content to be passed to the facade agent.
@@ -30,30 +33,8 @@ export interface AutoBeDescribeCompleteEvent
    * content item represents either the original text messages from the user or
    * the generated planning documents that describe the backend requirements
    * extracted from the provided images.
-   *
-   * The describe agent analyzes visual elements such as forms, buttons, data
-   * displays, and user flows in the images, then generates comprehensive
-   * planning documents that specify the necessary APIs, data models, business
-   * logic, and validation rules. These planning documents serve as the primary
-   * input for the facade agent to begin the backend generation process.
    */
-  document: string;
-
-  /**
-   * Executive summary of the complete system.
-   *
-   * Provides a high-level overview of all functional areas, key features, and
-   * the overall system architecture derived from image analysis.
-   */
-  summary: string;
-
-  /**
-   * List of all functional areas covered in the document.
-   *
-   * Each entry corresponds to a major section in the final document, helping
-   * readers navigate to specific areas of interest.
-   */
-  sections: string[];
+  contents: AutoBeUserMessageContent[];
 
   /**
    * Total elapsed time for the phase execution in milliseconds.
