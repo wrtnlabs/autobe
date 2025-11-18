@@ -34,6 +34,34 @@ export class AutoBeListener {
         this.insert(event);
       },
 
+      // DESCRIBE
+      describeImageStart: async (event) => {
+        this.dict_.delete("describeImageDraft");
+        this.dict_.delete("describeImageDraftGroup");
+        this.dict_.delete("describeImageDraftIntegration");
+        this.dict_.delete("describeImageDocument");
+        this.insert(event);
+      },
+      describeImageDraft: async (event) => {
+        this.insert(event);
+      },
+      describeImageDraftGroup: async (event) => {
+        this.insert(event);
+      },
+      describeImageDraftIntegration: async (event) => {
+        this.insert(event);
+      },
+      describeImageDocument: async (event) => {
+        this.insert(event);
+      },
+      describeImageComplete: async (event) => {
+        this.dict_.delete("describeImageDraft");
+        this.dict_.delete("describeImageDraftGroup");
+        this.dict_.delete("describeImageDraftIntegration");
+        this.dict_.delete("describeImageDocument");
+        this.insert(event);
+      },
+
       // ANALYZE
       analyzeStart: async (event) => {
         this.dict_.delete("analyzeWrite");

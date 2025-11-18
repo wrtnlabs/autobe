@@ -1,10 +1,10 @@
-import { AutoBeUserMessageImageContent } from "@autobe/interface";
+import { AutoBeUserImageConversateContent } from "@autobe/interface";
 
 /** Image content renderer component for OpenAI messages */
 export const OpenAIUserImageContent = ({
   content,
 }: {
-  content: AutoBeUserMessageImageContent;
+  content: AutoBeUserImageConversateContent;
 }) => {
   const imgSrc =
     content.image.type === "url" ? content.image.url : content.image.data;

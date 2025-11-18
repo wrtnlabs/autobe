@@ -1,4 +1,8 @@
-import { AutoBeEvent } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
+} from "@autobe/interface";
 
 import {
   AutoBeCompleteEventMovie,
@@ -33,7 +37,20 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
   const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
     case "userMessage":
-      return <AutoBeUserMessageMovie message={back.contents} />;
+      const message: AutoBeUserConversateContent[] = [];
+      back.contents.forEach((c) => {
+        if (c.type === "image")
+          message.push(
+            ...c.images.map(
+              (img) =>
+                ({
+                  type: "image",
+                  image: img,
+                }) satisfies AutoBeUserImageConversateContent,
+            ),
+          );
+      });
+      return <AutoBeUserMessageMovie message={message} />;
     case "assistantMessage":
       return (
         <AutoBeAssistantMessageMovie
@@ -119,6 +136,12 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     }
     // DISCARD
+    case "describeImageStart":
+    case "describeImageDraft":
+    case "describeImageDraftGroup":
+    case "describeImageDraftIntegration":
+    case "describeImageDocument":
+    case "describeImageComplete":
     case "interfaceEndpointReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":

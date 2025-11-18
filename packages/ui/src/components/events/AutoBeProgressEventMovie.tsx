@@ -135,6 +135,16 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Realize Correct",
           description: "Correcting the API functions",
         };
+      case "describeImageDraft":
+        return {
+          title: "Describe Image Draft",
+          description: "Describing the image draft",
+        };
+      case "describeImageDraftIntegration":
+        return {
+          title: "Describe Image Draft Integration",
+          description: "Integrating the image draft",
+        };
       default:
         event satisfies never;
         return {

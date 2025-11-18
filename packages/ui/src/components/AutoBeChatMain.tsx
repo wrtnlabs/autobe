@@ -1,4 +1,4 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeUserConversateContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef } from "react";
 
@@ -80,7 +80,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   // Unified service connection handler
   const conversate = async (
-    messages: AutoBeUserMessageContent[],
+    messages: AutoBeUserConversateContent[],
   ): Promise<void> => {
     // Check if we have required config
     if (props.isUnusedConfig === false && !hasRequiredConfig()) {

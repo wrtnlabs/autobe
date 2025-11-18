@@ -1,9 +1,9 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeUserConversateContent } from "@autobe/interface";
 
 import ChatBubble from "./common/ChatBubble";
 
 interface IAutoBeUserMessageHistoryMovieProps {
-  message: Array<AutoBeUserMessageContent>;
+  message: Array<AutoBeUserConversateContent>;
 }
 
 export const AutoBeUserMessageMovie = (

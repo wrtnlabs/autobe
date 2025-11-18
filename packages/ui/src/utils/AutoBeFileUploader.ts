@@ -138,11 +138,19 @@ export namespace AutoBeFileUploader {
     });
 
   const composeImageContent = async (
-    _config: IConfig,
+    config: IConfig,
     file: File,
   ): Promise<AutoBeUserImageConversateContent> => ({
     type: "image",
-    data: await convertToBase64(file),
+    image: config.image
+      ? {
+          type: "url",
+          url: await config.image(file).then((res) => res.url),
+        }
+      : {
+          type: "base64",
+          data: await convertToBase64(file),
+        },
   });
 
   const composeAudioContent = async (
