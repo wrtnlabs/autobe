@@ -108,17 +108,17 @@ export interface IAutoBeRpcListener {
   enable(value: boolean): Promise<void>;
 
   /* -----------------------------------------------------------
-    DESCRIBE PHASE EVENTS
+    DESCRIBE IMAGE EVENTS
   ----------------------------------------------------------- */
   /**
-   * Optional handler for describe phase start events.
+   * Optional handler for describe image start events.
    *
    * Called when the Describe agent begins the image analysis and planning
    * document generation process, enabling client applications to show describe
-   * phase initiation and prepare progress indicators for visual
+   * image initiation and prepare progress indicators for visual
    * interpretation.
    */
-  describeStart?(event: AutoBeDescribeImageStartEvent): Promise<void>;
+  describeImageStart?(event: AutoBeDescribeImageStartEvent): Promise<void>;
 
   /**
    * Optional handler for image draft generation events.
@@ -163,13 +163,15 @@ export interface IAutoBeRpcListener {
   ): Promise<void>;
 
   /**
-   * Mandatory handler for describe phase completion events.
+   * Mandatory handler for describe image completion events.
    *
-   * Called when the describe phase completes successfully, providing the
+   * Called when the describe image completes successfully, providing the
    * finalized planning documentation generated from image analysis that can be
-   * used as input for the analyze phase.
+   * used as input for the analyze agent.
    */
-  describeComplete?(event: AutoBeDescribeImageCompleteEvent): Promise<void>;
+  describeImageComplete?(
+    event: AutoBeDescribeImageCompleteEvent,
+  ): Promise<void>;
 
   /* -----------------------------------------------------------
     ANALYZE PHASE EVENTS
