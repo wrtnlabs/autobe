@@ -63,7 +63,12 @@ export namespace AutoBeExampleDocumentation {
                 : []),
             ].join(" ")
           : "-",
-      elapsedTime(state),
+      state.started_at !== null
+        ? elapsedTime({
+            started_at: state.started_at,
+            completed_at: state.completed_at,
+          })
+        : "-",
     ].join(" | ");
   };
 }
