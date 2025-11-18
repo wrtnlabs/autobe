@@ -1,5 +1,5 @@
-import { AutoBeUserMessageContent } from "../histories";
-import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
+import { AutoBeProcessAggregateCollection } from "../histories";
+import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
  * Event fired when the image-to-planning document conversion has successfully
@@ -21,7 +21,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  * @author michael
  */
 export interface AutoBeDescribeCompleteEvent
-  extends AutoBeCompleteEventBase<"describeComplete"> {
+  extends AutoBeEventBase<"describeComplete"> {
   /**
    * The input content to be passed to the facade agent.
    *
@@ -54,4 +54,44 @@ export interface AutoBeDescribeCompleteEvent
    * readers navigate to specific areas of interest.
    */
   sections: string[];
+
+  /**
+   * Total elapsed time for the phase execution in milliseconds.
+   *
+   * Measures the wall-clock duration from phase start to completion,
+   * encompassing all agent operations, self-healing spiral loops, compiler
+   * validations, and any retry attempts. This metric provides visibility into
+   * phase-level performance and enables identification of bottlenecks in the
+   * waterfall pipeline.
+   *
+   * The elapsed time includes both active LLM processing and any overhead from
+   * compilation, validation, and orchestration logic. For detailed breakdown of
+   * time spent in specific operations, consult the individual operation events
+   * within the phase.
+   *
+   * @example
+   *   ```typescript
+   *   elapsed: 15234 // Phase took 15.234 seconds
+   *   ```;
+   */
+  elapsed: number;
+
+  /**
+   * Aggregated token usage and function calling metrics by operation type.
+   *
+   * Maps each event type within the phase to its complete aggregate metrics,
+   * including detailed token consumption breakdown with cache statistics and
+   * comprehensive function calling metrics data. This comprehensive aggregation
+   * enables deep analysis of resource utilization patterns and operation
+   * quality across the entire phase.
+   *
+   * The partial record structure reflects that not all possible event types may
+   * occur during phase execution. Only operations that were actually performed
+   * will have entries in this mapping.
+   *
+   * The aggregate data supports cost analysis (via token usage), reliability
+   * assessment (via function calling metrics), and optimization opportunities
+   * (via cache hit rates and failure patterns).
+   */
+  aggregates: AutoBeProcessAggregateCollection<"describe">;
 }
