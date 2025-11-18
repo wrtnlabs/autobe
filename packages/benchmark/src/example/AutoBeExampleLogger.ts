@@ -48,21 +48,23 @@ export namespace AutoBeExampleLogger {
     return [
       state.name,
       !!phase?.name ? `${phase.name} (${phase.trial})` : "-",
-      state.completed_at !== null
-        ? state.success
-          ? "🟢 success"
-          : "🔴 failure"
-        : phase !== undefined && phase.snapshot !== null
-          ? [
-              phase.trial !== 1 ? "🟠" : "🟡",
-              `\`${phase.snapshot.event.type}\``,
-              ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
-                ? [
-                    `(${phase.snapshot.event.completed} of ${phase.snapshot.event.total})`,
-                  ]
-                : []),
-            ].join(" ")
-          : "-",
+      phase !== undefined && phase.snapshot !== null
+        ? [
+            state.completed_at !== null
+              ? state.success
+                ? "🟢 success"
+                : "🔴 failure"
+              : phase.trial !== 1
+                ? "🟠"
+                : "🟡",
+            `\`${phase.snapshot.event.type}\``,
+            ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
+              ? [
+                  `(${phase.snapshot.event.completed} of ${phase.snapshot.event.total})`,
+                ]
+              : []),
+          ].join(" ")
+        : "-",
       phase?.count.toLocaleString() ?? "0",
       state.started_at !== null
         ? elapsedTime({
