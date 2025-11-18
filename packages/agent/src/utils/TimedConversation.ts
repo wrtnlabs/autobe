@@ -3,6 +3,7 @@ import { AutoBeUserMessageContent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { ConditionVariable, IPointer, Singleton, sleep_for } from "tstl";
 
+import { createAgenticaUserMessageContent } from "../factory/createAgenticaUserMessageContent";
 import { AutoBeTimeoutError } from "./AutoBeTimeoutError";
 
 export namespace TimedConversation {
@@ -34,7 +35,11 @@ export namespace TimedConversation {
     if (props.timeout === null)
       try {
         const histories: MicroAgenticaHistory<Model>[] =
-          await props.agent.conversate(props.message);
+          await props.agent.conversate(
+            createAgenticaUserMessageContent({
+              content: props.message,
+            }),
+          );
         return {
           type: "success",
           histories,
@@ -69,9 +74,14 @@ export namespace TimedConversation {
       timeout.get();
     });
     props.agent
-      .conversate(props.message, {
-        abortSignal: abort.signal,
-      })
+      .conversate(
+        createAgenticaUserMessageContent({
+          content: props.message,
+        }),
+        {
+          abortSignal: abort.signal,
+        },
+      )
       .then(
         (v) =>
           (result.value ??= {
