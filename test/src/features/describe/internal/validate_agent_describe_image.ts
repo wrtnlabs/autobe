@@ -1,6 +1,6 @@
-import { describeImages } from "@autobe/agent/src/describe/image/describeImages";
+import { describeImages } from "@autobe/agent/src/describe/describeImages";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, AutoBeUserMessageImageContent } from "@autobe/interface";
+import { AutoBeEvent, AutoBeUserConversateContent } from "@autobe/interface";
 import fs from "fs";
 import path from "path";
 import typia from "typia";
@@ -24,67 +24,18 @@ export const validate_agent_describe_image = async (props: {
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
   const enroll = (event: AutoBeEvent) => {
-    console.log(JSON.stringify(event, null, 2));
     if (!map.has(event.type)) {
       map.set(event.type, true);
     }
-
     events.push(event);
   };
 
-  agent.on("describeStart", (e) => {
-    enroll(e);
-  });
-  agent.on("describeImageDraft", (e) => {
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/draft`,
-      files: {
-        [`logs/${e.id}.json`]: e.draft,
-      },
-      overwrite: true,
-    });
-    enroll(e);
-  });
-  agent.on("describeImageDraftGroup", (e) => {
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/group`,
-      files: {
-        [`logs/${e.id}.json`]: JSON.stringify(e.groups),
-      },
-      overwrite: true,
-    });
-    enroll(e);
-  });
-  agent.on("describeImageDraftIntegration", (e) => {
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/integration`,
-      files: {
-        "logs/draft-integration.json": e.integration,
-      },
-      overwrite: true,
-    });
-    enroll(e);
-  });
-  agent.on("describeImageDocument", (e) => {
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/document`,
-      files: {
-        "logs/document.json": e.document,
-      },
-      overwrite: true,
-    });
-    enroll(e);
-  });
-  agent.on("describeComplete", (e) => {
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/complete`,
-      files: {
-        "logs/complete.json": e.document,
-      },
-      overwrite: true,
-    });
-    enroll(e);
-  });
+  agent.on("describeStart", enroll);
+  agent.on("describeImageDraft", enroll);
+  agent.on("describeImageDraftGroup", enroll);
+  agent.on("describeImageDraftIntegration", enroll);
+  agent.on("describeImageDocument", enroll);
+  agent.on("describeComplete", enroll);
   agent.on("realizeStart", enroll);
   agent.on("realizeWrite", enroll);
   agent.on("realizeCorrect", enroll);
@@ -98,7 +49,7 @@ export const validate_agent_describe_image = async (props: {
 
   const assetsPath = path.join(TestGlobal.ROOT, "../assets/describe");
   const files = await fs.promises.readdir(assetsPath);
-  const imageContents: AutoBeUserMessageImageContent[] = await Promise.all(
+  const imageContents: AutoBeUserConversateContent[] = await Promise.all(
     files.map(async (fileName) => {
       const filePath = path.join(assetsPath, fileName);
       const extension = fileName.split(".").pop() ?? "unknown";
@@ -106,10 +57,7 @@ export const validate_agent_describe_image = async (props: {
 
       return {
         type: "image",
-        image: {
-          type: "base64",
-          data: base64Data,
-        },
+        data: base64Data,
       };
     }),
   );
