@@ -27,25 +27,22 @@ export const validate_agent_describe_image = async (props: {
     if (!map.has(event.type)) {
       map.set(event.type, true);
     }
+    FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/logs`,
+      files: {
+        [`${event.type}.json`]: JSON.stringify(event),
+      },
+      overwrite: true,
+    });
     events.push(event);
   };
 
-  agent.on("describeStart", enroll);
+  agent.on("describeImageStart", enroll);
   agent.on("describeImageDraft", enroll);
   agent.on("describeImageDraftGroup", enroll);
   agent.on("describeImageDraftIntegration", enroll);
   agent.on("describeImageDocument", enroll);
-  agent.on("describeComplete", enroll);
-  agent.on("realizeStart", enroll);
-  agent.on("realizeWrite", enroll);
-  agent.on("realizeCorrect", enroll);
-  agent.on("realizeValidate", enroll);
-  agent.on("realizeComplete", enroll);
-  agent.on("realizeAuthorizationStart", enroll);
-  agent.on("realizeAuthorizationWrite", enroll);
-  agent.on("realizeAuthorizationValidate", enroll);
-  agent.on("realizeAuthorizationCorrect", enroll);
-  agent.on("realizeAuthorizationComplete", enroll);
+  agent.on("describeImageComplete", enroll);
 
   const assetsPath = path.join(TestGlobal.ROOT, "../assets/describe");
   const files = await fs.promises.readdir(assetsPath);
@@ -77,6 +74,7 @@ export const validate_agent_describe_image = async (props: {
       "events.json": JSON.stringify(events),
       "histories.json": JSON.stringify(histories),
     },
+    overwrite: true,
   });
   typia.assert(histories);
 };
