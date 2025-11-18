@@ -51,16 +51,6 @@ export interface IAutoBePlaygroundReplay {
   histories: AutoBeHistory[];
 
   /**
-   * Event snapshots from the image-to-planning document conversion phase.
-   *
-   * Documents the describe agent's image analysis and planning document
-   * generation activities including UI component identification, data flow
-   * analysis, and business logic extraction. Null if the session didn't reach
-   * the describe phase or if snapshot data wasn't captured for this phase.
-   */
-  describe: AutoBeEventSnapshot[] | null;
-
-  /**
    * Event snapshots from the requirements analysis phase.
    *
    * Captures detailed events from the analyze agent's activities including
@@ -172,16 +162,6 @@ export namespace IAutoBePlaygroundReplay {
      * optimization opportunities in the automated pipeline.
      */
     elapsed: number;
-
-    /**
-     * Summary state for the image-to-planning document conversion phase.
-     *
-     * Documents the describe agent's image analysis and planning document
-     * generation activities including UI component identification, data flow
-     * analysis, and business logic extraction. Null if the session didn't reach
-     * the describe phase or if snapshot data wasn't captured for this phase.
-     */
-    describe: IPhaseState | null;
 
     /**
      * Summary state for the requirements analysis phase.
