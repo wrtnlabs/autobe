@@ -44,7 +44,7 @@ export const validate_agent_describe_image = async (props: {
   agent.on("describeImageDocument", enroll);
   agent.on("describeImageComplete", enroll);
 
-  const assetsPath = path.join(TestGlobal.ROOT, "../assets/describe");
+  const assetsPath = path.join(TestGlobal.ROOT, "scripts/account/describe");
   const files = await fs.promises.readdir(assetsPath);
   const imageContents: AutoBeUserConversateContent[] = await Promise.all(
     files.map(async (fileName) => {
