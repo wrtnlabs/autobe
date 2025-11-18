@@ -28,7 +28,7 @@ export interface IAutoBeCompleteEventMovieProps {
 export const AutoBeCompleteEventMovie = (
   props: IAutoBeCompleteEventMovieProps,
 ) => {
-  const stage = getStage(props.event);
+  const phase = getPhase(props.event);
   const [size, setSize] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -37,7 +37,7 @@ export const AutoBeCompleteEventMovie = (
     try {
       const result = await props.getFiles({
         dbms,
-        stage,
+        phase,
       });
       return result;
     } catch (error) {
@@ -189,7 +189,7 @@ export const AutoBeCompleteEventMovie = (
                 text="Zip (SQLite)"
                 onClick={() => download("sqlite")}
                 title={
-                  stage !== "analyze"
+                  phase !== "analyze"
                     ? "Download SQLite-based backend application (ideal for local development and testing)"
                     : "Download requirement analysis report"
                 }
@@ -385,7 +385,7 @@ const getMessage = (
   return null;
 };
 
-const getStage = (event: IAutoBeCompleteEventMovieProps["event"]) => {
+const getPhase = (event: IAutoBeCompleteEventMovieProps["event"]) => {
   if (event.type === "analyzeComplete") return "analyze";
   else if (event.type === "prismaComplete") return "prisma";
   else if (event.type === "interfaceComplete") return "interface";
