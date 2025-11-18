@@ -196,12 +196,12 @@ export namespace AutoBeEvent {
     jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
     // DESCRIBE
-    describeStart: AutoBeDescribeImageStartEvent;
+    describeImageStart: AutoBeDescribeImageStartEvent;
     describeImageDraft: AutoBeDescribeImageDraftEvent;
     describeImageDraftGroup: AutoBeDescribeImageDraftGroupEvent;
     describeImageDraftIntegration: AutoBeDescribeImageDraftIntegrationEvent;
     describeImageDocument: AutoBeDescribeImageDocumentEvent;
-    describeComplete: AutoBeDescribeImageCompleteEvent;
+    describeImageComplete: AutoBeDescribeImageCompleteEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;
