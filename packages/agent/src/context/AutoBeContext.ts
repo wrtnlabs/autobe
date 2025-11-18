@@ -8,7 +8,6 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageEvent,
   AutoBeAssistantMessageHistory,
-  AutoBeDescribeHistory,
   AutoBeEvent,
   AutoBeEventSource,
   AutoBeFunctionCallingMetric,
@@ -71,7 +70,6 @@ export namespace AutoBeContext {
     : null;
   export type DispatchHistoryMap = {
     assistantMessage: AutoBeAssistantMessageHistory;
-    describeComplete: AutoBeDescribeHistory;
     analyzeComplete: AutoBeAnalyzeHistory;
     prismaComplete: AutoBePrismaHistory;
     interfaceComplete: AutoBeInterfaceHistory;
