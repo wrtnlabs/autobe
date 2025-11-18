@@ -31,7 +31,6 @@ const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
 };
 
 const STEP_INDEXES: Record<Step, number> = {
-  describe: 0,
   analyze: 0,
   prisma: 1,
   interface: 2,
