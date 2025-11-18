@@ -8,8 +8,7 @@ import {
   AutoBePrismaHistory,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageHistory,
+  AutoBeUserConversateContent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
@@ -83,17 +82,17 @@ export const archive_prisma = async (props: {
     });
   });
 
-  const userMessage: AutoBeUserMessageHistory =
+  const userMessage: AutoBeUserConversateContent[] =
     await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "prisma",
     });
   const go = (
-    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
   ) => agent.conversate(c);
 
   // REQUEST PRISMA GENERATION
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  let histories: AutoBeHistory[] = await go(userMessage);
   if (histories.every((h) => h.type !== "prisma")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
     if (histories.every((h) => h.type !== "prisma"))

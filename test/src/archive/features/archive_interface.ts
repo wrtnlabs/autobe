@@ -6,8 +6,7 @@ import {
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeInterfaceHistory,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageHistory,
+  AutoBeUserConversateContent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -40,17 +39,17 @@ export const archive_interface = async (props: {
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
-  const userMessage: AutoBeUserMessageHistory =
+  const userMessage: AutoBeUserConversateContent[] =
     await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "interface",
     });
   const go = (
-    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
   ) => agent.conversate(c);
 
   // REQUEST INTERFACE GENERATION
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  let histories: AutoBeHistory[] = await go(userMessage);
   if (histories.every((h) => h.type !== "interface")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
     if (histories.every((h) => h.type !== "interface")) {

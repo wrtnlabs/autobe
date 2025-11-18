@@ -5,8 +5,7 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageHistory,
+  AutoBeUserConversateContent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -24,7 +23,7 @@ export const archive_analyze = async (props: {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const userMessage: AutoBeUserMessageHistory =
+  const userMessage: AutoBeUserConversateContent[] =
     await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "analyze",
@@ -51,13 +50,13 @@ export const archive_analyze = async (props: {
     props.factory.getTokenUsage().toJSON(),
   );
   const go = async (
-    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
   ): Promise<boolean> => {
     const histories: AutoBeHistory[] = await agent.conversate(c);
     return histories.some((h) => h.type === "analyze");
   };
 
-  if ((await go(userMessage.contents)) === false)
+  if ((await go(userMessage)) === false)
     if (
       (await go(
         "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",

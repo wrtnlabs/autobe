@@ -6,8 +6,7 @@ import {
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeTestHistory,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageHistory,
+  AutoBeUserConversateContent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -18,7 +17,7 @@ import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_test } from "../../features/test/internal/prepare_agent_test";
 import { ArchiveLogger } from "../utils/ArchiveLogger";
 
-export let archive_test = async (props: {
+export const archive_test = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -40,17 +39,17 @@ export let archive_test = async (props: {
     agent.on(type, listen);
   agent.on("vendorTimeout", (e) => ArchiveLogger.event(start, e));
 
-  const userMessage: AutoBeUserMessageHistory =
+  const userMessage: AutoBeUserConversateContent[] =
     await AutoBeExampleStorage.getUserMessage({
       project: props.project,
       phase: "test",
     });
   const go = (
-    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
   ) => agent.conversate(c);
 
   // DO TEST GENERATION
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  let histories: AutoBeHistory[] = await go(userMessage);
   if (histories.every((h) => h.type !== "test")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
     if (histories.every((h) => h.type !== "test"))
