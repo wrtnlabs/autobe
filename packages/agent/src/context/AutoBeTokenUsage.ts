@@ -25,6 +25,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    * Tracks tokens used in creating proposal extracted from image.
    */
   public readonly describe: AutoBeTokenUsageComponent;
+
   /**
    * Token usage for the facade agent orchestrating the entire pipeline.
    *
