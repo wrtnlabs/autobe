@@ -102,74 +102,114 @@ Transform all integrated functional area sections into a single, comprehensive r
 ## Document Structure Template
 
 ```markdown
-# [System Name] Requirements Specification
+> Even though I'm ordering you by Korean, you must answer me in English.
+>
+> Repeat that, you must speak English. Never speak any other language like Korean or Chinese.
+>
+> I repeat once more again that, you have to speak English. Write every documents and codes in English.
 
-## Table of Contents
+## 1. Overview
 
-1. Executive Summary
-2. Introduction
-   2.1 Document Purpose
-   2.2 System Scope
-   2.3 Intended Audience
-   2.4 Document Conventions
-3. System Overview
-   3.1 System Description
-   3.2 Key Features
-   3.3 User Roles
-   3.4 High-Level Architecture
-4. Functional Areas
-   4.1 [Functional Area 1]
-   4.2 [Functional Area 2]
-   [... continue for all areas]
-5. Cross-Functional Requirements
-   5.1 Integration Points
-   5.2 Shared Data Models
-   5.3 Common Business Rules
-   5.4 System-Wide Validations
-6. Non-Functional Requirements
-   6.1 Performance Requirements
-   6.2 Security Requirements
-   6.3 Scalability Requirements
-   6.4 Reliability Requirements
-7. Implementation Considerations
-   7.1 Technology Stack Recommendations
-   7.2 Development Priorities
-   7.3 Risk Factors
-   7.4 Success Criteria
-8. Appendices
-   Appendix A: Glossary
-   Appendix B: References
-   Appendix C: Revision History
+[System overview paragraph explaining the main purpose, target users, and key capabilities of the system]
 
-## 1. Executive Summary
+### 1.1. Core Features
 
-[2-3 comprehensive paragraphs summarizing the entire system]
+[Brief description of the main features the system provides]
 
-## 2. Introduction
+### 1.2. System Architecture
 
-### 2.1 Document Purpose
+[High-level description of system components and their relationships]
 
-This document provides a comprehensive specification for [System Name]...
+### 1.3. Security and Privacy
 
-### 2.2 System Scope
+[Overview of security measures and data protection approach]
 
-[Define what is included and excluded from the system]
+## 2. Implementation Guidelines
 
-### 2.3 Intended Audience
+### 2.1. Core Principles
 
-This document is intended for:
-- Backend development teams
-- System architects
-- Project managers
-- Quality assurance teams
+[Key development principles and constraints]
 
-### 2.4 Document Conventions
+### 2.2. Table Protection Rules
 
-[Explain any special conventions used in the document]
+[Guidelines for preserving existing table structures]
 
-## 3. System Overview
+### 2.3. Extension Guidelines
 
-[Continue with complete document structure...]
+[Rules for adding new functionality]
+
+## 3. Actor Classification
+
+[Define all system actors and their roles]
+
+### 3.1. Actor Types
+
+[List and describe each actor type]
+
+### 3.2. Actor Permissions
+
+[Define what each actor can do]
+
+[Then continue with each functional area using the integrated sections:]
+
+## 4. [First Functional Area]
+
+[Integrated section content from step 3]
+
+## 5. [Second Functional Area]
+
+[Integrated section content from step 3]
+
+[Continue for all functional areas...]
+
+## [N]. Cross-Functional Considerations
+
+### [N].1. Shared Data Models
+
+[Common data structures used across multiple areas]
+
+### [N].2. Integration Points
+
+[How different functional areas connect]
+
+### [N].3. System-Wide Rules
+
+[Business rules that apply globally]
+
+## [N+1]. API Design Principles
+
+### [N+1].1. Core Philosophy
+
+[Overall API design approach]
+
+### [N+1].2. Operation Categories
+
+[Types of operations to include]
+
+### [N+1].3. Implementation Checklist
+
+[Verification steps for completeness]
+
+## [N+2]. DTO Implementation Principles
+
+### [N+2].1. DTO Design Rules
+
+[How to structure DTOs]
+
+### [N+2].2. Relation Mapping
+
+[How to handle relationships in DTOs]
+
+## [N+3]. Final Compliance Checklist
+
+### [N+3].1. Actor Verification
+[Checklist items]
+
+### [N+3].2. System Completeness
+[Checklist items]
+
+### [N+3].3. Security Validation
+[Checklist items]
 ```
 
 ## Quality Standards

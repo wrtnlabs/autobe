@@ -93,116 +93,103 @@ Integrate all drafts from a single functional group (sharing the same cluster ke
 
 ## Document Structure Template
 
-Your integrated section must follow this structure:
+Your integrated section must follow this exact numbered format matching the requirements document style:
 
 ```markdown
-## [Functional Area Name]
+## [Number]. [Functional Area Name]
 
-### Overview
-[2-3 comprehensive paragraphs describing the functional area, its purpose in the
-system, key features, and how it relates to other system components]
+Brief overview paragraph describing what this functional area covers and its purpose in the system.
 
-### Core Concepts
-[Define key terms, concepts, and domain-specific language used in this functional
-area. Include business context and importance]
+### [Number].1. Actor Classification
 
-### Data Model
+Define which actors interact with this functional area:
+- Actor types and their roles
+- Permissions and capabilities
+- Access restrictions
 
-#### Entities
-[For each entity, provide comprehensive specifications]
+### [Number].2. Database Schema
 
-**[Entity Name]**
-- **Description**: [Clear explanation of the entity's purpose and role]
-- **Properties**:
-  - property_name: type (constraints) - description
-  - [Include all properties with complete specifications]
-- **Relationships**:
-  - [Describe all relationships to other entities]
-- **Business Rules**:
-  - [List all rules specific to this entity]
-- **Validations**:
-  - [Detail all validation requirements]
+#### [Number].2.1. [Table Name]
 
-#### Entity Relationships
-[Describe the overall relationship model, including cardinality, cascade rules,
-and referential integrity requirements]
+```prisma
+model table_name {
+  id String @id @uuid
+  field_name Type
+  // All fields with proper types and constraints
+  
+  @@index([field_name])
+  @@unique([field_name])
+}
+```
 
-### API Specifications
+Include all tables for this functional area with complete Prisma schemas.
 
-#### Resource Endpoints
+### [Number].3. Business Logic
 
-**[Resource Name]**
+#### [Number].3.1. [Feature Name]
 
-##### [HTTP Method] /api/path
-- **Purpose**: [Clear description of what this endpoint does]
-- **Authentication**: [Required authentication method]
-- **Authorization**: [Who can access this endpoint]
-- **Request**:
-  - Headers: [Required headers]
-  - Parameters: [URL/Query parameters with types]
-  - Body: [Request body structure with examples]
-- **Response**:
-  - Success (200/201): [Response structure]
-  - Error Cases: [All possible error responses]
-- **Business Logic**:
-  - [Step-by-step processing logic]
-  - [Validation sequence]
-  - [Side effects and triggers]
+##### [Number].3.1.1. Validation Rules
+- Specific validation requirements
+- Format constraints
+- Required field rules
 
-### Business Logic
+##### [Number].3.1.2. Business Rules
+- State management logic
+- Conditional processing
+- Constraints and limitations
 
-#### Workflows
-[Document each major workflow with clear steps, decision points, and outcomes]
+##### [Number].3.1.3. Workflow
+1. Step-by-step process
+2. Decision points
+3. Error conditions
+4. Success outcomes
 
-##### [Workflow Name]
-1. [Initial trigger or entry point]
-2. [Processing steps with conditions]
-3. [Decision branches and logic]
-4. [Final outcomes and state changes]
+### [Number].4. API Operations
 
-#### Validation Rules
-[Comprehensive list of all validation requirements organized by context]
+#### [Number].4.1. [Resource Name]
 
-##### Input Validation
-- [Field-level validations]
-- [Cross-field validations]
-- [Business rule validations]
+List all API operations:
+- **Create**: POST /api/resource
+- **Read Single**: GET /api/resource/:id
+- **Read List**: GET /api/resource
+- **Update**: PUT /api/resource/:id
+- **Delete**: DELETE /api/resource/:id
+- **Special Actions**: POST /api/resource/:id/action
 
-##### State Validations
-- [Valid state transitions]
-- [Preconditions for operations]
-- [Invariants that must be maintained]
+Include brief descriptions of what each operation does.
 
-#### Authorization Model
-[Define access control requirements at a business level]
+### [Number].5. DTO Interfaces
 
-- **Role-Based Access**:
-  - [Role definitions and capabilities]
-  - [Permission matrices]
-- **Resource-Based Access**:
-  - [Ownership rules]
-  - [Sharing mechanisms]
-- **Conditional Access**:
-  - [Context-based permissions]
-  - [Time-based restrictions]
+```typescript
+export interface IResourceName {
+  id: string;
+  // Core properties
+}
 
-### Integration Points
-[How this functional area connects with other parts of the system]
+export namespace IResourceName {
+  export interface ICreate {
+    // Creation properties
+  }
+  
+  export interface IUpdate {
+    // Update properties
+  }
+}
+```
 
-#### Dependencies
-- [Other functional areas this depends on]
-- [Shared data models]
-- [Required services]
+### [Number].6. Security Considerations
 
-#### Exposed Interfaces
-- [What this area provides to others]
-- [Events emitted]
-- [Shared resources]
+- Authentication requirements
+- Authorization rules per operation
+- Data access restrictions
+- Sensitive data handling
 
-#### Data Flows
-- [How data moves between this and other areas]
-- [Synchronization requirements]
-- [Consistency guarantees]
+### [Number].7. Integration Points
+
+- Dependencies on other functional areas
+- Shared data models
+- Event triggers
+- API interactions
 ```
 
 ## Quality Guidelines
@@ -279,24 +266,105 @@ When consolidating business rules:
 ## Example Integration Output
 
 ```markdown
-## User Management System
+## 4. User Management
 
-### Overview
+The User Management functional area handles all aspects of user accounts, authentication, profiles, and access control. This includes registration, login, profile management, and role-based permissions.
 
-The User Management System provides comprehensive functionality for managing user accounts, profiles, and access control within the B2B SaaS platform. This system handles user registration, authentication, profile management, and role-based permissions, ensuring secure and efficient user administration across the entire application.
+### 4.1. Actor Classification
 
-The system supports both individual user accounts and team-based structures, allowing organizations to manage their members effectively while maintaining strict security boundaries. Integration with the notification system enables real-time alerts, while the audit system tracks all user-related activities for compliance and security monitoring.
+- **User Actor** (`user`): Regular system users with accounts
+- **Admin Actor** (`admin`): System administrators managing users
 
-### Core Concepts
+### 4.2. Database Schema
 
-- **User**: An individual account holder with unique credentials and system access
-- **Profile**: Extended user information including preferences, settings, and metadata
-- **Role**: Defines permissions and access levels within the system hierarchy
-- **Team**: Organizational unit grouping users for collaborative work
-- **Session**: Authenticated user's active connection with security tokens
-- **Permission**: Granular access control for specific system features
+#### 4.2.1. Users Table
 
-[Document continues with complete specifications...]
+```prisma
+model users {
+  id String @id @uuid
+  email String
+  password_hashed String
+  name String
+  role String // admin, member
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+  
+  @@unique([email])
+  @@index([role])
+}
+```
+
+#### 4.2.2. User Profiles Table
+
+```prisma
+model user_profiles {
+  id String @id @uuid
+  user_id String @uuid
+  avatar_url String?
+  bio String?
+  preferences Json
+  created_at DateTime
+  updated_at DateTime
+  
+  @@unique([user_id])
+}
+```
+
+### 4.3. Business Logic
+
+#### 4.3.1. User Registration
+
+##### 4.3.1.1. Validation Rules
+- Email: required, valid email format, unique
+- Password: minimum 8 characters, must include letters and numbers
+- Name: required, 2-50 characters
+
+##### 4.3.1.2. Business Rules
+- Email verification required before activation
+- Default role is 'member'
+- Profile created automatically on registration
+
+##### 4.3.1.3. Workflow
+1. User submits registration form
+2. Validate all inputs
+3. Check email uniqueness
+4. Hash password
+5. Create user record
+6. Create empty profile
+7. Send verification email
+8. Return success response
+
+### 4.4. API Operations
+
+#### 4.4.1. Users
+- **Register**: POST /api/auth/register
+- **Login**: POST /api/auth/login
+- **Get Profile**: GET /api/users/profile
+- **Update Profile**: PUT /api/users/profile
+- **List Users**: GET /api/admin/users (admin only)
+- **Delete User**: DELETE /api/admin/users/:id (admin only)
+
+### 4.5. DTO Interfaces
+
+```typescript
+export interface IUser {
+  id: string;
+  email: string;
+  name: string;
+  role: "admin" | "member";
+  profile: IUserProfile;
+  created_at: string;
+}
+
+export namespace IUser {
+  export interface ICreate {
+    email: string;
+    password: string;
+    name: string;
+  }
+}
+```
 ```
 
 ## Quality Checklist

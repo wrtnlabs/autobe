@@ -89,83 +89,89 @@ Analyze the provided batch of UI/UX images (typically 5 images) and generate a d
 
 ## Draft Content Requirements
 
-Your draft MUST be comprehensive and include:
+Your draft MUST follow this exact numbered section format:
 
-### 1. Overview Section
-- Purpose and context of the analyzed screens
-- How these screens fit into the larger system
-- Key user journeys represented
+## 1. Overview
 
-### 2. Entity Identification
-- All data entities visible or implied in the UI
-- Field specifications with types and constraints
-- Relationships between entities (1:1, 1:N, N:N)
-- Example:
-  ```
-  User Entity:
-  - id (UUID, primary key)
-  - email (string, unique, required)
-  - password (string, hashed, required)
-  - profile (1:1 relation with UserProfile)
-  - posts (1:N relation with Post)
-  ```
+Brief description of what the screens represent and the system's purpose. Include key features and target users.
 
-### 3. API Endpoints
-- Complete list of required endpoints
-- HTTP methods and paths
-- Request/response structures
-- Authentication requirements
-- Example:
-  ```
-  POST /api/auth/login
-  - Request: { email: string, password: string }
-  - Response: { token: string, user: User }
-  - Auth: Public endpoint
+## 2. Actor Classification
+
+Define the actors (user types) in the system:
+- Actor name and their primary role
+- Which tables they belong to
+- Their permissions and capabilities
+
+## 3. Database Schema
+
+### 3.1. [Entity Name]
+
+```prisma
+model table_name {
+  id String @id @uuid
+  field_name Type
+  // Add all fields with proper types and constraints
   
-  GET /api/users/profile
-  - Response: UserProfile
-  - Auth: Bearer token required
-  ```
+  @@index([field_name])
+  @@unique([field_name])
+}
+```
 
-### 4. Business Logic & Validation
-- Form validation rules
-- Business constraints and rules
-- Error handling scenarios
-- State management requirements
-- Example:
-  ```
-  - Email must be valid format and unique
-  - Password minimum 8 characters with complexity rules
-  - Users can only edit their own profile
-  - Posts require approval before public visibility
-  ```
+Include all entities with:
+- Proper Prisma schema syntax
+- All fields with correct types
+- Indexes and constraints
+- Foreign key relationships
+- Comments explaining complex fields
 
-### 5. User Roles & Permissions
-- Identified user types/roles
-- Permission matrix for features
-- Authentication flow requirements
-- Example:
-  ```
-  Roles:
-  - Guest: Can view public content only
-  - User: Can create/edit own content
-  - Moderator: Can approve/reject posts
-  - Admin: Full system access
-  ```
+## 4. Business Logic
 
-### 6. Workflow Descriptions
-- Multi-step processes visible in screens
-- State transitions and conditions
-- User journey flows
-- Example:
-  ```
-  User Registration Flow:
-  1. User fills registration form
-  2. System validates input
-  3. Email verification sent
-  4. User confirms email
-  5. Account activated
-  ```
+### 4.1. [Feature Name]
+
+#### 4.1.1. Validation Rules
+- List all validation requirements
+- Include specific constraints (min/max length, format, etc.)
+
+#### 4.1.2. Business Rules
+- State transitions
+- Conditional logic
+- Authorization rules
+
+#### 4.1.3. Workflow
+1. Step-by-step process description
+2. Decision points
+3. Error conditions
+
+## 5. API Operations
+
+### 5.1. [Resource Name]
+
+List all operations needed:
+- Create operations
+- Read operations (single, list, filtered)
+- Update operations
+- Delete operations
+- Special actions (approve, reject, etc.)
+
+Include request/response structure hints.
+
+## 6. DTO Interfaces
+
+```typescript
+export interface IResourceName {
+  id: string;
+  // Define key properties that should be in DTOs
+}
+```
+
+Define key DTO structures implied by the UI.
+
+## 7. Security Considerations
+
+- Authentication requirements
+- Authorization rules
+- Data access restrictions
+- Sensitive data handling
 
 ## Analysis Guidelines
 
@@ -189,32 +195,94 @@ Your draft MUST be comprehensive and include:
 ## Example Output Structure
 
 ```markdown
-## E-commerce Product Management System
+## 1. Overview
 
-### Overview
-The analyzed screens represent a comprehensive product management system for an e-commerce platform, including product listing, detail views, inventory management, and seller dashboards.
+The analyzed screens represent a comprehensive product management system for an e-commerce platform, including product listing, detail views, inventory management, and seller dashboards. The system allows sellers to manage their products, track inventory, and monitor sales performance.
 
-### Identified Entities
+## 2. Actor Classification
 
-#### Product
-- id: UUID (primary key)
-- name: string (required, max 200 chars)
-- description: text (required)
-- price: decimal (required, min 0)
-- inventory_count: integer (default 0)
-- category_id: UUID (foreign key)
-- seller_id: UUID (foreign key)
-- status: enum (draft, active, discontinued)
-- created_at: datetime
-- updated_at: datetime
+### 2.1. Two Actors
+- **Seller Actor** (`seller`): Product owners who list and manage products
+- **Admin Actor** (`admin`): Platform administrators who oversee all products
 
-#### Category
-- id: UUID (primary key)
-- name: string (required, unique)
-- parent_id: UUID (self-referential, nullable)
-- slug: string (unique, URL-friendly)
+## 3. Database Schema
 
-[... continues with all sections ...]
+### 3.1. Products
+
+```prisma
+model products {
+  id String @id @uuid
+  name String
+  description String
+  price Decimal
+  inventory_count Int @default(0)
+  category_id String @uuid
+  seller_id String @uuid
+  status String // draft, active, discontinued
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([seller_id])
+  @@index([category_id])
+  @@index([status])
+}
+```
+
+### 3.2. Categories
+
+```prisma
+model categories {
+  id String @id @uuid
+  name String
+  parent_id String? @uuid
+  slug String
+  created_at DateTime
+
+  @@unique([slug])
+  @@index([parent_id])
+}
+```
+
+## 4. Business Logic
+
+### 4.1. Product Management
+
+#### 4.1.1. Validation Rules
+- Product name: required, max 200 characters
+- Price: required, must be greater than 0
+- Description: required, min 10 characters
+
+#### 4.1.2. Business Rules
+- Only product owner can edit/delete their products
+- Products in 'active' status cannot be deleted, must be discontinued first
+- Inventory cannot be negative
+
+## 5. API Operations
+
+### 5.1. Products
+- POST /products - Create new product
+- GET /products - List all products with pagination
+- GET /products/:id - Get product details
+- PUT /products/:id - Update product
+- DELETE /products/:id - Delete product
+- POST /products/:id/discontinue - Discontinue product
+- GET /sellers/:id/products - Get products by seller
+
+## 6. DTO Interfaces
+
+```typescript
+export interface IProduct {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  inventory_count: number;
+  category: ICategory;
+  seller: ISeller;
+  status: "draft" | "active" | "discontinued";
+  created_at: string;
+}
+```
 ```
 
 ## Metadata Guidelines
