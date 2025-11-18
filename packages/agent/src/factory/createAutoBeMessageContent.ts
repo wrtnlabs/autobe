@@ -1,0 +1,28 @@
+import {
+  AutoBeUserConversateContent,
+  AutoBeUserMessageContent,
+} from "@autobe/interface";
+
+export function createAutoBeUserMessageContent(props: {
+  content: AutoBeUserConversateContent;
+  description?: string;
+}): AutoBeUserMessageContent {
+  const { content, description } = props;
+  if (content.type === "image")
+    return {
+      type: "image",
+      images: [
+        {
+          type: "base64",
+          data: content.data,
+        },
+      ],
+      description: description ?? "",
+    };
+  else if (content.type === "text") return content;
+  else if (content.type === "file") return content;
+  else if (content.type === "audio") return content;
+  else content satisfies never;
+
+  throw new Error(`Invalid content type`);
+}
