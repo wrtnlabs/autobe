@@ -1,103 +1,28 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeExampleBenchmark } from "@autobe/benchmark";
+import {
+  AutoBeExampleBenchmark,
+  AutoBeExampleDocumentation,
+} from "@autobe/benchmark";
 import { IAutoBeExampleBenchmarkState } from "@autobe/benchmark/src/structures/IAutoBeExampleBenchmarkState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import {
-  AutoBeProgressEventBase,
+  AutoBeExampleProject,
   IAutoBeCompilerListener,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 import { Singleton, sleep_for } from "tstl";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 
-const elapsedTime = (props: {
-  started_at: Date;
-  completed_at: Date | null;
-}): string =>
-  Math.round(
-    ((props.completed_at ?? new Date()).getTime() -
-      props.started_at.getTime()) /
-      1_000,
-  ).toLocaleString() + " sec";
-
 const printState = (state: IAutoBeExampleBenchmarkState): void => {
-  const writeIndex = (): string =>
-    StringUtil.trim`
-    ## Table of Contents
-
-    ${state.vendors
-      .map(
-        (vendor) =>
-          `- [Vendor \`${vendor.name}\`](#vendor-${vendor.name
-            .replaceAll("/", "")
-            .replaceAll(":", "")})`,
-      )
-      .join("\n")}
-  `.trim();
-  const writeVendor = (
-    vendor: IAutoBeExampleBenchmarkState.IOfVendor,
-  ): string =>
-    StringUtil.trim`
-    ## Vendor \`${vendor.name}\`
-
-    ${vendor.projects.map((p) => writeProject(vendor, p)).join("\n\n")}
-  `.trim();
-  const writeProject = (
-    vendor: IAutoBeExampleBenchmarkState.IOfVendor,
-    project: IAutoBeExampleBenchmarkState.IOfProject,
-  ): string =>
-    StringUtil.trim`
-      ### Project \`${project.name}\`
-
-      - Success: ${project.success ?? "in progress"}
-      - Elapsed Time: ${elapsedTime(project)}
-      ${
-        project.success === true
-          ? ""
-          : project.phases
-              .map((ph) => writePhase(vendor, project, ph))
-              .join("\n")
-      }
-    `.trim();
-  const writePhase = (
-    _vendor: IAutoBeExampleBenchmarkState.IOfVendor,
-    _project: IAutoBeExampleBenchmarkState.IOfProject,
-    phase: IAutoBeExampleBenchmarkState.IOfPhase,
-  ): string =>
-    StringUtil.trim`
-    - phase \`${phase.name}\`
-      - Success: ${phase.success ?? "in progress"}
-      - Elapsed Time: ${elapsedTime(phase)}
-    ${
-      phase.completed_at === null && phase.snapshot !== null
-        ? `  - Event: \`${phase.snapshot.event.type}\``
-        : ""
-    }
-    ${
-      phase.completed_at === null &&
-      phase.snapshot !== null &&
-      typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
-        ? `  - Progress: ${phase.snapshot.event.completed} of ${
-            phase.snapshot.event.total
-          }`
-        : ""
-    }
-  `.trim();
   const task = async () => {
     while (true) {
       await sleep_for(2_500);
-      const content: string = StringUtil.trim`
-        ${writeIndex()}
-
-        ${state.vendors.map((v) => writeVendor(v)).join("\n\n")}
-      `;
       try {
         await fs.promises.writeFile(
           `${TestGlobal.ROOT}/benchmark.log.md`,
-          content,
+          AutoBeExampleDocumentation.markdown(state),
           "utf8",
         );
       } catch {}
@@ -136,7 +61,7 @@ const main = async (): Promise<void> => {
         }),
     },
     {
-      vendors: [
+      vendors: TestGlobal.getArguments("vendor") ?? [
         //----
         // COMMERCIAL MODELS
         //----
@@ -160,7 +85,9 @@ const main = async (): Promise<void> => {
         "qwen/qwen3-coder:exacto",
         "z-ai/glm-4.6:exacto",
       ],
-      projects: ["todo"],
+      projects: TestGlobal.getArguments("project")?.filter(
+        typia.createIs<AutoBeExampleProject>(),
+      ) ?? ["todo"],
       progress: (state) => printer.get(state),
     },
   );
