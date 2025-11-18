@@ -31,6 +31,10 @@ export function createAgenticaUserMessageContent(props: {
           image,
         } satisfies AgenticaUserMessageImageContent);
       });
+      result.push({
+        type: "text",
+        text: c.description,
+      });
     } else if (c.type === "text") {
       result.push({
         type: "text",
