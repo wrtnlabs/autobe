@@ -62,7 +62,10 @@ export const validate_agent_describe_image = async (props: {
 
       return {
         type: "image",
-        data: base64Data,
+        image: {
+          type: "base64",
+          data: base64Data,
+        },
       };
     }),
   );

@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { AutoBeUserConversateContentBase } from "./AutoBeUserConversateContentBase";
 
 /**
@@ -11,12 +13,39 @@ import { AutoBeUserConversateContentBase } from "./AutoBeUserConversateContentBa
 export interface AutoBeUserImageConversateContent
   extends AutoBeUserConversateContentBase<"image"> {
   /**
-   * Base64 encoded image data.
+   * Image content data.
    *
-   * The image data is encoded in Base64 format to ensure safe transmission and
-   * storage within the conversate system. This encoding allows the image to be
-   * processed by image analysis services and integrated seamlessly into the
-   * conversation flow alongside other content types.
+   * Either base64-encoded image data or a URL reference.
    */
-  data: string;
+  image:
+    | AutoBeUserImageConversateContent.IBase64
+    | AutoBeUserImageConversateContent.IUrl;
+
+  /**
+   * Image analysis detail level.
+   *
+   * - "auto": Automatic detail selection
+   * - "high": Detailed analysis for complex images
+   * - "low": Fast processing for simple images
+   */
+  detail?: "auto" | "high" | "low" | undefined;
+}
+
+export namespace AutoBeUserImageConversateContent {
+  export interface IBase64 {
+    /** Discriminator for base64 type. */
+    type: "base64";
+
+    /** Base64-encoded image data. */
+    data: string;
+  }
+
+  /** Image reference by URL. */
+  export interface IUrl {
+    /** Discriminator for URL type. */
+    type: "url";
+
+    /** Image URL with format validation. */
+    url: string & tags.Format<"url">;
+  }
 }
