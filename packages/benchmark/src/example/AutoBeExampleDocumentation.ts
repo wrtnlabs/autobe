@@ -47,7 +47,7 @@ export namespace AutoBeExampleDocumentation {
       state.phases.at(-1);
     return [
       state.name,
-      phase?.name ?? "-",
+      !!phase?.name ? `${phase.name} (${phase.trial})` : "-",
       state.completed_at !== null
         ? state.success
           ? "🟢 success"

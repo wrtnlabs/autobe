@@ -93,10 +93,12 @@ export namespace AutoBeExampleBenchmark {
         success: null,
         started_at: new Date(),
         completed_at: null,
+        trial: 0,
       };
       props.projectState.phases.push(phaseState);
       for (let i: number = 0; i < 3; ++i) {
         try {
+          ++phaseState.trial;
           phaseState.started_at = new Date();
           phaseState.completed_at = null;
           const success: boolean = await getArchiver(phase)({
