@@ -104,7 +104,13 @@ export namespace AutoBeExampleBenchmark {
             project: props.projectState.name,
             agent: (next) => ctx.createAgent(next),
             on: (s) => {
-              phaseState.snapshot = s;
+              const event = s.event;
+              if (
+                event.type !== "jsonValidateError" &&
+                event.type !== "jsonParseError" &&
+                event.type !== "preliminary"
+              )
+                phaseState.snapshot = s;
               props.report();
               if (props.on) props.on(s.event);
             },
