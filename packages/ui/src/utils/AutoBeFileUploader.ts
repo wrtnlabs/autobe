@@ -1,7 +1,7 @@
 import {
-  AutoBeUserMessageAudioContent,
-  AutoBeUserMessageFileContent,
-  AutoBeUserMessageImageContent,
+  AutoBeUserAudioConversateContent,
+  AutoBeUserFileConversateContent,
+  AutoBeUserImageConversateContent,
 } from "@autobe/interface";
 
 export namespace AutoBeFileUploader {
@@ -138,24 +138,16 @@ export namespace AutoBeFileUploader {
     });
 
   const composeImageContent = async (
-    config: IConfig,
+    _config: IConfig,
     file: File,
-  ): Promise<AutoBeUserMessageImageContent> => ({
+  ): Promise<AutoBeUserImageConversateContent> => ({
     type: "image",
-    image: config.image
-      ? {
-          type: "url",
-          url: await config.image(file).then((res) => res.url),
-        }
-      : {
-          type: "base64",
-          data: await convertToBase64(file),
-        },
+    data: await convertToBase64(file),
   });
 
   const composeAudioContent = async (
     file: File,
-  ): Promise<AutoBeUserMessageAudioContent> => ({
+  ): Promise<AutoBeUserAudioConversateContent> => ({
     type: "audio",
     data: (await convertToBase64(file)).split(",")[1]!,
     format: file.type.includes("wav") ? "wav" : "mp3",
@@ -164,7 +156,7 @@ export namespace AutoBeFileUploader {
   const composeFileContent = async (
     config: IConfig,
     file: File,
-  ): Promise<AutoBeUserMessageFileContent> => {
+  ): Promise<AutoBeUserFileConversateContent> => {
     // Get MIME type for the file
     const mimeType = getMimeType(file.name);
 
@@ -175,7 +167,7 @@ export namespace AutoBeFileUploader {
         file: {
           type: "id",
           id: await config.file(file).then((res) => res.id),
-        } satisfies AutoBeUserMessageFileContent.IId,
+        } satisfies AutoBeUserFileConversateContent.IId,
       };
     }
 
@@ -187,7 +179,7 @@ export namespace AutoBeFileUploader {
           type: "base64",
           name: file.name,
           data: await readAsText(file),
-        } satisfies AutoBeUserMessageFileContent.IBase64,
+        } satisfies AutoBeUserFileConversateContent.IBase64,
       };
     }
 
@@ -198,7 +190,7 @@ export namespace AutoBeFileUploader {
         type: "base64",
         name: file.name,
         data: await convertToBase64(file),
-      } satisfies AutoBeUserMessageFileContent.IBase64,
+      } satisfies AutoBeUserFileConversateContent.IBase64,
     };
   };
 }

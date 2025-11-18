@@ -1,8 +1,8 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
 import {
-  AutoBeUserMessageAudioContent,
-  AutoBeUserMessageFileContent,
-  AutoBeUserMessageImageContent,
+  AutoBeUserAudioConversateContent,
+  AutoBeUserConversateContent,
+  AutoBeUserFileConversateContent,
+  AutoBeUserImageConversateContent,
 } from "@autobe/interface";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
@@ -18,9 +18,9 @@ import { AutoBeFileUploader } from "../../utils";
 export interface IAutoBeBucket {
   file: File;
   content:
-    | AutoBeUserMessageAudioContent
-    | AutoBeUserMessageFileContent
-    | AutoBeUserMessageImageContent;
+    | AutoBeUserAudioConversateContent
+    | AutoBeUserFileConversateContent
+    | AutoBeUserImageConversateContent;
 }
 
 export interface IAutoBeChatUploadConfig {
@@ -72,13 +72,13 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
       return;
     }
 
-    const messages = [
+    const messages: AutoBeUserConversateContent[] = [
       {
         type: "text",
         text: text.trim(),
       },
       ...buckets.map(({ content }) => content),
-    ] as AutoBeUserMessageContent[];
+    ];
 
     setEmptyText(false);
     setText("");
@@ -413,7 +413,7 @@ export namespace AutoBeChatUploadBox {
   export interface IProps {
     listener: RefObject<IListener>;
     uploadConfig?: IAutoBeChatUploadConfig;
-    conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
+    conversate: (messages: AutoBeUserConversateContent[]) => Promise<void>;
     setError: (error: Error) => void;
   }
   export interface IListener {
