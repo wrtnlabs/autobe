@@ -1,5 +1,4 @@
 import {
-  IAutoBeGetFilesOptions,
   IAutoBeRealizeCompiler,
   IAutoBeRealizeCompilerListener,
   IAutoBeRealizeControllerProps,
@@ -7,11 +6,7 @@ import {
   IAutoBeRealizeTestResult,
 } from "@autobe/interface";
 
-import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { AutoBeCompilerRealizeTemplate } from "../raw/AutoBeCompilerRealizeTemplate";
-import { AutoBeCompilerRealizeTemplateOfPostgres } from "../raw/AutoBeCompilerRealizeTemplateOfPostgres";
-import { AutoBeCompilerRealizeTemplateOfSQLite } from "../raw/AutoBeCompilerRealizeTemplateOfSQLite";
-import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
 import { FilePrinter } from "../utils/FilePrinter";
 import { testRealizeProject } from "./testRealizeProject";
 import { writeRealizeControllers } from "./writeRealizeControllers";
@@ -43,21 +38,5 @@ export class AutoBeRealizeCompiler implements IAutoBeRealizeCompiler {
       },
       this.listener.test,
     );
-  }
-
-  public async getTemplate(
-    options: IAutoBeGetFilesOptions,
-  ): Promise<Record<string, string>> {
-    return {
-      ...AutoBeCompilerInterfaceTemplate,
-      ...AutoBeCompilerTestTemplate,
-      ...AutoBeCompilerRealizeTemplate,
-      ...(options.dbms === "postgres"
-        ? AutoBeCompilerRealizeTemplateOfPostgres
-        : {}),
-      ...(options.dbms === "sqlite"
-        ? AutoBeCompilerRealizeTemplateOfSQLite
-        : {}),
-    };
   }
 }

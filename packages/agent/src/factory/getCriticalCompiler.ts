@@ -20,10 +20,10 @@ export const getCriticalCompiler = (
       write: (app, dmbs) => lock(() => compiler.prisma.write(app, dmbs)),
     },
     interface: {
-      write: (doc) => lock(() => compiler.interface.write(doc)),
+      write: (doc, exclude) =>
+        lock(() => compiler.interface.write(doc, exclude)),
       transform: (doc) => lock(() => compiler.interface.transform(doc)),
       invert: (doc) => lock(() => compiler.interface.invert(doc)),
-      getTemplate: () => lock(() => compiler.interface.getTemplate()),
     },
     typescript: {
       compile: (props) => lock(() => compiler.typescript.compile(props)),
@@ -36,13 +36,11 @@ export const getCriticalCompiler = (
       validate: (props) => lock(() => compiler.test.validate(props)),
       write: (props) => lock(() => compiler.test.write(props)),
       getExternal: () => lock(() => compiler.test.getExternal()),
-      getTemplate: () => lock(() => compiler.test.getTemplate()),
     },
     realize: {
       controller: (props) => lock(() => compiler.realize.controller(props)),
       test: (props) => lock(() => compiler.realize.test(props)),
-      getTemplate: (options) =>
-        lock(() => compiler.realize.getTemplate(options)),
     },
+    getTemplate: (options) => lock(() => compiler.getTemplate(options)),
   };
 };

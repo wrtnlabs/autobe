@@ -22,10 +22,10 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
     props.authorizations.map((el) => [el.payload.location, el.payload.content]),
   );
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  const templateFiles: Record<string, string> =
-    await compiler.realize.getTemplate({
-      dbms: "sqlite",
-    });
+  const templateFiles: Record<string, string> = await compiler.getTemplate({
+    phase: "realize",
+    dbms: "sqlite",
+  });
   const nodeModules: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 

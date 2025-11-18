@@ -17,11 +17,11 @@ subgraph "Backend Coding Agent"
   coder("Facade Controller")
 end
 subgraph "Functional Agents"
-  coder --"Requirements Analysis"--> analyze("Analyze")
-  coder --"ERD"--> prisma("Prisma")
-  coder --"API Design"--> interface("Interface")
-  coder --"Test Codes" --> test("Test")
-  coder --"Main Program" --> realize("Realize")
+  coder --"Requirements Analysis"--> analyze("{{ANALYSIS_EMOJI}} Analyze")
+  coder --"ERD"--> prisma("{{PRISMA_EMOJI}} Prisma")
+  coder --"API Design"--> interface("{{INTERFACE_EMOJI}} Interface")
+  coder --"Test Codes" --> test("{{TEST_EMOJI}} Test")
+  coder --"Main Program" --> realize("{{REALIZE_EMOJI}} Realize")
 end
 subgraph "Compiler Feedback"
   prisma --"validates" --> prismaCompiler("Prisma Compiler")
@@ -40,12 +40,12 @@ Below table shows the mapping between waterfall phases, corresponding [`@autobe`
 
 Waterfall Model | AutoBe Agent | Result
 ----------------|--------------|----------------------------------------------
-Requirements    | Facade       | Conversation History
-Analysis        | Analyze      | [Requirement Analysis Report](docs/analysis)
-Design          | Prisma       | [Entity Relationship Diagram](docs/ERD.md) / [Prisma Schema](prisma/schema)
-Design          | Interface    | [API Controllers](src/controllers) / [DTO Structures](src/api/structures)
-Development     | Realize      | [API Provider Functions](src/providers)
-Testing         | Test         | [E2E Test Functions](test/features/api)
+Requirements    | ✅ Facade       | Conversation History
+Analysis        | {{ANALYSIS_EMOJI}} Analyze      | [Requirement Analysis Report](docs/analysis)
+Design          | {{PRISMA_EMOJI}} Prisma       | [Entity Relationship Diagram](docs/ERD.md) / [Prisma Schema](prisma/schema)
+Design          | {{INTERFACE_EMOJI}} Interface    | [API Controllers](src/controllers) / [DTO Structures](src/api/structures)
+Development     | {{REALIZE_EMOJI}} Realize      | [API Provider Functions](src/providers)
+Testing         | {{TEST_EMOJI}} Test         | [E2E Test Functions](test/features/api)
 Maintenance     | -            | Use Claude Code like AI coding tool please
 
 ## Project Structure
@@ -106,6 +106,20 @@ When you've created a new backend project through this template project, you can
 | PROJECT      | Your own project name
 | AUTHOR       | Author name
 | https://github.com/samchon/nestia-start | Your repository URL
+
+## Benchmark
+
+### Aggregate
+
+Phase | Generated | Token Consumption | Elapsed Time
+------|-----------|-------------------|---------------
+{{BENCHMARK_AGGREGATE}}
+
+### Function Calling
+
+Type | Trial | Validation Failure | JSON Parse Error | Succcess | Success Rate
+:----|------:|-------------------:|-----------------:|---------:|-------------:
+{{BENCHMARK_FUNCTION_CALLING}}
 
 ## License
 

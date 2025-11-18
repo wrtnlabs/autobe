@@ -46,7 +46,8 @@ export async function orchestrateRealizeAuthorizationWrite<
   };
   const templates: Record<string, string> = await (
     await ctx.compiler()
-  ).realize.getTemplate({
+  ).getTemplate({
+    phase: "realize",
     dbms: "sqlite",
   });
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(

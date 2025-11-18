@@ -1,6 +1,8 @@
 import {
+  AutoBePhase,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
+  IAutoBeGetFilesOptions,
   IAutoBeInterfaceCompiler,
   IAutoBePrismaCompiler,
   IAutoBeRealizeCompiler,
@@ -11,6 +13,11 @@ import {
 import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
 import { AutoBeInterfaceCompiler } from "./interface/AutoBeInterfaceCompiler";
 import { AutoBePrismaCompiler } from "./prisma/AutoBePrismaCompiler";
+import { AutoBeCompilerCommonTemplate } from "./raw/AutoBeCompilerCommonTemplate";
+import { AutoBeCompilerInterfaceTemplate } from "./raw/AutoBeCompilerInterfaceTemplate";
+import { AutoBeCompilerRealizeTemplateOfPostgres } from "./raw/AutoBeCompilerRealizeTemplateOfPostgres";
+import { AutoBeCompilerRealizeTemplateOfSQLite } from "./raw/AutoBeCompilerRealizeTemplateOfSQLite";
+import { AutoBeCompilerTestTemplate } from "./raw/AutoBeCompilerTestTemplate";
 import { AutoBeRealizeCompiler } from "./realize/AutoBeRealizeCompiler";
 import { AutoBeTestCompiler } from "./test/AutoBeTestCompiler";
 
@@ -50,4 +57,34 @@ export class AutoBeCompiler implements IAutoBeCompiler {
     this.test = new AutoBeTestCompiler();
     this.realize = new AutoBeRealizeCompiler(this.listener.realize);
   }
+
+  public async getTemplate(
+    options: Required<IAutoBeGetFilesOptions>,
+  ): Promise<Record<string, string>> {
+    const result: Record<string, string> = {
+      ...AutoBeCompilerCommonTemplate,
+    };
+    const index: number = PHASES.indexOf(options.phase);
+    if (index >= OF_INTERFACE)
+      Object.assign(result, AutoBeCompilerInterfaceTemplate);
+    if (index >= OF_TEST) Object.assign(result, AutoBeCompilerTestTemplate);
+    if (options.phase === "realize")
+      Object.assign(
+        result,
+        options.dbms === "postgres"
+          ? AutoBeCompilerRealizeTemplateOfPostgres
+          : AutoBeCompilerRealizeTemplateOfSQLite,
+      );
+    return result;
+  }
 }
+
+const PHASES: AutoBePhase[] = [
+  "analyze",
+  "prisma",
+  "interface",
+  "test",
+  "realize",
+];
+const OF_INTERFACE: number = PHASES.indexOf("interface");
+const OF_TEST: number = PHASES.indexOf("test");

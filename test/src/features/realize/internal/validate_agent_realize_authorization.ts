@@ -53,9 +53,10 @@ export const validate_agent_realize_authorization = async (props: {
   const prismaClients: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
-  const templateFiles = await (
+  const templateFiles: Record<string, string> = await (
     await ctx.compiler()
-  ).realize.getTemplate({
+  ).getTemplate({
+    phase: "realize",
     dbms: "sqlite",
   });
   const files: Record<string, string> = {

@@ -24,13 +24,13 @@ export abstract class AutoBeAgentBase {
   public async getFiles(
     options?: Partial<IAutoBeGetFilesOptions>,
   ): Promise<Record<string, string>> {
-    return getAutoBeGenerated(
-      await this.asset.compiler(),
-      this.asset.state(),
-      this.getHistories(),
-      this.getTokenUsage(),
+    return getAutoBeGenerated({
+      compiler: await this.asset.compiler(),
+      state: this.asset.state(),
+      histories: this.getHistories(),
+      tokenUsage: this.getTokenUsage(),
       options,
-    );
+    });
   }
   public abstract getHistories(): AutoBeHistory[];
   public abstract getTokenUsage(): AutoBeTokenUsage;

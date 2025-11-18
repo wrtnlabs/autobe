@@ -46,9 +46,10 @@ export const validate_agent_realize_authorization_correct = async (props: {
 
   const ctx = agent.getContext();
 
-  const template = await (
+  const template: Record<string, string> = await (
     await ctx.compiler()
-  ).realize.getTemplate({
+  ).getTemplate({
+    phase: "realize",
     dbms: "sqlite",
   });
 

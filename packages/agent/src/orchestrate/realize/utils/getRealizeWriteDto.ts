@@ -14,7 +14,7 @@ export async function getRealizeWriteDto<Model extends ILlmSchema.Model>(
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const entries: [string, string][] = Object.entries(
-    await compiler.interface.write(document),
+    await compiler.interface.write(document, []),
   );
 
   const filter = (prefix: string, exclude?: string) => {
@@ -27,7 +27,6 @@ export async function getRealizeWriteDto<Model extends ILlmSchema.Model>(
         : result,
     );
   };
-
   const dto: Record<string, string> = filter("src/api/structures");
   return dto;
 }

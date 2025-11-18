@@ -38,10 +38,14 @@ export interface IAutoBeInterfaceCompiler {
    *
    * @param document Validated AutoBE OpenAPI AST document containing complete
    *   API specification
+   * @param exclude Optional array of file paths to exclude from generation
    * @returns Promise resolving to key-value pairs mapping file paths to
    *   generated NestJS project contents ready for deployment
    */
-  write(document: AutoBeOpenApi.IDocument): Promise<Record<string, string>>;
+  write(
+    document: AutoBeOpenApi.IDocument,
+    exclude: string[],
+  ): Promise<Record<string, string>>;
 
   /**
    * Transforms AutoBE OpenAPI AST document to standard OpenAPI specification.
@@ -82,27 +86,4 @@ export interface IAutoBeInterfaceCompiler {
    *   pipeline integration
    */
   invert(document: OpenApi.IDocument): Promise<AutoBeOpenApi.IDocument>;
-
-  /**
-   * Retrieves template files and boilerplate code for NestJS API project
-   * structure.
-   *
-   * Provides access to template files that establish the foundational structure
-   * for NestJS API applications, including module definitions, controller
-   * patterns, DTO structures, and infrastructure code that forms the skeleton
-   * of the API service. These templates ensure consistent API architecture and
-   * provide reusable patterns for common API implementation scenarios.
-   *
-   * The template files complement the generated API code by providing
-   * standardized project structure, routing configurations, validation patterns,
-   * and utility functions that support efficient API development and
-   * maintenance. This includes NestJS main application setup, module
-   * organization patterns, exception filters, interceptors, and other
-   * foundational elements required for comprehensive API service infrastructure.
-   *
-   * @returns Promise resolving to key-value pairs mapping template file paths
-   *   to their content, establishing the complete API project structure and
-   *   supporting infrastructure for production-ready API service deployment
-   */
-  getTemplate(): Promise<Record<string, string>>;
 }

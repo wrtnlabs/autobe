@@ -3,7 +3,6 @@ import { invertOpenApiDocument, transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 import { OpenApi } from "@samchon/openapi";
 
-import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { FilePrinter } from "../utils/FilePrinter";
 
@@ -33,6 +32,7 @@ import { FilePrinter } from "../utils/FilePrinter";
 export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async write(
     document: AutoBeOpenApi.IDocument,
+    exclude: string[],
   ): Promise<Record<string, string>> {
     const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
       transformOpenApiDocument(document),
@@ -48,7 +48,9 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     });
     return Object.fromEntries([
       ...(await ArrayUtil.asyncMap(
-        Object.entries(files),
+        Object.entries(files).filter(
+          ([key, _]) => exclude.includes(key) === false,
+        ),
         async ([key, value]) => [
           key,
           key.endsWith(".ts") && key.endsWith(".d.ts") === false
@@ -60,7 +62,6 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
         "packages/api/swagger.json",
         JSON.stringify(migrate.getData().document(), null, 2),
       ],
-      ...Object.entries(AutoBeCompilerInterfaceTemplate),
     ]);
   }
 
@@ -74,9 +75,5 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     document: OpenApi.IDocument,
   ): Promise<AutoBeOpenApi.IDocument> {
     return invertOpenApiDocument(document);
-  }
-
-  public async getTemplate(): Promise<Record<string, string>> {
-    return AutoBeCompilerInterfaceTemplate;
   }
 }

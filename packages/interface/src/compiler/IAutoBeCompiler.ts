@@ -1,3 +1,4 @@
+import { IAutoBeGetFilesOptions } from "../facade/IAutoBeGetFilesOptions";
 import { IAutoBeInterfaceCompiler } from "./IAutoBeInterfaceCompiler";
 import { IAutoBePrismaCompiler } from "./IAutoBePrismaCompiler";
 import { IAutoBeRealizeCompiler } from "./IAutoBeRealizeCompiler";
@@ -105,14 +106,18 @@ export interface IAutoBeCompiler {
    * orchestrating comprehensive E2E test execution against fully implemented
    * backend applications. The Realize compiler generates NestJS controller
    * implementations with proper authorization handling and executes Test
-   * agent-generated test suites to ensure that implementations correctly fulfill
-   * all business requirements and API contracts.
+   * agent-generated test suites to ensure that implementations correctly
+   * fulfill all business requirements and API contracts.
    *
    * The compiler manages complete test environments, handles database state for
    * clean testing conditions, and provides detailed validation results that
    * determine the production readiness of generated backend applications. This
-   * comprehensive approach guarantees that AutoBE-generated code works correctly
-   * on the first deployment without manual debugging cycles.
+   * comprehensive approach guarantees that AutoBE-generated code works
+   * correctly on the first deployment without manual debugging cycles.
    */
   realize: IAutoBeRealizeCompiler;
+
+  getTemplate(
+    options: Required<IAutoBeGetFilesOptions>,
+  ): Promise<Record<string, string>>;
 }

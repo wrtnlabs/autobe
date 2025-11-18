@@ -42,6 +42,10 @@ const main = async (): Promise<void> => {
     await fs.promises.mkdir(`${__dirname}/../src/raw`);
   } catch {}
   await template({
+    root: `${__dirname}/../../../internals/template/common`,
+    name: "AutoBeCompilerCommonTemplate",
+  });
+  await template({
     root: `${__dirname}/../../../internals/template/interface`,
     name: "AutoBeCompilerInterfaceTemplate",
   });

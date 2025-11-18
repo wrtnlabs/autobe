@@ -129,7 +129,8 @@ export const validate_agent_realize_correct = async (props: {
     },
   );
 
-  const templateFiles = await compiler.realize.getTemplate({
+  const templateFiles = await compiler.getTemplate({
+    phase: "realize",
     dbms: "sqlite",
   });
   const files = await agent.getFiles();
