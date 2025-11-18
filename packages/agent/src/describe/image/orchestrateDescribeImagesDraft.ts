@@ -2,8 +2,8 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDescribeImageDraftEvent,
   AutoBeProgressEventBase,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageImageContent,
+  AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformDescribeImagesDraftHistories } from "./histories/transformDescribeImagesDraftHistories";
@@ -23,7 +24,7 @@ export const orchestrateDescribeImagesDrafts = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    content: AutoBeUserMessageContent[];
+    content: AutoBeUserConversateContent[];
     capacity?: number;
   },
 ): Promise<AutoBeDescribeImageDraftEvent[]> => {
@@ -36,10 +37,13 @@ export const orchestrateDescribeImagesDrafts = async <
       }
       return acc;
     },
-    [[] as AutoBeUserMessageImageContent[], [] as AutoBeUserMessageContent[]],
+    [
+      [] as AutoBeUserImageConversateContent[],
+      [] as AutoBeUserConversateContent[],
+    ],
   );
 
-  const matrix: AutoBeUserMessageImageContent[][] = divideArray({
+  const matrix: AutoBeUserImageConversateContent[][] = divideArray({
     array: imageContents,
     capacity: props.capacity ?? AutoBeConfigConstant.DESCRIBE_CAPACITY,
   });
@@ -67,8 +71,8 @@ export const orchestrateDescribeImagesDrafts = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    imageContents: AutoBeUserMessageImageContent[];
-    userContents: AutoBeUserMessageContent[];
+    imageContents: AutoBeUserImageConversateContent[];
+    userContents: AutoBeUserConversateContent[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -77,7 +81,7 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-  const content: AutoBeUserMessageContent[] = [
+  const content: AutoBeUserConversateContent[] = [
     ...props.imageContents,
     ...props.userContents,
   ];
@@ -92,7 +96,10 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     histories: transformDescribeImagesDraftHistories(),
-    userMessage: content,
+    userMessage:
+      content.length > 0
+        ? content.map((c) => createAutoBeUserMessageContent({ content: c }))
+        : "Analyze the image content and generate a draft of the planning document.",
     promptCacheKey: props.promptCacheKey,
   });
   props.progress.completed += props.imageContents.length;

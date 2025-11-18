@@ -1,41 +1,36 @@
 import {
   AutoBeDescribeCompleteEvent,
-  AutoBeDescribeHistory,
   AutoBeDescribeImageDocumentEvent,
   AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroup,
   AutoBeDescribeImageDraftIntegrationEvent,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
-import { AutoBeContext } from "../../context/AutoBeContext";
-import { orchestrateDescribeImagesDocument } from "./orchestrateDescribeImagesDocument";
-import { orchestrateDescribeImagesDrafts } from "./orchestrateDescribeImagesDraft";
-import { orchestrateDescribeImagesDraftsGroups } from "./orchestrateDescribeImagesDraftsGroups";
-import { orchestrateDescribeImagesDraftsIntegrations } from "./orchestrateDescribeImagesDraftsIntegrations";
+import { AutoBeContext } from "../context/AutoBeContext";
+import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
+import { orchestrateDescribeImagesDocument } from "./image/orchestrateDescribeImagesDocument";
+import { orchestrateDescribeImagesDrafts } from "./image/orchestrateDescribeImagesDraft";
+import { orchestrateDescribeImagesDraftsGroups } from "./image/orchestrateDescribeImagesDraftsGroups";
+import { orchestrateDescribeImagesDraftsIntegrations } from "./image/orchestrateDescribeImagesDraftsIntegrations";
 
 export const describeImages = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+    content: AutoBeUserConversateContent[];
   },
-): Promise<AutoBeDescribeHistory> => {
+): Promise<AutoBeUserMessageHistory> => {
   const start: Date = new Date();
   const step: number = ctx.state().analyze?.step ?? 0;
-  const userMessage: AutoBeUserMessageContent[] =
-    typeof props.content === "string"
-      ? [{ type: "text", text: props.content }]
-      : Array.isArray(props.content)
-        ? props.content
-        : [props.content];
-  if (userMessage.some((m) => m.type === "image") === false) {
-    throw new Error("No image content found in the user message.");
-  }
 
-  // Emit describe start event
-  const imageCount = userMessage.filter((m) => m.type === "image").length;
+  const imageContents: AutoBeUserImageConversateContent[] =
+    props.content.filter((m) => m.type === "image");
+  const imageCount: number = imageContents.length;
+  if (imageCount === 0) throw new Error("No image content found");
   ctx.dispatch({
     type: "describeStart",
     id: v7(),
@@ -45,13 +40,11 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   });
 
   const drafts: AutoBeDescribeImageDraftEvent[] =
-    await orchestrateDescribeImagesDrafts(ctx, { content: userMessage });
+    await orchestrateDescribeImagesDrafts(ctx, { content: props.content });
 
   const groups: AutoBeDescribeImageDraftGroup[] =
     await orchestrateDescribeImagesDraftsGroups(ctx, { drafts });
 
-  // Process each group to create integrated sections
-  // Process each group to create integrated sections
   const integrations: AutoBeDescribeImageDraftIntegrationEvent[] =
     await orchestrateDescribeImagesDraftsIntegrations(ctx, {
       groups,
@@ -72,6 +65,15 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
-
-  return ctx.dispatch(complete);
+  ctx.dispatch(complete);
+  return {
+    ...complete,
+    type: "userMessage",
+    contents: imageContents.map((c) =>
+      createAutoBeUserMessageContent({
+        content: c,
+        description: document.document,
+      }),
+    ),
+  } satisfies AutoBeUserMessageHistory;
 };
