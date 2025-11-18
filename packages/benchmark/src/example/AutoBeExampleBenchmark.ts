@@ -95,6 +95,7 @@ export namespace AutoBeExampleBenchmark {
         started_at: new Date(),
         completed_at: null,
         trial: 0,
+        count: 0,
       };
       props.projectState.phases.push(phaseState);
       for (let i: number = 0; i < 3; ++i) {
@@ -102,11 +103,13 @@ export namespace AutoBeExampleBenchmark {
           ++phaseState.trial;
           phaseState.started_at = new Date();
           phaseState.completed_at = null;
+          phaseState.count = 0;
           const success: boolean = await getArchiver(phase)({
             vendor: props.vendor,
             project: props.projectState.name,
             agent: (next) => ctx.createAgent(next),
             on: (s) => {
+              ++phaseState.count;
               const event = s.event;
               if (
                 event.type !== "jsonValidateError" &&

@@ -26,5 +26,6 @@ export namespace IAutoBeExampleBenchmarkState {
     started_at: Date;
     completed_at: Date | null;
     trial: number;
+    count: number;
   }
 }

@@ -4,7 +4,7 @@ import typia from "typia";
 
 import { IAutoBeExampleBenchmarkState } from "../structures";
 
-export namespace AutoBeExampleDocumentation {
+export namespace AutoBeExampleLogger {
   export const markdown = (state: IAutoBeExampleBenchmarkState): string =>
     StringUtil.trim`
       # AutoBe Example Benchmark Report
@@ -34,8 +34,8 @@ export namespace AutoBeExampleDocumentation {
   ): string => StringUtil.trim`
     ## \`${state.name}\`
 
-    Project | Phase | State | Elapsed Time
-    :-------|:------|:------|-------------:
+    Project | Phase | State | Count | Elapsed Time
+    :-------|:------|:------|------:|-------------:
     ${state.projects.map(markdownProject).join("\n")}
   `;
 
@@ -63,6 +63,7 @@ export namespace AutoBeExampleDocumentation {
                 : []),
             ].join(" ")
           : "-",
+      phase?.count.toLocaleString() ?? "0",
       state.started_at !== null
         ? elapsedTime({
             started_at: state.started_at,
