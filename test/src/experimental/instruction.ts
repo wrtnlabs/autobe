@@ -125,10 +125,7 @@ const main = async (): Promise<void> => {
         if (m.type === "image") {
           return {
             type: "image",
-            image: {
-              type: "base64",
-              data: m.data,
-            },
+            image: m.image,
           } satisfies AgenticaUserMessageImageContent;
         }
         return m;
