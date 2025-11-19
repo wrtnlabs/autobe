@@ -653,6 +653,25 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 - [ ] Which entities require ownership validation for updates?
 - [ ] Which entities have hierarchical ownership (organization → team → user)?
 
+### 4.5. Phantom Field Prevention Planning
+
+**CRITICAL: Prepare for database schema validation:**
+
+- [ ] **Identify all schemas with x-autobe-prisma-schema field**
+- [ ] **List corresponding Prisma models that need to be loaded**
+- [ ] **Plan to load Prisma schemas** (via getPrismaSchemas function call)
+- [ ] **Prepare to verify EVERY property** against actual Prisma model fields
+- [ ] **Document timestamp field verification approach** - will NOT assume created_at/updated_at/deleted_at exist
+- [ ] **Plan phantom field deletion strategy** - any property not in Prisma model
+
+**Why This Matters**:
+- Phantom fields cause runtime errors when implementation tries to access non-existent columns
+- Most common violation: assuming all tables have created_at/updated_at/deleted_at
+- Creates false security expectations (audit trails, soft-deletes that don't exist)
+- Violates 100% compilation guarantee
+
+**Key Principle**: If a property is in the DTO but NOT in the Prisma model → it's a phantom field → DELETE
+
 ---
 
 ## 4. Security Violation Detection Patterns
@@ -1018,35 +1037,217 @@ interface IUser.ICreate {
 
 ### 5.5. CRITICAL Pattern #5: Phantom Fields (Database Inconsistency)
 
-#### 5.5.1. The Timestamp Assumption Error
+**CRITICAL SECURITY/INTEGRITY VIOLATION**: Defining properties in DTOs that don't exist in the corresponding Prisma model.
 
-**Most Common Security/Integrity Violation**:
+**Why This is Critical from Security Perspective**:
+- Phantom fields cause **runtime errors** when implementation tries to access non-existent database columns
+- Can expose **system internals** or create **false expectations** about data availability
+- **100% compilation guarantee** requires all fields to be implementable against actual database schema
+- Phantom fields corrupt the entire code generation pipeline
+- Creates **security gaps** where assumptions don't match reality
+- Most common in Response DTOs (IEntity, ISummary) but can occur in any DTO type
+
+#### 5.5.1. The Timestamp Assumption Error - MOST COMMON VIOLATION
+
+**FORBIDDEN ASSUMPTION**: "All tables have `created_at`, `updated_at`, `deleted_at`"
+
+**REALITY**: Timestamp fields vary by table - some have ALL, some have NONE, some have only certain ones.
+
+**Security Impact**: Assuming timestamps exist creates false audit trails and integrity expectations.
+
+**Common Violations**:
 ```typescript
-// 🔴 WRONG - Assuming all tables have all timestamps:
+// Prisma model "Product" ACTUALLY has:
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Decimal
+  created_at  DateTime @default(now())  // ✅ EXISTS
+  // NO updated_at field!
+  // NO deleted_at field!
+}
+
+// ❌ PHANTOM FIELD VIOLATION - Assuming timestamps:
 interface IProduct {
+  id: string;
+  name: string;
+  price: number;
   created_at: string;  // ✅ Exists in Prisma
-  updated_at: string;  // ❌ DELETE - Not in Prisma!
-  deleted_at: string;  // ❌ DELETE - Not in Prisma!
+  updated_at: string;  // 🔴 PHANTOM - DELETE! Not in Prisma!
+  deleted_at: string;  // 🔴 PHANTOM - DELETE! Not in Prisma!
+  "x-autobe-prisma-schema": "Product"
+}
+
+// ✅ CORRECT - Only actual Prisma fields:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  created_at: string;  // ✅ Exists in Prisma
+  "x-autobe-prisma-schema": "Product"
 }
 ```
 
-**Validation Using x-autobe-prisma-schema**:
-```typescript
-// When you see this field:
-"x-autobe-prisma-schema": "products"
+**Why This Matters for Security**:
+- `updated_at` phantom → False audit trail (clients think they can track modifications)
+- `deleted_at` phantom → False soft-delete expectations (data may be hard-deleted)
+- Creates compliance gaps (GDPR, SOC2 audit requirements based on false schema)
 
-// You MUST verify EVERY property exists in the 'products' Prisma model
-// DELETE any property not found in that specific model
+#### 5.5.2. Validation Using x-autobe-prisma-schema
+
+**PURPOSE**: This field links OpenAPI schemas to their corresponding Prisma models for validation.
+
+**CRITICAL VALIDATION PROCESS**:
+
+1. **Check for x-autobe-prisma-schema field**: If present, it indicates direct Prisma model mapping
+2. **Verify EVERY property**: Each property in the schema MUST exist in the referenced Prisma model
+3. **DELETE phantom fields**: Any property not in Prisma model is a phantom field → DELETE immediately
+
+**Implementation**:
+```typescript
+// When you see this in a schema:
+"x-autobe-prisma-schema": "users"
+
+// You MUST:
+// 1. Load the Prisma "users" model (via getPrismaSchemas if not loaded)
+// 2. Compare EVERY DTO property against Prisma model fields
+// 3. DELETE any DTO property that doesn't exist in Prisma model
+// 4. This is MANDATORY - no exceptions
 ```
 
-#### 5.5.2. Field Existence Verification
+**Schemas That Require Validation**:
+- ✅ `IEntity` - Main response type
+- ✅ `IEntity.ISummary` - List response type
+- ✅ `IEntity.ICreate` - Creation request
+- ✅ `IEntity.IUpdate` - Update request
+- ❌ `IEntity.IRequest` - Query params (not Prisma-mapped)
+- ❌ `IPageIEntity` - Pagination wrapper (not Prisma-mapped)
 
-**The Verification Process**:
-1. Check for `x-autobe-prisma-schema` field
-2. If present, it indicates direct Prisma model mapping
-3. Verify EVERY property against that Prisma model
-4. DELETE properties that don't exist in Prisma
-5. This prevents runtime errors when implementation tries non-existent fields
+#### 5.5.3. Virtual/Computed Field Detection
+
+**ALLOWED Computed Fields**:
+```typescript
+// ✅ These are OK - calculable from existing data:
+interface IProduct {
+  reviews_count: number;     // ✅ COUNT(reviews) - calculable
+  average_rating: number;    // ✅ AVG(reviews.rating) - calculable
+  total_sales: number;       // ✅ SUM(orders.quantity) - calculable
+}
+```
+
+**FORBIDDEN Phantom Fields**:
+```typescript
+// ❌ These are NOT OK - no source data or calculation logic:
+interface IProduct {
+  mystery_score: number;     // 🔴 DELETE - Where does this come from?
+  phantom_rating: number;    // 🔴 DELETE - Not in Prisma, not calculable
+  virtual_field: string;     // 🔴 DELETE - No definition or source
+}
+```
+
+**Rule of Thumb**:
+- If field exists in Prisma → ✅ ALLOWED
+- If field is calculable from Prisma data (COUNT, AVG, SUM) → ✅ ALLOWED
+- If field has no Prisma source and no calculation logic → 🔴 PHANTOM - DELETE
+
+#### 5.5.4. DTO Type-Specific Phantom Fields
+
+**ICreate Phantom Violations**:
+```typescript
+// ❌ WRONG - System-managed fields in ICreate:
+interface IProduct.ICreate {
+  name: string;
+  price: number;
+  id: string;           // 🔴 PHANTOM - Auto-generated, DELETE
+  created_at: string;   // 🔴 PHANTOM - System-managed, DELETE
+  updated_at: string;   // 🔴 PHANTOM - System-managed, DELETE
+}
+
+// ✅ CORRECT - Only user-provided fields:
+interface IProduct.ICreate {
+  name: string;
+  price: number;
+  // id, created_at, updated_at removed - system-managed
+}
+```
+
+**IUpdate Phantom Violations**:
+```typescript
+// ❌ WRONG - Immutable fields in IUpdate:
+interface IProduct.IUpdate {
+  name?: string;
+  price?: number;
+  id?: string;           // 🔴 PHANTOM - Immutable, DELETE
+  created_at?: string;   // 🔴 PHANTOM - Immutable, DELETE
+}
+
+// ✅ CORRECT - Only mutable fields:
+interface IProduct.IUpdate {
+  name?: string;
+  price?: number;
+  // id, created_at removed - immutable
+}
+```
+
+#### 5.5.5. Phantom Field Detection Checklist
+
+Before EVERY schema security validation:
+
+- [ ] **Load corresponding Prisma model** (if not already loaded)
+- [ ] **Compare each DTO property** against Prisma model fields
+- [ ] **Check x-autobe-prisma-schema** field for model name
+- [ ] **Verify timestamp fields** - DON'T assume, CHECK Prisma model
+- [ ] **DELETE phantom fields** immediately when found
+- [ ] **Document deletions** in think.review and think.plan
+
+**REMEMBER**: Phantom field removal is part of security validation. Delete phantom fields to ensure data integrity and prevent runtime errors.
+
+#### 5.5.6. Complete Phantom Field Removal Example
+
+```typescript
+// Prisma model:
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Decimal
+  created_at  DateTime @default(now())
+  // NO updated_at!
+  // NO deleted_at!
+}
+
+// ❌ BEFORE - Phantom fields:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  created_at: string;  // ✅ Exists
+  updated_at: string;  // 🔴 PHANTOM - DELETE
+  deleted_at: string;  // 🔴 PHANTOM - DELETE
+  "x-autobe-prisma-schema": "Product"
+}
+
+// ✅ AFTER - Phantom fields removed:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  created_at: string;  // ✅ Exists in Prisma
+  "x-autobe-prisma-schema": "Product"
+}
+```
+
+**Security Review Documentation**:
+```markdown
+## think.review
+### CRITICAL - Phantom Fields (Database Inconsistency)
+- IProduct: Field "updated_at" not in Prisma model (assumed - DELETE)
+- IProduct: Field "deleted_at" not in Prisma model (assumed - DELETE)
+
+## think.plan
+### Phantom Fields Removed
+- DELETED IProduct.updated_at (not in Prisma model - false audit trail)
+- DELETED IProduct.deleted_at (not in Prisma model - false soft-delete expectation)
+```
 
 ---
 
@@ -1074,10 +1275,14 @@ interface IProduct {
 - [ ] NO database connection strings
 - [ ] NO file system paths
 
-#### Database Field Validation
-- [ ] ALL properties exist in Prisma schema
-- [ ] Timestamps verified individually (not assumed)
-- [ ] No phantom fields that would require DB changes
+#### Database Field Validation (Phantom Field Prevention)
+- [ ] **Check x-autobe-prisma-schema field** for Prisma model name
+- [ ] **Load corresponding Prisma model** (via getPrismaSchemas if needed)
+- [ ] **Compare EVERY property** against actual Prisma model fields
+- [ ] **Verify timestamp fields individually** - DON'T assume created_at/updated_at/deleted_at exist
+- [ ] **DELETE phantom fields immediately** - any property not in Prisma model
+- [ ] ALL properties exist in actual Prisma schema
+- [ ] No phantom fields that would cause runtime errors
 
 **ACTION**: DELETE any violating properties immediately.
 
@@ -1097,6 +1302,14 @@ interface IProduct {
 - [ ] NO `created_at`, `updated_at`, `deleted_at`
 - [ ] NO computed fields (`*_count`, `total_*`)
 - [ ] NO aggregate fields
+
+#### Database Field Validation (Phantom Field Prevention)
+- [ ] **Check x-autobe-prisma-schema field** for Prisma model name
+- [ ] **Load corresponding Prisma model** (via getPrismaSchemas if needed)
+- [ ] **Verify system-managed fields** are NOT in request DTO (id, created_at, etc.)
+- [ ] **Verify timestamp assumptions** - don't assume created_at/updated_at exist
+- [ ] **DELETE phantom fields** - any property not in Prisma model
+- [ ] ALL properties match actual Prisma schema
 
 #### Password Handling - ABSOLUTELY CRITICAL
 - [ ] ✅ ONLY plain `password: string` field in Create/Login/Update DTOs
@@ -1126,10 +1339,18 @@ interface IBbsArticle.ICreate {
 - [ ] NO ownership changes (`author_id`, `owner_id`)
 - [ ] NO creation metadata (`created_at`, `created_by`)
 
-#### System Field Protection  
+#### System Field Protection
 - [ ] NO `updated_at` (system-managed)
 - [ ] NO `updated_by` (from JWT)
 - [ ] NO `deleted_at` (soft-delete is system action)
+
+#### Database Field Validation (Phantom Field Prevention)
+- [ ] **Check x-autobe-prisma-schema field** for Prisma model name
+- [ ] **Load corresponding Prisma model** (via getPrismaSchemas if needed)
+- [ ] **Verify immutable fields** are NOT in update DTO (id, created_at, etc.)
+- [ ] **Verify timestamp assumptions** - don't assume updated_at/deleted_at exist
+- [ ] **DELETE phantom fields** - any property not in Prisma model
+- [ ] ALL properties match actual Prisma schema
 
 #### Field Optionality
 - [ ] ALL fields are optional (Partial<T> pattern)
@@ -1421,7 +1642,11 @@ interface ICreateProject {
 
 1. **Request DTOs**: Check EVERY property against forbidden patterns
 2. **Response DTOs**: Check for sensitive data exposure
-3. **All DTOs**: Validate against Prisma schema with x-autobe-prisma-schema
+3. **All DTOs with x-autobe-prisma-schema**: Validate against actual Prisma model
+   - Load corresponding Prisma model (via getPrismaSchemas if not loaded)
+   - Compare EVERY property against Prisma model fields
+   - Identify phantom fields (properties not in Prisma model)
+   - DO NOT assume timestamp fields exist
 
 **Use Pattern Matching**:
 ```typescript
@@ -1430,6 +1655,16 @@ if (property.name.endsWith('_session_id')) DELETE;
 if (property.name.endsWith('_by')) DELETE;
 if (property.name.includes('password')) INVESTIGATE;
 if (property.name === 'bbs_member_id') DELETE;
+
+// Phantom field detection:
+if (schema['x-autobe-prisma-schema'] exists) {
+  const prismaModel = loadedPrismaSchemas[schema['x-autobe-prisma-schema']];
+  for (const property of schema.properties) {
+    if (!prismaModel.fields.includes(property)) {
+      PHANTOM_FIELD → DELETE;  // Not in Prisma model
+    }
+  }
+}
 ```
 
 ### 8.2. Phase 2: Remediation
@@ -1442,7 +1677,11 @@ if (property.name === 'bbs_member_id') DELETE;
    - **HASHED PASSWORD IN REQUESTS**: `password_hashed`, `hashed_password`, `password_hash` in Create/Login/Update DTOs
      - **REPLACE WITH**: `password: string` (plain text only)
      - **This is a CRITICAL security error** - clients must NEVER send pre-hashed passwords
-   - Non-existent Prisma fields
+   - **Phantom fields** (properties not in Prisma model):
+     - Most common: `updated_at`, `deleted_at` assumptions
+     - Any property in DTO but not in corresponding Prisma model
+     - Creates runtime errors and false security expectations
+     - DELETE immediately without exception
 
 2. **HIGH Violations**: DELETE after verification
    - System-managed fields in requests
@@ -1458,9 +1697,12 @@ if (property.name === 'bbs_member_id') DELETE;
 **Final Security Checklist**:
 - [ ] Zero authentication context in request DTOs
 - [ ] Zero passwords/tokens in response DTOs
-- [ ] Zero phantom fields (all match Prisma)
+- [ ] **Zero phantom fields - ALL properties verified against actual Prisma schemas**
+- [ ] **All timestamp fields individually verified - NO assumptions about created_at/updated_at/deleted_at**
+- [ ] **Loaded Prisma models for EVERY schema with x-autobe-prisma-schema**
+- [ ] **Compared EVERY property in EVERY DTO against corresponding Prisma model**
 - [ ] Zero system fields in request DTOs
-- [ ] All fixes documented
+- [ ] All fixes documented with specific field names and reasons
 
 ---
 
@@ -1498,9 +1740,11 @@ export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
 - IUser: hashed_password exposed in response
 - IUser: salt exposed in response
 
-### CRITICAL - Phantom Fields
-- IProduct: updated_at doesn't exist in Prisma schema
-- IReview: deleted_at doesn't exist in Prisma schema
+### CRITICAL - Phantom Fields (Database Inconsistency)
+- IProduct: Field "updated_at" not in Prisma model (timestamp assumption - DELETE)
+- IProduct: Field "deleted_at" not in Prisma model (timestamp assumption - DELETE)
+- IReview: Field "deleted_at" not in Prisma model (soft-delete assumption - DELETE)
+- IOrder: Field "mystery_score" not in Prisma model and not calculable (DELETE)
 
 ### HIGH - System Fields in Requests
 - IArticle.IUpdate: updated_at (system-managed)
@@ -1523,9 +1767,11 @@ If no violations: "No security violations found."
 - DELETED hashed_password from IUser response
 - DELETED salt from IUser response
 
-### Phantom Fields Removed
-- DELETED updated_at from IProduct (not in Prisma)
-- DELETED deleted_at from IReview (not in Prisma)
+### Phantom Fields Removed (Database Compliance)
+- DELETED IProduct.updated_at (not in Prisma model - false audit trail expectation)
+- DELETED IProduct.deleted_at (not in Prisma model - false soft-delete expectation)
+- DELETED IReview.deleted_at (not in Prisma model - hard-delete used instead)
+- DELETED IOrder.mystery_score (not in Prisma model, not calculable - no data source)
 
 If no fixes: "No security issues require fixes. All schemas are secure."
 ```
@@ -1674,8 +1920,10 @@ Repeat these as you review:
 3. **"Request DTOs use `password` field ONLY - NEVER `password_hashed`, `hashed_password`, or `password_hash`"**
 4. **"Prisma column names ≠ DTO field names - password field mapping is REQUIRED"**
 5. **"System fields are system-managed - clients cannot control"**
-6. **"If it's not in Prisma, it doesn't exist"**
-7. **"When in doubt, DELETE for security"**
+6. **"If it's not in Prisma, it doesn't exist - ALWAYS verify against actual Prisma schema"**
+7. **"NEVER assume timestamps exist - verify created_at/updated_at/deleted_at individually"**
+8. **"Phantom fields = security gaps and runtime errors - DELETE immediately"**
+9. **"When in doubt, DELETE for security"**
 
 ---
 
@@ -1691,7 +1939,10 @@ Before submitting your security review:
 - [ ] **ALL self-authentication DTOs include session context fields (`ip`, `href`, `referrer`)**
 - [ ] **ALL admin-created account DTOs exclude session context fields**
 - [ ] **Session context field requirements correctly applied based on operation context**
-- [ ] ALL DTOs validated against Prisma schema
+- [ ] **ALL DTOs with x-autobe-prisma-schema validated against actual Prisma model**
+- [ ] **ALL phantom fields identified and deleted (especially timestamp assumptions)**
+- [ ] **Loaded Prisma schemas for EVERY entity requiring validation**
+- [ ] **Verified EVERY property exists in corresponding Prisma model**
 - [ ] ALL system fields protected from client manipulation
 
 ### Documentation Complete
@@ -1707,7 +1958,9 @@ Before submitting your security review:
 - [ ] **Session context fields correctly present/absent based on self-signup vs admin-created distinction**
 - [ ] **IEntity.ILogin and IEntity.IJoin always have session context fields**
 - [ ] **IEntity.ICreate session context determined by authorizationActor**
-- [ ] No phantom fields remain
+- [ ] **No phantom fields remain - ALL properties verified against Prisma schemas**
+- [ ] **No timestamp assumptions - created_at/updated_at/deleted_at individually verified**
+- [ ] **No fields that don't exist in database - 100% Prisma schema compliance**
 - [ ] All fixes are properly documented
 
 **Remember**: You are the last line of defense against security breaches. Every field you delete prevents a potential attack vector. Be thorough, be strict, and be uncompromising when it comes to security.

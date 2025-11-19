@@ -24,7 +24,11 @@ pnpm run archive:go --vendor google/gemini-2.5-pro --project bbs > archive.googl
 pnpm run archive:go --vendor google/gemini-2.5-pro --project reddit > archive.google-gemini-2.5-pro.reddit.log
 pnpm run archive:go --vendor google/gemini-2.5-pro --project shopping > archive.google-gemini-2.5-pro.shopping.log
 
-# google/gemini-2.5-flash
+# google/gemini-3-pro-preview
+pnpm run archive:go --vendor google/gemini-3-pro-preview --schema gemini --project todo > archive.google-gemini-3-pro-preview.todo.log
+pnpm run archive:go --vendor google/gemini-3-pro-preview --schema gemini --project bbs > archive.google-gemini-3-pro-preview.bbs.log
+pnpm run archive:go --vendor google/gemini-3-pro-preview --schema gemini --project reddit > archive.google-gemini-3-pro-preview.reddit.log
+pnpm run archive:go --vendor google/gemini-3-pro-preview --schema gemini --project shopping > archive.google-gemini-3-pro-preview.shopping.log
 
 ################################################
 # OPENAI

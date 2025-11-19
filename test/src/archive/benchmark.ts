@@ -71,6 +71,7 @@ const main = async (): Promise<void> => {
         "openai/gpt-4.1",
         "openai/gpt-5.1",
         "google/gemini-2.5-pro",
+        "google/gemini-3-pro-preview",
         "x-ai/grok-code-fast-1",
 
         //----

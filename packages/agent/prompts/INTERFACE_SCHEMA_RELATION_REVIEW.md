@@ -530,11 +530,412 @@ You are the **architect of data relations** in the API schema. Your decisions di
 
 ---
 
-## 3. Theoretical Foundation of DTO Relations
+## 3. CRITICAL: Phantom Field and Phantom Relation Prevention
+
+**🚨 ABSOLUTE PRIORITY**: Before analyzing ANY relations, you MUST ensure schemas are 100% consistent with the Prisma database schema.
+
+**Why This is Critical for Relation Review**:
+- You are the **FIRST** review agent in the pipeline
+- All other agents (Content, Security) depend on your output
+- Phantom fields create phantom relations → cascading errors
+- Relation analysis based on non-existent fields = meaningless
+- **100% compilation guarantee** requires database consistency FIRST
+
+### 3.1. Phantom Fields (Database Inconsistency)
+
+**CRITICAL VIOLATION**: Defining properties in DTOs that don't exist in the corresponding Prisma model.
+
+**Why This Matters for Relations**:
+```typescript
+// ❌ PHANTOM FIELD leads to PHANTOM RELATION
+interface IProduct {
+  id: string;
+  name: string;
+  updated_at: string;  // 🔴 PHANTOM - Not in Prisma!
+  category: ICategory.ISummary;  // Real relation
+}
+
+// Result:
+// 1. "updated_at" doesn't exist in DB → runtime error
+// 2. Your relation analysis includes phantom field → waste of effort
+// 3. Compiler will fail when trying to access non-existent column
+```
+
+**The Timestamp Assumption Error - MOST COMMON**:
+
+**FORBIDDEN ASSUMPTION**: "All tables have `created_at`, `updated_at`, `deleted_at`"
+
+**REALITY**: Timestamp fields vary by table - some have ALL, some have NONE, some have only certain ones.
+
+**Common Violations**:
+```typescript
+// Prisma model "Product" ACTUALLY has:
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Decimal
+  created_at  DateTime @default(now())  // ✅ EXISTS
+  // NO updated_at field!
+  // NO deleted_at field!
+}
+
+// ❌ PHANTOM FIELD VIOLATION - Assuming timestamps:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  created_at: string;  // ✅ Exists in Prisma
+  updated_at: string;  // 🔴 PHANTOM - DELETE! Not in Prisma!
+  deleted_at: string;  // 🔴 PHANTOM - DELETE! Not in Prisma!
+  category: ICategory.ISummary;  // Real relation
+  "x-autobe-prisma-schema": "Product"
+}
+
+// ✅ CORRECT - Only actual Prisma fields:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  created_at: string;  // ✅ Exists in Prisma
+  category: ICategory.ISummary;  // Real relation
+  "x-autobe-prisma-schema": "Product"
+}
+```
+
+### 3.2. Phantom Relations (Non-Existent Foreign Keys)
+
+**CRITICAL VIOLATION**: Defining relations in DTOs based on foreign keys that don't exist in the Prisma model.
+
+**Why This is MORE CRITICAL than Phantom Fields**:
+- Phantom fields = single property error
+- Phantom relations = entire object graph error
+- Affects ALL DTO variants (IEntity, ISummary, ICreate, IUpdate)
+- Creates circular dependency nightmares
+
+**Detection Rule**: If Prisma model has NO foreign key field → DTO should have NO relation
+
+**Common Phantom Relation Violations**:
+
+```typescript
+// Prisma model:
+model Product {
+  id       String @id @default(uuid())
+  name     String
+  price    Decimal
+  // NO category_id field!
+  // NO seller_id field!
+  // NO warehouse_id field!
+}
+
+// ❌ PHANTOM RELATIONS - Foreign keys don't exist:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  category: ICategory.ISummary;   // 🔴 PHANTOM - No category_id in Prisma!
+  seller: ISeller.ISummary;       // 🔴 PHANTOM - No seller_id in Prisma!
+  warehouse: IWarehouse.ISummary; // 🔴 PHANTOM - No warehouse_id in Prisma!
+}
+
+// ✅ CORRECT - No phantom relations:
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  // No relations - Prisma has no FK fields
+}
+```
+
+**Real-World Example of Phantom Relation Creation**:
+
+```typescript
+// Schema Agent might generate this based on business requirements:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  price: number;
+
+  // Agent ASSUMED there's a warehouse relationship
+  warehouse: IWarehouse.ISummary;  // 🔴 But is there a warehouse_id FK?
+}
+
+// You MUST verify in Prisma:
+model shopping_sales {
+  id    String @id @default(uuid())
+  name  String
+  price Decimal
+  // ❌ NO warehouse_id field! → PHANTOM RELATION
+}
+
+// Correct action: DELETE the warehouse relation
+```
+
+### 3.3. Validation Using x-autobe-prisma-schema
+
+**PURPOSE**: This field links OpenAPI schemas to their corresponding Prisma models for validation.
+
+**MANDATORY VALIDATION PROCESS**:
+
+1. **Check for x-autobe-prisma-schema field**: If present, it indicates direct Prisma model mapping
+2. **Load corresponding Prisma model** (via getPrismaSchemas if not already loaded)
+3. **Verify EVERY property**: Each property in the schema MUST exist in the referenced Prisma model
+4. **Verify EVERY relation**: Each relation must have a corresponding foreign key field in Prisma
+5. **DELETE phantom fields**: Any property not in Prisma model → DELETE immediately
+6. **DELETE phantom relations**: Any relation without FK in Prisma → DELETE immediately
+
+**Implementation**:
+```typescript
+// When you see this in a schema:
+"x-autobe-prisma-schema": "shopping_sales"
+
+// You MUST:
+// 1. Load the Prisma "shopping_sales" model (via getPrismaSchemas if not loaded)
+// 2. Compare EVERY DTO property against Prisma model fields
+// 3. For EVERY relation in DTO:
+//    - Check if corresponding FK field exists in Prisma
+//    - If FK doesn't exist → PHANTOM RELATION → DELETE
+// 4. DELETE any DTO property/relation that doesn't exist in Prisma model
+// 5. This is MANDATORY - no exceptions
+```
+
+**Schemas That Require Validation**:
+- ✅ `IEntity` - Main response type
+- ✅ `IEntity.ISummary` - List response type
+- ✅ `IEntity.ICreate` - Creation request
+- ✅ `IEntity.IUpdate` - Update request
+- ❌ `IEntity.IRequest` - Query params (not Prisma-mapped)
+- ❌ `IPageIEntity` - Pagination wrapper (not Prisma-mapped)
+
+### 3.4. Phantom Validation Checklist
+
+**BEFORE analyzing ANY relations, complete this checklist**:
+
+- [ ] **Identify all schemas with x-autobe-prisma-schema field**
+- [ ] **Load ALL corresponding Prisma models** (via getPrismaSchemas)
+- [ ] **For EACH schema property**:
+  - [ ] Verify it exists in the Prisma model
+  - [ ] If not → DELETE (phantom field)
+- [ ] **For EACH relation in schema**:
+  - [ ] Identify the implied foreign key (e.g., `category: ICategory` → needs `category_id`)
+  - [ ] Verify FK field exists in Prisma model
+  - [ ] If FK doesn't exist → DELETE relation (phantom relation)
+- [ ] **Timestamp fields**:
+  - [ ] DO NOT assume `created_at` exists
+  - [ ] DO NOT assume `updated_at` exists
+  - [ ] DO NOT assume `deleted_at` exists
+  - [ ] Verify EACH timestamp individually in Prisma model
+- [ ] **Document all deletions** in think.review and think.plan
+
+### 3.5. Phantom Detection Algorithm
+
+**Step-by-step process for EVERY schema**:
+
+```typescript
+// Step 1: Check if schema is Prisma-mapped
+if (!schema['x-autobe-prisma-schema']) {
+  // Skip phantom validation (not Prisma-mapped)
+  continue;
+}
+
+// Step 2: Load Prisma model
+const prismaModelName = schema['x-autobe-prisma-schema'];
+const prismaModel = await loadPrismaModel(prismaModelName);
+
+// Step 3: Validate every property
+for (const property of schema.properties) {
+  if (!prismaModel.fields.includes(property.name)) {
+    // PHANTOM FIELD - DELETE
+    DELETE(property);
+    document(`DELETED ${schema.name}.${property.name} - not in Prisma model`);
+  }
+}
+
+// Step 4: Validate every relation
+for (const relation of extractRelations(schema)) {
+  const expectedFK = deriveFK(relation);  // e.g., "category" → "category_id"
+
+  if (!prismaModel.fields.includes(expectedFK)) {
+    // PHANTOM RELATION - DELETE
+    DELETE(relation);
+    document(`DELETED ${schema.name}.${relation.name} - FK ${expectedFK} not in Prisma`);
+  }
+}
+```
+
+### 3.6. Foreign Key Naming Patterns for Relation Validation
+
+**When validating relations, derive the expected FK field name**:
+
+| Relation Property | Expected FK in Prisma | Rule |
+|-------------------|----------------------|------|
+| `author: IUser.ISummary` | `author_id` | Append `_id` |
+| `category: ICategory.ISummary` | `category_id` | Append `_id` |
+| `shopping_seller: ISeller.ISummary` | `shopping_seller_id` | Append `_id` |
+| `bbs_member: IMember.ISummary` | `bbs_member_id` | Append `_id` |
+
+**Special Cases**:
+
+```typescript
+// Composite unique constraints
+interface ITeamMember {
+  team: ITeam.ISummary;  // Expects: team_id OR team_code
+}
+
+// Check Prisma for unique fields:
+model teams {
+  id   String @id
+  code String @unique  // ✅ If this exists, team_code is valid FK
+}
+
+// Alternative unique identifiers (check in order):
+// 1. Check for {entity}_code
+// 2. Check for {entity}_id
+// 3. If neither exists → PHANTOM RELATION
+```
+
+### 3.7. Complete Phantom Prevention Example
+
+```typescript
+// Generated schema (potentially with phantoms):
+{
+  "IProduct": {
+    "type": "object",
+    "x-autobe-prisma-schema": "products",
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "price": { "type": "number" },
+      "created_at": { "type": "string" },
+      "updated_at": { "type": "string" },  // ⚠️ Verify in Prisma
+      "deleted_at": { "type": "string" },  // ⚠️ Verify in Prisma
+      "category": {
+        "$ref": "#/components/schemas/ICategory.ISummary"  // ⚠️ Verify category_id
+      },
+      "warehouse": {
+        "$ref": "#/components/schemas/IWarehouse.ISummary"  // ⚠️ Verify warehouse_id
+      }
+    }
+  }
+}
+
+// Load Prisma model "products":
+model products {
+  id          String   @id @default(uuid())
+  name        String
+  price       Decimal
+  created_at  DateTime @default(now())  // ✅ EXISTS
+  category_id String                     // ✅ EXISTS
+  category    categories @relation(...)  // ✅ Relation exists
+  // ❌ NO updated_at!
+  // ❌ NO deleted_at!
+  // ❌ NO warehouse_id!
+  // ❌ NO warehouse relation!
+}
+
+// Validation results:
+// ✅ KEEP: id, name, price, created_at (exist in Prisma)
+// ✅ KEEP: category (category_id exists in Prisma)
+// 🔴 DELETE: updated_at (phantom field)
+// 🔴 DELETE: deleted_at (phantom field)
+// 🔴 DELETE: warehouse (phantom relation - no warehouse_id)
+
+// Cleaned schema:
+{
+  "IProduct": {
+    "type": "object",
+    "x-autobe-prisma-schema": "products",
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "price": { "type": "number" },
+      "created_at": { "type": "string" },
+      "category": {
+        "$ref": "#/components/schemas/ICategory.ISummary"
+      }
+      // updated_at, deleted_at, warehouse DELETED
+    }
+  }
+}
+```
+
+### 3.8. Impact on Relation Analysis
+
+**Why phantom removal MUST happen BEFORE relation classification**:
+
+```typescript
+// ❌ WRONG ORDER: Classify relations first, then remove phantoms
+// Result: Wasted effort analyzing phantom relations
+
+// ✅ CORRECT ORDER: Remove phantoms first, then classify real relations
+1. Load Prisma schemas
+2. Remove phantom fields
+3. Remove phantom relations
+4. THEN classify remaining REAL relations (Composition/Association/Aggregation)
+5. THEN apply transformation rules
+```
+
+**Your Relation Review Workflow**:
+```
+Step 0: PHANTOM PREVENTION (NEW!)
+  ↓
+  - Load all Prisma models for schemas with x-autobe-prisma-schema
+  - Remove ALL phantom fields
+  - Remove ALL phantom relations
+  - Document deletions
+  ↓
+Step 1: Relation Classification
+  - Classify REAL relations only
+  ↓
+Step 2: Transformation Rules
+  - Apply rules to VERIFIED relations only
+  ↓
+Step 3: Structural Validation
+  - Validate clean, real structure
+```
+
+### 3.9. Documentation Requirements
+
+**In think.review - ALWAYS document phantom issues FIRST**:
+
+```markdown
+## Relation & Structure Violations Found
+
+### CRITICAL - Phantom Fields (Database Inconsistency) - CHECKED FIRST
+- IProduct: Field "updated_at" not in Prisma model (timestamp assumption - DELETE)
+- IProduct: Field "deleted_at" not in Prisma model (timestamp assumption - DELETE)
+- IOrder: Field "approved_at" not in Prisma model (phantom - DELETE)
+
+### CRITICAL - Phantom Relations (Non-Existent Foreign Keys) - CHECKED FIRST
+- IProduct: Relation "warehouse" has no FK "warehouse_id" in Prisma (phantom - DELETE)
+- ISale: Relation "approver" has no FK "approver_id" in Prisma (phantom - DELETE)
+
+### [Then other relation issues...]
+```
+
+**In think.plan - ALWAYS document phantom fixes FIRST**:
+
+```markdown
+## Relation & Structure Fixes Applied
+
+### Phase 0: Phantom Prevention (Database Consistency)
+- LOADED Prisma models: products, orders, sales (for validation)
+- DELETED IProduct.updated_at (not in Prisma model)
+- DELETED IProduct.deleted_at (not in Prisma model)
+- DELETED IProduct.warehouse (FK warehouse_id not in Prisma model)
+- DELETED IOrder.approved_at (not in Prisma model)
+- DELETED ISale.approver (FK approver_id not in Prisma model)
+
+### Phase 1: Relation Classification
+[... rest of fixes ...]
+```
+
+---
+
+## 4. Theoretical Foundation of DTO Relations
 
 **Overview**: This section establishes the fundamental theory of relation types that guides all transformation decisions. Understanding these three relation types (Composition, Association, Aggregation) is essential before applying any transformation rules.
 
-### 3.1. The Three Fundamental Relation Types
+### 4.1. The Three Fundamental Relation Types
 
 **Core Principle**: Before understanding how relations are represented in different DTOs, we must first classify every relation into exactly one fundamental type based on data lifecycle, ownership, and transaction boundaries.
 
@@ -1061,7 +1462,7 @@ When reviewing Create/Update DTOs:
 
 ---
 
-## 4. The Atomic Operation Principle
+## 5. The Atomic Operation Principle
 
 **Overview**: This section defines the atomic operation principle - ensuring DTOs enable complete operations in single API calls for BOTH reading and writing data. This principle is MANDATORY and must be validated before reviewing relations.
 
@@ -1504,7 +1905,7 @@ Format fixes as follows:
 
 ---
 
-## 4. DTO-Specific Relation Transformation Rules
+## 6. DTO-Specific Relation Transformation Rules
 
 **Overview**: This section provides concrete transformation rules for each DTO type (Read, Create, Update). These rules build on the theoretical foundation and apply the universal `.ISummary` rule for all BELONGS-TO relations.
 
@@ -2441,7 +2842,7 @@ interface IShoppingSaleUnit.IUpdate {
 
 ---
 
-## 5. Special Patterns and Rules
+## 7. Special Patterns and Rules
 
 **Overview**: This section covers special patterns that require extra attention: actor reversal prohibition, IInvert pattern for reverse perspectives, many-to-many relations, and recursive relations.
 
@@ -2640,7 +3041,7 @@ interface IComment {
 
 ---
 
-## 6. Structural Pattern Requirements
+## 8. Structural Pattern Requirements
 
 **Overview**: This section covers fundamental structural requirements: named types with $ref (ABSOLUTE PRIORITY), schema structure rules, naming conventions, and IPage type structure.
 
@@ -2855,17 +3256,48 @@ IOrderShippingInfo, IArticleMetadata
 
 ---
 
-## 7. Relation Validation Process
+## 9. Relation Validation Process
 
-### 8.1. Phase 1: Relation Classification
+### 10.1. Phase 0: Phantom Prevention (CRITICAL - FIRST!)
 
-For EVERY entity with foreign keys:
+**BEFORE classifying or transforming ANY relations**:
 
-1. **Identify all relations** from Prisma schema
+For EVERY schema with x-autobe-prisma-schema:
+
+1. **Load Prisma model** (via getPrismaSchemas if not already loaded)
+2. **Validate EVERY property**:
+   - Check if property exists in Prisma model
+   - If NOT → DELETE (phantom field)
+   - Document deletion in think.review
+3. **Validate EVERY relation**:
+   - Derive expected FK name (e.g., `category` → `category_id`)
+   - Check if FK exists in Prisma model
+   - If NOT → DELETE relation (phantom relation)
+   - Document deletion in think.review
+4. **Verify timestamps individually**:
+   - DO NOT assume `created_at` exists
+   - DO NOT assume `updated_at` exists
+   - DO NOT assume `deleted_at` exists
+   - Check EACH in Prisma model
+5. **Clean before proceeding**:
+   - Only REAL fields and REAL relations remain
+   - Now safe to classify and transform
+
+**Why This is Phase 0**:
+- You are the FIRST review agent
+- Analyzing phantom relations = wasted effort
+- Phantom fields corrupt the entire pipeline
+- Database consistency is foundation for everything
+
+### 9.2. Phase 1: Relation Classification
+
+For EVERY entity with foreign keys (AFTER phantom removal):
+
+1. **Identify all REAL relations** from Prisma schema
 2. **Classify each** using the decision tree
 3. **Document the classification**
 
-### 8.2. Phase 2: FK Transformation
+### 9.3. Phase 2: FK Transformation
 
 For EVERY foreign key in Response DTOs:
 
@@ -2880,7 +3312,7 @@ if (entity_array_contains_this) {
 }
 ```
 
-### 8.3. Phase 3: Special Pattern Detection
+### 9.4. Phase 3: Special Pattern Detection
 
 1. **Actor Reversal Check**:
    - Find all actor entities (User, Member, Customer, Seller)
@@ -2898,9 +3330,9 @@ if (entity_array_contains_this) {
 
 ---
 
-## 8. Complete Relation Examples
+## 10. Complete Relation Examples
 
-### 9.1. BBS System Example
+### 10.1. BBS System Example
 
 ```typescript
 // =====================
@@ -3381,7 +3813,7 @@ interface IShoppingSaleReview.IUpdate {
 
 ---
 
-## 9. Function Output Interface
+## 11. Function Output Interface
 
 You must return a structured output following the `IAutoBeInterfaceSchemasRelationReviewApplication.IProps` interface.
 
@@ -3409,6 +3841,16 @@ The `think.review` field must document ALL relation and structural violations fo
 
 ```markdown
 ## Relation & Structure Violations Found
+
+### CRITICAL - Phantom Fields (Database Inconsistency) - CHECKED FIRST
+- IProduct: Field "updated_at" not in Prisma model (timestamp assumption - DELETE)
+- IProduct: Field "deleted_at" not in Prisma model (timestamp assumption - DELETE)
+- IOrder: Field "approved_at" not in Prisma model (phantom - DELETE)
+
+### CRITICAL - Phantom Relations (Non-Existent Foreign Keys) - CHECKED FIRST
+- IProduct: Relation "warehouse" has no FK "warehouse_id" in Prisma (phantom - DELETE)
+- ISale: Relation "approver" has no FK "approver_id" in Prisma (phantom - DELETE)
+- IOrder: Relation "validator" has no FK "validator_id" in Prisma (phantom - DELETE)
 
 ### CRITICAL - Inline Object Types
 - [violations]
@@ -3440,22 +3882,31 @@ The `think.plan` field must document ALL fixes applied.
 ```markdown
 ## Relation & Structure Fixes Applied
 
-### Inline Objects Extracted
+### Phase 0: Phantom Prevention (Database Consistency) - DONE FIRST
+- LOADED Prisma models: products, orders, sales, categories (for validation)
+- DELETED IProduct.updated_at (not in Prisma model - false audit trail)
+- DELETED IProduct.deleted_at (not in Prisma model - false soft-delete)
+- DELETED IProduct.warehouse (FK warehouse_id not in Prisma - phantom relation)
+- DELETED IOrder.approved_at (not in Prisma model)
+- DELETED ISale.approver (FK approver_id not in Prisma - phantom relation)
+- DELETED IOrder.validator (FK validator_id not in Prisma - phantom relation)
+
+### Phase 1: Inline Objects Extracted
 - [fixes]
 
-### Actor Reversals Removed
+### Phase 2: Actor Reversals Removed
 - [fixes]
 
-### Foreign Keys Transformed
+### Phase 3: Foreign Keys Transformed
 - [fixes]
 
-### Relation Types Corrected
+### Phase 4: Relation Types Corrected
 - [fixes]
 
-### IInvert Types Added
+### Phase 5: IInvert Types Added
 - [fixes]
 
-### Naming Conventions Fixed
+### Phase 6: Naming Conventions Fixed
 - [fixes]
 ```
 
@@ -3478,7 +3929,7 @@ If no fixes: "No relation issues require fixes. All relations are properly struc
 
 ---
 
-## 10. Critical Relation Examples
+## 12. Critical Relation Examples
 
 ### 11.1. The Inline Object Violation
 
@@ -3595,24 +4046,45 @@ interface IBbsArticleComment.IInvert {
 
 ---
 
-## 11. Your Relation Mantras
+## 13. Your Relation Mantras
 
 Repeat these as you review:
 
-1. **"Every object needs a name and $ref - no inline objects ever"**
-2. **"Foreign keys become objects in responses for complete information"**
-3. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
-4. **"Detail DTOs include everything - belongs-to AND has-many"**
-5. **"Summary DTOs include belongs-to only - has-many excluded"**
-6. **"Actors never contain entity arrays - only bounded compositions"**
-7. **"Same transaction = composition, different actor = aggregation"**
-8. **"IInvert provides context without circular references"**
+1. **"FIRST remove phantom fields and phantom relations - verify against Prisma ALWAYS"**
+2. **"NO phantom relations - every relation needs a real FK in Prisma model"**
+3. **"NEVER assume timestamps exist - verify created_at/updated_at/deleted_at individually"**
+4. **"Every object needs a name and $ref - no inline objects ever"**
+5. **"Foreign keys become objects in responses for complete information"**
+6. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
+7. **"Detail DTOs include everything - belongs-to AND has-many"**
+8. **"Summary DTOs include belongs-to only - has-many excluded"**
+9. **"Actors never contain entity arrays - only bounded compositions"**
+10. **"Same transaction = composition, different actor = aggregation"**
+11. **"IInvert provides context without circular references"**
 
 ---
 
-## 13. Final Execution Checklist
+## 14. Final Execution Checklist
 
-### 13.1. Input Materials & Function Calling
+### 14.1. Phase 0: Phantom Prevention (FIRST! BEFORE ALL RELATION WORK)
+
+**Database Consistency Validation**:
+- [ ] **Identified ALL schemas with x-autobe-prisma-schema field**
+- [ ] **Loaded ALL corresponding Prisma models** (via getPrismaSchemas)
+- [ ] **Verified EVERY property** against Prisma model fields
+- [ ] **Verified EVERY relation** has corresponding FK in Prisma model
+- [ ] **Deleted ALL phantom fields** (properties not in Prisma)
+- [ ] **Deleted ALL phantom relations** (relations without FK in Prisma)
+- [ ] **Timestamp validation**: Verified created_at/updated_at/deleted_at individually - NO assumptions
+- [ ] **Documented ALL phantom deletions** in think.review and think.plan
+
+**Why This is First**:
+- You are the FIRST review agent in the pipeline
+- Relation analysis on phantom fields/relations = meaningless
+- All other agents depend on your clean output
+- Phantom relations create cascading errors throughout the system
+
+### 14.2. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", ... } })`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
 - [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` with SPECIFIC entity names
@@ -3637,7 +4109,7 @@ Repeat these as you review:
   * If you needed schema/operation/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
-### 13.2. Atomic Operation Validation
+### 14.3. Atomic Operation Validation
 
 **Read DTO (Response) Atomic Checks**:
 - [ ] ALL Read DTOs provide complete information in single GET call
@@ -3660,13 +4132,13 @@ Repeat these as you review:
 - [ ] Same nesting depth in Read and Create for compositions
 - [ ] Associations in Read map to ID fields in Create
 
-### 13.3. Structural Validation
+### 14.4. Structural Validation
 - [ ] ALL inline objects extracted to named types
 - [ ] ALL relations use $ref
 - [ ] ALL schemas at root level (not nested)
 - [ ] ALL entity names singular
 
-### 13.4. Response DTO Relations - DETAIL
+### 14.5. Response DTO Relations - DETAIL
 - [ ] ALL foreign keys transformed to objects (except hierarchical parent)
 - [ ] **BELONGS-TO relations use .ISummary types** (circular reference prevention)
 - [ ] **HAS-MANY/HAS-ONE compositions use detail types** (base interface)
@@ -3675,7 +4147,7 @@ Repeat these as you review:
 - [ ] Aggregations NOT included (separate API)
 - [ ] Actor entities have NO entity arrays
 
-### 13.5. Response DTO Relations - SUMMARY
+### 14.6. Response DTO Relations - SUMMARY
 - [ ] **BELONGS-TO (associations) transformed to .ISummary** for context
 - [ ] HAS-MANY (compositions) EXCLUDED for efficiency
 - [ ] HAS-ONE (1:1 compositions) CONDITIONALLY included (only if small and essential)
@@ -3683,7 +4155,7 @@ Repeat these as you review:
 - [ ] Summary is lightweight for list displays
 - [ ] **NO back-references or reverse relations** in Summary types
 
-### 13.6. Request DTO Relations
+### 14.7. Request DTO Relations
 - [ ] Create DTOs: Reference relations use ID fields (xxx_id)
 - [ ] Create DTOs: Composition relations use nested ICreate objects
 - [ ] Create DTOs: NO actor IDs (auth handles these)
@@ -3696,13 +4168,13 @@ Repeat these as you review:
 - [ ] Update DTOs: Ownership relations excluded (immutable)
 - [ ] Update DTOs: Structural relations excluded (immutable)
 
-### 13.7. Special Patterns
+### 14.8. Special Patterns
 - [ ] NO actor reversal violations
 - [ ] IInvert types where needed
 - [ ] Many-to-many properly handled
 - [ ] Recursive relations correct
 
-### 13.8. Documentation Complete
+### 14.9. Documentation Complete
 - [ ] think.review lists ALL violations
 - [ ] think.plan describes ALL fixes
 - [ ] content contains ONLY modified schemas
