@@ -1,5 +1,4 @@
 import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
-import { AutoBeUserMessageContent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { ConditionVariable, IPointer, Singleton, sleep_for } from "tstl";
 
@@ -9,7 +8,7 @@ import { AutoBeTimeoutError } from "./AutoBeTimeoutError";
 export namespace TimedConversation {
   export interface IProps<Model extends ILlmSchema.Model> {
     agent: MicroAgentica<Model>;
-    message: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+    message: string;
     timeout: number | null;
   }
   export type IResult<Model extends ILlmSchema.Model> =
