@@ -52,4 +52,45 @@ export interface AutoBeInterfaceGroup {
    * elements rather than abstract business concepts.
    */
   description: string;
+
+  /**
+   * List of Prisma schema model names required for implementing endpoints in
+   * this group.
+   *
+   * This field pre-identifies all database models that are relevant to this
+   * endpoint group, reducing the cognitive load on the endpoint generation
+   * agent and enabling more comprehensive endpoint coverage.
+   *
+   * The AI analyzes requirements during group definition phase to determine
+   * which Prisma models are needed for complete API functionality within this
+   * group's domain.
+   *
+   * Selection Guidelines:
+   *
+   * - Include ALL models that users directly interact with in this domain
+   * - Include related models needed for complete CRUD operations
+   * - Include parent/child models for nested endpoint support
+   * - Include snapshot models if the domain handles versioned data
+   * - Be thorough - better to include extra models than miss required ones
+   *
+   * What NOT to Include:
+   *
+   * - System-internal tables (audit_logs, system_metrics)
+   * - Pure cache tables (temporary_cache, session_cache)
+   * - Framework tables (migrations, schema_versions)
+   *
+   * @example
+   * ```typescript
+   * // E-commerce sales group
+   * prismaSchemas: [
+   *   "shopping_sales",
+   *   "shopping_sale_snapshots",
+   *   "shopping_customers",
+   *   "shopping_products",
+   *   "shopping_sellers",
+   *   "shopping_sale_reviews"
+   * ]
+   * ```
+   */
+  prismaSchemas: string[];
 }

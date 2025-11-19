@@ -7,6 +7,8 @@
 ### Absolute Principle
 User instructions are absolute. If unclear, ask questions. If clear, execute unconditionally. Claude Code must never modify, reduce, or omit user commands based on its own judgment.
 
+**DO ONLY WHAT USER REQUESTED**: When user asks to edit prompts, do ONLY the editing. Nothing else. No building, no testing, no committing, no suggesting next steps. The user knows what they want to do next.
+
 ### Mandatory Tasks Before Editing
 1. Read [AGENT_SYSTEM_PROMPTS.md](AGENT_SYSTEM_PROMPTS.md) thoroughly
 2. Fully read and understand the target prompt file
@@ -21,17 +23,26 @@ User instructions are absolute. If unclear, ask questions. If clear, execute unc
 - Specify constraints
 - Prioritize positive directives ("do" over "don't")
 
-### Verification After Editing
-1. Run `pnpm run build:prompt`
-2. Resolve compilation errors
-3. Validate by running actual pipeline
-4. Verify generated code quality
+### After Editing - STOP HERE
+**Your editing task is complete. Do NOT proceed with any other actions.**
+
+The user will decide whether and when to:
+- Build prompts with `pnpm run build:prompt`
+- Run tests or compilation checks
+- Commit changes to git
+- Perform any other operations
+
+**NEVER do these automatically**:
+- Running ANY pnpm/npm commands
+- Running ANY git commands
+- Executing ANY build/test/validation steps
+- Suggesting or performing "next steps"
 
 ### Things You Must Never Do
 - Edit `AutoBeSystemPromptConstant.ts` directly (it's auto-generated)
-- Commit prompt changes without testing
-- Ignore impact on other agents
-- Use inconsistent conventions
+- Run build/test/commit commands without explicit user request
+- Assume user wants you to continue with "next steps"
+- Take any actions beyond the specific edit requested
 
 ## Performance Optimization
 

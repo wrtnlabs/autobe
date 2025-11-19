@@ -1,18 +1,20 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBeRealizeAuthorization,
   AutoBeRealizeAuthorizationCorrect,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformRealizeAuthorizationCorrectHistories } from "./histories/transformRealizeAuthorizationCorrectHistories";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformRealizeAuthorizationCorrectHistory } from "./histories/transformRealizeAuthorizationCorrectHistory";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 import { AutoBeRealizeAuthorizationReplaceImport } from "./utils/AutoBeRealizeAuthorizationReplaceImport";
@@ -21,35 +23,37 @@ export async function orchestrateRealizeAuthorizationCorrect<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  authorization: AutoBeRealizeAuthorization,
-  prismaClients: Record<string, string>,
-  templateFiles: Record<string, string>,
+  props: {
+    authorization: AutoBeRealizeAuthorization;
+    template: Record<string, string>;
+    prismaClient: Record<string, string>;
+  },
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeAuthorization> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const providerContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
-      authorization.actor.name,
-      authorization.provider.content,
+      props.authorization.actor.name,
+      props.authorization.provider.content,
     ),
   );
   const decoratorContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
-      authorization.actor.name,
-      authorization.decorator.content,
+      props.authorization.actor.name,
+      props.authorization.decorator.content,
     ),
   );
 
   // Check Compile
   const files: Record<string, string> = {
-    ...templateFiles,
-    ...prismaClients,
-    [AuthorizationFileSystem.decoratorPath(authorization.decorator.name)]:
+    ...props.template,
+    ...props.prismaClient,
+    [AuthorizationFileSystem.decoratorPath(props.authorization.decorator.name)]:
       decoratorContent,
-    [AuthorizationFileSystem.providerPath(authorization.provider.name)]:
+    [AuthorizationFileSystem.providerPath(props.authorization.provider.name)]:
       providerContent,
-    [AuthorizationFileSystem.payloadPath(authorization.payload.name)]:
-      authorization.payload.content,
+    [AuthorizationFileSystem.payloadPath(props.authorization.payload.name)]:
+      props.authorization.payload.content,
   };
 
   const compiled: IAutoBeTypeScriptCompileResult =
@@ -61,89 +65,121 @@ export async function orchestrateRealizeAuthorizationCorrect<
     type: "realizeAuthorizationValidate",
     id: v7(),
     created_at: new Date().toISOString(),
-    authorization: authorization,
+    authorization: props.authorization,
     result: compiled,
     step: ctx.state().test?.step ?? 0,
   });
 
   if (compiled.type === "success") {
-    return authorization;
+    return props.authorization;
   } else if (compiled.type === "exception" || life < 0) {
-    return authorization;
+    return props.authorization;
   }
 
-  const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IProps | null> =
-    {
-      value: null,
-    };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "realizeAuthorizationCorrect",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
+  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+    new AutoBePreliminaryController({
+      source: SOURCE,
+      application:
+        typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
+      kinds: ["prismaSchemas"],
+      state: ctx.state(),
+    });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: "realizeAuthorizationCorrect",
+      controller: createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      ...transformRealizeAuthorizationCorrectHistory({
+        authorization: props.authorization,
+        template: props.template,
+        diagnostics: compiled.diagnostics,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const correct: AutoBeRealizeAuthorizationCorrect = {
+      ...pointer.value,
+      decorator: {
+        ...pointer.value.decorator,
+        location: AuthorizationFileSystem.decoratorPath(
+          pointer.value.decorator.name,
+        ),
       },
-    }),
-    enforceFunctionCall: true,
-    ...transformRealizeAuthorizationCorrectHistories(
-      ctx,
-      authorization,
-      templateFiles,
-      compiled.diagnostics,
-    ),
+      provider: {
+        ...pointer.value.provider,
+        location: AuthorizationFileSystem.providerPath(
+          pointer.value.provider.name,
+        ),
+      },
+      payload: {
+        name: pointer.value.payload.name,
+        location: AuthorizationFileSystem.payloadPath(
+          pointer.value.payload.name,
+        ),
+        content: await compiler.typescript.beautify(
+          pointer.value.payload.content,
+        ),
+      },
+      actor: props.authorization.actor,
+    };
+
+    ctx.dispatch({
+      ...pointer.value,
+      type: "realizeAuthorizationCorrect",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      authorization: correct,
+      result: compiled,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().test?.step ?? 0,
+    });
+    return out(result)(
+      await orchestrateRealizeAuthorizationCorrect(
+        ctx,
+        {
+          authorization: correct,
+          prismaClient: props.prismaClient,
+          template: props.template,
+        },
+        life - 1,
+      ),
+    );
   });
-  if (pointer.value === null) throw new Error("Failed to correct decorator.");
-
-  const result: AutoBeRealizeAuthorizationCorrect = {
-    ...pointer.value,
-    decorator: {
-      ...pointer.value.decorator,
-      location: AuthorizationFileSystem.decoratorPath(
-        pointer.value.decorator.name,
-      ),
-    },
-    provider: {
-      ...pointer.value.provider,
-      location: AuthorizationFileSystem.providerPath(
-        pointer.value.provider.name,
-      ),
-    },
-    payload: {
-      name: pointer.value.payload.name,
-      location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
-      content: await compiler.typescript.beautify(
-        pointer.value.payload.content,
-      ),
-    },
-    actor: authorization.actor,
-  };
-
-  ctx.dispatch({
-    ...pointer.value,
-    type: "realizeAuthorizationCorrect",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    authorization: result,
-    result: compiled,
-    metric,
-    tokenUsage,
-    step: ctx.state().test?.step ?? 0,
-  });
-
-  return await orchestrateRealizeAuthorizationCorrect(
-    ctx,
-    result,
-    prismaClients,
-    templateFiles,
-    life - 1,
-  );
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeRealizeAuthorizationCorrectApplication.IProps) => void;
+  build: (
+    next: IAutoBeRealizeAuthorizationCorrectApplication.IComplete,
+  ) => void;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
+
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeRealizeAuthorizationCorrectApplication.IProps> =
+      typia.validate<IAutoBeRealizeAuthorizationCorrectApplication.IProps>(
+        input,
+      );
+    if (result.success === false || result.data.request.type === "complete")
+      return result;
+    return props.preliminary.validate({
+      thinking: result.data.thinking,
+      request: result.data.request,
+    });
+  };
 
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt"
@@ -151,30 +187,53 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : props.model === "gemini"
         ? "gemini"
         : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Correct Authorization",
+    name: SOURCE,
     application,
     execute: {
-      correctDecorator: (next) => {
-        props.build(next);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeRealizeAuthorizationCorrectApplication,
   };
 }
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeRealizeAuthorizationCorrectApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeRealizeAuthorizationCorrectApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeRealizeAuthorizationCorrectApplication,
-    "gemini"
-  >(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeRealizeAuthorizationCorrectApplication,
+      "chatgpt"
+    >({
+      validate: {
+        process: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeRealizeAuthorizationCorrectApplication,
+      "claude"
+    >({
+      validate: {
+        process: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeRealizeAuthorizationCorrectApplication,
+      "gemini"
+    >({
+      validate: {
+        process: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeRealizeAuthorizationCorrectApplication.IProps>;
+
+const SOURCE = "realizeAuthorizationCorrect" satisfies AutoBeEventSource;

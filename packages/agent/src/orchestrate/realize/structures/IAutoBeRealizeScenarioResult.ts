@@ -1,8 +1,4 @@
-import {
-  AutoBeOpenApi,
-  AutoBeRealizeAuthorization,
-  AutoBeTestFile,
-} from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
 
 export interface IAutoBeRealizeScenarioResult {
   /** The OpenAPI operation to be realized. */
@@ -11,27 +7,18 @@ export interface IAutoBeRealizeScenarioResult {
   /**
    * The name of the function to be generated.
    *
-   * Derived from the Swagger path and method. The function name must be
-   * written in snake_case. It serves as the entry point in both code
-   * generation and test code.
+   * Derived from the Swagger path and method. The function name must be written
+   * in snake_case. It serves as the entry point in both code generation and
+   * test code.
    *
-   * Once the function is generated, the function name and file name will be
-   * the same. The generated file will be located at
+   * Once the function is generated, the function name and file name will be the
+   * same. The generated file will be located at
    * `src/providers/${function_name}.ts`.
    */
   functionName: string;
 
   /** For example, `src/providers/${function_name}.ts`. */
   location: string;
-
-  /**
-   * List of scenario descriptions for test code generation.
-   *
-   * Each scenario describes the expected behavior of the function under
-   * certain conditions. Used as a basis for TDD-style automated test
-   * generation.
-   */
-  testFiles: AutoBeTestFile[];
 
   /**
    * Optional decorator event for customizing code generation behavior.

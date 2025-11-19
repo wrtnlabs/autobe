@@ -1,0 +1,42 @@
+import { AutoBePrisma } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { v7 } from "uuid";
+
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+
+export const transformPrismaReviewHistory = (props: {
+  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  component: AutoBePrisma.IComponent;
+}): IAutoBeOrchestrateHistory => ({
+  histories: [
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+    },
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.PRISMA_REVIEW,
+    },
+    ...props.preliminary.getHistories(),
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        Now, please review the tables in the "${props.component.namespace}" namespace.
+        
+        Focus your review exclusively on these tables.
+        
+        **Tables in this namespace:**
+        ${props.component.tables.map((table) => `- ${table}`).join("\n")}
+      `,
+    },
+  ],
+  userMessage: "Please review the Prisma schema file.",
+});

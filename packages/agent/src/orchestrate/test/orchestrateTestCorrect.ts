@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
@@ -32,6 +32,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
+      ctx,
       props.functions.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
@@ -163,7 +164,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...(await transformTestCorrectHistories(ctx, {
+    ...(await transformTestCorrectHistory(ctx, {
       instruction: props.instruction,
       function: props.function,
       failures: [
@@ -191,7 +192,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "testCorrect",
-    kind: "casting",
+    kind: "overall",
     id: v7(),
     created_at: new Date().toISOString(),
     file: props.validate.file,

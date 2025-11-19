@@ -84,11 +84,9 @@ function groupEventsByCategory(events: AutoBeEvent[]) {
       case "realizeValidate":
       case "realizeAuthorizationValidate":
       case "prismaInsufficient":
-      case "interfaceComplement":
       case "interfaceOperationReview":
         grouped.validate.push(event);
         break;
-
       default:
         grouped.other.push(event);
         break;

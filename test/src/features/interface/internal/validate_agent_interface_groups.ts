@@ -1,4 +1,4 @@
-import { orchestrateInterfaceGroups } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceGroups";
+import { orchestrateInterfaceGroup } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceGroup";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeInterfaceGroupEvent } from "@autobe/interface";
@@ -16,7 +16,7 @@ export const validate_agent_interface_groups = async (props: {
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(props);
-  const result: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroups(
+  const result: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroup(
     agent.getContext(),
     {
       instruction: "Design API specs carefully considering the security.",

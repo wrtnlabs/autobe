@@ -4,12 +4,12 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { transformPreviousAndLatestCorrectHistories } from "../../common/histories/transformPreviousAndLatestCorrectHistories";
+import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { transformTestWriteHistories } from "./transformTestWriteHistories";
+import { transformTestWriteHistory } from "./transformTestWriteHistory";
 
-export const transformTestCorrectHistories = async <
+export const transformTestCorrectHistory = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -19,7 +19,7 @@ export const transformTestCorrectHistories = async <
     failures: IAutoBeTestFunctionFailure[];
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
-  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistories(
+  const previous: IAutoBeOrchestrateHistory = await transformTestWriteHistory(
     ctx,
     {
       instruction: props.instruction,
@@ -37,7 +37,7 @@ export const transformTestCorrectHistories = async <
         text: AutoBeSystemPromptConstant.TEST_CORRECT,
       },
       previous.histories.at(-1)!,
-      ...transformPreviousAndLatestCorrectHistories(
+      ...transformPreviousAndLatestCorrectHistory(
         props.failures.map((f) => ({
           script: f.function.script,
           diagnostics: f.failure.diagnostics,

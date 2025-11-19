@@ -60,6 +60,7 @@ export const validate_agent_realize_write = async (props: {
 
   const progress = { id: v7(), total: scenarios.length, completed: 0 };
   const writes: (AutoBeRealizeWriteEvent | null)[] = await executeCachedBatch(
+    agent.getContext(),
     scenarios.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
         (a) => a.actor.name === scenario.decoratorEvent?.actor.name,
@@ -87,6 +88,7 @@ export const validate_agent_realize_write = async (props: {
   const rejected = scenarios.filter((s) => !locations.includes(s.location));
 
   const retried = await executeCachedBatch(
+    agent.getContext(),
     rejected.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
         (a) => a.actor.name === scenario.decoratorEvent?.actor.name,

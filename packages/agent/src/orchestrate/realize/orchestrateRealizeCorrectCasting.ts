@@ -21,7 +21,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
-import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
+import { transformRealizeCorrectCastingHistory } from "./histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
@@ -113,6 +113,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   props.progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
+    ctx,
     locations.map((location) => async (): Promise<CorrectionResult> => {
       const func: AutoBeRealizeFunction = props.functions.find(
         (f) => f.location === location,
@@ -144,7 +145,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           },
         }),
         enforceFunctionCall: true,
-        ...transformRealizeCorrectCastingHistories(ctx, {
+        ...transformRealizeCorrectCastingHistory(ctx, {
           scenario,
           authorization,
           function: func,

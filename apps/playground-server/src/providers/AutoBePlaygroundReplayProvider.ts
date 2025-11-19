@@ -1,9 +1,5 @@
 import { AutoBeMockAgent } from "@autobe/agent";
-import {
-  AutoBeExampleStorage,
-  AutoBeReplayComputer,
-  AutoBeReplayStorage,
-} from "@autobe/benchmark";
+import { AutoBeExampleStorage, AutoBeReplayStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
   IAutoBePlaygroundReplay,
@@ -19,12 +15,12 @@ export namespace AutoBePlaygroundReplayProvider {
   export const index = async (): Promise<
     IAutoBePlaygroundReplay.ISummary[]
   > => {
-    const all = (vendor: string): Promise<IAutoBePlaygroundReplay[]> =>
-      AutoBeReplayStorage.getAll(vendor);
-    const replays: IAutoBePlaygroundReplay[][] = await Promise.all(
+    const all = (vendor: string): Promise<IAutoBePlaygroundReplay.ISummary[]> =>
+      AutoBeReplayStorage.getAllSummaries(vendor);
+    const replays: IAutoBePlaygroundReplay.ISummary[][] = await Promise.all(
       (await AutoBeExampleStorage.getVendorModels()).map(all),
     );
-    return replays.flat().map(AutoBeReplayComputer.summarize);
+    return replays.flat();
   };
 
   export const get = async (

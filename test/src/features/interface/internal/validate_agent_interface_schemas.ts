@@ -1,4 +1,4 @@
-import { orchestrateInterfaceSchemas } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemas";
+import { orchestrateInterfaceSchema } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchema";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
@@ -30,7 +30,7 @@ export const validate_agent_interface_schemas = async (props: {
 
   // GENERATE COMPONENTS
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    await orchestrateInterfaceSchemas(agent.getContext(), {
+    await orchestrateInterfaceSchema(agent.getContext(), {
       operations,
       instruction: "Design API specs carefully considering the security.",
     });

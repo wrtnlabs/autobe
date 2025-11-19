@@ -19,7 +19,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { transformCommonCorrectCastingHistories } from "./histories/transformCommonCorrectCastingHistories";
+import { transformCommonCorrectCastingHistory } from "./histories/transformCommonCorrectCastingHistory";
 import { IAutoBeCommonCorrectCastingApplication } from "./structures/IAutoBeCommonCorrectCastingApplication";
 
 interface IFactoryProps<
@@ -106,7 +106,7 @@ const correct = async <
       },
     }),
     enforceFunctionCall: true,
-    ...transformCommonCorrectCastingHistories(
+    ...transformCommonCorrectCastingHistory(
       [...failures, event].map((e) => ({
         diagnostics: (e.result as IAutoBeTypeScriptCompileResult.IFailure)
           .diagnostics,

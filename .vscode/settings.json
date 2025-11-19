@@ -14,4 +14,5 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
   },
+  "claudeCodeChat.permissions.yoloMode": true,
 }

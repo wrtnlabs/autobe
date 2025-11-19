@@ -7,7 +7,6 @@ import {
 
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
-import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { emplaceMap } from "./utils/emplaceMap";
 
 export abstract class AutoBeAgentBase {
@@ -17,21 +16,13 @@ export abstract class AutoBeAgentBase {
     Set<(event: AutoBeEvent) => Promise<void> | void>
   >;
 
-  public constructor(private readonly asset: AutoBeAgentBase.IAsset) {
+  public constructor() {
     this.listeners_ = new Map();
   }
 
-  public async getFiles(
+  public abstract getFiles(
     options?: Partial<IAutoBeGetFilesOptions>,
-  ): Promise<Record<string, string>> {
-    return getAutoBeGenerated(
-      await this.asset.compiler(),
-      this.asset.state(),
-      this.getHistories(),
-      this.getTokenUsage(),
-      options,
-    );
-  }
+  ): Promise<Record<string, string>>;
   public abstract getHistories(): AutoBeHistory[];
   public abstract getTokenUsage(): AutoBeTokenUsage;
 

@@ -11,7 +11,7 @@ export const validateEmptyCode = (props: {
   const errors: IValidation.IError[] = [];
   if (props.draft.includes(props.functionName) === false)
     errors.push({
-      path: "$input.draft",
+      path: "$input.request.draft",
       expected: `string (including function named '${props.functionName}')`,
       value: props.draft,
       description: description(props.functionName),
@@ -21,7 +21,7 @@ export const validateEmptyCode = (props: {
     props.revise.final.includes(props.functionName) === false
   )
     errors.push({
-      path: "$input.revise.final",
+      path: "$input.request.revise.final",
       expected: `string (including function named '${props.functionName}')`,
       value: props.revise.final,
       description: description(props.functionName),

@@ -23,7 +23,6 @@ export const getAutoBeRealizeGenerated = async (props: {
       ])
       .flat(),
   ),
-  ...(await props.compiler.realize.getTemplate(props.options)),
   ...(await props.compiler.realize.controller({
     document: props.document,
     functions: props.functions,

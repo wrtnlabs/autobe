@@ -1,14 +1,16 @@
-import { AutoBeRealizeAuthorization } from "@autobe/interface";
+import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
-import { transformRealizeWriteAuthorizationsHistories } from "./transformRealizeWriteAuthorizationsHistories";
+import { transformRealizeWriteMembershipHistory } from "./transformRealizeWriteMembershipHistory";
 
 export const transformRealizeWriteHistories = (props: {
   state: AutoBeState;
@@ -16,16 +18,8 @@ export const transformRealizeWriteHistories = (props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   dto: Record<string, string>;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): IAutoBeOrchestrateHistory => {
-  const payloads = Object.fromEntries(
-    props.totalAuthorizations.map((el) => [
-      el.payload.location,
-      el.payload.content,
-    ]),
-  );
-
-  const operation = props.scenario.operation;
-
   if (props.state.analyze === null)
     return {
       histories: [
@@ -109,11 +103,18 @@ export const transformRealizeWriteHistories = (props: {
       userMessage: "Please wait for prerequisites to complete",
     };
 
-  // Get authorization-specific histories if authorizationType is set
-  const authorizationHistories = operation.authorizationType
-    ? transformRealizeWriteAuthorizationsHistories(operation, payloads)
-    : [];
-  const document = props.state.interface.document;
+  const payloads: Record<string, string> = Object.fromEntries(
+    props.totalAuthorizations.map((el) => [
+      el.payload.location,
+      el.payload.content,
+    ]),
+  );
+  const operation: AutoBeOpenApi.IOperation = props.scenario.operation;
+  const authorizationHistories: IMicroAgenticaHistoryJson[] =
+    operation.authorizationType
+      ? transformRealizeWriteMembershipHistory(operation, payloads)
+      : [];
+  const document: AutoBeOpenApi.IDocument = props.state.interface.document;
 
   return {
     histories: [
@@ -123,20 +124,16 @@ export const transformRealizeWriteHistories = (props: {
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.REALIZE_WRITE,
       },
+      ...props.preliminary.getHistories(),
       ...authorizationHistories,
       {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
-          `{prismaSchemas}`,
-          JSON.stringify(props.state.prisma.schemas),
-        )
-          .replaceAll(
-            `{input}`,
-            getRealizeWriteInputType(operation, props.authorization),
-          )
-          .replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
+          `{input}`,
+          getRealizeWriteInputType(operation, props.authorization),
+        ).replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
       },
       {
         id: v7(),

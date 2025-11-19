@@ -53,6 +53,7 @@ export const orchestrateDescribeImagesDrafts = async <
   };
   return (
     await executeCachedBatch(
+      ctx,
       matrix.map((it) => async (promptCacheKey) => {
         const event: AutoBeDescribeImageDraftEvent = await process(ctx, {
           imageContents: it,

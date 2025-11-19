@@ -84,6 +84,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "interfaceAuthorization":
     case "interfaceSchema":
     case "interfaceSchemaReview":
+    case "interfaceComplement":
     case "interfaceSchemaRename":
     case "interfacePrerequisite":
     case "testWrite":
@@ -96,7 +97,6 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     // VALIDATE EVENTS
     case "prismaInsufficient":
     case "prismaValidate":
-    case "interfaceComplement":
     case "testValidate":
     case "realizeValidate":
     case "realizeAuthorizationValidate":
@@ -151,6 +151,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "jsonParseError":
     case "jsonValidateError":
     case "consentFunctionCall":
+    case "preliminary":
       return null;
     default:
       back satisfies never;

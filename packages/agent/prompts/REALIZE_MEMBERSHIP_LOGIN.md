@@ -134,7 +134,7 @@ The JWT token payload serves as a **cryptographically signed credential** that i
 **CRITICAL**: Use the predefined payload structures for consistency:
 
 ```json
-${PAYLOAD}
+{{PAYLOAD}}
 ```
 
 **NOTE**: The jsonwebtoken library is automatically imported as jwt. Use it to generate tokens with the EXACT payload structure:

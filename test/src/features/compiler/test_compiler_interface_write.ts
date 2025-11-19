@@ -17,8 +17,10 @@ export const test_compiler_interface_write = async (
       ).then((r) => r.json()),
     ),
   );
-  const files: Record<string, string> =
-    await compiler.interface.write(document);
+  const files: Record<string, string> = await compiler.interface.write(
+    document,
+    [],
+  );
   typia.assertEquals(files);
 
   const root: string = `${TestGlobal.ROOT}/results/compiler.interface.write`;

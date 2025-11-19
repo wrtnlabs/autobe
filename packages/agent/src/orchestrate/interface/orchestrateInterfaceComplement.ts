@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { missedOpenApiSchemas } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -7,100 +11,61 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
+import { divideArray } from "../../utils/divideArray";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
+export const orchestrateInterfaceComplement = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  return step(ctx, props, {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
+  step(ctx, props, {
     wasEmpty: false,
     life: 10,
   });
-}
 
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
   },
-  progress: {
+  state: {
     wasEmpty: boolean;
     life: number;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = missedOpenApiSchemas(props.document);
   if (missed.length === 0) return props.document.components.schemas;
-  else if (progress.life === 0) return props.document.components.schemas;
+  else if (state.life === 0) return props.document.components.schemas;
 
-  const pointer: IPointer<Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive
-  > | null> = {
-    value: null,
-  };
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "interfaceComplement",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value ??= {};
-        Object.assign(
-          pointer.value,
-          (OpenApiV3_1Emender.convertComponents({
-            schemas: next,
-          }).schemas ?? {}) as Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          >,
-        );
-      },
-    }),
-    enforceFunctionCall: true,
-    ...transformInterfaceComplementHistories({
-      state: ctx.state(),
+  props.progress.total += missed.length;
+  const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    await divideAndConquer(ctx, {
       instruction: props.instruction,
       document: props.document,
+      progress: props.progress,
       missed,
-    }),
-  });
-  if (pointer.value === null)
-    // unreachable
-    throw new Error(
-      "Failed to fill missing schema types. No response from agentica.",
-    );
-  ctx.dispatch({
-    type: "interfaceComplement",
-    id: v7(),
-    missed,
-    schemas: pointer.value,
-    metric,
-    tokenUsage,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-
-  const empty: boolean = Object.keys(pointer.value).length === 0;
-  if (empty === true && progress.wasEmpty === true)
-    return props.document.components.schemas;
-
-  const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-    ...pointer.value,
+    });
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+    ...newbie,
     ...props.document.components.schemas,
   };
-  JsonSchemaNamingConvention.schemas(props.document.operations, newSchemas);
-  return step(
+  JsonSchemaNamingConvention.schemas(props.document.operations, schemas);
+  return await step(
     ctx,
     {
       instruction: props.instruction,
@@ -108,42 +73,172 @@ async function step<Model extends ILlmSchema.Model>(
         ...props.document,
         components: {
           ...props.document.components,
-          schemas: newSchemas,
+          schemas,
         },
       },
+      progress: props.progress,
     },
     {
-      wasEmpty: empty,
-      life: progress.life - 1,
+      wasEmpty: Object.keys(newbie).length === 0,
+      life: state.life - 1,
     },
   );
 }
 
+async function divideAndConquer<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    instruction: string;
+    document: AutoBeOpenApi.IDocument;
+    missed: string[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const matrix: string[][] = divideArray({
+    array: props.missed,
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
+  });
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  for (const missed of matrix) {
+    const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      await process(ctx, {
+        instruction: props.instruction,
+        document: props.document,
+        progress: props.progress,
+        missed,
+      });
+    Object.assign(x, row);
+  }
+  return x;
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    instruction: string;
+    document: AutoBeOpenApi.IDocument;
+    missed: string[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  > = new AutoBePreliminaryController({
+    application:
+      typia.json.application<IAutoBeInterfaceComplementApplication>(),
+    source: SOURCE,
+    kinds: [
+      "analysisFiles",
+      "prismaSchemas",
+      "interfaceOperations",
+      "interfaceSchemas",
+    ],
+    state: ctx.state(),
+    all: {
+      interfaceOperations: props.document.operations,
+      interfaceSchemas: props.document.components.schemas,
+    },
+  });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    > | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value ??= {};
+          Object.assign(
+            pointer.value,
+            (OpenApiV3_1Emender.convertComponents({
+              schemas: next,
+            }).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >,
+          );
+        },
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceComplementHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        preliminary,
+        missed: props.missed,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    props.progress.completed += Object.keys(pointer.value).length;
+    props.progress.total +=
+      Object.keys(pointer.value).length - props.missed.length;
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      missed: props.missed,
+      schemas: pointer.value,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      completed: props.progress.completed,
+      total: props.progress.total,
+      created_at: new Date().toISOString(),
+    });
+    return out(result)(pointer.value);
+  });
+}
+
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+  >;
   build: (
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const validate = (
+  const validate: Validator = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    JsonSchemaFactory.fixPage("schemas", next);
+    if (
+      typia.is<{
+        request: {
+          type: "complete";
+          schemas: object;
+        };
+      }>(next)
+    )
+      JsonSchemaFactory.fixPage("schemas", next.request);
 
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    }
+    } else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
 
     const errors: IValidation.IError[] = [];
     JsonSchemaValidator.validateSchemas({
       errors,
-      schemas: result.data.schemas,
-      path: "$input.schemas",
+      schemas: result.data.request.schemas,
+      path: "$input.request.schemas",
     });
     if (errors.length !== 0)
       return {
@@ -165,33 +260,33 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "interface",
+    name: SOURCE,
     application,
     execute: {
-      complementComponents: (next) => {
-        props.build(next.schemas);
+      process: (next) => {
+        if (next.request.type === "complete") props.build(next.request.schemas);
       },
     } satisfies IAutoBeInterfaceComplementApplication,
   };
 }
 
 const collection = {
-  chatgpt: (validate: Validator) =>
+  chatgpt: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "chatgpt">({
       validate: {
-        complementComponents: validate,
+        process: validator,
       },
     }),
-  claude: (validate: Validator) =>
+  claude: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "claude">({
       validate: {
-        complementComponents: validate,
+        process: validator,
       },
     }),
-  gemini: (validate: Validator) =>
+  gemini: (validator: Validator) =>
     typia.llm.application<IAutoBeInterfaceComplementApplication, "gemini">({
       validate: {
-        complementComponents: validate,
+        process: validator,
       },
     }),
 };
@@ -199,3 +294,5 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceComplementApplication.IProps>;
+
+const SOURCE = "interfaceComplement" satisfies AutoBeEventSource;

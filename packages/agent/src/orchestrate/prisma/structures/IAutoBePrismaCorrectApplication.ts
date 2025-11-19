@@ -1,111 +1,124 @@
 import { AutoBePrisma } from "@autobe/interface";
 
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+
 export interface IAutoBePrismaCorrectApplication {
   /**
-   * Fixes validation errors in specific AutoBePrisma models while preserving
-   * ALL existing business logic and model descriptions.
+   * Process schema correction task or preliminary data requests.
    *
-   * ## Core Rules
+   * Fixes validation errors in specific Prisma models while preserving all
+   * business logic and model descriptions. Returns ONLY corrected models.
    *
-   * 1. Fix ONLY validation errors in provided models - never remove business
-   *    descriptions
-   * 2. Apply minimal changes to error models only - preserve original design
-   *    intent
-   * 3. Return ONLY corrected models - unchanged models remain in original schema
-   * 4. Maintain referential integrity with unchanged models
-   *
-   * ## Targeted Scope
-   *
-   * - Process ONLY models with validation errors from IError[] array
-   * - Exclude models without errors from processing and output
-   * - Minimize context usage by returning corrected models only
-   * - Preserve unchanged models in their original state
-   *
-   * ## Fix Strategy
-   *
-   * - Resolve validation errors within specific models only
-   * - Fix field duplications, invalid references, and type mismatches
-   * - Update cross-model references without modifying target models
-   * - Ensure naming conventions and index rules compliance in corrected models
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  correctPrismaSchemaFiles(props: IAutoBePrismaCorrectApplication.IProps): void;
+  process(props: IAutoBePrismaCorrectApplication.IProps): void;
 }
 export namespace IAutoBePrismaCorrectApplication {
   export interface IProps {
     /**
-     * Detailed execution plan for fixing `AutoBePrisma` validation errors in
-     * specific models.
+     * Think before you act.
      *
-     * 🎯 Purpose: Enable systematic reasoning and step-by-step error resolution
-     * approach for targeted model validation issues
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
      *
-     * 📋 Required Planning Content:
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
      *
-     * 1. **Error Scope Analysis**
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
      *
-     *    - List all validation errors from IAutoBePrismaValidation.IError[] array
-     *    - Extract unique table names from errors to identify affected models
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas) or final schema correction
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas;
+  }
+
+  /**
+   * Request to fix validation errors in Prisma models.
+   *
+   * Executes targeted error correction to resolve specific validation issues in
+   * affected models only. Applies minimal changes while preserving original
+   * design intent and business logic.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
+    /**
+     * Detailed execution plan for fixing validation errors.
+     *
+     * Contains systematic reasoning and step-by-step error resolution approach
+     * for targeted model validation issues.
+     *
+     * Required planning content:
+     *
+     * 1. Error scope analysis:
+     *
+     *    - List all validation errors from IAutoBePrismaValidation.IError[]
+     *    - Extract unique table names to identify affected models
      *    - Categorize errors by type (field duplications, references, types,
      *         indexes)
-     *    - Identify which models need correction vs. which remain unchanged
-     * 2. **Targeted Fix Strategy**
+     *    - Identify which models need correction vs. remain unchanged
+     * 2. Targeted fix strategy:
      *
      *    - Focus ONLY on models mentioned in validation errors
      *    - Outline minimal changes needed for each affected model
-     *    - Plan cross-model reference updates (if any) without modifying non-error
-     *         models
+     *    - Plan cross-model reference updates without modifying non-error models
      *    - Ensure unchanged models maintain valid references to corrected models
-     * 3. **Model-Specific Fix Plan**
+     * 3. Model-specific fix plan:
      *
      *    - Model-by-model modification plan for ONLY affected models
      *    - Exact field additions, renames, or type corrections required
      *    - Reference updates within corrected models only
      *    - Index corrections limited to affected models
-     * 4. **Minimal Scope Validation**
+     * 4. Minimal scope validation:
      *
      *    - Confirm which models will be included in output (error models only)
      *    - List models that will remain unchanged in original schema
      *    - Identify cross-model dependencies without including unchanged models
      *    - Preserve all business logic within corrected models
-     * 5. **Targeted Impact Assessment**
+     * 5. Targeted impact assessment:
      *
      *    - Potential effects of fixes on unchanged models (reference validation)
      *    - Verification points for corrected models only
      *    - Ensure no new validation errors in targeted models
      *    - Confirm minimal output scope compliance
-     *
-     * 💡 Example Planning Structure:
-     *
-     *     ## Error Scope
-     *     - Target Models: shopping_customers, shopping_orders (2 models only)
-     *     - Unchanged Models: All others remain in original schema
-     *
-     *     ## Targeted Fixes
-     *     - shopping_customers: Remove duplicate 'email' field
-     *     - shopping_orders: Update targetModel reference to 'shopping_customers'
-     *
-     *     ## Output Scope
-     *     - Return: Only shopping_customers and shopping_orders models
-     *     - Preserve: All other models unchanged in original schema
-     *
-     *     ## Cross-Model Impact
-     *     - Verify: shopping_orders still references shopping_customers correctly
-     *     - No changes needed in other models referencing these
      */
     planning: string;
 
     /**
-     * ONLY the specific models that contain validation errors and need
-     * correction.
+     * Models with validation errors that need correction.
      *
-     * 📥 Input Structure:
+     * Contains ONLY models mentioned in IAutoBePrismaValidation.IError[] array.
+     * Each model has specific validation errors requiring targeted correction.
+     * Models not mentioned in errors are excluded from this input.
      *
-     * - Contains ONLY models mentioned in IAutoBePrismaValidation.IError[] array
-     * - Each model has specific validation errors that need targeted correction
-     * - Models not mentioned in errors are excluded from this input
-     * - Represents minimal scope for error correction
-     *
-     * 🔍 Expected Validation Issues (Model-Specific):
+     * Expected validation issues:
      *
      * - Duplicate field/relation names within these specific models
      * - Invalid foreign key references from these models to other models
@@ -113,7 +126,7 @@ export namespace IAutoBePrismaCorrectApplication {
      * - Invalid naming conventions within these specific models
      * - Type validation errors in fields of these models
      *
-     * 📝 Model Content Analysis (Targeted Scope):
+     * Model content analysis:
      *
      * - Complete field definitions for each error model only
      * - Relationships from these models (may reference unchanged models)
@@ -121,7 +134,7 @@ export namespace IAutoBePrismaCorrectApplication {
      * - Business descriptions specific to these models
      * - Cross-model references that need validation (read-only for targets)
      *
-     * ⚠️ Processing Notes (Focused Approach):
+     * Processing notes:
      *
      * - Input contains ONLY models with validation errors
      * - May reference other models not included in this input
@@ -130,14 +143,6 @@ export namespace IAutoBePrismaCorrectApplication {
      * - Output should return corrected versions of ONLY these input models
      * - All business logic and descriptions within these models must be preserved
      * - Corrections must not break references from unchanged models
-     *
-     * 🎯 Correction Scope:
-     *
-     * - Fix validation errors within these specific models
-     * - Update internal model structure (fields, relations, indexes)
-     * - Correct references to external models (without modifying targets)
-     * - Maintain compatibility with unchanged models in the full schema
-     * - Return corrected versions of ONLY these models
      */
     models: AutoBePrisma.IModel[];
   }

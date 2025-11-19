@@ -19,6 +19,7 @@ export * from "./AutoBeVendorRequestEvent";
 export * from "./AutoBeVendorResponseEvent";
 export * from "./AutoBeJsonValidateErrorEvent";
 export * from "./AutoBeJsonParseErrorEvent";
+export * from "./AutoBePreliminaryEvent";
 
 /** @internal */
 export * from "./AutoBeEventOfSerializable";

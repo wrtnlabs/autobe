@@ -31,22 +31,6 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
 
 ## Getting Started
 
-[![Playground StackBlitz](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
-
-https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz
-
-Visit the site above to use AutoBE directly through the StackBlitz website. Simply discuss the topic you want to build, and AutoBE will create a backend application for you.
-
-Here's an example conversation script to use with AutoBE. Following this script will guide AutoBE to create an "Economic/Political Discussion Board":
-
-1. **Requirements Analysis**: "I want to create an economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
-2. **Database Design**: "Design the database schema."
-3. **API Specification**: "Create the API interface specification."
-4. **Testing**: "Make the e2e test functions."
-5. **Implementation**: "Implement API functions."
-
-If you want to use Local LLMs like `qwen3-next-80b-a3b-instruct` or maintain multiple chat sessions for frequent conversations with AutoBE, run the following commands. You can install AutoBE locally, run the playground application directly, and manage your chat sessions:
-
 ```bash
 git clone https://github.com/wrtnlabs/autobe
 cd autobe
@@ -54,9 +38,21 @@ pnpm install
 pnpm run playground
 ```
 
+To use AutoBE, clone the repository and run the playground application locally. This allows you to chat with AutoBE's AI agents, manage multiple sessions, and use various LLM providers including local models like `qwen3-next-80b-a3b-instruct`.
+
+After installation, the playground will be available at http://localhost:5713. You can interact with AutoBE through a chat interface - simply describe what you want to build, and AutoBE will generate the backend application for you.
+
+Here's an example conversation script that guides AutoBE to create an "Economic/Political Discussion Board":
+
+1. **Requirements Analysis**: "I want to create an economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
+2. **Database Design**: "Design the database schema."
+3. **API Specification**: "Create the API interface specification."
+4. **Testing**: "Make the e2e test functions."
+5. **Implementation**: "Implement API functions."
+
 ![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt-4.1.png)
 
-> After installing AutoBE locally and running the playground, you can replay chat sessions from AutoBE development team's testing at http://localhost:5713/replay/index.html.
+> The playground includes a replay feature at http://localhost:5713/replay/index.html where you can view chat sessions from the AutoBE development team's testing and benchmarks.
 
 ## Documentation Resources
 
@@ -179,33 +175,58 @@ This SDK eliminates the traditional pain points of API integration - no more man
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
-  title AutoBE Roadmap Overview
+  title AutoBE Gamma Roadmap Timeline
 
-  section Alpha Release
-  Overall Design: done, 2025-05-01, 21d
-  Compiler Development: done, 2025-05-16, 30d
-  Prototype Agents: done, 2025-05-16, 30d
+  section Production Testing
+  Hackathon Contest     : done  , 2025-09-16,  7d
+  Open Source Contest   : done  , 2025-09-16, 50d
+  Enterprise Development: done  , 2025-10-01, 31d
+  Performance Benchmark : active, 2025-11-01, 14d
+  
+  section Lessons Learned
+  Direct Instruction     : done  , 2025-10-15, 14d
+  Interface Schema Review: done  , 2025-10-20, 16d
+  JSON Schema Guideline  : done  , 2025-10-29,  7d
+  Image Understanding    : active, 2025-11-17, 13d
 
-  section Beta Release
-  Compiler Feedback: done, 2025-06-15, 29d
-  Test Agent: done, 2025-06-15, 92d
-  Realize Agent: done, 2025-07-01, 76d
-  Achieve 100% Compilation: done, 2025-07-16, 61d
-  Hackathon Contest: done, 2025-09-01, 21d
+  section RAG Optimization
+  Prisma   : done, 2025-11-10,  7d
+  Interface: done, 2025-11-17, 13d
+  Test     : done, 2025-11-24, 13d
+  Realize  : done, 2025-11-24, 13d
 
-  section v1.0 Official Release
-  Debate Enhancement: planned, 2025-09-15, 90d
-  RAG Optimization: planned, 2025-09-15, 90d
-  Achieve 100% Working: active, 2025-09-15, 90d
+  section Modularization
+  (Test) Authorization    : planned, 2025-11-10, 14d
+  (Test) Data Creation    : planned, 2025-11-17, 14d
+  (Realize) Transformation: planned, 2025-11-17, 20d
+  (Realize) Collector     : planned, 2025-11-24, 13d
+
+  section Complementation
+  Analyze  : planned, 2025-11-17,  7d
+  Prisma   : planned, 2025-11-17, 14d
+  Interface: planned, 2025-11-17, 14d
+  Test     : planned, 2025-11-24, 13d
+  Realize  : planned, 2025-11-24, 13d
+
+  section Recruitment
+  AutoBE Developer: active, 2025-11-10, 20d
 ```
 
-AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation for production-ready backend generation.
+AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation with **100% compilation success rate**. The current **Gamma Release** represents a strategic evolution based on real-world production experience.
 
-**The Alpha phase** (May 2025) focused on core architecture design and compiler development, creating the foundational framework for AI-friendly code generation. We built the initial agent system and established the waterfall methodology that ensures reliable, structured development processes.
+**Production Testing Experience**: Through enterprise development, open-source contests, and hackathons, we validated AutoBE in real production environments. This practical experience revealed both strengths and areas for improvement, directly shaping our development priorities.
 
-**The Beta phase** (June 15 - September 14, 2025) achieved our primary goal: 100% compilation success rate. Through extensive testing across diverse application types including e-commerce platforms, discussion boards, and task management systems, we validated that AutoBE's AI-friendly compilers can generate TypeScript and Prisma code that compiles successfully every time.
+**Strategic Shift**: While earlier phases pursued perfection for each feature, Gamma adopts a breadth-first approach - rapidly building foundational prototypes across more features, with quality refinement following through team expansion and incremental improvement.
 
-**The v1.0 Official Release** (starting September 15, 2025) now targets the next milestone: ensuring that AutoBE-generated backend applications not only compile successfully, but also run perfectly in production environments. This means achieving 100% runtime success alongside our existing compilation guarantee, delivering truly production-ready applications without manual intervention.
+**Key Focus Areas**:
+
+- **RAG Optimization**: Transitioning from batch processing to intelligent iterative workflows, where agents selectively request only necessary information, achieving up to 70% token reduction
+- **Modularization**: Generating reusable, maintainable code modules instead of duplicated implementations, making AI-generated code developer-friendly
+- **Complementation**: Enabling incremental updates to generated backends instead of full regeneration, supporting iterative improvement workflows
+- **Multimodal Support**: Extracting requirements from visual artifacts like Figma designs and ERD diagrams, not just natural language
+- **Direct Instruction**: Allowing precise technical specifications for database schemas and API designs when business constraints require it
+
+This roadmap prioritizes practical developer experience over theoretical perfection, informed by months of real-world usage in enterprise environments.
 
 ## Current Limitations
 

@@ -1,3 +1,4 @@
+import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeExampleProject,
@@ -5,6 +6,7 @@ import {
   AutoBePhase,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
+import fs from "fs";
 import typia from "typia";
 
 import { AutoBeExampleStorage } from "../example/AutoBeExampleStorage";
@@ -26,6 +28,22 @@ export namespace AutoBeReplayStorage {
       ),
     );
     return replays.filter((r) => r !== null);
+  };
+
+  export const getAllSummaries = async (
+    vendor: string,
+    projectFilter?: (project: AutoBeExampleProject) => boolean,
+  ): Promise<IAutoBePlaygroundReplay.ISummary[]> => {
+    const projects: AutoBeExampleProject[] = typia.misc
+      .literals<AutoBeExampleProject>()
+      .filter(projectFilter ?? (() => true));
+    const summaries: Array<IAutoBePlaygroundReplay.ISummary | null> =
+      await Promise.all(
+        projects.map((project) =>
+          AutoBeReplayStorage.getSummary({ vendor, project }),
+        ),
+      );
+    return summaries.filter((s) => s !== null);
   };
 
   export const get = async (props: {
@@ -58,6 +76,17 @@ export namespace AutoBeReplayStorage {
       test: await snapshots("test"),
       realize: await snapshots("realize"),
     };
+  };
+
+  export const getSummary = async (props: {
+    vendor: string;
+    project: AutoBeExampleProject;
+  }): Promise<IAutoBePlaygroundReplay.ISummary | null> => {
+    const location: string = `${AutoBeExampleStorage.getDirectory(props)}/summary.json.gz`;
+    if (fs.existsSync(location) === false) return null;
+    return JSON.parse(
+      await CompressUtil.gunzip(await fs.promises.readFile(location)),
+    );
   };
 
   const getHistories = async (props: {

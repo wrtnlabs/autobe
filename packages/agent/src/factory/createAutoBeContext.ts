@@ -27,7 +27,11 @@ import {
   IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import {
+  AutoBeProcessAggregateFactory,
+  StringUtil,
+  TokenUsageComputer,
+} from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore } from "tstl";
 import typia from "typia";
@@ -42,8 +46,6 @@ import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
 import { TimedConversation } from "../utils/TimedConversation";
-import { TokenUsageComputer } from "../utils/TokenUsageComputer";
-import { AutoBeProcessAggregateFactory } from "./AutoBeProcessAggregateFactory";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
@@ -181,6 +183,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           void props
             .dispatch({
               ...event,
+              function: event.operation.function.name,
               source: next.source,
             })
             .catch(() => {});
@@ -192,6 +195,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               type: "jsonValidateError",
               id: v7(),
               source: next.source,
+              function: event.operation.function.name,
               result: event.result,
               life: event.life,
               created_at: event.created_at,
@@ -260,6 +264,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             histories,
             tokenUsage: aggregate.tokenUsage,
             metric: aggregate.metric,
+            __agent: agent,
           };
         };
         if (result.type === "error") throw result.error;

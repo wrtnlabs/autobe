@@ -9,7 +9,7 @@ export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
   // Get available models from replays data
   const [items] = useState(AutoBeDemoStorage.getItems());
   const [selectedModel, setSelectedModel] = useState<string>(
-    props.model ?? "openai/gpt-4.1",
+    props.model ?? items[0].data,
   );
 
   return (

@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeEventSource,
   AutoBeInterfaceSchemaRefactor,
   AutoBeInterfaceSchemaRenameEvent,
   AutoBeOpenApi,
@@ -20,7 +21,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformInterfaceSchemaRenameHistories } from "./histories/transformInterfaceSchemaRenameHistories";
+import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
 export async function orchestrateInterfaceSchemaRename<
@@ -54,6 +55,7 @@ export async function orchestrateInterfaceSchemaRename<
   const refactors: AutoBeInterfaceSchemaRefactor[] = uniqueRefactors(
     (
       await executeCachedBatch(
+        ctx,
         matrix.map(
           (typeNames) => (promptCacheKey) =>
             divideAndConquer(ctx, {
@@ -158,14 +160,14 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         value: null,
       };
     const { metric, tokenUsage } = await ctx.conversate({
-      source: "interfaceSchemaRename",
+      source: SOURCE,
       controller: createController<Model>(
         ctx.model,
         (value) => (pointer.value = value),
       ),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaRenameHistories(props),
+      ...transformInterfaceSchemaRenameHistory(props),
     });
     if (pointer.value === null) {
       props.progress.completed += props.typeNames.length;
@@ -174,7 +176,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
 
     pointer.value.refactors = uniqueRefactors(pointer.value.refactors);
     ctx.dispatch({
-      type: "interfaceSchemaRename",
+      type: SOURCE,
       id: v7(),
       refactors: pointer.value.refactors,
       total: props.progress.total,
@@ -247,7 +249,7 @@ const createController = <Model extends ILlmSchema.Model>(
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "SchemaRenamer",
+    name: SOURCE,
     application,
     execute: {
       rename: (props) => {
@@ -271,3 +273,5 @@ const collection = {
     "gemini"
   >(),
 };
+
+const SOURCE = "interfaceSchemaRename" satisfies AutoBeEventSource;

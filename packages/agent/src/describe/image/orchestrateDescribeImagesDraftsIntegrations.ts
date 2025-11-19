@@ -29,6 +29,7 @@ export const orchestrateDescribeImagesDraftsIntegrations = async <
   };
 
   return await executeCachedBatch(
+    ctx,
     props.groups.map((group) => async (promptCacheKey) => {
       const event = await processGroup(ctx, {
         group,

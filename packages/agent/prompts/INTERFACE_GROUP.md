@@ -72,16 +72,136 @@ makeGroups({
   groups: [
     {
       name: "Shopping",
-      description: "Handles shopping-related entities and operations"
+      description: "Handles shopping-related entities and operations including sales, products, customers, and reviews",
+      prismaSchemas: [
+        "shopping_sales",
+        "shopping_sale_snapshots",
+        "shopping_customers",
+        "shopping_products",
+        "shopping_sellers",
+        "shopping_sale_reviews"
+      ]
     },
     {
-      name: "BBS", 
-      description: "Manages bulletin board system functionality"
+      name: "BBS",
+      description: "Manages bulletin board system functionality including articles, comments, and file attachments",
+      prismaSchemas: [
+        "bbs_articles",
+        "bbs_article_snapshots",
+        "bbs_article_comments",
+        "bbs_article_files",
+        "bbs_categories"
+      ]
     },
     // more groups...
   ],
 });
 ```
+
+### Output Field Requirements
+
+Each group object MUST contain three fields:
+
+1. **name** (string): PascalCase identifier derived from Prisma schema structure
+2. **description** (string): Comprehensive scope description (100-2000 characters)
+3. **prismaSchemas** (string[]): List of Prisma model names required for this group
+
+### prismaSchemas Field: Comprehensive Guide
+
+**Purpose**: Identify and list ALL Prisma schema model names required to implement complete API functionality for this endpoint group.
+
+**Critical Importance**:
+This field pre-filters database models for the endpoint generation phase, significantly reducing cognitive load on the endpoint generator and enabling more comprehensive endpoint coverage. The endpoint generator will receive these schemas upfront, eliminating the need to discover them through RAG.
+
+#### How to Determine prismaSchemas
+
+**Step 1: Analyze Requirements Thoroughly**
+- Read all requirements related to this endpoint group
+- Identify every entity, resource, and data type mentioned
+- Note relationships between entities (parent-child, references)
+
+**Step 2: Map Requirements to Prisma Models**
+- For each entity in requirements, find corresponding Prisma model
+- Look for table names matching the entity (e.g., "sales" → `shopping_sales`)
+- Consider namespace prefixes in your project (e.g., `shopping_*`, `bbs_*`)
+
+**Step 3: Include Related Models**
+- **Direct entities**: Models directly mentioned in requirements
+- **Parent entities**: Models that child entities reference (for nested endpoints)
+- **Child entities**: Models that are nested under parents
+- **Snapshot models**: If domain has versioning, include `*_snapshots` tables
+- **Junction tables**: If many-to-many relationships exist
+- **Related lookup data**: Categories, types, statuses if referenced
+
+**Step 4: Be Comprehensive**
+- Include ALL models users interact with in this domain
+- Include models needed for complete workflows
+- Don't worry about including "too many" - thoroughness is preferred
+- Endpoint generator will still select which endpoints to create
+
+#### Example Analysis Process
+
+```
+Requirement: "Customers can purchase products and leave reviews on sales"
+
+Analysis:
+- "Customers" → shopping_customers
+- "purchase" → shopping_sales, shopping_orders (check which exists)
+- "products" → shopping_products
+- "reviews" → shopping_sale_reviews (or shopping_reviews)
+- Need snapshots? → shopping_sale_snapshots (if sales are versioned)
+- Need sellers? → shopping_sellers (sellers own products)
+- Need categories? → shopping_product_categories (for product organization)
+
+Result prismaSchemas:
+[
+  "shopping_customers",
+  "shopping_sales",
+  "shopping_sale_snapshots",
+  "shopping_products",
+  "shopping_sellers",
+  "shopping_sale_reviews",
+  "shopping_product_categories"
+]
+```
+
+#### Common Domain Patterns
+
+| Domain Type | Typical Models to Include |
+|------------|---------------------------|
+| E-commerce Sales | sales, customers, products, sellers, sale_snapshots, reviews, categories |
+| User Management | users, profiles, roles, permissions, user_sessions |
+| Content/Articles | articles, article_snapshots, comments, files, categories, tags |
+| Orders/Transactions | orders, order_items, customers, products, payments, shipments |
+| Project Management | projects, tasks, teams, members, project_files, comments |
+
+#### What to Include vs Exclude
+
+**✅ Include**:
+- All directly mentioned entities in requirements
+- Parent entities for nested resources
+- Child entities for complete CRUD operations
+- Snapshot tables for versioned data
+- Related lookup/reference tables
+- Junction tables for many-to-many relationships
+
+**❌ Exclude**:
+- System-internal tables (audit_logs, system_metrics, performance_data)
+- Pure cache tables (temporary_cache, session_cache)
+- Framework tables (migrations, schema_versions)
+- Unrelated entities from other domains
+
+#### Validation Checklist
+
+Before finalizing `prismaSchemas`, verify:
+
+- [ ] Each schema name exists in the Prisma schema
+- [ ] All directly mentioned entities are included
+- [ ] Parent entities for nested resources are included
+- [ ] Snapshot tables are included if domain uses versioning
+- [ ] Related lookup/reference tables are included
+- [ ] No system-internal or cache tables included
+- [ ] List is comprehensive for complete workflow support
 
 ## Group Generation Principles
 

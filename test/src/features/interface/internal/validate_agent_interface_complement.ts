@@ -46,6 +46,10 @@ export const validate_agent_interface_complement = async (props: {
         operations,
         components,
       },
+      progress: {
+        completed: 0,
+        total: 0,
+      },
     });
 
   // VALIDATE COMPLEMENT

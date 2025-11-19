@@ -13,6 +13,8 @@ import path from "path";
 import { Singleton, VariadicSingleton } from "tstl";
 
 export namespace AutoBeExampleStorage {
+  export const TEST_ROOT: string = `${__dirname}/../../../../test`;
+
   export const repository = (): string => examples.get();
   export const getDirectory = (props: {
     vendor: string;
@@ -23,7 +25,7 @@ export namespace AutoBeExampleStorage {
   export const save = async (props: {
     vendor: string;
     project: AutoBeExampleProject;
-    files: Record<string, string>;
+    files: Record<string, string | null>;
   }): Promise<void> => {
     await saveWithGzip({
       root: `${getDirectory(props)}`,
@@ -184,57 +186,51 @@ export namespace AutoBeExampleStorage {
     if (replaceSlash) model = model.replaceAll("/", "-");
     return model;
   };
-}
 
-const PROMPT_TEMPLATE = {
-  describe:
-    "Analyze the image content and generate a draft of the planning document.",
-  prisma: "Design the database schema.",
-  interface: "Create the API interface specification.",
-  test: "Make the e2e test functions.",
-  realize: "Implement API functions.",
-};
-const TEST_ROOT: string = `${__dirname}/../../../../test`;
+  const PROMPT_TEMPLATE = {
+    prisma: "Design the database schema.",
+    interface: "Create the API interface specification.",
+    test: "Make the e2e test functions.",
+    realize: "Implement API functions.",
+  };
 
-const examples = new Singleton(() => {
-  const location: string = `${TEST_ROOT}/repositories/autobe-examples`;
-  if (fs.existsSync(location) === false) {
-    try {
-      fs.mkdirSync(`${TEST_ROOT}/repositories`);
-    } catch {}
-    cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
-      cwd: `${TEST_ROOT}/repositories`,
-      stdio: "inherit",
-    });
-  }
-  cp.execSync("git pull", {
-    cwd: location,
-    stdio: "ignore",
+  const examples = new Singleton(() => {
+    const location: string = `${TEST_ROOT}/../../autobe-examples`;
+    if (fs.existsSync(location) === false)
+      cp.execSync(`git clone https://github.com/wrtnlabs/autobe-examples`, {
+        cwd: `${TEST_ROOT}/../../`,
+        stdio: "inherit",
+      });
+    if (fs.existsSync(`${location}/raw`) === false)
+      fs.mkdirSync(`${location}/raw`);
+    return location;
   });
-  if (fs.existsSync(`${location}/raw`) === false)
-    fs.mkdirSync(`${location}/raw`);
-  return location;
-});
 
-const saveWithGzip = async (props: {
-  root: string;
-  files: Record<string, string>;
-  overwrite?: boolean;
-}): Promise<void> => {
-  if (props.overwrite !== true && fs.existsSync(props.root))
-    await fs.promises.rm(props.root, {
-      recursive: true,
-    });
-  const directory = new VariadicSingleton(async (location: string) => {
-    try {
-      await fs.promises.mkdir(location, {
+  const saveWithGzip = async (props: {
+    root: string;
+    files: Record<string, string | null>;
+    overwrite?: boolean;
+  }): Promise<void> => {
+    if (props.overwrite !== true && fs.existsSync(props.root))
+      await fs.promises.rm(props.root, {
         recursive: true,
       });
-    } catch {}
-  });
-  for (const [key, value] of Object.entries(props.files)) {
-    const file: string = path.resolve(`${props.root}/${key}.gz`);
-    await directory.get(path.dirname(file));
-    await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
-  }
-};
+    const directory = new VariadicSingleton(async (location: string) => {
+      try {
+        await fs.promises.mkdir(location, {
+          recursive: true,
+        });
+      } catch {}
+    });
+    for (const [key, value] of Object.entries(props.files)) {
+      const file: string = path.resolve(`${props.root}/${key}.gz`);
+      await directory.get(path.dirname(file));
+      if (value !== null)
+        await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
+      else
+        try {
+          await fs.promises.unlink(file);
+        } catch {}
+    }
+  };
+}

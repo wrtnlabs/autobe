@@ -157,7 +157,7 @@ The JWT token payload serves as a **cryptographically signed credential** that i
 **CRITICAL**: Use the predefined payload structures for consistency:
 
 ```json
-${PAYLOAD}
+{{PAYLOAD}}
 ```
 
 ```typescript

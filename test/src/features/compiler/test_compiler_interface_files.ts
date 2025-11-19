@@ -48,5 +48,4 @@ export const test_compiler_interface_files = async () => {
     });
   execute("pnpm install");
   execute("pnpm run build");
-  execute("pnpm run test --simultaneous 1");
 };

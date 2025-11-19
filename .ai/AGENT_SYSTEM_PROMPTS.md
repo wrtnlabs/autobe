@@ -6,12 +6,20 @@ System Prompt editing is **the most critical and sensitive task** in AutoBE deve
 
 **Absolute Rule**: User instructions are absolute. If unclear, ask questions. If clear, execute exactly as specified. Never modify, reduce, or omit user commands based on your own judgment.
 
+**CRITICAL - Scope Limitation**: When user asks to edit system prompts, do ONLY the editing. Do NOT:
+- Run `pnpm run build:prompt` unless explicitly requested
+- Run `pnpm run build`, `pnpm run test`, or ANY other commands
+- Execute `git commit` or any git operations
+- Perform ANY actions beyond the editing itself
+
+The user will decide when to build, test, and commit. Your role is to edit ONLY.
+
 When editing System Prompts, you must:
 1. **Completely** read and understand the target prompt file
 2. Review related Orchestrator, Tool, and History code
 3. Integrate changes naturally into the existing storyline
-4. Review the impact on affected agents after changes
-5. Validate by running the actual pipeline whenever possible
+4. **STOP** after completing the edit - do not proceed with any other actions
+5. Let the user decide whether to validate in actual pipeline
 
 ## Prompt Architecture
 

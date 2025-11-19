@@ -26,6 +26,7 @@ import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewE
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
+import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentEvent } from "./AutoBePrismaComponentEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
@@ -92,6 +93,7 @@ export type AutoBeEvent =
   | AutoBeJsonValidateErrorEvent
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
+  | AutoBePreliminaryEvent
   // DESCRIBE
   | AutoBeDescribeImageStartEvent
   | AutoBeDescribeImageDraftEvent
@@ -195,6 +197,7 @@ export namespace AutoBeEvent {
     jsonValidateError: AutoBeJsonValidateErrorEvent;
     jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
+    preliminary: AutoBePreliminaryEvent;
     // DESCRIBE
     describeImageStart: AutoBeDescribeImageStartEvent;
     describeImageDraft: AutoBeDescribeImageDraftEvent;

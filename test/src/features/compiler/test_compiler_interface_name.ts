@@ -8,8 +8,10 @@ export const test_compiler_interface_name = async (
   factory: TestFactory,
 ): Promise<void> => {
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const result: Record<string, string> =
-    await compiler.interface.write(DOCUMENT);
+  const result: Record<string, string> = await compiler.interface.write(
+    DOCUMENT,
+    [],
+  );
   const content: string =
     result["src/controllers/shopping/sale/ShoppingSaleController.ts"];
   TestValidator.predicate("method name", () =>

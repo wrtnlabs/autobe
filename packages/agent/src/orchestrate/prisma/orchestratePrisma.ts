@@ -9,6 +9,7 @@ import {
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
+import { writePrismaApplication } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -18,7 +19,7 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaReview } from "./orchestratePrismaReview";
-import { orchestratePrismaSchemas } from "./orchestratePrismaSchemas";
+import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 
 export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -49,26 +50,19 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
-  const schemaEvents: AutoBePrismaSchemaEvent[] =
-    await orchestratePrismaSchemas(
-      ctx,
-      props.instruction,
-      componentEvent.components,
-    );
+  const schemaEvents: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchema(
+    ctx,
+    props.instruction,
+    componentEvent.components,
+  );
   const application: AutoBePrisma.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };
 
   // REVIEW
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  const reviewSchemas: Record<string, string> = await compiler.prisma.write(
-    application,
-    "postgres",
-  );
   const reviewEvents: AutoBePrismaReviewEvent[] = await orchestratePrismaReview(
     ctx,
     application,
-    reviewSchemas,
     componentEvent.components,
   );
   for (const event of reviewEvents) {
@@ -90,12 +84,13 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     ctx,
     application,
   );
-  const finalSchemas: Record<string, string> = await compiler.prisma.write(
-    result.data,
-    "postgres",
-  );
+  const finalSchemas: Record<string, string> = writePrismaApplication({
+    dbms: "postgres",
+    application: result.data,
+  });
 
   // PROPAGATE
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   return ctx.dispatch({
     type: "prismaComplete",
     id: v7(),
