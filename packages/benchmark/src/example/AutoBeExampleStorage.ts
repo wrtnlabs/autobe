@@ -34,7 +34,7 @@ export namespace AutoBeExampleStorage {
 
   export const getUserMessage = async (props: {
     project: AutoBeExampleProject;
-    phase: AutoBePhase | "describe";
+    phase: AutoBePhase;
   }): Promise<AutoBeUserConversateContent[]> => {
     const full: string = `${TEST_ROOT}/scripts/${props.project}/${props.phase}`;
     if (props.project === "account" && props.phase === "analyze") {
