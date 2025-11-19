@@ -16,6 +16,9 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   history: AutoBeHistory;
 }): MicroAgenticaHistory<Model> | null {
   if (props.history.type === "userMessage") {
+    // @todo Seems to need more explanation that
+    //       this is not a pure text
+    //       but a text by analyzing an image
     const history: IAgenticaHistoryJson.IUserMessage = {
       ...props.history,
       contents: props.history.contents.map((c) => {
@@ -35,7 +38,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
     };
 
   const operation: AgenticaOperation<Model> | undefined = props.operations.find(
-    (op) => op.function.name === props.history.type,
+    (op) => op.function.name === props.history.type
   );
   if (operation === undefined) return null;
   const partial = {

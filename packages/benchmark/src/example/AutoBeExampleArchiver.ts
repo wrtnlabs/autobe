@@ -44,13 +44,13 @@ export namespace AutoBeExampleArchiver {
           await AutoBeExampleStorage.getUserMessage({
             project: ctx.project,
             phase: "analyze",
-          }).then((r) => r),
+          }).then((r) => r)
         )) ||
         (await conversate(
-          "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
+          "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report."
         )) ||
         (await conversate(
-          "I already told you to publish the analysis report. Never ask me anything, and just do it right now.",
+          "I already told you to publish the analysis report. Never ask me anything, and just do it right now."
         )),
       predicate: (histories): boolean =>
         histories.some((h) => h.type === "analyze"),
@@ -65,7 +65,7 @@ export namespace AutoBeExampleArchiver {
       }),
       predicate: (histories): boolean => {
         const prisma: AutoBePrismaHistory | undefined = histories.find(
-          (h) => h.type === "prisma",
+          (h) => h.type === "prisma"
         );
         return prisma !== undefined && prisma.compiled.type === "success";
       },
@@ -80,7 +80,7 @@ export namespace AutoBeExampleArchiver {
       }),
       predicate: (histories): boolean => {
         const interfaceHistory: AutoBeHistory | undefined = histories.find(
-          (h) => h.type === "interface",
+          (h) => h.type === "interface"
         );
         return (
           interfaceHistory !== undefined && interfaceHistory.missed.length === 0
@@ -97,7 +97,7 @@ export namespace AutoBeExampleArchiver {
       }),
       predicate: (histories): boolean => {
         const testHistory: AutoBeHistory | undefined = histories.find(
-          (h) => h.type === "test",
+          (h) => h.type === "test"
         );
         return (
           testHistory !== undefined && testHistory.compiled.type === "success"
@@ -114,7 +114,7 @@ export namespace AutoBeExampleArchiver {
       }),
       predicate: (histories): boolean => {
         const realizeHistory: AutoBeHistory | undefined = histories.find(
-          (h) => h.type === "realize",
+          (h) => h.type === "realize"
         );
         return (
           realizeHistory !== undefined &&
@@ -132,11 +132,11 @@ export namespace AutoBeExampleArchiver {
           input:
             | string
             | AutoBeUserConversateContent
-            | AutoBeUserConversateContent[],
-        ) => Promise<boolean>,
+            | AutoBeUserConversateContent[]
+        ) => Promise<boolean>
       ) => Promise<boolean>;
       predicate: (histories: AutoBeHistory[]) => boolean;
-    },
+    }
   ): Promise<boolean> => {
     // INITIALIZE AGENT
     const asset: IAgentProps = await getAsset({
@@ -159,7 +159,7 @@ export namespace AutoBeExampleArchiver {
 
     const summarize = async (
       histories: AutoBeHistory[],
-      error: boolean,
+      error: boolean
     ): Promise<void> => {
       const replay: IAutoBePlaygroundReplay = {
         vendor: ctx.vendor,
@@ -209,7 +209,7 @@ export namespace AutoBeExampleArchiver {
     try {
       // CONVERSATE
       const go = async (
-        c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
+        c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[]
       ): Promise<boolean> => {
         const result: AutoBeHistory[] = await agent.conversate(c);
         return result.some((h) => h.type === props.phase);
@@ -217,14 +217,18 @@ export namespace AutoBeExampleArchiver {
       const done: boolean = await props.trial(go);
       if (done === false)
         throw new Error(
-          `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.`,
+          `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.`
         );
 
       // AGGREGATE
       const histories: AutoBeHistory[] = agent.getHistories();
       try {
         await FileSystemIterator.save({
-          root: `${AutoBeExampleStorage.TEST_ROOT}/results/${AutoBeExampleStorage.slugModel(ctx.vendor, false)}/${ctx.project}/${props.phase}`,
+          root: `${
+            AutoBeExampleStorage.TEST_ROOT
+          }/results/${AutoBeExampleStorage.slugModel(ctx.vendor, false)}/${
+            ctx.project
+          }/${props.phase}`,
           files: {
             ...(await agent.getFiles()),
             ...Object.fromEntries(
@@ -234,9 +238,9 @@ export namespace AutoBeExampleArchiver {
                     h.type === "prisma" ||
                     h.type === "interface" ||
                     h.type === "test" ||
-                    h.type === "realize",
+                    h.type === "realize"
                 )
-                .map((h) => [`autobe/${h.type}.instruction.md`, h.instruction]),
+                .map((h) => [`autobe/${h.type}.instruction.md`, h.instruction])
             ),
           },
         });
@@ -279,17 +283,17 @@ export namespace AutoBeExampleArchiver {
         input:
           | string
           | AutoBeUserConversateContent
-          | AutoBeUserConversateContent[],
-      ) => Promise<boolean>,
+          | AutoBeUserConversateContent[]
+      ) => Promise<boolean>
     ): Promise<boolean> =>
       (await conversate(
-        await AutoBeExampleStorage.getUserMessage(props).then((r) => r),
+        await AutoBeExampleStorage.getUserMessage(props).then((r) => r)
       )) ||
       (await conversate(
-        "Don't ask me to do that, and just do it right now.",
+        "Don't ask me to do that, and just do it right now."
       )) ||
       (await conversate(
-        `I already told you to do ${props.phase} process. Never ask me anything, and just do it right now. Go go go!`,
+        `I already told you to do ${props.phase} process. Never ask me anything, and just do it right now. Go go go!`
       ));
 
   const getAsset = async (props: {
