@@ -1,8 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
-import {
-  AutoBeExampleBenchmark,
-  AutoBeExampleDocumentation,
-} from "@autobe/benchmark";
+import { AutoBeExampleBenchmark, AutoBeExampleLogger } from "@autobe/benchmark";
 import { IAutoBeExampleBenchmarkState } from "@autobe/benchmark/src/structures/IAutoBeExampleBenchmarkState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import {
@@ -22,7 +19,7 @@ const printState = (state: IAutoBeExampleBenchmarkState): void => {
       try {
         await fs.promises.writeFile(
           `${TestGlobal.ROOT}/benchmark.log.md`,
-          AutoBeExampleDocumentation.markdown(state),
+          AutoBeExampleLogger.markdown(state),
           "utf8",
         );
       } catch {}
@@ -92,4 +89,11 @@ const main = async (): Promise<void> => {
     },
   );
 };
+
+global.process.on("uncaughtException", (error) => {
+  console.log("uncaughtException", error);
+});
+global.process.on("unhandledRejection", (error) => {
+  console.log("unhandledRejection", error);
+});
 main().catch(console.error);

@@ -4,7 +4,7 @@ import typia from "typia";
 
 import { IAutoBeExampleBenchmarkState } from "../structures";
 
-export namespace AutoBeExampleDocumentation {
+export namespace AutoBeExampleLogger {
   export const markdown = (state: IAutoBeExampleBenchmarkState): string =>
     StringUtil.trim`
       # AutoBe Example Benchmark Report
@@ -34,8 +34,8 @@ export namespace AutoBeExampleDocumentation {
   ): string => StringUtil.trim`
     ## \`${state.name}\`
 
-    Project | Phase | State | Elapsed Time
-    :-------|:------|:------|-------------:
+    Project | Phase | State | Count | Elapsed Time
+    :-------|:------|:------|------:|-------------:
     ${state.projects.map(markdownProject).join("\n")}
   `;
 
@@ -48,21 +48,24 @@ export namespace AutoBeExampleDocumentation {
     return [
       state.name,
       !!phase?.name ? `${phase.name} (${phase.trial})` : "-",
-      state.completed_at !== null
-        ? state.success
-          ? "🟢 success"
-          : "🔴 failure"
-        : phase !== undefined && phase.snapshot !== null
-          ? [
-              phase.trial !== 1 ? "🟠" : "🟡",
-              `\`${phase.snapshot.event.type}\``,
-              ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
-                ? [
-                    `(${phase.snapshot.event.completed} of ${phase.snapshot.event.total})`,
-                  ]
-                : []),
-            ].join(" ")
-          : "-",
+      phase !== undefined && phase.snapshot !== null
+        ? [
+            state.completed_at !== null
+              ? state.success
+                ? "🟢 success"
+                : "🔴 failure"
+              : phase.trial !== 1
+                ? "🟠"
+                : "🟡",
+            `\`${phase.snapshot.event.type}\``,
+            ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
+              ? [
+                  `(${phase.snapshot.event.completed} of ${phase.snapshot.event.total})`,
+                ]
+              : []),
+          ].join(" ")
+        : "-",
+      phase?.count.toLocaleString() ?? "0",
       state.started_at !== null
         ? elapsedTime({
             started_at: state.started_at,
