@@ -18,7 +18,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
-import { IAutoBeInterfaceSchemaContentReviewApplication } from "./structures/IAutoBeInterfaceSchemaContentReviewApplication";
+import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
@@ -119,7 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<IAutoBeInterfaceSchemaContentReviewApplication>(),
+      typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -138,7 +138,7 @@ async function process<Model extends ILlmSchema.Model>(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaContentReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -189,7 +189,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  pointer: IPointer<IAutoBeInterfaceSchemaContentReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -201,7 +201,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceSchemaContentReviewApplication.IProps> => {
+  ): IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps> => {
     if (
       typia.is<{
         request: {
@@ -212,10 +212,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     )
       JsonSchemaFactory.fixPage("content", next.request);
 
-    const result: IValidation<IAutoBeInterfaceSchemaContentReviewApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaContentReviewApplication.IProps>(
-        next,
-      );
+    const result: IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaReviewApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -258,34 +256,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeInterfaceSchemaContentReviewApplication,
+    } satisfies IAutoBeInterfaceSchemaReviewApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeInterfaceSchemaContentReviewApplication,
-      "chatgpt"
-    >({
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication, "chatgpt">({
       validate: {
         process: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeInterfaceSchemaContentReviewApplication,
-      "claude"
-    >({
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeInterfaceSchemaContentReviewApplication,
-      "gemini"
-    >({
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication, "gemini">({
       validate: {
         process: validate,
       },
@@ -294,6 +283,6 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceSchemaContentReviewApplication.IProps>;
+) => IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps>;
 
 const SOURCE = "interfaceSchemaReview" satisfies AutoBeEventSource;

@@ -253,11 +253,15 @@ const REVIEWERS = [
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
   },
   {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+  },
+  {
     kind: "content" as const,
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
   },
   {
-    kind: "security" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+    kind: "phantom" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
   },
 ];

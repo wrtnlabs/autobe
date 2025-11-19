@@ -48,7 +48,7 @@ export interface AutoBeInterfaceSchemaReviewEvent
    * - `"relation"`: Relation validation for DTO relationships and structure
    * - `"content"`: Content validation for field completeness and accuracy
    */
-  kind: "security" | "relation" | "content";
+  kind: "security" | "relation" | "content" | "phantom";
 
   /**
    * Original schemas submitted for review.
