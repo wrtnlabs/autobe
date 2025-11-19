@@ -18,7 +18,6 @@ import {
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
-  AutoBeUserMessageContent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
@@ -45,7 +44,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   state: () => Readonly<AutoBeState>;
   usage: () => AutoBeTokenUsage;
   getCurrentAggregates: (
-    phase: AutoBePhase | "describe",
+    phase: AutoBePhase,
   ) => AutoBeProcessAggregateCollection;
 
   // events
@@ -81,7 +80,7 @@ export namespace AutoBeContext {
     controller: ILlmController<Model>;
     histories: Array<IMicroAgenticaHistoryJson>;
     enforceFunctionCall: boolean;
-    userMessage: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+    userMessage: string;
     promptCacheKey?: string;
   }
   export interface IResult<Model extends ILlmSchema.Model> {
