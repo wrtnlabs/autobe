@@ -16,7 +16,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { createAgenticaUserMessageContent } from "../../factory/createAgenticaUserMessageContent";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
@@ -114,11 +113,7 @@ async function process<Model extends ILlmSchema.Model>(
         : ctx.vendor.semaphore?.max(),
   });
   await agent.conversate(
-    createAgenticaUserMessageContent({
-      content: content.map((c) =>
-        createAutoBeUserMessageContent({ content: c }),
-      ),
-    }),
+    content.map((c) => createAutoBeUserMessageContent({ content: c })),
   );
   const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
     .getTokenUsage()

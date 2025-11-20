@@ -6,7 +6,6 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { createAgenticaUserMessageContent } from "../../../factory/createAgenticaUserMessageContent";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
@@ -24,9 +23,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
         if (h.type === "userMessage") {
           return {
             ...h,
-            contents: createAgenticaUserMessageContent({
-              content: h.contents,
-            }),
+            contents: h.contents,
           };
         } else {
           return h;

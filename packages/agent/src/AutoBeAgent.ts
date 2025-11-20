@@ -28,7 +28,6 @@ import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { describe } from "./describe/describe";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
-import { createAgenticaUserMessageContent } from "./factory/createAgenticaUserMessageContent";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
@@ -298,11 +297,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.dispatch(userMessageHistory).catch(() => {});
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(
-        createAgenticaUserMessageContent({
-          content: userMessageHistory.contents,
-        }),
-      );
+      await this.agentica_.conversate(userMessageHistory.contents);
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>

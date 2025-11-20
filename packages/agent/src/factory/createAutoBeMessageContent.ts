@@ -11,7 +11,7 @@ export function createAutoBeUserMessageContent(props: {
   if (content.type === "image")
     return {
       type: "image",
-      images: [content.image],
+      image: content.image,
       description: description ?? "",
     };
   else if (content.type === "text") return content;
