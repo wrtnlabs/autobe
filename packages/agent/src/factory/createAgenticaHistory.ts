@@ -38,7 +38,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
     };
 
   const operation: AgenticaOperation<Model> | undefined = props.operations.find(
-    (op) => op.function.name === props.history.type
+    (op) => op.function.name === props.history.type,
   );
   if (operation === undefined) return null;
   const partial = {
