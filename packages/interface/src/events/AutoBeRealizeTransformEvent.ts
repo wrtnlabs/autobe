@@ -7,6 +7,7 @@ export interface AutoBeRealizeTransformEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   location: string;
-  typeName: string;
+  prismaSchemaName: string;
+  dtoTypeName: string;
   step: number;
 }
