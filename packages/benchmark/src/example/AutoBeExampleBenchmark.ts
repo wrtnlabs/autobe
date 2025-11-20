@@ -155,7 +155,6 @@ const PROJECT_SEQUENCE = [
   "reddit",
   "shopping",
   "account",
-  "wrtn",
 ] as const;
 const PHASE_SEQUENCE = [
   "analyze",
