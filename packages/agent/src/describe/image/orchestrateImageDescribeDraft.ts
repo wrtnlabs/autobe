@@ -29,7 +29,6 @@ export const orchestrateImageDescribeDrafts = async <
   ctx: AutoBeContext<Model>,
   props: {
     content: AutoBeUserConversateContent[];
-    capacity?: number;
   },
 ): Promise<AutoBeImageDescribeDraftEvent[]> => {
   const [imageContents, otherContents] = props.content.reduce(
