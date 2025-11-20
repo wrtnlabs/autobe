@@ -15,10 +15,10 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { supportMistral } from "../../factory/supportMistral";
-import { transformDescribeImagesDocumentHistories } from "./histories/transformDescribeImagesDocumentHistories";
-import { IAutoBeDescribeImagesDocumentApplication } from "./structures/IAutoBeDescribeImagesDocumentApplication";
+import { transformImageDescribeDocumentHistories } from "./histories/transformImageDescribeDocumentHistories";
+import { IAutoBeImageDescribeDocumentApplication } from "./structures/IAutoBeImageDescribeDocumentApplication";
 
-export const orchestrateDescribeImagesDocument = async <
+export const orchestrateImageDescribeDocument = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -26,12 +26,12 @@ export const orchestrateDescribeImagesDocument = async <
     integrations: AutoBeImageDescribeDraftIntegrationEvent[];
   },
 ): Promise<AutoBeImageDescribeDocumentEvent> => {
-  const pointer: IPointer<IAutoBeDescribeImagesDocumentApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeImageDescribeDocumentApplication.IProps | null> =
     {
       value: null,
     };
 
-  const { histories, userMessage } = transformDescribeImagesDocumentHistories({
+  const { histories, userMessage } = transformImageDescribeDocumentHistories({
     integrations: props.integrations,
   });
 
@@ -87,13 +87,13 @@ export const orchestrateDescribeImagesDocument = async <
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeDescribeImagesDocumentApplication.IProps) => void;
+  build: (next: IAutoBeImageDescribeDocumentApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (next: unknown) => {
-    const result: IValidation<IAutoBeDescribeImagesDocumentApplication.IProps> =
-      typia.validate<IAutoBeDescribeImagesDocumentApplication.IProps>(next);
+    const result: IValidation<IAutoBeImageDescribeDocumentApplication.IProps> =
+      typia.validate<IAutoBeImageDescribeDocumentApplication.IProps>(next);
     if (result.success === false) return result;
     return result;
   };
@@ -115,25 +115,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       completeDocument: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeDescribeImagesDocumentApplication,
+    } satisfies IAutoBeImageDescribeDocumentApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDocumentApplication, "chatgpt">({
+    typia.llm.application<IAutoBeImageDescribeDocumentApplication, "chatgpt">({
       validate: {
         completeDocument: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDocumentApplication, "claude">({
+    typia.llm.application<IAutoBeImageDescribeDocumentApplication, "claude">({
       validate: {
         completeDocument: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDocumentApplication, "gemini">({
+    typia.llm.application<IAutoBeImageDescribeDocumentApplication, "gemini">({
       validate: {
         completeDocument: validate,
       },
@@ -142,4 +142,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeDescribeImagesDocumentApplication.IProps>;
+) => IValidation<IAutoBeImageDescribeDocumentApplication.IProps>;

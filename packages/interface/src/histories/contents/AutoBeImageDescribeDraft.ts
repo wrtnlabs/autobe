@@ -1,4 +1,4 @@
-export interface AutoBeDescribeImageDraftMetadata {
+export interface AutoBeImageDescribeDraftMetadata {
   /**
    * A concise 1-2 sentence description of what these screens represent.
    *

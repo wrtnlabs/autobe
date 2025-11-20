@@ -1,4 +1,4 @@
-export interface IAutoBeDescribeImagesDocumentApplication {
+export interface IAutoBeImageDescribeDocumentApplication {
   /**
    * Combines all integrated sections into a complete requirements document.
    *
@@ -7,11 +7,11 @@ export interface IAutoBeDescribeImagesDocumentApplication {
    * proper structure, table of contents, and executive summary.
    */
   completeDocument: (
-    next: IAutoBeDescribeImagesDocumentApplication.IProps,
+    next: IAutoBeImageDescribeDocumentApplication.IProps,
   ) => void;
 }
 
-export namespace IAutoBeDescribeImagesDocumentApplication {
+export namespace IAutoBeImageDescribeDocumentApplication {
   export interface IProps {
     /**
      * Executive summary of the entire system.

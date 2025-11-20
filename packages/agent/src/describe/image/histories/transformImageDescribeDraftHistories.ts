@@ -3,7 +3,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
-export const transformDescribeImagesDraftHistories =
+export const transformImageDescribeDraftHistories =
   (): Array<IMicroAgenticaHistoryJson> => {
     return [
       {

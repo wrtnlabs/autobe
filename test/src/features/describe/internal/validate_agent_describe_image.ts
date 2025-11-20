@@ -1,4 +1,4 @@
-import { describeImages } from "@autobe/agent/src/describe/describeImages";
+import { imageDescribe } from "@autobe/agent/src/describe/imageDescribe";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -42,12 +42,12 @@ export const validate_agent_describe_image = async (props: {
     events.push(event);
   };
 
-  agent.on("describeImageStart", enroll);
-  agent.on("describeImageDraft", enroll);
-  agent.on("describeImageDraftGroup", enroll);
-  agent.on("describeImageDraftIntegration", enroll);
-  agent.on("describeImageDocument", enroll);
-  agent.on("describeImageComplete", enroll);
+  agent.on("imageDescribeStart", enroll);
+  agent.on("imageDescribeDraft", enroll);
+  agent.on("imageDescribeDraftGroup", enroll);
+  agent.on("imageDescribeDraftIntegration", enroll);
+  agent.on("imageDescribeDocument", enroll);
+  agent.on("imageDescribeComplete", enroll);
 
   const assetsPath = path.join(
     TestGlobal.ROOT,
@@ -70,7 +70,7 @@ export const validate_agent_describe_image = async (props: {
     }),
   );
 
-  const histories = await describeImages(agent.getContext(), {
+  const histories = await imageDescribe(agent.getContext(), {
     content: [
       ...imageContents,
       {

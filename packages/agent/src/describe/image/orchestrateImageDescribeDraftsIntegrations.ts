@@ -4,7 +4,7 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
-  AutoBeDescribeImageDraftGroup,
+  AutoBeImageDescribeDraftGroup,
   AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -17,15 +17,15 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformDescribeImagesDraftsIntegrationsHistories } from "./histories/transformDescribeImagesDraftsIntegrationsHistories";
-import { IAutoBeDescribeImagesDraftsIntegrationsApplication } from "./structures/IAutoBeDescribeImagesDraftsIntegrationsApplication";
+import { transformImageDescribeDraftsIntegrationsHistories } from "./histories/transformImageDescribeDraftsIntegrationsHistories";
+import { IAutoBeImageDescribeDraftsIntegrationsApplication } from "./structures/IAutoBeImageDescribeDraftsIntegrationsApplication";
 
-export const orchestrateDescribeImagesDraftsIntegrations = async <
+export const orchestrateImageDescribeDraftsIntegrations = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    groups: AutoBeDescribeImageDraftGroup[];
+    groups: AutoBeImageDescribeDraftGroup[];
   },
 ): Promise<AutoBeImageDescribeDraftIntegrationEvent[]> => {
   const progress: AutoBeProgressEventBase = {
@@ -50,18 +50,18 @@ export const orchestrateDescribeImagesDraftsIntegrations = async <
 async function processGroup<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    group: AutoBeDescribeImageDraftGroup;
+    group: AutoBeImageDescribeDraftGroup;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeImageDescribeDraftIntegrationEvent> {
-  const pointer: IPointer<IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeImageDescribeDraftsIntegrationsApplication.IProps | null> =
     {
       value: null,
     };
 
   const { histories, userMessage } =
-    transformDescribeImagesDraftsIntegrationsHistories({
+    transformImageDescribeDraftsIntegrationsHistories({
       group: props.group,
     });
 
@@ -121,14 +121,14 @@ async function processGroup<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (
-    next: IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps,
+    next: IAutoBeImageDescribeDraftsIntegrationsApplication.IProps,
   ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (next: unknown) => {
-    const result: IValidation<IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps> =
-      typia.validate<IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps>(
+    const result: IValidation<IAutoBeImageDescribeDraftsIntegrationsApplication.IProps> =
+      typia.validate<IAutoBeImageDescribeDraftsIntegrationsApplication.IProps>(
         next,
       );
     if (result.success === false) return result;
@@ -152,14 +152,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
       integrateDrafts: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeDescribeImagesDraftsIntegrationsApplication,
+    } satisfies IAutoBeImageDescribeDraftsIntegrationsApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<
-      IAutoBeDescribeImagesDraftsIntegrationsApplication,
+      IAutoBeImageDescribeDraftsIntegrationsApplication,
       "chatgpt"
     >({
       validate: {
@@ -168,7 +168,7 @@ const collection = {
     }),
   claude: (validate: Validator) =>
     typia.llm.application<
-      IAutoBeDescribeImagesDraftsIntegrationsApplication,
+      IAutoBeImageDescribeDraftsIntegrationsApplication,
       "claude"
     >({
       validate: {
@@ -177,7 +177,7 @@ const collection = {
     }),
   gemini: (validate: Validator) =>
     typia.llm.application<
-      IAutoBeDescribeImagesDraftsIntegrationsApplication,
+      IAutoBeImageDescribeDraftsIntegrationsApplication,
       "gemini"
     >({
       validate: {
@@ -188,4 +188,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps>;
+) => IValidation<IAutoBeImageDescribeDraftsIntegrationsApplication.IProps>;

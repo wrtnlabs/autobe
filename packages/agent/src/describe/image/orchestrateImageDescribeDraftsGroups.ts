@@ -4,10 +4,10 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
-  AutoBeDescribeImageDraftGroup,
-  AutoBeDescribeImageDraftMetadata,
   AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraftGroup,
   AutoBeImageDescribeDraftGroupEvent,
+  AutoBeImageDescribeDraftMetadata,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair, hash } from "tstl";
@@ -17,19 +17,19 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { supportMistral } from "../../factory/supportMistral";
-import { transformDescribeImagesDraftsGroupsHistories } from "./histories/transformDescribeImagesDraftsGroupsHistories";
-import { IAutoBeDescribeImagesGroupsApplication } from "./structures/IAutoBeDescribeImagesGroupsApplication";
+import { transformImageDescribeDraftsGroupsHistories } from "./histories/transformImageDescribeDraftsGroupsHistories";
+import { IAutoBeImageDescribeGroupsApplication } from "./structures/IAutoBeImageDescribeGroupsApplication";
 
-export const orchestrateDescribeImagesDraftsGroups = async <
+export const orchestrateImageDescribeDraftsGroups = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
     drafts: AutoBeImageDescribeDraftEvent[];
   },
-): Promise<AutoBeDescribeImageDraftGroup[]> => {
+): Promise<AutoBeImageDescribeDraftGroup[]> => {
   // Extract metadata with indices for grouping
-  const metadataList: AutoBeDescribeImageDraftMetadata[] = props.drafts.map(
+  const metadataList: AutoBeImageDescribeDraftMetadata[] = props.drafts.map(
     (draft) => ({
       ...draft.metadata,
     }),
@@ -42,7 +42,7 @@ export const orchestrateDescribeImagesDraftsGroups = async <
     (x, y) => x === y,
   );
 
-  const exclude: AutoBeDescribeImageDraftGroup[] = [];
+  const exclude: AutoBeImageDescribeDraftGroup[] = [];
   let trial: number = 0;
 
   do {
@@ -63,21 +63,21 @@ export const orchestrateDescribeImagesDraftsGroups = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    metadataList: AutoBeDescribeImageDraftMetadata[];
+    metadataList: AutoBeImageDescribeDraftMetadata[];
     drafts: AutoBeImageDescribeDraftEvent[];
-    existingGroups: AutoBeDescribeImageDraftGroup[];
+    existingGroups: AutoBeImageDescribeDraftGroup[];
   },
 ): Promise<{
   event: AutoBeImageDescribeDraftGroupEvent;
   processedKeys: string[];
 }> {
-  const pointer: IPointer<IAutoBeDescribeImagesGroupsApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeImageDescribeGroupsApplication.IProps | null> =
     {
       value: null,
     };
 
   const { histories, userMessage } =
-    transformDescribeImagesDraftsGroupsHistories({
+    transformImageDescribeDraftsGroupsHistories({
       metadata: props.metadataList,
       existingGroups: props.existingGroups,
     });
@@ -123,7 +123,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   // Convert grouped data to full draft groups
-  const groups: AutoBeDescribeImageDraftGroup[] = pointer.value.groups.map(
+  const groups: AutoBeImageDescribeDraftGroup[] = pointer.value.groups.map(
     (group) => {
       // Find all drafts with this original cluster key
       const matchingDrafts = props.drafts.filter(
@@ -158,13 +158,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeDescribeImagesGroupsApplication.IProps) => void;
+  build: (next: IAutoBeImageDescribeGroupsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (next: unknown) => {
-    const result: IValidation<IAutoBeDescribeImagesGroupsApplication.IProps> =
-      typia.validate<IAutoBeDescribeImagesGroupsApplication.IProps>(next);
+    const result: IValidation<IAutoBeImageDescribeGroupsApplication.IProps> =
+      typia.validate<IAutoBeImageDescribeGroupsApplication.IProps>(next);
     if (result.success === false) return result;
     return result;
   };
@@ -186,25 +186,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       groupDrafts: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeDescribeImagesGroupsApplication,
+    } satisfies IAutoBeImageDescribeGroupsApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesGroupsApplication, "chatgpt">({
+    typia.llm.application<IAutoBeImageDescribeGroupsApplication, "chatgpt">({
       validate: {
         groupDrafts: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesGroupsApplication, "claude">({
+    typia.llm.application<IAutoBeImageDescribeGroupsApplication, "claude">({
       validate: {
         groupDrafts: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesGroupsApplication, "gemini">({
+    typia.llm.application<IAutoBeImageDescribeGroupsApplication, "gemini">({
       validate: {
         groupDrafts: validate,
       },
@@ -213,4 +213,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeDescribeImagesGroupsApplication.IProps>;
+) => IValidation<IAutoBeImageDescribeGroupsApplication.IProps>;

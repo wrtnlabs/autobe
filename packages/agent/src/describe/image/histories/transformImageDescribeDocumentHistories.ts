@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformDescribeImagesDocumentHistories = (props: {
+export const transformImageDescribeDocumentHistories = (props: {
   integrations: AutoBeImageDescribeDraftIntegrationEvent[];
 }): IAutoBeOrchestrateHistory => {
   return {

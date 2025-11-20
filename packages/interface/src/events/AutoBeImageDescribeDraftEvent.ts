@@ -1,4 +1,4 @@
-import { AutoBeDescribeImageDraftMetadata } from "../histories/contents/AutoBeDescribeImageDraft";
+import { AutoBeImageDescribeDraftMetadata } from "../histories/contents/AutoBeImageDescribeDraft";
 import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -36,7 +36,7 @@ export interface AutoBeImageDescribeDraftEvent
    * Used to group related drafts together based on their functional area,
    * enabling efficient organization of large sets of image-based requirements.
    */
-  metadata: AutoBeDescribeImageDraftMetadata;
+  metadata: AutoBeImageDescribeDraftMetadata;
 
   /**
    * Detailed token usage metrics for the operation.

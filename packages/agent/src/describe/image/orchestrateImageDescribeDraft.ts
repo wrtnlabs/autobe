@@ -20,10 +20,10 @@ import { createAgenticaUserMessageContent } from "../../factory/createAgenticaUs
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformDescribeImagesDraftHistories } from "./histories/transformDescribeImagesDraftHistories";
-import { IAutoBeDescribeImagesDraftApplication } from "./structures/IAutoBeDescribeImagesDraftApplication";
+import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
+import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";
 
-export const orchestrateDescribeImagesDrafts = async <
+export const orchestrateImageDescribeDrafts = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -77,7 +77,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeImageDescribeDraftEvent> {
-  const pointer: IPointer<IAutoBeDescribeImagesDraftApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeImageDescribeDraftApplication.IProps | null> =
     {
       value: null,
     };
@@ -95,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
       retry: ctx.retry,
     },
-    histories: transformDescribeImagesDraftHistories(),
+    histories: transformImageDescribeDraftHistories(),
     controllers: [
       createController({
         model: ctx.model,
@@ -143,13 +143,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeDescribeImagesDraftApplication.IProps) => void;
+  build: (next: IAutoBeImageDescribeDraftApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (next: unknown) => {
-    const result: IValidation<IAutoBeDescribeImagesDraftApplication.IProps> =
-      typia.validate<IAutoBeDescribeImagesDraftApplication.IProps>(next);
+    const result: IValidation<IAutoBeImageDescribeDraftApplication.IProps> =
+      typia.validate<IAutoBeImageDescribeDraftApplication.IProps>(next);
     if (result.success === false) return result;
     return result;
   };
@@ -171,25 +171,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       analyzeImage: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeDescribeImagesDraftApplication,
+    } satisfies IAutoBeImageDescribeDraftApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDraftApplication, "chatgpt">({
+    typia.llm.application<IAutoBeImageDescribeDraftApplication, "chatgpt">({
       validate: {
         analyzeImage: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDraftApplication, "claude">({
+    typia.llm.application<IAutoBeImageDescribeDraftApplication, "claude">({
       validate: {
         analyzeImage: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeDescribeImagesDraftApplication, "gemini">({
+    typia.llm.application<IAutoBeImageDescribeDraftApplication, "gemini">({
       validate: {
         analyzeImage: validate,
       },
@@ -198,4 +198,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeDescribeImagesDraftApplication.IProps>;
+) => IValidation<IAutoBeImageDescribeDraftApplication.IProps>;

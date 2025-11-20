@@ -1,6 +1,6 @@
 import {
-  AutoBeDescribeImageDraftGroup,
-  AutoBeDescribeImageDraftMetadata,
+  AutoBeImageDescribeDraftGroup,
+  AutoBeImageDescribeDraftMetadata,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -8,9 +8,9 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformDescribeImagesDraftsGroupsHistories = (props: {
-  metadata: AutoBeDescribeImageDraftMetadata[];
-  existingGroups?: AutoBeDescribeImageDraftGroup[];
+export const transformImageDescribeDraftsGroupsHistories = (props: {
+  metadata: AutoBeImageDescribeDraftMetadata[];
+  existingGroups?: AutoBeImageDescribeDraftGroup[];
 }): IAutoBeOrchestrateHistory => {
   const hasExistingGroups =
     props.existingGroups && props.existingGroups.length > 0;

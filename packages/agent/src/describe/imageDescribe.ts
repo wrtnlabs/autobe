@@ -1,8 +1,8 @@
 import {
-  AutoBeDescribeImageDraftGroup,
   AutoBeImageDescribeCompleteEvent,
   AutoBeImageDescribeDocumentEvent,
   AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraftGroup,
   AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
@@ -13,12 +13,12 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
-import { orchestrateDescribeImagesDocument } from "./image/orchestrateDescribeImagesDocument";
-import { orchestrateDescribeImagesDrafts } from "./image/orchestrateDescribeImagesDraft";
-import { orchestrateDescribeImagesDraftsGroups } from "./image/orchestrateDescribeImagesDraftsGroups";
-import { orchestrateDescribeImagesDraftsIntegrations } from "./image/orchestrateDescribeImagesDraftsIntegrations";
+import { orchestrateImageDescribeDocument } from "./image/orchestrateImageDescribeDocument";
+import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
+import { orchestrateImageDescribeDraftsGroups } from "./image/orchestrateImageDescribeDraftsGroups";
+import { orchestrateImageDescribeDraftsIntegrations } from "./image/orchestrateImageDescribeDraftsIntegrations";
 
-export const describeImages = async <Model extends ILlmSchema.Model>(
+export const imageDescribe = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     content: AutoBeUserConversateContent[];
@@ -38,18 +38,18 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   });
 
   const drafts: AutoBeImageDescribeDraftEvent[] =
-    await orchestrateDescribeImagesDrafts(ctx, { content: props.content });
+    await orchestrateImageDescribeDrafts(ctx, { content: props.content });
 
-  const groups: AutoBeDescribeImageDraftGroup[] =
-    await orchestrateDescribeImagesDraftsGroups(ctx, { drafts });
+  const groups: AutoBeImageDescribeDraftGroup[] =
+    await orchestrateImageDescribeDraftsGroups(ctx, { drafts });
 
   const integrations: AutoBeImageDescribeDraftIntegrationEvent[] =
-    await orchestrateDescribeImagesDraftsIntegrations(ctx, {
+    await orchestrateImageDescribeDraftsIntegrations(ctx, {
       groups,
     });
 
   const document: AutoBeImageDescribeDocumentEvent =
-    await orchestrateDescribeImagesDocument(ctx, { integrations });
+    await orchestrateImageDescribeDocument(ctx, { integrations });
 
   // Emit completion event
   const complete: AutoBeImageDescribeCompleteEvent = {

@@ -1,4 +1,4 @@
-import { AutoBeDescribeImageDraftGroup } from "../histories/contents/AutoBeDescribeImageDraftGroup";
+import { AutoBeImageDescribeDraftGroup } from "../histories/contents/AutoBeImageDescribeDraftGroup";
 import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -23,7 +23,7 @@ export interface AutoBeImageDescribeDraftGroupEvent
    * Each group contains drafts that share similar functionality or belong to
    * the same feature area, along with aggregated metadata for the group.
    */
-  groups: AutoBeDescribeImageDraftGroup[];
+  groups: AutoBeImageDescribeDraftGroup[];
 
   /**
    * Detailed token usage metrics for the operation.

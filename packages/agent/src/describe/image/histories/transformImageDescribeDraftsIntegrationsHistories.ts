@@ -1,12 +1,12 @@
-import { AutoBeDescribeImageDraftGroup } from "@autobe/interface";
+import { AutoBeImageDescribeDraftGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export const transformDescribeImagesDraftsIntegrationsHistories = (props: {
-  group: AutoBeDescribeImageDraftGroup;
+export const transformImageDescribeDraftsIntegrationsHistories = (props: {
+  group: AutoBeImageDescribeDraftGroup;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [

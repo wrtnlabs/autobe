@@ -1,4 +1,4 @@
-export interface IAutoBeDescribeImagesGroupsApplication {
+export interface IAutoBeImageDescribeGroupsApplication {
   /**
    * Groups image drafts by their cluster keys and consolidates metadata.
    *
@@ -6,10 +6,10 @@ export interface IAutoBeDescribeImagesGroupsApplication {
    * logical groups based on their cluster keys, enabling efficient processing
    * of related requirements together.
    */
-  groupDrafts: (next: IAutoBeDescribeImagesGroupsApplication.IProps) => void;
+  groupDrafts: (next: IAutoBeImageDescribeGroupsApplication.IProps) => void;
 }
 
-export namespace IAutoBeDescribeImagesGroupsApplication {
+export namespace IAutoBeImageDescribeGroupsApplication {
   export interface IProps {
     /**
      * Array of groups organized by cluster key.
@@ -32,8 +32,8 @@ export namespace IAutoBeDescribeImagesGroupsApplication {
     /**
      * The new cluster key to assign to this group.
      *
-     * This will replace the originClusterKey for better representation
-     * of the group's functionality.
+     * This will replace the originClusterKey for better representation of the
+     * group's functionality.
      */
     newClusterKey: string;
 

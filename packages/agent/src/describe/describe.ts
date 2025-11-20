@@ -7,7 +7,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
-import { describeImages } from "./describeImages";
+import { imageDescribe } from "./imageDescribe";
 
 export const describe = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -36,7 +36,7 @@ export const describe = async <Model extends ILlmSchema.Model>(
     : [props.content];
 
   if (contents.some((c) => c.type === "image"))
-    return await describeImages(ctx, { content: contents });
+    return await imageDescribe(ctx, { content: contents });
   return {
     type: "userMessage",
     id: v7(),

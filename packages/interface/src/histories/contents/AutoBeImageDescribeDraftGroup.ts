@@ -1,4 +1,4 @@
-export interface AutoBeDescribeImageDraftGroup {
+export interface AutoBeImageDescribeDraftGroup {
   /**
    * The cluster key that groups these related drafts together.
    *
