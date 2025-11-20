@@ -130,6 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
   const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
     .getTokenUsage()
     .toJSON().aggregate;
+  ctx.usage().record(tokenUsage, ["facade"]);
   props.progress.completed += props.imageContents.length;
   if (pointer.value === null) throw new Error("Failed to analyze image.");
 
