@@ -32,13 +32,6 @@ export const validate_agent_describe_image = async (props: {
     if (!map.has(event.type)) {
       map.set(event.type, true);
     }
-    FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${props.vendor}/describe/image/logs`,
-      files: {
-        [`${event.type}.json`]: JSON.stringify(event),
-      },
-      overwrite: true,
-    });
     events.push(event);
   };
 
