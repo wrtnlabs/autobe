@@ -121,9 +121,6 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     // DISCARD
     case "imageDescribeStart":
     case "imageDescribeDraft":
-    case "imageDescribeDraftGroup":
-    case "imageDescribeDraftIntegration":
-    case "imageDescribeDocument":
     case "imageDescribeComplete":
     case "interfaceEndpointReview":
     case "realizeTestComplete":

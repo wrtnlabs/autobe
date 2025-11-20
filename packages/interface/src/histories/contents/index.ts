@@ -4,6 +4,8 @@ export * from "./AutoBeUserMessageFileContent";
 export * from "./AutoBeUserMessageImageContent";
 export * from "./AutoBeUserMessageTextContent";
 
+export * from "./AutoBeImageDescribeDraft";
+
 export * from "./AutoBeAnalyzeActor";
 
 export * from "./AutoBeInterfaceAuthorization";

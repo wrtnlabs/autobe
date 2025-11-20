@@ -4,6 +4,7 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
+  AutoBeImageDescribeDraft,
   AutoBeImageDescribeDraftEvent,
   AutoBeProgressEventBase,
   AutoBeUserConversateContent,
@@ -29,7 +30,7 @@ export const orchestrateImageDescribeDrafts = async <
   props: {
     content: AutoBeUserConversateContent[];
   },
-): Promise<AutoBeImageDescribeDraftEvent[]> => {
+): Promise<AutoBeImageDescribeDraft[]> => {
   const [imageContents, otherContents] = props.content.reduce(
     (acc, cur) => {
       if (cur.type === "image") {
@@ -61,7 +62,11 @@ export const orchestrateImageDescribeDrafts = async <
         promptCacheKey,
       });
       ctx.dispatch(event);
-      return event;
+      return {
+        ...event,
+        image: imageContent,
+        description: event.draft,
+      };
     }),
   );
 };

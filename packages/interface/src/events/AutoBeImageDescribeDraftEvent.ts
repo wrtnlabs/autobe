@@ -7,11 +7,11 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * This event occurs when the Describe agent processes an image to extract
  * visual information, understand its content, and generate comprehensive
- * documentation. The analysis follows a sequential process from observation
- * to detailed description.
+ * documentation. The analysis follows a sequential process from observation to
+ * detailed description.
  *
- * The event provides progress tracking as multiple images are processed
- * and contains the analysis results with structured documentation.
+ * The event provides progress tracking as multiple images are processed and
+ * contains the analysis results with structured documentation.
  */
 export interface AutoBeImageDescribeDraftEvent
   extends AutoBeEventBase<"imageDescribeDraft">,
@@ -43,8 +43,8 @@ export interface AutoBeImageDescribeDraftEvent
   /**
    * Concise summary of the image content.
    *
-   * A 2-3 sentence overview that captures the essence of what the image
-   * shows and its primary purpose.
+   * A 2-3 sentence overview that captures the essence of what the image shows
+   * and its primary purpose.
    */
   summary: string;
 

@@ -1,6 +1,6 @@
 import {
   AutoBeImageDescribeCompleteEvent,
-  AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraft,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
   AutoBeUserMessageHistory,
@@ -9,7 +9,6 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
-import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
 import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
 
 export const imageDescribe = async <Model extends ILlmSchema.Model>(
@@ -31,28 +30,17 @@ export const imageDescribe = async <Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   });
 
-  const drafts: AutoBeImageDescribeDraftEvent[] =
+  const drafts: AutoBeImageDescribeDraft[] =
     await orchestrateImageDescribeDrafts(ctx, { content: props.content });
 
-  // Create descriptions from drafts
-  const descriptions = drafts.map((draft) => ({
-    observation: draft.observation,
-    analysis: draft.analysis,
-    topics: draft.topics,
-    summary: draft.summary,
-    description: draft.draft,
-  }));
-
-  // Emit completion event
   const complete: AutoBeImageDescribeCompleteEvent = {
     type: "imageDescribeComplete",
     id: v7(),
-    contents: imageContents.map((c, index) =>
-      createAutoBeUserMessageContent({
-        content: c,
-        description: descriptions[index] ? JSON.stringify(descriptions[index], null, 2) : undefined,
-      }),
-    ),
+    contents: drafts.map((d) => ({
+      ...d.image,
+      description: d.description,
+      type: "image",
+    })),
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
