@@ -5,12 +5,12 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
-  AutoBeDescribeImageCompleteEvent,
-  AutoBeDescribeImageDocumentEvent,
-  AutoBeDescribeImageDraftEvent,
-  AutoBeDescribeImageDraftGroupEvent,
-  AutoBeDescribeImageDraftIntegrationEvent,
-  AutoBeDescribeImageStartEvent,
+  AutoBeImageDescribeCompleteEvent,
+  AutoBeImageDescribeDocumentEvent,
+  AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraftGroupEvent,
+  AutoBeImageDescribeDraftIntegrationEvent,
+  AutoBeImageDescribeStartEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
@@ -118,7 +118,7 @@ export interface IAutoBeRpcListener {
    * image initiation and prepare progress indicators for visual
    * interpretation.
    */
-  describeImageStart?(event: AutoBeDescribeImageStartEvent): Promise<void>;
+  imageDescribeStart?(event: AutoBeImageDescribeStartEvent): Promise<void>;
 
   /**
    * Optional handler for image draft generation events.
@@ -127,7 +127,7 @@ export interface IAutoBeRpcListener {
    * or design documents and generates planning drafts. Each event represents
    * analysis of a batch of images with extracted requirements and metadata.
    */
-  describeImageDraft?(event: AutoBeDescribeImageDraftEvent): Promise<void>;
+  imageDescribeDraft?(event: AutoBeImageDescribeDraftEvent): Promise<void>;
 
   /**
    * Optional handler for image draft grouping events.
@@ -136,8 +136,8 @@ export interface IAutoBeRpcListener {
    * keys, organizing drafts that belong to the same functional area or feature
    * set for consolidated processing.
    */
-  describeImageDraftGroup?(
-    event: AutoBeDescribeImageDraftGroupEvent,
+  imageDescribeDraftGroup?(
+    event: AutoBeImageDescribeDraftGroupEvent,
   ): Promise<void>;
 
   /**
@@ -147,8 +147,8 @@ export interface IAutoBeRpcListener {
    * into consolidated section documents, creating coherent specifications for
    * each functional area of the system.
    */
-  describeImageDraftIntegration?(
-    event: AutoBeDescribeImageDraftIntegrationEvent,
+  imageDescribeDraftIntegration?(
+    event: AutoBeImageDescribeDraftIntegrationEvent,
   ): Promise<void>;
 
   /**
@@ -158,8 +158,8 @@ export interface IAutoBeRpcListener {
    * requirements document, providing a comprehensive specification derived from
    * the analyzed images.
    */
-  describeImageDocument?(
-    event: AutoBeDescribeImageDocumentEvent,
+  imageDescribeDocument?(
+    event: AutoBeImageDescribeDocumentEvent,
   ): Promise<void>;
 
   /**
@@ -169,8 +169,8 @@ export interface IAutoBeRpcListener {
    * finalized planning documentation generated from image analysis that can be
    * used as input for the analyze agent.
    */
-  describeImageComplete?(
-    event: AutoBeDescribeImageCompleteEvent,
+  imageDescribeComplete?(
+    event: AutoBeImageDescribeCompleteEvent,
   ): Promise<void>;
 
   /* -----------------------------------------------------------

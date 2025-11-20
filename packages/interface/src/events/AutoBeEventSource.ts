@@ -1,11 +1,11 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
-import { AutoBeDescribeImageCompleteEvent } from "./AutoBeDescribeImageCompleteEvent";
-import { AutoBeDescribeImageDocumentEvent } from "./AutoBeDescribeImageDocumentEvent";
-import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
-import { AutoBeDescribeImageDraftGroupEvent } from "./AutoBeDescribeImageDraftGroupEvent";
-import { AutoBeDescribeImageDraftIntegrationEvent } from "./AutoBeDescribeImageDraftIntegrationEvent";
+import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
+import { AutoBeImageDescribeDocumentEvent } from "./AutoBeImageDescribeDocumentEvent";
+import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
+import { AutoBeImageDescribeDraftGroupEvent } from "./AutoBeImageDescribeDraftGroupEvent";
+import { AutoBeImageDescribeDraftIntegrationEvent } from "./AutoBeImageDescribeDraftIntegrationEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
@@ -65,11 +65,11 @@ export type AutoBeEventSource =
   | "facade"
   | AutoBePreliminaryEvent["type"]
   // describe
-  | AutoBeDescribeImageDraftEvent["type"]
-  | AutoBeDescribeImageDraftGroupEvent["type"]
-  | AutoBeDescribeImageDraftIntegrationEvent["type"]
-  | AutoBeDescribeImageDocumentEvent["type"]
-  | AutoBeDescribeImageCompleteEvent["type"]
+  | AutoBeImageDescribeDraftEvent["type"]
+  | AutoBeImageDescribeDraftGroupEvent["type"]
+  | AutoBeImageDescribeDraftIntegrationEvent["type"]
+  | AutoBeImageDescribeDocumentEvent["type"]
+  | AutoBeImageDescribeCompleteEvent["type"]
   // analyze
   | AutoBeAnalyzeScenarioEvent["type"]
   | AutoBeAnalyzeWriteEvent["type"]

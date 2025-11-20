@@ -4,10 +4,10 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
-  AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroup,
-  AutoBeDescribeImageDraftGroupEvent,
   AutoBeDescribeImageDraftMetadata,
+  AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraftGroupEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair, hash } from "tstl";
@@ -25,7 +25,7 @@ export const orchestrateDescribeImagesDraftsGroups = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    drafts: AutoBeDescribeImageDraftEvent[];
+    drafts: AutoBeImageDescribeDraftEvent[];
   },
 ): Promise<AutoBeDescribeImageDraftGroup[]> => {
   // Extract metadata with indices for grouping
@@ -64,11 +64,11 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     metadataList: AutoBeDescribeImageDraftMetadata[];
-    drafts: AutoBeDescribeImageDraftEvent[];
+    drafts: AutoBeImageDescribeDraftEvent[];
     existingGroups: AutoBeDescribeImageDraftGroup[];
   },
 ): Promise<{
-  event: AutoBeDescribeImageDraftGroupEvent;
+  event: AutoBeImageDescribeDraftGroupEvent;
   processedKeys: string[];
 }> {
   const pointer: IPointer<IAutoBeDescribeImagesGroupsApplication.IProps | null> =
@@ -143,8 +143,8 @@ async function process<Model extends ILlmSchema.Model>(
   props.existingGroups.push(...groups);
 
   // Create and emit event
-  const event: AutoBeDescribeImageDraftGroupEvent = {
-    type: "describeImageDraftGroup",
+  const event: AutoBeImageDescribeDraftGroupEvent = {
+    type: "imageDescribeDraftGroup",
     id: v7(),
     groups,
     tokenUsage,

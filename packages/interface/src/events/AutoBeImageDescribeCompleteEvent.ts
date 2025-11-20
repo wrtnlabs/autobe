@@ -20,8 +20,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author michael
  */
-export interface AutoBeDescribeImageCompleteEvent
-  extends AutoBeEventBase<"describeImageComplete"> {
+export interface AutoBeImageDescribeCompleteEvent
+  extends AutoBeEventBase<"imageDescribeComplete"> {
   /**
    * The input content to be passed to the facade agent.
    *

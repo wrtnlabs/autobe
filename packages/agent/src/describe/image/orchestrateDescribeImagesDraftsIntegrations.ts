@@ -5,7 +5,7 @@ import {
 } from "@agentica/core";
 import {
   AutoBeDescribeImageDraftGroup,
-  AutoBeDescribeImageDraftIntegrationEvent,
+  AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -27,7 +27,7 @@ export const orchestrateDescribeImagesDraftsIntegrations = async <
   props: {
     groups: AutoBeDescribeImageDraftGroup[];
   },
-): Promise<AutoBeDescribeImageDraftIntegrationEvent[]> => {
+): Promise<AutoBeImageDescribeDraftIntegrationEvent[]> => {
   const progress: AutoBeProgressEventBase = {
     total: props.groups.length,
     completed: 0,
@@ -54,7 +54,7 @@ async function processGroup<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeDescribeImageDraftIntegrationEvent> {
+): Promise<AutoBeImageDescribeDraftIntegrationEvent> {
   const pointer: IPointer<IAutoBeDescribeImagesDraftsIntegrationsApplication.IProps | null> =
     {
       value: null,
@@ -104,8 +104,8 @@ async function processGroup<Model extends ILlmSchema.Model>(
       `Failed to integrate drafts for group: ${props.group.clusterKey}`,
     );
 
-  const event: AutoBeDescribeImageDraftIntegrationEvent = {
-    type: "describeImageDraftIntegration",
+  const event: AutoBeImageDescribeDraftIntegrationEvent = {
+    type: "imageDescribeDraftIntegration",
     id: v7(),
     clusterKey: props.group.clusterKey,
     integration: pointer.value.integration,

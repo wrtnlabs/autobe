@@ -2,12 +2,12 @@
 export * from "./contents";
 
 // DESCRIBE
-export * from "./AutoBeDescribeImageStartEvent";
-export * from "./AutoBeDescribeImageDraftEvent";
-export * from "./AutoBeDescribeImageDraftGroupEvent";
-export * from "./AutoBeDescribeImageDraftIntegrationEvent";
-export * from "./AutoBeDescribeImageDocumentEvent";
-export * from "./AutoBeDescribeImageCompleteEvent";
+export * from "./AutoBeImageDescribeStartEvent";
+export * from "./AutoBeImageDescribeDraftEvent";
+export * from "./AutoBeImageDescribeDraftGroupEvent";
+export * from "./AutoBeImageDescribeDraftIntegrationEvent";
+export * from "./AutoBeImageDescribeDocumentEvent";
+export * from "./AutoBeImageDescribeCompleteEvent";
 
 // FACADE
 export * from "./AutoBeAssistantMessageEvent";

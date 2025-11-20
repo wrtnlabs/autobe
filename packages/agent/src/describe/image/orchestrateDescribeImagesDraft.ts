@@ -4,7 +4,7 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
-  AutoBeDescribeImageDraftEvent,
+  AutoBeImageDescribeDraftEvent,
   AutoBeProgressEventBase,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
@@ -31,7 +31,7 @@ export const orchestrateDescribeImagesDrafts = async <
     content: AutoBeUserConversateContent[];
     capacity?: number;
   },
-): Promise<AutoBeDescribeImageDraftEvent[]> => {
+): Promise<AutoBeImageDescribeDraftEvent[]> => {
   const [imageContents, otherContents] = props.content.reduce(
     (acc, cur) => {
       if (cur.type === "image") {
@@ -56,7 +56,7 @@ export const orchestrateDescribeImagesDrafts = async <
   return await executeCachedBatch(
     ctx,
     imageContents.map((imageContent) => async (promptCacheKey) => {
-      const event: AutoBeDescribeImageDraftEvent = await process(ctx, {
+      const event: AutoBeImageDescribeDraftEvent = await process(ctx, {
         imageContents: [imageContent], // Single image
         userContents: otherContents,
         progress,
@@ -76,7 +76,7 @@ async function process<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeDescribeImageDraftEvent> {
+): Promise<AutoBeImageDescribeDraftEvent> {
   const pointer: IPointer<IAutoBeDescribeImagesDraftApplication.IProps | null> =
     {
       value: null,
@@ -128,8 +128,8 @@ async function process<Model extends ILlmSchema.Model>(
   props.progress.completed += props.imageContents.length;
   if (pointer.value === null) throw new Error("Failed to analyze image.");
 
-  const event: AutoBeDescribeImageDraftEvent = {
-    type: "describeImageDraft",
+  const event: AutoBeImageDescribeDraftEvent = {
+    type: "imageDescribeDraft",
     id: v7(),
     draft: pointer.value.draft,
     metadata: pointer.value.metadata,

@@ -15,8 +15,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * requirements by consolidating related drafts that can be processed together
  * to generate comprehensive backend specifications.
  */
-export interface AutoBeDescribeImageDraftGroupEvent
-  extends AutoBeEventBase<"describeImageDraftGroup"> {
+export interface AutoBeImageDescribeDraftGroupEvent
+  extends AutoBeEventBase<"imageDescribeDraftGroup"> {
   /**
    * List of draft groups organized by cluster key.
    *

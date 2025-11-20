@@ -5,12 +5,12 @@ import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
-import { AutoBeDescribeImageCompleteEvent } from "./AutoBeDescribeImageCompleteEvent";
-import { AutoBeDescribeImageDocumentEvent } from "./AutoBeDescribeImageDocumentEvent";
-import { AutoBeDescribeImageDraftEvent } from "./AutoBeDescribeImageDraftEvent";
-import { AutoBeDescribeImageDraftGroupEvent } from "./AutoBeDescribeImageDraftGroupEvent";
-import { AutoBeDescribeImageDraftIntegrationEvent } from "./AutoBeDescribeImageDraftIntegrationEvent";
-import { AutoBeDescribeImageStartEvent } from "./AutoBeDescribeImageStartEvent";
+import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
+import { AutoBeImageDescribeDocumentEvent } from "./AutoBeImageDescribeDocumentEvent";
+import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
+import { AutoBeImageDescribeDraftGroupEvent } from "./AutoBeImageDescribeDraftGroupEvent";
+import { AutoBeImageDescribeDraftIntegrationEvent } from "./AutoBeImageDescribeDraftIntegrationEvent";
+import { AutoBeImageDescribeStartEvent } from "./AutoBeImageDescribeStartEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -95,12 +95,12 @@ export type AutoBeEvent =
   | AutoBeConsentFunctionCallEvent
   | AutoBePreliminaryEvent
   // DESCRIBE
-  | AutoBeDescribeImageStartEvent
-  | AutoBeDescribeImageDraftEvent
-  | AutoBeDescribeImageDraftGroupEvent
-  | AutoBeDescribeImageDraftIntegrationEvent
-  | AutoBeDescribeImageDocumentEvent
-  | AutoBeDescribeImageCompleteEvent
+  | AutoBeImageDescribeStartEvent
+  | AutoBeImageDescribeDraftEvent
+  | AutoBeImageDescribeDraftGroupEvent
+  | AutoBeImageDescribeDraftIntegrationEvent
+  | AutoBeImageDescribeDocumentEvent
+  | AutoBeImageDescribeCompleteEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
@@ -199,12 +199,12 @@ export namespace AutoBeEvent {
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
     preliminary: AutoBePreliminaryEvent;
     // DESCRIBE
-    describeImageStart: AutoBeDescribeImageStartEvent;
-    describeImageDraft: AutoBeDescribeImageDraftEvent;
-    describeImageDraftGroup: AutoBeDescribeImageDraftGroupEvent;
-    describeImageDraftIntegration: AutoBeDescribeImageDraftIntegrationEvent;
-    describeImageDocument: AutoBeDescribeImageDocumentEvent;
-    describeImageComplete: AutoBeDescribeImageCompleteEvent;
+    imageDescribeStart: AutoBeImageDescribeStartEvent;
+    imageDescribeDraft: AutoBeImageDescribeDraftEvent;
+    imageDescribeDraftGroup: AutoBeImageDescribeDraftGroupEvent;
+    imageDescribeDraftIntegration: AutoBeImageDescribeDraftIntegrationEvent;
+    imageDescribeDocument: AutoBeImageDescribeDocumentEvent;
+    imageDescribeComplete: AutoBeImageDescribeCompleteEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;

@@ -1,9 +1,9 @@
 import {
-  AutoBeDescribeImageCompleteEvent,
-  AutoBeDescribeImageDocumentEvent,
-  AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroup,
-  AutoBeDescribeImageDraftIntegrationEvent,
+  AutoBeImageDescribeCompleteEvent,
+  AutoBeImageDescribeDocumentEvent,
+  AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
   AutoBeUserMessageHistory,
@@ -31,29 +31,29 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
   const imageCount: number = imageContents.length;
   if (imageCount === 0) throw new Error("No image content found");
   ctx.dispatch({
-    type: "describeImageStart",
+    type: "imageDescribeStart",
     id: v7(),
     imageCount,
     created_at: new Date().toISOString(),
   });
 
-  const drafts: AutoBeDescribeImageDraftEvent[] =
+  const drafts: AutoBeImageDescribeDraftEvent[] =
     await orchestrateDescribeImagesDrafts(ctx, { content: props.content });
 
   const groups: AutoBeDescribeImageDraftGroup[] =
     await orchestrateDescribeImagesDraftsGroups(ctx, { drafts });
 
-  const integrations: AutoBeDescribeImageDraftIntegrationEvent[] =
+  const integrations: AutoBeImageDescribeDraftIntegrationEvent[] =
     await orchestrateDescribeImagesDraftsIntegrations(ctx, {
       groups,
     });
 
-  const document: AutoBeDescribeImageDocumentEvent =
+  const document: AutoBeImageDescribeDocumentEvent =
     await orchestrateDescribeImagesDocument(ctx, { integrations });
 
   // Emit completion event
-  const complete: AutoBeDescribeImageCompleteEvent = {
-    type: "describeImageComplete",
+  const complete: AutoBeImageDescribeCompleteEvent = {
+    type: "imageDescribeComplete",
     id: v7(),
     contents: imageContents.map((c) =>
       createAutoBeUserMessageContent({

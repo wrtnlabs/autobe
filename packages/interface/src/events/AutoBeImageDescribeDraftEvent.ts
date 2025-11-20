@@ -16,8 +16,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * processed and contains the generated drafts with their associated metadata
  * for subsequent grouping and consolidation.
  */
-export interface AutoBeDescribeImageDraftEvent
-  extends AutoBeEventBase<"describeImageDraft">,
+export interface AutoBeImageDescribeDraftEvent
+  extends AutoBeEventBase<"imageDescribeDraft">,
     AutoBeProgressEventBase {
   /**
    * A comprehensive planning document generated from analyzing a batch of

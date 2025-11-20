@@ -1,4 +1,5 @@
 export type AutoBeExampleProject =
+  | "wrtn"
   | "todo"
   | "bbs"
   | "reddit"

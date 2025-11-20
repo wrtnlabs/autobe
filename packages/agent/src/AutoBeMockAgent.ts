@@ -186,12 +186,12 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   consentFunctionCall: 0,
   preliminary: 0,
   // DESCRIBE
-  describeImageStart: 1_000,
-  describeImageDraft: 300,
-  describeImageDraftGroup: 200,
-  describeImageDraftIntegration: 200,
-  describeImageDocument: 200,
-  describeImageComplete: 1_000,
+  imageDescribeStart: 1_000,
+  imageDescribeDraft: 300,
+  imageDescribeDraftGroup: 200,
+  imageDescribeDraftIntegration: 200,
+  imageDescribeDocument: 200,
+  imageDescribeComplete: 1_000,
   // ANALYZE
   analyzeStart: 1_000,
   analyzeScenario: 1_000,

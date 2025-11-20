@@ -136,12 +136,12 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     }
     // DISCARD
-    case "describeImageStart":
-    case "describeImageDraft":
-    case "describeImageDraftGroup":
-    case "describeImageDraftIntegration":
-    case "describeImageDocument":
-    case "describeImageComplete":
+    case "imageDescribeStart":
+    case "imageDescribeDraft":
+    case "imageDescribeDraftGroup":
+    case "imageDescribeDraftIntegration":
+    case "imageDescribeDocument":
+    case "imageDescribeComplete":
     case "interfaceEndpointReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":

@@ -1,8 +1,8 @@
 import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
-export interface AutoBeDescribeImageDocumentEvent
-  extends AutoBeEventBase<"describeImageDocument"> {
+export interface AutoBeImageDescribeDocumentEvent
+  extends AutoBeEventBase<"imageDescribeDocument"> {
   /**
    * The complete B2B SaaS requirements document.
    *

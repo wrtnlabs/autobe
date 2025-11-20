@@ -35,30 +35,30 @@ export class AutoBeListener {
       },
 
       // DESCRIBE
-      describeImageStart: async (event) => {
-        this.dict_.delete("describeImageDraft");
-        this.dict_.delete("describeImageDraftGroup");
-        this.dict_.delete("describeImageDraftIntegration");
-        this.dict_.delete("describeImageDocument");
+      imageDescribeStart: async (event) => {
+        this.dict_.delete("imageDescribeDraft");
+        this.dict_.delete("imageDescribeDraftGroup");
+        this.dict_.delete("imageDescribeDraftIntegration");
+        this.dict_.delete("imageDescribeDocument");
         this.insert(event);
       },
-      describeImageDraft: async (event) => {
+      imageDescribeDraft: async (event) => {
         this.insert(event);
       },
-      describeImageDraftGroup: async (event) => {
+      imageDescribeDraftGroup: async (event) => {
         this.insert(event);
       },
-      describeImageDraftIntegration: async (event) => {
+      imageDescribeDraftIntegration: async (event) => {
         this.insert(event);
       },
-      describeImageDocument: async (event) => {
+      imageDescribeDocument: async (event) => {
         this.insert(event);
       },
-      describeImageComplete: async (event) => {
-        this.dict_.delete("describeImageDraft");
-        this.dict_.delete("describeImageDraftGroup");
-        this.dict_.delete("describeImageDraftIntegration");
-        this.dict_.delete("describeImageDocument");
+      imageDescribeComplete: async (event) => {
+        this.dict_.delete("imageDescribeDraft");
+        this.dict_.delete("imageDescribeDraftGroup");
+        this.dict_.delete("imageDescribeDraftIntegration");
+        this.dict_.delete("imageDescribeDocument");
         this.insert(event);
       },
 

@@ -1,4 +1,4 @@
-import { AutoBeDescribeImageDraftIntegrationEvent } from "@autobe/interface";
+import { AutoBeImageDescribeDraftIntegrationEvent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
 export const transformDescribeImagesDocumentHistories = (props: {
-  integrations: AutoBeDescribeImageDraftIntegrationEvent[];
+  integrations: AutoBeImageDescribeDraftIntegrationEvent[];
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [

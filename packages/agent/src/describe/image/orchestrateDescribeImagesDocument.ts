@@ -4,8 +4,8 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import {
-  AutoBeDescribeImageDocumentEvent,
-  AutoBeDescribeImageDraftIntegrationEvent,
+  AutoBeImageDescribeDocumentEvent,
+  AutoBeImageDescribeDraftIntegrationEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -23,9 +23,9 @@ export const orchestrateDescribeImagesDocument = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    integrations: AutoBeDescribeImageDraftIntegrationEvent[];
+    integrations: AutoBeImageDescribeDraftIntegrationEvent[];
   },
-): Promise<AutoBeDescribeImageDocumentEvent> => {
+): Promise<AutoBeImageDescribeDocumentEvent> => {
   const pointer: IPointer<IAutoBeDescribeImagesDocumentApplication.IProps | null> =
     {
       value: null,
@@ -71,8 +71,8 @@ export const orchestrateDescribeImagesDocument = async <
   if (pointer.value === null)
     throw new Error("Failed to complete the requirements document");
 
-  const event: AutoBeDescribeImageDocumentEvent = {
-    type: "describeImageDocument",
+  const event: AutoBeImageDescribeDocumentEvent = {
+    type: "imageDescribeDocument",
     id: v7(),
     document: pointer.value.document,
     summary: pointer.value.summary,

@@ -13,8 +13,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * The integration process removes duplicates, resolves conflicts, and produces
  * a coherent section following the B2B SaaS requirements document format.
  */
-export interface AutoBeDescribeImageDraftIntegrationEvent
-  extends AutoBeEventBase<"describeImageDraftIntegration">,
+export interface AutoBeImageDescribeDraftIntegrationEvent
+  extends AutoBeEventBase<"imageDescribeDraftIntegration">,
     AutoBeProgressEventBase {
   /**
    * The cluster key that identifies this integrated section.
