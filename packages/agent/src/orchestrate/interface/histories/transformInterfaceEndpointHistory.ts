@@ -63,7 +63,7 @@ export const transformInterfaceEndpointHistory = (props: {
             path: op.path,
             method: op.method,
             name: op.name,
-            summary: op.summary,
+            summary: StringUtil.summary(op.description),
           })),
         )}
         \`\`\`

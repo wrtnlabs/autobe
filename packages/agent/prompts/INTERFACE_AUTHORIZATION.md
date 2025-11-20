@@ -499,7 +499,7 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
 
 #### operations
 Array of authorization-related API operations. Each operation must include:
-- All standard `AutoBeOpenApi.IOperation` fields (specification, path, method, etc.)
+- All standard `AutoBeOpenApi.IOperation` fields (path, method, description, parameters, requestBody, responseBody, authorizationType, authorizationActor, name, prerequisites, etc.)
 - Proper `authorizationType` values for auth operations (`"join"`, `"login"`, `"refresh"`, or `null`)
 - Appropriate `authorizationActor` for actor-specific endpoints
 

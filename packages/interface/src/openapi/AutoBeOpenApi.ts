@@ -296,23 +296,6 @@ export namespace AutoBeOpenApi {
    */
   export interface IOperation extends IEndpoint {
     /**
-     * Specification of the API operation.
-     *
-     * Before defining the API operation interface, please describe what you're
-     * planning to write in this `specification` field.
-     *
-     * The specification must be fully detailed and clear, so that anyone can
-     * understand the purpose and functionality of the API operation and its
-     * related components (e.g., {@link path}, {@link parameters},
-     * {@link requestBody}).
-     *
-     * IMPORTANT: The specification MUST identify which Prisma DB table this
-     * operation is associated with, helping ensure complete coverage of all
-     * database entities.
-     */
-    specification: string;
-
-    /**
      * Authorization type of the API operation.
      *
      * - `"login"`: User login operations that validate credentials
@@ -380,31 +363,6 @@ export namespace AutoBeOpenApi {
      * > MUST be written in English. Never use other languages.
      */
     description: string;
-
-    /**
-     * Short summary of the API operation.
-     *
-     * This should be a concise description of the API operation, typically one
-     * sentence long. It should provide a quick overview of what the API does
-     * without going into too much detail.
-     *
-     * This summary will be used in the OpenAPI documentation to give users a
-     * quick understanding of the API operation's purpose.
-     *
-     * IMPORTANT: The summary should clearly indicate which Prisma DB table this
-     * operation relates to, helping to ensure all tables have API coverage.
-     *
-     * **CRITICAL WARNING about soft delete keywords**: DO NOT use terms like
-     * "soft delete", "soft-delete", or similar variations in this summary
-     * UNLESS the operation actually implements soft deletion. These keywords
-     * trigger validation logic that expects a corresponding soft_delete_column
-     * to be specified. Only use these terms when you intend to implement soft
-     * deletion (marking records as deleted without removing them from the
-     * database).
-     *
-     * > MUST be written in English. Never use other languages
-     */
-    summary: string;
 
     /**
      * List of path parameters.

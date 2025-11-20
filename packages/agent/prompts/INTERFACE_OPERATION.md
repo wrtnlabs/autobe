@@ -95,7 +95,7 @@ thinking: "Created index operation with IQuery, at operation with path params, c
 
 ## 2. Your Mission
 
-Analyze the provided information and generate complete API operations that transform simple endpoint definitions (path + method) into fully detailed `AutoBeOpenApi.IOperation` objects. Each operation must include comprehensive specifications, multi-paragraph descriptions, proper parameters, and appropriate request/response body definitions.
+Analyze the provided information and generate complete API operations that transform simple endpoint definitions (path + method) into fully detailed `AutoBeOpenApi.IOperation` objects. Each operation must include multi-paragraph descriptions, proper parameters, and appropriate request/response body definitions.
 
 ## 2.1. Critical Schema Verification Rule
 
@@ -213,15 +213,15 @@ CORRECT Approach:
 5. Generate operations (CRUD + computed operations)
 ```
 
-**Implementation Specification Pattern**:
+**Implementation Documentation Pattern**:
 
-For non-table operations, your `specification` field must clearly document:
+For non-table operations, your `description` field must clearly document the implementation approach:
 
 ```typescript
 {
-  specification: `This operation computes monthly sales statistics by aggregating
-  data from the Orders table using GROUP BY month. It does NOT map to a single
-  Prisma table - instead it executes:
+  description: `This operation computes monthly sales statistics by aggregating data from the Orders table using GROUP BY month.
+
+  Implementation note: This does NOT map to a single Prisma table - instead it executes:
 
   SELECT
     DATE_TRUNC('month', created_at) as month,
@@ -752,19 +752,20 @@ export namespace IAutoBeInterfaceOperationApplication {
   export interface IProps {
     operations: IOperation[];  // Array of API operations
   }
-  
+
   // Each operation extends AutoBeOpenApi.IOperation but with authorizationActors instead
   interface IOperation {
-    specification: string;      // REQUIRED: Detailed API specification
     path: string;              // REQUIRED: Resource path
     method: string;            // REQUIRED: HTTP method
-    summary: string;           // REQUIRED: Concise summary
     description: string;       // REQUIRED: Multi-paragraph description
     parameters?: Array<...>;   // Path/query parameters if needed
     requestBody?: {...};       // Request body for POST/PUT/PATCH
     responseBody?: {...};      // Response body definition
     authorizationActors: string[];  // REQUIRED: Array of actors (can be empty [])
     name: string;              // REQUIRED: Operation name (index, at, search, create, update, erase)
+    authorizationType: "login" | "join" | "refresh" | null;  // REQUIRED: Auth type
+    authorizationActor: string | null;  // REQUIRED: Single actor for this operation
+    prerequisites: IPrerequisite[];  // REQUIRED: Prerequisite operations
   }
 }
 ```
@@ -783,13 +784,17 @@ You MUST call `process({ request: { type: "complete", operations: [...] } })` wi
 ### CRITICAL CHECKLIST - EVERY OPERATION MUST HAVE ALL THESE FIELDS
 
 **MANDATORY FIELDS - NEVER LEAVE UNDEFINED:**
-- [ ] `specification` - REQUIRED string: Detailed API specification
 - [ ] `path` - REQUIRED string: Resource path
 - [ ] `method` - REQUIRED string: HTTP method
-- [ ] `summary` - REQUIRED string: One-sentence summary
 - [ ] `description` - REQUIRED string: Multi-paragraph description
 - [ ] `authorizationActors` - REQUIRED array: Actor array (can be empty [])
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
+- [ ] `authorizationType` - REQUIRED: "login" | "join" | "refresh" | null
+- [ ] `authorizationActor` - REQUIRED: string | null (single actor for this operation)
+- [ ] `parameters` - REQUIRED array: Path parameters (can be empty [])
+- [ ] `requestBody` - REQUIRED: object | null
+- [ ] `responseBody` - REQUIRED: object | null
+- [ ] `prerequisites` - REQUIRED array: Prerequisite operations (can be empty [])
 
 **FAILURE TO INCLUDE ANY OF THESE FIELDS WILL CAUSE VALIDATION ERRORS**
 
@@ -800,19 +805,20 @@ process({
     operations: [
       {
         // ALL FIELDS BELOW ARE MANDATORY - DO NOT SKIP ANY
-      specification: "This operation retrieves a list of resources...", // REQUIRED
       path: "/resources",                                               // REQUIRED
-      method: "get",                                                   // REQUIRED  
-      summary: "Retrieve list of resources",                           // REQUIRED
+      method: "get",                                                   // REQUIRED
       description: "Detailed multi-paragraph description...\n\n...",   // REQUIRED
-      parameters: [],                                                  // Can be empty
-      requestBody: null,                                              // Can be null
-      responseBody: {                                                 // Can have value or null
+      parameters: [],                                                  // REQUIRED (can be empty)
+      requestBody: null,                                              // REQUIRED (can be null)
+      responseBody: {                                                 // REQUIRED (can have value or null)
         description: "Response description",
         typeName: "IPageIResource"  // REQUIRED if responseBody exists
       },
       authorizationActors: [],                                         // REQUIRED (can be empty array)
-      name: "index"                                                   // REQUIRED
+      name: "index",                                                  // REQUIRED
+      authorizationType: null,                                        // REQUIRED
+      authorizationActor: null,                                       // REQUIRED
+      prerequisites: []                                               // REQUIRED (can be empty)
       },
       // ONLY include operations that pass validation
       // EVERY operation MUST have ALL required fields
@@ -823,16 +829,7 @@ process({
 
 ## 5. Operation Design Principles
 
-### 5.1. Specification Field Requirements
-
-The `specification` field must:
-- Clearly identify which Prisma DB table this operation is associated with
-- Explain the business purpose and functionality
-- Describe any business rules or validation logic
-- Reference relationships to other entities
-- Be detailed enough to understand implementation requirements
-
-### 5.2. Description Requirements
+### 5.1. Description Requirements
 
 **CRITICAL**: The `description` field MUST be clear, comprehensive, and extensively detailed.
 
@@ -888,7 +885,14 @@ When describing DELETE operations, state the behavior directly without comparing
 
 **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
-### 5.3. HTTP Method Patterns
+The `description` field should include:
+- Clear identification of which Prisma DB table this operation is associated with
+- Explanation of the business purpose and functionality
+- Description of any business rules or validation logic
+- References to relationships to other entities
+- Sufficient detail to understand implementation requirements
+
+### 5.2. HTTP Method Patterns
 
 Follow these patterns based on the endpoint method:
 
@@ -1883,13 +1887,11 @@ Use actual actor names from the Prisma schema. Common patterns:
 ```typescript
 {
   // CRITICAL: ALL FIELDS BELOW ARE REQUIRED - NEVER LEAVE ANY UNDEFINED
-  
-  specification: "This operation retrieves a paginated list of shopping customer accounts with advanced filtering, searching, and sorting capabilities. It operates on the Customer table from the Prisma schema and supports complex queries to find customers based on various criteria including name, email, registration date, and account status.",  // REQUIRED
-  
+
   path: "/customers",  // REQUIRED
   method: "patch",      // REQUIRED
-  
-  description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
+
+  description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation operates on the Customer table from the Prisma schema and provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
 
 The operation supports comprehensive pagination with configurable page sizes and sorting options. Customers can sort by registration date, last login, name, or other relevant fields in ascending or descending order.
 
@@ -1897,22 +1899,23 @@ Security considerations include rate limiting for search operations and appropri
 
 This operation integrates with the Customer table as defined in the Prisma schema, incorporating all available customer fields and relationships. The response includes customer summary information optimized for list displays, with options to include additional details based on authorization level.`,  // REQUIRED - Must be multi-paragraph
 
-  summary: "Search and retrieve a filtered, paginated list of shopping customers",  // REQUIRED
-  
-  parameters: [],  // Can be empty array but field is REQUIRED
-  
-  requestBody: {  // Can be null but field is REQUIRED
+  parameters: [],  // REQUIRED (can be empty array)
+
+  requestBody: {  // REQUIRED (can be null)
     description: "Search criteria and pagination parameters for customer filtering",
     typeName: "IShoppingCustomer.IRequest"  // If requestBody exists, typeName is REQUIRED
   },
-  
-  responseBody: {  // Can be null but field is REQUIRED
+
+  responseBody: {  // REQUIRED (can be null)
     description: "Paginated list of customer summary information matching search criteria",
     typeName: "IPageIShoppingCustomer.ISummary"  // If responseBody exists, typeName is REQUIRED
   },
-  
+
   authorizationActors: ["admin"],  // REQUIRED - Can be empty array []
-  name: "search"                   // REQUIRED - Must be one of: index/at/search/create/update/erase
+  authorizationType: null,  // REQUIRED - "login" | "join" | "refresh" | null
+  authorizationActor: "admin",  // REQUIRED - string | null (single actor for this operation)
+  name: "index",  // REQUIRED - Must be one of: index/at/search/create/update/erase
+  prerequisites: []  // REQUIRED - Can be empty array []
 }
 ```
 
@@ -1959,16 +1962,17 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] **Pattern detection applied**: Checked paths for forbidden patterns (/auth/, /login, /signup, /register, /signin, /join, /sessions with write methods)
 
 ### 10.2. Mandatory Field Completeness
-- [ ] **specification**: EVERY operation has complete technical specification
 - [ ] **path**: EVERY operation has exact path matching provided endpoint
 - [ ] **method**: EVERY operation has HTTP method matching provided endpoint
-- [ ] **description**: EVERY operation has multi-paragraph comprehensive description
-- [ ] **summary**: EVERY operation has concise one-line summary
+- [ ] **description**: EVERY operation has multi-paragraph comprehensive description including technical details, business purpose, and implementation requirements
 - [ ] **parameters**: Field exists (array or empty array `[]`)
 - [ ] **requestBody**: Field exists (object with description+typeName OR `null`)
 - [ ] **responseBody**: Field exists (object with description+typeName OR `null`)
 - [ ] **authorizationActors**: EVERY operation has actor array (can be empty `[]`)
+- [ ] **authorizationType**: Field exists ("login" | "join" | "refresh" | null)
+- [ ] **authorizationActor**: Field exists (string | null)
 - [ ] **name**: EVERY operation has semantic name (index/at/search/create/update/erase)
+- [ ] **prerequisites**: Field exists (array or empty array `[]`)
 - [ ] NO fields are undefined or missing
 - [ ] ALL string fields have meaningful content (not empty strings)
 
@@ -2048,15 +2052,14 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] Self-service operations (user managing own data) identified correctly
 
 ### 10.9. Description Quality
-- [ ] **specification**: Technical, implementation-focused, describes HOW
-- [ ] **description**: Multi-paragraph (3+ paragraphs), user-facing, describes WHAT and WHY:
-  * Paragraph 1: Primary purpose and functionality
-  * Paragraph 2: Advanced features, capabilities, options
+- [ ] **description**: Multi-paragraph (3+ paragraphs), comprehensive, describes WHAT, WHY, and HOW:
+  * Paragraph 1: Primary purpose, functionality, and Prisma table association
+  * Paragraph 2: Advanced features, capabilities, options, business rules
   * Paragraph 3: Security, performance, integration considerations
-- [ ] **summary**: One-line concise description for API docs
+  * Additional detail: Implementation requirements and relationships to other entities
 - [ ] All descriptions in clear English
 - [ ] Descriptions reference actual Prisma schema models/fields
-- [ ] Descriptions explain business value, not just technical details
+- [ ] Descriptions explain business value AND technical details
 - [ ] Parameter descriptions include scope indicators for composite unique
 
 ### 10.10. Semantic Naming

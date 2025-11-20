@@ -7,6 +7,7 @@ import {
 } from "@samchon/openapi";
 import { HashMap } from "tstl";
 
+import { StringUtil } from "../StringUtil";
 import { AutoBeOpenApiEndpointComparator } from "./AutoBeOpenApiEndpointComparator";
 
 export function transformOpenApiDocument(
@@ -22,7 +23,7 @@ export function transformOpenApiDocument(
     dict.set(op, op.name);
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
-      summary: op.summary,
+      summary: StringUtil.summary(op.description),
       description:
         op.description +
         (op.authorizationType !== null &&
@@ -65,7 +66,6 @@ export function transformOpenApiDocument(
         : undefined,
       ...{
         "x-autobe-prerequisites": op.prerequisites,
-        "x-autobe-specification": op.specification,
         "x-samchon-accessor": op.accessor,
       },
     };

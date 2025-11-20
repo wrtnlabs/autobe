@@ -105,18 +105,18 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
 // Each operation in the content array must include:
 export namespace AutoBeOpenApi {
   export interface IOperation {
-    specification: string;  // REQUIRED: Detailed API specification
-    path: string;
-    method: string;
-    summary: string;
-    description: string;
-    parameters?: Array<...>;
-    requestBody?: ...;
-    responseBody?: ...;
-    
+    path: string;  // REQUIRED
+    method: string;  // REQUIRED
+    description: string;  // REQUIRED: Multi-paragraph detailed description
+    parameters?: Array<...>;  // REQUIRED
+    requestBody?: ...;  // REQUIRED
+    responseBody?: ...;  // REQUIRED
+
     // REQUIRED authorization fields (MUST be present in every operation):
-    authorizationType: "login" | "join" | "refresh" | null;
-    authorizationActor: (string & CamelPattern & MinLength<1>) | null;
+    authorizationType: "login" | "join" | "refresh" | null;  // REQUIRED
+    authorizationActor: (string & CamelPattern & MinLength<1>) | null;  // REQUIRED
+    name: string;  // REQUIRED
+    prerequisites: IPrerequisite[];  // REQUIRED
   }
 }
 ```
@@ -152,17 +152,16 @@ The final array of validated and corrected API operations.
 EVERY operation in the array MUST include:
 
 **MANDATORY CHECKLIST - NEVER LEAVE ANY FIELD UNDEFINED:**
-- [ ] `specification` - REQUIRED string: Detailed API specification 
 - [ ] `path` - REQUIRED string: Resource path (e.g., "/users/{userId}")
 - [ ] `method` - REQUIRED string: HTTP method (get, post, put, delete, patch)
-- [ ] `summary` - REQUIRED string: Concise one-sentence summary
-- [ ] `description` - REQUIRED string: Multi-paragraph detailed description
+- [ ] `description` - REQUIRED string: Multi-paragraph detailed description (includes technical details, business purpose, implementation requirements)
 - [ ] `parameters` - REQUIRED array: Can be empty [] but must exist
 - [ ] `requestBody` - REQUIRED: Can be null or object with `description` and `typeName`
 - [ ] `responseBody` - REQUIRED: Can be null or object with `description` and `typeName`
 - [ ] `authorizationType` - REQUIRED: Must be `"login"`, `"join"`, `"refresh"`, or `null`
 - [ ] `authorizationActor` - REQUIRED: Must be camelCase string or `null`
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
+- [ ] `prerequisites` - REQUIRED array: Can be empty [] but must exist
 
 **CRITICAL RULES FOR requestBody/responseBody:**
 - If requestBody is an object, it MUST have `typeName` field (string)
@@ -175,27 +174,32 @@ EVERY operation in the array MUST include:
 ```typescript
 // Public read operation - ALL FIELDS REQUIRED
 {
-  specification: "Retrieves list of products...",    // REQUIRED
   path: "/products",                                  // REQUIRED
   method: "get",                                       // REQUIRED
-  summary: "Get product list",                        // REQUIRED
-  description: "Multi-paragraph description...",      // REQUIRED
+  description: `Retrieve a paginated list of products from the system.
+
+This operation operates on the Product table from the Prisma schema and provides search capabilities for finding products.
+
+Security: Public endpoint with no authentication required.
+
+Implementation: Returns paginated results with filtering and sorting options.`,  // REQUIRED (multi-paragraph)
   parameters: [],                                     // REQUIRED (can be empty)
   requestBody: null,                                  // REQUIRED (can be null)
-  responseBody: { 
+  responseBody: {
     description: "Product list",
     typeName: "IPageIProduct"                        // REQUIRED if body exists
   },                                                  // REQUIRED
   authorizationType: null,                           // REQUIRED
   authorizationActor: null,                           // REQUIRED
-  name: "index"                                       // REQUIRED
+  name: "index",                                      // REQUIRED
+  prerequisites: []                                   // REQUIRED (can be empty)
 }
 
 // NEVER DO THIS - Missing required fields will cause validation errors:
 {
   path: "/products",
   method: "get",
-  // MISSING: specification, summary, description, name, etc.
+  // MISSING: description, name, prerequisites, etc.
   // THIS WILL FAIL VALIDATION!
 ```
 
@@ -1257,18 +1261,19 @@ Here's an example of how to review an operation:
 {
   path: "/customers",
   method: "delete",
-  
+
   description: "Soft delete a customer by marking them as deleted. This operation sets the deleted_at timestamp to the current time, preserving the customer record for audit purposes while excluding them from normal queries.",
-  
-  summary: "Mark customer as deleted (soft delete)",
-  
+
   parameters: [
     { name: "id", in: "path" }
   ],
-  
+
   responseBody: null
   // MISSING: authorizationType field
   // MISSING: authorizationActor field
+  // MISSING: name field
+  // MISSING: prerequisites field
+  // MISSING: requestBody field
 }
 ```
 
@@ -1277,6 +1282,9 @@ Here's an example of how to review an operation:
 **Issue 1: MISSING REQUIRED FIELDS**
 - **authorizationType**: Field is undefined, must be set to `null` for non-auth operations
 - **authorizationActor**: Field is undefined, should be `"admin"` for delete operations
+- **name**: Field is undefined, should be `"erase"` for delete operations
+- **prerequisites**: Field is undefined, must be empty array `[]`
+- **requestBody**: Field is undefined, must be `null` for delete operations
 
 **Issue 2: CRITICAL SCHEMA VIOLATION**
 - Examined Customer model in provided schema
@@ -1287,26 +1295,29 @@ Here's an example of how to review an operation:
 **Required Fix - ALL FIELDS MUST BE PRESENT**:
 ```typescript
 {
-  specification: "Permanently removes a customer record from the database. This operation performs a hard delete on the Customer table in the Prisma schema.",  // ADDED: Required field
-  
   path: "/customers",                  // REQUIRED
   method: "delete",                     // REQUIRED
-  
-  summary: "Permanently delete customer from database",  // ADDED: Required field
-  
-  description: "Permanently delete a customer and all associated data from the database. This operation performs a hard delete, completely removing the customer record. Warning: This action cannot be undone and will cascade delete all related orders.",  // REQUIRED
-  
+
+  description: `Permanently delete a customer and all associated data from the database.
+
+This operation performs a hard delete on the Customer table in the Prisma schema, completely removing the customer record.
+
+Warning: This action cannot be undone and will cascade delete all related orders.
+
+Implementation: Executes DELETE FROM customers WHERE id = ? with cascading deletes for related entities.`,  // REQUIRED (multi-paragraph with implementation details)
+
   parameters: [                        // REQUIRED
-    { name: "id", in: "path" }
+    { name: "id", in: "path", description: "Customer ID", schema: { type: "string", format: "uuid" } }
   ],
-  
+
   requestBody: null,                   // ADDED: Required field (can be null)
   responseBody: null,                  // REQUIRED (can be null)
-  
+
   authorizationType: null,             // ADDED: Required field
   authorizationActor: "admin",          // ADDED: Required field
-  
-  name: "erase"                        // ADDED: Required field
+
+  name: "erase",                       // ADDED: Required field
+  prerequisites: []                    // ADDED: Required field (empty array)
 }
 ```
 
@@ -1314,9 +1325,9 @@ Here's an example of how to review an operation:
 
 ```typescript
 {
-  path: "/users", 
+  path: "/users",
   method: "delete",
-  
+
   // Assume schema has:
   // model User {
   //   id            String    @id @default(uuid())
@@ -1324,11 +1335,28 @@ Here's an example of how to review an operation:
   //   deleted_at    DateTime? // Soft-delete field EXISTS
   //   posts         Post[]
   // }
-  
-  description: "Soft delete a user by setting the deleted_at timestamp. The user record is preserved for audit purposes but excluded from normal queries. Users can be restored by clearing the deleted_at field.",
-  
-  summary: "Soft delete user (mark as deleted)",
-  
+
+  description: `Soft delete a user by setting the deleted_at timestamp.
+
+The user record is preserved for audit purposes but excluded from normal queries.
+
+Users can be restored by clearing the deleted_at field.
+
+Implementation: Updates the User table, setting deleted_at = NOW() WHERE id = ?`,  // Multi-paragraph with implementation
+
+  parameters: [
+    { name: "id", in: "path", description: "User ID", schema: { type: "string", format: "uuid" } }
+  ],
+
+  requestBody: null,
+  responseBody: null,
+
+  authorizationType: null,
+  authorizationActor: "admin",
+
+  name: "erase",
+  prerequisites: []
+
   // This description is CORRECT because deleted_at field EXISTS in schema
 }
 ```

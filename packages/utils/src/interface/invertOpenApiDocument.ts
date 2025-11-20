@@ -16,12 +16,11 @@ export function invertOpenApiDocument(
       .map(
         (r) =>
           ({
-            specification: empty("specification"),
             authorizationType: null,
             method: r.method as "post",
             path: r.path,
-            summary: r.operation().summary ?? empty("summary"),
-            description: r.operation().description ?? empty("description"),
+            description:
+              writeDescription(r.operation()) ?? empty("description"),
             parameters: r.parameters.map(
               (p) =>
                 ({
@@ -61,6 +60,16 @@ export function invertOpenApiDocument(
       authorizations: [],
     },
   };
+}
+
+function writeDescription(operation: OpenApi.IOperation): string | undefined {
+  if (operation.summary === undefined && operation.description === undefined)
+    return undefined;
+  if (operation.summary === undefined) return operation.description;
+  else if (operation.description === undefined) return operation.summary;
+  else if (operation.description.startsWith(operation.summary))
+    return operation.description;
+  return `${operation.summary}${operation.summary.endsWith(".") ? "" : "."}\n\n${operation.description}`;
 }
 
 function empty(key: string): string {

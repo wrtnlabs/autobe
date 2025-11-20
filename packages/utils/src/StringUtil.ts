@@ -56,4 +56,15 @@ export namespace StringUtil {
     }
     return result.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
   }
+
+  export function summary(description: string): string {
+    const newLine: number = description.indexOf("\n");
+    const dot: number = description.indexOf(".");
+    const minimum: number = Math.min(
+      newLine === -1 ? Number.MAX_SAFE_INTEGER : newLine,
+      dot === -1 ? Number.MAX_SAFE_INTEGER : dot,
+      description.length,
+    );
+    return description.substring(0, minimum);
+  }
 }

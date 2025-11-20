@@ -144,7 +144,9 @@ namespace Transformer {
         Name | Stance | Summary
         -----|--------|---------
         ${newbie
-          .map((m) => [m.name, m.stance, getSummary(m.description)].join(" | "))
+          .map((m) =>
+            [m.name, m.stance, StringUtil.summary(m.description)].join(" | "),
+          )
           .join("\n")}
       `,
       loaded: props.local.prismaSchemas.map((s) => `- ${s.name}`).join("\n"),
@@ -210,7 +212,7 @@ namespace Transformer {
               o.path,
               o.authorizationActor ?? "-",
               o.authorizationType ?? "-",
-              getSummary(o.summary),
+              StringUtil.summary(o.description),
             ].join(" | "),
           )
           .join("\n")}
@@ -267,7 +269,7 @@ namespace Transformer {
         -----|---------
         ${Object.entries(newbie)
           .map(([name, schema]) =>
-            [name, getSummary(schema.description)].join(" | "),
+            [name, StringUtil.summary(schema.description)].join(" | "),
           )
           .join("\n")}
       `,
@@ -363,17 +365,6 @@ const createSystemMessage = (props: {
     .replaceAll("{{EXHAUSTED}}", props.exhausted),
   created_at: new Date().toISOString(),
 });
-
-const getSummary = (description: string): string => {
-  const newLine: number = description.indexOf("\n");
-  const dot: number = description.indexOf(".");
-  const minimum: number = Math.min(
-    newLine === -1 ? Number.MAX_SAFE_INTEGER : newLine,
-    dot === -1 ? Number.MAX_SAFE_INTEGER : dot,
-    description.length,
-  );
-  return description.substring(0, minimum);
-};
 
 const toJsonBlock = (obj: any): string =>
   StringUtil.trim`
