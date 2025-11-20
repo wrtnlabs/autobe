@@ -10,6 +10,7 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceHistory,
   AutoBeInterfaceStartEvent,
+  AutoBePhase,
   AutoBePrismaCompleteEvent,
   AutoBePrismaHistory,
   AutoBePrismaStartEvent,
@@ -500,8 +501,5 @@ const forceRetry = async <T>(
 
 const STAGES =
   typia.misc.literals<
-    keyof Pick<
-      IAutoBeTokenUsageJson,
-      "facade" | "analyze" | "prisma" | "interface" | "test" | "realize"
-    >
+    keyof Pick<IAutoBeTokenUsageJson, "facade" | AutoBePhase>
   >();
