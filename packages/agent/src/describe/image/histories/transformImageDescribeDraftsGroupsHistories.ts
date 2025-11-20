@@ -29,7 +29,7 @@ export const transformImageDescribeDraftsGroupsHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.DESCRIBE_IMAGES_GROUPS,
+        text: AutoBeSystemPromptConstant.IMAGE_DESCRIBE_GROUPS,
       },
       {
         id: v7(),

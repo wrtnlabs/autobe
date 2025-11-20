@@ -14,7 +14,7 @@ export const transformImageDescribeDraftsIntegrationsHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.DESCRIBE_IMAGES_DRAFTS_INTEGRATIONS,
+        text: AutoBeSystemPromptConstant.IMAGE_DESCRIBE_DRAFTS_INTEGRATIONS,
       },
       {
         id: v7(),

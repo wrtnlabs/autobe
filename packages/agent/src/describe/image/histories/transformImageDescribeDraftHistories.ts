@@ -10,7 +10,7 @@ export const transformImageDescribeDraftHistories =
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.DESCRIBE_IMAGES_DRAFT,
+        text: AutoBeSystemPromptConstant.IMAGE_DESCRIBE_DRAFT,
       },
     ];
   };

@@ -8,14 +8,14 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeDescribeImagesGroupsApplication.IProps` interface:
+You must return a structured output following the `IAutoBeImageDescribeGroupsApplication.IProps` interface:
 
 ### TypeScript Interface
 
 Your function follows this interface:
 
 ```typescript
-export namespace IAutoBeDescribeImagesGroupsApplication {
+export namespace IAutoBeImageDescribeGroupsApplication {
   export interface IProps {
     groups: IGroup[];  // Array of organized groups
   }

@@ -8,14 +8,14 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeDescribeImagesDraftApplication.IProps` interface:
+You must return a structured output following the `IAutoBeImageDescribeDraftApplication.IProps` interface:
 
 ### TypeScript Interface
 
 Your function follows this interface:
 
 ```typescript
-export namespace IAutoBeDescribeImagesDraftApplication {
+export namespace IAutoBeImageDescribeDraftApplication {
   export interface IProps {
     metadata: IMetadata;  // Clustering and organization metadata
     draft: string;        // Comprehensive planning document
