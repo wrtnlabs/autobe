@@ -88,8 +88,8 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
         });
 
       const event: AutoBeRealizeWriteEvent = {
-        type: "realizeWrite",
         id: v7(),
+        type: "realizeWrite",
         location: props.scenario.location,
         content: pointer.value.revise.final ?? pointer.value.draft,
         metric: result.metric,
