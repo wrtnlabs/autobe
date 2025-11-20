@@ -97,7 +97,7 @@ async function processGroup<Model extends ILlmSchema.Model>(
   const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
     .getTokenUsage()
     .toJSON().aggregate;
-  ctx.usage().record(tokenUsage, ["facade"]);
+  ctx.usage().record(tokenUsage, ["describe"]);
   props.progress.completed += 1;
   if (pointer.value === null)
     throw new Error(
