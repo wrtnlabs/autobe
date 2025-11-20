@@ -1,4 +1,8 @@
-import { IAgenticaController } from "@agentica/core";
+import {
+  IAgenticaController,
+  IAgenticaTokenUsageJson,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeDescribeImageDraftGroup,
   AutoBeDescribeImageDraftIntegrationEvent,
@@ -11,6 +15,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformDescribeImagesDraftsIntegrationsHistories } from "./histories/transformDescribeImagesDraftsIntegrationsHistories";
 import { IAutoBeDescribeImagesDraftsIntegrationsApplication } from "./structures/IAutoBeDescribeImagesDraftsIntegrationsApplication";
@@ -55,26 +60,43 @@ async function processGroup<Model extends ILlmSchema.Model>(
       value: null,
     };
 
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "describeImageDraftIntegration",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    histories: transformDescribeImagesDraftsIntegrationsHistories({
+  const { histories, userMessage } =
+    transformDescribeImagesDraftsIntegrationsHistories({
       group: props.group,
-    }),
-    userMessage: [
-      {
-        type: "text",
-        text: `Integrate all ${props.group.drafts.length} drafts for the "${props.group.clusterKey}" functional area into a single comprehensive section.`,
+    });
+
+  const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      executor: {
+        describe: false,
       },
+      retry: ctx.retry,
+    },
+    histories,
+    controllers: [
+      createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
     ],
-    promptCacheKey: props.promptCacheKey,
   });
+  supportMistral(agent, {
+    api: ctx.vendor.api,
+    model: ctx.vendor.model,
+    options: ctx.vendor.options,
+    semaphore:
+      typeof ctx.vendor.semaphore === "number"
+        ? ctx.vendor.semaphore
+        : ctx.vendor.semaphore?.max(),
+  });
+  await agent.conversate(userMessage);
+  const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
+    .getTokenUsage()
+    .toJSON().aggregate;
   props.progress.completed += 1;
   if (pointer.value === null)
     throw new Error(
@@ -86,10 +108,9 @@ async function processGroup<Model extends ILlmSchema.Model>(
     id: v7(),
     clusterKey: props.group.clusterKey,
     integration: pointer.value.integration,
+    tokenUsage,
     completed: props.progress.completed,
     total: props.progress.total,
-    metric,
-    tokenUsage,
     created_at: new Date().toISOString(),
   };
 

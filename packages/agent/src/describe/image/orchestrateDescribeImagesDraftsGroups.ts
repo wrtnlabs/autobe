@@ -1,4 +1,8 @@
-import { IAgenticaController } from "@agentica/core";
+import {
+  IAgenticaController,
+  IAgenticaTokenUsageJson,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeDescribeImageDraftEvent,
   AutoBeDescribeImageDraftGroup,
@@ -12,6 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { supportMistral } from "../../factory/supportMistral";
 import { transformDescribeImagesDraftsGroupsHistories } from "./histories/transformDescribeImagesDraftsGroupsHistories";
 import { IAutoBeDescribeImagesGroupsApplication } from "./structures/IAutoBeDescribeImagesGroupsApplication";
 
@@ -71,21 +76,44 @@ async function process<Model extends ILlmSchema.Model>(
       value: null,
     };
 
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "describeImageDraftGroup",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    ...transformDescribeImagesDraftsGroupsHistories({
+  const { histories, userMessage } =
+    transformDescribeImagesDraftsGroupsHistories({
       metadata: props.metadataList,
       existingGroups: props.existingGroups,
-    }),
-  });
+    });
 
+  const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      executor: {
+        describe: false,
+      },
+      retry: ctx.retry,
+    },
+    histories,
+    controllers: [
+      createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+  });
+  supportMistral(agent, {
+    api: ctx.vendor.api,
+    model: ctx.vendor.model,
+    options: ctx.vendor.options,
+    semaphore:
+      typeof ctx.vendor.semaphore === "number"
+        ? ctx.vendor.semaphore
+        : ctx.vendor.semaphore?.max(),
+  });
+  await agent.conversate(userMessage);
+  const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
+    .getTokenUsage()
+    .toJSON().aggregate;
   if (pointer.value === null) throw new Error("Failed to group image drafts.");
 
   // Track processed original cluster keys
@@ -118,7 +146,6 @@ async function process<Model extends ILlmSchema.Model>(
     type: "describeImageDraftGroup",
     id: v7(),
     groups,
-    metric,
     tokenUsage,
     created_at: new Date().toISOString(),
   };

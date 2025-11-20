@@ -1,4 +1,8 @@
-import { IAgenticaController } from "@agentica/core";
+import {
+  IAgenticaController,
+  IAgenticaTokenUsageJson,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeDescribeImageDraftEvent,
   AutoBeProgressEventBase,
@@ -13,7 +17,9 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { createAgenticaUserMessageContent } from "../../factory/createAgenticaUserMessageContent";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
+import { supportMistral } from "../../factory/supportMistral";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformDescribeImagesDraftHistories } from "./histories/transformDescribeImagesDraftHistories";
@@ -86,22 +92,44 @@ async function process<Model extends ILlmSchema.Model>(
     ...props.userContents,
   ];
 
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "describeImageDraft",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
+  const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      executor: {
+        describe: false,
       },
-    }),
-    enforceFunctionCall: true,
+      retry: ctx.retry,
+    },
     histories: transformDescribeImagesDraftHistories(),
-    userMessage:
-      content.length > 0
-        ? content.map((c) => createAutoBeUserMessageContent({ content: c }))
-        : "Analyze the image content and generate a draft of the planning document.",
-    promptCacheKey: props.promptCacheKey,
+    controllers: [
+      createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
   });
+  supportMistral(agent, {
+    api: ctx.vendor.api,
+    model: ctx.vendor.model,
+    options: ctx.vendor.options,
+    semaphore:
+      typeof ctx.vendor.semaphore === "number"
+        ? ctx.vendor.semaphore
+        : ctx.vendor.semaphore?.max(),
+  });
+  await agent.conversate(
+    createAgenticaUserMessageContent({
+      content: content.map((c) =>
+        createAutoBeUserMessageContent({ content: c }),
+      ),
+    }),
+  );
+  const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
+    .getTokenUsage()
+    .toJSON().aggregate;
   props.progress.completed += props.imageContents.length;
   if (pointer.value === null) throw new Error("Failed to analyze image.");
 
@@ -111,9 +139,8 @@ async function process<Model extends ILlmSchema.Model>(
     draft: pointer.value.draft,
     metadata: pointer.value.metadata,
     completed: props.progress.completed,
-    total: props.progress.total,
-    metric,
     tokenUsage,
+    total: props.progress.total,
     created_at: new Date().toISOString(),
   };
   return event;

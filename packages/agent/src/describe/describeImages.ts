@@ -61,7 +61,6 @@ export const describeImages = async <Model extends ILlmSchema.Model>(
         description: document.document,
       }),
     ),
-    aggregates: ctx.getCurrentAggregates("describe"),
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };

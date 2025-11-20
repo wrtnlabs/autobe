@@ -1,4 +1,8 @@
-import { IAgenticaController } from "@agentica/core";
+import {
+  IAgenticaController,
+  IAgenticaTokenUsageJson,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeDescribeImageDocumentEvent,
   AutoBeDescribeImageDraftIntegrationEvent,
@@ -10,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { supportMistral } from "../../factory/supportMistral";
 import { transformDescribeImagesDocumentHistories } from "./histories/transformDescribeImagesDocumentHistories";
 import { IAutoBeDescribeImagesDocumentApplication } from "./structures/IAutoBeDescribeImagesDocumentApplication";
 
@@ -26,26 +31,42 @@ export const orchestrateDescribeImagesDocument = async <
       value: null,
     };
 
-  const { metric, tokenUsage } = await ctx.conversate({
-    source: "describeImageDocument",
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: true,
-    histories: transformDescribeImagesDocumentHistories({
-      integrations: props.integrations,
-    }),
-    userMessage: [
-      {
-        type: "text",
-        text: `Combine all ${props.integrations.length} integrated sections into a complete B2B SaaS requirements document.`,
-      },
-    ],
+  const { histories, userMessage } = transformDescribeImagesDocumentHistories({
+    integrations: props.integrations,
   });
 
+  const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      executor: {
+        describe: false,
+      },
+      retry: ctx.retry,
+    },
+    histories,
+    controllers: [
+      createController({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+  });
+  supportMistral(agent, {
+    api: ctx.vendor.api,
+    model: ctx.vendor.model,
+    options: ctx.vendor.options,
+    semaphore:
+      typeof ctx.vendor.semaphore === "number"
+        ? ctx.vendor.semaphore
+        : ctx.vendor.semaphore?.max(),
+  });
+  await agent.conversate(userMessage);
+  const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
+    .getTokenUsage()
+    .toJSON().aggregate;
   if (pointer.value === null)
     throw new Error("Failed to complete the requirements document");
 
@@ -55,7 +76,6 @@ export const orchestrateDescribeImagesDocument = async <
     document: pointer.value.document,
     summary: pointer.value.summary,
     sections: pointer.value.sections,
-    metric,
     tokenUsage,
     created_at: new Date().toISOString(),
   };
