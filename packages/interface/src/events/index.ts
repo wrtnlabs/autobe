@@ -4,9 +4,6 @@ export * from "./contents";
 // DESCRIBE
 export * from "./AutoBeImageDescribeStartEvent";
 export * from "./AutoBeImageDescribeDraftEvent";
-export * from "./AutoBeImageDescribeDraftGroupEvent";
-export * from "./AutoBeImageDescribeDraftIntegrationEvent";
-export * from "./AutoBeImageDescribeDocumentEvent";
 export * from "./AutoBeImageDescribeCompleteEvent";
 
 // FACADE

@@ -1,9 +1,6 @@
 import {
   AutoBeImageDescribeCompleteEvent,
-  AutoBeImageDescribeDocumentEvent,
   AutoBeImageDescribeDraftEvent,
-  AutoBeImageDescribeDraftGroup,
-  AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
   AutoBeUserMessageHistory,
@@ -13,10 +10,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
-import { orchestrateImageDescribeDocument } from "./image/orchestrateImageDescribeDocument";
 import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
-import { orchestrateImageDescribeDraftsGroups } from "./image/orchestrateImageDescribeDraftsGroups";
-import { orchestrateImageDescribeDraftsIntegrations } from "./image/orchestrateImageDescribeDraftsIntegrations";
 
 export const imageDescribe = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -40,25 +34,23 @@ export const imageDescribe = async <Model extends ILlmSchema.Model>(
   const drafts: AutoBeImageDescribeDraftEvent[] =
     await orchestrateImageDescribeDrafts(ctx, { content: props.content });
 
-  const groups: AutoBeImageDescribeDraftGroup[] =
-    await orchestrateImageDescribeDraftsGroups(ctx, { drafts });
-
-  const integrations: AutoBeImageDescribeDraftIntegrationEvent[] =
-    await orchestrateImageDescribeDraftsIntegrations(ctx, {
-      groups,
-    });
-
-  const document: AutoBeImageDescribeDocumentEvent =
-    await orchestrateImageDescribeDocument(ctx, { integrations });
+  // Create descriptions from drafts
+  const descriptions = drafts.map((draft) => ({
+    observation: draft.observation,
+    analysis: draft.analysis,
+    topics: draft.topics,
+    summary: draft.summary,
+    description: draft.draft,
+  }));
 
   // Emit completion event
   const complete: AutoBeImageDescribeCompleteEvent = {
     type: "imageDescribeComplete",
     id: v7(),
-    contents: imageContents.map((c) =>
+    contents: imageContents.map((c, index) =>
       createAutoBeUserMessageContent({
         content: c,
-        description: document.document,
+        description: descriptions[index] ? JSON.stringify(descriptions[index], null, 2) : undefined,
       }),
     ),
     elapsed: new Date().getTime() - start.getTime(),

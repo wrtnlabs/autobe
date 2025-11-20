@@ -6,10 +6,7 @@ import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
-import { AutoBeImageDescribeDocumentEvent } from "./AutoBeImageDescribeDocumentEvent";
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
-import { AutoBeImageDescribeDraftGroupEvent } from "./AutoBeImageDescribeDraftGroupEvent";
-import { AutoBeImageDescribeDraftIntegrationEvent } from "./AutoBeImageDescribeDraftIntegrationEvent";
 import { AutoBeImageDescribeStartEvent } from "./AutoBeImageDescribeStartEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
@@ -97,9 +94,6 @@ export type AutoBeEvent =
   // DESCRIBE
   | AutoBeImageDescribeStartEvent
   | AutoBeImageDescribeDraftEvent
-  | AutoBeImageDescribeDraftGroupEvent
-  | AutoBeImageDescribeDraftIntegrationEvent
-  | AutoBeImageDescribeDocumentEvent
   | AutoBeImageDescribeCompleteEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
@@ -201,9 +195,6 @@ export namespace AutoBeEvent {
     // DESCRIBE
     imageDescribeStart: AutoBeImageDescribeStartEvent;
     imageDescribeDraft: AutoBeImageDescribeDraftEvent;
-    imageDescribeDraftGroup: AutoBeImageDescribeDraftGroupEvent;
-    imageDescribeDraftIntegration: AutoBeImageDescribeDraftIntegrationEvent;
-    imageDescribeDocument: AutoBeImageDescribeDocumentEvent;
     imageDescribeComplete: AutoBeImageDescribeCompleteEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;

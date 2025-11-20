@@ -6,10 +6,7 @@ import {
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
   AutoBeImageDescribeCompleteEvent,
-  AutoBeImageDescribeDocumentEvent,
   AutoBeImageDescribeDraftEvent,
-  AutoBeImageDescribeDraftGroupEvent,
-  AutoBeImageDescribeDraftIntegrationEvent,
   AutoBeImageDescribeStartEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
@@ -128,39 +125,6 @@ export interface IAutoBeRpcListener {
    * analysis of a batch of images with extracted requirements and metadata.
    */
   imageDescribeDraft?(event: AutoBeImageDescribeDraftEvent): Promise<void>;
-
-  /**
-   * Optional handler for image draft grouping events.
-   *
-   * Called when the Describe agent groups related image drafts by their cluster
-   * keys, organizing drafts that belong to the same functional area or feature
-   * set for consolidated processing.
-   */
-  imageDescribeDraftGroup?(
-    event: AutoBeImageDescribeDraftGroupEvent,
-  ): Promise<void>;
-
-  /**
-   * Optional handler for image draft integration events.
-   *
-   * Called when the Describe agent integrates multiple drafts from each group
-   * into consolidated section documents, creating coherent specifications for
-   * each functional area of the system.
-   */
-  imageDescribeDraftIntegration?(
-    event: AutoBeImageDescribeDraftIntegrationEvent,
-  ): Promise<void>;
-
-  /**
-   * Optional handler for image analysis document generation events.
-   *
-   * Called when all integrated sections are assembled into a complete B2B SaaS
-   * requirements document, providing a comprehensive specification derived from
-   * the analyzed images.
-   */
-  imageDescribeDocument?(
-    event: AutoBeImageDescribeDocumentEvent,
-  ): Promise<void>;
 
   /**
    * Mandatory handler for describe image completion events.

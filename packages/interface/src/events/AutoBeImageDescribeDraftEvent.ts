@@ -1,42 +1,61 @@
-import { AutoBeImageDescribeDraftMetadata } from "../histories/contents/AutoBeImageDescribeDraft";
 import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Describe agent generates planning drafts from image
- * analysis.
+ * Event fired when the Describe agent analyzes and describes an image.
  *
- * This event occurs when the Describe agent analyzes batches of UI screenshots,
- * mockups, wireframes, or design documents to generate comprehensive planning
- * drafts for backend application development. Each draft includes extracted
- * requirements, data structures, API endpoints, and metadata for clustering.
+ * This event occurs when the Describe agent processes an image to extract
+ * visual information, understand its content, and generate comprehensive
+ * documentation. The analysis follows a sequential process from observation
+ * to detailed description.
  *
- * The event provides progress tracking as multiple batches of images are
- * processed and contains the generated drafts with their associated metadata
- * for subsequent grouping and consolidation.
+ * The event provides progress tracking as multiple images are processed
+ * and contains the analysis results with structured documentation.
  */
 export interface AutoBeImageDescribeDraftEvent
   extends AutoBeEventBase<"imageDescribeDraft">,
     AutoBeProgressEventBase {
   /**
-   * A comprehensive planning document generated from analyzing a batch of
-   * images.
+   * Raw observation of visual elements in the image.
    *
-   * Contains detailed requirements, entities, API endpoints, business logic,
-   * and workflow descriptions extracted from UI screenshots, mockups, or design
-   * documents. This draft serves as the foundation for generating backend
-   * application specifications.
+   * Contains uninterpreted documentation of everything visible including
+   * objects, text, UI elements, colors, and spatial relationships.
    */
-  draft: string;
+  observation: string;
 
   /**
-   * Metadata for clustering and organization of image drafts.
+   * Interpreted analysis of the observed elements.
    *
-   * Used to group related drafts together based on their functional area,
-   * enabling efficient organization of large sets of image-based requirements.
+   * Explains what the observed elements mean, their purposes, relationships,
+   * and the overall context of the image.
    */
-  metadata: AutoBeImageDescribeDraftMetadata;
+  analysis: string;
+
+  /**
+   * Key topics or themes extracted from the image.
+   *
+   * Array of 3-5 kebab-case terms that represent the main subjects or
+   * functional areas present in the image.
+   */
+  topics: string[];
+
+  /**
+   * Concise summary of the image content.
+   *
+   * A 2-3 sentence overview that captures the essence of what the image
+   * shows and its primary purpose.
+   */
+  summary: string;
+
+  /**
+   * Comprehensive documentation of the image.
+   *
+   * Detailed markdown-formatted description organized into logical sections,
+   * providing enough information for someone to understand the image without
+   * seeing it.
+   */
+  draft: string;
 
   /**
    * Detailed token usage metrics for the operation.

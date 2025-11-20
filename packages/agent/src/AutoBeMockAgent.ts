@@ -188,9 +188,6 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   // DESCRIBE
   imageDescribeStart: 1_000,
   imageDescribeDraft: 300,
-  imageDescribeDraftGroup: 200,
-  imageDescribeDraftIntegration: 200,
-  imageDescribeDocument: 200,
   imageDescribeComplete: 1_000,
   // ANALYZE
   analyzeStart: 1_000,

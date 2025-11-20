@@ -37,28 +37,13 @@ export class AutoBeListener {
       // DESCRIBE
       imageDescribeStart: async (event) => {
         this.dict_.delete("imageDescribeDraft");
-        this.dict_.delete("imageDescribeDraftGroup");
-        this.dict_.delete("imageDescribeDraftIntegration");
-        this.dict_.delete("imageDescribeDocument");
         this.insert(event);
       },
       imageDescribeDraft: async (event) => {
         this.insert(event);
       },
-      imageDescribeDraftGroup: async (event) => {
-        this.insert(event);
-      },
-      imageDescribeDraftIntegration: async (event) => {
-        this.insert(event);
-      },
-      imageDescribeDocument: async (event) => {
-        this.insert(event);
-      },
       imageDescribeComplete: async (event) => {
         this.dict_.delete("imageDescribeDraft");
-        this.dict_.delete("imageDescribeDraftGroup");
-        this.dict_.delete("imageDescribeDraftIntegration");
-        this.dict_.delete("imageDescribeDocument");
         this.insert(event);
       },
 

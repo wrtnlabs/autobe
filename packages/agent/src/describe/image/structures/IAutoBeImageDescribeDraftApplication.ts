@@ -1,51 +1,86 @@
 export interface IAutoBeImageDescribeDraftApplication {
   /**
-   * Analyzes UI/UX images to generate backend development planning drafts.
+   * Analyzes images to extract and describe their content comprehensively.
    *
-   * Processes screenshots, mockups, or wireframes to extract entities, APIs,
-   * business logic, and workflows for backend implementation.
+   * This function performs sequential image analysis through observation,
+   * interpretation, and documentation phases to generate a complete description.
+   *
+   * @param props - The sequential analysis steps from observation to final output
    */
-  analyzeImage: (next: IAutoBeImageDescribeDraftApplication.IProps) => void;
+  analyzeImage: (props: IAutoBeImageDescribeDraftApplication.IProps) => void;
 }
 
 export namespace IAutoBeImageDescribeDraftApplication {
   export interface IProps {
     /**
-     * Structured metadata for organizing and clustering related screens. Used
-     * to group similar functionality and improve document organization.
-     */
-    metadata: IMetadata;
-
-    /**
-     * Comprehensive planning document in markdown format containing:
+     * Step 1: Initial Observation
      *
-     * - Overview of analyzed screens and their purpose
-     * - Identified data entities with relationships
-     * - Required API endpoints with operations
-     * - Business logic rules and validation requirements
-     * - User roles, permissions, and authentication flows
-     * - Workflow descriptions for multi-step processes
+     * Raw, uninterpreted observation of what is visible in the image.
+     * List everything you can see without making assumptions or interpretations.
+     * Be thorough and systematic, covering all visual elements from top to bottom.
+     *
+     * Include:
+     * - All visible objects and their positions
+     * - Text content (labels, values, titles)
+     * - UI elements (buttons, forms, menus)
+     * - Colors, shapes, and visual patterns
+     * - Layout and spatial relationships
      */
-    draft: string;
-  }
+    observation: string;
 
-  export interface IMetadata {
     /**
-     * Brief 1-2 sentence description summarizing what the analyzed screens
-     * represent and their main functionality in the system.
+     * Step 2: Content Analysis
+     *
+     * Interpret and understand what the observed elements mean.
+     * Connect the dots between different elements and identify their purposes.
+     *
+     * Analyze:
+     * - The type and purpose of the image
+     * - Functional relationships between elements
+     * - User interactions or workflows
+     * - Technical specifications or architectures
+     * - Domain context and business logic
      */
-    summary: string;
+    analysis: string;
+
     /**
-     * Array of 3-5 key feature tags identifying the functional areas (e.g.,
-     * ["user-management", "authentication", "profile-settings"]). Used for
-     * categorizing and finding related screens.
+     * Step 3: Key Topics
+     *
+     * Extract 3-5 main topics or themes from the image.
+     * Use kebab-case format for consistency.
+     *
+     * Examples:
+     * - "user-dashboard", "data-analytics", "form-validation"
+     * - "payment-flow", "inventory-management", "report-generation"
      */
     topics: string[];
+
     /**
-     * Single descriptive identifier for grouping related screens into
-     * functional clusters (e.g., "user-auth-flow", "order-management"). Enables
-     * efficient organization of multi-screen workflows.
+     * Step 4: Summary
+     *
+     * Write a concise 2-3 sentence summary of the image.
+     * Capture the essence of what the image shows and its primary purpose.
+     * This should give readers immediate understanding without seeing the image.
      */
-    clusterKey: string;
+    summary: string;
+
+    /**
+     * Step 5: Detailed Description
+     *
+     * Comprehensive documentation of the image content in markdown format.
+     * Organize information into clear sections based on what you observed.
+     *
+     * Structure your description with appropriate sections such as:
+     * - Overview of the interface/content
+     * - Main components and their functions
+     * - Data or information displayed
+     * - User interactions available
+     * - Technical details if applicable
+     *
+     * Write in a way that someone could understand or recreate
+     * the image content without seeing it.
+     */
+    description: string;
+
   }
 }

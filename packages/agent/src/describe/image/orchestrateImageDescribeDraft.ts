@@ -125,8 +125,11 @@ async function process<Model extends ILlmSchema.Model>(
   const event: AutoBeImageDescribeDraftEvent = {
     type: "imageDescribeDraft",
     id: v7(),
-    draft: pointer.value.draft,
-    metadata: pointer.value.metadata,
+    observation: pointer.value.observation,
+    analysis: pointer.value.analysis,
+    topics: pointer.value.topics,
+    summary: pointer.value.summary,
+    draft: pointer.value.description,
     completed: props.progress.completed,
     tokenUsage,
     total: props.progress.total,

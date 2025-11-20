@@ -44,9 +44,6 @@ export const validate_agent_describe_image = async (props: {
 
   agent.on("imageDescribeStart", enroll);
   agent.on("imageDescribeDraft", enroll);
-  agent.on("imageDescribeDraftGroup", enroll);
-  agent.on("imageDescribeDraftIntegration", enroll);
-  agent.on("imageDescribeDocument", enroll);
   agent.on("imageDescribeComplete", enroll);
 
   const assetsPath = path.join(
@@ -75,7 +72,7 @@ export const validate_agent_describe_image = async (props: {
       ...imageContents,
       {
         type: "text",
-        text: "Convert the images into a planning document.",
+        text: "Analyze these images and describe their content.",
       },
     ],
   });
