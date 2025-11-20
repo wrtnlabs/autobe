@@ -14,13 +14,11 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { createAgenticaUserMessageContent } from "../../factory/createAgenticaUserMessageContent";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
-import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformDescribeImagesDraftHistories } from "./histories/transformDescribeImagesDraftHistories";
 import { IAutoBeDescribeImagesDraftApplication } from "./structures/IAutoBeDescribeImagesDraftApplication";
@@ -49,29 +47,25 @@ export const orchestrateDescribeImagesDrafts = async <
     ],
   );
 
-  const matrix: AutoBeUserImageConversateContent[][] = divideArray({
-    array: imageContents,
-    capacity: props.capacity ?? AutoBeConfigConstant.DESCRIBE_CAPACITY,
-  });
   const progress: AutoBeProgressEventBase = {
     total: imageContents.length,
     completed: 0,
   };
-  return (
-    await executeCachedBatch(
-      ctx,
-      matrix.map((it) => async (promptCacheKey) => {
-        const event: AutoBeDescribeImageDraftEvent = await process(ctx, {
-          imageContents: it,
-          userContents: otherContents,
-          progress,
-          promptCacheKey,
-        });
-        ctx.dispatch(event);
-        return event;
-      }),
-    )
-  ).flat();
+
+  // Process each image individually
+  return await executeCachedBatch(
+    ctx,
+    imageContents.map((imageContent) => async (promptCacheKey) => {
+      const event: AutoBeDescribeImageDraftEvent = await process(ctx, {
+        imageContents: [imageContent], // Single image
+        userContents: otherContents,
+        progress,
+        promptCacheKey,
+      });
+      ctx.dispatch(event);
+      return event;
+    }),
+  );
 };
 
 async function process<Model extends ILlmSchema.Model>(
