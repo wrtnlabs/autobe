@@ -1,8 +1,4 @@
-import {
-  AutoBeEvent,
-  AutoBeUserConversateContent,
-  AutoBeUserImageConversateContent,
-} from "@autobe/interface";
+import { AutoBeEvent } from "@autobe/interface";
 
 import {
   AutoBeCompleteEventMovie,
@@ -37,20 +33,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
   const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
     case "userMessage":
-      const message: AutoBeUserConversateContent[] = [];
-      back.contents.forEach((c) => {
-        if (c.type === "image")
-          message.push(
-            ...c.images.map(
-              (img) =>
-                ({
-                  type: "image",
-                  image: img,
-                }) satisfies AutoBeUserImageConversateContent,
-            ),
-          );
-      });
-      return <AutoBeUserMessageMovie message={message} />;
+      return <AutoBeUserMessageMovie message={back.contents} />;
     case "assistantMessage":
       return (
         <AutoBeAssistantMessageMovie

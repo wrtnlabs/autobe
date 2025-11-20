@@ -148,11 +148,9 @@ export namespace AutoBeHackathonSessionReporter {
                   ? "BASE 64 FILE"
                   : "OPENAI STORE FILE: " + c.file.id;
               else if (c.type === "image")
-                return c.images
-                  .map((img) =>
-                    img.type === "base64" ? "BASE 64 IMAGE" : img.url,
-                  )
-                  .join("\n");
+                return c.image.type === "base64"
+                  ? "BASE 64 IMAGE"
+                  : c.image.url;
               else if (c.type === "audio") return "AUDIO FILE";
               return c.text
                 .split("\n")
