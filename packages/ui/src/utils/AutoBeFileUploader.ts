@@ -1,7 +1,7 @@
 import {
-  AutoBeUserAudioConversateContent,
-  AutoBeUserFileConversateContent,
   AutoBeUserImageConversateContent,
+  AutoBeUserMessageAudioContent,
+  AutoBeUserMessageFileContent,
 } from "@autobe/interface";
 
 export namespace AutoBeFileUploader {
@@ -155,7 +155,7 @@ export namespace AutoBeFileUploader {
 
   const composeAudioContent = async (
     file: File,
-  ): Promise<AutoBeUserAudioConversateContent> => ({
+  ): Promise<AutoBeUserMessageAudioContent> => ({
     type: "audio",
     data: (await convertToBase64(file)).split(",")[1]!,
     format: file.type.includes("wav") ? "wav" : "mp3",
@@ -164,7 +164,7 @@ export namespace AutoBeFileUploader {
   const composeFileContent = async (
     config: IConfig,
     file: File,
-  ): Promise<AutoBeUserFileConversateContent> => {
+  ): Promise<AutoBeUserMessageFileContent> => {
     // Get MIME type for the file
     const mimeType = getMimeType(file.name);
 
@@ -175,7 +175,7 @@ export namespace AutoBeFileUploader {
         file: {
           type: "id",
           id: await config.file(file).then((res) => res.id),
-        } satisfies AutoBeUserFileConversateContent.IId,
+        } satisfies AutoBeUserMessageFileContent.IId,
       };
     }
 
@@ -187,7 +187,7 @@ export namespace AutoBeFileUploader {
           type: "base64",
           name: file.name,
           data: await readAsText(file),
-        } satisfies AutoBeUserFileConversateContent.IBase64,
+        } satisfies AutoBeUserMessageFileContent.IBase64,
       };
     }
 
@@ -198,7 +198,7 @@ export namespace AutoBeFileUploader {
         type: "base64",
         name: file.name,
         data: await convertToBase64(file),
-      } satisfies AutoBeUserFileConversateContent.IBase64,
+      } satisfies AutoBeUserMessageFileContent.IBase64,
     };
   };
 }

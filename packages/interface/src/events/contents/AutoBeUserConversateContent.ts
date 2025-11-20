@@ -1,13 +1,15 @@
-import { AutoBeUserAudioConversateContent } from "./AutoBeUserAudioConversateContent";
-import { AutoBeUserFileConversateContent } from "./AutoBeUserFileConversateContent";
+import {
+  AutoBeUserMessageAudioContent,
+  AutoBeUserMessageFileContent,
+  AutoBeUserMessageTextContent,
+} from "../../histories";
 import { AutoBeUserImageConversateContent } from "./AutoBeUserImageConversateContent";
-import { AutoBeUserTextConversateContent } from "./AutoBeUserTextConversateContent";
 
 export type AutoBeUserConversateContent =
   | AutoBeUserImageConversateContent
-  | AutoBeUserFileConversateContent
-  | AutoBeUserTextConversateContent
-  | AutoBeUserAudioConversateContent;
+  | AutoBeUserMessageFileContent
+  | AutoBeUserMessageTextContent
+  | AutoBeUserMessageAudioContent;
 
 export namespace AutoBeUserConversateContent {
   /**

@@ -1,8 +1,8 @@
 import {
-  AutoBeUserAudioConversateContent,
   AutoBeUserConversateContent,
-  AutoBeUserFileConversateContent,
   AutoBeUserImageConversateContent,
+  AutoBeUserMessageAudioContent,
+  AutoBeUserMessageFileContent,
 } from "@autobe/interface";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
@@ -18,8 +18,8 @@ import { AutoBeFileUploader } from "../../utils";
 export interface IAutoBeBucket {
   file: File;
   content:
-    | AutoBeUserAudioConversateContent
-    | AutoBeUserFileConversateContent
+    | AutoBeUserMessageAudioContent
+    | AutoBeUserMessageFileContent
     | AutoBeUserImageConversateContent;
 }
 
