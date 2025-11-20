@@ -1,5 +1,5 @@
 import { AutoBeDescribeImageDraftMetadata } from "../histories/contents/AutoBeDescribeImageDraft";
-import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
@@ -18,8 +18,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  */
 export interface AutoBeDescribeImageDraftEvent
   extends AutoBeEventBase<"describeImageDraft">,
-    AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeProgressEventBase {
   /**
    * A comprehensive planning document generated from analyzing a batch of
    * images.
@@ -38,4 +37,19 @@ export interface AutoBeDescribeImageDraftEvent
    * enabling efficient organization of large sets of image-based requirements.
    */
   metadata: AutoBeDescribeImageDraftMetadata;
+
+  /**
+   * Detailed token usage metrics for the operation.
+   *
+   * Contains comprehensive token consumption data including total usage, input
+   * token breakdown with cache hit rates, and output token categorization by
+   * generation type (reasoning, predictions). This component-level tracking
+   * enables precise cost analysis and identification of operations that benefit
+   * most from prompt caching or require optimization.
+   *
+   * Token usage directly translates to operational costs, making this metric
+   * essential for understanding the financial implications of different
+   * operation types and guiding resource allocation decisions.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

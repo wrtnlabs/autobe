@@ -1,9 +1,8 @@
-import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 export interface AutoBeDescribeImageDocumentEvent
-  extends AutoBeEventBase<"describeImageDocument">,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"describeImageDocument"> {
   /**
    * The complete B2B SaaS requirements document.
    *
@@ -29,4 +28,19 @@ export interface AutoBeDescribeImageDocumentEvent
    * readers navigate to specific areas of interest.
    */
   sections: string[];
+
+  /**
+   * Detailed token usage metrics for the operation.
+   *
+   * Contains comprehensive token consumption data including total usage, input
+   * token breakdown with cache hit rates, and output token categorization by
+   * generation type (reasoning, predictions). This component-level tracking
+   * enables precise cost analysis and identification of operations that benefit
+   * most from prompt caching or require optimization.
+   *
+   * Token usage directly translates to operational costs, making this metric
+   * essential for understanding the financial implications of different
+   * operation types and guiding resource allocation decisions.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

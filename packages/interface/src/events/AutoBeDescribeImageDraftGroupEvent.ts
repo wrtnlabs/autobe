@@ -1,9 +1,10 @@
 import { AutoBeDescribeImageDraftGroup } from "../histories/contents/AutoBeDescribeImageDraftGroup";
-import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
+import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Describe agent groups related image drafts by cluster key.
+ * Event fired when the Describe agent groups related image drafts by cluster
+ * key.
  *
  * This event occurs after multiple image drafts have been generated and the
  * system groups them based on their cluster keys to organize related functional
@@ -15,13 +16,27 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * to generate comprehensive backend specifications.
  */
 export interface AutoBeDescribeImageDraftGroupEvent
-  extends AutoBeEventBase<"describeImageDraftGroup">,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"describeImageDraftGroup"> {
   /**
    * List of draft groups organized by cluster key.
    *
-   * Each group contains drafts that share similar functionality or belong
-   * to the same feature area, along with aggregated metadata for the group.
+   * Each group contains drafts that share similar functionality or belong to
+   * the same feature area, along with aggregated metadata for the group.
    */
   groups: AutoBeDescribeImageDraftGroup[];
+
+  /**
+   * Detailed token usage metrics for the operation.
+   *
+   * Contains comprehensive token consumption data including total usage, input
+   * token breakdown with cache hit rates, and output token categorization by
+   * generation type (reasoning, predictions). This component-level tracking
+   * enables precise cost analysis and identification of operations that benefit
+   * most from prompt caching or require optimization.
+   *
+   * Token usage directly translates to operational costs, making this metric
+   * essential for understanding the financial implications of different
+   * operation types and guiding resource allocation decisions.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

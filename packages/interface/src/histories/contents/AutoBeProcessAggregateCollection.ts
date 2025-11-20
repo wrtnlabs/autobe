@@ -30,7 +30,7 @@ import { AutoBeProcessAggregate } from "./AutoBeProcessAggregate";
  *   "interface", "test", "realize") or "all" for cross-phase aggregation
  */
 export type AutoBeProcessAggregateCollection<
-  Phase extends AutoBePhase | "describe" | "all" = "all",
+  Phase extends AutoBePhase | "all" = "all",
 > = {
   /**
    * Total aggregate metrics combining all operations.
@@ -44,25 +44,16 @@ export type AutoBeProcessAggregateCollection<
   total: AutoBeProcessAggregate;
 } & Partial<Record<PhaseEventType<Phase>, AutoBeProcessAggregate>>;
 
-type PhaseEventType<Phase extends AutoBePhase | "describe" | "all"> =
-  Phase extends "all"
-    ? Extract<AutoBeEvent, AutoBeAggregateEventBase>["type"] extends infer U
+type PhaseEventType<Phase extends AutoBePhase | "all"> = Phase extends "all"
+  ? Extract<AutoBeEvent, AutoBeAggregateEventBase>["type"] extends infer U
+    ? U extends `${string}Complete`
+      ? never
+      : U
+    : never
+  : Extract<AutoBeEvent, AutoBeAggregateEventBase>["type"] extends infer U
+    ? U extends `${Phase}${string}`
       ? U extends `${string}Complete`
         ? never
         : U
       : never
-    : Phase extends "describe"
-      ? Extract<AutoBeEvent, AutoBeAggregateEventBase>["type"] extends infer U
-        ? U extends `describe${string}`
-          ? U extends `${string}Complete`
-            ? never
-            : U
-          : never
-        : never
-      : Extract<AutoBeEvent, AutoBeAggregateEventBase>["type"] extends infer U
-        ? U extends `${Phase}${string}`
-          ? U extends `${string}Complete`
-            ? never
-            : U
-          : never
-        : never;
+    : never;

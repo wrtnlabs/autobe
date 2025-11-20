@@ -1,7 +1,4 @@
-import {
-  AutoBeProcessAggregateCollection,
-  AutoBeUserMessageContent,
-} from "../histories";
+import { AutoBeUserMessageContent } from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -56,23 +53,4 @@ export interface AutoBeDescribeImageCompleteEvent
    *   ```;
    */
   elapsed: number;
-
-  /**
-   * Aggregated token usage and function calling metrics by operation type.
-   *
-   * Maps each event type within the phase to its complete aggregate metrics,
-   * including detailed token consumption breakdown with cache statistics and
-   * comprehensive function calling metrics data. This comprehensive aggregation
-   * enables deep analysis of resource utilization patterns and operation
-   * quality across the entire phase.
-   *
-   * The partial record structure reflects that not all possible event types may
-   * occur during phase execution. Only operations that were actually performed
-   * will have entries in this mapping.
-   *
-   * The aggregate data supports cost analysis (via token usage), reliability
-   * assessment (via function calling metrics), and optimization opportunities
-   * (via cache hit rates and failure patterns).
-   */
-  aggregates: AutoBeProcessAggregateCollection<"describe">;
 }
