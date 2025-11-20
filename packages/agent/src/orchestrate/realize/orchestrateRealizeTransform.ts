@@ -4,7 +4,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { AutoBeRealizeTransformEvent } from "@autobe/interface/src/events/AutoBeRealizeTransformEvent";
+import { AutoBeRealizeTransformEvent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
