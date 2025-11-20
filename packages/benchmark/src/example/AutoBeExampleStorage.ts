@@ -39,10 +39,7 @@ export namespace AutoBeExampleStorage {
     phase: AutoBePhase;
   }): Promise<AutoBeUserConversateContent[]> => {
     const full: string = `${TEST_ROOT}/scripts/${props.project}/${props.phase}`;
-    if (
-      props.project === "account" ||
-      (props.project === "wrtn" && props.phase === "analyze")
-    ) {
+    if (props.project === "account" && props.phase === "analyze") {
       const files: string[] = await fs.promises.readdir(full);
       const contents: AutoBeUserConversateContent[] = await Promise.all(
         files.map(async (filename) => {
