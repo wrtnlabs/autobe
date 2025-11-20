@@ -20,13 +20,6 @@ import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
  */
 export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
   /**
-   * Token usage for the describe agent.
-   *
-   * Tracks tokens used in creating proposal extracted from image.
-   */
-  public readonly describe: AutoBeTokenUsageComponent;
-
-  /**
    * Token usage for the facade agent orchestrating the entire pipeline.
    *
    * Tracks tokens consumed by the initial agent that coordinates and manages
@@ -82,9 +75,9 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    *
    * Provides a unified view of token consumption by combining data from all
    * processing phases in the vibe coding pipeline. This computed property
-   * dynamically calculates the sum of all agent components (describe, facade,
-   * analyze, prisma, interface, test, realize) whenever accessed, ensuring the
-   * aggregate always reflects the current state of token usage.
+   * dynamically calculates the sum of all agent components (facade, analyze,
+   * prisma, interface, test, realize) whenever accessed, ensuring the aggregate
+   * always reflects the current state of token usage.
    *
    * The aggregation performs element-wise addition across all token metrics,
    * including total counts, input breakdowns with cache statistics, and output
@@ -144,7 +137,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
     props?: AutoBeTokenUsage | IAutoBeTokenUsageJson | undefined,
   ) {
     if (props === undefined) {
-      this.describe = new AutoBeTokenUsageComponent();
       this.facade = new AutoBeTokenUsageComponent();
       this.analyze = new AutoBeTokenUsageComponent();
       this.prisma = new AutoBeTokenUsageComponent();
@@ -153,7 +145,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
       this.realize = new AutoBeTokenUsageComponent();
       return;
     } else if (props instanceof AutoBeTokenUsage) {
-      this.describe = props.describe;
       this.facade = props.facade;
       this.analyze = props.analyze;
       this.prisma = props.prisma;
@@ -161,7 +152,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
       this.test = props.test;
       this.realize = props.realize;
     } else {
-      this.describe = new AutoBeTokenUsageComponent(props.describe);
       this.facade = new AutoBeTokenUsageComponent(props.facade);
       this.analyze = new AutoBeTokenUsageComponent(props.analyze);
       this.prisma = new AutoBeTokenUsageComponent(props.prisma);
@@ -172,7 +162,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
   }
 
   public assign(props: IAutoBeTokenUsageJson) {
-    this.describe.assign(props.describe);
     this.facade.assign(props.facade);
     this.analyze.assign(props.analyze);
     this.prisma.assign(props.prisma);
@@ -194,7 +183,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
   public toJSON(): IAutoBeTokenUsageJson {
     return {
       aggregate: this.aggregate,
-      describe: this.describe.toJSON(),
       facade: this.facade.toJSON(),
       analyze: this.analyze.toJSON(),
       prisma: this.prisma.toJSON(),
@@ -231,13 +219,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
     usage: IAutoBeTokenUsageJson.IComponent,
     additionalStages: (keyof Pick<
       IAutoBeTokenUsageJson,
-      | "describe"
-      | "facade"
-      | "analyze"
-      | "prisma"
-      | "interface"
-      | "test"
-      | "realize"
+      "facade" | "analyze" | "prisma" | "interface" | "test" | "realize"
     >)[] = [],
   ) {
     additionalStages.forEach((stage) => {
@@ -286,10 +268,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    */
   public static plus(usageA: AutoBeTokenUsage, usageB: AutoBeTokenUsage) {
     return new AutoBeTokenUsage({
-      describe: AutoBeTokenUsageComponent.plus(
-        usageA.describe,
-        usageB.describe,
-      ),
       facade: AutoBeTokenUsageComponent.plus(usageA.facade, usageB.facade),
       analyze: AutoBeTokenUsageComponent.plus(usageA.analyze, usageB.analyze),
       prisma: AutoBeTokenUsageComponent.plus(usageA.prisma, usageB.prisma),
@@ -315,7 +293,6 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    */
   private static keys() {
     return [
-      "describe",
       "facade",
       "analyze",
       "prisma",

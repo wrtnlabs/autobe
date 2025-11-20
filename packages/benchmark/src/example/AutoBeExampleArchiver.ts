@@ -310,7 +310,6 @@ export namespace AutoBeExampleArchiver {
         tokenUsage: {
           aggregate: TokenUsageComputer.zero(),
           facade: TokenUsageComputer.zero(),
-          describe: TokenUsageComputer.zero(),
           analyze: TokenUsageComputer.zero(),
           prisma: TokenUsageComputer.zero(),
           interface: TokenUsageComputer.zero(),

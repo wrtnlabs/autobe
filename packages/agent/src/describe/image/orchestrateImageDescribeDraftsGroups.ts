@@ -114,7 +114,7 @@ async function process<Model extends ILlmSchema.Model>(
   const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
     .getTokenUsage()
     .toJSON().aggregate;
-  ctx.usage().record(tokenUsage, ["describe"]);
+  ctx.usage().record(tokenUsage, ["facade"]);
   if (pointer.value === null) throw new Error("Failed to group image drafts.");
 
   // Track processed original cluster keys

@@ -67,7 +67,7 @@ export const orchestrateImageDescribeDocument = async <
   const tokenUsage: IAgenticaTokenUsageJson.IComponent = agent
     .getTokenUsage()
     .toJSON().aggregate;
-  ctx.usage().record(tokenUsage, ["describe"]);
+  ctx.usage().record(tokenUsage, ["facade"]);
   if (pointer.value === null)
     throw new Error("Failed to complete the requirements document");
 
