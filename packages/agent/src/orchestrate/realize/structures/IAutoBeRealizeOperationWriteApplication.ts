@@ -1,20 +1,32 @@
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeRealizeWriteApplication {
+/**
+ * Function calling interface for generating API operation implementation functions.
+ *
+ * Guides the AI agent through creating provider functions that implement
+ * complete business logic for specific API endpoints. Each operation function
+ * handles the full request-response lifecycle including validation,
+ * authorization, database operations, and response formatting.
+ *
+ * The generation follows a structured RAG workflow: preliminary context
+ * gathering (Prisma schemas) → implementation planning → code generation →
+ * review and refinement.
+ */
+export interface IAutoBeRealizeOperationWriteApplication {
   /**
-   * Process provider implementation task or preliminary data requests.
+   * Process operation function implementation task or preliminary data requests.
    *
-   * Generates complete provider function implementation through three-phase
+   * Generates complete operation function implementation through three-phase
    * workflow (plan → draft → revise). Ensures type safety, proper Prisma usage,
    * and API contract compliance.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeRealizeWriteApplication.IProps): void;
+  process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeRealizeWriteApplication {
+export namespace IAutoBeRealizeOperationWriteApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -49,26 +61,22 @@ export namespace IAutoBeRealizeWriteApplication {
   }
 
   /**
-   * Request to generate provider function implementation.
+   * Request to generate operation function implementation.
    *
-   * Executes three-phase generation to create complete provider implementation.
+   * Executes three-phase generation to create complete operation implementation.
    * Follows plan → draft → revise pattern to ensure type safety, proper Prisma
    * usage, and API contract compliance.
    */
   export interface IComplete {
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
+     * Type discriminator for completion request.
      */
     type: "complete";
 
     /**
-     * Implementation plan and strategy.
+     * Operation implementation plan and strategy.
      *
-     * Analyzes the provider function requirements, identifies related Prisma
+     * Analyzes the operation function requirements, identifies related Prisma
      * schemas, and outlines the implementation approach. Includes schema
      * validation and API contract verification.
      */
@@ -106,7 +114,7 @@ export namespace IAutoBeRealizeWriteApplication {
     review: string;
 
     /**
-     * Final implementation code.
+     * Final operation function code.
      *
      * The complete, production-ready implementation with all review suggestions
      * applied.

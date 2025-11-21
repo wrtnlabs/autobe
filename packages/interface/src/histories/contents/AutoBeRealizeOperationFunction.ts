@@ -1,7 +1,21 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 
-/** @author Kakasoo */
-export interface AutoBeRealizeFunction {
+/**
+ * API operation provider function implementation.
+ *
+ * Represents a generated provider function that implements the business logic
+ * for a specific API operation endpoint. Each operation function handles the
+ * complete request-response lifecycle including validation, authorization,
+ * database interactions, and response formatting.
+ *
+ * @author Kakasoo
+ */
+export interface AutoBeRealizeOperationFunction {
+  /**
+   * Type discriminator for operation function.
+   */
+  kind: "operation";
+
   /**
    * OpenAPI endpoint specification
    *

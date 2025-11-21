@@ -1,7 +1,7 @@
 import {
   AutoBeOpenApi,
   AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
+  AutoBeRealizeOperationFunction,
   IAutoBeRealizeControllerProps,
 } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
@@ -29,11 +29,13 @@ export const writeRealizeControllers = async (
           props.document.operations.find(
             (o) => o.method === ctx.route.method && o.path === ctx.route.path,
           );
-        const func: AutoBeRealizeFunction | undefined = props.functions.find(
-          (f) =>
-            f.endpoint.method === ctx.route.method &&
-            f.endpoint.path === ctx.route.path,
-        );
+        const func: AutoBeRealizeOperationFunction | undefined = props.functions
+          .filter((f) => f.kind === "operation")
+          .find(
+            (f) =>
+              f.endpoint.method === ctx.route.method &&
+              f.endpoint.path === ctx.route.path,
+          );
         if (func === undefined || operate === undefined) return method; // unreachable
 
         const authorization: AutoBeRealizeAuthorization | undefined =

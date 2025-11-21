@@ -15,7 +15,7 @@ import { transformPreviousAndLatestCorrectHistory } from "../../common/histories
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
-import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
+import { transformRealizeWriteHistory } from "./transformRealizeWriteHistory";
 
 export function transformRealizeCorrectHistory<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -30,7 +30,7 @@ export function transformRealizeCorrectHistory<Model extends ILlmSchema.Model>(
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
 ): IAutoBeOrchestrateHistory {
-  const writeHistories = transformRealizeWriteHistories(props);
+  const writeHistories = transformRealizeWriteHistory(props);
   return {
     histories: [
       ...writeHistories.histories,

@@ -59,7 +59,6 @@ export * from "./AutoBeTestWriteEvent";
 // REALIZE-MAIN
 export * from "./AutoBeRealizeCompleteEvent";
 export * from "./AutoBeRealizeCorrectEvent";
-export * from "./AutoBeRealizeTransformEvent";
 export * from "./AutoBeRealizeStartEvent";
 export * from "./AutoBeRealizeValidateEvent";
 export * from "./AutoBeRealizeWriteEvent";

@@ -69,23 +69,9 @@ export const validate_agent_realize_correct = async (props: {
     ),
   );
 
-  const functions: AutoBeRealizeFunction[] = Object.entries(
-    Object.fromEntries(
-      writeEvents.map((event) => [event.location, event.content]),
-    ),
-  ).map(([location, content]) => {
-    const scenario = scenarios.find((el) => el.location === location)!;
-    return {
-      location,
-      content,
-      endpoint: {
-        method: scenario.operation.method,
-        path: scenario.operation.path,
-      },
-      name: scenario.functionName,
-    };
-  });
-
+  const functions: AutoBeRealizeFunction[] = writeEvents.map(
+    (event) => event.function,
+  );
   const compilation: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     agent.getContext(),
     {
@@ -93,7 +79,6 @@ export const validate_agent_realize_correct = async (props: {
       functions,
     },
   );
-
   if (compilation.result.type !== "failure") {
     throw new Error("Cannot test because the compilation was successful.");
   }

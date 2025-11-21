@@ -12,7 +12,7 @@ import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplat
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteMembershipHistory } from "./transformRealizeWriteMembershipHistory";
 
-export const transformRealizeWriteHistories = (props: {
+export const transformRealizeWriteHistory = (props: {
   state: AutoBeState;
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
@@ -122,7 +122,7 @@ export const transformRealizeWriteHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_WRITE,
+        text: AutoBeSystemPromptConstant.REALIZE_OPERATION_WRITE,
       },
       ...props.preliminary.getHistories(),
       ...authorizationHistories,
@@ -130,7 +130,7 @@ export const transformRealizeWriteHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
+        text: AutoBeSystemPromptConstant.REALIZE_OPERATION_WRITE_ARTIFACT.replaceAll(
           `{input}`,
           getRealizeWriteInputType(operation, props.authorization),
         ).replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
