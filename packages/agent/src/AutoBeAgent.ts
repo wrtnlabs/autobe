@@ -1,5 +1,6 @@
 import {
   AgenticaExecuteHistory,
+  AgenticaUserMessageContent,
   IAgenticaTokenUsageJson,
   IAgenticaVendor,
   MicroAgentica,
@@ -295,9 +296,18 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       { content },
     );
     this.dispatch(userMessageHistory).catch(() => {});
+    const contents: AgenticaUserMessageContent[] =
+      userMessageHistory.contents.map((c) => {
+        if (c.type === "image")
+          return {
+            type: "text",
+            text: c.description,
+          } satisfies AgenticaUserMessageContent;
+        else return c;
+      });
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(userMessageHistory.contents);
+      await this.agentica_.conversate(contents);
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>
