@@ -20,7 +20,7 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorizationWrite } from "./orchestrateRealizeAuthorizationWrite";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeCorrectCasting } from "./orchestrateRealizeCorrectCasting";
-import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
+import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 
@@ -79,7 +79,7 @@ export const orchestrateRealize =
           artifacts.map((art) => async (promptCacheKey) => {
             const write = async (): Promise<AutoBeRealizeWriteEvent | null> => {
               try {
-                return await orchestrateRealizeWrite(ctx, {
+                return await orchestrateRealizeOperationWrite(ctx, {
                   totalAuthorizations: authorizations,
                   authorization: art.decoratorEvent ?? null,
                   scenario: art,
@@ -95,22 +95,7 @@ export const orchestrateRealize =
           }),
         )
       ).filter((w) => w !== null);
-      const functions: AutoBeRealizeFunction[] = Object.entries(
-        Object.fromEntries(writes.map((w) => [w.location, w.content])),
-      ).map(([location, content]) => {
-        const scenario: IAutoBeRealizeScenarioResult = artifacts.find(
-          (el) => el.location === location,
-        )!;
-        return {
-          location,
-          content,
-          endpoint: {
-            method: scenario.operation.method,
-            path: scenario.operation.path,
-          },
-          name: scenario.functionName,
-        };
-      });
+      const functions: AutoBeRealizeFunction[] = writes.map((w) => w.function);
       const corrected: AutoBeRealizeFunction[] =
         await orchestrateRealizeCorrectCasting(
           ctx,
@@ -160,6 +145,7 @@ export const orchestrateRealize =
         .map((f) =>
           entireScenarios.find(
             (s) =>
+              f.kind === "operation" &&
               s.operation.path === f.endpoint.path &&
               s.operation.method === f.endpoint.method,
           ),

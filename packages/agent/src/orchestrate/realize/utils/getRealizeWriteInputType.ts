@@ -11,7 +11,7 @@ import { StringUtil } from "@autobe/utils";
  * - URL path parameters (e.g., id, boardId, postId)
  * - Request body type (if applicable)
  *
- * The output is injected into REALIZE_WRITE_ARTIFACT.md template to tell the AI
+ * The output is injected into REALIZE_OPERATION_WRITE.md template to tell the AI
  * exactly what parameter type the function should accept.
  *
  * @example

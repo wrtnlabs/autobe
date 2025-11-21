@@ -1,21 +1,29 @@
+import {
+  AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
+  AutoBeRealizeCollectorFunction,
+} from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired during the implementation process as the Realize agent creates
- * individual implementation files.
+ * Event fired during the Realize phase when code files are generated.
  *
- * This event provides real-time visibility into the implementation progress as
- * the Realize agent systematically creates service classes, business logic
- * methods, data access objects, and integration code. Each progress event
- * represents the completion of a specific implementation file that contributes
- * to the overall application functionality.
+ * This unified event covers three types of code generation during the
+ * implementation process:
  *
- * The progress events enable stakeholders to monitor the final development
- * phase and understand how the complete application is being assembled from
- * individual implementation components that bridge API specifications with
- * database schemas.
+ * - **Operation** (`kind: "operation"`): API operation implementation files
+ *   that contain business logic for specific endpoints
+ * - **Transformer** (`kind: "transformer"`): DTO transformation modules that
+ *   convert Prisma query results to API response DTOs (DB → API)
+ * - **Collector** (`kind: "collector"`): Data collection modules that prepare
+ *   Prisma input data from API request DTOs (API → DB)
+ *
+ * Each kind generates reusable TypeScript code that contributes to the complete
+ * application implementation, with operation files orchestrating business logic
+ * while transformer and collector modules provide shared data transformation
+ * utilities.
  *
  * @author Samchon
  */
@@ -24,34 +32,24 @@ export interface AutoBeRealizeWriteEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Name of the implementation file that has been completed.
+   * Generated function with complete metadata.
    *
-   * Specifies the filename of the TypeScript implementation file that was just
-   * generated, which could be a service class, business logic module, data
-   * access object, integration handler, or other implementation component. The
-   * filename provides context about which part of the application functionality
-   * has been implemented.
+   * Contains the complete function information including kind discriminator,
+   * file location, implementation content, and type-specific metadata (endpoint,
+   * DTO type names, etc).
+   *
+   * The `kind` discriminator enables type-safe pattern matching:
+   * - `kind: "operation"`: API operation implementation with endpoint and name
+   * - `kind: "transformer"`: DB → DTO transformer with schema and DTO names
+   * - `kind: "collector"`: DTO → DB collector with DTO name
    */
-  location: string;
+  function:
+    | AutoBeRealizeOperationFunction
+    | AutoBeRealizeTransformerFunction
+    | AutoBeRealizeCollectorFunction;
 
   /**
-   * Content of the completed implementation file.
-   *
-   * Contains the actual TypeScript implementation code that was generated for
-   * this file, including service methods, business logic, data access patterns,
-   * error handling, and integration logic. The content represents working code
-   * that implements the business requirements while maintaining consistency
-   * with the established API contracts and database schemas.
-   *
-   * This implementation code bridges the gap between design specifications and
-   * executable functionality, providing the concrete business logic that makes
-   * the application operational and ready for deployment.
-   */
-  content: string;
-
-  /**
-   * Iteration number of the requirements analysis this implementation progress
-   * reflects.
+   * Iteration number of the requirements analysis this implementation reflects.
    *
    * Indicates which version of the requirements analysis this implementation
    * work is based on. This step number ensures that the implementation progress
@@ -60,8 +58,7 @@ export interface AutoBeRealizeWriteEvent
    *
    * The step value enables proper synchronization between implementation
    * activities and the underlying requirements, ensuring that the generated
-   * code remains relevant to the current project scope and business
-   * objectives.
+   * code remains relevant to the current project scope and business objectives.
    */
   step: number;
 }

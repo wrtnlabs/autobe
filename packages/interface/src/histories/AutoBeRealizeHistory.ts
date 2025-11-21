@@ -44,17 +44,21 @@ export interface AutoBeRealizeHistory
   authorizations: AutoBeRealizeAuthorization[];
 
   /**
-   * Generated implementation functions
+   * Generated implementation functions.
    *
-   * Contains the complete set of TypeScript implementation functions including
-   * service classes, business logic methods, data access objects, and
-   * integration code. Each key represents the function name and each value
-   * contains the actual implementation code that brings the designed system to
-   * life.
+   * Contains the complete set of TypeScript implementation code including:
+   *
+   * - **Operation functions**: API endpoint implementations with business logic
+   * - **Transform functions**: Reusable DB → DTO converters
+   * - **Collect functions**: Reusable DTO → DB input preparers
+   *
+   * Each function type is distinguished by its `kind` discriminator, enabling
+   * type-safe access to function-specific metadata. The modular design promotes
+   * code reuse and maintainability across the generated application.
    *
    * The implementation functions bridge the gap between API specifications and
-   * database schemas, providing the concrete business logic that makes the
-   * application functional and ready for deployment.
+   * database schemas, providing the concrete logic that makes the application
+   * functional and ready for deployment.
    */
   functions: AutoBeRealizeFunction[];
 

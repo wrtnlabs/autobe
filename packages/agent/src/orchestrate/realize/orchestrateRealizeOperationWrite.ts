@@ -19,13 +19,15 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeWriteHistories } from "./histories/transformRealizeWriteHistories";
+import { transformRealizeWriteHistory } from "./histories/transformRealizeWriteHistory";
+import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { IAutoBeRealizeWriteApplication } from "./structures/IAutoBeRealizeWriteApplication";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
-export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
+export async function orchestrateRealizeOperationWrite<
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -39,14 +41,16 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
     new AutoBePreliminaryController({
       source: SOURCE,
-      application: typia.json.application<IAutoBeRealizeWriteApplication>(),
+      application:
+        typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
       kinds: ["prismaSchemas"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeWriteApplication.IComplete | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const dto: Record<string, string> = await getRealizeWriteDto(
       ctx,
       props.scenario.operation,
@@ -63,7 +67,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeWriteHistories({
+      ...transformRealizeWriteHistory({
         state: ctx.state(),
         scenario: props.scenario,
         authorization: props.authorization,
@@ -88,10 +92,18 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
         });
 
       const event: AutoBeRealizeWriteEvent = {
-        type: "realizeWrite",
         id: v7(),
-        location: props.scenario.location,
-        content: pointer.value.revise.final ?? pointer.value.draft,
+        type: "realizeWrite",
+        function: {
+          kind: "operation",
+          endpoint: {
+            method: props.scenario.operation.method,
+            path: props.scenario.operation.path,
+          },
+          location: props.scenario.location,
+          name: props.scenario.functionName,
+          content: pointer.value.revise.final ?? pointer.value.draft,
+        },
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,
@@ -109,14 +121,14 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
-  build: (next: IAutoBeRealizeWriteApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeRealizeWriteApplication.IProps> =
-      typia.validate<IAutoBeRealizeWriteApplication.IProps>(input);
+    const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
+      typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete") {
       return result;
@@ -152,25 +164,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeRealizeWriteApplication,
+    } satisfies IAutoBeRealizeOperationWriteApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeWriteApplication, "chatgpt">({
+    typia.llm.application<IAutoBeRealizeOperationWriteApplication, "chatgpt">({
       validate: {
         process: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeWriteApplication, "claude">({
+    typia.llm.application<IAutoBeRealizeOperationWriteApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeWriteApplication, "gemini">({
+    typia.llm.application<IAutoBeRealizeOperationWriteApplication, "gemini">({
       validate: {
         process: validate,
       },
@@ -179,6 +191,6 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeRealizeWriteApplication.IProps>;
+) => IValidation<IAutoBeRealizeOperationWriteApplication.IProps>;
 
 const SOURCE = "realizeWrite" satisfies AutoBeEventSource;

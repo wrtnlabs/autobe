@@ -15,6 +15,9 @@ export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";
 export * from "./AutoBeTestScenarioDependency";
 
+export * from "./AutoBeRealizeOperationFunction";
+export * from "./AutoBeRealizeTransformerFunction";
+export * from "./AutoBeRealizeCollectorFunction";
 export * from "./AutoBeRealizeFunction";
 export * from "./AutoBeRealizeAuthorization";
 export * from "./AutoBeRealizeAuthorizationCorrect";

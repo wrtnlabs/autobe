@@ -1,4 +1,4 @@
-import { orchestrateRealizeWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeWrite";
+import { orchestrateRealizeOperationWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeOperationWrite";
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { executeCachedBatch } from "@autobe/agent/src/utils/executeCachedBatch";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
@@ -66,17 +66,15 @@ export const validate_agent_realize_write = async (props: {
         (a) => a.actor.name === scenario.decoratorEvent?.actor.name,
       );
       try {
-        const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
-          agent.getContext(),
-          {
+        const write: AutoBeRealizeWriteEvent =
+          await orchestrateRealizeOperationWrite(agent.getContext(), {
             document: agent.getContext().state().interface!.document,
             totalAuthorizations: authorizations,
             authorization: authorization ?? null,
             progress,
             scenario,
             promptCacheKey,
-          },
-        );
+          });
         return write;
       } catch (err) {
         return null;
@@ -84,7 +82,9 @@ export const validate_agent_realize_write = async (props: {
     }),
   );
 
-  const locations = writes.filter((w) => w !== null).map((el) => el.location);
+  const locations = writes
+    .filter((w) => w !== null)
+    .map((el) => el.function.location);
   const rejected = scenarios.filter((s) => !locations.includes(s.location));
 
   const retried = await executeCachedBatch(
@@ -94,17 +94,15 @@ export const validate_agent_realize_write = async (props: {
         (a) => a.actor.name === scenario.decoratorEvent?.actor.name,
       );
       try {
-        const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
-          agent.getContext(),
-          {
+        const write: AutoBeRealizeWriteEvent =
+          await orchestrateRealizeOperationWrite(agent.getContext(), {
             totalAuthorizations: authorizations,
             document: agent.getContext().state().interface!.document,
             authorization: authorization ?? null,
             progress,
             scenario,
             promptCacheKey,
-          },
-        );
+          });
         return write;
       } catch (err) {
         return null;
@@ -116,7 +114,9 @@ export const validate_agent_realize_write = async (props: {
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/authorization-correct`,
     files: {
       ...(await agent.getFiles()),
-      ...Object.fromEntries(retried.map((el) => [el?.location, el?.content])),
+      ...Object.fromEntries(
+        retried.map((el) => [el?.function.location, el?.function.content]),
+      ),
     },
   });
 
