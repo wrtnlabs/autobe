@@ -22,6 +22,9 @@ export interface AutoBeUserMessageImageContent
     | AutoBeUserMessageImageContent.IBase64
     | AutoBeUserMessageImageContent.IUrl;
 
+  /** Image analysis description. */
+  description: string;
+
   /**
    * Image analysis detail level.
    *

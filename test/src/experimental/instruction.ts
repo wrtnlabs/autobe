@@ -1,5 +1,6 @@
 import {
   AgenticaExecuteHistory,
+  AgenticaUserMessageImageContent,
   MicroAgentica,
   MicroAgenticaHistory,
 } from "@agentica/core";
@@ -7,7 +8,7 @@ import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSy
 import { IAutoBeFacadeApplication } from "@autobe/agent/src/orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBePhase, AutoBeUserMessageHistory } from "@autobe/interface";
+import { AutoBePhase, AutoBeUserConversateContent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -108,21 +109,27 @@ const main = async (): Promise<void> => {
   });
 
   for (const phase of SEQUENCE) {
-    const message: AutoBeUserMessageHistory =
+    const message: AutoBeUserConversateContent[] =
       await AutoBeExampleStorage.getUserMessage({
         project: "chat",
         phase,
       });
     console.log(
       "userMessage",
-      message.contents[0].type === "text"
-        ? message.contents[0].text.length
-        : "binary",
+      message[0].type === "text" ? message[0].text.length : "binary",
     );
 
     const start: Date = new Date();
     const histories: MicroAgenticaHistory<"chatgpt">[] = await agent.conversate(
-      message.contents,
+      message.map((m) => {
+        if (m.type === "image") {
+          return {
+            type: "image",
+            image: m.image,
+          } satisfies AgenticaUserMessageImageContent;
+        }
+        return m;
+      }),
     );
     const execute: AgenticaExecuteHistory<"chatgpt"> | undefined =
       histories.find((h) => h.type === "execute");

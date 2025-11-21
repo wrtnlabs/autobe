@@ -1,12 +1,13 @@
 import {
   AgenticaExecuteHistory,
   AgenticaOperation,
+  AgenticaUserMessageContent,
+  IAgenticaHistoryJson,
   MicroAgenticaHistory,
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
-  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
@@ -14,12 +15,23 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   operations: readonly AgenticaOperation<Model>[];
   history: AutoBeHistory;
 }): MicroAgenticaHistory<Model> | null {
-  if (props.history.type === "userMessage")
-    return {
+  if (props.history.type === "userMessage") {
+    // @todo Seems to need more explanation that
+    //       this is not a pure text
+    //       but a text by analyzing an image
+    const history: IAgenticaHistoryJson.IUserMessage = {
       ...props.history,
-      toJSON: () => props.history as AutoBeUserMessageHistory,
+      contents: props.history.contents.map((c) => {
+        if (c.type === "image") {
+          return {
+            type: "text",
+            text: c.description,
+          } satisfies AgenticaUserMessageContent;
+        } else return c;
+      }),
     };
-  else if (props.history.type === "assistantMessage")
+    return { ...history, toJSON: () => history };
+  } else if (props.history.type === "assistantMessage")
     return {
       ...props.history,
       toJSON: () => props.history as AutoBeAssistantMessageHistory,

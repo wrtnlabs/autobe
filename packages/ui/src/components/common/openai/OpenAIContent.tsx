@@ -1,4 +1,4 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeUserConversateContent } from "@autobe/interface";
 
 import { OpenAIUserAudioContent } from "./OpenAIUserAudioContent";
 import { OpenAIUserFileContent } from "./OpenAIUserFileContent";
@@ -6,7 +6,7 @@ import { OpenAIUserImageContent } from "./OpenAIUserImageContent";
 import { OpenAIUserTextContent } from "./OpenAIUserTextContent";
 
 export interface IOpenAIUserContentProps {
-  content: Array<AutoBeUserMessageContent | string>;
+  content: Array<AutoBeUserConversateContent | string>;
 }
 
 export const OpenAIContent = (props: IOpenAIUserContentProps) => {
@@ -14,7 +14,7 @@ export const OpenAIContent = (props: IOpenAIUserContentProps) => {
 
   /** Renders a single content item */
   const renderSingleContent = (
-    item: AutoBeUserMessageContent | string,
+    item: AutoBeUserConversateContent | string,
     index: number,
   ) => {
     if (typeof item === "string") {

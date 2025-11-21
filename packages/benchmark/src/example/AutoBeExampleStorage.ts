@@ -4,14 +4,13 @@ import {
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
-  AutoBeUserMessageHistory,
+  AutoBeUserConversateContent,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import cp from "child_process";
 import fs from "fs";
 import path from "path";
 import { Singleton, VariadicSingleton } from "tstl";
-import { v7 } from "uuid";
 
 export namespace AutoBeExampleStorage {
   export const TEST_ROOT: string = `${__dirname}/../../../../test`;
@@ -38,8 +37,34 @@ export namespace AutoBeExampleStorage {
   export const getUserMessage = async (props: {
     project: AutoBeExampleProject;
     phase: AutoBePhase;
-  }): Promise<AutoBeUserMessageHistory> => {
+  }): Promise<AutoBeUserConversateContent[]> => {
     const full: string = `${TEST_ROOT}/scripts/${props.project}/${props.phase}`;
+    if (props.project === "account" && props.phase === "analyze") {
+      const files: string[] = await fs.promises.readdir(full);
+      const contents: AutoBeUserConversateContent[] = await Promise.all(
+        files.map(async (filename) => {
+          const filePath = path.join(full, filename);
+          const extension = filename.split(".").pop() ?? "unknown";
+          const base64Data = `data:image/${extension};base64,${await fs.promises.readFile(filePath, "base64")}`;
+
+          return {
+            type: "image",
+            image: {
+              type: "base64",
+              data: base64Data,
+            },
+          } satisfies AutoBeUserConversateContent;
+        }),
+      );
+      return [
+        ...contents,
+        {
+          type: "text",
+          text: "Convert the images into a planning document.",
+        },
+      ];
+    }
+
     if (fs.existsSync(`${full}.md`) === false) {
       const text: string =
         props.phase === "analyze"
@@ -48,30 +73,22 @@ export namespace AutoBeExampleStorage {
               "utf8",
             )
           : PROMPT_TEMPLATE[props.phase];
-      return {
-        type: "userMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        contents: [
-          {
-            type: "text",
-            text,
-          },
-        ],
-      };
-    }
-    const text: string = await fs.promises.readFile(`${full}.md`, "utf8");
-    return {
-      type: "userMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      contents: [
+      return [
         {
           type: "text",
-          text: text,
+          text,
         },
-      ],
-    };
+      ];
+    }
+
+    const text: string = await fs.promises.readFile(`${full}.md`, "utf8");
+
+    return [
+      {
+        type: "text",
+        text,
+      },
+    ];
   };
 
   export const getVendorModels = async (): Promise<string[]> => {
@@ -142,6 +159,7 @@ export namespace AutoBeExampleStorage {
         });
         return {
           aggregate: component(),
+          describe: component(),
           facade: component(),
           analyze: component(),
           prisma: component(),

@@ -20,17 +20,14 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       .histories()
       .filter((h) => h.type === "userMessage" || h.type === "assistantMessage")
       .map((h) => {
-        const text =
-          h.type === "userMessage"
-            ? h.contents
-                .filter((el) => el.type === "text")
-                .map((el) => el.text)
-                .join("\n")
-            : h.text;
-        return {
-          ...h,
-          text,
-        };
+        if (h.type === "userMessage") {
+          return {
+            ...h,
+            contents: h.contents,
+          };
+        } else {
+          return h;
+        }
       }),
     {
       id: v7(),

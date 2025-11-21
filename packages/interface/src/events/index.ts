@@ -1,3 +1,11 @@
+// CONTENTS
+export * from "./contents";
+
+// DESCRIBE
+export * from "./AutoBeImageDescribeStartEvent";
+export * from "./AutoBeImageDescribeDraftEvent";
+export * from "./AutoBeImageDescribeCompleteEvent";
+
 // FACADE
 export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeEvent";

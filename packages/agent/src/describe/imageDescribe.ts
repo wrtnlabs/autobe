@@ -1,0 +1,52 @@
+import {
+  AutoBeImageDescribeCompleteEvent,
+  AutoBeImageDescribeDraft,
+  AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
+  AutoBeUserMessageHistory,
+} from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
+import { v7 } from "uuid";
+
+import { AutoBeContext } from "../context/AutoBeContext";
+import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
+
+export const imageDescribe = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    content: AutoBeUserConversateContent[];
+  },
+): Promise<AutoBeUserMessageHistory> => {
+  const start: Date = new Date();
+
+  const imageContents: AutoBeUserImageConversateContent[] =
+    props.content.filter((m) => m.type === "image");
+  const imageCount: number = imageContents.length;
+  if (imageCount === 0) throw new Error("No image content found");
+  ctx.dispatch({
+    type: "imageDescribeStart",
+    id: v7(),
+    imageCount,
+    created_at: new Date().toISOString(),
+  });
+
+  const drafts: AutoBeImageDescribeDraft[] =
+    await orchestrateImageDescribeDrafts(ctx, { content: props.content });
+
+  const complete: AutoBeImageDescribeCompleteEvent = {
+    type: "imageDescribeComplete",
+    id: v7(),
+    contents: drafts.map((d) => ({
+      ...d.image,
+      description: d.description,
+      type: "image",
+    })),
+    elapsed: new Date().getTime() - start.getTime(),
+    created_at: new Date().toISOString(),
+  };
+  ctx.dispatch(complete);
+  return {
+    ...complete,
+    type: "userMessage",
+  } satisfies AutoBeUserMessageHistory;
+};

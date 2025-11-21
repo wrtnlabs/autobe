@@ -34,6 +34,19 @@ export class AutoBeListener {
         this.insert(event);
       },
 
+      // DESCRIBE
+      imageDescribeStart: async (event) => {
+        this.dict_.delete("imageDescribeDraft");
+        this.insert(event);
+      },
+      imageDescribeDraft: async (event) => {
+        this.insert(event);
+      },
+      imageDescribeComplete: async (event) => {
+        this.dict_.delete("imageDescribeDraft");
+        this.insert(event);
+      },
+
       // ANALYZE
       analyzeStart: async (event) => {
         this.dict_.delete("analyzeWrite");

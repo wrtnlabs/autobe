@@ -1,7 +1,7 @@
 import {
+  AutoBeUserImageConversateContent,
   AutoBeUserMessageAudioContent,
   AutoBeUserMessageFileContent,
-  AutoBeUserMessageImageContent,
 } from "@autobe/interface";
 
 export namespace AutoBeFileUploader {
@@ -140,7 +140,7 @@ export namespace AutoBeFileUploader {
   const composeImageContent = async (
     config: IConfig,
     file: File,
-  ): Promise<AutoBeUserMessageImageContent> => ({
+  ): Promise<AutoBeUserImageConversateContent> => ({
     type: "image",
     image: config.image
       ? {

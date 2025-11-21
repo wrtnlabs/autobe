@@ -3,4 +3,5 @@ export type AutoBeExampleProject =
   | "bbs"
   | "reddit"
   | "shopping"
-  | "chat";
+  | "chat"
+  | "account";

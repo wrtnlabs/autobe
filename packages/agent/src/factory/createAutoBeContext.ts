@@ -10,6 +10,7 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceHistory,
   AutoBeInterfaceStartEvent,
+  AutoBePhase,
   AutoBePrismaCompleteEvent,
   AutoBePrismaHistory,
   AutoBePrismaStartEvent,
@@ -41,7 +42,6 @@ import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
-import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
@@ -208,22 +208,22 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         const message: string =
           next.enforceFunctionCall === true
             ? StringUtil.trim`
-                ${next.userMessage}
+                  ${next.userMessage}
 
-                > You have to call function(s) of below to accomplish my request.
-                >
-                > Never hesitate the function calling. Never ask for me permission 
-                > to execute the function. Never explain me your plan with waiting
-                > for my approval.
-                >
-                > I gave you every information for the function calling, so just 
-                > call it. I repeat that, never hesitate the function calling. 
-                > Just do it without any explanation.
-                >
-                ${next.controller.application.functions
-                  .map((f) => `> - ${f.name}`)
-                  .join("\n")}
-              `
+                  > You have to call function(s) of below to accomplish my request.
+                  >
+                  > Never hesitate the function calling. Never ask for me permission 
+                  > to execute the function. Never explain me your plan with waiting
+                  > for my approval.
+                  >
+                  > I gave you every information for the function calling, so just 
+                  > call it. I repeat that, never hesitate the function calling. 
+                  > Just do it without any explanation.
+                  >
+                  ${next.controller.application.functions
+                    .map((f) => `> - ${f.name}`)
+                    .join("\n")}
+                `
             : next.userMessage;
         const result: TimedConversation.IResult<Model> =
           await TimedConversation.process({
@@ -499,4 +499,7 @@ const forceRetry = async <T>(
   throw error;
 };
 
-const STAGES = typia.misc.literals<keyof IAutoBeFacadeApplication>();
+const STAGES =
+  typia.misc.literals<
+    keyof Pick<IAutoBeTokenUsageJson, "facade" | AutoBePhase>
+  >();

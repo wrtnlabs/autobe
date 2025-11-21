@@ -5,6 +5,9 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
+  AutoBeImageDescribeCompleteEvent,
+  AutoBeImageDescribeDraftEvent,
+  AutoBeImageDescribeStartEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
@@ -100,6 +103,39 @@ export interface IAutoBeRpcListener {
    * @param value `true` to enable conversation, `false` to disable.
    */
   enable(value: boolean): Promise<void>;
+
+  /* -----------------------------------------------------------
+    DESCRIBE IMAGE EVENTS
+  ----------------------------------------------------------- */
+  /**
+   * Optional handler for describe image start events.
+   *
+   * Called when the Describe agent begins the image analysis and planning
+   * document generation process, enabling client applications to show describe
+   * image initiation and prepare progress indicators for visual
+   * interpretation.
+   */
+  imageDescribeStart?(event: AutoBeImageDescribeStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for image draft generation events.
+   *
+   * Called when the Describe agent analyzes batches of UI screenshots, mockups,
+   * or design documents and generates planning drafts. Each event represents
+   * analysis of a batch of images with extracted requirements and metadata.
+   */
+  imageDescribeDraft?(event: AutoBeImageDescribeDraftEvent): Promise<void>;
+
+  /**
+   * Mandatory handler for describe image completion events.
+   *
+   * Called when the describe image completes successfully, providing the
+   * finalized planning documentation generated from image analysis that can be
+   * used as input for the analyze agent.
+   */
+  imageDescribeComplete?(
+    event: AutoBeImageDescribeCompleteEvent,
+  ): Promise<void>;
 
   /* -----------------------------------------------------------
     ANALYZE PHASE EVENTS

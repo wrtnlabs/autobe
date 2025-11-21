@@ -10,7 +10,7 @@ import {
   AutoBeHistory,
   AutoBePhase,
   AutoBeProcessAggregateCollection,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
   IAutoBeCompilerListener,
@@ -26,6 +26,7 @@ import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
+import { describe } from "./describe/describe";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
@@ -282,30 +283,21 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     ACCESSORS
   ----------------------------------------------------------- */
   public async conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]> {
     const index: number = this.histories_.length;
-    const userMessageHistory: AutoBeUserMessageHistory = {
-      id: v7(),
-      type: "userMessage",
-      contents:
-        typeof content === "string"
-          ? [
-              {
-                type: "text",
-                text: content,
-              },
-            ]
-          : Array.isArray(content)
-            ? content
-            : [content],
-      created_at: new Date().toISOString(),
-    };
-    this.histories_.push(userMessageHistory);
+
+    const userMessageHistory: AutoBeUserMessageHistory = await describe(
+      this.context_,
+      { content },
+    );
     this.dispatch(userMessageHistory).catch(() => {});
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(content);
+      await this.agentica_.conversate(userMessageHistory.contents);
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>
@@ -319,6 +311,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         throw v;
       }
     }
+
+    this.histories_.push(userMessageHistory);
     return this.histories_.slice(index);
   }
 

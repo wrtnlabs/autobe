@@ -1,8 +1,8 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
 import {
+  AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
   AutoBeUserMessageAudioContent,
   AutoBeUserMessageFileContent,
-  AutoBeUserMessageImageContent,
 } from "@autobe/interface";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
@@ -20,7 +20,7 @@ export interface IAutoBeBucket {
   content:
     | AutoBeUserMessageAudioContent
     | AutoBeUserMessageFileContent
-    | AutoBeUserMessageImageContent;
+    | AutoBeUserImageConversateContent;
 }
 
 export interface IAutoBeChatUploadConfig {
@@ -72,13 +72,13 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
       return;
     }
 
-    const messages = [
+    const messages: AutoBeUserConversateContent[] = [
       {
         type: "text",
         text: text.trim(),
       },
       ...buckets.map(({ content }) => content),
-    ] as AutoBeUserMessageContent[];
+    ];
 
     setEmptyText(false);
     setText("");
@@ -102,7 +102,8 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
     const newFiles: IAutoBeBucket[] = [];
     const errorFileNames: string[] = [];
 
-    for (const file of fileList) {
+    const files = Array.from(fileList);
+    for (const file of files) {
       try {
         newFiles.push(
           await AutoBeFileUploader.compose(props.uploadConfig ?? {}, file),
@@ -412,7 +413,7 @@ export namespace AutoBeChatUploadBox {
   export interface IProps {
     listener: RefObject<IListener>;
     uploadConfig?: IAutoBeChatUploadConfig;
-    conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
+    conversate: (messages: AutoBeUserConversateContent[]) => Promise<void>;
     setError: (error: Error) => void;
   }
   export interface IListener {

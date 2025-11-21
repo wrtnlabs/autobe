@@ -1,6 +1,5 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
-import { IAutoBeFacadeApplication } from "../orchestrate/facade/histories/IAutoBeFacadeApplication";
 import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
 
 /**
@@ -218,7 +217,10 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    */
   public record(
     usage: IAutoBeTokenUsageJson.IComponent,
-    additionalStages: (keyof IAutoBeFacadeApplication)[] = [],
+    additionalStages: (keyof Pick<
+      IAutoBeTokenUsageJson,
+      "facade" | "analyze" | "prisma" | "interface" | "test" | "realize"
+    >)[] = [],
   ) {
     additionalStages.forEach((stage) => {
       this[stage].increment(usage);

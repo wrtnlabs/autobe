@@ -1,7 +1,7 @@
+import { AutoBeUserConversateContent } from "../events/contents/AutoBeUserConversateContent";
 import { IAutoBeGetFilesOptions } from "../facade/IAutoBeGetFilesOptions";
 import { AutoBePhase } from "../histories";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
-import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 
 /**
@@ -45,7 +45,10 @@ export interface IAutoBeRpcService {
    *   events and artifacts generated during this conversation turn
    */
   conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]>;
 
   /**
@@ -135,7 +138,8 @@ export interface IAutoBeRpcService {
   getTokenUsage(): Promise<IAutoBeTokenUsageJson>;
 
   /**
-   * Retrieves the current development phase in the vibe coding pipeline via RPC.
+   * Retrieves the current development phase in the vibe coding pipeline via
+   * RPC.
    *
    * Returns the active phase of the AutoBE development process through the RPC
    * interface, indicating which agent is currently executing or which stage of
@@ -149,7 +153,8 @@ export interface IAutoBeRpcService {
    * is active (before starting or after completion), returns null.
    *
    * @returns Promise resolving to the current AutoBePhase enum value indicating
-   *   the active development phase, or null when no phase is currently executing
+   *   the active development phase, or null when no phase is currently
+   *   executing
    */
   getPhase(): Promise<AutoBePhase | null>;
 }

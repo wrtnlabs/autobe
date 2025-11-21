@@ -45,14 +45,14 @@ export namespace AutoBeExampleBenchmark {
     };
     const report = () => props.progress(state);
     await Promise.all(
-      state.vendors.map((vendor) =>
-        executeVendor(ctx, {
+      state.vendors.map(async (vendor) => {
+        await executeVendor(ctx, {
           phases: props.phases,
           vendorState: vendor,
           on: props.on,
           report,
-        }),
-      ),
+        });
+      }),
     );
   };
 
@@ -127,6 +127,12 @@ export namespace AutoBeExampleBenchmark {
           props.report();
           if (success === true) break;
         } catch (error) {
+          console.log(
+            props.vendor,
+            props.projectState.name,
+            phaseState.name,
+            error,
+          );
           continue;
         }
       }
@@ -152,7 +158,13 @@ const getArchiver = (phase: AutoBePhase) => {
   throw new Error(`Unknown phase: ${phase}`);
 };
 
-const PROJECT_SEQUENCE = ["todo", "bbs", "reddit", "shopping"] as const;
+const PROJECT_SEQUENCE = [
+  "todo",
+  "bbs",
+  "reddit",
+  "shopping",
+  "account",
+] as const;
 const PHASE_SEQUENCE = [
   "analyze",
   "prisma",

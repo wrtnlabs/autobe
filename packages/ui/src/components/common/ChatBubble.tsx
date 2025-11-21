@@ -1,4 +1,4 @@
-import { AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeUserConversateContent } from "@autobe/interface";
 
 import { formatTime } from "../../utils/time";
 import { OpenAIContent } from "./openai";
@@ -6,7 +6,7 @@ import { OpenAIContent } from "./openai";
 /** Props interface for ChatBubble component */
 export interface IChatBubbleProps {
   /** Message content - supports text, audio, file, and image types */
-  content: Array<AutoBeUserMessageContent | string>;
+  content: Array<AutoBeUserConversateContent | string>;
 
   /** Direction of the chat bubble - left or right */
   direction: "left" | "right";

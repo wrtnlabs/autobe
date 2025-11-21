@@ -119,6 +119,9 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     }
     // DISCARD
+    case "imageDescribeStart":
+    case "imageDescribeDraft":
+    case "imageDescribeComplete":
     case "interfaceEndpointReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":

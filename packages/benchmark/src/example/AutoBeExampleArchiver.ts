@@ -8,7 +8,7 @@ import {
   AutoBePhase,
   AutoBePrismaHistory,
   AutoBeProcessAggregateCollection,
-  AutoBeUserMessageContent,
+  AutoBeUserConversateContent,
   IAutoBeAgent,
   IAutoBePlaygroundReplay,
   IAutoBeTokenUsageJson,
@@ -44,7 +44,7 @@ export namespace AutoBeExampleArchiver {
           await AutoBeExampleStorage.getUserMessage({
             project: ctx.project,
             phase: "analyze",
-          }).then((r) => r.contents),
+          }),
         )) ||
         (await conversate(
           "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
@@ -129,7 +129,10 @@ export namespace AutoBeExampleArchiver {
       phase: AutoBePhase;
       trial: (
         conversate: (
-          input: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+          input:
+            | string
+            | AutoBeUserConversateContent
+            | AutoBeUserConversateContent[],
         ) => Promise<boolean>,
       ) => Promise<boolean>;
       predicate: (histories: AutoBeHistory[]) => boolean;
@@ -206,7 +209,7 @@ export namespace AutoBeExampleArchiver {
     try {
       // CONVERSATE
       const go = async (
-        c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+        c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
       ): Promise<boolean> => {
         const result: AutoBeHistory[] = await agent.conversate(c);
         return result.some((h) => h.type === props.phase);
@@ -221,7 +224,11 @@ export namespace AutoBeExampleArchiver {
       const histories: AutoBeHistory[] = agent.getHistories();
       try {
         await FileSystemIterator.save({
-          root: `${AutoBeExampleStorage.TEST_ROOT}/results/${AutoBeExampleStorage.slugModel(ctx.vendor, false)}/${ctx.project}/${props.phase}`,
+          root: `${
+            AutoBeExampleStorage.TEST_ROOT
+          }/results/${AutoBeExampleStorage.slugModel(ctx.vendor, false)}/${
+            ctx.project
+          }/${props.phase}`,
           files: {
             ...(await agent.getFiles()),
             ...Object.fromEntries(
@@ -273,13 +280,14 @@ export namespace AutoBeExampleArchiver {
     (props: { project: AutoBeExampleProject; phase: AutoBePhase }) =>
     async (
       conversate: (
-        input: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+        input:
+          | string
+          | AutoBeUserConversateContent
+          | AutoBeUserConversateContent[],
       ) => Promise<boolean>,
     ): Promise<boolean> =>
       (await conversate(
-        await AutoBeExampleStorage.getUserMessage(props).then(
-          (r) => r.contents,
-        ),
+        await AutoBeExampleStorage.getUserMessage(props).then((r) => r),
       )) ||
       (await conversate(
         "Don't ask me to do that, and just do it right now.",

@@ -1,4 +1,5 @@
 import { AutoBeEventSnapshot } from "../events/AutoBeEventSnapshot";
+import { AutoBePhase } from "../histories";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { AutoBeProcessAggregateCollection } from "../histories/contents/AutoBeProcessAggregateCollection";
 
@@ -132,7 +133,7 @@ export namespace IAutoBePlaygroundReplay {
      * when retrieving or displaying replay data. Each phase represents a
      * distinct stage in the automated backend development pipeline.
      */
-    phase: "analyze" | "prisma" | "interface" | "test" | "realize" | null;
+    phase: AutoBePhase | null;
   }
 
   /**

@@ -1,7 +1,7 @@
 import { AutoBeEvent } from "../events/AutoBeEvent";
+import { AutoBeUserConversateContent } from "../events/contents/AutoBeUserConversateContent";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { AutoBePhase } from "../histories/AutoBePhase";
-import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json";
 import { IAutoBeGetFilesOptions } from "./IAutoBeGetFilesOptions";
 
@@ -31,7 +31,10 @@ export interface IAutoBeAgent {
    *   conversation
    */
   conversate(
-    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]>;
 
   /**
@@ -127,11 +130,11 @@ export interface IAutoBeAgent {
   /**
    * Retrieves the current development phase in the vibe coding pipeline.
    *
-   * Returns the active phase of the AutoBE development process, indicating which
-   * agent is currently executing or which stage of backend generation is in
-   * progress. This information is useful for tracking overall pipeline progress,
-   * displaying phase-specific UI elements, and coordinating multi-phase
-   * operations.
+   * Returns the active phase of the AutoBE development process, indicating
+   * which agent is currently executing or which stage of backend generation is
+   * in progress. This information is useful for tracking overall pipeline
+   * progress, displaying phase-specific UI elements, and coordinating
+   * multi-phase operations.
    *
    * The phase information updates in real-time as the agent progresses through
    * the waterfall development model, transitioning from analyze through prisma,
