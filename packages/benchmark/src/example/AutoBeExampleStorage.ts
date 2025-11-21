@@ -159,7 +159,6 @@ export namespace AutoBeExampleStorage {
         });
         return {
           aggregate: component(),
-          describe: component(),
           facade: component(),
           analyze: component(),
           prisma: component(),
