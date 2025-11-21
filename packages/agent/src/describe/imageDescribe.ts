@@ -3,6 +3,7 @@ import {
   AutoBeImageDescribeDraft,
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
+  AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -32,15 +33,19 @@ export const imageDescribe = async <Model extends ILlmSchema.Model>(
 
   const drafts: AutoBeImageDescribeDraft[] =
     await orchestrateImageDescribeDrafts(ctx, { content: props.content });
-
+  const draftContents: AutoBeUserMessageContent[] = drafts.map((d) => ({
+    ...d.image,
+    description: d.description,
+    type: "image",
+  }));
+  const query: AutoBeUserMessageContent = {
+    type: "text",
+    text: "Based on the image analysis above, please analyze and write a comprehensive requirements specification document.",
+  };
   const complete: AutoBeImageDescribeCompleteEvent = {
     type: "imageDescribeComplete",
     id: v7(),
-    contents: drafts.map((d) => ({
-      ...d.image,
-      description: d.description,
-      type: "image",
-    })),
+    contents: [...draftContents, query],
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
