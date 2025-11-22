@@ -76,6 +76,7 @@ const main = async (): Promise<void> => {
         "deepseek/deepseek-v3.1-terminus:exacto",
         "meta-llama/llama-4-maverick",
         "meta-llama/llama-4-scout",
+        "minimax/minimax-m2",
         "mistralai/codestral-2508",
         "moonshotai/kimi-k2-0905:exacto",
         "qwen/qwen3-next-80b-a3b-instruct",
