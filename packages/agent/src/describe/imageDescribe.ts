@@ -10,6 +10,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
+import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
 import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
 
 export const imageDescribe = async <Model extends ILlmSchema.Model>(
@@ -33,11 +34,12 @@ export const imageDescribe = async <Model extends ILlmSchema.Model>(
 
   const drafts: AutoBeImageDescribeDraft[] =
     await orchestrateImageDescribeDrafts(ctx, { content: props.content });
-  const draftContents: AutoBeUserMessageContent[] = drafts.map((d) => ({
-    ...d.image,
-    description: d.description,
-    type: "image",
-  }));
+  const draftContents: AutoBeUserMessageContent[] = drafts.map((d) =>
+    createAutoBeUserMessageContent({
+      content: d.image,
+      description: d.description,
+    }),
+  );
   const query: AutoBeUserMessageContent = {
     type: "text",
     text: "Based on the image analysis above, please analyze and write a comprehensive requirements specification document.",
