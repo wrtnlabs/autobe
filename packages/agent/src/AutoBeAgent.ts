@@ -295,15 +295,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       { content },
     );
     this.dispatch(userMessageHistory).catch(() => {});
-    const history: MicroAgenticaHistory<Model> | null = createAgenticaHistory({
-      history: userMessageHistory,
-      operations: this.agentica_.getOperations(),
-    });
-    if (history?.type !== "userMessage")
-      throw new Error("Unreachable code: Invalid history type");
+    this.histories_.push(userMessageHistory);
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
-      await this.agentica_.conversate(history.contents);
+      await this.agentica_.conversate(userMessageHistory.contents);
     const errorHistory: AgenticaExecuteHistory<Model> | undefined =
       agenticaHistories.find(
         (h): h is AgenticaExecuteHistory<Model> =>
@@ -318,7 +313,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       }
     }
 
-    this.histories_.push(userMessageHistory);
     return this.histories_.slice(index);
   }
 
