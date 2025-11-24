@@ -9,6 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformRealizeCollectorWriteHistories = (props: {
   state: AutoBeState;
   dtoTypeName: string;
+  prismaSchemaName: string;
   preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
 }): IAutoBeOrchestrateHistory => {
   if (props.state.analyze === null)
@@ -123,11 +124,12 @@ export const transformRealizeCollectorWriteHistories = (props: {
     userMessage: StringUtil.trim`
       Create a collector module for:
       - DTO Type: ${props.dtoTypeName}
+      - Prisma Schema: ${props.prismaSchemaName}
 
       Generate complete TypeScript code that includes:
       1. A namespace with collect() function
-      2. Proper Prisma CreateInput types
-      3. UUID generation for new records
+      2. Proper Prisma CreateInput types for ${props.prismaSchemaName}
+      3. UUID generation for new records using v4()
       4. Type-safe field mappings from DTO to Prisma input
       5. Handling of nested relationships (connect/create)
 

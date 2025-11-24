@@ -26,6 +26,7 @@ export async function orchestrateRealizeCollectorWrite<
   ctx: AutoBeContext<Model>,
   props: {
     dtoTypeName: string;
+    prismaSchemaName: string;
     location: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
@@ -60,6 +61,7 @@ export async function orchestrateRealizeCollectorWrite<
       ...transformRealizeCollectorWriteHistories({
         state: ctx.state(),
         dtoTypeName: props.dtoTypeName,
+        prismaSchemaName: props.prismaSchemaName,
         preliminary,
       }),
     });
@@ -70,6 +72,7 @@ export async function orchestrateRealizeCollectorWrite<
         function: {
           kind: "collector",
           dtoTypeName: props.dtoTypeName,
+          prismaSchemaName: props.prismaSchemaName,
           location: props.location,
           content: pointer.value.revise.final ?? pointer.value.draft,
         },

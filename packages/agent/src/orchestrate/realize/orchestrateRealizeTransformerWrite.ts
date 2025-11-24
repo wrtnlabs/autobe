@@ -26,7 +26,6 @@ export async function orchestrateRealizeTransformerWrite<
   ctx: AutoBeContext<Model>,
   props: {
     dtoTypeName: string;
-    prismaSchemaName: string;
     location: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
@@ -61,7 +60,6 @@ export async function orchestrateRealizeTransformerWrite<
       ...transformRealizeTransformerWriteHistories({
         state: ctx.state(),
         dtoTypeName: props.dtoTypeName,
-        prismaSchemaName: props.prismaSchemaName,
         preliminary,
       }),
     });
@@ -72,7 +70,7 @@ export async function orchestrateRealizeTransformerWrite<
         function: {
           kind: "transformer",
           dtoTypeName: props.dtoTypeName,
-          prismaSchemaName: props.prismaSchemaName,
+          prismaSchemaName: pointer.value.prismaSchemaName,
           location: props.location,
           content: pointer.value.revise.final ?? pointer.value.draft,
         },

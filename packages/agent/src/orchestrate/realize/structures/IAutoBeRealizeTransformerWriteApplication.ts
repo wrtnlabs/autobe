@@ -85,6 +85,17 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     type: "complete";
 
     /**
+     * Prisma schema name being transformed from.
+     *
+     * The source Prisma table/model name that provides the data for this
+     * transformer. The AI agent determines this by analyzing the Prisma schemas
+     * and DTO type definition to find the appropriate database table.
+     *
+     * Example: "shopping_sale_snapshot_unit_stocks"
+     */
+    prismaSchemaName: string;
+
+    /**
      * Transformer implementation plan and strategy.
      *
      * Analyzes the Prisma schema and DTO type to plan the transformation logic:

@@ -29,6 +29,17 @@ export interface AutoBeRealizeCollectorFunction {
   dtoTypeName: string;
 
   /**
+   * Prisma schema name being collected to.
+   *
+   * The target Prisma table/model name that receives the collected data.
+   * This is determined by the transformer during analysis and passed to the
+   * collector to ensure consistency.
+   *
+   * Example: "shopping_sale_snapshot_unit_stocks"
+   */
+  prismaSchemaName: string;
+
+  /**
    * File path where the collector module is generated.
    *
    * The relative path to the TypeScript file containing the collector namespace

@@ -9,7 +9,6 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformRealizeTransformerWriteHistories = (props: {
   state: AutoBeState;
   dtoTypeName: string;
-  prismaSchemaName: string;
   preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
 }): IAutoBeOrchestrateHistory => {
   if (props.state.analyze === null)
@@ -121,11 +120,13 @@ export const transformRealizeTransformerWriteHistories = (props: {
       },
     ],
     userMessage: StringUtil.trim`
-      Create a transformer module for:
-      - DTO Type: ${props.dtoTypeName}
-      - Prisma Schema: ${props.prismaSchemaName}
+      Create a transformer module for the DTO type: ${props.dtoTypeName}
 
-      Generate complete TypeScript code that includes:
+      First, analyze the Prisma schemas and Interface schemas to determine:
+      1. Which Prisma table/model corresponds to this DTO type
+      2. The field mappings between Prisma columns and DTO properties
+
+      Then generate complete TypeScript code that includes:
       1. A namespace with transform() and select() functions
       2. Proper Prisma payload types
       3. Type-safe field mappings from DB to DTO
