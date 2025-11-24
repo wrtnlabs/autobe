@@ -1,5 +1,5 @@
-import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeUserConversateContent } from "./contents/AutoBeUserConversateContent";
 
 /**
  * Event fired when a user sends a message during the conversation flow.
@@ -22,11 +22,11 @@ export interface AutoBeUserMessageEvent extends AutoBeEventBase<"userMessage"> {
   /**
    * Array of multimodal content items that comprise the user's message.
    *
-   * Contains the diverse {@link AutoBeUserMessageContent} elements that make up
-   * the user's communication, which can include text descriptions, images for
-   * visual references, document files for specifications, and audio for voice
-   * input. Each content item represents a different modality or attachment
-   * within the same message.
+   * Contains the diverse {@link AutoBeUserConversateContent} elements that make
+   * up the user's communication, which can include text descriptions, images
+   * for visual references, document files for specifications, and audio for
+   * voice input. Each content item represents a different modality or
+   * attachment within the same message.
    *
    * The multimodal array structure allows users to combine multiple content
    * types in a single message, such as text requirements accompanied by
@@ -35,5 +35,5 @@ export interface AutoBeUserMessageEvent extends AutoBeEventBase<"userMessage"> {
    * generate more accurate development artifacts throughout the vibe coding
    * process.
    */
-  contents: AutoBeUserMessageContent[];
+  contents: AutoBeUserConversateContent[];
 }

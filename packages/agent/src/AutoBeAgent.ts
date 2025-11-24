@@ -289,12 +289,28 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       | AutoBeUserConversateContent[],
   ): Promise<AutoBeHistory[]> {
     const index: number = this.histories_.length;
+    const userContent: AutoBeUserConversateContent[] =
+      typeof content === "string"
+        ? [
+            {
+              type: "text",
+              text: content,
+            },
+          ]
+        : Array.isArray(content)
+          ? content
+          : [content];
+    this.dispatch({
+      type: "userMessage",
+      id: v7(),
+      contents: userContent,
+      created_at: new Date().toISOString(),
+    }).catch(() => {});
 
     const userMessageHistory: AutoBeUserMessageHistory = await describe(
       this.context_,
       { content },
     );
-    this.dispatch(userMessageHistory).catch(() => {});
     this.histories_.push(userMessageHistory);
 
     const agenticaHistories: MicroAgenticaHistory<Model>[] =
