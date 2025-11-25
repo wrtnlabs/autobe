@@ -1,4 +1,5 @@
-import { AutoBeTestFile } from "./AutoBeTestFile";
+import { AutoBeTestScenario } from "./AutoBeTestScenario";
+import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
 
 /**
  * Test writing function content structure for individual test scenario files.
@@ -16,33 +17,24 @@ import { AutoBeTestFile } from "./AutoBeTestFile";
  *
  * @author Michael
  */
-export interface AutoBeTestWriteFunction {
+export interface AutoBeTestWriteFunction
+  extends AutoBeTestWriteFunctionBase<"write"> {
   /**
-   * Function type discriminator for test writing operations.
+   * Detailed metadata describing the test scenario and its characteristics.
    *
-   * Fixed value of "write" identifies this as a test file creation function,
-   * distinguishing it from other test-related operations such as generation,
-   * preparation, or authorization functions.
+   * Provides comprehensive information about what this test file covers,
+   * including the specific API endpoints being tested, the business scenarios
+   * being validated, expected outcomes, and any special conditions or
+   * prerequisites. This metadata helps developers understand the test's purpose
+   * and scope without having to analyze the AST structure or generated code.
+   *
+   * The scenario information is crucial for test maintenance, coverage
+   * analysis, and ensuring that all business requirements are adequately tested
+   * across the test suite. It serves as high-level documentation that
+   * complements both the structured AST representation and the generated
+   * executable TypeScript code.
    */
-  kind: "write";
-
-  /**
-   * Test file structure containing location, content, and scenario metadata.
-   *
-   * Encapsulates the complete test file information including its file system
-   * location, generated TypeScript source code, and detailed scenario description.
-   * This comprehensive structure provides all necessary information for creating,
-   * organizing, and understanding the test file within the broader test suite.
-   *
-   * The file object enables proper test organization by location, executable test
-   * code generation, and rich scenario documentation that explains the business
-   * context and validation objectives. It serves as the primary artifact produced
-   * by the test writing process, containing both the implementation details and
-   * the high-level testing strategy.
-   *
-   * @see {@link AutoBeTestFile} for detailed file structure
-   */
-  file: AutoBeTestFile;
+  scenario: Omit<AutoBeTestScenario, "functionName">;
 
   /**
    * Functional domain category for test classification and organization.
@@ -86,19 +78,4 @@ export interface AutoBeTestWriteFunction {
    * deviations from established testing patterns and conventions.
    */
   review?: string;
-
-  /**
-   * Final production-ready test implementation.
-   *
-   * Polished, optimized test code that incorporates all review feedback and
-   * meets production quality standards. This final version includes
-   * comprehensive error handling, complete edge case coverage, clear
-   * documentation, and follows all established testing best practices.
-   *
-   * The final implementation represents a thoroughly vetted test that reliably
-   * validates business requirements, handles various scenarios gracefully, and
-   * serves as both a quality gate and living documentation for the tested
-   * functionality.
-   */
-  final?: string;
 }
