@@ -79,7 +79,7 @@ export const orchestrateTest =
         functions: written.map((w) => ({
           scenario: w.scenario,
           artifacts: w.artifacts,
-          location: w.event.location,
+          location: w.event.file.location,
           script: w.event.final ?? w.event.draft,
         })),
       },
