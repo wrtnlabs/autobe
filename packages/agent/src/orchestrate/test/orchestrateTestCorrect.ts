@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
+  AutoBeTestWriteFunction,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -68,10 +69,10 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
                     final: next.final,
                     step: ctx.state().analyze?.step ?? 0,
                   }) satisfies AutoBeTestCorrectEvent,
-                script: (event) => event.file.content,
+                script: (event) => event.function.content,
                 functionName: w.scenario.functionName,
               },
-              x.file.content,
+              x.function.content,
             );
           return await predicate(
             ctx,
@@ -107,11 +108,15 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
   return {
     type: "testValidate",
     id: v7(),
-    file: {
+    function: {
+      kind: "write",
       scenario: func.scenario,
       location: func.location,
       content: func.script,
-    },
+      functionName: func.scenario.functionName,
+      domain: "",
+      draft: "",
+    } satisfies AutoBeTestWriteFunction,
     result,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
@@ -195,7 +200,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     kind: "overall",
     id: v7(),
     created_at: new Date().toISOString(),
-    file: props.validate.file,
+    file: {
+      location: props.function.location,
+      content: props.function.script,
+      scenario: props.function.scenario,
+    },
     result: props.validate.result,
     metric,
     tokenUsage,

@@ -7,8 +7,19 @@ export const transformTestValidateEvent = (
   event: AutoBeTestValidateEvent,
   artifacts: IAutoBeTestScenarioArtifacts,
 ): IAutoBeTestFunction => ({
-  scenario: event.file.scenario,
+  scenario:
+    event.function.kind === "write"
+      ? {
+          ...event.function.scenario,
+          functionName: event.function.functionName,
+        }
+      : {
+          dependencies: [],
+          draft: "",
+          endpoint: event.function.endpoint,
+          functionName: event.function.functionName,
+        },
   artifacts,
-  location: event.file.location,
-  script: event.file.content,
+  location: event.function.location,
+  script: event.function.content,
 });
