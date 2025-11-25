@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 dotenvExpand.expand(dotenv.config());
 
