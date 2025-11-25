@@ -1,5 +1,11 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { AutoBeTestFile } from "../histories";
+import {
+  AutoBeTestFile,
+  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestWriteFunction,
+  AutoBeTestWriteGenerationFunction,
+  AutoBeTestWritePrepareFunction,
+} from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -21,22 +27,11 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  */
 export interface AutoBeTestValidateEvent
   extends AutoBeEventBase<"testValidate"> {
-  /**
-   * Test file that is being validated or contained compilation errors with its
-   * detailed scenario metadata.
-   *
-   * Contains the structured test file object that is undergoing validation or
-   * failed compilation. The file includes its location, source code content,
-   * and associated scenario information that provides context for understanding
-   * any compilation issues. This file serves as a comprehensive baseline for
-   * measuring the effectiveness of the correction process.
-   *
-   * Unlike simple key-value pairs, this structure preserves the rich metadata
-   * about the test scenario, enabling better analysis of what specific test
-   * patterns or business logic implementations led to compilation failures and
-   * how they can be systematically improved.
-   */
-  file: AutoBeTestFile;
+  function:
+    | AutoBeTestWritePrepareFunction
+    | AutoBeTestWriteGenerationFunction
+    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestWriteFunction;
 
   /**
    * Compilation result indicating success, failure, or exception during
