@@ -37,3 +37,4 @@ export * from "./AutoBeProcessAggregateCollection";
 export * from "./AutoBeProcessAggregate";
 
 export * from "./AutoBeTestWriteAuthorizationFunction";
+export * from "./AutoBeTestWritePrepareFunction";
