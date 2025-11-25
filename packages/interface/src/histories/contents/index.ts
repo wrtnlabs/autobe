@@ -28,3 +28,4 @@ export * from "./AutoBeProcessAggregate";
 
 export * from "./AutoBeTestWriteAuthorizationFunction";
 export * from "./AutoBeTestWritePrepareFunction";
+export * from "./AutoBeTestWriteGenerationFunction";
