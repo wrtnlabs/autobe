@@ -1,3 +1,9 @@
+import {
+  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestWriteFunction,
+  AutoBeTestWriteGenerationFunction,
+  AutoBeTestWritePrepareFunction,
+} from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -23,57 +29,11 @@ export interface AutoBeTestWriteEvent
   extends AutoBeEventBase<"testWrite">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
-  /**
-   * File system path where the test file should be located.
-   *
-   * Specifies the relative or absolute path for the test file within the
-   * project structure. This location typically follows testing conventions and
-   * may be organized by API endpoints, feature modules, or business domains to
-   * ensure logical test suite organization and easy navigation.
-   *
-   * Example: "test/features/api/order/test_api_shopping_order_publish.ts"
-   */
-  location: string;
-
-  /**
-   * Test scenario description and implementation strategy.
-   *
-   * Detailed explanation of the business scenario to be tested, including
-   * step-by-step execution plan and test methodology.
-   */
-  scenario: string;
-
-  /**
-   * Functional domain category for test organization.
-   *
-   * Primary API resource domain (e.g., "user", "article", "payment") used for
-   * file structure and logical test grouping.
-   */
-  domain: string;
-
-  /**
-   * Initial test code implementation.
-   *
-   * First working version of the TypeScript E2E test function, implementing the
-   * complete business scenario with proper types and SDK usage.
-   */
-  draft: string;
-
-  /**
-   * Code review feedback and improvement suggestions.
-   *
-   * Quality assessment results identifying issues, best practice violations,
-   * and specific recommendations for code refinement.
-   */
-  review?: string;
-
-  /**
-   * Final production-ready test code.
-   *
-   * Polished implementation incorporating all review feedback, ready for
-   * deployment in the actual test suite.
-   */
-  final?: string;
+  function:
+    | AutoBeTestWritePrepareFunction
+    | AutoBeTestWriteGenerationFunction
+    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestWriteFunction;
 
   /**
    * Iteration number of the requirements analysis this test writing reflects.
