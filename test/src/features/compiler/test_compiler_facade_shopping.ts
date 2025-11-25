@@ -24,7 +24,7 @@ export const test_compiler_facade_shopping = async (
   const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
-      prisma: prisma.nodeModules,
+      prisma: prisma.client,
       package: "@samchon/shopping-api",
     });
   if (result.type !== "success") {

@@ -155,7 +155,7 @@ async function process<Model extends ILlmSchema.Model>(
     const prismaCompiled: IAutoBePrismaCompileResult | undefined =
       ctx.state().prisma?.compiled;
     const prismaClient: Record<string, string> =
-      prismaCompiled?.type === "success" ? prismaCompiled.nodeModules : {};
+      prismaCompiled?.type === "success" ? prismaCompiled.client : {};
     return out(result)(
       await orchestrateRealizeAuthorizationCorrect(ctx, {
         template: props.templates,

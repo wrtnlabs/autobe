@@ -65,14 +65,23 @@ export namespace IAutoBePrismaCompileResult {
     schemas: Record<string, string>;
 
     /**
-     * Generated Node.js dependency files and configurations.
+     * Prisma Client SDK source files.
      *
-     * Includes package.json configurations, TypeScript definitions, and other
-     * Node.js ecosystem files required for proper integration with the
-     * generated Prisma schemas. Ensures seamless compatibility with existing
-     * development and deployment workflows.
+     * This is a mapping where:
+     *
+     * - Keys are file paths relative to the generated output directory (e.g.,
+     *   'prisma/client.ts', 'prisma/models.ts', 'prisma/enums.ts')
+     * - Values are the TypeScript source file (`.ts`) contents as strings
+     *
+     * Prisma v7 generates the client SDK as TypeScript source files (`.ts`)
+     * instead of type definition files (`.d.ts`), providing full implementation
+     * code that can be directly used in TypeScript applications.
+     *
+     * Applications can write these files to their designated output directory
+     * to provide IDE autocompletion and type checking when using the Prisma
+     * Client.
      */
-    nodeModules: Record<string, string>;
+    client: Record<string, string>;
   }
 
   /**

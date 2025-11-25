@@ -26,14 +26,14 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
     phase: "realize",
     dbms: "sqlite",
   });
-  const nodeModules: Record<string, string> =
-    prisma?.type === "success" ? prisma.nodeModules : {};
+  const client: Record<string, string> =
+    prisma?.type === "success" ? prisma.client : {};
 
   const filterTsFiles = (location: string) =>
     location.startsWith("src/") && location.endsWith(".ts");
 
   const files: Record<string, string> = {
-    ...nodeModules,
+    ...client,
     ...payloads,
     ...Object.fromEntries(
       Object.entries(await ctx.files({ dbms: "sqlite" })).filter(([key]) =>
