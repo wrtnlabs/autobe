@@ -50,6 +50,7 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
   const compiled: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files: files,
+      prisma: client,
     });
   return {
     type: "realizeValidate",

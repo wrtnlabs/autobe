@@ -86,6 +86,7 @@ const main = async (): Promise<void> => {
       projects: TestGlobal.getArguments("project")?.filter(
         typia.createIs<AutoBeExampleProject>(),
       ) ?? ["todo", "bbs", "reddit", "shopping"],
+      phases: (TestGlobal.getArguments("phase") as any) ?? undefined,
       progress: (state) => printer.get(state),
     },
   );

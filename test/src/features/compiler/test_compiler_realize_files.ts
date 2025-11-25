@@ -50,6 +50,7 @@ export const test_compiler_realize_files = async () => {
       functions: realize.functions,
     },
   );
+  if (event.result.type === "failure") console.log(event.result.diagnostics);
   TestValidator.equals("local compile", event.result.type, "success");
 
   const files: Record<string, string> = await agent.getFiles();

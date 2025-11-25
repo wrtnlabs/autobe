@@ -55,11 +55,15 @@ const main = async (): Promise<void> => {
   await iterate({
     histories: async (histories) => {
       for (const history of histories) {
-        if (history.type === "prisma")
+        if (history.type === "prisma") {
+          history.schemas = await new AutoBePrismaCompiler().write(
+            history.result.data,
+            "sqlite",
+          );
           history.compiled = await new AutoBePrismaCompiler().compile({
             files: history.schemas,
           });
-        else if (history.type === "realize") {
+        } else if (history.type === "realize") {
           history.authorizations.forEach((auth) => {
             auth.provider.content = auth.provider.content.replaceAll(
               PRISMA_CLIENT,
@@ -86,11 +90,15 @@ const main = async (): Promise<void> => {
               PRISMA_CLIENT,
               PRISMA_SDK,
             );
-        else if (event.type === "prismaComplete")
+        else if (event.type === "prismaComplete") {
+          event.schemas = await new AutoBePrismaCompiler().write(
+            event.result.data,
+            "sqlite",
+          );
           event.compiled = await new AutoBePrismaCompiler().compile({
             files: event.schemas,
           });
-        else if (event.type === "realizeComplete") {
+        } else if (event.type === "realizeComplete") {
           event.authorizations.forEach((auth) => {
             auth.provider.content = auth.provider.content.replaceAll(
               PRISMA_CLIENT,
