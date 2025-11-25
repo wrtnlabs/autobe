@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi";
+import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
 
 /**
  * Interface defining generation functions that create resources used in test functions.
@@ -14,13 +15,8 @@ import { AutoBeOpenApi } from "../../openapi";
  *
  * @author Michael
  */
-export interface AutoBeTestWriteGenerationFunction {
-  /**
-   * Type discriminator indicating that this object is a generation function.
-   * Used to distinguish types in the discriminated union pattern.
-   */
-  kind: "generation";
-
+export interface AutoBeTestWriteGenerationFunction
+  extends AutoBeTestWriteFunctionBase<"generation"> {
   /**
    * OpenAPI endpoint specification that this generation function corresponds
    * to.
@@ -46,44 +42,4 @@ export interface AutoBeTestWriteGenerationFunction {
    * permission context.
    */
   actor: string | null;
-
-  /**
-   * Function name of the generation function.
-   *
-   * The TypeScript function name in snake_case format that clearly describes
-   * what data is being generated. The naming convention typically follows the
-   * pattern: generate_[adjective]_[entity]_[details].
-   *
-   * Example: "generate_random_bbs_article", "generate_valid_user_profile",
-   * "generate_invalid_payment_request"
-   */
-  functionName: string;
-
-  /**
-   * File system path where the generation function should be located.
-   *
-   * Specifies the relative or absolute path for the generation function within
-   * the project structure. This location typically follows test utility
-   * conventions and may be organized by API endpoints, feature modules, or
-   * business domains to ensure logical test suite organization and easy
-   * navigation.
-   *
-   * Example: "test/features/common/generate/generate_random_bbs_article.ts",
-   */
-  location: string;
-
-  /**
-   * Complete TypeScript source code content of the resource generation function.
-   *
-   * Contains the full implementation of the function that generates resources
-   * required by test functions. The content is structured as executable TypeScript
-   * code that creates various testing resources needed during test execution.
-   *
-   * The content ensures that test functions have all necessary resources to
-   * execute properly, maintaining consistency with the application's requirements
-   * and constraints. The generation function serves as a critical resource provider
-   * in the test suite, supplying test functions with everything they need for
-   * proper testing.
-   */
-  content: string;
 }
