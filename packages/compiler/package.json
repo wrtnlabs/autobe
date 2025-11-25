@@ -40,6 +40,7 @@
     "prisma-markdown": "catalog:samchon",
     "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
+    "typescript-transform-paths": "catalog:typescript",
     "typia": "catalog:samchon"
   },
   "devDependencies": {

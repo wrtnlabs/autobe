@@ -52,8 +52,8 @@ catalogs:
       specifier: ^2.0.1
       version: 2.0.1
     embed-prisma:
-      specifier: ^3.0.0-dev.20251125
-      version: 3.0.0-dev.20251125
+      specifier: ^3.0.0-dev.20251125-3
+      version: 3.0.0-dev.20251125-3
     embed-typescript:
       specifier: ^2.0.1
       version: 2.0.1
@@ -91,6 +91,9 @@ catalogs:
     typescript:
       specifier: ~5.9.3
       version: 5.9.3
+    typescript-transform-paths:
+      specifier: ^3.5.5
+      version: 3.5.5
   ui:
     '@types/react':
       specifier: ^19.1.10
@@ -304,7 +307,7 @@ importers:
         specifier: catalog:typescript
         version: 5.9.3
       typescript-transform-paths:
-        specifier: ^3.5.5
+        specifier: catalog:typescript
         version: 3.5.5(typescript@5.9.3)
 
   apps/hackathon-ui:
@@ -880,7 +883,7 @@ importers:
         version: 2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.3)
       embed-prisma:
         specifier: catalog:samchon
-        version: 3.0.0-dev.20251125(prisma@7.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.3))(typescript@5.9.3)
+        version: 3.0.0-dev.20251125-3(prisma@7.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.3))(typescript@5.9.3)
       embed-typescript:
         specifier: catalog:samchon
         version: 2.0.1(typescript@5.9.3)
@@ -905,6 +908,9 @@ importers:
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
+      typescript-transform-paths:
+        specifier: catalog:typescript
+        version: 3.5.5(typescript@5.9.3)
       typia:
         specifier: catalog:samchon
         version: 10.1.0(typescript@5.9.3)
@@ -4776,8 +4782,8 @@ packages:
       '@typescript-eslint/parser': '>=8.0.0 <9.0.0'
       eslint: '>=9.0.0 <10.0.0'
 
-  embed-prisma@3.0.0-dev.20251125:
-    resolution: {integrity: sha512-wDXkqwuwPaJcFBwJLf7UgB+gBCcSKJi95Z7Q1gynJ6K8xZ/QWT8NZBthg6o2jw3/TuyRpOQRH6iDToDCxz+hZg==}
+  embed-prisma@3.0.0-dev.20251125-3:
+    resolution: {integrity: sha512-IsuxW7fSbZAWMCzevJuznA44RhZfr9dtMxtLuJDywGv0gj1TRigQ7sb7RWC5PNMM4vSxj54rcCWGPb1eSAH8pQ==}
 
   embed-typescript@2.0.1:
     resolution: {integrity: sha512-vwupt/saSg1CrpUGoL91Xuz7QLkB62O3T4gWmCjQ3mJhERwkxUoKYtnoiyaUnbjlG7TyBSZ8+a9Y4KRSnzIivA==}
@@ -12239,7 +12245,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  embed-prisma@3.0.0-dev.20251125(prisma@7.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.3))(typescript@5.9.3):
+  embed-prisma@3.0.0-dev.20251125-3(prisma@7.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
       '@prisma/client': 7.0.0(prisma@7.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/client-generator-js': 7.0.0(typescript@5.9.3)
