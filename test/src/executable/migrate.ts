@@ -44,8 +44,8 @@ const iterate = async (props: {
           vendor,
           project,
           files: {
-            [`${phase}.histories.json.gz`]: JSON.stringify(histories),
-            [`${phase}.snapshots.json.gz`]: JSON.stringify(snapshots),
+            [`${phase}.histories.json`]: JSON.stringify(histories),
+            [`${phase}.snapshots.json`]: JSON.stringify(snapshots),
           },
         });
       }
