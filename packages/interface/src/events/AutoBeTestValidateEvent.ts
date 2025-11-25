@@ -1,6 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import {
-  AutoBeTestFile,
   AutoBeTestWriteAuthorizationFunction,
   AutoBeTestWriteFunction,
   AutoBeTestWriteGenerationFunction,
@@ -30,25 +29,23 @@ export interface AutoBeTestValidateEvent
   /**
    * Function type indicating the specific test writing operation performed.
    *
-   * This discriminated union represents different stages and types of test
-   * code generation that occur during the test writing process:
+   * This discriminated union represents different stages and types of test code
+   * generation that occur during the test writing process:
    *
-   * - `AutoBeTestWritePrepareFunction`: Generates test data preparation
-   *   functions that create mock DTO objects required by API endpoints
-   * - `AutoBeTestWriteGenerationFunction`: Creates resource generation
-   *   functions that produce test data and utilities needed by test
-   *   scenarios
+   * - `AutoBeTestWritePrepareFunction`: Generates test data preparation functions
+   *   that create mock DTO objects required by API endpoints
+   * - `AutoBeTestWriteGenerationFunction`: Creates resource generation functions
+   *   that produce test data and utilities needed by test scenarios
    * - `AutoBeTestWriteAuthorizationFunction`: Implements authentication and
    *   authorization functions for different actors (login, signup, token
    *   refresh)
-   * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files
-   *   with complete test implementations
+   * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
+   *   complete test implementations
    *
-   * Each function type serves a specific purpose in building comprehensive
-   * test suites, from data preparation through authentication to actual
-   * scenario validation. The discriminated union pattern enables type-safe
-   * handling of different test writing stages while providing detailed
-   * progress tracking.
+   * Each function type serves a specific purpose in building comprehensive test
+   * suites, from data preparation through authentication to actual scenario
+   * validation. The discriminated union pattern enables type-safe handling of
+   * different test writing stages while providing detailed progress tracking.
    */
   function:
     | AutoBeTestWritePrepareFunction
