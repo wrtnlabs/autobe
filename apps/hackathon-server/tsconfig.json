@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "paths": {
-      "@prisma/client": ["./src/prisma/client.ts"],
+      "@prisma/sdk": ["./src/prisma/client.ts"],
     },
     "plugins": [
       { "transform": "@nestia/core/lib/transform" },
