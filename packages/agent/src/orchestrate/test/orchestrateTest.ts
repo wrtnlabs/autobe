@@ -95,13 +95,27 @@ export const orchestrateTest =
               dbms: "sqlite",
             }),
           ).filter(([key]) => key.endsWith(".ts")),
-          ...corrects.map((s) => [s.file.location, s.file.content]),
+          ...corrects.map((s) => [s.function.location, s.function.content]),
         ]),
       });
     return ctx.dispatch({
       type: "testComplete",
       id: v7(),
-      files: corrects.map((s) => s.file),
+      files: corrects.map((s) => {
+        return {
+          scenario: {
+            dependencies: [],
+            draft: s.function.kind === "write" ? s.function.draft : "",
+            endpoint:
+              s.function.kind === "write"
+                ? s.function.scenario.endpoint
+                : s.function.endpoint,
+            functionName: s.function.functionName,
+          },
+          location: s.function.location,
+          content: s.function.content,
+        };
+      }),
       compiled: compileResult,
       aggregates: ctx.getCurrentAggregates("test"),
       step: ctx.state().interface?.step ?? 0,
