@@ -425,7 +425,7 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
   generator client {
     provider     = "prisma-client"
     output       = "../../src/prisma
-    moduleFormat = "cjs""
+    moduleFormat = "cjs"
   }
   datasource db {
     provider = "sqlite"
