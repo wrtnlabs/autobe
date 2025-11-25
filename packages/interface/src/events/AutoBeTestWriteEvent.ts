@@ -1,9 +1,3 @@
-import {
-  AutoBeTestWriteAuthorizationFunction,
-  AutoBeTestWriteFunction,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
-} from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -30,30 +24,56 @@ export interface AutoBeTestWriteEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Function type indicating the specific test writing operation performed.
+   * File system path where the test file should be located.
    *
-   * This discriminated union represents different stages and types of test
-   * code generation that occur during the test writing process:
+   * Specifies the relative or absolute path for the test file within the
+   * project structure. This location typically follows testing conventions and
+   * may be organized by API endpoints, feature modules, or business domains to
+   * ensure logical test suite organization and easy navigation.
    *
-   * - `AutoBeTestWritePrepareFunction`: Generates test data preparation functions
-   *   that create mock DTO objects required by API endpoints
-   * - `AutoBeTestWriteGenerationFunction`: Creates resource generation functions
-   *   that produce test data and utilities needed by test scenarios
-   * - `AutoBeTestWriteAuthorizationFunction`: Implements authentication and
-   *   authorization functions for different actors (login, signup, token refresh)
-   * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
-   *   complete test implementations
-   *
-   * Each function type serves a specific purpose in building comprehensive test
-   * suites, from data preparation through authentication to actual scenario
-   * validation. The discriminated union pattern enables type-safe handling of
-   * different test writing stages while providing detailed progress tracking.
+   * Example: "test/features/api/order/test_api_shopping_order_publish.ts"
    */
-  function:
-    | AutoBeTestWritePrepareFunction
-    | AutoBeTestWriteGenerationFunction
-    | AutoBeTestWriteAuthorizationFunction
-    | AutoBeTestWriteFunction;
+  location: string;
+
+  /**
+   * Test scenario description and implementation strategy.
+   *
+   * Detailed explanation of the business scenario to be tested, including
+   * step-by-step execution plan and test methodology.
+   */
+  scenario: string;
+
+  /**
+   * Functional domain category for test organization.
+   *
+   * Primary API resource domain (e.g., "user", "article", "payment") used for
+   * file structure and logical test grouping.
+   */
+  domain: string;
+
+  /**
+   * Initial test code implementation.
+   *
+   * First working version of the TypeScript E2E test function, implementing the
+   * complete business scenario with proper types and SDK usage.
+   */
+  draft: string;
+
+  /**
+   * Code review feedback and improvement suggestions.
+   *
+   * Quality assessment results identifying issues, best practice violations,
+   * and specific recommendations for code refinement.
+   */
+  review?: string;
+
+  /**
+   * Final production-ready test code.
+   *
+   * Polished implementation incorporating all review feedback, ready for
+   * deployment in the actual test suite.
+   */
+  final?: string;
 
   /**
    * Iteration number of the requirements analysis this test writing reflects.

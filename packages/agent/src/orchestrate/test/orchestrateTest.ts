@@ -80,7 +80,7 @@ export const orchestrateTest =
           scenario: w.scenario,
           artifacts: w.artifacts,
           location: w.event.location,
-          script: w.event.content,
+          script: w.event.final ?? w.event.draft,
         })),
       },
     );

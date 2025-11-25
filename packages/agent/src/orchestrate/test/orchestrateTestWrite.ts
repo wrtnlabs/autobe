@@ -51,17 +51,11 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           instruction: props.instruction,
         });
         ctx.dispatch(event);
-
-        if (event.function.kind !== "write")
-          throw new Error(
-            `Unexpected testWrite function kind: ${event.function.kind}`,
-          );
-
         return {
           scenario,
           artifacts,
-          event: event.function,
-        } satisfies IAutoBeTestWriteResult;
+          event,
+        };
       } catch {
         return null;
       }
@@ -122,16 +116,12 @@ async function process<Model extends ILlmSchema.Model>(
     type: "testWrite",
     id: v7(),
     created_at: new Date().toISOString(),
-    function: {
-      kind: "write",
-      domain: pointer.value.domain,
-      draft: pointer.value.draft,
-      review: pointer.value.revise?.review,
-      content: pointer.value.revise.final ?? pointer.value.draft,
-      functionName: props.scenario.functionName,
-      location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-      scenario,
-    },
+    location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
+    scenario: pointer.value.scenario,
+    domain: pointer.value.domain,
+    draft: pointer.value.draft,
+    review: pointer.value.revise?.review,
+    final: pointer.value.revise?.final ?? undefined,
     metric,
     tokenUsage,
     completed: ++progress.completed,

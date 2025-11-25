@@ -25,8 +25,3 @@ export * from "./AutoBeRealizeAuthorizationProvider";
 export * from "./AutoBeFunctionCallingMetric";
 export * from "./AutoBeProcessAggregateCollection";
 export * from "./AutoBeProcessAggregate";
-
-export * from "./AutoBeTestWriteAuthorizationFunction";
-export * from "./AutoBeTestWritePrepareFunction";
-export * from "./AutoBeTestWriteGenerationFunction";
-export * from "./AutoBeTestWriteFunction";
