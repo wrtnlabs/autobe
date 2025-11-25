@@ -424,7 +424,7 @@ const POSTGRES_MAIN_FILE = StringUtil.trim`
 const SQLITE_MAIN_FILE = StringUtil.trim`
   generator client {
     provider     = "prisma-client"
-    output       = "../../src/prisma
+    output       = "../../src/prisma"
     moduleFormat = "cjs"
   }
   datasource db {
