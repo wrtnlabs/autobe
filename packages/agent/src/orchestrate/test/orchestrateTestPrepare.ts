@@ -235,7 +235,7 @@ const generatePropertyValue = (props: {
       case "integer":
         return generateIntegerValue(schema);
       case "boolean":
-        return "RandomGenerator.boolean()";
+        return "Math.random() < 0.5";
       case "array":
         return generateArrayValue(
           schema as OpenApi.IJsonSchema.IArray,
@@ -267,7 +267,11 @@ const generateStringValue = (schema: OpenApi.IJsonSchema.IString): string => {
   if (schema.format === "uuid") {
     return "RandomGenerator.alphaNumeric(32)";
   }
-  if (schema.format === "uri" || schema.format === "url") {
+  if (
+    schema.format === "uri" ||
+    schema.format === "iri" ||
+    schema.format === "url"
+  ) {
     return `"https://" + RandomGenerator.alphabets(randint(5, 10)) + ".com"`;
   }
 
@@ -279,8 +283,8 @@ const generateNumberValue = (schema: OpenApi.IJsonSchema.INumber): string => {
   const min: number = schema.minimum ?? 0;
   const max: number = schema.maximum ?? 100;
 
-  // For decimal numbers
-  return `RandomGenerator.number(${min}, ${max})`;
+  // For decimal numbers, use Math.random()
+  return `${min} + Math.random() * ${max - min}`;
 };
 
 const generateIntegerValue = (schema: OpenApi.IJsonSchema.IInteger): string => {
@@ -315,5 +319,5 @@ const generateArrayValue = (
 
 const generateEnumValue = (enumValues: any[]): string => {
   const values: string = enumValues.map((v) => JSON.stringify(v)).join(", ");
-  return `ArrayUtil.take([${values}])()`;
+  return `RandomGenerator.pick([${values}])`;
 };
