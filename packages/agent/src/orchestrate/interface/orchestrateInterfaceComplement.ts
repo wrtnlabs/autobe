@@ -151,7 +151,7 @@ async function process<Model extends ILlmSchema.Model>(
     };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: SOURCE,
-      controller: createController({
+      controller: createController(ctx, {
         model: ctx.model,
         build: (next) => {
           pointer.value ??= {};
@@ -196,18 +196,21 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "prismaSchemas"
-    | "interfaceOperations"
-    | "interfaceSchemas"
-  >;
-  build: (
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-  ) => void;
-}): IAgenticaController.IClass<Model> {
+function createController<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    model: Model;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "prismaSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+    >;
+    build: (
+      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+    ) => void;
+  },
+): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (
@@ -237,6 +240,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const errors: IValidation.IError[] = [];
     JsonSchemaValidator.validateSchemas({
       errors,
+      prismaSchemas: new Set(
+        ctx
+          .state()
+          .prisma!.result.data.files.map((f) => f.models.map((m) => m.name))
+          .flat(),
+      ),
       schemas: result.data.request.schemas,
       path: "$input.request.schemas",
     });

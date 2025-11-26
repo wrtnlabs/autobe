@@ -192,6 +192,7 @@ export namespace JsonSchemaFactory {
   
       Collection of records with pagination information.
     `,
+    "x-autobe-prisma-schema": null, // filled by relation review agent
   });
 
   export const fixPage = (path: string, input: unknown): void => {
@@ -221,12 +222,28 @@ export namespace JsonSchemaFactory {
     typeof input === "object" && input !== null;
 }
 
-const DEFAULT_SCHEMAS = typia.assertEquals<
-  Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
->(
-  typia.json.schemas<[IPage.IPagination, IPage.IRequest, IAuthorizationToken]>()
-    .components?.schemas,
-);
+const DEFAULT_SCHEMAS = (() => {
+  const init: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    (typia.json.schemas<
+      [IPage.IPagination, IPage.IRequest, IAuthorizationToken]
+    >().components?.schemas ?? {}) as Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    >;
+  for (const value of Object.values(init))
+    AutoBeOpenApiTypeChecker.visit({
+      components: {
+        schemas: init,
+        authorizations: [],
+      },
+      schema: value,
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isObject(next))
+          next["x-autobe-prisma-schema"] = null;
+      },
+    });
+  return init;
+})();
 
 namespace IPage {
   /** Page information. */
