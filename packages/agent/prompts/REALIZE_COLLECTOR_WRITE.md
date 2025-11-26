@@ -93,7 +93,7 @@ thinking: "Missing Interface schema for DTO structure analysis. Need it."
 thinking: "Implemented collector with nested creates for choices and inventory"
 
 // WRONG - too verbose or listing items
-thinking: "Need shopping_products, shopping_categories, shopping_brands schemas"
+thinking: "Need shopping_sales, shopping_categories, shopping_brands schemas"
 thinking: "Collect id field, name field, price field, created_at field..."
 ```
 
@@ -105,9 +105,9 @@ Generate a **collector module** that provides the essential `collect()` function
 **The collector pattern:**
 ```typescript
 // What you generate
-export namespace ProductCollector {
-  export function collect(props: {
-    body: IProduct.ICreate;
+export namespace ShoppingSaleCollector {
+  export async function collect(props: {
+    body: IShoppingSale.ICreate;
   }) {
     return {
       id: v4(),
@@ -118,19 +118,19 @@ export namespace ProductCollector {
         connect: { id: props.body.categoryId },
       },
       created_at: new Date(),
-    } satisfies Prisma.productsCreateInput;
+    } satisfies Prisma.shopping_salesCreateInput;
   }
 }
 
 // How it gets used
-export async function createProduct(props: {
-  body: IProduct.ICreate;
-}): Promise<IProduct> {
-  const created = await MyGlobal.prisma.products.create({
-    data: ProductCollector.collect({ body: props.body }),
-    ...ProductTransformer.select(),
+export async function createShoppingSale(props: {
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({ body: props.body }),
+    ...ShoppingSaleTransformer.select(),
   });
-  return ProductTransformer.transform(created);
+  return await ShoppingSaleTransformer.transform(created);
 }
 ```
 
@@ -174,8 +174,8 @@ src/
 
 ```typescript
 export namespace {TypeName}Collector {
-  // Collect function: DTO to Prisma CreateInput
-  export function collect(props: {
+  // Collect function: DTO to Prisma CreateInput (async for safety)
+  export async function collect(props: {
     body: {ITypeName}.ICreate;
     // Optional additional props for context
   }) {
@@ -222,7 +222,7 @@ The Operation specification's parameter description will indicate whether it's a
 ```typescript
 // Path parameter: sectionId (UUID PK)
 // Operation description: "Section UUID identifier"
-export function collect(props: {
+export async function collect(props: {
   body: IArticle.ICreate;
   section: IEntity;  // ✅ Resolved from UUID PK
 }) {
@@ -235,7 +235,7 @@ export function collect(props: {
 
 // Path parameter: sectionCode (UK)
 // Operation description: "Section unique code identifier"
-export function collect(props: {
+export async function collect(props: {
   body: IArticle.ICreate;
   section: IEntity;  // ✅ Resolved from UK, but still IEntity
 }) {
@@ -253,7 +253,7 @@ export function collect(props: {
 
 1. **Simple CREATE - body only**:
 ```typescript
-export function collect(props: {
+export async function collect(props: {
   body: IProduct.ICreate;
 }) {
   return {
@@ -266,7 +266,7 @@ export function collect(props: {
 
 2. **CREATE with auth context** (user_id, tenant_id):
 ```typescript
-export function collect(props: {
+export async function collect(props: {
   auth: AuthPayload;
   body: IProduct.ICreate;
 }) {
@@ -281,7 +281,7 @@ export function collect(props: {
 
 3. **Nested CREATE with parent context**:
 ```typescript
-export function collect(props: {
+export async function collect(props: {
   body: IOrderItem.ICreate;
   order: IEntity;  // ✅ Resolved entity, not orderId: string
   sequence: number;  // Position in array
@@ -297,7 +297,7 @@ export function collect(props: {
 
 4. **Complex context** (nested collectors, shared data):
 ```typescript
-export function collect(props: {
+export async function collect(props: {
   body: IShoppingSaleUnitStock.ICreate;
   options: ReturnType<typeof OptionCollector.collect>[];  // Shared context
   sequence: number;
@@ -306,8 +306,9 @@ export function collect(props: {
     id: v4(),
     sequence: props.sequence,
     choices: {
-      create: props.body.choices.map((choice, i) =>
-        ChoiceCollector.collect({
+      create: await ArrayUtil.asyncMap(
+        props.body.choices,
+        (choice, i) => ChoiceCollector.collect({
           body: choice,
           options: props.options,  // Pass shared context down
           sequence: i,
@@ -344,8 +345,8 @@ export function collect(props: {
 
 **Basic Pattern**:
 ```typescript
-export function collect(props: {
-  body: IShoppingProduct.ICreate;
+export async function collect(props: {
+  body: IShoppingSale.ICreate;
 }) {
   return {
     // UUID generation for primary key
@@ -369,28 +370,56 @@ export function collect(props: {
 
     // Nested creates - reuse other Collectors
     tags: {
-      create: props.body.tags.map((tag, i) =>
-        ShoppingTagCollector.collect({
+      create: await ArrayUtil.asyncMap(
+        props.body.tags,
+        (tag, i) => ShoppingSaleTagCollector.collect({
           body: tag,
           sequence: i,
         })
       ),
     },
-  } satisfies Prisma.shopping_productsCreateInput;
+  } satisfies Prisma.shopping_salesCreateInput;
 }
 ```
 
-**Why reuse other Collectors for nested creates?**
+**Best Practice: Reusing Collectors for nested creates**
 
-When your Create DTO contains nested objects to be created (tags, inventory, etc.), those objects have their own Create DTOs and corresponding Collectors. Reusing those Collectors:
+When your Create DTO contains nested objects to be created (tags, inventory, etc.), **prefer reusing** existing Collectors when available. Reusing Collectors:
 - Eliminates code duplication across multiple operations
 - Maintains single responsibility (each Collector handles one Create DTO type)
 - Automatically stays in sync when nested DTO structure changes
 - Ensures consistent UUID generation and field mapping
 
-**Example of what NOT to do:**
+**When to write nested logic directly:**
+
+Sometimes you **must** write nested collection logic directly instead of reusing a Collector:
+
+1. **M:N relationships through join tables**: When a join table exists to resolve a many-to-many relationship, the join table typically has no corresponding DTO or Collector. You must handle the join table inline.
+
+Example: `bbs_articles` M:N `bbs_files` through `bbs_article_files` join table
 ```typescript
-// ❌ Avoid this - manually constructing nested objects
+// DTO: IBbsArticle.files: IBbsFile[]  (no IBbsArticleFile DTO!)
+// No BbsArticleFileCollector exists - must handle join table inline
+
+files: {
+  create: await ArrayUtil.asyncMap(
+    props.body.files,
+    (file, i) => ({
+      id: v4(),
+      sequence: i,
+      file: {
+        connect: { id: file.id },  // Connect to existing bbs_files record
+      },
+    })
+  ),
+},
+```
+
+**Why?** The `bbs_article_files` join table is a database implementation detail, not exposed in the DTO layer. `IBbsArticle` references `IBbsFile[]` directly, so there's no `IBbsArticleFile.ICreate` DTO or corresponding Collector.
+
+**Example of when reuse is better:**
+```typescript
+// ❌ Manually constructing when a Collector exists
 tags: {
   create: props.body.tags.map(tag => ({
     id: v4(),
@@ -398,18 +427,26 @@ tags: {
     created_at: new Date(),
   })),
 },
-// Instead, reuse ShoppingTagCollector.collect({ body: tag, sequence: i })
+
+// ✅ Reuse ShoppingSaleTagCollector when it exists
+tags: {
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag, i) => ShoppingSaleTagCollector.collect({ body: tag, sequence: i })
+  ),
+},
 ```
 
 **Critical Rules**:
-- Use function declaration pattern: `export function collect(...) { return {...} satisfies Type; }`
+- Use async function declaration pattern: `export async function collect(...) { return {...} satisfies Type; }`
 - Return object literal with `satisfies` operator
 - Type validation via `satisfies Prisma.{table}CreateInput`
-- **For nested creates**: Reuse other Collectors' `collect()` functions
+- **For nested creates**: Prefer reusing other Collectors' `collect()` functions with `await ArrayUtil.asyncMap` when the Collector exists
+- For M:N join tables without DTOs: write nested logic inline (no Collector exists)
 - Generate UUIDs with `v4()`
 - Use `new Date()` for timestamp fields
 - Optional fields: use `null`
-- Handle relationships with `connect` (existing) or `create` (new, reuse Collector)
+- Handle relationships with `connect` (existing) or `create` (new, reuse Collector if available)
 - Map camelCase DTO fields to snake_case database columns
 
 ### 3. UUID Generation
@@ -449,12 +486,13 @@ category: {
 Use `create` array when the DTO provides nested objects to create. Always reuse the appropriate Collector for nested creates.
 
 ```typescript
-// DTO: { tags: Array<IShoppingTag.ICreate> }
+// DTO: { tags: Array<IShoppingSaleTag.ICreate> }
 // Prisma: tags relation field
 
 tags: {
-  create: props.body.tags.map((tag, i) =>
-    ShoppingTagCollector.collect({
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag, i) => ShoppingSaleTagCollector.collect({
       body: tag,
       sequence: i,
     })
@@ -464,7 +502,7 @@ tags: {
 
 Avoid manually constructing nested objects:
 ```typescript
-// ❌ Don't do this - duplicates ShoppingTagCollector logic
+// ❌ Don't do this - duplicates ShoppingSaleTagCollector logic
 tags: {
   create: props.body.tags.map(tag => ({
     id: v4(),
@@ -483,7 +521,7 @@ Use `create` object when the DTO provides a nested object to create. Reuse the a
 // Prisma: inventory relation field
 
 inventory: {
-  create: ShoppingInventoryCollector.collect({
+  create: await ShoppingInventoryCollector.collect({
     body: props.body.inventory,
   }),
 },
@@ -546,8 +584,9 @@ category: {
 // BbsArticle has many BbsArticleAttachments
 // Reuse BbsArticleAttachmentCollector
 attachments: {
-  create: props.body.attachments.map((attachment, i) =>
-    BbsArticleAttachmentCollector.collect({
+  create: await ArrayUtil.asyncMap(
+    props.body.attachments,
+    (attachment, i) => BbsArticleAttachmentCollector.collect({
       body: attachment,
       sequence: i,
     })
@@ -560,24 +599,36 @@ attachments: {
 // BbsArticle has one BbsArticleContent
 // Reuse BbsArticleContentCollector
 content: {
-  create: BbsArticleContentCollector.collect({
+  create: await BbsArticleContentCollector.collect({
     body: props.body.content,
   }),
 },
 ```
 
 **ManyToMany (through join table)**: Use `create` with nested `connect`
+
+M:N relationships are resolved through join tables. Since join tables are database implementation details not exposed in DTOs, you must handle them inline (no separate Collector exists).
+
 ```typescript
-// ShoppingProduct has many ShoppingCategories through shopping_product_categories join
+// ShoppingSale M:N ShoppingCategory through shopping_sale_categories join
+// DTO: IShoppingSale.categoryIds: string[] (not ICategoryLink[])
+// No ShoppingSaleCategoryCollector exists - handle join inline
+
 categories: {
-  create: props.body.categoryIds.map(categoryId => ({
-    id: v4(),
-    category: {
-      connect: { id: categoryId },
-    },
-  })),
+  create: await ArrayUtil.asyncMap(
+    props.body.categoryIds,
+    (categoryId, i) => ({
+      id: v4(),
+      sequence: i,
+      category: {
+        connect: { id: categoryId },  // Connect to existing category
+      },
+    })
+  ),
 },
 ```
+
+**Why inline?** The `shopping_sale_categories` join table has no corresponding `IShoppingSaleCategory.ICreate` DTO. The API contract exposes `categoryIds: string[]` directly, so there's no Collector to reuse.
 
 ### 7. Code Style and Conventions
 
@@ -775,7 +826,7 @@ Collection strategy:
     `,
     draft: `
 export namespace ShoppingSaleUnitStockCollector {
-  export function collect(props: {
+  export async function collect(props: {
     options: ReturnType<typeof ShoppingSaleSnapshotUnitOptionCollector.collect>[];
     body: IShoppingSaleUnitStock.ICreate;
     sequence: number;
@@ -785,8 +836,9 @@ export namespace ShoppingSaleUnitStockCollector {
       name: props.body.name,
       sequence: props.sequence,
       choices: {
-        create: props.body.choices.map((value, i) =>
-          ShoppingSaleSnapshotUnitStockChoiceCollector.collect({
+        create: await ArrayUtil.asyncMap(
+          props.body.choices,
+          (value, i) => ShoppingSaleSnapshotUnitStockChoiceCollector.collect({
             options: props.options,
             body: value,
             sequence: i,
@@ -886,7 +938,7 @@ export namespace BbsArticleCollector {
    * - Creates nested attachments (reuses BbsArticleAttachmentCollector)
    * - Sets creation timestamps
    */
-  export function collect(props: {
+  export async function collect(props: {
     auth: AuthPayload;
     body: IBbsArticle.ICreate;
   }) {
@@ -911,7 +963,7 @@ export namespace BbsArticleCollector {
 
       // HasOne relationship - reuse BbsArticleContentCollector
       content: {
-        create: BbsArticleContentCollector.collect({
+        create: await BbsArticleContentCollector.collect({
           body: {
             content: props.body.content,
           },
@@ -920,8 +972,9 @@ export namespace BbsArticleCollector {
 
       // HasMany relationship - reuse BbsArticleAttachmentCollector
       attachments: {
-        create: props.body.attachments.map((attachment, i) =>
-          BbsArticleAttachmentCollector.collect({
+        create: await ArrayUtil.asyncMap(
+          props.body.attachments,
+          (attachment, i) => BbsArticleAttachmentCollector.collect({
             body: attachment,
             sequence: i,
           })
@@ -940,19 +993,19 @@ Collectors work together with Transformers in the complete CRUD flow:
 1. **Collector**: Prepares data for Prisma CREATE/UPDATE (API → DB)
 2. **Transformer**: Converts query results to Response DTOs (DB → API)
 
-The `...ProductTransformer.select()` pattern spreads the select/include object into the Prisma query, ensuring the created record contains exactly the fields needed for transformation.
+The `...ShoppingSaleTransformer.select()` pattern spreads the select/include object into the Prisma query, ensuring the created record contains exactly the fields needed for transformation.
 
 ```typescript
 // In a provider function
-export async function createProduct(props: {
-  body: IProduct.ICreate;
-}): Promise<IProduct> {
-  const created = await MyGlobal.prisma.products.create({
-    data: ProductCollector.collect({ body: props.body }),
-    ...ProductTransformer.select(),  // Spread Transformer's select for proper data fetching
+export async function createShoppingSale(props: {
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({ body: props.body }),
+    ...ShoppingSaleTransformer.select(),  // Spread Transformer's select for proper data fetching
   });
 
-  return ProductTransformer.transform(created);
+  return await ShoppingSaleTransformer.transform(created);
 }
 ```
 
@@ -961,7 +1014,7 @@ export async function createProduct(props: {
 **Before calling `process({ request: { type: "complete", ... } })`, verify ALL items:**
 
 ### Type Safety
-- [ ] Uses function declaration: `export function collect(...) { return {...} satisfies Type; }`
+- [ ] Uses async function declaration: `export async function collect(...) { return {...} satisfies Type; }`
 - [ ] Return statement uses `satisfies Prisma.{table}CreateInput` or `satisfies Prisma.{table}CreateWithout{Parent}Input`
 - [ ] Props structure matches Operation specification (auth, body, params, etc.)
 - [ ] All props properly typed with DTO interfaces
@@ -1030,8 +1083,9 @@ When creating multiple nested records, always reuse the appropriate Collector.
 
 // Reuse BbsArticleTagCollector
 tags: {
-  create: props.body.tags.map((tag, i) =>
-    BbsArticleTagCollector.collect({
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag, i) => BbsArticleTagCollector.collect({
       body: tag,
       sequence: i,
     })
@@ -1069,12 +1123,13 @@ Collectors can be nested multiple levels deep, each reusing appropriate sub-Coll
 ```typescript
 // Reuse ShoppingSaleUnitStockCollector for complex nested data
 stocks: {
-  create: props.body.stocks.map((stock, index) =>
-    ShoppingSaleUnitStockCollector.collect({
+  create: await ArrayUtil.asyncMap(
+    props.body.stocks,
+    (stock, index) => ShoppingSaleUnitStockCollector.collect({
       body: stock,
       sequence: index,
       additionalContext: props.someContext,
-    }),
+    })
   ),
 },
 ```
@@ -1087,18 +1142,22 @@ sale: {
   create: {
     id: v4(),
     units: {
-      create: props.body.units.map((unit, unitIndex) => ({
-        id: v4(),
-        sequence: unitIndex,
-        stocks: {
-          create: unit.stocks.map((stock, stockIndex) =>
-            StockCollector.collect({
-              body: stock,
-              sequence: stockIndex,
-            }),
-          ),
-        },
-      })),
+      create: await ArrayUtil.asyncMap(
+        props.body.units,
+        async (unit, unitIndex) => ({
+          id: v4(),
+          sequence: unitIndex,
+          stocks: {
+            create: await ArrayUtil.asyncMap(
+              unit.stocks,
+              (stock, stockIndex) => StockCollector.collect({
+                body: stock,
+                sequence: stockIndex,
+              })
+            ),
+          },
+        })
+      ),
     },
   },
 },
@@ -1109,8 +1168,8 @@ sale: {
 ### MISTAKE 1: Missing satisfies Operator
 ```typescript
 // WRONG - No satisfies
-export function collect(props: {
-  body: IProduct.ICreate;
+export async function collect(props: {
+  body: IShoppingSale.ICreate;
 }) {
   return {
     id: v4(),
@@ -1119,13 +1178,13 @@ export function collect(props: {
 }
 
 // CORRECT - With satisfies
-export function collect(props: {
-  body: IProduct.ICreate;
+export async function collect(props: {
+  body: IShoppingSale.ICreate;
 }) {
   return {
     id: v4(),
     name: props.body.name,
-  } satisfies Prisma.productsCreateInput;
+  } satisfies Prisma.shopping_salesCreateInput;
 }
 ```
 
@@ -1142,7 +1201,7 @@ export function collect(props: {
   id: v4(),
   name: props.body.name,
   created_at: new Date(),
-}
+} satisfies Prisma.shopping_salesCreateInput;
 ```
 
 ### MISTAKE 3: Incorrect Relationship Syntax

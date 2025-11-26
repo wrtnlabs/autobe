@@ -89,10 +89,10 @@ This is a required self-reflection step that helps you:
 ```typescript
 // CORRECT - brief, focused on gap or accomplishment
 thinking: "Missing Interface schema for DTO structure analysis. Need it."
-thinking: "Mapped DTO to shopping_products table, implemented select+transform with relations"
+thinking: "Mapped DTO to shopping_sales table, implemented select+transform with relations"
 
 // WRONG - too verbose or listing items
-thinking: "Need shopping_products, shopping_categories, shopping_brands schemas"
+thinking: "Need shopping_sales, shopping_categories, shopping_brands schemas"
 thinking: "Transform id field, name field, price field, created_at field..."
 ```
 
@@ -105,8 +105,8 @@ Generate a **transformer module** that provides two essential functions:
 **The transformer pattern:**
 ```typescript
 // What you generate
-export namespace ProductTransformer {
-  export async function transform(input: Payload): Promise<IProduct> {
+export namespace ShoppingSaleTransformer {
+  export async function transform(input: Payload): Promise<IShoppingSale> {
     // DB -> API transformation logic
   }
 
@@ -114,17 +114,17 @@ export namespace ProductTransformer {
     // Returns select/include specification, or empty object
   }
 
-  type Payload = Prisma.productsGetPayload<ReturnType<typeof select>>;
+  type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 }
 
 // How it gets used
-const record = await MyGlobal.prisma.products.findFirstOrThrow({
-  ...ProductTransformer.select(),  // Spread: works with select, include, or {}
+const record = await MyGlobal.prisma.shopping_sales.findFirstOrThrow({
+  ...ShoppingSaleTransformer.select(),  // Spread: works with select, include, or {}
   where: {
     id: "some-uuid-value"
   }
 });
-return await ProductTransformer.transform(record);
+return await ShoppingSaleTransformer.transform(record);
 ```
 
 ## Input Information
@@ -142,8 +142,8 @@ You will receive:
 
 1. **Analyze the DTO name pattern**:
    - `IShoppingSaleUnitStock` -> likely `shopping_sale_snapshot_unit_stocks` or `shopping_sale_unit_stocks`
-   - `IUser` -> likely `users` or `user_accounts`
-   - `IProduct` -> likely `products` or `product_items`
+   - `IShoppingSale` -> likely `shopping_sales` or `shopping_sale_snapshots`
+   - `IBbsArticle` -> likely `bbs_articles` or `bbs_article_snapshots`
 
 2. **Request Prisma schemas** based on your hypothesis:
    ```typescript
@@ -254,23 +254,52 @@ export function select() {
 }
 ```
 
-**Why reuse other Transformers for nested relations?**
+**Best Practice: Reusing Transformers for nested relations**
 
-Transformers are designed for modularization and code reuse. When a DTO has nested objects, those nested objects have their own Transformers. Reusing their `select()` functions:
+When a DTO has nested objects, **prefer reusing** existing Transformers' `select()` functions when available. Reusing Transformers:
 - Eliminates code duplication
 - Maintains single responsibility (each Transformer owns its own selection logic)
 - Automatically stays in sync when nested DTO requirements change
 
-**Example of what NOT to do:**
+**When to write selection logic directly:**
+
+Sometimes you **must** write nested selection logic directly instead of reusing a Transformer:
+
+1. **M:N relationships through join tables**: When a join table exists to resolve a many-to-many relationship, the join table typically has no corresponding DTO or Transformer. You must handle the join table selection inline.
+
+Example: `bbs_articles` M:N `bbs_files` through `bbs_article_files` join table
 ```typescript
-// ❌ Avoid this - manually duplicating nested selection logic
+// DTO: IBbsArticle.files: IBbsFile[]  (no IBbsArticleFile DTO!)
+// No BbsArticleFileTransformer exists - must handle join table inline
+
+// In select()
+files: {
+  select: {
+    file: {
+      select: {
+        id: true,
+        name: true,
+        url: true,
+      },
+    },
+  },
+},
+```
+
+**Why?** The `bbs_article_files` join table is a database implementation detail, not exposed in the DTO layer. `IBbsArticle` references `IBbsFile[]` directly, so there's no `IBbsArticleFile` DTO or corresponding Transformer.
+
+**Example of when reuse is better:**
+```typescript
+// ❌ Manually duplicating when a Transformer exists
 category: {
   select: {
     id: true,
     name: true,
   },
 },
-// Instead, reuse ShoppingCategoryTransformer.select()
+
+// ✅ Reuse ShoppingCategoryTransformer.select() when it exists
+category: ShoppingCategoryTransformer.select(),
 ```
 
 **Pattern 2: Using `include` (when loading full related entities)**
@@ -313,7 +342,7 @@ export function select() {
 
 **Basic Pattern**:
 ```typescript
-export async function transform(input: Payload): Promise<IShoppingProduct> {
+export async function transform(input: Payload): Promise<IShoppingSale> {
   return {
     // Direct field mapping (rename snake_case -> camelCase)
     id: input.id,
@@ -351,37 +380,65 @@ brand: input.brand
 **3. Array of nested objects:**
 ```typescript
 // When DTO has array of nested objects
-tags: await Promise.all(
-  input.tags.map(ShoppingTagTransformer.transform)
+tags: await ArrayUtil.asyncMap(
+  input.tags,
+  ShoppingSaleTagTransformer.transform
 ),
 ```
 
-**Why reuse other Transformers for nested objects?**
+**Best Practice: Reusing Transformers for nested objects**
 
-When your DTO contains nested objects (category, tags, etc.), those objects have their own DTO types and corresponding Transformers. Reusing those Transformers:
+When your DTO contains nested objects (category, tags, etc.), **prefer reusing** existing Transformers when available. Reusing Transformers:
 - Eliminates code duplication across multiple endpoints
 - Maintains single responsibility (each Transformer handles one DTO type)
 - Automatically stays in sync when nested DTO structure changes
 
-**Example of what NOT to do:**
+**When to write transformation logic directly:**
+
+Sometimes you **must** write nested transformation logic directly instead of reusing a Transformer:
+
+1. **M:N relationships through join tables**: When a join table exists to resolve a many-to-many relationship, the join table typically has no corresponding DTO or Transformer. You must handle the join table transformation inline.
+
+Example: `bbs_articles` M:N `bbs_files` through `bbs_article_files` join table
 ```typescript
-// ❌ Avoid this - manually mapping nested object fields
+// DTO: IBbsArticle.files: IBbsFile[]  (no IBbsArticleFile DTO!)
+// No BbsArticleFileTransformer exists - must handle join table inline
+
+// In transform()
+files: await ArrayUtil.asyncMap(
+  input.files,
+  async (af) => ({
+    id: af.file.id,
+    name: af.file.name,
+    url: af.file.url,
+  })
+),
+```
+
+**Why?** The `bbs_article_files` join table is a database implementation detail. The DTO exposes `files: IBbsFile[]` directly, so you must map through the join table (`af.file`) to extract the actual file data.
+
+**Example of when reuse is better:**
+```typescript
+// ❌ Manually mapping when a Transformer exists
 category: {
   id: input.category.id,
   name: input.category.name,
 },
-// Instead, reuse ShoppingCategoryTransformer.transform(input.category)
+
+// ✅ Reuse ShoppingCategoryTransformer.transform() when it exists
+category: await ShoppingCategoryTransformer.transform(input.category),
 ```
 
 **Critical Rules**:
 - Function MUST be `async` and return `Promise<{ITypeName}>` for safety
 - Parameter type MUST be `Payload` (the type alias you defined)
 - Return type MUST be the exact DTO interface type wrapped in Promise
-- **For nested objects**: Reuse other Transformers' `transform()` functions
+- **For nested objects**: Prefer reusing other Transformers' `transform()` functions when the Transformer exists
+- For M:N join tables without DTOs: write nested transformation inline (no Transformer exists)
 - Handle nullable fields according to DTO requirements (see NULL vs UNDEFINED section below)
 - Convert Date objects to ISO strings: `input.created_at.toISOString()`
 - For optional nested objects: check existence before calling transformer
-- For arrays of nested objects: use `Promise.all` with `.map(Transformer.transform)`
+- For arrays of nested objects: use `ArrayUtil.asyncMap` with array and `Transformer.transform` (or inline for join tables)
 
 ## 🚨 CRITICAL: NULL vs UNDEFINED Handling
 
@@ -534,12 +591,12 @@ tags: input.tags.map(tag => ({
 **Nested transformer reuse**:
 ```typescript
 // In select()
-products: {
-  select: ProductTransformer.select(),
+sales: {
+  select: ShoppingSaleTransformer.select(),
 },
 
 // In transform()
-products: input.products.map(ProductTransformer.transform),
+sales: await ArrayUtil.asyncMap(input.sales, ShoppingSaleTransformer.transform),
 ```
 
 ### 6. Common Field Transformations
@@ -894,7 +951,7 @@ export async function getBbsArticles(): Promise<IBbsArticle[]> {
     ...BbsArticleTransformer.select(),  // Spread pattern
   });
 
-  return await Promise.all(articles.map(BbsArticleTransformer.transform));
+  return await ArrayUtil.asyncMap(articles, BbsArticleTransformer.transform);
 }
 ```
 
@@ -1027,7 +1084,7 @@ export type Payload = {
 };
 
 // CORRECT - Derived from Prisma
-export type Payload = Prisma.productsGetPayload<{
+export type Payload = Prisma.shopping_salesGetPayload<{
   select: ReturnType<typeof select>;
 }>;
 ```
@@ -1074,14 +1131,14 @@ createdAt: input.created_at.toISOString(),
 // WRONG - Selecting everything
 export function select() {
   return {
-    products: true,  // Loads ALL fields!
+    sales: true,  // Loads ALL fields!
   } as const;
 }
 
 // CORRECT - Select only what's needed
 export function select() {
   return {
-    products: {
+    sales: {
       select: {
         id: true,
         name: true,
