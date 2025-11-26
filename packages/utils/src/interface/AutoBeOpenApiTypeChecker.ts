@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 
 export namespace AutoBeOpenApiTypeChecker {
   export const isArray = (
@@ -40,4 +41,57 @@ export namespace AutoBeOpenApiTypeChecker {
     schema: AutoBeOpenApi.IJsonSchema,
   ): schema is AutoBeOpenApi.IJsonSchema.IString =>
     (schema as AutoBeOpenApi.IJsonSchema.IString).type === "string";
+
+  export const visit = (props: {
+    components: AutoBeOpenApi.IComponents;
+    schema: AutoBeOpenApi.IJsonSchema;
+    closure: (schema: AutoBeOpenApi.IJsonSchema, accessor: string) => void;
+  }): void =>
+    OpenApiTypeChecker.visit({
+      components: props.components,
+      schema: props.schema,
+      closure: (schema, accessor) => {
+        props.closure(schema as any, accessor);
+      },
+    });
+
+  export const skim = (props: {
+    closure: (schema: AutoBeOpenApi.IJsonSchema, accessor: string) => void;
+    schema: AutoBeOpenApi.IJsonSchema;
+    accessor: string;
+  }): void => {
+    props.closure(props.schema, props.accessor);
+    if (isOneOf(props.schema))
+      props.schema.oneOf.forEach((sub, index) =>
+        skim({
+          closure: props.closure,
+          schema: sub,
+          accessor: `${props.accessor}.oneOf[${index}]`,
+        }),
+      );
+    else if (isArray(props.schema))
+      skim({
+        closure: props.closure,
+        schema: props.schema.items,
+        accessor: `${props.accessor}.items`,
+      });
+    else if (isObject(props.schema)) {
+      if (
+        typeof props.schema.additionalProperties === "object" &&
+        props.schema.additionalProperties !== null
+      )
+        skim({
+          closure: props.closure,
+          schema: props.schema.additionalProperties,
+          accessor: `${props.accessor}.additionalProperties`,
+        });
+      for (const [key, value] of Object.entries(props.schema.properties))
+        if (value)
+          skim({
+            closure: props.closure,
+            schema: value,
+            accessor: `${props.accessor}.properties[${JSON.stringify(key)}]`,
+          });
+    }
+  };
 }

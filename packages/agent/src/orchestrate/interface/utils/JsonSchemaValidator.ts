@@ -7,13 +7,14 @@ import { Escaper } from "typia/lib/utils/Escaper";
 export namespace JsonSchemaValidator {
   export interface IProps {
     errors: IValidation.IError[];
+    prismaSchemas: Set<string>;
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     path: string;
   }
 
   export const validateSchemas = (props: IProps): void => {
     validateAuthorization(props);
-    validatePrismaSchema(props.errors);
+    validatePrismaSchema(props);
     validateRecursive(props);
     for (const key of Object.keys(props.schemas)) {
       validateKey({
@@ -176,8 +177,9 @@ export namespace JsonSchemaValidator {
     }
   };
 
-  const validatePrismaSchema = (errors: IValidation.IError[]): void => {
-    for (const e of errors) {
+  const validatePrismaSchema = (props: IProps): void => {
+    // fulfill error messages for "x-autobe-prisma-schema" misplacement
+    for (const e of props.errors) {
       if (e.path.endsWith(`.properties["x-autobe-prisma-schema"]`) === false)
         continue;
       e.expected =
@@ -201,6 +203,38 @@ export namespace JsonSchemaValidator {
         )} 
       `;
     }
+    // check prisma schema existence
+    for (const [key, value] of Object.entries(props.schemas))
+      AutoBeOpenApiTypeChecker.skim({
+        schema: value,
+        accessor: `${props.path}[${JSON.stringify(key)}]`,
+        closure: (schema, accessor) => {
+          if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
+          else if (
+            schema["x-autobe-prisma-schema"] !== null &&
+            schema["x-autobe-prisma-schema"] !== undefined &&
+            props.prismaSchemas.has(schema["x-autobe-prisma-schema"]) === false
+          )
+            props.errors.push({
+              path: accessor,
+              expected: Array.from(props.prismaSchemas)
+                .map((s) => JSON.stringify(s))
+                .join(" | "),
+              value: schema["x-autobe-prisma-schema"],
+              description: StringUtil.trim`
+                You've referenced a non-existing Prisma schema name
+                ${JSON.stringify(schema["x-autobe-prisma-schema"])} in
+                "x-autobe-prisma-schema" property.
+
+                Make sure that the referenced Prisma schema name exists
+                in your Prisma schema files.
+
+                Existing Prisma schema names are:
+                - ${Array.from(props.prismaSchemas).join("\n- ")}
+              `,
+            });
+        },
+      });
   };
 
   const validateRecursive = (props: IProps): void => {

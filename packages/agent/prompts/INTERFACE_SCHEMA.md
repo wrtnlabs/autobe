@@ -727,31 +727,43 @@ async update(
 
 **WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code.
 
-#### 2.2.2. x-autobe-prisma-schema Validation
+#### 2.2.2. `x-autobe-prisma-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
 
 **PURPOSE**: This field links OpenAPI schemas to their corresponding Prisma models for validation.
 
-**USAGE**:
-- Present in ANY schema type that maps to a Prisma model
-- Includes: `IEntity`, `IEntity.ISummary`, `IEntity.ICreate`, `IEntity.IUpdate`
-- EXCLUDES: `IEntity.IRequest` (query params), `IPageIEntity` (wrapper), system types
+**CRITICAL: OBJECT TYPE SCHEMAS ONLY**
 
-**FORMAT**: `"x-autobe-prisma-schema": "PrismaModelName"` (exact model name from Prisma schema)
+This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
+- ✅ **APPLIES TO**: Object type schemas (`"type": "object"`)
+- ❌ **DOES NOT APPLY TO**: Primitive types, array types, enum types, or any non-object type
+
+**TYPE SAFETY**:
+- Type: `string | null` (enforced at TypeScript level)
+- `undefined` is **NOT POSSIBLE** (prevented by type system)
+- This field is **MANDATORY** for all object type schemas
+- Non-object types do NOT have this field
+
+**USAGE**:
+- Present in ANY object type schema that maps to a Prisma model
+- Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
+- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
+
+**FORMAT**: `"`x-autobe-prisma-schema`": "PrismaModelName"` (exact model name from Prisma schema) or `null`
 
 **VALIDATION PROCESS**:
-1. **Check for x-autobe-prisma-schema field**: If present, it indicates direct Prisma model mapping
-2. **Verify every property**: Each property in the schema MUST exist in the referenced Prisma model
+1. **Check for `x-autobe-prisma-schema` field**: If present in an object type schema, it indicates direct Prisma model mapping (string) or no mapping (null)
+2. **Verify every property** (when value is a string): Each property in the schema MUST exist in the referenced Prisma model
    - Exception: Computed/derived fields explicitly calculated from existing fields
    - Exception: Relation fields populated via joins
 3. **Timestamp Verification**:
-   - If `"x-autobe-prisma-schema": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
+   - If `"`x-autobe-prisma-schema`": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
    - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked Prisma model
 
 **Example**:
 ```json
-// If Prisma User model only has: id, email, name, created_at
+// If a DB schema only has: id, email, name, created_at
 {
-  "IUser": {
+  "IShoppingCustomer": {
     "type": "object",
     "properties": {
       "id": { "type": "string" },
@@ -761,7 +773,7 @@ async update(
       "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in Prisma
       "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in Prisma
     },
-    "x-autobe-prisma-schema": "User"
+    "x-autobe-prisma-schema": "shopping_customers"
   }
 }
 ```
@@ -1206,7 +1218,7 @@ All IPage types MUST follow this exact structure:
 3. You MUST NEVER modify or remove the `pagination` and `data` properties
 4. The `data` property is ALWAYS an array type
 5. The array items reference the type indicated in the IPage name
-6. **CRITICAL**: NEVER use any[] - always specify the exact type (e.g., `IEntity.ISummary[]`)
+6. **CRITICAL**: NEVER use any[] - always specify the exact type (e.g., `IEntityName.ISummary[]`)
 
 ### 3.5. Authorization Response Types (IAuthorized)
 
@@ -1270,9 +1282,9 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 **Operation Naming Patterns**:
 
-1. **`IEntity.ILogin`**: Always includes session context (self-login)
-2. **`IEntity.IJoin`**: Always includes session context (self-signup with immediate login)
-3. **`IEntity.ICreate`**: Context-dependent
+1. **`IEntityName.ILogin`**: Always includes session context (self-login)
+2. **`IEntityName.IJoin`**: Always includes session context (self-signup with immediate login)
+3. **`IEntityName.ICreate`**: Context-dependent
    - If used for **self-signup** → Include session context
    - If used by **admin/system** → Do NOT include session context
    - Check `operation.authorizationActor` to determine context
@@ -1404,9 +1416,9 @@ interface IUser.ICreate {
 **How to Determine if Session Context is Needed**:
 
 1. **Check operation type**:
-   - `IEntity.ILogin` → ALWAYS include
-   - `IEntity.IJoin` → ALWAYS include
-   - `IEntity.ICreate` → Check authorization context (step 2)
+   - `IEntityName.ILogin` → ALWAYS include
+   - `IEntityName.IJoin` → ALWAYS include
+   - `IEntityName.ICreate` → Check authorization context (step 2)
 
 2. **Check `operation.authorizationActor`**:
    - `null` or matches entity type (e.g., "user" for IUser.ICreate) → Self-signup → INCLUDE
@@ -1417,9 +1429,9 @@ interface IUser.ICreate {
    - Will user login later? → EXCLUDE
 
 **When to Include These Fields**:
-- ✅ Self-login operations (`IEntity.ILogin`)
-- ✅ Self-signup operations (`IEntity.IJoin`)
-- ✅ Self-registration for actor entities (`IEntity.ICreate` without admin authorization)
+- ✅ Self-login operations (`IEntityName.ILogin`)
+- ✅ Self-signup operations (`IEntityName.IJoin`)
+- ✅ Self-registration for actor entities (`IEntityName.ICreate` without admin authorization)
 - ✅ Any operation where **the actor themselves** establishes their own session
 - ❌ Admin/system creating accounts for others
 - ❌ Token refresh operations (reuses existing session)
@@ -2582,12 +2594,12 @@ interface IBbsArticle {
 
 ##### 4.4.4.1. Understanding Detail vs Summary Response DTOs
 
-**Detail Response DTOs (Main Entity Type - `IEntity`)**:
+**Detail Response DTOs (Main Entity Type - `IEntityName`)**:
 - **Purpose**: Complete entity representation for single-entity retrieval (GET /entities/:id)
 - **Use Case**: Displaying full entity detail page
 - **Relation Strategy**: Include BOTH belongs-to references AND has-many/has-one compositions
 
-**Summary Response DTOs (`IEntity.ISummary`)**:
+**Summary Response DTOs (`IEntityName.ISummary`)**:
 - **Purpose**: Lightweight representation for lists and embeddings (GET /entities)
 - **Use Case**: Displaying entity in list views or as reference in other entities
 - **Relation Strategy**: Include ONLY belongs-to references, EXCLUDE has-many compositions
@@ -3710,7 +3722,7 @@ interface IShoppingSaleReview.IInvert {
 
 Each DTO type serves a specific purpose with distinct restrictions on what properties should or should not be included.
 
-### 5.1. Main Entity Types (IEntity) - Response DTOs
+### 5.1. Main Entity Types (IEntityName) - Response DTOs
 
 **Purpose**: Full entity representation returned from single-item queries (GET /entity/:id)
 
@@ -3733,7 +3745,7 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
 - Apply field-level permissions based on user role
 - Consider separate DTOs for different user roles (IUser vs IUserAdmin)
 
-### 5.2. Create DTOs (IEntity.ICreate) - Request bodies for POST
+### 5.2. Create DTOs (IEntityName.ICreate) - Request bodies for POST
 
 **Purpose**: Data required to create new entities
 
@@ -3791,7 +3803,7 @@ interface IBbsArticle.ICreate {
 }
 ```
 
-### 5.3. Update DTOs (IEntity.IUpdate) - Request bodies for PUT
+### 5.3. Update DTOs (IEntityName.IUpdate) - Request bodies for PUT
 
 **Purpose**: Fields that can be modified after creation
 
@@ -3832,7 +3844,7 @@ interface IBbsArticle.IUpdate {
 }
 ```
 
-### 5.4. Summary DTOs (IEntity.ISummary) - Optimized for list views
+### 5.4. Summary DTOs (IEntityName.ISummary) - Optimized for list views
 
 **Purpose**: Lightweight representation for lists, embeddings, and references.
 
@@ -3843,7 +3855,7 @@ interface IBbsArticle.IUpdate {
 
 **CRITICAL DISTINCTION**: Response DTOs come in two forms with different relation inclusion rules:
 
-#### Detail Response DTOs (Default Type - IEntity)
+#### Detail Response DTOs (Default Type - IEntityName)
 
 **Purpose**: Complete entity representation for single-entity retrieval (GET /entities/:id).
 
@@ -3878,7 +3890,7 @@ interface IShoppingSale {
 }
 ```
 
-#### Summary Response DTOs (IEntity.ISummary)
+#### Summary Response DTOs (IEntityName.ISummary)
 
 **Purpose**: Efficient representation for lists and embeddings (GET /entities).
 
@@ -3940,7 +3952,7 @@ interface IShoppingSale.ISummary {
 - Summary DTO: ~5-15KB per entity (3-10x smaller)
 - For list of 20 items: 1MB vs 100-300KB
 
-### 5.5. Search/Filter DTOs (IEntity.IRequest) - Query parameters
+### 5.5. Search/Filter DTOs (IEntityName.IRequest) - Query parameters
 
 **Purpose**: Parameters for filtering, sorting, and pagination
 
@@ -3970,7 +3982,7 @@ interface IUser.IRequest {
 }
 ```
 
-### 5.6. Role-Specific DTOs (IEntity.IPublic, IEntity.IAdmin)
+### 5.6. Role-Specific DTOs (IEntityName.IPublic, IEntityName.IAdmin)
 
 **Purpose**: Different views based on user permissions
 
@@ -3986,7 +3998,7 @@ interface IUser.IRequest {
 - Include system flags and metadata
 - Still exclude passwords and tokens
 
-### 5.7. Auth DTOs (IEntity.IAuthorized, IEntity.ILogin)
+### 5.7. Auth DTOs (IEntityName.IAuthorized, IEntityName.ILogin)
 
 **Purpose**: Authentication-related operations
 
@@ -3999,7 +4011,7 @@ interface IUser.IRequest {
 - FORBIDDEN: `password`, `salt`, refresh tokens in body
 - Refresh tokens should be in secure HTTP-only cookies
 
-### 5.8. Aggregate DTOs (IEntity.IStats, IEntity.ICount)
+### 5.8. Aggregate DTOs (IEntityName.IStats, IEntityName.ICount)
 
 **Purpose**: Statistical and analytical data
 
@@ -4181,7 +4193,7 @@ interface IBbsArticle.IUpdate {
 2. **Define Main Entity Schema** (`IEntityName`):
    - Include all public-facing fields from Prisma
    - **CRITICAL**: Verify each timestamp field exists in Prisma (don't assume)
-   - Add `"x-autobe-prisma-schema": "PrismaModelName"` for direct table mapping
+   - Add `"`x-autobe-prisma-schema`": "PrismaModelName"` for direct table mapping
    - Apply security filtering - remove sensitive fields
    - Document thoroughly with descriptions from Prisma schema
 
@@ -4199,7 +4211,7 @@ interface IBbsArticle.IUpdate {
      - **Step 2**: Classify each FK:
        - Direct Parent (Has relation inverse) → Keep as ID
        - Associated Reference (Actor/Category/Organization) → Transform to object
-     - **Step 3**: For Response DTOs (IEntity, ISummary):
+     - **Step 3**: For Response DTOs (IEntityName, ISummary):
        - Transform ALL associated reference FKs to objects
        - Keep direct parent FKs as IDs (prevent circular references)
      - **Step 4**: For Request DTOs (ICreate, IUpdate):
@@ -4251,7 +4263,7 @@ interface IBbsArticle.IUpdate {
      - Never both parent and children arrays
      - Add `x-autobe-prisma-schema` linkage
 
-5. **Validation When x-autobe-prisma-schema Is Present**:
+5. **Validation When `x-autobe-prisma-schema` Is Present**:
    - Verify EVERY property exists in the referenced Prisma model
    - Double-check timestamp fields existence
    - Ensure no phantom fields are introduced
@@ -4373,7 +4385,7 @@ interface IBbsArticle.IUpdate {
 - [ ] Every property exists in Prisma schema - no assumptions
 - [ ] Timestamp fields verified individually per table
 - [ ] No phantom fields that would require database changes
-- [ ] x-autobe-prisma-schema linkage added for all applicable types
+- [ ] `x-autobe-prisma-schema` linkage added for all applicable types
 
 **F. Security Verification**:
 
@@ -4503,7 +4515,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   // Main entity types
   IBbsArticle: {
     type: "object",
-    "x-autobe-prisma-schema": "bbs_articles",  // Maps to Prisma model
+    "`x-autobe-prisma-schema`": "bbs_articles",  // Maps to Prisma model
     properties: {
       id: {
         type: "string",
@@ -4558,7 +4570,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   // Variant types
   "IBbsArticle.ICreate": {
     type: "object",
-    "x-autobe-prisma-schema": "bbs_articles",
+    "`x-autobe-prisma-schema`": "bbs_articles",
     properties: {
       title: { type: "string" },
       content: { type: "string" },
@@ -4570,7 +4582,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
   "IBbsArticle.IUpdate": {
     type: "object",
-    "x-autobe-prisma-schema": "bbs_articles",
+    "`x-autobe-prisma-schema`": "bbs_articles",
     properties: {
       title: { type: "string" },
       content: { type: "string" }
@@ -4580,7 +4592,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
   "IBbsArticle.ISummary": {
     type: "object",
-    "x-autobe-prisma-schema": "bbs_articles",
+    "`x-autobe-prisma-schema`": "bbs_articles",
     properties: {
       id: { type: "string" },
       title: { type: "string" },
@@ -4592,7 +4604,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
   "IBbsArticle.IRequest": {
     type: "object",
-    // NO x-autobe-prisma-schema - query params, not table mapping
+    // NO `x-autobe-prisma-schema` - query params, not table mapping
     properties: {
       page: { type: "integer" },
       limit: { type: "integer" },
@@ -4731,7 +4743,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
    - Apply security filters BEFORE adding business fields
    - Apply relation classification rules consistently
    - Document all definitions and properties thoroughly
-   - Add x-autobe-prisma-schema linkage for all applicable types
+   - Add `x-autobe-prisma-schema` linkage for all applicable types
    - Verify timestamp fields individually against Prisma schema
 
 5. **Verification**:
@@ -4770,8 +4782,8 @@ Before completing the schema generation, verify ALL of the following items:
   - **VERIFY**: Check each table individually in the Prisma schema
   - **NEVER**: Add timestamps just because other tables have them
 - [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
-- [ ] **x-autobe-prisma-schema linkage** - Add this field for ANY types that map to Prisma models
-- [ ] **Validate with x-autobe-prisma-schema** - When this field is present:
+- [ ] **`x-autobe-prisma-schema` linkage** - Add this field for ANY types that map to Prisma models
+- [ ] **Validate with `x-autobe-prisma-schema`** - When this field is present:
   - Every property MUST exist in the referenced Prisma model (except computed fields)
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly
@@ -4803,10 +4815,10 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **No authentication bypass** - User identity MUST come from JWT/session, not request body
 
 ### ✅ Session Context Fields for Authentication Operations
-- [ ] **Self-login includes session context** - `IEntity.ILogin` MUST include `href`, `referrer` (required) and `ip` (optional)
-- [ ] **Self-signup includes session context** - `IEntity.IJoin` MUST include `href`, `referrer` (required) and `ip` (optional)
-- [ ] **Context-aware for ICreate** - Self-signup `IEntity.ICreate` (authorizationActor: null) includes session context
-- [ ] **Admin-created accounts exclude session context** - `IEntity.ICreate` with admin authorization does NOT include `ip`, `href`, `referrer`
+- [ ] **Self-login includes session context** - `IEntityName.ILogin` MUST include `href`, `referrer` (required) and `ip` (optional)
+- [ ] **Self-signup includes session context** - `IEntityName.IJoin` MUST include `href`, `referrer` (required) and `ip` (optional)
+- [ ] **Context-aware for ICreate** - Self-signup `IEntityName.ICreate` (authorizationActor: null) includes session context
+- [ ] **Admin-created accounts exclude session context** - `IEntityName.ICreate` with admin authorization does NOT include `ip`, `href`, `referrer`
 - [ ] **IP field is optional** - `ip` field typed as `ip?: string | null | undefined` (server can extract)
 - [ ] **href/referrer are required** - `href` and `referrer` marked as required strings in self-authentication DTOs
 - [ ] **Proper field descriptions** - Session context fields described as connection metadata, not authentication data
@@ -4818,7 +4830,7 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **No internal fields exposed** - Exclude `is_deleted`, `internal_status`, `debug_info` from responses
 
 ### ✅ DTO Type Completeness
-- [ ] **Main entity type defined** - `IEntity` with all non-sensitive fields
+- [ ] **Main entity type defined** - `IEntityName` with all non-sensitive fields
 - [ ] **Create DTO minimal** - Only required business fields, no system fields
 - [ ] **Update DTO all optional** - Every field optional, no ownership changes allowed
 - [ ] **Summary DTO optimized** - Only essential fields for list views, no strong relations
@@ -4922,9 +4934,9 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 13.2. Schema Generation Compliance
-- [ ] ALL schema naming follows conventions (IEntity, IEntity.ICreate, IEntity.ISummary, etc.)
+- [ ] ALL schema naming follows conventions (IEntityName, IEntityName.ICreate, IEntityName.ISummary, etc.)
 - [ ] Security-first design applied (actor fields, passwords, system fields)
-- [ ] Database-schema consistency verified via x-autobe-prisma-schema
+- [ ] Database-schema consistency verified via `x-autobe-prisma-schema`
 - [ ] ALL relations use $ref (ZERO inline object definitions)
 - [ ] Schema structure principle followed (all schemas at root level)
 - [ ] Composition relations modeled as nested objects/arrays

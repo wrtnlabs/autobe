@@ -1251,7 +1251,7 @@ export namespace AutoBeOpenApi {
        *
        * This field is optional and should only be included when there is a
        * direct correspondence to a Prisma model. If there's not any Prisma
-       * model association, this field can be omitted.
+       * model association, this field becomes `null`.
        */
       "x-autobe-prisma-schema"?: string | null | undefined;
 
