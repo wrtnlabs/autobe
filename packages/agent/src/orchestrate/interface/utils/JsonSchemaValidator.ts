@@ -178,7 +178,7 @@ export namespace JsonSchemaValidator {
   };
 
   const validatePrismaSchema = (props: IProps): void => {
-    // fullfill error messages for "x-autobe-prisma-schema" misplacement
+    // fulfill error messages for "x-autobe-prisma-schema" misplacement
     for (const e of props.errors) {
       if (e.path.endsWith(`.properties["x-autobe-prisma-schema"]`) === false)
         continue;
