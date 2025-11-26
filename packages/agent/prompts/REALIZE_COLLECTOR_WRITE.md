@@ -340,12 +340,12 @@ export function collect(props: {
 
 ### 2. The collect() Function - Data Collection
 
-**Purpose**: Transform API request DTO to Prisma CreateInput with proper field mapping, UUID generation, and relationship handling.
+**Purpose**: Transform API request DTO to Prisma CreateInput with proper field mapping, UUID generation, and relationship handling. The `collect()` function prepares data for database insertion.
 
-**Pattern**:
+**Basic Pattern**:
 ```typescript
 export function collect(props: {
-  body: IProduct.ICreate;
+  body: IShoppingProduct.ICreate;
 }) {
   return {
     // UUID generation for primary key
@@ -367,25 +367,49 @@ export function collect(props: {
       connect: { id: props.body.categoryId },
     },
 
-    // Relationship: create nested records
+    // Nested creates - reuse other Collectors
     tags: {
-      create: props.body.tags.map(tag => ({
-        id: v4(),
-        name: tag.name,
-      })),
+      create: props.body.tags.map((tag, i) =>
+        ShoppingTagCollector.collect({
+          body: tag,
+          sequence: i,
+        })
+      ),
     },
-  } satisfies Prisma.productsCreateInput;
+  } satisfies Prisma.shopping_productsCreateInput;
 }
+```
+
+**Why reuse other Collectors for nested creates?**
+
+When your Create DTO contains nested objects to be created (tags, inventory, etc.), those objects have their own Create DTOs and corresponding Collectors. Reusing those Collectors:
+- Eliminates code duplication across multiple operations
+- Maintains single responsibility (each Collector handles one Create DTO type)
+- Automatically stays in sync when nested DTO structure changes
+- Ensures consistent UUID generation and field mapping
+
+**Example of what NOT to do:**
+```typescript
+// ❌ Avoid this - manually constructing nested objects
+tags: {
+  create: props.body.tags.map(tag => ({
+    id: v4(),
+    name: tag.name,
+    created_at: new Date(),
+  })),
+},
+// Instead, reuse ShoppingTagCollector.collect({ body: tag, sequence: i })
 ```
 
 **Critical Rules**:
 - Use function declaration pattern: `export function collect(...) { return {...} satisfies Type; }`
 - Return object literal with `satisfies` operator
 - Type validation via `satisfies Prisma.{table}CreateInput`
+- **For nested creates**: Reuse other Collectors' `collect()` functions
 - Generate UUIDs with `v4()`
 - Use `new Date()` for timestamp fields
 - Optional fields: use `null`
-- Handle relationships with `connect` (existing) or `create` (new)
+- Handle relationships with `connect` (existing) or `create` (new, reuse Collector)
 - Map camelCase DTO fields to snake_case database columns
 
 ### 3. UUID Generation
@@ -405,23 +429,42 @@ id: v4(),
 
 ### 4. Handling Nested Relationships
 
-**Pattern 1: Connect to Existing Record (BelongsTo, HasOne)**
-```typescript
-// DTO has categoryId: string
-// Prisma has category_id: String @relation
+Prisma relationships are handled differently depending on whether you're connecting to existing records or creating new nested records.
 
-// In collect()
+**Pattern 1: Connect to Existing Record (BelongsTo)**
+
+Use `connect` when the DTO provides an ID to an existing record.
+
+```typescript
+// DTO: { categoryId: string }
+// Prisma: category relation field
+
 category: {
   connect: { id: props.body.categoryId },
 },
 ```
 
 **Pattern 2: Create Nested Records (HasMany)**
-```typescript
-// DTO has tags: Array<{ name: string }>
-// Prisma has tags: product_tags[]
 
-// In collect()
+Use `create` array when the DTO provides nested objects to create. Always reuse the appropriate Collector for nested creates.
+
+```typescript
+// DTO: { tags: Array<IShoppingTag.ICreate> }
+// Prisma: tags relation field
+
+tags: {
+  create: props.body.tags.map((tag, i) =>
+    ShoppingTagCollector.collect({
+      body: tag,
+      sequence: i,
+    })
+  ),
+},
+```
+
+Avoid manually constructing nested objects:
+```typescript
+// ❌ Don't do this - duplicates ShoppingTagCollector logic
 tags: {
   create: props.body.tags.map(tag => ({
     id: v4(),
@@ -431,23 +474,30 @@ tags: {
 },
 ```
 
-**Pattern 3: Optional Relationship**
-```typescript
-// DTO has shippingAddressId?: string
-// Prisma has shipping_address_id: String?
+**Pattern 3: Create Nested Single Record (HasOne)**
 
-// In collect()
-shipping_address: null,
+Use `create` object when the DTO provides a nested object to create. Reuse the appropriate Collector.
+
+```typescript
+// DTO: { inventory: IShoppingInventory.ICreate }
+// Prisma: inventory relation field
+
+inventory: {
+  create: ShoppingInventoryCollector.collect({
+    body: props.body.inventory,
+  }),
+},
 ```
 
-**Pattern 4: Nested Collector Reuse**
+**Pattern 4: Optional Relationship**
+
+Use `null` for optional foreign key fields.
+
 ```typescript
-// Reuse another collector for complex nested data
-tags: {
-  create: props.body.tags.map((tag, index) =>
-    ProductTagCollector.collect({ body: tag, sequence: index }),
-  ),
-},
+// DTO: { shippingAddressId?: string }
+// Prisma: shipping_address_id nullable field
+
+shipping_address: null,
 ```
 
 ### 5. Common Field Transformations
@@ -485,39 +535,40 @@ description: null,
 
 **BelongsTo (Many-to-One)**: Use `connect`
 ```typescript
-// Product belongs to Category
+// BbsArticle belongs to BbsCategory
 category: {
   connect: { id: props.body.categoryId },
 },
 ```
 
-**HasMany (One-to-Many)**: Use `create` array
+**HasMany (One-to-Many)**: Use `create` array with Collector reuse
 ```typescript
-// Product has many Tags
-tags: {
-  create: props.body.tags.map(tag => ({
-    id: v4(),
-    name: tag.name,
-  })),
+// BbsArticle has many BbsArticleAttachments
+// Reuse BbsArticleAttachmentCollector
+attachments: {
+  create: props.body.attachments.map((attachment, i) =>
+    BbsArticleAttachmentCollector.collect({
+      body: attachment,
+      sequence: i,
+    })
+  ),
 },
 ```
 
-**HasOne (One-to-One)**: Use `create` object
+**HasOne (One-to-One)**: Use `create` object with Collector reuse
 ```typescript
-// Product has one Inventory
-inventory: {
-  create: {
-    id: v4(),
-    quantity: props.body.initialQuantity,
-    income: props.body.initialQuantity,
-    outcome: 0,
-  },
+// BbsArticle has one BbsArticleContent
+// Reuse BbsArticleContentCollector
+content: {
+  create: BbsArticleContentCollector.collect({
+    body: props.body.content,
+  }),
 },
 ```
 
 **ManyToMany (through join table)**: Use `create` with nested `connect`
 ```typescript
-// Product has many Categories through product_categories join
+// ShoppingProduct has many ShoppingCategories through shopping_product_categories join
 categories: {
   create: props.body.categoryIds.map(categoryId => ({
     id: v4(),
@@ -764,22 +815,21 @@ export namespace ShoppingSaleUnitStockCollector {
 });
 ```
 
-## Complete Example: Product Collector
+## Complete Example: BBS Article Collector
 
 ### Given Create DTO
 
 ```typescript
-// src/api/structures/IProduct.ts
-export namespace IProduct {
+// src/api/structures/bbs/IBbsArticle.ts
+export namespace IBbsArticle {
   export interface ICreate {
-    name: string;
-    price: number;
-    description?: string;
+    title: string;
+    content: string;
     categoryId: string & tags.Format<"uuid">;
-    tags: Array<{
-      name: string;
+    attachments: Array<{
+      filename: string;
+      url: string;
     }>;
-    initialQuantity: number;
   }
 }
 ```
@@ -787,96 +837,97 @@ export namespace IProduct {
 ### Given Prisma Schema
 
 ```prisma
-model products {
+model bbs_articles {
   id          String    @id @db.Uuid
-  name        String    @db.VarChar
-  price       Decimal   @db.Decimal
-  description String?   @db.Text
+  title       String    @db.VarChar
   created_at  DateTime  @db.Timestamptz
   updated_at  DateTime  @db.Timestamptz
+  author_id   String    @db.Uuid
   category_id String    @db.Uuid
 
-  category    product_categories @relation(fields: [category_id], references: [id])
-  tags        product_tags[]
-  inventory   product_inventory?
+  author      bbs_members          @relation(fields: [author_id], references: [id])
+  category    bbs_categories       @relation(fields: [category_id], references: [id])
+  content     bbs_article_contents?
+  attachments bbs_article_attachments[]
 }
 
-model product_tags {
+model bbs_article_contents {
   id         String   @id @db.Uuid
-  product_id String   @db.Uuid
-  name       String   @db.VarChar
+  article_id String   @unique @db.Uuid
+  content    String   @db.Text
   created_at DateTime @db.Timestamptz
 
-  product    products @relation(fields: [product_id], references: [id])
+  article    bbs_articles @relation(fields: [article_id], references: [id])
 }
 
-model product_inventory {
-  id         String @id @db.Uuid
-  product_id String @unique @db.Uuid
-  quantity   Int
-  income     Int
-  outcome    Int
+model bbs_article_attachments {
+  id         String   @id @db.Uuid
+  article_id String   @db.Uuid
+  filename   String   @db.VarChar
+  url        String   @db.VarChar
+  sequence   Int
+  created_at DateTime @db.Timestamptz
 
-  product    products @relation(fields: [product_id], references: [id])
+  article    bbs_articles @relation(fields: [article_id], references: [id])
 }
 ```
 
 ### Generated Collector
 
 ```typescript
-export namespace ProductCollector {
+export namespace BbsArticleCollector {
   /**
-   * Collect product creation data from DTO to Prisma CreateInput.
+   * Collect BBS article creation data from DTO to Prisma CreateInput.
    *
    * Generates UUIDs, handles nested relationships, and prepares database input:
    * - Generates primary key UUID
    * - Connects to existing category
-   * - Creates nested tags with UUIDs
-   * - Creates nested inventory record
+   * - Creates nested content (reuses BbsArticleContentCollector)
+   * - Creates nested attachments (reuses BbsArticleAttachmentCollector)
    * - Sets creation timestamps
    */
   export function collect(props: {
-    body: IProduct.ICreate;
+    auth: AuthPayload;
+    body: IBbsArticle.ICreate;
   }) {
     return {
       // UUID generation for primary key
       id: v4(),
 
       // Direct field mappings
-      name: props.body.name,
-      price: props.body.price,
-
-      // Optional field - use null
-      description: null,
+      title: props.body.title,
 
       // Timestamps
       created_at: new Date(),
       updated_at: new Date(),
+
+      // Auth context - user who creates the article
+      author_id: props.auth.id,
 
       // BelongsTo relationship - connect to existing category
       category: {
         connect: { id: props.body.categoryId },
       },
 
-      // HasMany relationship - create nested tags
-      tags: {
-        create: props.body.tags.map(tag => ({
-          id: v4(),
-          name: tag.name,
-          created_at: new Date(),
-        })),
+      // HasOne relationship - reuse BbsArticleContentCollector
+      content: {
+        create: BbsArticleContentCollector.collect({
+          body: {
+            content: props.body.content,
+          },
+        }),
       },
 
-      // HasOne relationship - create nested inventory
-      inventory: {
-        create: {
-          id: v4(),
-          quantity: props.body.initialQuantity,
-          income: props.body.initialQuantity,
-          outcome: 0,
-        },
+      // HasMany relationship - reuse BbsArticleAttachmentCollector
+      attachments: {
+        create: props.body.attachments.map((attachment, i) =>
+          BbsArticleAttachmentCollector.collect({
+            body: attachment,
+            sequence: i,
+          })
+        ),
       },
-    } satisfies Prisma.productsCreateInput;
+    } satisfies Prisma.bbs_articlesCreateInput;
   }
 }
 ```
@@ -971,11 +1022,26 @@ category: {
 
 ### Pattern 2: HasMany with Nested Objects
 
-```typescript
-// DTO has: tags: Array<{ name: string; priority: number }>
-// Prisma has: tags relation to product_tags table
+When creating multiple nested records, always reuse the appropriate Collector.
 
-// In collect()
+```typescript
+// DTO: { tags: Array<IBbsArticleTag.ICreate> }
+// Prisma: tags relation to bbs_article_tags table
+
+// Reuse BbsArticleTagCollector
+tags: {
+  create: props.body.tags.map((tag, i) =>
+    BbsArticleTagCollector.collect({
+      body: tag,
+      sequence: i,
+    })
+  ),
+},
+```
+
+Avoid manual construction:
+```typescript
+// ❌ Don't do this - duplicates BbsArticleTagCollector logic
 tags: {
   create: props.body.tags.map((tag, index) => ({
     id: v4(),
@@ -990,21 +1056,22 @@ tags: {
 ### Pattern 3: Optional Nested Relationship
 
 ```typescript
-// DTO has: shippingAddressId?: string
-// Prisma has: optional shipping_address relation
+// DTO: { shippingAddressId?: string }
+// Prisma: optional shipping_address relation
 
-// In collect()
 shipping_address: null,
 ```
 
 ### Pattern 4: Collector Composition
 
+Collectors can be nested multiple levels deep, each reusing appropriate sub-Collectors.
+
 ```typescript
-// Reuse another collector for complex nested data
-choices: {
-  create: props.body.choices.map((choice, index) =>
-    ProductChoiceCollector.collect({
-      body: choice,
+// Reuse ShoppingSaleUnitStockCollector for complex nested data
+stocks: {
+  create: props.body.stocks.map((stock, index) =>
+    ShoppingSaleUnitStockCollector.collect({
+      body: stock,
       sequence: index,
       additionalContext: props.someContext,
     }),

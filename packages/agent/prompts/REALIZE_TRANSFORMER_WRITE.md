@@ -221,11 +221,14 @@ export namespace {TypeName}Transformer {
 
 ### 2. The select() Function - Database Query Specification
 
-**Purpose**: Define exactly which fields and relations to load from the database.
+**Purpose**: Define exactly which fields and relations to load from the database. The `select()` function returns a Prisma query specification that determines what data to fetch.
 
 The `select()` function can return different patterns depending on the DTO structure:
 
 **Pattern 1: Using `select` (most common)**
+
+Use when you need specific fields from the main table and related entities.
+
 ```typescript
 export function select() {
   return {
@@ -236,13 +239,9 @@ export function select() {
       price: true,
       created_at: true,
 
-      // Relations (nested selects)
-      category: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
+      // Nested relations - reuse other Transformers
+      category: ShoppingCategoryTransformer.select(),
+      tags: ShoppingTagTransformer.select(),
 
       // Computed/aggregated fields
       _count: {
@@ -255,7 +254,29 @@ export function select() {
 }
 ```
 
+**Why reuse other Transformers for nested relations?**
+
+Transformers are designed for modularization and code reuse. When a DTO has nested objects, those nested objects have their own Transformers. Reusing their `select()` functions:
+- Eliminates code duplication
+- Maintains single responsibility (each Transformer owns its own selection logic)
+- Automatically stays in sync when nested DTO requirements change
+
+**Example of what NOT to do:**
+```typescript
+// ❌ Avoid this - manually duplicating nested selection logic
+category: {
+  select: {
+    id: true,
+    name: true,
+  },
+},
+// Instead, reuse ShoppingCategoryTransformer.select()
+```
+
 **Pattern 2: Using `include` (when loading full related entities)**
+
+Use when you need all fields from related entities.
+
 ```typescript
 export function select() {
   return {
@@ -268,6 +289,9 @@ export function select() {
 ```
 
 **Pattern 3: Empty object (when all fields are needed)**
+
+Use when the DTO maps directly to all table fields without filtering.
+
 ```typescript
 export function select() {
   return {} as const;
@@ -278,17 +302,18 @@ export function select() {
 - Use `as const` to enable precise type inference
 - Choose the appropriate pattern based on DTO requirements
 - For `select`: Include ONLY fields needed for the target DTO
+- **For nested relations**: Reuse other Transformers' `select()` functions
 - For `include`: Use when you need entire related entities
 - For `{}`: Use when DTO maps to all table fields with no filtering
 - Match field names EXACTLY as they appear in Prisma schema
 
 ### 3. The transform() Function - Data Conversion
 
-**Purpose**: Convert Prisma query result to DTO type with proper field mapping and type safety.
+**Purpose**: Convert Prisma query result to DTO type with proper field mapping and type safety. The `transform()` function takes the Prisma payload and returns the API response DTO.
 
-**Pattern**:
+**Basic Pattern**:
 ```typescript
-export async function transform(input: Payload): Promise<IProduct> {
+export async function transform(input: Payload): Promise<IShoppingProduct> {
   return {
     // Direct field mapping (rename snake_case -> camelCase)
     id: input.id,
@@ -298,25 +323,65 @@ export async function transform(input: Payload): Promise<IProduct> {
     // Null handling (DB null -> API undefined)
     description: input.description ?? undefined,
 
-    // Nested object transformation
-    category: input.category ? {
-      id: input.category.id,
-      name: input.category.name,
-    } : undefined,
+    // Nested objects - reuse other Transformers
+    category: await ShoppingCategoryTransformer.transform(input.category),
 
-    // Aggregations
+    // Aggregations (direct mapping)
     reviewCount: input._count.reviews,
   };
 }
+```
+
+**Handling Different Nested Object Scenarios**:
+
+**1. Required nested object:**
+```typescript
+// When DTO requires a nested object that's always present
+category: await ShoppingCategoryTransformer.transform(input.category),
+```
+
+**2. Optional nested object:**
+```typescript
+// When DTO has optional nested object
+brand: input.brand
+  ? await ShoppingBrandTransformer.transform(input.brand)
+  : undefined,
+```
+
+**3. Array of nested objects:**
+```typescript
+// When DTO has array of nested objects
+tags: await Promise.all(
+  input.tags.map(ShoppingTagTransformer.transform)
+),
+```
+
+**Why reuse other Transformers for nested objects?**
+
+When your DTO contains nested objects (category, tags, etc.), those objects have their own DTO types and corresponding Transformers. Reusing those Transformers:
+- Eliminates code duplication across multiple endpoints
+- Maintains single responsibility (each Transformer handles one DTO type)
+- Automatically stays in sync when nested DTO structure changes
+
+**Example of what NOT to do:**
+```typescript
+// ❌ Avoid this - manually mapping nested object fields
+category: {
+  id: input.category.id,
+  name: input.category.name,
+},
+// Instead, reuse ShoppingCategoryTransformer.transform(input.category)
 ```
 
 **Critical Rules**:
 - Function MUST be `async` and return `Promise<{ITypeName}>` for safety
 - Parameter type MUST be `Payload` (the type alias you defined)
 - Return type MUST be the exact DTO interface type wrapped in Promise
+- **For nested objects**: Reuse other Transformers' `transform()` functions
 - Handle nullable fields according to DTO requirements (see NULL vs UNDEFINED section below)
 - Convert Date objects to ISO strings: `input.created_at.toISOString()`
-- For nested relations, check for existence before transforming
+- For optional nested objects: check existence before calling transformer
+- For arrays of nested objects: use `Promise.all` with `.map(Transformer.transform)`
 
 ## 🚨 CRITICAL: NULL vs UNDEFINED Handling
 
@@ -702,108 +767,116 @@ export namespace ShoppingSaleUnitStockTransformer {
 });
 ```
 
-## Complete Example: Product Transformer
+## Complete Example: BBS Article Transformer
 
 ### Given DTO Type
 
 ```typescript
-// src/api/structures/IProduct.ts
-export interface IProduct {
+// src/api/structures/bbs/IBbsArticle.ts
+export interface IBbsArticle {
   id: string & tags.Format<"uuid">;
-  name: string;
-  price: number;
-  description?: string;
+  title: string;
+  content: string;
   createdAt: string & tags.Format<"date-time">;
+  author: {
+    id: string & tags.Format<"uuid">;
+    nickname: string;
+  };
   category: {
     id: string & tags.Format<"uuid">;
     name: string;
   };
-  reviewCount: number;
+  commentCount: number;
 }
 ```
 
 ### Given Prisma Schema
 
 ```prisma
-model products {
+model bbs_articles {
   id          String    @id @db.Uuid
-  name        String    @db.VarChar
-  price       Decimal   @db.Decimal
-  description String?   @db.Text
+  title       String    @db.VarChar
+  content     String    @db.Text
   created_at  DateTime  @db.Timestamptz
+  author_id   String    @db.Uuid
   category_id String    @db.Uuid
 
-  category    product_categories @relation(fields: [category_id], references: [id])
-  reviews     product_reviews[]
+  author      bbs_members      @relation(fields: [author_id], references: [id])
+  category    bbs_categories   @relation(fields: [category_id], references: [id])
+  comments    bbs_comments[]
 }
 
-model product_categories {
+model bbs_members {
+  id       String @id @db.Uuid
+  nickname String @db.VarChar
+  articles bbs_articles[]
+}
+
+model bbs_categories {
   id       String @id @db.Uuid
   name     String @db.VarChar
-  products products[]
+  articles bbs_articles[]
 }
 ```
 
 ### Generated Transformer
 
 ```typescript
-export namespace ProductTransformer {
+export namespace BbsArticleTransformer {
   /**
    * Prisma payload type derived from select specification.
    */
-  export type Payload = Prisma.productsGetPayload<
+  export type Payload = Prisma.bbs_articlesGetPayload<
     ReturnType<typeof select>
   >;
 
   /**
-   * Transform Prisma products payload to IProduct DTO.
+   * Transform Prisma bbs_articles payload to IBbsArticle DTO.
    *
    * Converts database representation to API response format with:
    * - Snake_case -> camelCase field names
    * - Date -> ISO string conversion
-   * - Nested category object transformation
-   * - Review count aggregation
+   * - Nested author object (reuses BbsMemberTransformer)
+   * - Nested category object (reuses BbsCategoryTransformer)
+   * - Comment count aggregation
    */
-  export async function transform(input: Payload): Promise<IProduct> {
+  export async function transform(input: Payload): Promise<IBbsArticle> {
     return {
       id: input.id,
-      name: input.name,
-      price: Number(input.price),
-      description: input.description ?? undefined,
+      title: input.title,
+      content: input.content,
       createdAt: input.created_at.toISOString(),
-      category: {
-        id: input.category.id,
-        name: input.category.name,
-      },
-      reviewCount: input._count.reviews,
+      // Reuse BbsMemberTransformer for author
+      author: await BbsMemberTransformer.transform(input.author),
+      // Reuse BbsCategoryTransformer for category
+      category: await BbsCategoryTransformer.transform(input.category),
+      commentCount: input._count.comments,
     };
   }
 
   /**
-   * Prisma select specification for products query.
+   * Prisma select specification for bbs_articles query.
    *
    * Includes:
-   * - Scalar fields needed for IProduct
-   * - Category relation for nested object
-   * - Review count aggregation
+   * - Scalar fields needed for IBbsArticle
+   * - Author relation (reuses BbsMemberTransformer.select())
+   * - Category relation (reuses BbsCategoryTransformer.select())
+   * - Comment count aggregation
    */
   export function select() {
     return {
       select: {
         id: true,
-        name: true,
-        price: true,
-        description: true,
+        title: true,
+        content: true,
         created_at: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        // Reuse BbsMemberTransformer.select() for author
+        author: BbsMemberTransformer.select(),
+        // Reuse BbsCategoryTransformer.select() for category
+        category: BbsCategoryTransformer.select(),
         _count: {
           select: {
-            reviews: true,
+            comments: true,
           },
         },
       },
@@ -816,12 +889,12 @@ export namespace ProductTransformer {
 
 ```typescript
 // In a provider function
-export async function getProducts(): Promise<IProduct[]> {
-  const products = await MyGlobal.prisma.products.findMany({
-    ...ProductTransformer.select(),  // Spread pattern
+export async function getBbsArticles(): Promise<IBbsArticle[]> {
+  const articles = await MyGlobal.prisma.bbs_articles.findMany({
+    ...BbsArticleTransformer.select(),  // Spread pattern
   });
 
-  return await Promise.all(products.map(ProductTransformer.transform));
+  return await Promise.all(articles.map(BbsArticleTransformer.transform));
 }
 ```
 
