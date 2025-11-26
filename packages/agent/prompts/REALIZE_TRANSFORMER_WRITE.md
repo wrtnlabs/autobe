@@ -106,22 +106,25 @@ Generate a **transformer module** that provides two essential functions:
 ```typescript
 // What you generate
 export namespace ProductTransformer {
-  export function transform(input: Payload): IProduct {
+  export async function transform(input: Payload): Promise<IProduct> {
     // DB -> API transformation logic
   }
 
   export function select() {
-    // Prisma select specification
+    // Returns select/include specification, or empty object
   }
 
-  type Payload = Prisma.productsGetPayload<{ select: ReturnType<typeof select> }>;
+  type Payload = Prisma.productsGetPayload<ReturnType<typeof select>>;
 }
 
 // How it gets used
-const products = await MyGlobal.prisma.products.findMany({
-  select: ProductTransformer.select(),
+const record = await MyGlobal.prisma.products.findFirstOrThrow({
+  ...ProductTransformer.select(),  // Spread: works with select, include, or {}
+  where: {
+    id: "some-uuid-value"
+  }
 });
-return products.map(ProductTransformer.transform);
+return await ProductTransformer.transform(record);
 ```
 
 ## Input Information
@@ -200,18 +203,18 @@ src/
 ```typescript
 export namespace {TypeName}Transformer {
   // Type alias for Prisma payload
-  export type Payload = Prisma.{table_name}GetPayload<{
-    select: ReturnType<typeof select>;
-  }>;
+  export type Payload = Prisma.{table_name}GetPayload<
+    ReturnType<typeof select>
+  >;
 
-  // Transform function: DB -> DTO
-  export function transform(input: Payload): {ITypeName} {
+  // Transform function: DB -> DTO (async for safety)
+  export async function transform(input: Payload): Promise<{ITypeName}> {
     // Transformation logic
   }
 
   // Select specification function
   export function select() {
-    // Return Prisma select object
+    // Return Prisma select/include specification or empty object
   }
 }
 ```
@@ -220,39 +223,63 @@ export namespace {TypeName}Transformer {
 
 **Purpose**: Define exactly which fields and relations to load from the database.
 
-**Pattern**:
+The `select()` function can return different patterns depending on the DTO structure:
+
+**Pattern 1: Using `select` (most common)**
 ```typescript
 export function select() {
   return {
-    // Scalar fields
-    id: true,
-    name: true,
-    price: true,
-    created_at: true,
+    select: {
+      // Scalar fields
+      id: true,
+      name: true,
+      price: true,
+      created_at: true,
 
-    // Relations (nested selects)
-    category: {
-      select: {
-        id: true,
-        name: true,
+      // Relations (nested selects)
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
       },
-    },
 
-    // Computed/aggregated fields
-    _count: {
-      select: {
-        reviews: true,
+      // Computed/aggregated fields
+      _count: {
+        select: {
+          reviews: true,
+        },
       },
     },
   } as const;
 }
 ```
 
+**Pattern 2: Using `include` (when loading full related entities)**
+```typescript
+export function select() {
+  return {
+    include: {
+      category: true,  // Load all category fields
+      tags: true,      // Load all related tags
+    },
+  } as const;
+}
+```
+
+**Pattern 3: Empty object (when all fields are needed)**
+```typescript
+export function select() {
+  return {} as const;
+}
+```
+
 **Critical Rules**:
 - Use `as const` to enable precise type inference
-- Include ONLY fields needed for the target DTO
-- For relations, use nested `select` objects
-- For counts, use `_count.select`
+- Choose the appropriate pattern based on DTO requirements
+- For `select`: Include ONLY fields needed for the target DTO
+- For `include`: Use when you need entire related entities
+- For `{}`: Use when DTO maps to all table fields with no filtering
 - Match field names EXACTLY as they appear in Prisma schema
 
 ### 3. The transform() Function - Data Conversion
@@ -261,7 +288,7 @@ export function select() {
 
 **Pattern**:
 ```typescript
-export function transform(input: Payload): IProduct {
+export async function transform(input: Payload): Promise<IProduct> {
   return {
     // Direct field mapping (rename snake_case -> camelCase)
     id: input.id,
@@ -284,8 +311,9 @@ export function transform(input: Payload): IProduct {
 ```
 
 **Critical Rules**:
+- Function MUST be `async` and return `Promise<{ITypeName}>` for safety
 - Parameter type MUST be `Payload` (the type alias you defined)
-- Return type MUST be the exact DTO interface type
+- Return type MUST be the exact DTO interface type wrapped in Promise
 - Handle nullable fields according to DTO requirements (see NULL vs UNDEFINED section below)
 - Convert Date objects to ISO strings: `input.created_at.toISOString()`
 - For nested relations, check for existence before transforming
@@ -633,11 +661,11 @@ Mapping strategy:
     `,
     draft: `
 export namespace ShoppingSaleUnitStockTransformer {
-  export type Payload = Prisma.shopping_sale_snapshot_unit_stocksGetPayload<{
-    select: ReturnType<typeof select>;
-  }>;
+  export type Payload = Prisma.shopping_sale_snapshot_unit_stocksGetPayload<
+    ReturnType<typeof select>
+  >;
 
-  export function transform(input: Payload): IShoppingSaleUnitStock {
+  export async function transform(input: Payload): Promise<IShoppingSaleUnitStock> {
     return {
       id: input.id,
       stockQuantity: input.stock_quantity,
@@ -651,13 +679,15 @@ export namespace ShoppingSaleUnitStockTransformer {
 
   export function select() {
     return {
-      id: true,
-      stock_quantity: true,
-      updated_at: true,
-      shopping_sale: {
-        select: {
-          id: true,
-          name: true,
+      select: {
+        id: true,
+        stock_quantity: true,
+        updated_at: true,
+        shopping_sale: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
     } as const;
@@ -721,9 +751,9 @@ export namespace ProductTransformer {
   /**
    * Prisma payload type derived from select specification.
    */
-  export type Payload = Prisma.productsGetPayload<{
-    select: ReturnType<typeof select>;
-  }>;
+  export type Payload = Prisma.productsGetPayload<
+    ReturnType<typeof select>
+  >;
 
   /**
    * Transform Prisma products payload to IProduct DTO.
@@ -734,7 +764,7 @@ export namespace ProductTransformer {
    * - Nested category object transformation
    * - Review count aggregation
    */
-  export function transform(input: Payload): IProduct {
+  export async function transform(input: Payload): Promise<IProduct> {
     return {
       id: input.id,
       name: input.name,
@@ -759,20 +789,22 @@ export namespace ProductTransformer {
    */
   export function select() {
     return {
-      id: true,
-      name: true,
-      price: true,
-      description: true,
-      created_at: true,
-      category: {
-        select: {
-          id: true,
-          name: true,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        created_at: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
-      _count: {
-        select: {
-          reviews: true,
+        _count: {
+          select: {
+            reviews: true,
+          },
         },
       },
     } as const;
@@ -786,10 +818,10 @@ export namespace ProductTransformer {
 // In a provider function
 export async function getProducts(): Promise<IProduct[]> {
   const products = await MyGlobal.prisma.products.findMany({
-    select: ProductTransformer.select(),
+    ...ProductTransformer.select(),  // Spread pattern
   });
 
-  return products.map(ProductTransformer.transform);
+  return await Promise.all(products.map(ProductTransformer.transform));
 }
 ```
 
@@ -798,8 +830,8 @@ export async function getProducts(): Promise<IProduct[]> {
 **Before calling `process({ request: { type: "complete", ... } })`, verify ALL items:**
 
 ### Type Safety
-- [ ] ✅ Payload type uses `Prisma.{table}GetPayload<{select: ReturnType<typeof select>}>` pattern
-- [ ] ✅ transform() has explicit return type annotation: `function transform(input: Payload): {ITypeName}`
+- [ ] ✅ Payload type uses `Prisma.{table}GetPayload<ReturnType<typeof select>>` pattern
+- [ ] ✅ transform() is async with explicit return type: `async function transform(input: Payload): Promise<{ITypeName}>`
 - [ ] ✅ select() returns object with `as const` suffix
 - [ ] ✅ No use of `any` type anywhere
 
