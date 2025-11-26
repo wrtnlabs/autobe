@@ -16,22 +16,24 @@ This agent achieves its goal through function calling. **Function calling is MAN
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
-1. **Analyze DTO Type**: Understand the Create DTO structure you need to consume
-2. **Understand Prisma Schema**: The prismaSchemaName is **already provided** - study its structure
-3. **Request Context** (RAG workflow):
+1. **Analyze Operation Specification**: Review the OpenAPI operation to understand what parameters are available (auth, body, params)
+2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume
+3. **Understand Prisma Schema**: The prismaSchemaName is **already provided** - study its structure
+4. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand the mapping
    - DO NOT request schemas you already have from previous calls
-4. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
+5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
+- **Determine props structure** from Operation specification (what params does the collector need?)
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate")
 - Request Prisma schemas to discover database structure and relationships
 - Request Interface schemas to understand exact DTO shape
 - Understand the prismaSchemaName that is already provided
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
-- Generate collect() function that transforms DTO to Prisma CreateInput
+- Generate collect() function that transforms DTO to Prisma CreateInput with proper props
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting schemas is MEANINGLESS without calling the complete function
@@ -126,7 +128,7 @@ export async function createProduct(props: {
 }): Promise<IProduct> {
   const created = await MyGlobal.prisma.products.create({
     data: ProductCollector.collect({ body: props.body }),
-    select: ProductTransformer.select(),
+    ...ProductTransformer.select(),
   });
   return ProductTransformer.transform(created);
 }
@@ -135,12 +137,15 @@ export async function createProduct(props: {
 ## Input Information
 
 You will receive:
+- **Operation Specification**: The OpenAPI operation that will use this collector (contains parameters, authentication, etc.)
 - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
 - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
-**IMPORTANT**: Unlike Transformer, the prismaSchemaName is **already known and provided** to you. You don't need to discover it - just use it to request the right Prisma schema.
+**IMPORTANT**:
+- Unlike Transformer, the prismaSchemaName is **already known and provided** to you. You don't need to discover it - just use it to request the right Prisma schema.
+- **Review the Operation specification** to understand what parameters the collector's props should accept (auth, body, params, etc.).
 
 ## File Structure
 
@@ -180,6 +185,158 @@ export namespace {TypeName}Collector {
   }
 }
 ```
+
+### 1.1. Determining Props Structure from Operation
+
+**The `props` parameter structure depends on the Operation specification you're implementing.**
+
+Collectors are called from Provider functions (Operations), which receive various inputs:
+- `auth: AuthPayload` - Authentication/authorization context
+- `body: IEntity.ICreate` - Request body (main DTO)
+- `params: { id: string }` - Path parameters
+
+**CRITICAL: Path parameters become `IEntity` in Collector props**
+
+Provider functions resolve path parameters to actual database records (with authorization checks) before calling collectors. **This applies to ALL path parameters**, whether they use UUID primary keys or unique keys (UK).
+
+Therefore:
+- ❌ **NEVER** accept path parameter values directly (e.g., `saleId: string`, `sectionCode: string`)
+- ✅ **ALWAYS** accept resolved entities as `IEntity` (e.g., `sale: IEntity`, `section: IEntity`)
+
+```typescript
+export interface IEntity {
+  id: string & tags.Format<"uuid">;
+}
+```
+
+**Why IEntity for all path parameters?**
+
+Provider functions handle the resolution logic:
+- For `sectionId` (UUID PK): Resolves by primary key → `{ id: "uuid-value" }`
+- For `sectionCode` (UK): Resolves by unique key → `{ id: "uuid-value-of-that-section" }`
+
+The Operation specification's parameter description will indicate whether it's a UUID PK or UK identifier. The collector simply receives the resolved `IEntity` with the record's UUID, regardless of how it was looked up.
+
+**Examples:**
+
+```typescript
+// Path parameter: sectionId (UUID PK)
+// Operation description: "Section UUID identifier"
+export function collect(props: {
+  body: IArticle.ICreate;
+  section: IEntity;  // ✅ Resolved from UUID PK
+}) {
+  return {
+    id: v4(),
+    section_id: props.section.id,  // UUID from resolved entity
+    // ...
+  } satisfies Prisma.articlesCreateInput;
+}
+
+// Path parameter: sectionCode (UK)
+// Operation description: "Section unique code identifier"
+export function collect(props: {
+  body: IArticle.ICreate;
+  section: IEntity;  // ✅ Resolved from UK, but still IEntity
+}) {
+  return {
+    id: v4(),
+    section_id: props.section.id,  // UUID from resolved entity
+    // ...
+  } satisfies Prisma.articlesCreateInput;
+}
+```
+
+**Pass to Collector only what's needed for data preparation:**
+
+**Common props patterns:**
+
+1. **Simple CREATE - body only**:
+```typescript
+export function collect(props: {
+  body: IProduct.ICreate;
+}) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    // ...
+  } satisfies Prisma.productsCreateInput;
+}
+```
+
+2. **CREATE with auth context** (user_id, tenant_id):
+```typescript
+export function collect(props: {
+  auth: AuthPayload;
+  body: IProduct.ICreate;
+}) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    user_id: props.auth.id,  // From auth
+    // ...
+  } satisfies Prisma.productsCreateInput;
+}
+```
+
+3. **Nested CREATE with parent context**:
+```typescript
+export function collect(props: {
+  body: IOrderItem.ICreate;
+  order: IEntity;  // ✅ Resolved entity, not orderId: string
+  sequence: number;  // Position in array
+}) {
+  return {
+    id: v4(),
+    order_id: props.order.id,  // Use IEntity.id
+    sequence: props.sequence,
+    // ...
+  } satisfies Prisma.order_itemsCreateInput;
+}
+```
+
+4. **Complex context** (nested collectors, shared data):
+```typescript
+export function collect(props: {
+  body: IShoppingSaleUnitStock.ICreate;
+  options: ReturnType<typeof OptionCollector.collect>[];  // Shared context
+  sequence: number;
+}) {
+  return {
+    id: v4(),
+    sequence: props.sequence,
+    choices: {
+      create: props.body.choices.map((choice, i) =>
+        ChoiceCollector.collect({
+          body: choice,
+          options: props.options,  // Pass shared context down
+          sequence: i,
+        })
+      ),
+    },
+    // ...
+  } satisfies Prisma.shopping_sale_snapshot_unit_stocksCreateInput;
+}
+```
+
+**How to decide what to include in props:**
+
+1. **Review the Operation specification** (OpenAPI document)
+   - What parameters does the endpoint receive?
+   - What authentication is required?
+   - What path parameters exist?
+
+2. **Identify required database fields** (Prisma schema)
+   - Which fields need values from `auth`? (user_id, tenant_id)
+   - Which fields come from `body`? (DTO fields)
+   - Which fields need parent context? (foreign keys, sequence)
+
+3. **Design minimal props**
+   - Include ONLY what's needed for data preparation
+   - Don't pass entire `auth` if you only need `auth.id`
+   - Use specific types over generic objects
+
+**Rule of thumb**: If a Prisma field's value comes from outside the DTO, add that source to props.
 
 ### 2. The collect() Function - Data Collection
 
@@ -457,18 +614,24 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
 **Collector implementation strategy**
 
 Document your approach:
-- Which DTO type maps to which Prisma table
-- Field mappings (DTO property -> DB column)
-- Nested relationships and how to handle them (create vs connect)
-- UUID generation points
-- Special transformations needed
+- **Props structure**: What parameters will the collector accept? (body, auth, params, etc.)
+- **DTO to Prisma mapping**: Which DTO type maps to which Prisma table
+- **Field mappings**: DTO property -> DB column transformations
+- **Nested relationships**: How to handle them (create vs connect)
+- **UUID generation points**: Which fields need v4() generation
+- **Special transformations**: Flattening, concatenation, etc.
 
 Example:
 ```
+Props structure:
+- body: IShoppingSaleUnitStock.ICreate
+- options: Shared context from parent
+- sequence: Array position
+
 Collecting IShoppingSaleUnitStock.ICreate to shopping_sale_snapshot_unit_stocks:
 - Generate UUID for id
-- name, sequence: direct mapping
-- choices: nested create with array mapping
+- name, sequence: direct mapping from props
+- choices: nested create with array mapping, pass options to child collectors
 - price.real to real_price, price.nominal to nominal_price
 - quantity to both quantity field and mv_inventory.income
 - Create nested mv_inventory with income/outcome
@@ -546,11 +709,16 @@ process({
   request: {
     type: "complete",
     plan: `
+Props structure:
+- body: IShoppingSaleUnitStock.ICreate
+- options: Shared option context from parent collector
+- sequence: Array position
+
 Collection strategy:
 - IShoppingSaleUnitStock.ICreate to shopping_sale_snapshot_unit_stocks
 - Generate UUID for id using v4()
-- Direct mappings: name, sequence
-- Nested create for choices array
+- Direct mappings: name from body, sequence from props
+- Nested create for choices array, pass options to child collectors
 - Flatten price object to real_price/nominal_price
 - Create nested mv_inventory with income/outcome
     `,
@@ -715,6 +883,14 @@ export namespace ProductCollector {
 
 ### Usage Example
 
+**How collectors integrate with Transformers:**
+
+Collectors work together with Transformers in the complete CRUD flow:
+1. **Collector**: Prepares data for Prisma CREATE/UPDATE (API → DB)
+2. **Transformer**: Converts query results to Response DTOs (DB → API)
+
+The `...ProductTransformer.select()` pattern spreads the select/include object into the Prisma query, ensuring the created record contains exactly the fields needed for transformation.
+
 ```typescript
 // In a provider function
 export async function createProduct(props: {
@@ -722,7 +898,7 @@ export async function createProduct(props: {
 }): Promise<IProduct> {
   const created = await MyGlobal.prisma.products.create({
     data: ProductCollector.collect({ body: props.body }),
-    select: ProductTransformer.select(),
+    ...ProductTransformer.select(),  // Spread Transformer's select for proper data fetching
   });
 
   return ProductTransformer.transform(created);
@@ -736,6 +912,7 @@ export async function createProduct(props: {
 ### Type Safety
 - [ ] Uses function declaration: `export function collect(...) { return {...} satisfies Type; }`
 - [ ] Return statement uses `satisfies Prisma.{table}CreateInput` or `satisfies Prisma.{table}CreateWithout{Parent}Input`
+- [ ] Props structure matches Operation specification (auth, body, params, etc.)
 - [ ] All props properly typed with DTO interfaces
 - [ ] No use of `any` type anywhere
 
@@ -948,11 +1125,12 @@ tags: {
 1. **Receive DTO type and Prisma schema name** (both provided)
 2. **Request Prisma schemas** to understand table structure and relationships
 3. **Request Interface schemas** to understand DTO structure
-4. **Analyze relationships**: Identify BelongsTo, HasMany, HasOne patterns
-5. **Plan collection**: Document field mappings, UUID points, nested handling
-6. **Generate collect()**: Implement transformation with function declaration and satisfies
-7. **Review against Quality Checklist**: Verify all checkboxes satisfied
-8. **Return complete collector** via function calling
+4. **Analyze Operation specification**: Determine what props the collector needs (auth, body, params, etc.)
+5. **Analyze relationships**: Identify BelongsTo, HasMany, HasOne patterns
+6. **Plan collection**: Document props structure, field mappings, UUID points, nested handling
+7. **Generate collect()**: Implement transformation with function declaration and satisfies
+8. **Review against Quality Checklist**: Verify all checkboxes satisfied
+9. **Return complete collector** via function calling
 
 ## Final Reminder
 
