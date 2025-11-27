@@ -1,169 +1,224 @@
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeProcessAggregate,
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeProgressEventBase,
+  AutoBeTestWriteEvent,
   AutoBeTestWriteGenerationFunction,
   AutoBeTestWritePrepareFunction,
 } from "@autobe/interface";
-import {
-  AutoBeProcessAggregateFactory,
-  transformOpenApiDocument,
-} from "@autobe/utils";
-import {
-  HttpMigration,
-  IHttpMigrateApplication,
-  IHttpMigrateRoute,
-  ILlmSchema,
-  OpenApi,
-} from "@samchon/openapi";
-import { HashMap } from "tstl";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { validateEmptyCode } from "../../utils/validateEmptyCode";
+import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { transformTestWriteGenerationHistory } from "./histories/transformTestWriteGenerationHistory";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestWriteGenerationApplication } from "./structures/IAutoBeTestWriteGenerationApplication";
+
+interface IAutoBeTestWriteGenerationResult {
+  prepareFunction: AutoBeTestWritePrepareFunction;
+  operation: AutoBeOpenApi.IOperation;
+  event: AutoBeTestWriteGenerationFunction;
+}
 
 export const orchestrateTestGeneration = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    instruction: string;
     document: AutoBeOpenApi.IDocument;
     preparedFunctions: AutoBeTestWritePrepareFunction[];
-    authorizationFunctions: AutoBeTestWriteAuthorizationFunction[];
   },
 ): Promise<AutoBeTestWriteGenerationFunction[]> => {
-  const generationFunctions: AutoBeTestWriteGenerationFunction[] = [];
-  const operations: AutoBeOpenApi.IOperation[] = props.document.operations;
+  const progress: AutoBeProgressEventBase = {
+    total: props.preparedFunctions.length,
+    completed: 0,
+  };
 
-  // Convert to standard OpenAPI document and create migration app
-  const openApiDoc: OpenApi.IDocument = transformOpenApiDocument(
-    props.document,
-  );
-  const app: IHttpMigrateApplication = HttpMigration.application(openApiDoc);
+  const result: Array<IAutoBeTestWriteGenerationResult | null> =
+    await executeCachedBatch(
+      ctx,
+      props.preparedFunctions.map(
+        (prepareFunction) => async (promptCacheKey) => {
+          try {
+            // Find matching operation by endpoint
+            const operation = props.document.operations.find(
+              (op) =>
+                op.method === prepareFunction.endpoint.method &&
+                op.path === prepareFunction.endpoint.path,
+            );
+            if (!operation) return null;
 
-  // Create a HashMap of routes by method and path for quick lookup
-  const routeMap: HashMap<AutoBeOpenApi.IEndpoint, IHttpMigrateRoute> =
-    new HashMap<AutoBeOpenApi.IEndpoint, IHttpMigrateRoute>();
-  app.routes.forEach((route) => {
-    if (route.method === "head") return;
-    const endpoint: AutoBeOpenApi.IEndpoint = {
-      method: route.method,
-      path: route.path,
+            const event: AutoBeTestWriteEvent = await process(ctx, {
+              prepareFunction,
+              operation,
+              progress,
+              promptCacheKey,
+              instruction: props.instruction,
+            });
+            ctx.dispatch(event);
+
+            if (event.function.kind !== "generation")
+              throw new Error(
+                `Unexpected testWrite function kind: ${event.function.kind}`,
+              );
+
+            return {
+              prepareFunction,
+              operation,
+              event: event.function,
+            } satisfies IAutoBeTestWriteGenerationResult;
+          } catch {
+            return null;
+          }
+        },
+      ),
+    );
+
+  return result
+    .filter((r): r is IAutoBeTestWriteGenerationResult => r !== null)
+    .map((r) => r.event);
+};
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    prepareFunction: AutoBeTestWritePrepareFunction;
+    operation: AutoBeOpenApi.IOperation;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
+): Promise<AutoBeTestWriteEvent> {
+  const { prepareFunction, operation, progress, promptCacheKey } = props;
+
+  // Get artifacts for this specific operation
+  const artifacts: IAutoBeTestScenarioArtifacts =
+    await getTestScenarioArtifacts(ctx, {
+      endpoint: prepareFunction.endpoint,
+      dependencies: [],
+      functionName: prepareFunction.functionName,
+    });
+
+  const pointer: IPointer<IAutoBeTestWriteGenerationApplication.IProps | null> =
+    {
+      value: null,
     };
-    routeMap.set(endpoint, route);
+
+  const { metric, tokenUsage } = await ctx.conversate({
+    source: "testWrite",
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
+    promptCacheKey,
+    ...transformTestWriteGenerationHistory(
+      props.instruction,
+      prepareFunction,
+      operation,
+      artifacts,
+    ),
   });
 
-  for (const prepareFunction of props.preparedFunctions) {
-    // Find matching operation based on prepare function
-    const resourceName = prepareFunction.functionName.replace(
-      "prepare_random_",
-      "",
-    );
+  if (pointer.value === null)
+    throw new Error("Failed to create generation function.");
 
-    // Find create operation for this resource
-    const operation = operations.find(
-      (op) =>
-        op.method === "post" &&
-        op.path.includes(`/${resourceName}`) &&
-        op.requestBody?.typeName?.includes("ICreate") &&
-        op.responseBody?.typeName,
-    );
-
-    if (!operation || !operation.responseBody?.typeName) continue;
-
-    // Find the corresponding route to get SDK accessor
-    const endpoint: AutoBeOpenApi.IEndpoint = {
-      method: operation.method,
-      path: operation.path,
-    };
-    const route = routeMap.get(endpoint);
-
-    if (!route) continue;
-
-    const functionName = `generate_random_${resourceName}`;
-
-    // Generate the function content
-    const content = generateFunctionContent({
-      operation,
-      prepareFunctionName: prepareFunction.functionName,
-      actor: operation.authorizationActor,
-      responseTypeName: operation.responseBody.typeName,
-      sdkAccessor: route.accessor,
-    });
-
-    const location = `test/features/utils/generation/${resourceName}/${functionName}.ts`;
-
-    const generationFunction: AutoBeTestWriteGenerationFunction = {
+  return {
+    type: "testWrite",
+    id: v7(),
+    created_at: new Date().toISOString(),
+    function: {
       kind: "generation",
-      endpoint: operation,
+      endpoint: prepareFunction.endpoint,
       actor: operation.authorizationActor,
-      location,
-      functionName,
-      content,
-    };
+      location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
+      functionName: pointer.value.functionName,
+      content: pointer.value.revise.final ?? pointer.value.draft,
+    },
+    metric,
+    tokenUsage,
+    completed: ++progress.completed,
+    total: progress.total,
+    step: ctx.state().test?.step ?? 0,
+  } satisfies AutoBeTestWriteEvent;
+}
 
-    generationFunctions.push(generationFunction);
+function createController<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  build: (next: IAutoBeTestWriteGenerationApplication.IProps) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
 
-    const aggregate: AutoBeProcessAggregate =
-      AutoBeProcessAggregateFactory.createAggregate();
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeTestWriteGenerationApplication.IProps> =
+      typia.validate<IAutoBeTestWriteGenerationApplication.IProps>(input);
+    if (result.success === false) return result;
 
-    ctx.dispatch({
-      type: "testWrite",
-      id: v7(),
-      function: generationFunction,
-      step: ctx.state().test?.step ?? 0,
-      total: props.preparedFunctions.length,
-      completed: generationFunctions.length,
-      created_at: new Date().toISOString(),
-      ...aggregate,
+    const errors: IValidation.IError[] = validateEmptyCode({
+      functionName: result.data.functionName,
+      draft: result.data.draft,
+      revise: result.data.revise,
     });
-  }
 
-  return generationFunctions;
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
+
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+
+  return {
+    protocol: "class",
+    name: "testWriteGeneration",
+    application,
+    execute: {
+      generate: (next) => {
+        props.build(next);
+      },
+    } satisfies IAutoBeTestWriteGenerationApplication,
+  };
+}
+
+const collection = {
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteGenerationApplication, "chatgpt">({
+      validate: {
+        generate: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteGenerationApplication, "claude">({
+      validate: {
+        generate: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteGenerationApplication, "gemini">({
+      validate: {
+        generate: validate,
+      },
+    }),
 };
 
-const generateFunctionContent = (props: {
-  operation: AutoBeOpenApi.IOperation;
-  prepareFunctionName: string;
-  actor: string | null;
-  responseTypeName: string;
-  sdkAccessor: string[];
-}): string => {
-  const imports: string[] = [
-    `import api from "@ORGANIZATION/PROJECT-api";`,
-    `import { ${props.responseTypeName.split(".")[0]} } from "@ORGANIZATION/PROJECT-api/lib/structures/${props.responseTypeName.split(".")[0]}";`,
-  ];
-
-  if (props.actor) {
-    imports.push(
-      `import { authorize_${props.actor}_login } from "../authorize";`,
-    );
-  }
-
-  imports.push(`import { ${props.prepareFunctionName} } from "../prepare";`);
-
-  const resourceType = props.responseTypeName.split(".")[0];
-  const createType = `${resourceType}.ICreate`;
-
-  const functionBody = `
-${imports.join("\n")}
-
-export const ${props.prepareFunctionName.replace("prepare", "generate")} = async (
-    props: {
-        connection: api.IConnection,
-        input?: Partial<${createType}>
-    }
-): Promise<${props.responseTypeName}> => {
-    ${props.actor ? `await authorize_${props.actor}_login(props.connection);\n` : ""}
-    const prepared = ${props.prepareFunctionName}({
-        connection: props.connection,
-        input: props.input,
-    });
-    
-    const result: ${props.responseTypeName} = await api.functional.${props.sdkAccessor.join(".")}(
-        props.connection,
-        prepared
-    );
-    
-    return result;
-};`;
-
-  return functionBody.trim();
-};
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestWriteGenerationApplication.IProps>;
