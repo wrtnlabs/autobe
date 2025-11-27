@@ -55,7 +55,7 @@ export async function orchestrateRealizeTransformerPlan<
 
   const matrix: string[][] = divideArray({
     array: Array.from(dtoTypeNames),
-    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 4,
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
   });
   const result: AutoBeRealizeTransformerPlan[][] = await executeCachedBatch(
     ctx,
