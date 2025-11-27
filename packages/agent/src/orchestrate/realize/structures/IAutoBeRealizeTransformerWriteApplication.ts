@@ -94,21 +94,13 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    *
    * Follows plan → draft → revise pattern to ensure type safety and correct
    * field mappings.
+   *
+   * Note: The Prisma schema name is provided as input from the planning phase,
+   * so it doesn't need to be returned in the response.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
     type: "complete";
-
-    /**
-     * Prisma schema name being transformed from.
-     *
-     * The source Prisma table/model name that provides the data for this
-     * transformer. The AI agent determines this by analyzing the Prisma schemas
-     * and DTO type definition to find the appropriate database table.
-     *
-     * Example: "shopping_sale_snapshot_unit_stocks"
-     */
-    prismaSchemaName: string;
 
     /**
      * Transformer implementation plan and strategy.

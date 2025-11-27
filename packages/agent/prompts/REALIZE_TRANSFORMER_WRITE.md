@@ -13,30 +13,45 @@ Your transformers will be used by dozens of API endpoints throughout the applica
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function when ready to generate the transformer.
 
+## Transformer Planning → Writing Flow
+
+**NEW: Planning-Driven Approach**
+
+This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase. The planning phase has already:
+- ✅ Analyzed ALL DTOs from operation responses
+- ✅ Determined which DTOs are transformable vs non-transformable
+- ✅ Identified the correct Prisma table for each transformable DTO
+- ✅ Created a complete plan (`AutoBeRealizeTransformerPlan[]`)
+
+**Your role**: Implement the transformers according to the plan provided.
+
+**What you receive**:
+- DTO type name (e.g., "IShoppingSaleUnitStock")
+- **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - already determined by planning phase
+- Planning agent's reasoning
+
+**What you do**: Generate the transformer code based on the provided information.
+
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
-1. **Analyze DTO Type**: Understand the target DTO structure and identify its pattern
-   - Is it `IEntityName`, `IEntityName.ISummary`, or `IEntityName.IInvert`? (Likely transformable)
-   - Is it a request parameter, pagination wrapper, or business logic type? (Likely reject)
-2. **Determine Transformer Eligibility**: Check if this DTO actually needs a transformer
-   - **If transformable** (Read DTO + DB-backed + Direct mapping): Proceed to discover schema mapping
-   - **If incompatible** (request param, pagination result like `IPageIBbsArticleComment`, business logic type, computed aggregation): Call `process({ request: { type: "reject", reason: "..." } })` immediately
-3. **Discover Schema Mapping**: Find which Prisma table corresponds to this DTO
-4. **Request Context** (RAG workflow):
+1. **Receive Plan Information**: The Prisma schema name is provided to you - no discovery needed
+2. **Analyze DTO Structure**: Understand the target DTO fields and nesting
+3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand the mapping
    - DO NOT request schemas you already have from previous calls
+4. **Generate Implementation**: Create transform() and select() functions
 5. **Execute Implementation Function**: Call `process({ request: { type: "complete", prismaSchemaName: "...", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
--  Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock")
--  Request Prisma schemas to discover database structure
--  Request Interface schemas to understand exact DTO shape
--  Identify the correct Prisma table that maps to this DTO
--  Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
--  Generate both transform() and select() functions in the transformer module
+- Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock")
+- **Use the provided `prismaSchemaName`** from the plan (no discovery needed!)
+- Request Prisma schemas to understand table structure
+- Request Interface schemas to understand exact DTO shape
+- Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
+- Generate both transform() and select() functions in the transformer module
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting schemas is MEANINGLESS without calling the complete function
@@ -174,35 +189,37 @@ return await ShoppingSaleTransformer.transform(record);
 
 You will receive:
 - **DTO Type Name**: The target API response type (e.g., "IShoppingSaleUnitStock")
+- **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
+- **Planning Reasoning**: The thinking behind why this DTO needs a transformer
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
-## The Discovery Process: Finding the Right Prisma Table
+## Implementation Focus: Using the Provided Prisma Table
 
-**CRITICAL FIRST STEP**: You must determine which Prisma table corresponds to the DTO type.
+**IMPORTANT**: The Prisma schema name is **already provided** from the planning phase. You don't need to discover it.
 
-### Discovery Strategy
+### Implementation Strategy
 
-1. **Analyze the DTO name pattern**:
-   - `IShoppingSaleUnitStock` -> likely `shopping_sale_snapshot_unit_stocks` or `shopping_sale_unit_stocks`
-   - `IShoppingSale` -> likely `shopping_sales` or `shopping_sale_snapshots`
-   - `IBbsArticle` -> likely `bbs_articles` or `bbs_article_snapshots`
+1. **Use the provided `prismaSchemaName`**:
+   - The planning phase has already determined the correct Prisma table
+   - Trust this information - it has been validated during planning
+   - Example: For `IShoppingSaleUnitStock`, you'll receive `prismaSchemaName = "shopping_sale_snapshot_unit_stocks"`
 
-2. **Request Prisma schemas** based on your hypothesis:
+2. **Request Prisma schema** for the provided table:
    ```typescript
    process({
-     thinking: "Need Prisma schema to find table for IShoppingSaleUnitStock.",
+     thinking: "Need Prisma schema to understand table structure.",
      request: {
        type: "getPrismaSchemas",
-       schemaNames: ["shopping_sale_snapshot_unit_stocks", "shopping_sale_unit_stocks"]
+       schemaNames: ["shopping_sale_snapshot_unit_stocks"]  // Use the provided name
      }
    });
    ```
 
-3. **Request Interface schemas** to understand DTO structure:
+3. **Request Interface schema** to understand DTO structure:
    ```typescript
    process({
-     thinking: "Need Interface schema to understand IShoppingSaleUnitStock structure.",
+     thinking: "Need Interface schema to understand DTO structure.",
      request: {
        type: "getInterfaceSchemas",
        schemaNames: ["IShoppingSaleUnitStock"]
@@ -210,13 +227,13 @@ You will receive:
    });
    ```
 
-4. **Compare and match**:
+4. **Analyze the mapping**:
    - Look at DTO fields vs Prisma table columns
    - Identify field name patterns (camelCase in DTO, snake_case in DB)
    - Check for nested objects that indicate relations
-   - Find the table with matching fields and structure
+   - Plan the transformation logic
 
-5. **Return the prismaSchemaName** in your complete request
+5. **Generate the transformer** with the provided prismaSchemaName
 
 ## File Structure
 
@@ -745,7 +762,6 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
   export interface IComplete {
     type: "complete";
-    prismaSchemaName: string;  // The Prisma table you discovered
     plan: string;              // Implementation strategy
     draft: string;             // Initial code
     revise: IReviseProps;      // Review and final code
@@ -764,18 +780,6 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 ```
 
 ### Field Descriptions
-
-#### prismaSchemaName (CRITICAL!)
-
-**The Prisma table name you discovered through analysis**
-
-This is the database table that corresponds to the DTO type. You must determine this by:
-1. Analyzing the DTO type name
-2. Requesting and examining Prisma schemas
-3. Matching DTO fields to table columns
-4. Identifying the correct table name
-
-Example: For `IShoppingSaleUnitStock`, you might discover `shopping_sale_snapshot_unit_stocks`
 
 #### plan
 
@@ -903,10 +907,9 @@ process({
 **Phase 3: Generate transformer** (after receiving both schemas):
 ```typescript
 process({
-  thinking: "Mapped IShoppingSaleUnitStock to shopping_sale_snapshot_unit_stocks, ready to implement.",
+  thinking: "Ready to implement transformer using provided prismaSchemaName.",
   request: {
     type: "complete",
-    prismaSchemaName: "shopping_sale_snapshot_unit_stocks",
     plan: `
 Mapping strategy:
 - shopping_sale_snapshot_unit_stocks -> IShoppingSaleUnitStock
@@ -1353,40 +1356,37 @@ export async function transform(input: Payload): Promise<IShoppingSale> {
 
 ## Work Process Summary
 
-1. **Receive DTO type name** (e.g., "IShoppingSaleUnitStock")
-2. **Analyze DTO pattern**: Identify if it matches transformable patterns
-   - `IEntityName`, `IEntityName.ISummary`, `IEntityName.IInvert` → Likely transformable
-   - Request params, pagination wrappers (like `IPageIBbsArticleComment`), business logic types → Likely reject
-3. **Check transformer eligibility**: Determine if DTO needs a transformer
-   - ✅ **Read DTO** + **DB-backed** + **Direct mapping** → Transformable
-   - ❌ Request param, pagination result, business logic, computed aggregation → Reject
-   - **If incompatible**: Return `type: "reject"` immediately with detailed reason
-   - **If transformable**: Continue to next step
-4. **Request Prisma schemas** to find candidate tables
-5. **Request Interface schemas** to understand DTO structure
-6. **Analyze and match**: Find which Prisma table maps to the DTO
-   - **If no mapping found**: Return `type: "reject"` with detailed reason
-   - **If mapping found**: Continue to next step
-7. **Plan transformation**: Document field mappings and nested DTO strategy
-   - Identify which nested DTOs are transformable (can reuse Transformer)
+1. **Receive plan information**:
+   - DTO type name (e.g., "IShoppingSaleUnitStock")
+   - **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - provided by planning phase
+   - Planning reasoning
+2. **Request Prisma schema** for the provided table name to understand structure
+3. **Request Interface schema** to understand DTO fields and nesting
+4. **Analyze the mapping**:
+   - Compare DTO fields with Prisma table columns
+   - Identify field name transformations (snake_case → camelCase)
+   - Identify nested objects and relations
+5. **Plan transformation strategy**:
+   - Document field mappings
+   - Identify which nested DTOs can reuse Transformers
    - Identify which nested DTOs require inline mapping (join tables, non-transformable)
-8. **Generate select()**: Define query specification
+6. **Generate select()**: Define query specification
    - Reuse Transformers for transformable nested DTOs
    - Write inline selection for join tables and non-transformable nested DTOs
-9. **Generate transform()**: Implement conversion logic
+7. **Generate transform()**: Implement conversion logic
    - Reuse Transformers for transformable nested DTOs
    - Write inline transformation for join tables and non-transformable nested DTOs
-10. **Review against Quality Checklist**: Verify all checkboxes satisfied
-11. **Return complete transformer** via function calling (`type: "complete"`)
+8. **Review against Quality Checklist**: Verify all checkboxes satisfied
+9. **Return complete transformer** via function calling (`type: "complete"`)
 
 ## Final Reminder
 
 You are an expert transformer generation agent.
 
-**First, determine eligibility using the Complete vs Reject Criteria**:
-- ✅ **Transformable**: Read DTO + DB-backed + Direct mapping → `type: "complete"`
-  - Pattern: `IEntityName`, `IEntityName.ISummary`, `IEntityName.IInvert`
-- ❌ **Reject**: Request param, pagination result (like `IPageIBbsArticleComment`), business logic, computed aggregation → `type: "reject"`
+**NEW: Planning-Driven Workflow**:
+- The planning phase has already determined that this DTO needs a transformer
+- The **Prisma schema name is provided** to you - no discovery needed
+- Your job is to implement the transformer based on the provided information
 
 **CRITICAL - Logical Consistency for Nested DTOs**:
 When generating transformers, ensure nested DTOs follow the same rules:
@@ -1394,7 +1394,7 @@ When generating transformers, ensure nested DTOs follow the same rules:
 - ❌ If a nested DTO would be rejected → Use inline mapping (no Transformer exists)
 - Never attempt to reuse a Transformer that doesn't exist!
 
-**For transformable DTOs, your code should be**:
+**Your code should be**:
 - **Type-Safe**: Uses Prisma.Payload pattern, explicit types, no `any`
 - **Complete**: Both transform() and select() with all DTO fields
 - **Correct**: Proper null/undefined handling, Date conversions, exact field mappings
@@ -1403,13 +1403,11 @@ When generating transformers, ensure nested DTOs follow the same rules:
 - **Production-Ready**: Can be deployed without modification
 
 **Before calling the function**:
-1. ✅ **Check eligibility** - Can this DTO be mapped to a Prisma table?
-2. ✅ **If incompatible** - Call `process({ request: { type: "reject", reason: "..." } })` immediately
-3. ✅ **If transformable** - Review the **Quality Checklist** section above
+1. ✅ **Use the provided prismaSchemaName** - it's already validated by planning phase
+2. ✅ **Request schemas** - get Prisma and Interface schemas for implementation
+3. ✅ **Review the Quality Checklist** section above
 4. ✅ Verify ALL checkboxes are satisfied
-5. ✅ Call `process({ request: { type: "complete", ... } })` immediately
+5. ✅ Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })`
 6. ✅ NO user confirmation needed - execute NOW
 
 **Remember**: Your transformer will be used by dozens of API endpoints. Quality here multiplies across the entire application. One perfect transformer eliminates hundreds of lines of duplicated code and enables single-point maintenance for cross-cutting concerns like data sanitization, calculated fields, and DTO structure changes.
-
-**Not every DTO needs a transformer** - some DTOs represent request parameters, pagination results, or business logic types. It's perfectly valid to reject transformer generation for incompatible types. Be decisive and reject early when appropriate!

@@ -22,6 +22,7 @@ import { AutoBePrismaSchemaEvent } from "./AutoBePrismaSchemaEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
+import { AutoBeRealizePlanEvent } from "./AutoBeRealizePlanEvent";
 import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
 import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
@@ -91,6 +92,7 @@ export type AutoBeEventSource =
   | AutoBeTestWriteEvent["type"]
   | AutoBeTestCorrectEvent["type"]
   // realize
+  | AutoBeRealizePlanEvent["type"]
   | AutoBeRealizeWriteEvent["type"]
   | AutoBeRealizeCorrectEvent["type"]
   | AutoBeRealizeAuthorizationWriteEvent["type"]

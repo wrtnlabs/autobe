@@ -6,11 +6,8 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformRealizeTransformerWriteHistories = (props: {
+export const transformRealizeTransformerPlanHistories = (props: {
   state: AutoBeState;
-  dtoTypeName: string;
-  prismaSchemaName: string;
-  planThinking: string;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   >;
@@ -102,7 +99,7 @@ export const transformRealizeTransformerWriteHistories = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
+        text: AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_PLAN,
       },
       ...props.preliminary.getHistories(),
       {
@@ -112,40 +109,38 @@ export const transformRealizeTransformerWriteHistories = (props: {
         text: StringUtil.trim`
           I understand the task.
 
-          This is the planning-driven workflow where the Prisma schema name is already provided to me.
+          I need to analyze ALL DTOs from the operation response and create a complete plan that determines which transformers to generate.
 
-          **My responsibilities**:
-          - Use the provided Prisma schema name from the planning phase
-          - Create transformer module that converts Prisma results to API DTOs (DB → API)
-          - Provide transform() function for data conversion
-          - Provide select() function for Prisma query specification
-          - Use proper TypeScript types from Prisma payload types
+          **My approach**:
+          1. Extract all candidate DTOs from operation response (including nested DTOs)
+          2. Request Prisma schemas to understand database structure
+          3. Request Interface schemas to understand DTO shapes
+          4. Analyze each DTO to determine if it's transformable or not
+          5. Generate complete plan including ALL DTOs with appropriate prismaSchemaName
 
-          I will follow all type safety rules and use the provided information to implement the transformer.
+          **For transformable DTOs**: Set prismaSchemaName to actual Prisma table name
+          **For non-transformable DTOs**: Set prismaSchemaName to null
+
+          I will include ALL DTOs in the plan with their analysis results.
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      Create a transformer module for the DTO type: ${props.dtoTypeName}
-
-      **Plan Information from REALIZE_TRANSFORMER_PLAN phase**:
-
-      - **Prisma Schema Name**: ${props.prismaSchemaName}
-      - **Planning Reasoning**: ${props.planThinking}
+      Analyze the operation response DTOs and create a complete transformer plan.
 
       **Your task**:
+      1. Identify ALL DTO types from the operation response (including nested DTOs)
+      2. Request necessary Prisma and Interface schemas to understand mappings
+      3. Determine which DTOs are transformable (map to Prisma tables) vs non-transformable
+      4. Generate complete plan including ALL DTOs
 
-      1. Use the provided Prisma schema name: \`${props.prismaSchemaName}\`
-      2. Request Prisma schemas to understand the table structure
-      3. Request Interface schemas to understand the DTO structure
-      4. Analyze field mappings between Prisma columns and DTO properties
-      5. Generate complete TypeScript code that includes:
-         - A namespace with transform() and select() functions
-         - Proper Prisma payload types
-         - Type-safe field mappings from DB to DTO
-         - Handling of nested relationships if needed
+      **Remember**:
+      - Include ALL DTOs in your plan (both transformable and non-transformable)
+      - Transformable DTOs: Set prismaSchemaName to actual Prisma table name
+      - Non-transformable DTOs: Set prismaSchemaName to null
+      - Analyze nested DTOs recursively (category, tags, etc.)
 
-      Follow all coding standards and type safety rules. The Prisma table name is already determined - use it directly.
+      Create the complete plan now.
     `,
   };
 };

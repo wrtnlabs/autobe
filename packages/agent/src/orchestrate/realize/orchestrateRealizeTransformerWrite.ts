@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeRealizeTransformerPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import {
@@ -25,46 +26,36 @@ import { IAutoBeRealizeTransformerWriteApplication } from "./structures/IAutoBeR
 
 export async function orchestrateRealizeTransformerWrite<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeWriteEvent[]> {
+>(
+  ctx: AutoBeContext<Model>,
+  plans: AutoBeRealizeTransformerPlan[],
+): Promise<AutoBeRealizeWriteEvent[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize transformer write without interface.");
 
   const document: AutoBeOpenApi.IDocument = history.document;
-  const candidates: string[] = Object.keys(document.components.schemas).filter(
-    (key) =>
-      key !== "IAuthorizationToken" &&
-      key.startsWith("IPage") === false &&
-      key.endsWith(".IRequest") === false &&
-      key.endsWith(".ICreate") === false &&
-      key.endsWith(".IUpdate") === false &&
-      key.endsWith(".ILogin") === false &&
-      key.endsWith(".IJoin") === false &&
-      key.endsWith(".IRefresh") === false &&
-      key.endsWith(".IAuthorized") === false,
-  );
+
   console.log(
-    "candidates",
-    Object.fromEntries(
-      candidates.map((key) => [
-        key,
-        (document.components.schemas[key] as any)["x-autobe-prisma-schema"] ??
-          null,
-      ]),
-    ),
+    "transformer plans",
+    plans.map((p) => ({
+      dtoTypeName: p.dtoTypeName,
+      prismaSchemaName: p.prismaSchemaName,
+      thinking: p.thinking,
+    })),
   );
 
   const progress: AutoBeProgressEventBase = {
-    total: candidates.length,
+    total: plans.length,
     completed: 0,
   };
   const result: Array<AutoBeRealizeWriteEvent | false> =
     await executeCachedBatch(
       ctx,
-      candidates.map(
-        (dtoTypeName) => (promptCacheKey) =>
+      plans.map(
+        (plan) => (promptCacheKey) =>
           process(ctx, {
-            dtoTypeName,
+            plan,
             promptCacheKey,
             progress,
           }),
@@ -76,19 +67,24 @@ export async function orchestrateRealizeTransformerWrite<
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    dtoTypeName: string;
+    plan: AutoBeRealizeTransformerPlan;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeWriteEvent | false> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const dtoTypeName = props.plan.dtoTypeName;
+  const prismaSchemaName = props.plan.prismaSchemaName;
+
   console.log(
-    "progress",
-    props.dtoTypeName,
-    (document.components.schemas[props.dtoTypeName] as any)[
-      "x-autobe-prisma-schema"
-    ],
+    "processing transformer",
+    dtoTypeName,
+    "->",
+    prismaSchemaName,
+    "thinking:",
+    props.plan.thinking,
   );
+
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -99,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
     kinds: ["prismaSchemas", "interfaceSchemas"],
     local: {
       interfaceSchemas: {
-        [props.dtoTypeName]: document.components.schemas[props.dtoTypeName],
+        [dtoTypeName]: document.components.schemas[dtoTypeName],
       },
     },
   });
@@ -116,7 +112,9 @@ async function process<Model extends ILlmSchema.Model>(
       controller: createController({
         model: ctx.model,
         schemas: document.components.schemas,
-        dtoTypeName: props.dtoTypeName,
+        dtoTypeName,
+        prismaSchemaName,
+        planThinking: props.plan.thinking,
         build: (next) => {
           pointer.value = next;
         },
@@ -126,7 +124,9 @@ async function process<Model extends ILlmSchema.Model>(
       promptCacheKey: props.promptCacheKey,
       ...transformRealizeTransformerWriteHistories({
         state: ctx.state(),
-        dtoTypeName: props.dtoTypeName,
+        dtoTypeName,
+        prismaSchemaName,
+        planThinking: props.plan.thinking,
         preliminary,
       }),
     });
@@ -134,7 +134,7 @@ async function process<Model extends ILlmSchema.Model>(
       if (pointer.value.type === "reject") return out(result)(false);
       const content: string =
         await AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
-          dtoTypeName: props.dtoTypeName,
+          dtoTypeName,
           schemas: document.components.schemas,
           code: pointer.value.revise.final ?? pointer.value.draft,
         });
@@ -143,10 +143,10 @@ async function process<Model extends ILlmSchema.Model>(
         type: "realizeWrite",
         function: {
           kind: "transformer",
-          dtoTypeName: props.dtoTypeName,
-          prismaSchemaName: pointer.value.prismaSchemaName,
+          dtoTypeName,
+          prismaSchemaName,
           location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
-            props.dtoTypeName,
+            dtoTypeName,
           )}.ts`,
           neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
           content,
@@ -169,6 +169,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   dtoTypeName: string;
+  prismaSchemaName: string;
+  planThinking: string;
   build: (
     next:
       | IAutoBeRealizeTransformerWriteApplication.IComplete
