@@ -61,6 +61,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      `import { PasswordUtil } from "../utils/PasswordUtil";`,
     ];
     return imports;
   }

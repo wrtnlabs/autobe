@@ -59,12 +59,12 @@ export const validate_agent_realize_collector_write = async (props: {
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector`,
     files: {
       ...(await agent.getFiles()),
+      ...AutoBeCompilerRealizeTemplate,
       ...Object.fromEntries(
         writes
           .filter((w) => w !== null)
           .map((w) => [w.function.location, w.function.content]),
       ),
-      "tsconfig.json": AutoBeCompilerRealizeTemplate["tsconfig.json"],
       "pnpm-workspace.yaml": "",
       "src/api/structures/IEntity.ts": StringUtil.trim`
         import { tags } from "typia";

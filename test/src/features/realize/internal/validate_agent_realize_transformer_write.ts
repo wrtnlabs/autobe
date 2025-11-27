@@ -58,12 +58,12 @@ export const validate_agent_realize_transformer_write = async (props: {
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-transformer`,
     files: {
       ...(await agent.getFiles()),
+      ...AutoBeCompilerRealizeTemplate,
       ...Object.fromEntries(
         writes
           .filter((w) => w !== null)
           .map((w) => [w.function.location, w.function.content]),
       ),
-      "tsconfig.json": AutoBeCompilerRealizeTemplate["tsconfig.json"],
       "pnpm-workspace.yaml": "",
     },
   });

@@ -319,7 +319,92 @@ export async function collect(props: {
 }
 ```
 
-**Pass to Collector only what's needed for data preparation:**
+**CRITICAL: Strict Props Parameter Rules**
+
+**ABSOLUTE PROHIBITION - Additional Parameters Are FORBIDDEN**:
+
+Collectors accept **ONLY** the following parameter types:
+1. ✅ **`body`**: The Create DTO (e.g., `IShoppingSale.ICreate`)
+2. ✅ **References from `AutoBeRealizeCollectorPlan.references`**: IEntity parameters from path parameters or auth context
+3. ✅ **Nested collector context**: `sequence`, `options`, or other data passed from parent collectors
+
+**FORBIDDEN - You MUST NOT add these**:
+- ❌ **Transformed/derived fields** (e.g., `passwordHash`, `hashedPassword`)
+- ❌ **Computed values** (e.g., `fullName`, `displayName`)
+- ❌ **Processed data** (e.g., `encryptedData`, `sanitizedContent`)
+
+**Why these are forbidden:**
+
+The Create DTO (`body`) already contains ALL input data from the API request. If you need to transform data (like hashing a password), **perform the transformation INSIDE the collector**, not by passing additional parameters.
+
+**WRONG - Passing transformed data as parameter**:
+```typescript
+// ❌ NEVER DO THIS - passwordHash should NOT be a separate parameter
+export async function collect(props: {
+  body: IShoppingCustomer.ICreate;  // Has password field
+  passwordHash: string;              // ❌ FORBIDDEN - derived from body.password
+}) {
+  return {
+    id: v4(),
+    email: props.body.email,
+    password_hash: props.passwordHash,  // ❌ Wrong approach
+    // ...
+  } satisfies Prisma.shopping_customersCreateInput;
+}
+```
+
+**CORRECT - Transform data inside collector**:
+```typescript
+// ✅ CORRECT - Hash password inside collector
+export async function collect(props: {
+  body: IShoppingCustomer.ICreate;  // Has password field
+}) {
+  return {
+    id: v4(),
+    email: props.body.email,
+    password_hash: await PasswordUtil.hash(props.body.password),  // ✅ Transform inside
+    // ...
+  } satisfies Prisma.shopping_customersCreateInput;
+}
+```
+
+**More transformation examples**:
+```typescript
+// Password hashing
+password_hash: await PasswordUtil.hash(props.body.password),
+
+// JSON encoding
+metadata_json: JSON.stringify(props.body.metadata),
+
+// String concatenation
+full_name: `${props.body.firstName} ${props.body.lastName}`,
+
+// Date parsing
+birth_date: new Date(props.body.birthDate),
+
+// URL encoding
+slug: encodeURIComponent(props.body.title.toLowerCase()),
+```
+
+**The ONLY valid additional parameters** (besides `body` and references):
+
+**Nested collector context** - Data passed from parent collectors:
+```typescript
+// ✅ Valid - sequence for array position
+export async function collect(props: {
+  body: IShoppingSaleTag.ICreate;
+  sequence: number;  // ✅ OK - parent provides array index
+}) { ... }
+
+// ✅ Valid - shared context from parent
+export async function collect(props: {
+  body: IShoppingSaleUnitStock.ICreate;
+  options: ReturnType<typeof OptionCollector.collect>[];  // ✅ OK - shared data
+  sequence: number;
+}) { ... }
+```
+
+**Rule**: If it can be computed from `body`, compute it inside the collector. Only accept external data that truly comes from outside sources (path params, auth context, parent collector context).
 
 **Common props patterns:**
 
@@ -357,10 +442,10 @@ export async function collect(props: {
 ```typescript
 export async function collect(props: {
   body: IShoppingSaleReview.ICreate;
-  sale: IEntity;      // ✅ Resolved entity, not saleId: string
-  customer: IEntity;  // ✅ From auth - logged-in customer
-  session: IEntity;   // ✅ From auth - current session
-  sequence: number;   // Position in array
+  sale: IEntity;      // ✅ From references - path parameter
+  customer: IEntity;  // ✅ From references - auth actor
+  session: IEntity;   // ✅ From references - auth session
+  sequence: number;   // ✅ Nested context - array position
 }) {
   return {
     id: v4(),
@@ -373,12 +458,12 @@ export async function collect(props: {
 }
 ```
 
-4. **Complex context** (nested collectors, shared data):
+4. **Nested CREATE with shared context**:
 ```typescript
 export async function collect(props: {
   body: IShoppingSaleUnitStock.ICreate;
-  options: ReturnType<typeof OptionCollector.collect>[];  // Shared context
-  sequence: number;
+  options: ReturnType<typeof OptionCollector.collect>[];  // ✅ Nested context - shared data
+  sequence: number;  // ✅ Nested context - array position
 }) {
   return {
     id: v4(),
@@ -397,25 +482,6 @@ export async function collect(props: {
   } satisfies Prisma.shopping_sale_snapshot_unit_stocksCreateInput;
 }
 ```
-
-**How to decide what to include in props:**
-
-1. **Review the Operation specification** (OpenAPI document)
-   - What parameters does the endpoint receive?
-   - What authentication is required?
-   - What path parameters exist?
-
-2. **Identify required database fields** (Prisma schema)
-   - Which fields need values from `auth`? (user_id, tenant_id)
-   - Which fields come from `body`? (DTO fields)
-   - Which fields need parent context? (foreign keys, sequence)
-
-3. **Design minimal props**
-   - Include ONLY what's needed for data preparation
-   - Don't pass entire `auth` if you only need `auth.id`
-   - Use specific types over generic objects
-
-**Rule of thumb**: If a Prisma field's value comes from outside the DTO, add that source to props.
 
 ### 2. The collect() Function - Data Collection
 

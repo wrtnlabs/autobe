@@ -6,7 +6,7 @@ export namespace PasswordUtil {
    * module for password hashing
    */
   // Fixed salt for password hashing (consistent across all operations)
-  export const FIXED_SALT: "autobe-fixed-salt-2024" = "autobe-fixed-salt-2024";
+  export const FIXED_SALT: string = "autobe-fixed-salt-2024";
 
   /**
    * Hash a plain password using crypto.pbkdf2 All authentication operations
