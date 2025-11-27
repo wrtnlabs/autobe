@@ -16,6 +16,9 @@ export const transformRealizeTransformerWriteHistories = (props: {
     "prismaSchemas" | "interfaceSchemas"
   >;
 }): IAutoBeOrchestrateHistory => {
+  const modulo: string = AutoBeRealizeTransformerProgrammer.getName(
+    props.plan.dtoTypeName,
+  );
   return {
     histories: [
       {
@@ -30,16 +33,37 @@ export const transformRealizeTransformerWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
+          Here is the declaration of the collector function for
+          the DTO type ${props.plan.dtoTypeName} and its corresponding
+          Prisma schema ${props.plan.prismaSchemaName}:
+
+          \`\`\`typescript
+          export namespace ${modulo} {
+            export async function transform(input: Payload): Promise<${props.plan.dtoTypeName}> {
+              ...
+            }
+
+            export function select() {
+              return {
+                ...
+              } satisfies Prisma.${props.plan.prismaSchemaName}FindManyArgs;
+            }
+
+            export type Payload = Prisma.${props.plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
+          }
+          \`\`\`
+
           Here is the neighbor transformers you can utilize:
 
           Transformer Name | DTO Type Name | Prisam Schema Name 
-          ---------------- | ------------- | -------------------
+          -----------------|---------------|--------------------
           ${props.neighbors
-            .map(
-              (n) =>
-                `- ${AutoBeRealizeTransformerProgrammer.getName(
-                  n.dtoTypeName,
-                )} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
+            .map((n) =>
+              [
+                AutoBeRealizeTransformerProgrammer.getName(n.dtoTypeName),
+                n.dtoTypeName,
+                n.prismaSchemaName,
+              ].join(" | "),
             )
             .join("\n")}
         `,

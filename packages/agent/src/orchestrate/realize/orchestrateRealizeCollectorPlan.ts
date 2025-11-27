@@ -3,8 +3,8 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeRealizeCollectorPlan,
   AutoBeRealizePlanEvent,
-  AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import {
@@ -23,26 +23,26 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeTransformerPlanHistories } from "./histories/transformRealizeTransformerPlanHistories";
-import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
-import { IAutoBeRealizeTransformerPlanApplication } from "./structures/IAutoBeRealizeTransformerPlanApplication";
+import { transformRealizeCollectorPlanHistories } from "./histories/transformRealizeCollectorPlanHistories";
+import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
+import { IAutoBeRealizeCollectorPlanApplication } from "./structures/IAutoBeRealizeCollectorPlanApplication";
 
-export async function orchestrateRealizeTransformerPlan<
+export async function orchestrateRealizeCollectorPlan<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeTransformerPlan[]> {
+): Promise<AutoBeRealizeCollectorPlan[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
-    throw new Error("Cannot realize transformer write without interface.");
+    throw new Error("Cannot realize collector plan without interface.");
 
   const document: AutoBeOpenApi.IDocument = history.document;
   const dtoTypeNames: string[] = Object.keys(
     document.components.schemas,
-  ).filter(AutoBeRealizeTransformerProgrammer.filter);
+  ).filter(AutoBeRealizeCollectorProgrammer.filter);
   const prismaSchemaNames: Set<string> = new Set(
     ctx
       .state()
@@ -57,7 +57,7 @@ export async function orchestrateRealizeTransformerPlan<
     array: Array.from(dtoTypeNames),
     capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
   });
-  const result: AutoBeRealizeTransformerPlan[][] = await executeCachedBatch(
+  const result: AutoBeRealizeCollectorPlan[][] = await executeCachedBatch(
     ctx,
     matrix.map(
       (it) => (promptCacheKey) =>
@@ -82,16 +82,21 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeTransformerPlan[]> {
+): Promise<AutoBeRealizeCollectorPlan[]> {
   const preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
+    "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
     state: ctx.state(),
     source: SOURCE,
     application:
-      typia.json.application<IAutoBeRealizeTransformerPlanApplication>(),
-    kinds: ["prismaSchemas", "interfaceSchemas"],
+      typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
+    kinds: ["prismaSchemas", "interfaceSchemas", "interfaceOperations"],
     local: {
+      interfaceOperations: props.document.operations.filter(
+        (op) =>
+          op.requestBody !== null &&
+          props.dtoTypeNames.includes(op.requestBody.typeName),
+      ),
       interfaceSchemas: Object.fromEntries(
         Object.entries(props.document.components.schemas).filter(([key]) =>
           props.dtoTypeNames.includes(key),
@@ -100,7 +105,7 @@ async function process<Model extends ILlmSchema.Model>(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IComplete | null> =
       {
         value: null,
       };
@@ -116,21 +121,22 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerPlanHistories({
+      promptCacheKey: "collector-plan",
+      ...transformRealizeCollectorPlanHistories({
         state: ctx.state(),
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
+    const plans: AutoBeRealizeCollectorPlan[] = pointer.value.plans
       .filter((p) => p.prismaSchemaName !== null)
       .map((p) => ({
-        kind: "transformer" as const,
+        kind: "collector" as const,
         dtoTypeName: p.dtoTypeName,
         thinking: p.thinking,
         prismaSchemaName: p.prismaSchemaName!,
+        references: p.references,
       }));
     const event: AutoBeRealizePlanEvent = {
       type: "realizePlan",
@@ -152,16 +158,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   prismaSchemaNames: Set<string>;
   dtoTypeNames: string[];
-  build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
+    "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
   >;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
-      typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);
+    const result: IValidation<IAutoBeRealizeCollectorPlanApplication.IProps> =
+      typia.validate<IAutoBeRealizeCollectorPlanApplication.IProps>(input);
     if (result.success === false || result.data.request.type !== "complete")
       return result;
 
@@ -225,25 +231,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeRealizeTransformerPlanApplication,
+    } satisfies IAutoBeRealizeCollectorPlanApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "chatgpt">({
+    typia.llm.application<IAutoBeRealizeCollectorPlanApplication, "chatgpt">({
       validate: {
         process: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "claude">({
+    typia.llm.application<IAutoBeRealizeCollectorPlanApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "gemini">({
+    typia.llm.application<IAutoBeRealizeCollectorPlanApplication, "gemini">({
       validate: {
         process: validate,
       },
@@ -252,6 +258,6 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeRealizeTransformerPlanApplication.IProps>;
+) => IValidation<IAutoBeRealizeCollectorPlanApplication.IProps>;
 
 const SOURCE = "realizePlan" satisfies AutoBeEventSource;
