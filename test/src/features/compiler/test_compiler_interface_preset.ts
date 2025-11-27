@@ -11,6 +11,7 @@ export const test_compiler_interface_preset = (): void => {
     "keys",
     Object.keys(preset).sort(),
     [
+      "IEntity",
       "IPage.IPagination",
       "IPage.IRequest",
       "IAuthorizationToken",
