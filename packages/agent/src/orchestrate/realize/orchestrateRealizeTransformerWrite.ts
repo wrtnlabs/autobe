@@ -103,9 +103,8 @@ async function process<Model extends ILlmSchema.Model>(
       promptCacheKey: props.promptCacheKey,
       ...transformRealizeTransformerWriteHistories({
         state: ctx.state(),
-        dtoTypeName,
-        prismaSchemaName,
-        planThinking: props.plan.thinking,
+        plan: props.plan,
+        neighbors: props.neighbors,
         preliminary,
       }),
     });

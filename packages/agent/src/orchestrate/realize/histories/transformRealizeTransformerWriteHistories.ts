@@ -1,3 +1,4 @@
+import { AutoBeRealizeTransformerPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -8,94 +9,12 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformRealizeTransformerWriteHistories = (props: {
   state: AutoBeState;
-  dtoTypeName: string;
-  prismaSchemaName: string;
-  planThinking: string;
+  plan: AutoBeRealizeTransformerPlan;
+  neighbors: AutoBeRealizeTransformerPlan[];
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   >;
 }): IAutoBeOrchestrateHistory => {
-  if (props.state.analyze === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Requirement analysis is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the requirement analysis.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.analyze.step !== props.state.prisma.step)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has not been updated",
-            "for the latest requirement analysis.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma.compiled.type !== "success")
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has failed to compile.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.interface === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Interface generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the interface generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
   return {
     histories: [
       {
@@ -110,32 +29,30 @@ export const transformRealizeTransformerWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          I understand the task.
+          Here is the neighbor transformers you can utilize:
 
-          This is the planning-driven workflow where the Prisma schema name is already provided to me.
-
-          **My responsibilities**:
-          - Use the provided Prisma schema name from the planning phase
-          - Create transformer module that converts Prisma results to API DTOs (DB → API)
-          - Provide transform() function for data conversion
-          - Provide select() function for Prisma query specification
-          - Use proper TypeScript types from Prisma payload types
-
-          I will follow all type safety rules and use the provided information to implement the transformer.
+          Transformer Name | DTO Type Name | Prisam Schema Name 
+          ---------------- | ------------- | -------------------
+          ${props.neighbors
+            .map(
+              (n) =>
+                `- ${n.dtoTypeName} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
+            )
+            .join("\n")}
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      Create a transformer module for the DTO type: ${props.dtoTypeName}
+      Create a transformer module for the DTO type: ${props.plan.dtoTypeName}
 
       **Plan Information from REALIZE_TRANSFORMER_PLAN phase**:
 
-      - **Prisma Schema Name**: ${props.prismaSchemaName}
-      - **Planning Reasoning**: ${props.planThinking}
+      - **Prisma Schema Name**: ${props.plan.prismaSchemaName}
+      - **Planning Reasoning**: ${props.plan.thinking}
 
       **Your task**:
 
-      1. Use the provided Prisma schema name: \`${props.prismaSchemaName}\`
+      1. Use the provided Prisma schema name: \`${props.plan.prismaSchemaName}\`
       2. Request Prisma schemas to understand the table structure
       3. Request Interface schemas to understand the DTO structure
       4. Analyze field mappings between Prisma columns and DTO properties
