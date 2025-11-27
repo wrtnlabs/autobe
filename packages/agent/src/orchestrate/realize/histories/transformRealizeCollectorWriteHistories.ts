@@ -1,99 +1,22 @@
+import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 
 export const transformRealizeCollectorWriteHistories = (props: {
   state: AutoBeState;
-  dtoTypeName: string;
-  prismaSchemaName: string;
-  preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
+  plan: AutoBeRealizeCollectorPlan;
+  neighbors: AutoBeRealizeCollectorPlan[];
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "interfaceSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => {
-  if (props.state.analyze === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Requirement analysis is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the requirement analysis.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.analyze.step !== props.state.prisma.step)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has not been updated",
-            "for the latest requirement analysis.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma.compiled.type !== "success")
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has failed to compile.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.interface === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Interface generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the interface generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-
   return {
     histories: [
       {
@@ -108,32 +31,86 @@ export const transformRealizeCollectorWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          I understand the task.
+          ${getDeclaration(props.plan)}
 
-          I need to create a collector module that:
-          - Converts API request DTOs to Prisma input data (API → DB)
-          - Provides a collect() function for data transformation
-          - Handles nested relationships (create/connect)
-          - Generates UUIDs for new records using v4()
-          - Uses proper Prisma input types
+          Here are the neighbor collectors you can utilize.
 
-          I will follow all type safety rules and avoid using the Date type.
+          Collector Name | DTO Type Name | Prisma Schema Name
+          ---------------|---------------|--------------------
+          ${props.neighbors
+            .map((n) =>
+              [
+                AutoBeRealizeCollectorProgrammer.getName(n.dtoTypeName),
+                n.dtoTypeName,
+                n.prismaSchemaName,
+              ].join(" | "),
+            )
+            .join("\n")}
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      Create a collector module for:
-      - DTO Type: ${props.dtoTypeName}
-      - Prisma Schema: ${props.prismaSchemaName}
+      Create a collector module for the DTO type: ${props.plan.dtoTypeName}
 
-      Generate complete TypeScript code that includes:
-      1. A namespace with collect() function
-      2. Proper Prisma CreateInput types for ${props.prismaSchemaName}
-      3. UUID generation for new records using v4()
-      4. Type-safe field mappings from DTO to Prisma input
-      5. Handling of nested relationships (connect/create)
+      **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
 
-      Follow all coding standards and type safety rules.
+      - **Prisma Schema Name**: ${props.plan.prismaSchemaName}
+      - **Planning Reasoning**: ${props.plan.thinking}
+
+      **Your task**:
+
+      1. Use the provided Prisma schema name: \`${props.plan.prismaSchemaName}\`
+      2. Request Prisma schemas to understand the table structure
+      3. Request Interface schemas to understand the DTO structure
+      4. Analyze field mappings between DTO properties and Prisma columns
+      5. Generate complete TypeScript code that includes:
+         - A namespace with collect() function
+         - Proper Prisma CreateInput types
+         - Type-safe field mappings from DTO to DB
+         - Handling of nested relationships if needed
+         - UUID generation for new records
+
+      Follow all coding standards and type safety rules. The Prisma table name is already determined - use it directly.
     `,
   };
 };
+
+function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
+  const modulo: string = AutoBeRealizeCollectorProgrammer.getName(
+    plan.dtoTypeName,
+  );
+  return StringUtil.trim`
+    Here is the declaration of the collector function for 
+    the DTO type ${plan.dtoTypeName} and its corresponding
+    Prisma schema ${plan.prismaSchemaName}.
+
+    ${
+      plan.references.length === 0
+        ? ""
+        : StringUtil.trim`
+          Also, as create DTO ${plan.dtoTypeName} does not include
+          every references required for the creation of the ${plan.prismaSchemaName}
+          record, you have to accept some references as function
+          parameters like below:
+        `
+    }
+
+    \`\`\`typescript
+    export namespace ${modulo} {
+      export async function collect(props: {
+        body: ${plan.dtoTypeName};
+        ${plan.references
+          .map(
+            (r) =>
+              `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+          )
+          .join("\n")}
+      }) {
+        return {
+          ...
+        } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
+      }
+    }
+    \`\`\`
+  `;
+}

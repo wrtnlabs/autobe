@@ -1,6 +1,6 @@
 import {
   AutoBeOpenApi,
-  AutoBeRealizeTransformerPlan,
+  AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -8,31 +8,22 @@ import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export namespace AutoBeRealizeTransformerProgrammer {
+export namespace AutoBeRealizeCollectorProgrammer {
   export function filter(key: string): boolean {
-    return (
-      key !== "IAuthorizationToken" &&
-      key !== "IEntity" &&
-      key.startsWith("IPage") === false &&
-      key.endsWith(".IRequest") === false &&
-      key.endsWith(".ICreate") === false &&
-      key.endsWith(".IUpdate") === false &&
-      key.endsWith(".IAuthorized") === false
-    );
+    return key.endsWith(".ICreate");
   }
 
   export function getName(dtoTypeName: string): string {
-    return (
-      dtoTypeName
-        .split(".")
-        .map((s) => (s.startsWith("I") ? s.substring(1) : s))
-        .join("At") + "Transformer"
-    );
+    const replaced: string = dtoTypeName.replace(".ICreate", "");
+    const entity: string = replaced.startsWith("I")
+      ? replaced.substring(1)
+      : replaced;
+    return `${entity}Collector`;
   }
 
   export function getNeighbors(code: string): string[] {
     const unique: Set<string> = new Set();
-    const regex: RegExp = /(\w+Transformer)\.(select|transform)/g;
+    const regex: RegExp = /(\w+Transformer)\.(collect)/g;
     while (true) {
       const match: RegExpExecArray | null = regex.exec(code);
       if (match === null) break;
@@ -62,12 +53,15 @@ export namespace AutoBeRealizeTransformerProgrammer {
     const imports: string[] = [
       `import { Prisma } from "@prisma/sdk";`,
       `import { ArrayUtil } from "@nestia/e2e";`,
+      `import { v4 } from "uuid";`,
       "",
+      `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
       ...Array.from(typeReferences).map(
         (ref) =>
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      `import { PasswordUtil } from "../utils/PasswordUtil";`,
     ];
     return imports;
   }
@@ -102,8 +96,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   export function validate(props: {
-    plan: AutoBeRealizeTransformerPlan;
-    neighbors: AutoBeRealizeTransformerPlan[];
+    plan: AutoBeRealizeCollectorPlan;
+    neighbors: AutoBeRealizeCollectorPlan[];
     draft: string;
     revise: {
       review: string;
@@ -141,7 +135,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   function validateEmptyCode(props: {
-    plan: AutoBeRealizeTransformerPlan;
+    plan: AutoBeRealizeCollectorPlan;
     content: string;
     path: string;
     errors: IValidation.IError[];
@@ -157,7 +151,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   function validateNeighbors(props: {
-    neighbors: AutoBeRealizeTransformerPlan[];
+    neighbors: AutoBeRealizeCollectorPlan[];
     content: string;
     path: string;
     errors: IValidation.IError[];
@@ -170,14 +164,14 @@ export namespace AutoBeRealizeTransformerProgrammer {
           expected: `Use existing transformer.`,
           value: props.content,
           description: StringUtil.trim`
-            You've imported and utilized ${x}, but it does not exist.
-
-            Use one of them below, or change to another code:
-
-            ${props.neighbors
-              .map((y) => `- ${getName(y.dtoTypeName)}`)
-              .join("\n")}
-          `,
+              You've imported and utilized ${x}, but it does not exist.
+  
+              Use one of them below, or change to another code:
+  
+              ${props.neighbors
+                .map((y) => `- ${getName(y.dtoTypeName)}`)
+                .join("\n")}
+            `,
         });
   }
 }

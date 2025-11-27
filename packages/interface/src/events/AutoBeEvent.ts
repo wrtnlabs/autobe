@@ -39,6 +39,7 @@ import { AutoBeRealizeAuthorizationValidateEvent } from "./AutoBeRealizeAuthoriz
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
+import { AutoBeRealizePlanEvent } from "./AutoBeRealizePlanEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
 import { AutoBeRealizeTestOperationEvent } from "./AutoBeRealizeTestOperationEvent";
@@ -134,6 +135,7 @@ export type AutoBeEvent =
   | AutoBeTestCompleteEvent
   // REALIZE
   | AutoBeRealizeStartEvent
+  | AutoBeRealizePlanEvent
   | AutoBeRealizeWriteEvent
   | AutoBeRealizeCorrectEvent
   | AutoBeRealizeValidateEvent
@@ -183,70 +185,6 @@ export namespace AutoBeEvent {
    * maintain compile-time type safety across different event types.
    */
   export type Mapper = {
-    assistantMessage: AutoBeAssistantMessageEvent;
-    userMessage: AutoBeUserMessageEvent;
-    vendorRequest: AutoBeVendorRequestEvent;
-    vendorResponse: AutoBeVendorResponseEvent;
-    vendorTimeout: AutoBeVendorTimeoutEvent;
-    jsonValidateError: AutoBeJsonValidateErrorEvent;
-    jsonParseError: AutoBeJsonParseErrorEvent;
-    consentFunctionCall: AutoBeConsentFunctionCallEvent;
-    preliminary: AutoBePreliminaryEvent;
-    // DESCRIBE
-    imageDescribeStart: AutoBeImageDescribeStartEvent;
-    imageDescribeDraft: AutoBeImageDescribeDraftEvent;
-    imageDescribeComplete: AutoBeImageDescribeCompleteEvent;
-    // ANALYZE
-    analyzeStart: AutoBeAnalyzeStartEvent;
-    analyzeScenario: AutoBeAnalyzeScenarioEvent;
-    analyzeWrite: AutoBeAnalyzeWriteEvent;
-    analyzeReview: AutoBeAnalyzeReviewEvent;
-    analyzeComplete: AutoBeAnalyzeCompleteEvent;
-    // PRISMA
-    prismaStart: AutoBePrismaStartEvent;
-    prismaComponent: AutoBePrismaComponentEvent;
-    prismaSchema: AutoBePrismaSchemaEvent;
-    prismaInsufficient: AutoBePrismaInsufficientEvent;
-    prismaReview: AutoBePrismaReviewEvent;
-    prismaValidate: AutoBePrismaValidateEvent;
-    prismaCorrect: AutoBePrismaCorrectEvent;
-    prismaComplete: AutoBePrismaCompleteEvent;
-    // INTERFACE
-    interfaceStart: AutoBeInterfaceStartEvent;
-    interfaceGroup: AutoBeInterfaceGroupEvent;
-    interfaceAuthorization: AutoBeInterfaceAuthorizationEvent;
-    interfaceEndpoint: AutoBeInterfaceEndpointEvent;
-    interfaceEndpointReview: AutoBeInterfaceEndpointReviewEvent;
-    interfaceOperation: AutoBeInterfaceOperationEvent;
-    interfaceOperationReview: AutoBeInterfaceOperationReviewEvent;
-    interfaceSchema: AutoBeInterfaceSchemaEvent;
-    interfaceSchemaReview: AutoBeInterfaceSchemaReviewEvent;
-    interfaceSchemaRename: AutoBeInterfaceSchemaRenameEvent;
-    interfaceComplement: AutoBeInterfaceComplementEvent;
-    interfaceComplete: AutoBeInterfaceCompleteEvent;
-    interfacePrerequisite: AutoBeInterfacePrerequisiteEvent;
-    // TEST
-    testStart: AutoBeTestStartEvent;
-    testScenario: AutoBeTestScenarioEvent;
-    testScenarioReview: AutoBeTestScenarioReviewEvent;
-    testWrite: AutoBeTestWriteEvent;
-    testValidate: AutoBeTestValidateEvent;
-    testCorrect: AutoBeTestCorrectEvent;
-    testComplete: AutoBeTestCompleteEvent;
-    // REALIZE
-    realizeStart: AutoBeRealizeStartEvent;
-    realizeWrite: AutoBeRealizeWriteEvent;
-    realizeCorrect: AutoBeRealizeCorrectEvent;
-    realizeValidate: AutoBeRealizeValidateEvent;
-    realizeComplete: AutoBeRealizeCompleteEvent;
-    realizeAuthorizationStart: AutoBeRealizeAuthorizationStartEvent;
-    realizeAuthorizationWrite: AutoBeRealizeAuthorizationWriteEvent;
-    realizeAuthorizationValidate: AutoBeRealizeAuthorizationValidateEvent;
-    realizeAuthorizationCorrect: AutoBeRealizeAuthorizationCorrectEvent;
-    realizeAuthorizationComplete: AutoBeRealizeAuthorizationCompleteEvent;
-    realizeTestStart: AutoBeRealizeTestStartEvent;
-    realizeTestReset: AutoBeRealizeTestResetEvent;
-    realizeTestOperation: AutoBeRealizeTestOperationEvent;
-    realizeTestComplete: AutoBeRealizeTestCompleteEvent;
+    [E in AutoBeEvent as E["type"]]: E;
   };
 }

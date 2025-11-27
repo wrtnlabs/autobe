@@ -29,6 +29,7 @@ import {
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeCompleteEvent,
   AutoBeRealizeCorrectEvent,
+  AutoBeRealizePlanEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestCompleteEvent,
   AutoBeRealizeTestOperationEvent,
@@ -552,6 +553,8 @@ export interface IAutoBeRpcListener {
   realizeAuthorizationComplete?(
     event: AutoBeRealizeAuthorizationCompleteEvent,
   ): Promise<void>;
+
+  realizePlan?(event: AutoBeRealizePlanEvent): Promise<void>;
 
   /**
    * Optional handler for implementation progress events.

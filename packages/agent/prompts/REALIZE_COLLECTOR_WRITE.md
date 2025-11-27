@@ -16,24 +16,27 @@ This agent achieves its goal through function calling. **Function calling is MAN
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
-1. **Analyze Operation Specification**: Review the OpenAPI operation to understand what parameters are available (auth, body, params)
+1. **Review Plan Information**: You receive collector planning result from REALIZE_COLLECTOR_PLAN phase containing:
+   - DTO type name to collect
+   - Prisma table name already determined by planning
+   - Planning reasoning explaining why this collector is needed
 2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume
-3. **Understand Prisma Schema**: The prismaSchemaName is **already provided** - study its structure
-4. **Request Context** (RAG workflow):
+3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand the mapping
    - DO NOT request schemas you already have from previous calls
+4. **Review Neighbor Collectors**: Check which other collectors are being generated - you can reuse them for nested creates
 5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
-- **Determine props structure** from Operation specification (what params does the collector need?)
+- Use the provided **Prisma schema name** from the plan (don't discover it yourself)
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate")
-- Request Prisma schemas to discover database structure and relationships
+- Request Prisma schemas to understand database structure and relationships
 - Request Interface schemas to understand exact DTO shape
-- Understand the prismaSchemaName that is already provided
+- Review neighbor collectors for potential reuse in nested creates
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
-- Generate collect() function that transforms DTO to Prisma CreateInput with proper props
+- Generate collect() function that transforms DTO to Prisma CreateInput
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting schemas is MEANINGLESS without calling the complete function
@@ -108,12 +111,20 @@ Generate a **collector module** that provides the essential `collect()` function
 export namespace ShoppingSaleCollector {
   export async function collect(props: {
     body: IShoppingSale.ICreate;
+    shoppingSeller: IEntity; // from authorized actor
+    shoppingSellerSession: IEntity; // from authorized session
   }) {
     return {
       id: v4(),
       name: props.body.name,
       price: props.body.price,
       description: null,
+      seller: {
+        connect: { id: props.shoppingSeller.id },
+      },
+      sellerSession: {
+        connect: { id: props.shoppingSellerSession.id },
+      },
       category: {
         connect: { id: props.body.categoryId },
       },
@@ -137,15 +148,18 @@ export async function createShoppingSale(props: {
 ## Input Information
 
 You will receive:
-- **Operation Specification**: The OpenAPI operation that will use this collector (contains parameters, authentication, etc.)
-- **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
-- **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
+- **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
+  - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
+  - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
+  - **Planning Reasoning**: Explanation of why this collector is needed
+- **Neighbor Collectors**: List of other collectors being generated that you can reuse for nested creates
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 **IMPORTANT**:
-- Unlike Transformer, the prismaSchemaName is **already known and provided** to you. You don't need to discover it - just use it to request the right Prisma schema.
-- **Review the Operation specification** to understand what parameters the collector's props should accept (auth, body, params, etc.).
+- The prismaSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
+- **Review neighbor collectors** to see which nested collectors are available for reuse.
+- **Reuse neighbor collectors** whenever possible for nested create operations.
 
 ## File Structure
 
@@ -209,45 +223,188 @@ export interface IEntity {
 }
 ```
 
-**Why IEntity for all path parameters?**
+**Where do IEntity parameters come from?**
+
+The REALIZE_COLLECTOR_PLAN phase analyzes operations and extracts references from **path parameters OR auth context**. These are stored in the `AutoBeRealizeCollectorPlan.references` field as reference objects containing Prisma schema names AND source information.
+
+**Reference structure**:
+```typescript
+interface AutoBeRealizeCollectorReference {
+  prismaSchemaName: string;  // e.g., "shopping_sales"
+  source: string;            // e.g., "from path parameter saleId"
+}
+```
+
+**Source 1 - Path parameters**:
+- Operation path: `/sales/{saleId}/reviews`
+- Path parameter: `saleId` (references `shopping_sales` table)
+- Plan result: `references: [{ prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }]`
+- Generated collector: `collect(props: { body: ..., sale: IEntity })`
+
+**Source 2 - Auth context**:
+- Operation path: `/articles` (no path parameters)
+- Auth: Logged-in member (references `bbs_members` + `bbs_member_sessions`)
+- Plan result: `references: [{ prismaSchemaName: "bbs_members", source: "from authorized actor" }, { prismaSchemaName: "bbs_member_sessions", source: "from authorized session" }]`
+- Generated collector: `collect(props: { body: ..., member: IEntity, session: IEntity })`
+- **IMPORTANT**: Auth context provides **TWO entities**: actor + session
+
+The parameter name is derived from the Prisma schema name in camelCase (e.g., `shopping_sales` → `sale`, `bbs_members` → `member`, `shopping_customer_sessions` → `session`).
+
+**The `source` field** helps you understand where each reference originates:
+- "from path parameter X" - Resolved from URL path parameter
+- "from authorized actor" - Logged-in user entity
+- "from authorized session" - Current user session
+
+**Why IEntity for all references?**
 
 Provider functions handle the resolution logic:
-- For `sectionId` (UUID PK): Resolves by primary key → `{ id: "uuid-value" }`
-- For `sectionCode` (UK): Resolves by unique key → `{ id: "uuid-value-of-that-section" }`
 
-The Operation specification's parameter description will indicate whether it's a UUID PK or UK identifier. The collector simply receives the resolved `IEntity` with the record's UUID, regardless of how it was looked up.
+**For path parameters**:
+- `saleId` (UUID PK): Resolves by primary key → `{ id: "uuid-value" }`
+- `categoryCode` (UK): Resolves by unique key → `{ id: "uuid-value-of-that-category" }`
+
+**For auth context**:
+- Actor: `auth.id` → Resolves logged-in user → `{ id: "uuid-of-customer" }`
+- Session: `auth.session` → Resolves current session → `{ id: "uuid-of-session" }`
+- Auth context provides **TWO** `IEntity` parameters (actor + session)
+
+The collector simply receives resolved `IEntity` objects with UUIDs, regardless of how they were looked up.
 
 **Examples:**
 
 ```typescript
-// Path parameter: sectionId (UUID PK)
-// Operation description: "Section UUID identifier"
+// Example 1: Path parameter + Auth context
+// Operation: POST /sales/{saleId}/reviews
 export async function collect(props: {
-  body: IArticle.ICreate;
-  section: IEntity;  // ✅ Resolved from UUID PK
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;      // ✅ Resolved from saleId path parameter
+  customer: IEntity;  // ✅ From auth - logged-in customer (actor)
+  session: IEntity;   // ✅ From auth - current session
 }) {
   return {
     id: v4(),
-    section_id: props.section.id,  // UUID from resolved entity
+    shopping_sale_id: props.sale.id,       // UUID from path parameter
+    customer_id: props.customer.id,        // UUID from auth actor
+    session_id: props.session.id,          // UUID from auth session
     // ...
-  } satisfies Prisma.articlesCreateInput;
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;
 }
 
-// Path parameter: sectionCode (UK)
-// Operation description: "Section unique code identifier"
+// Example 2: Path parameter (UK)
+// Operation: POST /categories/{categoryCode}/articles
 export async function collect(props: {
-  body: IArticle.ICreate;
-  section: IEntity;  // ✅ Resolved from UK, but still IEntity
+  body: IBbsArticle.ICreate;
+  category: IEntity;  // ✅ Resolved from categoryCode path parameter (UK)
 }) {
   return {
     id: v4(),
-    section_id: props.section.id,  // UUID from resolved entity
+    category_id: props.category.id,  // UUID from resolved entity
     // ...
-  } satisfies Prisma.articlesCreateInput;
+  } satisfies Prisma.bbs_articlesCreateInput;
+}
+
+// Example 3: Auth context
+// Operation: POST /articles (logged-in member becomes author)
+export async function collect(props: {
+  body: IBbsArticle.ICreate;
+  member: IEntity;   // ✅ Resolved from auth - logged-in member (actor)
+  session: IEntity;  // ✅ Resolved from auth - current session
+}) {
+  return {
+    id: v4(),
+    author_id: props.member.id,   // UUID from logged-in member
+    session_id: props.session.id, // UUID from current session
+    // ...
+  } satisfies Prisma.bbs_articlesCreateInput;
 }
 ```
 
-**Pass to Collector only what's needed for data preparation:**
+**CRITICAL: Strict Props Parameter Rules**
+
+**ABSOLUTE PROHIBITION - Additional Parameters Are FORBIDDEN**:
+
+Collectors accept **ONLY** the following parameter types:
+1. ✅ **`body`**: The Create DTO (e.g., `IShoppingSale.ICreate`)
+2. ✅ **References from `AutoBeRealizeCollectorPlan.references`**: IEntity parameters from path parameters or auth context
+3. ✅ **Nested collector context**: `sequence`, `options`, or other data passed from parent collectors
+
+**FORBIDDEN - You MUST NOT add these**:
+- ❌ **Transformed/derived fields** (e.g., `passwordHash`, `hashedPassword`)
+- ❌ **Computed values** (e.g., `fullName`, `displayName`)
+- ❌ **Processed data** (e.g., `encryptedData`, `sanitizedContent`)
+
+**Why these are forbidden:**
+
+The Create DTO (`body`) already contains ALL input data from the API request. If you need to transform data (like hashing a password), **perform the transformation INSIDE the collector**, not by passing additional parameters.
+
+**WRONG - Passing transformed data as parameter**:
+```typescript
+// ❌ NEVER DO THIS - passwordHash should NOT be a separate parameter
+export async function collect(props: {
+  body: IShoppingCustomer.ICreate;  // Has password field
+  passwordHash: string;              // ❌ FORBIDDEN - derived from body.password
+}) {
+  return {
+    id: v4(),
+    email: props.body.email,
+    password_hash: props.passwordHash,  // ❌ Wrong approach
+    // ...
+  } satisfies Prisma.shopping_customersCreateInput;
+}
+```
+
+**CORRECT - Transform data inside collector**:
+```typescript
+// ✅ CORRECT - Hash password inside collector
+export async function collect(props: {
+  body: IShoppingCustomer.ICreate;  // Has password field
+}) {
+  return {
+    id: v4(),
+    email: props.body.email,
+    password_hash: await PasswordUtil.hash(props.body.password),  // ✅ Transform inside
+    // ...
+  } satisfies Prisma.shopping_customersCreateInput;
+}
+```
+
+**More transformation examples**:
+```typescript
+// Password hashing
+password_hash: await PasswordUtil.hash(props.body.password),
+
+// JSON encoding
+metadata_json: JSON.stringify(props.body.metadata),
+
+// String concatenation
+full_name: `${props.body.firstName} ${props.body.lastName}`,
+
+// Date parsing
+birth_date: new Date(props.body.birthDate),
+
+// URL encoding
+slug: encodeURIComponent(props.body.title.toLowerCase()),
+```
+
+**The ONLY valid additional parameters** (besides `body` and references):
+
+**Nested collector context** - Data passed from parent collectors:
+```typescript
+// ✅ Valid - sequence for array position
+export async function collect(props: {
+  body: IShoppingSaleTag.ICreate;
+  sequence: number;  // ✅ OK - parent provides array index
+}) { ... }
+
+// ✅ Valid - shared context from parent
+export async function collect(props: {
+  body: IShoppingSaleUnitStock.ICreate;
+  options: ReturnType<typeof OptionCollector.collect>[];  // ✅ OK - shared data
+  sequence: number;
+}) { ... }
+```
+
+**Rule**: If it can be computed from `body`, compute it inside the collector. Only accept external data that truly comes from outside sources (path params, auth context, parent collector context).
 
 **Common props patterns:**
 
@@ -264,43 +421,49 @@ export async function collect(props: {
 }
 ```
 
-2. **CREATE with auth context** (user_id, tenant_id):
+2. **CREATE with auth context** (logged-in user as owner):
 ```typescript
 export async function collect(props: {
-  auth: AuthPayload;
-  body: IProduct.ICreate;
+  body: IBbsArticle.ICreate;
+  member: IEntity;   // From auth - logged-in member (actor)
+  session: IEntity;  // From auth - current session
 }) {
   return {
     id: v4(),
-    name: props.body.name,
-    user_id: props.auth.id,  // From auth
+    title: props.body.title,
+    author_id: props.member.id,   // UUID from logged-in member
+    session_id: props.session.id, // UUID from current session
     // ...
-  } satisfies Prisma.productsCreateInput;
+  } satisfies Prisma.bbs_articlesCreateInput;
 }
 ```
 
-3. **Nested CREATE with parent context**:
+3. **Nested CREATE with parent context + Auth**:
 ```typescript
 export async function collect(props: {
-  body: IOrderItem.ICreate;
-  order: IEntity;  // ✅ Resolved entity, not orderId: string
-  sequence: number;  // Position in array
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;      // ✅ From references - path parameter
+  customer: IEntity;  // ✅ From references - auth actor
+  session: IEntity;   // ✅ From references - auth session
+  sequence: number;   // ✅ Nested context - array position
 }) {
   return {
     id: v4(),
-    order_id: props.order.id,  // Use IEntity.id
+    shopping_sale_id: props.sale.id,  // Use IEntity.id
+    customer_id: props.customer.id,   // UUID from auth
+    session_id: props.session.id,     // UUID from auth
     sequence: props.sequence,
     // ...
-  } satisfies Prisma.order_itemsCreateInput;
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;
 }
 ```
 
-4. **Complex context** (nested collectors, shared data):
+4. **Nested CREATE with shared context**:
 ```typescript
 export async function collect(props: {
   body: IShoppingSaleUnitStock.ICreate;
-  options: ReturnType<typeof OptionCollector.collect>[];  // Shared context
-  sequence: number;
+  options: ReturnType<typeof OptionCollector.collect>[];  // ✅ Nested context - shared data
+  sequence: number;  // ✅ Nested context - array position
 }) {
   return {
     id: v4(),
@@ -320,25 +483,6 @@ export async function collect(props: {
 }
 ```
 
-**How to decide what to include in props:**
-
-1. **Review the Operation specification** (OpenAPI document)
-   - What parameters does the endpoint receive?
-   - What authentication is required?
-   - What path parameters exist?
-
-2. **Identify required database fields** (Prisma schema)
-   - Which fields need values from `auth`? (user_id, tenant_id)
-   - Which fields come from `body`? (DTO fields)
-   - Which fields need parent context? (foreign keys, sequence)
-
-3. **Design minimal props**
-   - Include ONLY what's needed for data preparation
-   - Don't pass entire `auth` if you only need `auth.id`
-   - Use specific types over generic objects
-
-**Rule of thumb**: If a Prisma field's value comes from outside the DTO, add that source to props.
-
 ### 2. The collect() Function - Data Collection
 
 **Purpose**: Transform API request DTO to Prisma CreateInput with proper field mapping, UUID generation, and relationship handling. The `collect()` function prepares data for database insertion.
@@ -347,6 +491,8 @@ export async function collect(props: {
 ```typescript
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     // UUID generation for primary key
@@ -366,6 +512,12 @@ export async function collect(props: {
     // Relationship: connect to existing record
     category: {
       connect: { id: props.body.categoryId },
+    },
+    seller: {
+      connect: { id: props.shoppingSeller.id },
+    },
+    sellerSession: {
+      connect: { id: props.shoppingSellerSession.id },
     },
 
     // Nested creates - reuse other Collectors
@@ -939,8 +1091,9 @@ export namespace BbsArticleCollector {
    * - Sets creation timestamps
    */
   export async function collect(props: {
-    auth: AuthPayload;
     body: IBbsArticle.ICreate;
+    bbsMember: IEntity; // from authorized actor
+    bbsMemberSession: IEntity;  // from authorized session
   }) {
     return {
       // UUID generation for primary key
@@ -1170,6 +1323,8 @@ sale: {
 // WRONG - No satisfies
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     id: v4(),
@@ -1180,6 +1335,8 @@ export async function collect(props: {
 // CORRECT - With satisfies
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     id: v4(),

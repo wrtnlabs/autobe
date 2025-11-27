@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReference";
+
 /**
  * DTO collector function implementation.
  *
@@ -14,9 +16,7 @@
  * @author Samchon
  */
 export interface AutoBeRealizeCollectorFunction {
-  /**
-   * Type discriminator for collector function.
-   */
+  /** Type discriminator for collector function. */
   kind: "collector";
 
   /**
@@ -31,13 +31,17 @@ export interface AutoBeRealizeCollectorFunction {
   /**
    * Prisma schema name being collected to.
    *
-   * The target Prisma table/model name that receives the collected data.
-   * This is determined by the transformer during analysis and passed to the
+   * The target Prisma table/model name that receives the collected data. This
+   * is determined by the transformer during analysis and passed to the
    * collector to ensure consistency.
    *
    * Example: "shopping_sale_snapshot_unit_stocks"
    */
   prismaSchemaName: string;
+
+  neighbors: string[];
+
+  references: AutoBeRealizeCollectorReference[];
 
   /**
    * File path where the collector module is generated.
@@ -45,8 +49,8 @@ export interface AutoBeRealizeCollectorFunction {
    * The relative path to the TypeScript file containing the collector namespace
    * with collect() function.
    *
-   * Format: "src/collectors/${PascalCaseTypeName}Collector.ts"
-   * Example: "src/collectors/ShoppingSaleUnitStockCollector.ts"
+   * Format: "src/collectors/${PascalCaseTypeName}Collector.ts" Example:
+   * "src/collectors/ShoppingSaleUnitStockCollector.ts"
    */
   location: string;
 
@@ -54,8 +58,9 @@ export interface AutoBeRealizeCollectorFunction {
    * Generated TypeScript collector code.
    *
    * Contains the complete collector implementation including:
+   *
    * - Namespace declaration
-   * - collect() function for DTO → Prisma input conversion
+   * - `collect()` function for DTO → Prisma input conversion
    * - Proper handling of nested relationships
    * - UUID generation for new records
    * - Proper type annotations with Prisma input types
