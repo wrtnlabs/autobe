@@ -111,12 +111,20 @@ Generate a **collector module** that provides the essential `collect()` function
 export namespace ShoppingSaleCollector {
   export async function collect(props: {
     body: IShoppingSale.ICreate;
+    shoppingSeller: IEntity; // from authorized actor
+    shoppingSellerSession: IEntity; // from authorized session
   }) {
     return {
       id: v4(),
       name: props.body.name,
       price: props.body.price,
       description: null,
+      seller: {
+        connect: { id: props.shoppingSeller.id },
+      },
+      sellerSession: {
+        connect: { id: props.shoppingSellerSession.id },
+      },
       category: {
         connect: { id: props.body.categoryId },
       },
@@ -1009,8 +1017,9 @@ export namespace BbsArticleCollector {
    * - Sets creation timestamps
    */
   export async function collect(props: {
-    auth: AuthPayload;
     body: IBbsArticle.ICreate;
+    bbsMember: IEntity; // from authorized actor
+    bbsMemberSession: IEntity;  // from authorized session
   }) {
     return {
       // UUID generation for primary key
@@ -1240,6 +1249,8 @@ sale: {
 // WRONG - No satisfies
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     id: v4(),
@@ -1250,6 +1261,8 @@ export async function collect(props: {
 // CORRECT - With satisfies
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     id: v4(),
