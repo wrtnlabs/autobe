@@ -3,5 +3,4 @@ export interface AutoBeRealizeCollectorPlan {
   dtoTypeName: string;
   thinking: string;
   prismaSchemaName: string;
-  arguments: string[];
 }

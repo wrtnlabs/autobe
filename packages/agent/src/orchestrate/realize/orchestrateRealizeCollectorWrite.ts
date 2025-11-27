@@ -1,5 +1,6 @@
 import {
   AutoBeEventSource,
+  AutoBeRealizeCollectorPlan,
   AutoBeProgressEventBase,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
@@ -15,6 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorWriteHistories } from "./histories/transformRealizeCollectorWriteHistories";
@@ -25,21 +27,47 @@ export async function orchestrateRealizeCollectorWrite<
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    dtoTypeName: string;
-    prismaSchemaName: string;
-    location: string;
+    plans: AutoBeRealizeCollectorPlan[];
     progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
-): Promise<AutoBeRealizeWriteEvent> {
+): Promise<AutoBeRealizeWriteEvent[]> {
+  props.progress.total += props.plans.length;
+  const result: Array<AutoBeRealizeWriteEvent | false> =
+    await executeCachedBatch(
+      ctx,
+      props.plans.map(
+        (x) => (promptCacheKey) =>
+          process(ctx, {
+            progress: props.progress,
+            neighbors: props.plans.filter((y) => x !== y),
+            plan: x,
+            promptCacheKey,
+          }),
+      ),
+    );
+  return result.filter((r) => r !== false);
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    plan: AutoBeRealizeCollectorPlan;
+    neighbors: AutoBeRealizeCollectorPlan[];
+    promptCacheKey: string;
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeWriteEvent | false> {
+  const dtoTypeName: string = props.plan.dtoTypeName;
+  const prismaSchemaName: string = props.plan.prismaSchemaName;
+  const location: string = `src/collectors/${getCollectorName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
     kinds: ["prismaSchemas", "interfaceSchemas"],
-    state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeCollectorWriteApplication.IComplete | null> =
@@ -50,7 +78,8 @@ export async function orchestrateRealizeCollectorWrite<
       source: "realizeWrite",
       controller: createController({
         model: ctx.model,
-        dtoTypeName: props.dtoTypeName,
+        plan: props.plan,
+        neighbors: props.neighbors,
         build: (next) => {
           pointer.value = next;
         },
@@ -60,8 +89,8 @@ export async function orchestrateRealizeCollectorWrite<
       promptCacheKey: props.promptCacheKey,
       ...transformRealizeCollectorWriteHistories({
         state: ctx.state(),
-        dtoTypeName: props.dtoTypeName,
-        prismaSchemaName: props.prismaSchemaName,
+        plan: props.plan,
+        neighbors: props.neighbors,
         preliminary,
       }),
     });
@@ -71,9 +100,9 @@ export async function orchestrateRealizeCollectorWrite<
         type: "realizeWrite",
         function: {
           kind: "collector",
-          dtoTypeName: props.dtoTypeName,
-          prismaSchemaName: props.prismaSchemaName,
-          location: props.location,
+          dtoTypeName,
+          prismaSchemaName,
+          location,
           content: pointer.value.revise.final ?? pointer.value.draft,
         },
         metric: result.metric,
@@ -86,13 +115,14 @@ export async function orchestrateRealizeCollectorWrite<
       ctx.dispatch(event);
       return out(result)(event);
     }
-    return out(result)(null);
+    return out(result)(false);
   });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  dtoTypeName: string;
+  plan: AutoBeRealizeCollectorPlan;
+  neighbors: AutoBeRealizeCollectorPlan[];
   build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
@@ -108,7 +138,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       return result;
     }
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: `${props.dtoTypeName}Collector`,
+      functionName: `${getCollectorName(props.plan.dtoTypeName)}`,
       draft: result.data.request.draft,
       revise: result.data.request.revise,
     });
@@ -168,3 +198,7 @@ type Validator = (
 ) => IValidation<IAutoBeRealizeCollectorWriteApplication.IProps>;
 
 const SOURCE = "realizeWrite" satisfies AutoBeEventSource;
+
+function getCollectorName(dtoTypeName: string): string {
+  return dtoTypeName.replace(/^I/, "").replace(/\.ICreate$/, "") + "Collector";
+}

@@ -1,4 +1,3 @@
-import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -7,11 +6,11 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformRealizeCollectorWriteHistories = (props: {
+export const transformRealizeCollectorPlanHistories = (props: {
   state: AutoBeState;
-  plan: AutoBeRealizeCollectorPlan;
-  neighbors: AutoBeRealizeCollectorPlan[];
-  preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
+  >;
 }): IAutoBeOrchestrateHistory => {
   if (props.state.analyze === null)
     return {
@@ -94,18 +93,13 @@ export const transformRealizeCollectorWriteHistories = (props: {
       ],
       userMessage: "Please wait for prerequisites to complete",
     };
-
-  const getCollectorName = (dtoTypeName: string): string => {
-    return dtoTypeName.replace(/^I/, "").replace(/\.ICreate$/, "") + "Collector";
-  };
-
   return {
     histories: [
       {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_COLLECTOR_WRITE,
+        text: AutoBeSystemPromptConstant.REALIZE_COLLECTOR_PLAN,
       },
       ...props.preliminary.getHistories(),
       {
@@ -113,41 +107,41 @@ export const transformRealizeCollectorWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the neighbor collectors you can utilize:
+          I understand the task.
 
-          Collector Name | DTO Type Name | Prisma Schema Name
-          -------------- | ------------- | -------------------
-          ${props.neighbors
-            .map(
-              (n) =>
-                `- ${getCollectorName(n.dtoTypeName)} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
-            )
-            .join("\n")}
+          I need to analyze ALL Create DTOs from operations and create a complete plan that determines which collectors to generate.
+
+          **My approach**:
+          1. Extract all candidate Create DTOs from operations (including nested Create DTOs)
+          2. Request Prisma schemas to understand database structure
+          3. Request Interface schemas to understand Create DTO shapes
+          4. Request Interface operations to understand how Create DTOs are used
+          5. Analyze each Create DTO to determine if it's collectable or not
+          6. Generate complete plan including ALL DTOs with appropriate prismaSchemaName
+
+          **For collectable DTOs**: Set prismaSchemaName to actual Prisma table name
+          **For non-collectable DTOs**: Set prismaSchemaName to null
+
+          I will include ALL DTOs in the plan with their analysis results.
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      Create a collector module for the DTO type: ${props.plan.dtoTypeName}
-
-      **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
-
-      - **Prisma Schema Name**: ${props.plan.prismaSchemaName}
-      - **Planning Reasoning**: ${props.plan.thinking}
+      Analyze the operation Create DTOs and create a complete collector plan.
 
       **Your task**:
+      1. Identify ALL Create DTO types from operations (including nested Create DTOs)
+      2. Request necessary Prisma, Interface schemas, and Operations to understand mappings
+      3. Determine which Create DTOs are collectable (map to Prisma tables) vs non-collectable
+      4. Generate complete plan including ALL DTOs
 
-      1. Use the provided Prisma schema name: \`${props.plan.prismaSchemaName}\`
-      2. Request Prisma schemas to understand the table structure
-      3. Request Interface schemas to understand the DTO structure
-      4. Analyze field mappings between DTO properties and Prisma columns
-      5. Generate complete TypeScript code that includes:
-         - A namespace with collect() function
-         - Proper Prisma CreateInput types
-         - Type-safe field mappings from DTO to DB
-         - Handling of nested relationships if needed
-         - UUID generation for new records
+      **Remember**:
+      - Include ALL DTOs in your plan (both collectable and non-collectable)
+      - Collectable DTOs: Set prismaSchemaName to actual Prisma table name
+      - Non-collectable DTOs: Set prismaSchemaName to null
+      - Analyze nested Create DTOs recursively (tags, inventory, etc.)
 
-      Follow all coding standards and type safety rules. The Prisma table name is already determined - use it directly.
+      Create the complete plan now.
     `,
   };
 };

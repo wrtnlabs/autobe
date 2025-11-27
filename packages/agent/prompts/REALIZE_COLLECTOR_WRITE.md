@@ -16,24 +16,27 @@ This agent achieves its goal through function calling. **Function calling is MAN
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
-1. **Analyze Operation Specification**: Review the OpenAPI operation to understand what parameters are available (auth, body, params)
+1. **Review Plan Information**: You receive collector planning result from REALIZE_COLLECTOR_PLAN phase containing:
+   - DTO type name to collect
+   - Prisma table name already determined by planning
+   - Planning reasoning explaining why this collector is needed
 2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume
-3. **Understand Prisma Schema**: The prismaSchemaName is **already provided** - study its structure
-4. **Request Context** (RAG workflow):
+3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand the mapping
    - DO NOT request schemas you already have from previous calls
+4. **Review Neighbor Collectors**: Check which other collectors are being generated - you can reuse them for nested creates
 5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
-- **Determine props structure** from Operation specification (what params does the collector need?)
+- Use the provided **Prisma schema name** from the plan (don't discover it yourself)
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate")
-- Request Prisma schemas to discover database structure and relationships
+- Request Prisma schemas to understand database structure and relationships
 - Request Interface schemas to understand exact DTO shape
-- Understand the prismaSchemaName that is already provided
+- Review neighbor collectors for potential reuse in nested creates
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
-- Generate collect() function that transforms DTO to Prisma CreateInput with proper props
+- Generate collect() function that transforms DTO to Prisma CreateInput
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting schemas is MEANINGLESS without calling the complete function
@@ -137,15 +140,18 @@ export async function createShoppingSale(props: {
 ## Input Information
 
 You will receive:
-- **Operation Specification**: The OpenAPI operation that will use this collector (contains parameters, authentication, etc.)
-- **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
-- **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
+- **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
+  - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
+  - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
+  - **Planning Reasoning**: Explanation of why this collector is needed
+- **Neighbor Collectors**: List of other collectors being generated that you can reuse for nested creates
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 **IMPORTANT**:
-- Unlike Transformer, the prismaSchemaName is **already known and provided** to you. You don't need to discover it - just use it to request the right Prisma schema.
-- **Review the Operation specification** to understand what parameters the collector's props should accept (auth, body, params, etc.).
+- The prismaSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
+- **Review neighbor collectors** to see which nested collectors are available for reuse.
+- **Reuse neighbor collectors** whenever possible for nested create operations.
 
 ## File Structure
 
