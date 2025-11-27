@@ -12,22 +12,22 @@ catalogs:
     '@agentica/core': ^0.34.2
     '@agentica/rpc': ^0.34.2
   samchon:
-    '@nestia/benchmark': ^9.0.3
-    '@nestia/core': ^9.0.3
-    '@nestia/e2e': ^9.0.3
-    '@nestia/editor': ^9.0.3
-    '@nestia/fetcher': ^9.0.3
-    '@nestia/migrate': ^9.0.3
-    '@nestia/sdk': ^9.0.3
-    '@samchon/openapi': ^5.0.1
+    '@nestia/benchmark': ^9.1.0
+    '@nestia/core': ^9.1.0
+    '@nestia/e2e': ^9.1.0
+    '@nestia/editor': ^9.1.0
+    '@nestia/fetcher': ^9.1.0
+    '@nestia/migrate': ^9.1.0
+    '@nestia/sdk': ^9.1.0
+    '@samchon/openapi': ^5.1.0
     embed-eslint: ^2.0.1
-    embed-prisma: ^1.1.2
+    embed-prisma: ^3.0.0-dev.20251125-3
     embed-typescript: ^2.0.1
-    nestia: ^9.0.3
-    prisma-markdown: ^3.0.0
+    nestia: ^9.1.0
+    prisma-markdown: ^4.0.0
     tgrid: ^1.2.0
     tstl: ^3.0.0
-    typia: ^10.0.2
+    typia: ^10.1.0
   typescript:
     '@typescript-eslint/eslint-plugin': 8.40.0
     '@typescript-eslint/parser': 8.40.0
@@ -35,12 +35,14 @@ catalogs:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0
     typescript: ~5.9.3
+    typescript-transform-paths: ^3.5.5
   prisma:
-    '@prisma/adapter-pg': ^6.16.2
-    '@prisma/adapter-better-sqlite3': ^6.16.2
-    '@prisma/client': ^6.16.2
-    '@prisma/internals': ^6.16.2
-    prisma: ^6.16.2
+    '@prisma/adapter-pg': ^7.0.0
+    '@prisma/adapter-better-sqlite3': ^7.0.0
+    '@prisma/client': ^7.0.0
+    '@prisma/client-runtime-utils': ^7.0.0
+    '@prisma/internals': ^7.0.0
+    prisma: ^7.0.0
   ui:
     react: ^19.1.1
     react-dom: ^19.1.1

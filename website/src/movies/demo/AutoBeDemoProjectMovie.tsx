@@ -146,7 +146,7 @@ export default function AutoBeDemoProjectMovie(
                         phase.success === true
                           ? "bg-green-500"
                           : phase.success === false
-                            ? "bg-red-500"
+                            ? "bg-yellow-500"
                             : "bg-gray-600"
                       } rounded-full`}
                     ></div>
@@ -157,7 +157,7 @@ export default function AutoBeDemoProjectMovie(
                         phase.success === true
                           ? "text-white"
                           : phase.success === false
-                            ? "text-red-400"
+                            ? "text-yellow-400"
                             : "text-gray-500"
                       }
                     >

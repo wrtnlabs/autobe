@@ -2,9 +2,13 @@
   "extends": "../../internals/config/tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
+    "paths": {
+      "@prisma/sdk": ["./src/prisma/client.ts"],
+    },
     "plugins": [
-      { "transform": "typia/lib/transform" },
       { "transform": "@nestia/core/lib/transform" },
+      { "transform": "typia/lib/transform" },
+      { "transform": "typescript-transform-paths" },
     ],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

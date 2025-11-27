@@ -407,13 +407,13 @@ const POSTGRES_PHYSICAL_TYPES = {
 
 const POSTGRES_MAIN_FILE = StringUtil.trim`
   generator client {
-    provider        = "prisma-client-js"
-    engineType      = "client"
+    provider        = "prisma-client"
     previewFeatures = ["postgresqlExtensions", "views"]
+    output          = "../../src/prisma"
+    moduleFormat    = "cjs"
   }
   datasource db {
     provider   = "postgresql"
-    url        = env("DATABASE_URL")
     extensions = [pg_trgm]
   }
   generator markdown {
@@ -423,12 +423,12 @@ const POSTGRES_MAIN_FILE = StringUtil.trim`
 `;
 const SQLITE_MAIN_FILE = StringUtil.trim`
   generator client {
-    provider   = "prisma-client-js"
-    engineType = "client"
+    provider     = "prisma-client"
+    output       = "../../src/prisma"
+    moduleFormat = "cjs"
   }
   datasource db {
     provider = "sqlite"
-    url      = "file:../db.sqlite"
   }
   generator markdown {
     provider = "prisma-markdown"

@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/sdk";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 import fs from "fs";

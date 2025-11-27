@@ -4,7 +4,7 @@ import {
   IAutoBeHackathonParticipant,
 } from "@autobe/interface";
 import { ForbiddenException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/sdk";
 
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
 import { BcryptUtil } from "../../utils/BcryptUtil";

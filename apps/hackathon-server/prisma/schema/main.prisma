@@ -1,12 +1,12 @@
 datasource db {
   provider   = "postgresql"
-  url        = env("HACKATHON_POSTGRES_URL")
   extensions = [pg_trgm]
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  engineType      = "client"
+  provider        = "prisma-client"
+  output          = "../../src/prisma"
+  moduleFormat    = "cjs"
   previewFeatures = ["postgresqlExtensions", "views"]
 }
 

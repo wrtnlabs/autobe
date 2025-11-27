@@ -59,7 +59,7 @@ export const validate_agent_realize_authorization_correct = async (props: {
 
   const prisma = ctx.state().prisma?.compiled;
   const prismaClient: Record<string, string> =
-    prisma?.type === "success" ? prisma.nodeModules : {};
+    prisma?.type === "success" ? prisma.client : {};
 
   const authorizations: AutoBeRealizeAuthorization[] = [
     {

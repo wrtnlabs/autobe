@@ -15,7 +15,19 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
     props: IAutoBePrismaCompilerProps,
   ): Promise<IAutoBePrismaCompileResult> {
     const compiler: EmbedPrisma = new EmbedPrisma();
-    return compiler.compile(props.files);
+    const result: IAutoBePrismaCompileResult = await compiler.compile(
+      props.files,
+    );
+    if (result.type !== "success") return result;
+    return {
+      ...result,
+      client: Object.fromEntries(
+        Object.entries(result.client).map(([key, value]) => [
+          `src/prisma/${key}`,
+          value,
+        ]),
+      ),
+    };
   }
 
   public async validate(

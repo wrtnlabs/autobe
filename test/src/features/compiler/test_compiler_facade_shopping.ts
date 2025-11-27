@@ -1,4 +1,4 @@
-import { RepositoryFileSystem } from "@autobe/filesystem";
+import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 import {
   IAutoBeCompiler,
   IAutoBePrismaCompileResult,
@@ -8,6 +8,7 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_facade_shopping = async (
   factory: TestFactory,
@@ -21,10 +22,22 @@ export const test_compiler_facade_shopping = async (
     throw new Error("Failed to pass prisma generate");
   }
 
+  const files: Record<string, string> = await RepositoryFileSystem.src(
+    "samchon",
+    "shopping-backend",
+  );
+  await FileSystemIterator.save({
+    root: `${TestGlobal.ROOT}/results/compiler.realize.facade`,
+    files: {
+      ...files,
+      ...prisma.client,
+    },
+  });
+
   const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
-      files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
-      prisma: prisma.nodeModules,
+      files,
+      prisma: prisma.client,
       package: "@samchon/shopping-api",
     });
   if (result.type !== "success") {

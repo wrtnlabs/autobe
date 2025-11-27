@@ -29,8 +29,8 @@ jobs:
       - name: Compile Backend-Server
         run: pnpm run build
 
-      # - name: Run Test Program
-      #   run: pnpm run test -- --reset true --simultaneous 16
+      - name: Run Test Program
+        run: pnpm run test -- --reset true --simultaneous 16
 
       - name: EsLint
         run: pnpm run eslint

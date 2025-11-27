@@ -9,7 +9,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformRealizeTransformerWriteHistories = (props: {
   state: AutoBeState;
   dtoTypeName: string;
-  preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "interfaceSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => {
   if (props.state.analyze === null)
     return {
@@ -92,7 +94,6 @@ export const transformRealizeTransformerWriteHistories = (props: {
       ],
       userMessage: "Please wait for prerequisites to complete",
     };
-
   return {
     histories: [
       {
@@ -109,11 +110,17 @@ export const transformRealizeTransformerWriteHistories = (props: {
         text: StringUtil.trim`
           I understand the task.
 
-          I need to create a transformer module that:
-          - Converts Prisma database query results to API response DTOs (DB → API)
-          - Provides a transform() function for data conversion
-          - Provides a select() function for Prisma query specification
-          - Uses proper TypeScript types from Prisma payload types
+          I need to either create a transformer module OR reject if incompatible:
+
+          **If the DTO maps to a Prisma table**:
+          - Create transformer module that converts Prisma results to API DTOs (DB → API)
+          - Provide transform() function for data conversion
+          - Provide select() function for Prisma query specification
+          - Use proper TypeScript types from Prisma payload types
+
+          **If the DTO is incompatible** (request param, business logic type):
+          - Reject with type: "reject" and clear reason
+          - Explain why no Prisma mapping exists
 
           I will follow all type safety rules and avoid using the Date type.
         `,
@@ -122,11 +129,23 @@ export const transformRealizeTransformerWriteHistories = (props: {
     userMessage: StringUtil.trim`
       Create a transformer module for the DTO type: ${props.dtoTypeName}
 
-      First, analyze the Prisma schemas and Interface schemas to determine:
+      **Step 1: Determine transformer eligibility**
+
+      First, check if this DTO type actually needs a transformer:
+      - Does it represent database-backed data that maps to a Prisma table?
+      - Or is it a request parameter, business logic type, or computed type?
+
+      **If incompatible** (request param like IPage.IRequest, business logic type like IAuthorizationToken):
+      - Call process() with type: "reject" immediately
+      - Provide clear reason explaining why no Prisma mapping exists
+
+      **If transformable**, proceed to analyze:
+
       1. Which Prisma table/model corresponds to this DTO type
       2. The field mappings between Prisma columns and DTO properties
 
       Then generate complete TypeScript code that includes:
+
       1. A namespace with transform() and select() functions
       2. Proper Prisma payload types
       3. Type-safe field mappings from DB to DTO

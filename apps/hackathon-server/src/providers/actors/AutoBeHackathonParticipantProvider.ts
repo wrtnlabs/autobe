@@ -4,7 +4,7 @@ import {
   IPage,
 } from "@autobe/interface";
 import { ForbiddenException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/sdk";
 import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";

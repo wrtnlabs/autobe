@@ -1,5 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/sdk";
 
 import { MyGlobal } from "../MyGlobal";
 import { MySetupWizard } from "../setup/MySetupWizard";
