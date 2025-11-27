@@ -1,4 +1,5 @@
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
+import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
@@ -34,7 +35,7 @@ export const validate_agent_realize_transformer_write = async (props: {
 
   agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("realize")) agent.on(type, listen);
+    agent.on(type, listen);
 
   const writes: AutoBeRealizeWriteEvent[] =
     await orchestrateRealizeTransformerWrite(agent.getContext());
@@ -47,6 +48,8 @@ export const validate_agent_realize_transformer_write = async (props: {
           .filter((w) => w !== null)
           .map((w) => [w.function.location, w.function.content]),
       ),
+      "tsconfig.json": AutoBeCompilerRealizeTemplate["tsconfig.json"],
+      "pnpm-workspace.yaml": "",
     },
   });
 };

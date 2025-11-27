@@ -215,7 +215,24 @@ src/
 **Naming convention:**
 - File: `{PascalCaseTypeName}Transformer.ts`
 - Namespace: `{PascalCaseTypeName}Transformer`
+- For nested interfaces (containing `.`), replace `.` with `At` and remove `I` prefix from each part
 - Example: For "IShoppingSaleUnitStock" -> "ShoppingSaleUnitStockTransformer.ts"
+- Example: For "IShoppingSale.ISummary" -> "ShoppingSaleAtSummaryTransformer.ts"
+- Example: For "IBbsArticle.IContent" -> "BbsArticleAtContentTransformer.ts"
+
+**Naming algorithm:**
+1. Split the DTO type name by `.`
+2. Remove `I` prefix from each part if it starts with `I`
+3. Join the parts with `At`
+4. Append `Transformer`
+
+```typescript
+// Implementation reference:
+dtoTypeName
+  .split(".")
+  .map((s) => (s.startsWith("I") ? s.substring(1) : s))
+  .join("At") + "Transformer"
+```
 
 ## Code Generation Rules
 
@@ -271,7 +288,7 @@ export function select() {
         },
       },
     },
-  } as const;
+  } satisfies Prisma.shopping_salesFindManyArgs;
 }
 ```
 
@@ -334,7 +351,7 @@ export function select() {
       category: true,  // Load all category fields
       tags: true,      // Load all related tags
     },
-  } as const;
+  } satisfies Prisma.shopping_salesFindManyArgs;
 }
 ```
 
@@ -344,12 +361,12 @@ Use when the DTO maps directly to all table fields without filtering.
 
 ```typescript
 export function select() {
-  return {} as const;
+  return {} satisfies Prisma.shopping_salesFindManyArgs;
 }
 ```
 
 **Critical Rules**:
-- Use `as const` to enable precise type inference
+- Use `satisfies Prisma.{table_name}FindManyArgs` to ensure type compatibility with Prisma
 - Choose the appropriate pattern based on DTO requirements
 - For `select`: Include ONLY fields needed for the target DTO
 - **For nested relations**: Reuse other Transformers' `select()` functions
@@ -651,7 +668,7 @@ totalOrders: input._count.orders,
 
 - **NO** imports needed - all are auto-generated
 - Use explicit return type on transform()
-- Use `as const` on select() return value
+- Use `satisfies Prisma.{table_name}FindManyArgs` on select() return value
 - Prefer `??` over `||` for null coalescing
 - Keep transform() logic simple and readable
 - Add JSDoc comments for complex transformations
@@ -870,7 +887,7 @@ export namespace ShoppingSaleUnitStockTransformer {
           },
         },
       },
-    } as const;
+    } satisfies Prisma.shopping_sale_snapshot_unit_stocksFindManyArgs;
   }
 }
     `,
@@ -1006,7 +1023,7 @@ export namespace BbsArticleTransformer {
           },
         },
       },
-    } as const;
+    } satisfies Prisma.bbs_articlesFindManyArgs;
   }
 }
 ```
@@ -1031,7 +1048,7 @@ export async function getBbsArticles(): Promise<IBbsArticle[]> {
 ### Type Safety
 - [ ] ✅ Payload type uses `Prisma.{table}GetPayload<ReturnType<typeof select>>` pattern
 - [ ] ✅ transform() is async with explicit return type: `async function transform(input: Payload): Promise<{ITypeName}>`
-- [ ] ✅ select() returns object with `as const` suffix
+- [ ] ✅ select() returns object with `satisfies Prisma.{table_name}FindManyArgs` suffix
 - [ ] ✅ No use of `any` type anywhere
 
 ### Field Completeness
@@ -1158,22 +1175,26 @@ export type Payload = Prisma.shopping_salesGetPayload<{
 }>;
 ```
 
-### MISTAKE 2: Forgetting `as const`
+### MISTAKE 2: Forgetting `satisfies` Type Constraint
 ```typescript
-// WRONG - No type inference
+// WRONG - No Prisma type checking
 export function select() {
   return {
-    id: true,
-    name: true,
+    select: {
+      id: true,
+      name: true,
+    },
   };
 }
 
-// CORRECT - Enables precise typing
+// CORRECT - Ensures type compatibility with Prisma
 export function select() {
   return {
-    id: true,
-    name: true,
-  } as const;
+    select: {
+      id: true,
+      name: true,
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
 }
 ```
 
@@ -1200,20 +1221,24 @@ createdAt: input.created_at.toISOString(),
 // WRONG - Selecting everything
 export function select() {
   return {
-    sales: true,  // Loads ALL fields!
-  } as const;
+    include: {
+      sales: true,  // Loads ALL fields!
+    },
+  } satisfies Prisma.shopping_categoriesFindManyArgs;
 }
 
 // CORRECT - Select only what's needed
 export function select() {
   return {
-    sales: {
-      select: {
-        id: true,
-        name: true,
+    select: {
+      sales: {
+        select: {
+          id: true,
+          name: true,
+        },
       },
     },
-  } as const;
+  } satisfies Prisma.shopping_categoriesFindManyArgs;
 }
 ```
 

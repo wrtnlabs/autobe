@@ -1,9 +1,10 @@
 import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
-import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
+import { StringUtil } from "@autobe/utils";
+import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export namespace AutoBeRealizeOperationFactory {
+export namespace AutoBeRealizeOperationProgrammer {
   export function writeImportStatements(props: {
     operation: AutoBeOpenApi.IOperation;
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -27,7 +28,7 @@ export namespace AutoBeRealizeOperationFactory {
 
     const imports = [
       'import { HttpException } from "@nestjs/common";',
-      'import { Prisma } from "@prisma/client";',
+      'import { Prisma } from "@prisma/sdk";',
       'import jwt from "jsonwebtoken";',
       'import typia, { tags } from "typia";',
       'import { v4 } from "uuid";',
@@ -99,4 +100,43 @@ export namespace AutoBeRealizeOperationFactory {
     code = code.replaceAll("typia.tags.assert", "typia.assert");
     return code;
   }
+
+  export function validateEmptyCode(props: {
+    functionName: string;
+    draft: string;
+    revise: {
+      final: string | null;
+    };
+  }): IValidation.IError[] {
+    const errors: IValidation.IError[] = [];
+    if (props.draft.includes(props.functionName) === false)
+      errors.push({
+        path: "$input.request.draft",
+        expected: `string (including function named '${props.functionName}')`,
+        value: props.draft,
+        description: description(props.functionName),
+      });
+    if (
+      props.revise.final !== null &&
+      props.revise.final.includes(props.functionName) === false
+    )
+      errors.push({
+        path: "$input.request.revise.final",
+        expected: `string (including function named '${props.functionName}')`,
+        value: props.revise.final,
+        description: description(props.functionName),
+      });
+    return errors;
+  }
 }
+
+const description = (func: string): string => StringUtil.trim`
+  The function ${func} does not exist in the provided code snippet.
+
+  The first reason of the non-existence is that the code snippet is empty,
+  and the second reason is that AI has written different function name
+  by mistake.
+
+  Please make sure that the code snippet includes the function ${func}.
+  Note that, you never have to write empty code or different function name.
+`;

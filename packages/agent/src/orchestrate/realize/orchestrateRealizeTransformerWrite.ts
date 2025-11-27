@@ -18,9 +18,9 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerWriteHistories } from "./histories/transformRealizeTransformerWriteHistories";
+import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerWriteApplication } from "./structures/IAutoBeRealizeTransformerWriteApplication";
 
 export async function orchestrateRealizeTransformerWrite<
@@ -33,16 +33,32 @@ export async function orchestrateRealizeTransformerWrite<
   const document: AutoBeOpenApi.IDocument = history.document;
   const candidates: string[] = Object.keys(document.components.schemas).filter(
     (key) =>
-      key.startsWith("IPage") === false &&
       key !== "IAuthorizationToken" &&
+      key.startsWith("IPage") === false &&
+      key.endsWith(".IRequest") === false &&
       key.endsWith(".ICreate") === false &&
-      key.endsWith(".IUpdate") === false,
+      key.endsWith(".IUpdate") === false &&
+      key.endsWith(".ILogin") === false &&
+      key.endsWith(".IJoin") === false &&
+      key.endsWith(".IRefresh") === false &&
+      key.endsWith(".IAuthorized") === false,
   );
+  console.log(
+    "candidates",
+    Object.fromEntries(
+      candidates.map((key) => [
+        key,
+        (document.components.schemas[key] as any)["x-autobe-prisma-schema"] ??
+          null,
+      ]),
+    ),
+  );
+
   const progress: AutoBeProgressEventBase = {
     total: candidates.length,
     completed: 0,
   };
-  const result: Array<AutoBeRealizeWriteEvent | string> =
+  const result: Array<AutoBeRealizeWriteEvent | false> =
     await executeCachedBatch(
       ctx,
       candidates.map(
@@ -54,7 +70,7 @@ export async function orchestrateRealizeTransformerWrite<
           }),
       ),
     );
-  return result.filter((r) => typeof r === "object");
+  return result.filter((r) => r !== false);
 }
 
 async function process<Model extends ILlmSchema.Model>(
@@ -64,15 +80,28 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent | string> {
+): Promise<AutoBeRealizeWriteEvent | false> {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  console.log(
+    "progress",
+    props.dtoTypeName,
+    (document.components.schemas[props.dtoTypeName] as any)[
+      "x-autobe-prisma-schema"
+    ],
+  );
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
     kinds: ["prismaSchemas", "interfaceSchemas"],
-    state: ctx.state(),
+    local: {
+      interfaceSchemas: {
+        [props.dtoTypeName]: document.components.schemas[props.dtoTypeName],
+      },
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<
@@ -101,8 +130,13 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     });
     if (pointer.value !== null) {
-      if (pointer.value.type === "reject")
-        return out(result)(pointer.value.reason);
+      if (pointer.value.type === "reject") return out(result)(false);
+      const content: string =
+        await AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
+          dtoTypeName: props.dtoTypeName,
+          schemas: document.components.schemas,
+          code: pointer.value.revise.final ?? pointer.value.draft,
+        });
       const event: AutoBeRealizeWriteEvent = {
         id: v7(),
         type: "realizeWrite",
@@ -110,8 +144,11 @@ async function process<Model extends ILlmSchema.Model>(
           kind: "transformer",
           dtoTypeName: props.dtoTypeName,
           prismaSchemaName: pointer.value.prismaSchemaName,
-          location: `src/transformers/${props.dtoTypeName.replaceAll(".", "_")}Transformer.ts`,
-          content: pointer.value.revise.final ?? pointer.value.draft,
+          location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
+            props.dtoTypeName,
+          )}.ts`,
+          neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
+          content,
         },
         metric: result.metric,
         tokenUsage: result.tokenUsage,
@@ -130,7 +167,11 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   dtoTypeName: string;
-  build: (next: IAutoBeRealizeTransformerWriteApplication.IComplete) => void;
+  build: (
+    next:
+      | IAutoBeRealizeTransformerWriteApplication.IComplete
+      | IAutoBeRealizeTransformerWriteApplication.IReject,
+  ) => void;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   >;
@@ -143,11 +184,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete") return result;
 
-    const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: `${props.dtoTypeName}Transformer`,
-      draft: result.data.request.draft,
-      revise: result.data.request.revise,
-    });
+    const errors: IValidation.IError[] =
+      AutoBeRealizeTransformerProgrammer.validateEmptyCode({
+        dtoTypeName: props.dtoTypeName,
+        draft: result.data.request.draft,
+        revise: result.data.request.revise,
+      });
     return errors.length
       ? {
           success: false,
@@ -172,7 +214,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "complete" || next.request.type === "reject")
+          props.build(next.request);
       },
     } satisfies IAutoBeRealizeTransformerWriteApplication,
   };
