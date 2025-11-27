@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReference";
+
 /**
  * DTO collector function implementation.
  *
@@ -37,7 +39,9 @@ export interface AutoBeRealizeCollectorFunction {
    */
   prismaSchemaName: string;
 
-  references: string[];
+  neighbors: string[];
+
+  references: AutoBeRealizeCollectorReference[];
 
   /**
    * File path where the collector module is generated.

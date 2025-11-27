@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorReference } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
@@ -155,6 +157,20 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      */
     prismaSchemaName: string | null;
 
-    references: string[];
+    /**
+     * Referenced entities from path parameters or auth context.
+     *
+     * Each reference contains:
+     * - `prismaSchemaName`: Prisma table name (e.g., "shopping_sales")
+     * - `source`: Origin of reference
+     *   - "from path parameter {paramName}"
+     *   - "from authorized actor"
+     *   - "from authorized session"
+     *
+     * See `AutoBeRealizeCollectorReference` for details.
+     *
+     * Empty array means the Create DTO contains all necessary references.
+     */
+    references: AutoBeRealizeCollectorReference[];
   }
 }

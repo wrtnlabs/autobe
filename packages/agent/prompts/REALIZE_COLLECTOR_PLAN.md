@@ -82,22 +82,26 @@ This is a required self-reflection step that helps you:
       {
         dtoTypeName: "IShoppingSale.ICreate",
         thinking: "Collects to shopping_sales with category connect",
-        prismaSchemaName: "shopping_sales"
+        prismaSchemaName: "shopping_sales",
+        references: []  // No path params, DTO has all references
       },
       {
         dtoTypeName: "IShoppingSaleTag.ICreate",
         thinking: "Collects nested tags for shopping sales",
-        prismaSchemaName: "shopping_sale_tags"
+        prismaSchemaName: "shopping_sale_tags",
+        references: []  // Nested, called from parent collector
       },
       {
         dtoTypeName: "IShoppingSaleOption.ICreate",
         thinking: "Collects nested options for sale units",
-        prismaSchemaName: "shopping_sale_snapshot_unit_options"
+        prismaSchemaName: "shopping_sale_snapshot_unit_options",
+        references: []  // Nested, called from parent collector
       },
       {
         dtoTypeName: "IShoppingSale",
         thinking: "Read-only response DTO, not for creation",
-        prismaSchemaName: null
+        prismaSchemaName: null,
+        references: []  // Non-collectable, no references needed
       }
     ]
   }
@@ -243,22 +247,26 @@ You will receive:
          {
            dtoTypeName: "IShoppingSale.ICreate",
            thinking: "Collects to shopping_sales with category and nested tags",
-           prismaSchemaName: "shopping_sales"
+           prismaSchemaName: "shopping_sales",
+           references: []  // No path params needed
          },
          {
            dtoTypeName: "IShoppingSaleTag.ICreate",
            thinking: "Collects nested tags for shopping sales",
-           prismaSchemaName: "shopping_sale_tags"
+           prismaSchemaName: "shopping_sale_tags",
+           references: []  // Nested collector
          },
          {
            dtoTypeName: "IShoppingSaleInventory.ICreate",
            thinking: "Collects nested inventory for shopping sales",
-           prismaSchemaName: "shopping_sale_inventories"
+           prismaSchemaName: "shopping_sale_inventories",
+           references: []  // Nested collector
          },
          {
            dtoTypeName: "IShoppingSale",
            thinking: "Read-only response DTO, not for creation",
-           prismaSchemaName: null
+           prismaSchemaName: null,
+           references: []  // Non-collectable
          }
        ]
      }
@@ -273,11 +281,137 @@ Each plan entry specifies one DTO analysis result:
 
 ```typescript
 {
-  dtoTypeName: "IShoppingSale.ICreate",     // Create DTO type name
-  thinking: "Collects to shopping_sales...",   // Chain of thought for this decision
-  prismaSchemaName: "shopping_sales"       // Prisma table name (or null if non-collectable)
+  dtoTypeName: "IShoppingSale.ICreate",      // Create DTO type name
+  thinking: "Collects to shopping_sales...", // Chain of thought for this decision
+  prismaSchemaName: "shopping_sales",        // Prisma table name (or null if non-collectable)
+  references: [
+    { prismaSchemaName: "shopping_sellers", source: "from authorized actor" },
+    { prismaSchemaName: "shopping_seller_sessions", source: "from authorized session" }
+  ]  // Auth context: seller + session
 }
 ```
+
+**The `references` field**:
+
+This field contains reference objects with **Prisma schema names AND sources** extracted from **path parameters OR auth context** in the operation. When a Create DTO doesn't include all foreign key references needed to create the Prisma record, those references come from either:
+
+1. **Path parameters**: Entity identifiers in the URL path
+2. **Auth context**: Logged-in user information from authentication
+
+**Reference structure**:
+
+Each reference is an object containing:
+- `prismaSchemaName`: The Prisma table name (e.g., "shopping_sales")
+- `source`: Where the reference comes from
+
+**Source formats**:
+- "from path parameter {paramName}" - URL path parameter
+- "from authorized actor" - Logged-in user entity
+- "from authorized session" - Current user session entity
+
+**How to extract references**:
+
+**From path parameters** (`AutoBeOpenApi.IOperation.parameters`):
+
+1. Identify path parameters that reference foreign entities
+2. Determine the Prisma schema they reference:
+   - UUID PK parameters (e.g., `saleId`) → `shopping_sales`
+   - UK parameters (e.g., `categoryCode`) → `bbs_categories`
+3. Add the reference object with Prisma schema name and source to the `references` array:
+   - `{ prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }`
+
+**From auth context** (logged-in user):
+
+1. Check if the operation requires authentication
+2. Determine if logged-in user becomes a foreign key:
+   - User creates their own content → `author_id`, `customer_id`, `seller_id`
+   - Common patterns: articles, posts, reviews by logged-in user
+3. **IMPORTANT**: Add **BOTH** actor and session reference objects to references:
+   - **Actor entity**: `shopping_customers`, `shopping_sellers`, `bbs_members`
+     - `{ prismaSchemaName: "shopping_customers", source: "from authorized actor" }`
+   - **Session entity**: `shopping_customer_sessions`, `shopping_seller_sessions`, `bbs_member_sessions`
+     - `{ prismaSchemaName: "shopping_customer_sessions", source: "from authorized session" }`
+4. Auth context always provides **TWO entities**: actor + session
+
+**Example**:
+
+**Example 1 - Path parameter reference**:
+
+```typescript
+// Operation: POST /sales/{saleId}/reviews
+// Path parameter: saleId (UUID, references shopping_sales)
+
+{
+  dtoTypeName: "IShoppingSaleReview.ICreate",
+  thinking: "Collects review under a specific sale",
+  prismaSchemaName: "shopping_sale_reviews",
+  references: [
+    { prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }
+  ]
+}
+
+// Generated collector:
+export namespace ShoppingSaleReviewCollector {
+  export async function collect(props: {
+    body: IShoppingSaleReview.ICreate;
+    shoppingSale: IEntity;  // From saleId path parameter
+    shoppingCustomer: IEntity; // from authorized customer
+    shoppingCustomerSession: IEntity; // from authorized session
+  }) {
+    return {
+      shopping_sale_id: props.shoppingSale.id,
+      ...
+    } satisfies Prisma.shopping_sale_reviewsCreateInput;
+  }
+}
+```
+
+**Example 2 - Auth context reference**:
+
+```typescript
+// Operation: POST /articles (no path parameters)
+// Auth: Logged-in member becomes the article author
+
+{
+  dtoTypeName: "IBbsArticle.ICreate",
+  thinking: "Collects article with logged-in member as author",
+  prismaSchemaName: "bbs_articles",
+  references: [
+    { prismaSchemaName: "bbs_members", source: "from authorized actor" },
+    { prismaSchemaName: "bbs_member_sessions", source: "from authorized session" }
+  ]
+}
+
+// Generated collector:
+export namespace BbsArticleCollector {
+  export async function collect(props: {
+    body: IBbsArticle.ICreate;
+    member: IEntity;   // From auth - logged-in member (actor)
+    session: IEntity;  // From auth - current session
+  }) {
+    return {
+      author_id: props.member.id,   // UUID from logged-in member
+      session_id: props.session.id, // UUID from current session
+      ...
+    } satisfies Prisma.bbs_articlesCreateInput;
+  }
+}
+```
+
+**When to use references**:
+
+- Path parameters provide foreign keys not in the Create DTO body
+- Auth context provides user identity for owner/author relationships
+- Common in nested resource creation (e.g., `/sales/{saleId}/reviews`)
+- Common in user-owned resources (e.g., `/articles` where user is author)
+- Empty array `[]` means the Create DTO contains all necessary references
+
+**Why include source information**:
+
+The `source` field helps the WRITE phase understand where each reference originates, enabling:
+- Correct parameter naming in generated collectors (e.g., `sale` for saleId, `member` for authorized actor)
+- Accurate documentation comments explaining parameter origins
+- Proper type annotations and validation logic
 
 ### 2. Handling Non-Collectable DTOs
 
@@ -288,13 +422,15 @@ Each plan entry specifies one DTO analysis result:
 {
   dtoTypeName: "IShoppingSale",
   thinking: "Read-only response DTO, not for creation",
-  prismaSchemaName: null  // ✅ Null indicates non-collectable
+  prismaSchemaName: null,  // ✅ Null indicates non-collectable
+  references: []           // Always include references field
 }
 
 {
   dtoTypeName: "IShoppingSale.ICreate",
   thinking: "Collects to shopping_sales with nested relations",
-  prismaSchemaName: "shopping_sales"  // ✅ Table name indicates collectable
+  prismaSchemaName: "shopping_sales",  // ✅ Table name indicates collectable
+  references: []  // No path params needed for this operation
 }
 ```
 

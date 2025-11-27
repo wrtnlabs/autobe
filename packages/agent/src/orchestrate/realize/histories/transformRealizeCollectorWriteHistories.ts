@@ -100,7 +100,10 @@ function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
       export async function collect(props: {
         body: ${plan.dtoTypeName};
         ${plan.references
-          .map((r) => `${NamingConvention.camel(r)}: IEntity;`)
+          .map(
+            (r) =>
+              `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+          )
           .join("\n")}
       }) {
         return {

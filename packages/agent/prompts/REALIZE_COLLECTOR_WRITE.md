@@ -215,41 +215,99 @@ export interface IEntity {
 }
 ```
 
-**Why IEntity for all path parameters?**
+**Where do IEntity parameters come from?**
+
+The REALIZE_COLLECTOR_PLAN phase analyzes operations and extracts references from **path parameters OR auth context**. These are stored in the `AutoBeRealizeCollectorPlan.references` field as reference objects containing Prisma schema names AND source information.
+
+**Reference structure**:
+```typescript
+interface AutoBeRealizeCollectorReference {
+  prismaSchemaName: string;  // e.g., "shopping_sales"
+  source: string;            // e.g., "from path parameter saleId"
+}
+```
+
+**Source 1 - Path parameters**:
+- Operation path: `/sales/{saleId}/reviews`
+- Path parameter: `saleId` (references `shopping_sales` table)
+- Plan result: `references: [{ prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }]`
+- Generated collector: `collect(props: { body: ..., sale: IEntity })`
+
+**Source 2 - Auth context**:
+- Operation path: `/articles` (no path parameters)
+- Auth: Logged-in member (references `bbs_members` + `bbs_member_sessions`)
+- Plan result: `references: [{ prismaSchemaName: "bbs_members", source: "from authorized actor" }, { prismaSchemaName: "bbs_member_sessions", source: "from authorized session" }]`
+- Generated collector: `collect(props: { body: ..., member: IEntity, session: IEntity })`
+- **IMPORTANT**: Auth context provides **TWO entities**: actor + session
+
+The parameter name is derived from the Prisma schema name in camelCase (e.g., `shopping_sales` → `sale`, `bbs_members` → `member`, `shopping_customer_sessions` → `session`).
+
+**The `source` field** helps you understand where each reference originates:
+- "from path parameter X" - Resolved from URL path parameter
+- "from authorized actor" - Logged-in user entity
+- "from authorized session" - Current user session
+
+**Why IEntity for all references?**
 
 Provider functions handle the resolution logic:
-- For `sectionId` (UUID PK): Resolves by primary key → `{ id: "uuid-value" }`
-- For `sectionCode` (UK): Resolves by unique key → `{ id: "uuid-value-of-that-section" }`
 
-The Operation specification's parameter description will indicate whether it's a UUID PK or UK identifier. The collector simply receives the resolved `IEntity` with the record's UUID, regardless of how it was looked up.
+**For path parameters**:
+- `saleId` (UUID PK): Resolves by primary key → `{ id: "uuid-value" }`
+- `categoryCode` (UK): Resolves by unique key → `{ id: "uuid-value-of-that-category" }`
+
+**For auth context**:
+- Actor: `auth.id` → Resolves logged-in user → `{ id: "uuid-of-customer" }`
+- Session: `auth.session` → Resolves current session → `{ id: "uuid-of-session" }`
+- Auth context provides **TWO** `IEntity` parameters (actor + session)
+
+The collector simply receives resolved `IEntity` objects with UUIDs, regardless of how they were looked up.
 
 **Examples:**
 
 ```typescript
-// Path parameter: sectionId (UUID PK)
-// Operation description: "Section UUID identifier"
+// Example 1: Path parameter + Auth context
+// Operation: POST /sales/{saleId}/reviews
 export async function collect(props: {
-  body: IArticle.ICreate;
-  section: IEntity;  // ✅ Resolved from UUID PK
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;      // ✅ Resolved from saleId path parameter
+  customer: IEntity;  // ✅ From auth - logged-in customer (actor)
+  session: IEntity;   // ✅ From auth - current session
 }) {
   return {
     id: v4(),
-    section_id: props.section.id,  // UUID from resolved entity
+    shopping_sale_id: props.sale.id,       // UUID from path parameter
+    customer_id: props.customer.id,        // UUID from auth actor
+    session_id: props.session.id,          // UUID from auth session
     // ...
-  } satisfies Prisma.articlesCreateInput;
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;
 }
 
-// Path parameter: sectionCode (UK)
-// Operation description: "Section unique code identifier"
+// Example 2: Path parameter (UK)
+// Operation: POST /categories/{categoryCode}/articles
 export async function collect(props: {
-  body: IArticle.ICreate;
-  section: IEntity;  // ✅ Resolved from UK, but still IEntity
+  body: IBbsArticle.ICreate;
+  category: IEntity;  // ✅ Resolved from categoryCode path parameter (UK)
 }) {
   return {
     id: v4(),
-    section_id: props.section.id,  // UUID from resolved entity
+    category_id: props.category.id,  // UUID from resolved entity
     // ...
-  } satisfies Prisma.articlesCreateInput;
+  } satisfies Prisma.bbs_articlesCreateInput;
+}
+
+// Example 3: Auth context
+// Operation: POST /articles (logged-in member becomes author)
+export async function collect(props: {
+  body: IBbsArticle.ICreate;
+  member: IEntity;   // ✅ Resolved from auth - logged-in member (actor)
+  session: IEntity;  // ✅ Resolved from auth - current session
+}) {
+  return {
+    id: v4(),
+    author_id: props.member.id,   // UUID from logged-in member
+    session_id: props.session.id, // UUID from current session
+    // ...
+  } satisfies Prisma.bbs_articlesCreateInput;
 }
 ```
 
@@ -270,34 +328,40 @@ export async function collect(props: {
 }
 ```
 
-2. **CREATE with auth context** (user_id, tenant_id):
+2. **CREATE with auth context** (logged-in user as owner):
 ```typescript
 export async function collect(props: {
-  auth: AuthPayload;
-  body: IProduct.ICreate;
+  body: IBbsArticle.ICreate;
+  member: IEntity;   // From auth - logged-in member (actor)
+  session: IEntity;  // From auth - current session
 }) {
   return {
     id: v4(),
-    name: props.body.name,
-    user_id: props.auth.id,  // From auth
+    title: props.body.title,
+    author_id: props.member.id,   // UUID from logged-in member
+    session_id: props.session.id, // UUID from current session
     // ...
-  } satisfies Prisma.productsCreateInput;
+  } satisfies Prisma.bbs_articlesCreateInput;
 }
 ```
 
-3. **Nested CREATE with parent context**:
+3. **Nested CREATE with parent context + Auth**:
 ```typescript
 export async function collect(props: {
-  body: IOrderItem.ICreate;
-  order: IEntity;  // ✅ Resolved entity, not orderId: string
-  sequence: number;  // Position in array
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;      // ✅ Resolved entity, not saleId: string
+  customer: IEntity;  // ✅ From auth - logged-in customer
+  session: IEntity;   // ✅ From auth - current session
+  sequence: number;   // Position in array
 }) {
   return {
     id: v4(),
-    order_id: props.order.id,  // Use IEntity.id
+    shopping_sale_id: props.sale.id,  // Use IEntity.id
+    customer_id: props.customer.id,   // UUID from auth
+    session_id: props.session.id,     // UUID from auth
     sequence: props.sequence,
     // ...
-  } satisfies Prisma.order_itemsCreateInput;
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;
 }
 ```
 
