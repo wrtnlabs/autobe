@@ -32,6 +32,7 @@ export const validate_agent_test_prepare = async (props: {
     interfaceState.document.operations;
   const result: AutoBeTestWritePrepareFunction[] = await orchestrateTestPrepare(
     agent.getContext(),
+    "Generate test data preparation functions for all ICreate DTOs.",
   );
   typia.assert(result);
 
