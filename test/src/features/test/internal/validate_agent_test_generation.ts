@@ -1,4 +1,4 @@
-import { orchestrateTestGeneration } from "@autobe/agent/src/orchestrate/test/orchestrateTestGeneration";
+import { orchestrateTestWriteGeneration } from "@autobe/agent/src/orchestrate/test/orchestrateTestGeneration";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -66,7 +66,7 @@ export const validate_agent_test_generation = async (props: {
 
   // GENERATE GENERATION FUNCTIONS
   const generationFunctions: AutoBeTestWriteGenerationFunction[] =
-    await orchestrateTestGeneration(agent.getContext(), {
+    await orchestrateTestWriteGeneration(agent.getContext(), {
       instruction: "Generate generation functions for the prepared functions.",
       document,
       preparedFunctions,

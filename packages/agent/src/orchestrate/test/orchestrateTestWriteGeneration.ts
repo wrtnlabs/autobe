@@ -26,7 +26,9 @@ interface IAutoBeTestWriteGenerationResult {
   event: AutoBeTestWriteGenerationFunction;
 }
 
-export const orchestrateTestGeneration = async <Model extends ILlmSchema.Model>(
+export const orchestrateTestWriteGeneration = async <
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
