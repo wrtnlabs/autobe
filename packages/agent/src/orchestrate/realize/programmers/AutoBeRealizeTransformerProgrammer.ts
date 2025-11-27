@@ -82,7 +82,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return await compiler.typescript.beautify(code);
   }
 
-  export function validateEmptyCode(props: {
+  export function validate(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     dtoTypeName: string;
     draft: string;
     revise: {
@@ -90,26 +91,61 @@ export namespace AutoBeRealizeTransformerProgrammer {
       final: string | null;
     };
   }): IValidation.IError[] {
-    const name: string = getName(props.dtoTypeName);
     const errors: IValidation.IError[] = [];
-    const validate = (next: { value: string; path: string }): void => {
-      if (next.value.includes(`export namespace ${name}`) === false)
-        errors.push({
-          path: next.path,
-          expected: `Namespace '${name}' to be present in the code.`,
-          value: next.value,
-          description: `The generated code does not contain the expected namespace '${name}'.`,
-        });
-    };
-    validate({
-      value: props.draft,
+    validateEmptyCode({
+      dtoTypeName: props.dtoTypeName,
+      content: props.draft,
       path: "$input.request.draft",
+      errors,
     });
-    if (props.revise.final !== null)
-      validate({
-        value: props.revise.final,
+    validateNeighbors({
+      schemas: props.schemas,
+      dtoTypeName: props.dtoTypeName,
+      content: props.draft,
+      path: "$input.request.draft",
+      errors,
+    });
+    if (props.revise.final !== null) {
+      validateEmptyCode({
+        dtoTypeName: props.dtoTypeName,
+        content: props.revise.final,
         path: "$input.request.revise.final",
+        errors,
       });
+      validateNeighbors({
+        schemas: props.schemas,
+        dtoTypeName: props.dtoTypeName,
+        content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+    }
     return errors;
+  }
+
+  function validateEmptyCode(props: {
+    dtoTypeName: string;
+    content: string;
+    path: string;
+    errors: IValidation.IError[];
+  }): void {
+    const name: string = getName(props.dtoTypeName);
+    if (props.content.includes(`export namespace ${name}`) === false)
+      props.errors.push({
+        path: props.path,
+        expected: `Namespace '${name}' to be present in the code.`,
+        value: props.content,
+        description: `The generated code does not contain the expected namespace '${name}'.`,
+      });
+  }
+
+  function validateNeighbors(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    dtoTypeName: string;
+    content: string;
+    path: string;
+    errors: IValidation.IError[];
+  }): void {
+    props;
   }
 }

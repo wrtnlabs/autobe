@@ -115,6 +115,7 @@ async function process<Model extends ILlmSchema.Model>(
       source: "realizeWrite",
       controller: createController({
         model: ctx.model,
+        schemas: document.components.schemas,
         dtoTypeName: props.dtoTypeName,
         build: (next) => {
           pointer.value = next;
@@ -166,6 +167,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   dtoTypeName: string;
   build: (
     next:
@@ -185,7 +187,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     else if (result.data.request.type !== "complete") return result;
 
     const errors: IValidation.IError[] =
-      AutoBeRealizeTransformerProgrammer.validateEmptyCode({
+      AutoBeRealizeTransformerProgrammer.validate({
+        schemas: props.schemas,
         dtoTypeName: props.dtoTypeName,
         draft: result.data.request.draft,
         revise: result.data.request.revise,
