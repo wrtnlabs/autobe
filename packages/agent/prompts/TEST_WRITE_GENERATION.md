@@ -255,4 +255,10 @@ try {
 }
 ```
 
+## 6. Note on Authentication
+
+This generation function does not handle authentication.
+Authentication should be handled separately in the test scenarios
+that use these generation functions.
+
 Remember: Your goal is to create a reliable, reusable generation function that other test scenarios can depend on for creating test resources.
