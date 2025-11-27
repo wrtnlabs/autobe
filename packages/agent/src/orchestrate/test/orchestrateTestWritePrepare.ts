@@ -36,7 +36,9 @@ import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWrit
  * @param instruction User instructions for test data generation context
  * @returns Array of generated prepare function definitions
  */
-export const orchestrateTestPrepare = async <Model extends ILlmSchema.Model>(
+export const orchestrateTestWritePrepare = async <
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   instruction: string,
 ): Promise<AutoBeTestWritePrepareFunction[]> => {

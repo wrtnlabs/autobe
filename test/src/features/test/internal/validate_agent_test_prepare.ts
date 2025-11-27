@@ -1,4 +1,4 @@
-import { orchestrateTestPrepare } from "@autobe/agent/src/orchestrate/test/orchestrateTestPrepare";
+import { orchestrateTestWritePrepare } from "@autobe/agent/src/orchestrate/test/orchestrateTestPrepare";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -30,10 +30,11 @@ export const validate_agent_test_prepare = async (props: {
   // GENERATE TEST PREPARE FUNCTIONS
   const operations: AutoBeOpenApi.IOperation[] =
     interfaceState.document.operations;
-  const result: AutoBeTestWritePrepareFunction[] = await orchestrateTestPrepare(
-    agent.getContext(),
-    "Generate test data preparation functions for all ICreate DTOs.",
-  );
+  const result: AutoBeTestWritePrepareFunction[] =
+    await orchestrateTestWritePrepare(
+      agent.getContext(),
+      "Generate test data preparation functions for all ICreate DTOs.",
+    );
   typia.assert(result);
 
   // VALIDATE PREPARE FUNCTIONS
