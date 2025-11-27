@@ -1,5 +1,7 @@
 import {
   AutoBeEventSource,
+  AutoBeInterfaceHistory,
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
@@ -15,6 +17,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerWriteHistories } from "./histories/transformRealizeTransformerWriteHistories";
@@ -22,15 +25,46 @@ import { IAutoBeRealizeTransformerWriteApplication } from "./structures/IAutoBeR
 
 export async function orchestrateRealizeTransformerWrite<
   Model extends ILlmSchema.Model,
->(
+>(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeWriteEvent[]> {
+  const history: AutoBeInterfaceHistory | null = ctx.state().interface;
+  if (history === null)
+    throw new Error("Cannot realize transformer write without interface.");
+
+  const document: AutoBeOpenApi.IDocument = history.document;
+  const candidates: string[] = Object.keys(document.components.schemas).filter(
+    (key) =>
+      key.startsWith("IPage") === false &&
+      key !== "IAuthorizationToken" &&
+      key.endsWith(".ICreate") === false &&
+      key.endsWith(".IUpdate") === false,
+  );
+  const progress: AutoBeProgressEventBase = {
+    total: candidates.length,
+    completed: 0,
+  };
+  const result: Array<AutoBeRealizeWriteEvent | string> =
+    await executeCachedBatch(
+      ctx,
+      candidates.map(
+        (dtoTypeName) => (promptCacheKey) =>
+          process(ctx, {
+            dtoTypeName,
+            promptCacheKey,
+            progress,
+          }),
+      ),
+    );
+  return result.filter((r) => typeof r === "object");
+}
+
+async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     dtoTypeName: string;
-    location: string;
-    progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent> {
+): Promise<AutoBeRealizeWriteEvent | string> {
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -41,10 +75,13 @@ export async function orchestrateRealizeTransformerWrite<
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeTransformerWriteApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<
+      | IAutoBeRealizeTransformerWriteApplication.IComplete
+      | IAutoBeRealizeTransformerWriteApplication.IReject
+      | null
+    > = {
+      value: null,
+    };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "realizeWrite",
       controller: createController({
@@ -64,6 +101,8 @@ export async function orchestrateRealizeTransformerWrite<
       }),
     });
     if (pointer.value !== null) {
+      if (pointer.value.type === "reject")
+        return out(result)(pointer.value.reason);
       const event: AutoBeRealizeWriteEvent = {
         id: v7(),
         type: "realizeWrite",
@@ -71,7 +110,7 @@ export async function orchestrateRealizeTransformerWrite<
           kind: "transformer",
           dtoTypeName: props.dtoTypeName,
           prismaSchemaName: pointer.value.prismaSchemaName,
-          location: props.location,
+          location: `src/transformers/${props.dtoTypeName.replaceAll(".", "_")}Transformer.ts`,
           content: pointer.value.revise.final ?? pointer.value.draft,
         },
         metric: result.metric,
@@ -102,9 +141,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete") {
-      return result;
-    }
+    else if (result.data.request.type !== "complete") return result;
+
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: `${props.dtoTypeName}Transformer`,
       draft: result.data.request.draft,
@@ -142,30 +180,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeRealizeTransformerWriteApplication,
-      "chatgpt"
-    >({
+    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "chatgpt">(
+      {
+        validate: {
+          process: validate,
+        },
+      },
+    ),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "claude">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "gemini">(
-      {
-        validate: {
-          process: validate,
-        },
+    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "gemini">({
+      validate: {
+        process: validate,
       },
-    ),
+    }),
 };
 
 type Validator = (

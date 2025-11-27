@@ -6,20 +6,20 @@ import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
+  AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
-import { v7 } from "uuid";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_write = async (props: {
+export const validate_agent_realize_operation_write = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -58,7 +58,10 @@ export const validate_agent_realize_write = async (props: {
     ),
   );
 
-  const progress = { id: v7(), total: scenarios.length, completed: 0 };
+  const progress: AutoBeProgressEventBase = {
+    total: scenarios.length,
+    completed: 0,
+  };
   const writes: (AutoBeRealizeWriteEvent | null)[] = await executeCachedBatch(
     agent.getContext(),
     scenarios.map((scenario) => async (promptCacheKey) => {
@@ -119,7 +122,6 @@ export const validate_agent_realize_write = async (props: {
       ),
     },
   });
-
   if (TestGlobal.archive)
     await AutoBeExampleStorage.save({
       vendor: props.vendor,

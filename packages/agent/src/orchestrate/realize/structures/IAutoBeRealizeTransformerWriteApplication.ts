@@ -12,6 +12,11 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * The generation follows a structured RAG workflow: preliminary context
  * gathering (Prisma schemas, DTO schemas) → implementation planning → code
  * generation → review and refinement.
+ *
+ * **Special Case - Rejection**: Not all DTO types require transformers. Some
+ * DTOs represent request parameters or business logic types without direct
+ * Prisma mappings (e.g., IPage.IRequest, IAuthorizationToken). The agent can
+ * reject transformer generation for such incompatible types.
  */
 export interface IAutoBeRealizeTransformerWriteApplication {
   /**
@@ -36,15 +41,23 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
+     *
      * - What schemas (Prisma or DTO) are missing that you need?
      * - Why do you need them for transformer generation?
      * - Be brief - state the gap, don't list everything you have.
      *
      * For completion:
+     *
      * - What schemas did you acquire?
      * - What transformer patterns did you implement?
      * - Why is it sufficient to complete?
      * - Summarize - don't enumerate every field mapping.
+     *
+     * For rejection:
+     *
+     * - What type of DTO is this (request param, business logic, etc.)?
+     * - Why doesn't it map to a Prisma table?
+     * - Be specific about incompatibility.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -55,15 +68,18 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform:
+     *
      * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final transformer implementation
+     * - "reject": Reject transformer generation for incompatible DTO types
      *
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
     request:
       | IComplete
+      | IReject
       | IAutoBePreliminaryGetPrismaSchemas
       | IAutoBePreliminaryGetInterfaceSchemas;
   }
@@ -72,16 +88,15 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    * Request to generate transformer module implementation.
    *
    * Executes three-phase generation to create complete transformer with:
-   * - transform() function: Converts Prisma payload to DTO
-   * - select() function: Returns Prisma include/select specification
+   *
+   * - Transform() function: Converts Prisma payload to DTO
+   * - Select() function: Returns Prisma include/select specification
    *
    * Follows plan → draft → revise pattern to ensure type safety and correct
    * field mappings.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for completion request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
@@ -99,6 +114,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Transformer implementation plan and strategy.
      *
      * Analyzes the Prisma schema and DTO type to plan the transformation logic:
+     *
      * - Identifies field mappings (Prisma column → DTO property)
      * - Plans nested object transformations
      * - Determines required Prisma includes/selects
@@ -110,9 +126,10 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Initial transformer implementation draft.
      *
      * The first complete implementation including:
+     *
      * - Namespace declaration
-     * - transform() function with proper types
-     * - select() function returning Prisma specification
+     * - Transform() function with proper types
+     * - Select() function returning Prisma specification
      * - Nested transformer calls if needed
      */
     draft: string;
@@ -131,6 +148,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Review and improvement suggestions.
      *
      * Identifies areas for improvement in the draft code:
+     *
      * - Type safety (proper Prisma payload types)
      * - Field mapping accuracy
      * - Null/undefined handling
@@ -148,5 +166,50 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Returns `null` if the draft is already perfect and needs no changes.
      */
     final: string | null;
+  }
+
+  /**
+   * Request to reject transformer generation for incompatible DTO types.
+   *
+   * Not all DTO types require or support transformer generation. Some DTOs
+   * represent concepts that don't map directly to Prisma database tables,
+   * making transformer generation inappropriate or impossible.
+   *
+   * Use this when the target DTO falls into one of these categories:
+   *
+   * 1. **Request Parameter Types**: DTOs used for API input parameters rather
+   *    than response data (e.g., `IPage.IRequest`, `ISort`, `IFilter`)
+   *
+   * 2. **Business Logic Types**: DTOs constructed from business logic rather
+   *    than direct database queries (e.g., `IAuthorizationToken`,
+   *    `IStatistics`, `IDashboardSummary`)
+   *
+   * 3. **Computed/Aggregated Types**: DTOs that aggregate data from multiple
+   *    tables or require complex business logic (e.g., `IReportSummary`,
+   *    `IAnalytics`)
+   *
+   * The agent should analyze the DTO structure and determine if it maps to a
+   * Prisma table. If no clear mapping exists, reject with a detailed
+   * explanation.
+   */
+  export interface IReject {
+    /**
+     * Type discriminator for rejection request.
+     */
+    type: "reject";
+
+    /**
+     * Detailed explanation of why transformer generation is rejected.
+     *
+     * Should clearly explain:
+     * - What category the DTO falls into (request param, business logic, etc.)
+     * - Why it doesn't map to a Prisma table
+     * - What the DTO represents instead
+     *
+     * Example: "IPage.IRequest is a pagination parameter DTO used for API
+     * input. It contains query parameters like page number and limit, not data
+     * from database tables. No Prisma mapping exists."
+     */
+    reason: string;
   }
 }

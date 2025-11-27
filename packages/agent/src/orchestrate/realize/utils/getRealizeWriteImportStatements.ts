@@ -22,7 +22,7 @@ export function getRealizeWriteImportStatements(props: {
     visit(props.operation.responseBody.typeName);
 
   // Build the standard imports
-  const imports = [
+  const imports: string[] = [
     'import { HttpException } from "@nestjs/common";',
     'import { Prisma } from "@prisma/client";',
     'import jwt from "jsonwebtoken";',
