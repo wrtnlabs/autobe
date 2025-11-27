@@ -116,7 +116,7 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: "transformer-plan",
+      promptCacheKey: props.promptCacheKey,
       ...transformRealizeTransformerPlanHistories({
         state: ctx.state(),
         preliminary,

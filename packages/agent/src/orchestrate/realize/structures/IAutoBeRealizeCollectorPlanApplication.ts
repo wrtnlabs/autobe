@@ -11,7 +11,8 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * other collectors are identified upfront.
  *
  * The planning follows a structured RAG workflow: preliminary context gathering
- * (Prisma schemas, DTO schemas, Operations) → eligibility analysis → plan generation.
+ * (Prisma schemas, DTO schemas, Operations) → eligibility analysis → plan
+ * generation.
  *
  * **Key Decisions**: Not all DTOs require collectors. The agent must
  * distinguish collectable DTOs (Create DTO + DB-backed + Direct mapping) from
@@ -81,8 +82,8 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
    * Request to complete collector planning.
    *
    * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * collectable and non-collectable DTOs. Collectable DTOs have a Prisma
-   * schema name, while non-collectable DTOs have null.
+   * collectable and non-collectable DTOs. Collectable DTOs have a Prisma schema
+   * name, while non-collectable DTOs have null.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
@@ -99,6 +100,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * Include ALL DTOs from the operation request, both collectable and
      * non-collectable. Use prismaSchemaName to distinguish:
+     *
      * - Non-null: Collectable DTO, collector will be generated
      * - Null: Non-collectable DTO, no collector needed
      */
@@ -124,28 +126,35 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * Chain of thought for this DTO's planning decision.
      *
      * Explains the agent's reasoning:
-     * - For collectable DTOs: Why a collector is needed, which Prisma table
-     *   it maps to
+     *
+     * - For collectable DTOs: Why a collector is needed, which Prisma table it
+     *   maps to
      * - For non-collectable DTOs: Why no collector is needed (read-only DTO,
      *   computed type, etc.)
      *
-     * Example (collectable): "Collects IShoppingSale.ICreate to shopping_sales with nested category"
+     * Example (collectable): "Collects IShoppingSale.ICreate to shopping_sales
+     * with nested category"
      *
-     * Example (non-collectable): "IShoppingSale is read-only response DTO, not for creation"
+     * Example (non-collectable): "IShoppingSale is read-only response DTO, not
+     * for creation"
      */
     thinking: string;
 
     /**
      * Prisma schema name if collectable, null if not.
      *
-     * - **Non-null**: The Prisma table name this DTO maps to. A collector
-     *   will be generated for this DTO.
-     * - **Null**: This DTO is non-collectable (read-only DTO, computed type).
-     *   No collector will be generated.
+     * - **Non-null**: The Prisma table name this DTO maps to. A collector will be
+     *   generated for this DTO.
+     * - **Null**: This DTO is non-collectable (read-only DTO, computed type). No
+     *   collector will be generated.
      *
-     * Example (collectable): "shopping_sales", "shopping_categories"
-     * Example (non-collectable): null
+     * Examples:
+     *
+     * - (collectable): "shopping_sales", "shopping_categories"
+     * - (non-collectable): null
      */
     prismaSchemaName: string | null;
+
+    references: string[];
   }
 }

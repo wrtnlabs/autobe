@@ -290,6 +290,9 @@ export namespace {TypeName}Transformer {
   // Select specification function
   export function select() {
     // Return Prisma select/include specification or empty object
+    return {
+      ...
+    } satisfies Prisma.{prisma_schema_name}FindManyArgs;
   }
 }
 ```

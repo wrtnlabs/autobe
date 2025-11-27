@@ -130,6 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
         dtoTypeName: p.dtoTypeName,
         thinking: p.thinking,
         prismaSchemaName: p.prismaSchemaName!,
+        references: p.references,
       }));
     const event: AutoBeRealizePlanEvent = {
       type: "realizePlan",

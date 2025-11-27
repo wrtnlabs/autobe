@@ -1,104 +1,22 @@
 import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 
 export const transformRealizeCollectorWriteHistories = (props: {
   state: AutoBeState;
   plan: AutoBeRealizeCollectorPlan;
   neighbors: AutoBeRealizeCollectorPlan[];
-  preliminary: AutoBePreliminaryController<"prismaSchemas" | "interfaceSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "interfaceSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => {
-  if (props.state.analyze === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Requirement analysis is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the requirement analysis.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.analyze.step !== props.state.prisma.step)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has not been updated",
-            "for the latest requirement analysis.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma.compiled.type !== "success")
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has failed to compile.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.interface === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Interface generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the interface generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-
-  const getCollectorName = (dtoTypeName: string): string => {
-    return dtoTypeName.replace(/^I/, "").replace(/\.ICreate$/, "") + "Collector";
-  };
-
   return {
     histories: [
       {
@@ -113,14 +31,19 @@ export const transformRealizeCollectorWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the neighbor collectors you can utilize:
+          ${getDeclaration(props.plan)}
+
+          Here are the neighbor collectors you can utilize.
 
           Collector Name | DTO Type Name | Prisma Schema Name
-          -------------- | ------------- | -------------------
+          ---------------|---------------|--------------------
           ${props.neighbors
-            .map(
-              (n) =>
-                `- ${getCollectorName(n.dtoTypeName)} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
+            .map((n) =>
+              [
+                AutoBeRealizeCollectorProgrammer.getName(n.dtoTypeName),
+                n.dtoTypeName,
+                n.prismaSchemaName,
+              ].join(" | "),
             )
             .join("\n")}
         `,
@@ -151,3 +74,40 @@ export const transformRealizeCollectorWriteHistories = (props: {
     `,
   };
 };
+
+function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
+  const modulo: string = AutoBeRealizeCollectorProgrammer.getName(
+    plan.dtoTypeName,
+  );
+  return StringUtil.trim`
+    Here is the declaration of the collector function for 
+    the DTO type ${plan.dtoTypeName} and its corresponding
+    Prisma schema ${plan.prismaSchemaName}.
+
+    ${
+      plan.references.length === 0
+        ? ""
+        : StringUtil.trim`
+          Also, as create DTO ${plan.dtoTypeName} does not include
+          every references required for the creation of the ${plan.prismaSchemaName}
+          record, you have to accept some references as function
+          parameters like below:
+        `
+    }
+
+    \`\`\`typescript
+    export namespace ${modulo} {
+      export async function collect(props: {
+        body: ${plan.dtoTypeName};
+        ${plan.references
+          .map((r) => `${NamingConvention.camel(r)}: IEntity;`)
+          .join("\n")}
+      }) {
+        return {
+          ...
+        } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
+      }
+    }
+    \`\`\`
+  `;
+}
