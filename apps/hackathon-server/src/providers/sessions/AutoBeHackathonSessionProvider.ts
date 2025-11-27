@@ -9,7 +9,7 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { UnprocessableEntityException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/sdk";
 import typia from "typia";
 import { v7 } from "uuid";
 

@@ -52,6 +52,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         paths: {
           [alias]: ["./src/api"],
           [`${alias}/lib/*`]: ["./src/api/*"],
+          ["@prisma/sdk"]: ["./src/prisma/client.ts"],
         },
         strict: true,
         skipLibCheck: true,

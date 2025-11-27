@@ -7,6 +7,7 @@ node_modules/
 prisma/migrations
 prisma/schema/migrations
 prisma/bbs.db
+src/prisma
 
 *.DS_Store
 .env

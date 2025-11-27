@@ -29,11 +29,13 @@ export const test_compiler_prisma_254 = async (
     const result: IAutoBePrismaCompileResult = await compiler.prisma.compile({
       files,
     });
-    if (result.type !== "success")
+    if (result.type !== "success") {
+      console.log(result.type === "exception" ? result.error : result.reason);
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/compiler/prisma/254/${dbms}`,
         files: files,
       });
+    }
     TestValidator.equals(dbms, result.type, "success");
   };
   await write("postgres");

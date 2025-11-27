@@ -161,3 +161,12 @@ pnpm run archive:go --vendor moonshotai/kimi-k2-0905:exacto --project todo > arc
 pnpm run archive:go --vendor moonshotai/kimi-k2-0905:exacto --project bbs > archive.moonshotai-kimi-k2-0905.bbs.log
 pnpm run archive:go --vendor moonshotai/kimi-k2-0905:exacto --project reddit > archive.moonshotai-kimi-k2-0905.reddit.log
 pnpm run archive:go --vendor moonshotai/kimi-k2-0905:exacto --project shopping > archive.moonshotai-kimi-k2-0905.shopping.log
+
+################################################
+# MINIMAX
+################################################
+# minimax/minimax-m2
+pnpm run archive:go --vendor minimax/minimax-m2 --project todo > archive.minimax-minimax-m2.todo.log
+pnpm run archive:go --vendor minimax/minimax-m2 --project bbs > archive.minimax-minimax-m2.bbs.log
+pnpm run archive:go --vendor minimax/minimax-m2 --project reddit > archive.minimax-minimax-m2.reddit.log
+pnpm run archive:go --vendor minimax/minimax-m2 --project shopping > archive.minimax-minimax-m2.shopping.log

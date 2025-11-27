@@ -24,7 +24,7 @@ export const test_compiler_facade_bbs = async (
   const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files: await RepositoryFileSystem.src("samchon", "bbs-backend"),
-      prisma: prisma.nodeModules,
+      prisma: prisma.client,
       package: "@samchon/bbs-api",
     });
   if (result.type === "failure") console.log(result.diagnostics);

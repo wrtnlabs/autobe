@@ -52,12 +52,10 @@ export async function getAutoBeGenerated(props: {
   // PRISMA
   if (props.state.prisma?.step === props.state.analyze.step) {
     const schemaFiles: Record<string, string> =
-      (options?.dbms ?? "postgres") === "postgres"
-        ? props.state.prisma.schemas
-        : await props.compiler.prisma.write(
-            props.state.prisma.result.data,
-            options!.dbms!,
-          );
+      await props.compiler.prisma.write(
+        props.state.prisma.result.data,
+        options!.dbms!,
+      );
     Object.assign<
       Record<string, string>,
       Record<string, string>,

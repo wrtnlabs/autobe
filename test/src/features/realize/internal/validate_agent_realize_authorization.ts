@@ -51,7 +51,7 @@ export const validate_agent_realize_authorization = async (props: {
 
   const prisma = ctx.state().prisma?.compiled;
   const prismaClients: Record<string, string> =
-    prisma?.type === "success" ? prisma.nodeModules : {};
+    prisma?.type === "success" ? prisma.client : {};
 
   const templateFiles: Record<string, string> = await (
     await ctx.compiler()

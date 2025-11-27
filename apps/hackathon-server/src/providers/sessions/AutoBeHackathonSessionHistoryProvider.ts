@@ -1,5 +1,5 @@
 import { AutoBeHistory } from "@autobe/interface";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/sdk";
 import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
