@@ -4,7 +4,6 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestWriteAuthorizationFunction,
   AutoBeTestWriteGenerationFunction,
   AutoBeTestWritePrepareFunction,
   IAutoBeCompiler,
@@ -35,7 +34,6 @@ export const validate_agent_test_generation = async (props: {
 
   // Create mock prepare functions for testing
   const preparedFunctions: AutoBeTestWritePrepareFunction[] = [];
-  const authorizationFunctions: AutoBeTestWriteAuthorizationFunction[] = [];
 
   // Create prepare functions based on create operations
   operations
@@ -61,28 +59,6 @@ export const validate_agent_test_generation = async (props: {
       });
     });
 
-  // Create authorization functions for unique actors
-  const uniqueActors = new Set(
-    operations
-      .filter((op) => op.authorizationActor)
-      .map((op) => op.authorizationActor!),
-  );
-
-  uniqueActors.forEach((actor) => {
-    authorizationFunctions.push({
-      kind: "authorization",
-      endpoint: {
-        method: "post",
-        path: `/api/auth/login`,
-      },
-      actor,
-      authType: "login",
-      location: `test/features/auth/authorize_${actor}_login.ts`,
-      functionName: `authorize_${actor}_login`,
-      content: `// Mock authorization function for ${actor}`,
-    });
-  });
-
   const start: Date = new Date();
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, (event) => ArchiveLogger.event(start, event));
@@ -91,9 +67,9 @@ export const validate_agent_test_generation = async (props: {
   // GENERATE GENERATION FUNCTIONS
   const generationFunctions: AutoBeTestWriteGenerationFunction[] =
     await orchestrateTestGeneration(agent.getContext(), {
+      instruction: "Generate generation functions for the prepared functions.",
       document,
       preparedFunctions,
-      authorizationFunctions,
     });
 
   // COMPILE TEST
