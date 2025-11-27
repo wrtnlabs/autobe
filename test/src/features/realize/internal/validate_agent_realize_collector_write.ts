@@ -46,6 +46,7 @@ export const validate_agent_realize_collector_write = async (props: {
         completed: 0,
       },
     });
+  console.log("plans", plans);
 
   const writes: AutoBeRealizeWriteEvent[] =
     await orchestrateRealizeCollectorWrite(agent.getContext(), {
@@ -55,6 +56,8 @@ export const validate_agent_realize_collector_write = async (props: {
         completed: 0,
       },
     });
+  console.log("writes", writes);
+
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector`,
     files: {

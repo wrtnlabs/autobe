@@ -32,20 +32,19 @@ export async function orchestrateRealizeCollectorWrite<
   },
 ): Promise<AutoBeRealizeWriteEvent[]> {
   props.progress.total += props.plans.length;
-  const result: Array<AutoBeRealizeWriteEvent | false> =
-    await executeCachedBatch(
-      ctx,
-      props.plans.map(
-        (x) => (promptCacheKey) =>
-          process(ctx, {
-            progress: props.progress,
-            neighbors: props.plans.filter((y) => x !== y),
-            plan: x,
-            promptCacheKey,
-          }),
-      ),
-    );
-  return result.filter((r) => r !== false);
+  const result: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
+    ctx,
+    props.plans.map(
+      (x) => (promptCacheKey) =>
+        process(ctx, {
+          progress: props.progress,
+          neighbors: props.plans.filter((y) => x !== y),
+          plan: x,
+          promptCacheKey,
+        }),
+    ),
+  );
+  return result;
 }
 
 async function process<Model extends ILlmSchema.Model>(
@@ -56,7 +55,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent | false> {
+): Promise<AutoBeRealizeWriteEvent> {
   const dtoTypeName: string = props.plan.dtoTypeName;
   const prismaSchemaName: string = props.plan.prismaSchemaName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
@@ -94,29 +93,28 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      const event: AutoBeRealizeWriteEvent = {
-        id: v7(),
-        type: "realizeWrite",
-        function: {
-          kind: "collector",
-          dtoTypeName,
-          prismaSchemaName,
-          location,
-          content: pointer.value.revise.final ?? pointer.value.draft,
-          references: props.plan.references,
-        },
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      };
-      ctx.dispatch(event);
-      return out(result)(event);
-    }
-    return out(result)(false);
+    if (pointer.value === null) return out(result)(null);
+
+    const event: AutoBeRealizeWriteEvent = {
+      id: v7(),
+      type: "realizeWrite",
+      function: {
+        kind: "collector",
+        dtoTypeName,
+        prismaSchemaName,
+        location,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+        references: props.plan.references,
+      },
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    };
+    ctx.dispatch(event);
+    return out(result)(event);
   });
 }
 

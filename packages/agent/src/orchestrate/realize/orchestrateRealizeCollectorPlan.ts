@@ -91,6 +91,11 @@ async function process<Model extends ILlmSchema.Model>(
       typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
     kinds: ["prismaSchemas", "interfaceSchemas", "interfaceOperations"],
     local: {
+      interfaceOperations: props.document.operations.filter(
+        (op) =>
+          op.requestBody !== null &&
+          props.dtoTypeNames.includes(op.requestBody.typeName),
+      ),
       interfaceSchemas: Object.fromEntries(
         Object.entries(props.document.components.schemas).filter(([key]) =>
           props.dtoTypeNames.includes(key),
