@@ -1,3 +1,4 @@
+import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -5,6 +6,7 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
+  AutoBeRealizeTransformerPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import typia from "typia";
@@ -37,8 +39,22 @@ export const validate_agent_realize_transformer_write = async (props: {
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
+  const plans: AutoBeRealizeTransformerPlan[] =
+    await orchestrateRealizeTransformerPlan(agent.getContext(), {
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
+
   const writes: AutoBeRealizeWriteEvent[] =
-    await orchestrateRealizeTransformerWrite(agent.getContext());
+    await orchestrateRealizeTransformerWrite(agent.getContext(), {
+      plans,
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-transformer`,
     files: {

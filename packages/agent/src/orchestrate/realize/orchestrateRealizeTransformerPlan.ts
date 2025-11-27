@@ -3,8 +3,10 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeRealizePlanEvent,
   AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -13,6 +15,7 @@ import {
 } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -40,6 +43,14 @@ export async function orchestrateRealizeTransformerPlan<
   const dtoTypeNames: string[] = Object.keys(
     document.components.schemas,
   ).filter(AutoBeRealizeTransformerProgrammer.filter);
+  const prismaSchemaNames: Set<string> = new Set(
+    ctx
+      .state()
+      .prisma!.result.data.files.map((f) => f.models)
+      .flat()
+      .map((m) => m.name),
+  );
+
   props.progress.total += dtoTypeNames.length;
 
   const matrix: string[][] = divideArray({
@@ -53,6 +64,7 @@ export async function orchestrateRealizeTransformerPlan<
         process(ctx, {
           document,
           dtoTypeNames: it,
+          prismaSchemaNames,
           promptCacheKey,
           progress: props.progress,
         }),
@@ -66,6 +78,7 @@ async function process<Model extends ILlmSchema.Model>(
   props: {
     document: AutoBeOpenApi.IDocument;
     dtoTypeNames: string[];
+    prismaSchemaNames: Set<string>;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
@@ -95,7 +108,8 @@ async function process<Model extends ILlmSchema.Model>(
       source: "realizePlan",
       controller: createController({
         model: ctx.model,
-        schemas: props.document.components.schemas,
+        prismaSchemaNames: props.prismaSchemaNames,
+        dtoTypeNames: props.dtoTypeNames,
         build: (next) => {
           pointer.value = next;
         },
@@ -108,25 +122,36 @@ async function process<Model extends ILlmSchema.Model>(
         preliminary,
       }),
     });
+    if (pointer.value === null) return out(result)(null);
 
-    if (pointer.value !== null) {
-      const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
-        .filter((p) => p.prismaSchemaName !== null)
-        .map((p) => ({
-          kind: "transformer" as const,
-          dtoTypeName: p.dtoTypeName,
-          thinking: p.thinking,
-          prismaSchemaName: p.prismaSchemaName!,
-        }));
-      return out(result)(plans);
-    }
-    return out(result)(null);
+    const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
+      .filter((p) => p.prismaSchemaName !== null)
+      .map((p) => ({
+        kind: "transformer" as const,
+        dtoTypeName: p.dtoTypeName,
+        thinking: p.thinking,
+        prismaSchemaName: p.prismaSchemaName!,
+      }));
+    const event: AutoBeRealizePlanEvent = {
+      type: "realizePlan",
+      id: v4(),
+      plans,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: (props.progress.completed += props.dtoTypeNames.length),
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    };
+    ctx.dispatch(event);
+    return out(result)(plans);
   });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  prismaSchemaNames: Set<string>;
+  dtoTypeNames: string[];
   build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
@@ -137,11 +162,50 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);
-    if (result.success === false) return result;
-    else if (result.data.request.type !== "complete") return result;
+    if (result.success === false || result.data.request.type !== "complete")
+      return result;
 
-    // Additional validation can be added here if needed
-    return result;
+    const errors: IValidation.IError[] = [];
+    result.data.request.plans.map((plan, i) => {
+      if (props.dtoTypeNames.includes(plan.dtoTypeName) === false)
+        errors.push({
+          path: `$input.request.plans[${i}].dtoTypeName`,
+          value: plan.dtoTypeName,
+          expected: props.dtoTypeNames
+            .map((s) => JSON.stringify(s))
+            .join(" | "),
+          description: StringUtil.trim`
+            The DTO type name must be one of the available DTOs in the interface schema.
+
+            ${props.dtoTypeNames.map((s) => `- ${s}`).join("\n")}
+          `,
+        });
+      if (
+        plan.prismaSchemaName !== null &&
+        props.prismaSchemaNames.has(plan.prismaSchemaName) === false
+      )
+        errors.push({
+          path: `$input.request.plans[${i}].prismaSchemaName`,
+          value: plan.prismaSchemaName,
+          expected: Array.from(props.prismaSchemaNames)
+            .map((s) => JSON.stringify(s))
+            .join(" | "),
+          description: StringUtil.trim`
+            The Prisma schema name must be one of the available Prisma schemas.
+
+            ${Array.from(props.prismaSchemaNames)
+              .map((s) => `- ${s}`)
+              .join("\n")}
+          `,
+        });
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
   };
 
   const application: ILlmApplication<Model> = collection[
@@ -153,7 +217,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-
   return {
     protocol: "class",
     name: SOURCE,
