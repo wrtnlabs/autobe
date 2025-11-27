@@ -1,4 +1,9 @@
-import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeRealizeTransformerPlan,
+  IAutoBeCompiler,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -95,8 +100,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   export function validate(props: {
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    dtoTypeName: string;
+    plan: AutoBeRealizeTransformerPlan;
+    neighbors: AutoBeRealizeTransformerPlan[];
     draft: string;
     revise: {
       review: string;
@@ -105,28 +110,26 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
     validateEmptyCode({
-      dtoTypeName: props.dtoTypeName,
+      plan: props.plan,
       content: props.draft,
       path: "$input.request.draft",
       errors,
     });
     validateNeighbors({
-      schemas: props.schemas,
-      dtoTypeName: props.dtoTypeName,
+      neighbors: props.neighbors,
       content: props.draft,
       path: "$input.request.draft",
       errors,
     });
     if (props.revise.final !== null) {
       validateEmptyCode({
-        dtoTypeName: props.dtoTypeName,
+        plan: props.plan,
         content: props.revise.final,
         path: "$input.request.revise.final",
         errors,
       });
       validateNeighbors({
-        schemas: props.schemas,
-        dtoTypeName: props.dtoTypeName,
+        neighbors: props.neighbors,
         content: props.revise.final,
         path: "$input.request.revise.final",
         errors,
@@ -136,12 +139,12 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   function validateEmptyCode(props: {
-    dtoTypeName: string;
+    plan: AutoBeRealizeTransformerPlan;
     content: string;
     path: string;
     errors: IValidation.IError[];
   }): void {
-    const name: string = getName(props.dtoTypeName);
+    const name: string = getName(props.plan.dtoTypeName);
     if (props.content.includes(`export namespace ${name}`) === false)
       props.errors.push({
         path: props.path,
@@ -152,12 +155,27 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   function validateNeighbors(props: {
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    dtoTypeName: string;
+    neighbors: AutoBeRealizeTransformerPlan[];
     content: string;
     path: string;
     errors: IValidation.IError[];
   }): void {
-    props;
+    const neighborNames: string[] = getNeighbors(props.content);
+    for (const x of neighborNames)
+      if (props.neighbors.some((y) => getName(y.dtoTypeName) === x) === false)
+        props.errors.push({
+          path: props.path,
+          expected: `Use existing transformer.`,
+          value: props.content,
+          description: StringUtil.trim`
+            You've imported and utilized ${x}, but it does not exist.
+
+            Use one of them below, or change to another code:
+
+            ${props.neighbors
+              .map((y) => `- ${getName(y.dtoTypeName)}`)
+              .join("\n")}
+          `,
+        });
   }
 }

@@ -42,10 +42,11 @@ export async function orchestrateRealizeTransformerWrite<
     await executeCachedBatch(
       ctx,
       props.plans.map(
-        (plan) => (promptCacheKey) =>
+        (x) => (promptCacheKey) =>
           process(ctx, {
             progress: props.progress,
-            plan,
+            neighbors: props.plans.filter((y) => x !== y),
+            plan: x,
             promptCacheKey,
           }),
       ),
@@ -57,6 +58,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     plan: AutoBeRealizeTransformerPlan;
+    neighbors: AutoBeRealizeTransformerPlan[];
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
@@ -90,10 +92,8 @@ async function process<Model extends ILlmSchema.Model>(
       source: "realizeWrite",
       controller: createController({
         model: ctx.model,
-        schemas: document.components.schemas,
-        dtoTypeName,
-        prismaSchemaName,
-        planThinking: props.plan.thinking,
+        plan: props.plan,
+        neighbors: props.neighbors,
         build: (next) => {
           pointer.value = next;
         },
@@ -146,10 +146,8 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  dtoTypeName: string;
-  prismaSchemaName: string;
-  planThinking: string;
+  plan: AutoBeRealizeTransformerPlan;
+  neighbors: AutoBeRealizeTransformerPlan[];
   build: (
     next:
       | IAutoBeRealizeTransformerWriteApplication.IComplete
@@ -169,8 +167,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     const errors: IValidation.IError[] =
       AutoBeRealizeTransformerProgrammer.validate({
-        schemas: props.schemas,
-        dtoTypeName: props.dtoTypeName,
+        plan: props.plan,
+        neighbors: props.neighbors,
         draft: result.data.request.draft,
         revise: result.data.request.revise,
       });
@@ -191,7 +189,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-
   return {
     protocol: "class",
     name: SOURCE,
