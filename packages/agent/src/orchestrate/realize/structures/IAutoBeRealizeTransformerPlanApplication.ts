@@ -15,7 +15,8 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * **Key Decisions**: Not all DTOs require transformers. The agent must
  * distinguish transformable DTOs (Read DTO + DB-backed + Direct mapping) from
  * non-transformable DTOs (request params, pagination wrappers, business logic
- * types) and exclude non-transformable ones from the plan.
+ * types) and include ALL DTOs with prismaSchemaName set to null for
+ * non-transformable ones.
  */
 export interface IAutoBeRealizeTransformerPlanApplication {
   /**
@@ -23,7 +24,7 @@ export interface IAutoBeRealizeTransformerPlanApplication {
    *
    * Analyzes operation response DTOs and generates complete plan listing which
    * transformers to generate. Ensures nested DTOs are analyzed recursively and
-   * non-transformable DTOs are excluded.
+   * ALL DTOs are included with appropriate prismaSchemaName values.
    *
    * @param props Request containing either preliminary data request or complete
    *   plan
