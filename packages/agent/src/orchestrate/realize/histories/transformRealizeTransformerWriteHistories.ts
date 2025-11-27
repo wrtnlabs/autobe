@@ -6,6 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 
 export const transformRealizeTransformerWriteHistories = (props: {
   state: AutoBeState;
@@ -36,7 +37,9 @@ export const transformRealizeTransformerWriteHistories = (props: {
           ${props.neighbors
             .map(
               (n) =>
-                `- ${n.dtoTypeName} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
+                `- ${AutoBeRealizeTransformerProgrammer.getName(
+                  n.dtoTypeName,
+                )} | ${n.dtoTypeName} | ${n.prismaSchemaName}`,
             )
             .join("\n")}
         `,
