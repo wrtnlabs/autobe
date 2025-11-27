@@ -425,6 +425,8 @@ export async function collect(props: {
 ```typescript
 export async function collect(props: {
   body: IShoppingSale.ICreate;
+  shoppingSeller: IEntity;
+  shoppingSellerSession: IEntity;
 }) {
   return {
     // UUID generation for primary key
@@ -444,6 +446,12 @@ export async function collect(props: {
     // Relationship: connect to existing record
     category: {
       connect: { id: props.body.categoryId },
+    },
+    seller: {
+      connect: { id: props.shoppingSeller.id },
+    },
+    sellerSession: {
+      connect: { id: props.shoppingSellerSession.id },
     },
 
     // Nested creates - reuse other Collectors
