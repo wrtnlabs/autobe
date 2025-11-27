@@ -27,6 +27,7 @@ export namespace AutoBeRealizeOperationProgrammer {
       visit(props.operation.responseBody.typeName);
 
     const imports = [
+      `import { ArrayUtil } from "@nestia/e2e";`,
       'import { HttpException } from "@nestjs/common";',
       'import { Prisma } from "@prisma/sdk";',
       'import jwt from "jsonwebtoken";',

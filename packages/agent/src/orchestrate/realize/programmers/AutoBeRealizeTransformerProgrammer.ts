@@ -44,11 +44,13 @@ export namespace AutoBeRealizeTransformerProgrammer {
 
     const imports: string[] = [
       `import { Prisma } from "@prisma/sdk";`,
+      `import { ArrayUtil } from "@nestia/e2e";`,
       "",
       ...Array.from(typeReferences).map(
         (ref) =>
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
+      "",
     ];
     return imports;
   }

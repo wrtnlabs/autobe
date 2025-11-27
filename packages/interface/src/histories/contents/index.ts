@@ -15,10 +15,13 @@ export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";
 export * from "./AutoBeTestScenarioDependency";
 
-export * from "./AutoBeRealizeOperationFunction";
+export * from "./AutoBeRealizeFunction";
 export * from "./AutoBeRealizeTransformerFunction";
 export * from "./AutoBeRealizeCollectorFunction";
-export * from "./AutoBeRealizeFunction";
+export * from "./AutoBeRealizeOperationFunction";
+export * from "./AutoBeRealizeTranformerPlan";
+export * from "./AutoBeRealizeCollectorPlan";
+
 export * from "./AutoBeRealizeAuthorization";
 export * from "./AutoBeRealizeAuthorizationCorrect";
 export * from "./AutoBeRealizeAuthorizationDecorator";

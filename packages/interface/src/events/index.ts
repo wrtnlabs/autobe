@@ -70,6 +70,7 @@ export * from "./AutoBeRealizeCorrectEvent";
 export * from "./AutoBeRealizeStartEvent";
 export * from "./AutoBeRealizeValidateEvent";
 export * from "./AutoBeRealizeWriteEvent";
+export * from "./AutoBeRealizePlanEvent";
 
 // REALIZE-AUTHORIZATION
 export * from "./AutoBeRealizeAuthorizationCorrectEvent";

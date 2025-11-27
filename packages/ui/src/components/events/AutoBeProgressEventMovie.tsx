@@ -119,6 +119,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Test Write",
           description: "Writing E2E test functions",
         };
+      case "realizePlan":
+        return {
+          title: "Realize Plan",
+          description: "Planning the API functions' modularization",
+        };
       case "realizeWrite":
         return {
           title: "Realize Write",

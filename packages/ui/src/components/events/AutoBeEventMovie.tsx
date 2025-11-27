@@ -73,6 +73,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "testWrite":
     case "testScenario":
     case "testScenarioReview":
+    case "realizePlan":
     case "realizeWrite":
     case "realizeAuthorizationWrite":
     case "realizeTestOperation":

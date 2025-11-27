@@ -39,6 +39,7 @@ import { AutoBeRealizeAuthorizationValidateEvent } from "./AutoBeRealizeAuthoriz
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
+import { AutoBeRealizePlanEvent } from "./AutoBeRealizePlanEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
 import { AutoBeRealizeTestOperationEvent } from "./AutoBeRealizeTestOperationEvent";
@@ -134,6 +135,7 @@ export type AutoBeEvent =
   | AutoBeTestCompleteEvent
   // REALIZE
   | AutoBeRealizeStartEvent
+  | AutoBeRealizePlanEvent
   | AutoBeRealizeWriteEvent
   | AutoBeRealizeCorrectEvent
   | AutoBeRealizeValidateEvent
@@ -235,6 +237,7 @@ export namespace AutoBeEvent {
     testComplete: AutoBeTestCompleteEvent;
     // REALIZE
     realizeStart: AutoBeRealizeStartEvent;
+    realizePlan: AutoBeRealizePlanEvent;
     realizeWrite: AutoBeRealizeWriteEvent;
     realizeCorrect: AutoBeRealizeCorrectEvent;
     realizeValidate: AutoBeRealizeValidateEvent;
