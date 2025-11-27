@@ -53,7 +53,9 @@ export namespace AutoBeRealizeCollectorProgrammer {
     const imports: string[] = [
       `import { Prisma } from "@prisma/sdk";`,
       `import { ArrayUtil } from "@nestia/e2e";`,
+      `import { v4 } from "uuid";`,
       "",
+      `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
       ...Array.from(typeReferences).map(
         (ref) =>
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,

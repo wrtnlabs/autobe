@@ -225,7 +225,7 @@ export namespace JsonSchemaFactory {
 const DEFAULT_SCHEMAS = (() => {
   const init: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     (typia.json.schemas<
-      [IPage.IPagination, IPage.IRequest, IAuthorizationToken]
+      [IPage.IPagination, IPage.IRequest, IAuthorizationToken, IEntity]
     >().components?.schemas ?? {}) as Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
@@ -323,4 +323,10 @@ interface IAuthorizationToken {
    * refresh token can be used to obtain new access tokens.
    */
   refreshable_until: string & tags.Format<"date-time">;
+}
+
+/** Just a base entity interface for referencing. */
+interface IEntity {
+  /** Primary Key. */
+  id: string & tags.Format<"uuid">;
 }

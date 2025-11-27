@@ -46,7 +46,6 @@ export const validate_agent_realize_transformer_write = async (props: {
         completed: 0,
       },
     });
-
   const writes: AutoBeRealizeWriteEvent[] =
     await orchestrateRealizeTransformerWrite(agent.getContext(), {
       plans,

@@ -9,6 +9,7 @@ import {
   AutoBeRealizeCollectorPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -46,8 +47,6 @@ export const validate_agent_realize_collector_write = async (props: {
         completed: 0,
       },
     });
-  console.log("plans", plans);
-
   const writes: AutoBeRealizeWriteEvent[] =
     await orchestrateRealizeCollectorWrite(agent.getContext(), {
       plans,
@@ -56,8 +55,6 @@ export const validate_agent_realize_collector_write = async (props: {
         completed: 0,
       },
     });
-  console.log("writes", writes);
-
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector`,
     files: {
@@ -69,6 +66,19 @@ export const validate_agent_realize_collector_write = async (props: {
       ),
       "tsconfig.json": AutoBeCompilerRealizeTemplate["tsconfig.json"],
       "pnpm-workspace.yaml": "",
+      "src/api/structures/IEntity.ts": StringUtil.trim`
+        import { tags } from "typia";
+
+        /**
+         * Just a basic entity interface for referencing.
+         */
+        export interface IEntity {
+          /**
+           * Primary Key.
+           */
+          id: string & tags.Format<"uuid">;
+        }
+      `,
     },
   });
 };

@@ -12,6 +12,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
   export function filter(key: string): boolean {
     return (
       key !== "IAuthorizationToken" &&
+      key !== "IEntity" &&
       key.startsWith("IPage") === false &&
       key.endsWith(".IRequest") === false &&
       key.endsWith(".ICreate") === false &&

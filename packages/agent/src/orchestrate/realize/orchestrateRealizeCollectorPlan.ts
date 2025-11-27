@@ -24,6 +24,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorPlanHistories } from "./histories/transformRealizeCollectorPlanHistories";
+import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorPlanApplication } from "./structures/IAutoBeRealizeCollectorPlanApplication";
 
 export async function orchestrateRealizeCollectorPlan<
@@ -41,7 +42,7 @@ export async function orchestrateRealizeCollectorPlan<
   const document: AutoBeOpenApi.IDocument = history.document;
   const dtoTypeNames: string[] = Object.keys(
     document.components.schemas,
-  ).filter((name) => name.endsWith(".ICreate"));
+  ).filter(AutoBeRealizeCollectorProgrammer.filter);
   const prismaSchemaNames: Set<string> = new Set(
     ctx
       .state()
