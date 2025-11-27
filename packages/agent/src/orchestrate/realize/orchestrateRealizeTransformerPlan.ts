@@ -2,6 +2,7 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
 import {
@@ -13,10 +14,14 @@ import {
 import { IPointer } from "tstl";
 import typia from "typia";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { divideArray } from "../../utils/divideArray";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerPlanHistories } from "./histories/transformRealizeTransformerPlanHistories";
+import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerPlanApplication } from "./structures/IAutoBeRealizeTransformerPlanApplication";
 
 export async function orchestrateRealizeTransformerPlan<
@@ -24,15 +29,47 @@ export async function orchestrateRealizeTransformerPlan<
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    dtoTypeNames: string[];
-    promptCacheKey: string;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerPlan[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
-    throw new Error("Cannot realize transformer plan without interface.");
+    throw new Error("Cannot realize transformer write without interface.");
 
   const document: AutoBeOpenApi.IDocument = history.document;
+  const dtoTypeNames: string[] = Object.keys(
+    document.components.schemas,
+  ).filter(AutoBeRealizeTransformerProgrammer.filter);
+  props.progress.total += dtoTypeNames.length;
+
+  const matrix: string[][] = divideArray({
+    array: Array.from(dtoTypeNames),
+    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 4,
+  });
+  const result: AutoBeRealizeTransformerPlan[][] = await executeCachedBatch(
+    ctx,
+    matrix.map(
+      (it) => (promptCacheKey) =>
+        process(ctx, {
+          document,
+          dtoTypeNames: it,
+          promptCacheKey,
+          progress: props.progress,
+        }),
+    ),
+  );
+  return result.flat();
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    document: AutoBeOpenApi.IDocument;
+    dtoTypeNames: string[];
+    promptCacheKey: string;
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeTransformerPlan[]> {
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -43,7 +80,7 @@ export async function orchestrateRealizeTransformerPlan<
     kinds: ["prismaSchemas", "interfaceSchemas"],
     local: {
       interfaceSchemas: Object.fromEntries(
-        Object.entries(document.components.schemas).filter(([key]) =>
+        Object.entries(props.document.components.schemas).filter(([key]) =>
           props.dtoTypeNames.includes(key),
         ),
       ),
@@ -58,7 +95,7 @@ export async function orchestrateRealizeTransformerPlan<
       source: "realizePlan",
       controller: createController({
         model: ctx.model,
-        schemas: document.components.schemas,
+        schemas: props.document.components.schemas,
         build: (next) => {
           pointer.value = next;
         },

@@ -43,7 +43,7 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
    - Request schemas strategically - you need BOTH to understand the mapping
    - DO NOT request schemas you already have from previous calls
 4. **Generate Implementation**: Create transform() and select() functions
-5. **Execute Implementation Function**: Call `process({ request: { type: "complete", prismaSchemaName: "...", plan: "...", draft: "...", revise: {...} } })` after gathering context
+5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock")
@@ -90,17 +90,15 @@ This is a required self-reflection step that helps you:
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Mapped IShoppingSaleUnitStock to shopping_sale_snapshot_unit_stocks, created transform+select.",
+  thinking: "Analyzed table structure and DTO fields, created transform+select functions.",
   request: {
     type: "complete",
-    prismaSchemaName: "shopping_sale_snapshot_unit_stocks",
     plan: "...",
     draft: "...",
     revise: {...}
   }
 }
 ```
-- Summarize what DTO -> Prisma mapping you found
 - Summarize key transformation logic implemented
 - Explain why implementation is complete
 - Don't enumerate every single field mapping
@@ -123,7 +121,7 @@ This is a required self-reflection step that helps you:
 ```typescript
 // CORRECT - brief, focused on gap or accomplishment
 thinking: "Missing Interface schema for DTO structure analysis. Need it."
-thinking: "Mapped DTO to shopping_sales table, implemented select+transform with relations"
+thinking: "Implemented select+transform with nested relations for provided table"
 thinking: "IAuthorizationToken is business logic type, no DB mapping. Rejecting."
 thinking: "IPageIBbsArticleComment is pagination wrapper, not DB-backed. Rejecting."
 

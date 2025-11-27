@@ -28,36 +28,25 @@ export async function orchestrateRealizeTransformerWrite<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  plans: AutoBeRealizeTransformerPlan[],
+  props: {
+    plans: AutoBeRealizeTransformerPlan[];
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeRealizeWriteEvent[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize transformer write without interface.");
 
-  const document: AutoBeOpenApi.IDocument = history.document;
-
-  console.log(
-    "transformer plans",
-    plans.map((p) => ({
-      dtoTypeName: p.dtoTypeName,
-      prismaSchemaName: p.prismaSchemaName,
-      thinking: p.thinking,
-    })),
-  );
-
-  const progress: AutoBeProgressEventBase = {
-    total: plans.length,
-    completed: 0,
-  };
+  props.progress.total += props.plans.length;
   const result: Array<AutoBeRealizeWriteEvent | false> =
     await executeCachedBatch(
       ctx,
-      plans.map(
+      props.plans.map(
         (plan) => (promptCacheKey) =>
           process(ctx, {
+            progress: props.progress,
             plan,
             promptCacheKey,
-            progress,
           }),
       ),
     );
@@ -73,18 +62,8 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeRealizeWriteEvent | false> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
-  const dtoTypeName = props.plan.dtoTypeName;
-  const prismaSchemaName = props.plan.prismaSchemaName;
-
-  console.log(
-    "processing transformer",
-    dtoTypeName,
-    "->",
-    prismaSchemaName,
-    "thinking:",
-    props.plan.thinking,
-  );
-
+  const dtoTypeName: string = props.plan.dtoTypeName;
+  const prismaSchemaName: string = props.plan.prismaSchemaName;
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({

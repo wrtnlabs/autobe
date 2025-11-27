@@ -4,6 +4,16 @@ import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
 export namespace AutoBeRealizeTransformerProgrammer {
+  export function filter(key: string): boolean {
+    return (
+      key !== "IAuthorizationToken" &&
+      key.startsWith("IPage") === false &&
+      key.endsWith(".IRequest") === false &&
+      key.endsWith(".ICreate") === false &&
+      key.endsWith(".IUpdate") === false
+    );
+  }
+
   export function getName(dtoTypeName: string): string {
     return (
       dtoTypeName
