@@ -15,7 +15,10 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
+import { completeTestCode } from "./compile/completeTestCode";
+import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWritePrepareHistories } from "./histories/transformTestWritePrepareHistories";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWritePrepareApplication";
 
 /**
@@ -131,6 +134,13 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestWriteEvent> {
   const { operation, schema, promptCacheKey, progress, instruction } = props;
 
+  const artifacts: IAutoBeTestScenarioArtifacts =
+    await getTestScenarioArtifacts(ctx, {
+      endpoint: operation,
+      dependencies: [],
+      functionName: "",
+    });
+
   // Validate schema is an object schema
   if (!("properties" in schema)) {
     throw new Error(
@@ -165,6 +175,20 @@ async function process<Model extends ILlmSchema.Model>(
       `Failed to generate prepare function for ${props.typeName}`,
     );
   }
+
+  // Complete the code with imports
+  if (pointer.value.revise.final) {
+    pointer.value.revise.final = await completeTestCode(
+      ctx,
+      artifacts,
+      pointer.value.revise.final,
+    );
+  }
+  pointer.value.draft = await completeTestCode(
+    ctx,
+    artifacts,
+    pointer.value.draft,
+  );
 
   const event: AutoBeTestWriteEvent = {
     id: v7(),
