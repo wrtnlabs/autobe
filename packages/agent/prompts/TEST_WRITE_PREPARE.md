@@ -168,7 +168,7 @@ export const prepare_random_user = (
    - Internal flags or metadata
 
 2. **ALWAYS** generate these fields internally:
-   - `id: v4()`
+   - `id: RandomGenerator.alphaNumeric(32)`  // Use alphaNumeric instead of uuid
    - `created_at: new Date().toISOString()`
    - `updated_at: new Date().toISOString()`
 
@@ -190,44 +190,9 @@ export const prepare_random_user = (
 
 ## Output Format
 
-### Import Statement Rules
-
-**CRITICAL**: Import statements must follow these exact patterns:
-
-1. **Namespace Imports** (for DTOs and structures):
-   ```typescript
-   import { IBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IBbsArticle";
-   import { IShoppingSale } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingSale";
-   import { IUser } from "@ORGANIZATION/PROJECT-api/lib/structures/IUser";
-   ```
-   - Import path format: `@ORGANIZATION/PROJECT-api/lib/structures/{NAMESPACE}`
-   - Import the NAMESPACE only, not individual interfaces
-   - Use the namespace in code: `IBbsArticle.ICreate`, not `ICreate`
-   - The namespace name appears at the end of the path
-
-2. **Utility Function Imports** (maintain exact format):
-   ```typescript
-   import { ArrayUtil, RandomGenerator } from "@nestia/e2e";
-   import { randint } from "tstl";
-   import { v4 } from "uuid";
-   ```
-   - Import ONLY the functions/utilities actually used in the code
-   - Keep the exact import format as shown
-
-3. **API Client Imports** (if needed):
-   ```typescript
-   import ShoppingApi from "@ORGANIZATION/PROJECT-api/lib/index";
-   ```
-
 ### Function Structure
 
 ```typescript
-import { ArrayUtil, RandomGenerator } from "@nestia/e2e";
-import { randint } from "tstl";
-import { v4 } from "uuid";
-
-import { IBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IBbsArticle";
-
 export const prepare_random_bbs_article = (
   input?: Pick<IBbsArticle.ICreate, "title" | "content" | "category">
 ): IBbsArticle.ICreate => ({
@@ -243,7 +208,7 @@ export const prepare_random_bbs_article = (
   category: input?.category ?? RandomGenerator.pick([...]),
   
   // System-managed fields (NEVER in input)
-  id: v4(),
+  id: RandomGenerator.alphaNumeric(32),  // Generate UUID-like string
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   status: "active",
@@ -260,14 +225,8 @@ export const prepare_random_bbs_article = (
 
 ## Examples of Complex Patterns
 
-### Full Example with Namespace Import
+### Full Example
 ```typescript
-import { ArrayUtil, RandomGenerator } from "@nestia/e2e";
-import { randint } from "tstl";
-import { v4 } from "uuid";
-
-import { IShoppingSale } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingSale";
-
 export const prepare_random_shopping_sale = (
   input?: Pick<IShoppingSale.ICreate, "title" | "content" | "price" | "category_id">
 ): IShoppingSale.ICreate => ({
@@ -283,11 +242,11 @@ export const prepare_random_shopping_sale = (
     sentenceMax: 10
   }),
   price: input?.price ?? randint(1000, 999999),  // cents: $10.00 to $9999.99
-  category_id: input?.category_id ?? v4(),
+  category_id: input?.category_id ?? RandomGenerator.alphaNumeric(32),
   
   // System fields
-  id: v4(),
-  seller_id: v4(),
+  id: RandomGenerator.alphaNumeric(32),
+  seller_id: RandomGenerator.alphaNumeric(32),
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   status: "draft",
@@ -319,7 +278,7 @@ published_at: input?.published_at ?? (
 items: input?.items ?? ArrayUtil.repeat(
   randint(1, 5),
   () => ({
-    product_id: v4(),
+    product_id: RandomGenerator.alphaNumeric(32),
     quantity: randint(1, 10),
     unit_price: randint(100, 99999),  // cents: $1.00 to $999.99
   })
@@ -354,6 +313,11 @@ The `@nestia/e2e` RandomGenerator provides these key methods:
 
 **Common Patterns**:
 ```typescript
+// UUID Generation (DO NOT use v4() from uuid package)
+id: RandomGenerator.alphaNumeric(32)  // UUID-like string
+user_id: RandomGenerator.alphaNumeric(32)
+product_id: RandomGenerator.alphaNumeric(32)
+
 // Numbers
 age: randint(18, 80)
 price: randint(100, 999999)  // cents
