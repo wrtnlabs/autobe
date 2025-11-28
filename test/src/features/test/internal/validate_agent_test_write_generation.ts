@@ -1,4 +1,4 @@
-import { orchestrateTestWriteGeneration } from "@autobe/agent/src/orchestrate/test/orchestrateTestGeneration";
+import { orchestrateTestWriteGeneration } from "@autobe/agent/src/orchestrate/test/orchestrateTestWriteGeneration";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -17,7 +17,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-export const validate_agent_test_generation = async (props: {
+export const validate_agent_test_write_generation = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
