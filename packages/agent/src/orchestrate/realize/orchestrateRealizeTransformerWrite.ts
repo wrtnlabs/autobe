@@ -65,7 +65,6 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeRealizeWriteEvent | false> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
-  const prismaSchemaName: string = props.plan.prismaSchemaName;
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -121,12 +120,11 @@ async function process<Model extends ILlmSchema.Model>(
         type: "realizeWrite",
         function: {
           kind: "transformer",
-          dtoTypeName,
-          prismaSchemaName,
+          plan: props.plan,
+          neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
           location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
             dtoTypeName,
           )}.ts`,
-          neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
           content,
         },
         metric: result.metric,

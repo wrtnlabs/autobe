@@ -7,6 +7,7 @@
  * the reference.
  *
  * The source field indicates where the reference originates:
+ *
  * - "from path parameter X" - Entity identifier from URL path (e.g., saleId)
  * - "from authorized actor" - Logged-in user entity (customer/seller/member)
  * - "from authorized session" - Current user session entity
@@ -14,23 +15,7 @@
  * Each reference becomes an `IEntity` parameter in the collector's `collect()`
  * function signature.
  *
- * @example
- * // Path parameter reference
- * {
- *   prismaSchemaName: "shopping_sales",
- *   source: "from path parameter saleId"
- * }
- *
- * @example
- * // Auth context references (always TWO: actor + session)
- * {
- *   prismaSchemaName: "shopping_customers",
- *   source: "from authorized actor"
- * }
- * {
- *   prismaSchemaName: "shopping_customer_sessions",
- *   source: "from authorized session"
- * }
+ * @author Samchon
  */
 export interface AutoBeRealizeCollectorReference {
   /**
@@ -44,6 +29,7 @@ export interface AutoBeRealizeCollectorReference {
    * Source of this reference, describing where it originates.
    *
    * Possible formats:
+   *
    * - "from path parameter {paramName}" - URL path parameter (e.g., "from path
    *   parameter saleId")
    * - "from authorized actor" - Logged-in user entity

@@ -1,4 +1,4 @@
-import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReference";
+import { AutoBeRealizeCollectorPlan } from "./AutoBeRealizeCollectorPlan";
 
 /**
  * DTO collector function implementation.
@@ -20,28 +20,28 @@ export interface AutoBeRealizeCollectorFunction {
   kind: "collector";
 
   /**
-   * DTO type name being collected from.
+   * Planning information for this collector.
    *
-   * The source TypeScript interface type that provides input data.
-   *
-   * Example: "IShoppingSaleUnitStock.ICreate"
+   * Contains the original planning decision including DTO type name, Prisma
+   * table mapping, planning reasoning, and foreign key references. This
+   * information guides the generated collector's structure and behavior.
    */
-  dtoTypeName: string;
+  plan: AutoBeRealizeCollectorPlan;
 
   /**
-   * Prisma schema name being collected to.
+   * Dependent collector names referenced in this collector.
    *
-   * The target Prisma table/model name that receives the collected data. This
-   * is determined by the transformer during analysis and passed to the
-   * collector to ensure consistency.
+   * Lists other collector modules that this collector imports and uses for
+   * nested create operations. These dependencies are automatically detected by
+   * scanning the code for patterns like `{Name}Collector.collect()`.
    *
-   * Example: "shopping_sale_snapshot_unit_stocks"
+   * This enables proper dependency tracking and import statement generation,
+   * ensuring that nested Create DTOs are collected using their dedicated
+   * collectors rather than inline mapping logic.
+   *
+   * Example: ["ShoppingSaleTagCollector", "ShoppingSaleInventoryCollector"]
    */
-  prismaSchemaName: string;
-
   neighbors: string[];
-
-  references: AutoBeRealizeCollectorReference[];
 
   /**
    * File path where the collector module is generated.

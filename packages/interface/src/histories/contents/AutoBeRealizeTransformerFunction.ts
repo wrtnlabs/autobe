@@ -1,3 +1,5 @@
+import { AutoBeRealizeTransformerPlan } from "./AutoBeRealizeTransformerPlan";
+
 /**
  * DTO transformer function implementation.
  *
@@ -16,22 +18,13 @@ export interface AutoBeRealizeTransformerFunction {
   kind: "transformer";
 
   /**
-   * DTO type name being transformed to.
+   * Planning information for this transformer.
    *
-   * The target TypeScript interface type that the transformer produces.
-   *
-   * Example: "IShoppingSaleUnitStock"
+   * Contains the original planning decision including DTO type name, Prisma
+   * table mapping, and planning reasoning. This information guides the
+   * generated transformer's structure and behavior.
    */
-  dtoTypeName: string;
-
-  /**
-   * Prisma schema name being transformed from.
-   *
-   * The source Prisma table/model name that provides the data.
-   *
-   * Example: "shopping_sale_snapshot_unit_stocks"
-   */
-  prismaSchemaName: string;
+  plan: AutoBeRealizeTransformerPlan;
 
   /**
    * Dependent transformer names referenced in this transformer.
