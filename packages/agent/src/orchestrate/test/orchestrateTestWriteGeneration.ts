@@ -15,6 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
+import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWriteGenerationHistory } from "./histories/transformTestWriteGenerationHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
@@ -131,6 +132,23 @@ async function process<Model extends ILlmSchema.Model>(
 
   if (pointer.value === null)
     throw new Error("Failed to create generation function.");
+
+  // Generate prepare function import statement
+  const prepareFunctionImport = `import { ${prepareFunction.functionName} } from "../prepare/${prepareFunction.functionName}";`;
+
+  if (pointer.value.revise.final)
+    pointer.value.revise.final = await completeTestCode(
+      ctx,
+      artifacts,
+      pointer.value.revise.final,
+      prepareFunctionImport,
+    );
+  pointer.value.draft = await completeTestCode(
+    ctx,
+    artifacts,
+    pointer.value.draft,
+    prepareFunctionImport,
+  );
 
   return {
     type: "testWrite",
