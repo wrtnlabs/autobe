@@ -1,4 +1,9 @@
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBePrisma,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeTransformerFunction,
+} from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
 export interface IAutoBePreliminaryCollection {
@@ -6,4 +11,6 @@ export interface IAutoBePreliminaryCollection {
   prismaSchemas: AutoBePrisma.IModel[];
   interfaceOperations: AutoBeOpenApi.IOperation[];
   interfaceSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  realizeCollectors: AutoBeRealizeCollectorFunction[];
+  realizeTransformers: AutoBeRealizeTransformerFunction[];
 }

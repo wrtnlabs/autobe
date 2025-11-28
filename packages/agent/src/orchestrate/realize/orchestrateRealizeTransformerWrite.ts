@@ -159,8 +159,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerWriteApplication.IProps>(input);
-    if (result.success === false) return result;
-    else if (result.data.request.type !== "complete") return result;
+    if (result.success === false || result.data.request.type === "reject")
+      return result; // @todo -> reject must be erased
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
 
     const errors: IValidation.IError[] =
       AutoBeRealizeTransformerProgrammer.validate({

@@ -214,13 +214,14 @@ async function step<Model extends ILlmSchema.Model>(
     ctx,
     props.scenario.operation,
   );
-  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
-    new AutoBePreliminaryController({
-      source: SOURCE,
-      application: typia.json.application<IAutoBeRealizeCorrectApplication>(),
-      kinds: ["prismaSchemas"],
-      state: ctx.state(),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  > = new AutoBePreliminaryController({
+    source: SOURCE,
+    application: typia.json.application<IAutoBeRealizeCorrectApplication>(),
+    kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
+    state: ctx.state(),
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeCorrectApplication.IComplete | null> =
       {
@@ -287,7 +288,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
   build: (next: IAutoBeRealizeCorrectApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  >;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 
@@ -300,6 +303,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         thinking: result.data.thinking,
         request: result.data.request,
       });
+
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: props.functionName,
       draft: result.data.request.draft,

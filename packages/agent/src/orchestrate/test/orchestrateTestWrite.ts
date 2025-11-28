@@ -141,6 +141,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeTestWriteApplication.IProps> =
       typia.validate<IAutoBeTestWriteApplication.IProps>(input);
     if (result.success === false) return result;
+
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: props.functionName,
       draft: result.data.draft,

@@ -246,6 +246,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeTestCorrectApplication.IProps> =
       typia.validate<IAutoBeTestCorrectApplication.IProps>(input);
     if (result.success === false) return result;
+
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: props.functionName,
       draft: result.data.draft,

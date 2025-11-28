@@ -13,6 +13,8 @@ export function createPreliminaryCollection(
       interfaceSchemas: Object.fromEntries(
         Object.entries(defined?.interfaceSchemas ?? {}),
       ),
+      realizeCollectors: (defined?.realizeCollectors ?? []).slice(),
+      realizeTransformers: (defined?.realizeTransformers ?? []).slice(),
     };
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
@@ -28,5 +30,13 @@ export function createPreliminaryCollection(
       defined?.interfaceSchemas ??
       state.interface?.document.components.schemas ??
       {},
+    realizeCollectors:
+      defined?.realizeCollectors ??
+      state.realize?.functions.filter((f) => f.kind === "collector") ??
+      [],
+    realizeTransformers:
+      defined?.realizeTransformers ??
+      state.realize?.functions.filter((f) => f.kind === "transformer") ??
+      [],
   };
 }

@@ -27,7 +27,9 @@ export function transformRealizeCorrectHistory<Model extends ILlmSchema.Model>(
     totalAuthorizations: AutoBeRealizeAuthorization[];
     dto: Record<string, string>;
     failures: IAutoBeRealizeFunctionFailure[];
-    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+    >;
   },
 ): IAutoBeOrchestrateHistory {
   const writeHistories = transformRealizeWriteHistory(props);
