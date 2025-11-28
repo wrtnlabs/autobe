@@ -10,6 +10,8 @@ import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePrelimi
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetRealizeCollectors } from "../structures/IAutoBePreliminaryGetRealizeCollectors";
+import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBePreliminaryGetRealizeTransformers";
 
 export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
@@ -295,6 +297,134 @@ namespace PreliminaryApplicationValidator {
             "{{REQUEST_TYPE}}",
             typia.misc.literals<
               IAutoBePreliminaryGetInterfaceSchemas["type"]
+            >()[0],
+          ),
+      });
+    return finalize(input, errors);
+  };
+
+  export const getRealizeCollectors = (
+    controller: AutoBePreliminaryController<"realizeCollectors">,
+    input: IAutoBePreliminaryRequest<"realizeCollectors">,
+  ): IValidation<IAutoBePreliminaryRequest<"realizeCollectors">> => {
+    const all: Set<string> = new Set(
+      controller.getAll().realizeCollectors.map((c) => c.plan.dtoTypeName),
+    );
+    const oldbie: Set<string> = new Set(
+      controller.getLocal().realizeCollectors.map((c) => c.plan.dtoTypeName),
+    );
+    const newbie: Set<string> = new Set(
+      controller
+        .getAll()
+        .realizeCollectors.filter((c) => oldbie.has(c.plan.dtoTypeName) === false)
+        .map((c) => c.plan.dtoTypeName),
+    );
+
+    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
+    const description = StringUtil.trim`
+      Here are the list of realize collector functions you can use.
+
+      Please select from the below. Never assume non-existing collectors.
+
+      ${quoted.map((q) => `- ${q}`).join("\n")}
+
+      ${
+        newbie.size === 0
+          ? "All available collectors have already been requested."
+          : ""
+      }
+    `;
+
+    const errors: IValidation.IError[] = [];
+    input.request.dtoTypeNames.forEach((key, i) => {
+      if (all.has(key) === false)
+        errors.push({
+          path: `$input.request.dtoTypeNames[${i}]`,
+          value: key,
+          expected: quoted.join(" | "),
+          description,
+        });
+    });
+    if (input.request.dtoTypeNames.every((k) => oldbie.has(k)))
+      errors.push({
+        path: `$input.request`,
+        value: input.request,
+        expected: controller
+          .getArgumentTypeNames()
+          .filter(
+            (k) =>
+              k !== typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>(),
+          )
+          .join(" | "),
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetRealizeCollectors["type"]
+            >()[0],
+          ),
+      });
+    return finalize(input, errors);
+  };
+
+  export const getRealizeTransformers = (
+    controller: AutoBePreliminaryController<"realizeTransformers">,
+    input: IAutoBePreliminaryRequest<"realizeTransformers">,
+  ): IValidation<IAutoBePreliminaryRequest<"realizeTransformers">> => {
+    const all: Set<string> = new Set(
+      controller.getAll().realizeTransformers.map((t) => t.plan.dtoTypeName),
+    );
+    const oldbie: Set<string> = new Set(
+      controller.getLocal().realizeTransformers.map((t) => t.plan.dtoTypeName),
+    );
+    const newbie: Set<string> = new Set(
+      controller
+        .getAll()
+        .realizeTransformers.filter((t) => oldbie.has(t.plan.dtoTypeName) === false)
+        .map((t) => t.plan.dtoTypeName),
+    );
+
+    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
+    const description = StringUtil.trim`
+      Here are the list of realize transformer functions you can use.
+
+      Please select from the below. Never assume non-existing transformers.
+
+      ${quoted.map((q) => `- ${q}`).join("\n")}
+
+      ${
+        newbie.size === 0
+          ? "All available transformers have already been requested."
+          : ""
+      }
+    `;
+
+    const errors: IValidation.IError[] = [];
+    input.request.dtoTypeNames.forEach((key, i) => {
+      if (all.has(key) === false)
+        errors.push({
+          path: `$input.request.dtoTypeNames[${i}]`,
+          value: key,
+          expected: quoted.join(" | "),
+          description,
+        });
+    });
+    if (input.request.dtoTypeNames.every((k) => oldbie.has(k)))
+      errors.push({
+        path: `$input.request`,
+        value: input.request,
+        expected: controller
+          .getArgumentTypeNames()
+          .filter(
+            (k) =>
+              k !== typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>(),
+          )
+          .join(" | "),
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetRealizeTransformers["type"]
             >()[0],
           ),
       });

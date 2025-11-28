@@ -1,4 +1,6 @@
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
+import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
 /**
  * Function calling interface for generating API operation implementation functions.
@@ -53,11 +55,16 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final implementation generation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getPrismaSchemas, getRealizeCollectors, getRealizeTransformers) or final
+     * implementation generation (complete). When preliminary returns empty
+     * array, that type is removed from the union, physically preventing
+     * repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetRealizeCollectors
+      | IAutoBePreliminaryGetRealizeTransformers;
   }
 
   /**

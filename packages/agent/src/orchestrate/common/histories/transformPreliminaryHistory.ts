@@ -6,8 +6,9 @@ import {
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
-  // AutoBePreliminaryKind,
   AutoBePrisma,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import {
@@ -292,6 +293,125 @@ namespace Transformer {
               request: {
                 type: "getInterfaceSchemas",
                 typeNames: Object.keys(props.local.interfaceSchemas),
+              },
+            },
+          }),
+          assistant,
+          system,
+        ];
+  };
+
+  export const realizeCollectors = (
+    props: IProps<"realizeCollectors">,
+  ): IMicroAgenticaHistoryJson[] => {
+    const oldbie: Record<string, AutoBeRealizeCollectorFunction> =
+      Object.fromEntries(
+        props.local.realizeCollectors.map((c) => [c.plan.dtoTypeName, c]),
+      );
+    const newbie: AutoBeRealizeCollectorFunction[] =
+      props.all.realizeCollectors.filter(
+        (c) => oldbie[c.plan.dtoTypeName] === undefined,
+      );
+
+    const assistant: IAgenticaHistoryJson.IAssistantMessage =
+      createAssistantMessage({
+        prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_LOADED,
+        content: toJsonBlock(oldbie),
+      });
+    const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
+      prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
+      available: StringUtil.trim`
+        DTO Type Name | Prisma Table | References
+        --------------|--------------|------------
+        ${newbie
+          .map((c) =>
+            [
+              c.plan.dtoTypeName,
+              c.plan.prismaSchemaName,
+              c.plan.references.length > 0
+                ? c.plan.references.map((r) => r.source).join(", ")
+                : "-",
+            ].join(" | "),
+          )
+          .join("\n")}
+      `,
+      loaded: props.local.realizeCollectors
+        .map((c) => `- ${c.plan.dtoTypeName}`)
+        .join("\n"),
+      exhausted:
+        newbie.length === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
+          : "",
+    });
+    return props.local.realizeCollectors.length === 0
+      ? [assistant, system]
+      : [
+          createFunctionCallingMessage({
+            controller: props.source,
+            kind: "realizeCollectors",
+            arguments: {
+              thinking: "realize collectors for Create DTO transformation",
+              request: {
+                type: "getRealizeCollectors",
+                dtoTypeNames: props.local.realizeCollectors.map(
+                  (c) => c.plan.dtoTypeName,
+                ),
+              },
+            },
+          }),
+          assistant,
+          system,
+        ];
+  };
+
+  export const realizeTransformers = (
+    props: IProps<"realizeTransformers">,
+  ): IMicroAgenticaHistoryJson[] => {
+    const oldbie: Record<string, AutoBeRealizeTransformerFunction> =
+      Object.fromEntries(
+        props.local.realizeTransformers.map((t) => [t.plan.dtoTypeName, t]),
+      );
+    const newbie: AutoBeRealizeTransformerFunction[] =
+      props.all.realizeTransformers.filter(
+        (t) => oldbie[t.plan.dtoTypeName] === undefined,
+      );
+
+    const assistant: IAgenticaHistoryJson.IAssistantMessage =
+      createAssistantMessage({
+        prompt:
+          AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_LOADED,
+        content: toJsonBlock(oldbie),
+      });
+    const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
+      prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
+      available: StringUtil.trim`
+        DTO Type Name | Prisma Table
+        --------------|-------------
+        ${newbie
+          .map((t) => [t.plan.dtoTypeName, t.plan.prismaSchemaName].join(" | "))
+          .join("\n")}
+      `,
+      loaded: props.local.realizeTransformers
+        .map((t) => `- ${t.plan.dtoTypeName}`)
+        .join("\n"),
+      exhausted:
+        newbie.length === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
+          : "",
+    });
+    return props.local.realizeTransformers.length === 0
+      ? [assistant, system]
+      : [
+          createFunctionCallingMessage({
+            controller: props.source,
+            kind: "realizeTransformers",
+            arguments: {
+              thinking: "realize transformers for response DTO construction",
+              request: {
+                type: "getRealizeTransformers",
+                dtoTypeNames: props.local.realizeTransformers.map(
+                  (t) => t.plan.dtoTypeName,
+                ),
               },
             },
           }),

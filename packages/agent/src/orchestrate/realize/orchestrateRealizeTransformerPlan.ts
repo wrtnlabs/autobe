@@ -162,8 +162,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);
-    if (result.success === false || result.data.request.type !== "complete")
-      return result;
+    if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
 
     const errors: IValidation.IError[] = [];
     result.data.request.plans.map((plan, i) => {

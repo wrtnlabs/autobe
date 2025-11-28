@@ -1,17 +1,33 @@
 import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReference";
 
 /**
- * Planning result for a single collector that will be generated.
+ * Planning result for a single collector function that will be generated.
  *
- * Contains all information needed to generate a collector module in the
- * REALIZE_COLLECTOR_WRITE phase.
+ * Represents a collector planning decision made during the
+ * REALIZE_COLLECTOR_PLAN phase. Each plan specifies which Create DTO requires a
+ * collector module and which Prisma table it maps to for database insertion
+ * operations.
+ *
+ * Collectors transform API request DTOs into Prisma CreateInput structures,
+ * handling UUID generation, nested relationships, and proper connect/create
+ * syntax. The planning phase determines which DTOs are collectable (Create DTO
+ * + DB-backed + Direct mapping) and which are not.
+ *
+ * This planning information is consumed by the REALIZE_COLLECTOR_WRITE phase to
+ * generate actual TypeScript collector modules with type-safe collect()
+ * functions.
+ *
+ * @author Samchon
  */
 export interface AutoBeRealizeCollectorPlan {
   /** Type discriminator for plan kind. */
   kind: "collector";
 
   /**
-   * DTO type name for which the collector will be generated.
+   * Create DTO type name for which the collector will be generated.
+   *
+   * The TypeScript interface name representing the API request body structure
+   * that this collector will transform into Prisma input.
    *
    * Example: "IShoppingSale.ICreate", "IBbsArticle.ICreate"
    */
@@ -20,119 +36,40 @@ export interface AutoBeRealizeCollectorPlan {
   /**
    * Chain of thought explaining the planning decision.
    *
-   * Documents why this collector is needed and what Prisma table it maps to.
+   * Documents why this collector is needed, what Prisma table it maps to, and
+   * any notable transformation logic (nested creates, foreign key handling,
+   * etc.).
    *
-   * Example: "Collects IShoppingSale.ICreate to shopping_sales with nested
-   * category"
+   * Example: "Collects IShoppingSale.ICreate to shopping_sales with nested tags
+   * and category connect"
    */
   thinking: string;
 
   /**
-   * Prisma schema name (table name) this collector maps to.
+   * Prisma table name this collector maps to.
    *
-   * The target database table for this Create DTO.
+   * The target database table for this Create DTO. The collector's collect()
+   * function will return a Prisma CreateInput type for this table.
    *
-   * Example: "shopping_sales", "bbs_articles"
+   * Example: "shopping_sales", "bbs_articles", "shopping_sale_tags"
    */
   prismaSchemaName: string;
 
   /**
-   * Referenced entities from path parameters or auth context.
+   * Foreign key references from path parameters or auth context.
    *
-   * When a Create DTO doesn't contain all foreign key references needed to
-   * create the Prisma record, those references must come from either:
+   * Lists entities that must be resolved and passed to the collector's
+   * collect() function as IEntity parameters. These provide foreign key
+   * relationships not present in the Create DTO body itself.
    *
-   * 1. **Path parameters**: Entity identifiers in the URL path
-   * 2. **Auth context**: Logged-in user information from authentication
-   *
-   * This field lists the Prisma schema names AND sources of entities that will
-   * be resolved and passed to the collector.
-   *
-   * Each reference becomes an `IEntity` parameter in the collector's
-   * `collect()` function, providing the resolved entity's UUID.
-   *
-   * **Reference structure**:
-   *
-   * Each reference contains:
-   * - `prismaSchemaName`: The Prisma table name (e.g., "shopping_sales")
-   * - `source`: Where the reference comes from (e.g., "from path parameter
-   *   saleId")
-   *
-   * **Source formats**:
-   * - "from path parameter {paramName}" - URL path parameter
-   * - "from authorized actor" - Logged-in user entity
-   * - "from authorized session" - Current user session entity
-   *
-   * **How references are extracted**:
-   *
-   * **From path parameters** (`AutoBeOpenApi.IOperation.parameters`):
-   *
-   * - `saleId` (UUID PK) → resolved to `shopping_sales` entity → becomes `sale:
-   *   IEntity` parameter
-   *   - Source: "from path parameter saleId"
-   * - `categoryCode` (UK) → resolved to `bbs_categories` entity → becomes
-   *   `category: IEntity` parameter
-   *   - Source: "from path parameter categoryCode"
-   *
-   * **From auth context** (logged-in user):
-   *
-   * - Authorized actor provides **TWO entities**: actor + session
-   * - Actor: `shopping_customers`, `shopping_sellers`, `bbs_members` → becomes
-   *   `customer: IEntity`, `seller: IEntity`, or `member: IEntity`
-   *   - Source: "from authorized actor"
-   * - Session: `shopping_customer_sessions`, `shopping_seller_sessions`,
-   *   `bbs_member_sessions` → becomes `session: IEntity`
-   *   - Source: "from authorized session"
-   * - Common for operations where logged-in user is the resource owner
-   *
-   * **Example usage**:
-   *
-   * ```typescript
-   * // If references = [
-   * //   { prismaSchemaName: "shopping_sales", source: "from path parameter saleId" },
-   * //   { prismaSchemaName: "shopping_customers", source: "from authorized actor" },
-   * //   { prismaSchemaName: "shopping_customer_sessions", source: "from authorized session" }
-   * // ]
-   * export namespace ShoppingSaleReviewCollector {
-   *   export async function collect(props: {
-   *     body: IShoppingSaleReview.ICreate;
-   *     sale: IEntity;      // from saleId path param
-   *     customer: IEntity;  // from auth - logged-in customer
-   *     session: IEntity;   // from auth - current session
-   *   }) {
-   *     return {
-   *       shopping_sale_id: props.sale.id,      // UUID from path param
-   *       customer_id: props.customer.id,       // UUID from auth actor
-   *       session_id: props.session.id,         // UUID from auth session
-   *       ...
-   *     } satisfies Prisma.shopping_sale_reviewsCreateInput;
-   *   }
-   * }
-   * ```
-   *
-   * **Why references are needed**:
-   *
-   * Path parameters and auth context provide foreign key relationships that
-   * aren't in the Create DTO body.
-   *
-   * **Example 1 - Path parameter**:
-   *
-   * - Path: `/sales/{saleId}/reviews`
-   * - Body: `IShoppingSaleReview.ICreate` (doesn't contain saleId)
-   * - Reference: `{ prismaSchemaName: "shopping_sales", source: "from path
-   *   parameter saleId" }`
-   *
-   * **Example 2 - Auth context**:
-   *
-   * - Path: `/articles` (no path parameters)
-   * - Body: `IBbsArticle.ICreate` (doesn't contain author information)
-   * - Auth: Logged-in member
-   * - References:
-   *   - `{ prismaSchemaName: "bbs_members", source: "from authorized actor" }`
-   *   - `{ prismaSchemaName: "bbs_member_sessions", source: "from authorized
-   *     session" }`
+   * Sources include URL path parameters (e.g., saleId) and authentication
+   * context (logged-in user actor + session). Each reference becomes an IEntity
+   * parameter in the generated collector.
    *
    * Empty array means the Create DTO contains all necessary references.
+   *
+   * Example: [{ prismaSchemaName: "shopping_sales", source: "from path
+   * parameter saleId" }]
    */
   references: AutoBeRealizeCollectorReference[];
 }

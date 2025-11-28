@@ -18,91 +18,10 @@ export const transformRealizeWriteHistory = (props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   dto: Record<string, string>;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  >;
 }): IAutoBeOrchestrateHistory => {
-  if (props.state.analyze === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Requirement analysis is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the requirement analysis.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.analyze.step !== props.state.prisma.step)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has not been updated",
-            "for the latest requirement analysis.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.prisma.compiled.type !== "success")
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Prisma DB schema generation has not been updated",
-            "for the latest requirement analysis.",
-            "Don't call the any tool function,",
-            "but say to re-process the Prisma DB schema generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-  else if (props.state.interface === null)
-    return {
-      histories: [
-        {
-          id: v7(),
-          created_at: new Date().toISOString(),
-          type: "systemMessage",
-          text: [
-            "Interface generation is not yet completed.",
-            "Don't call the any tool function,",
-            "but say to process the interface generation.",
-          ].join(" "),
-        },
-      ],
-      userMessage: "Please wait for prerequisites to complete",
-    };
-
   const payloads: Record<string, string> = Object.fromEntries(
     props.totalAuthorizations.map((el) => [
       el.payload.location,
@@ -114,7 +33,7 @@ export const transformRealizeWriteHistory = (props: {
     operation.authorizationType
       ? transformRealizeWriteMembershipHistory(operation, payloads)
       : [];
-  const document: AutoBeOpenApi.IDocument = props.state.interface.document;
+  const document: AutoBeOpenApi.IDocument = props.state.interface!.document;
 
   return {
     histories: [

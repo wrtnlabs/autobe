@@ -65,7 +65,6 @@ async function process<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeRealizeWriteEvent> {
   const dtoTypeName: string = props.plan.dtoTypeName;
-  const prismaSchemaName: string = props.plan.prismaSchemaName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
@@ -114,12 +113,10 @@ async function process<Model extends ILlmSchema.Model>(
       type: "realizeWrite",
       function: {
         kind: "collector",
-        dtoTypeName,
-        prismaSchemaName,
+        plan: props.plan,
+        neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
         location,
         content,
-        neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
-        references: props.plan.references,
       },
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -148,9 +145,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeRealizeCollectorWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeCollectorWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete") {
-      return result;
-    }
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
     const errors: IValidation.IError[] =
       AutoBeRealizeCollectorProgrammer.validate({
         plan: props.plan,

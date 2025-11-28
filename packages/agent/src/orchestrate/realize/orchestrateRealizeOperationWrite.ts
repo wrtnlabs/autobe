@@ -38,14 +38,15 @@ export async function orchestrateRealizeOperationWrite<
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeWriteEvent> {
-  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
-    new AutoBePreliminaryController({
-      source: SOURCE,
-      application:
-        typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
-      kinds: ["prismaSchemas"],
-      state: ctx.state(),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  > = new AutoBePreliminaryController({
+    source: SOURCE,
+    application:
+      typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
+    kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
+    state: ctx.state(),
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
       {
@@ -122,7 +123,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  >;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 
@@ -130,9 +133,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete") {
-      return result;
-    }
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName: props.functionName,
       draft: result.data.request.draft,
