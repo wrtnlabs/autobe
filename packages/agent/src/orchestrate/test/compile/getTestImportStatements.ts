@@ -12,6 +12,7 @@ export const getTestImportStatements = (
   return StringUtil.trim`
     import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";
     import { IConnection } from "@nestia/fetcher";
+    import { randint } from "tstl";
     import typia, { tags } from "typia";
     
     import api from "@ORGANIZATION/PROJECT-api";
