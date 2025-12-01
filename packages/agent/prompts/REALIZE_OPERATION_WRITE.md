@@ -618,7 +618,9 @@ export async function createPost(props: {
       content: props.content,  // Already validated as string
       tags: props.tags,        // Already validated as string[]
     }
+    ...PostTransformer.select(),
   });
+  return await PostTransformer.transform(post);
 }
 ```
 
@@ -960,21 +962,13 @@ export async function createEntity(props: {
   body: IEntity.ICreate;
 }): Promise<IEntity> {
   const created = await MyGlobal.prisma.entity.create({
-    data: {
-      id: v4() as string & tags.Format<"uuid">,
-      ...props.body,
-      user_id: props.auth.id,
-      created_at: toISOStringSafe(new Date()),
-      updated_at: toISOStringSafe(new Date()),
-    },
+    data: await EntityCollector.collect({
+      body: props.body,
+      user: { id: props.auth.id },
+    }),
+    ...EntityTransformer.select()
   });
-
-  return {
-    id: created.id,
-    ...created,
-    created_at: toISOStringSafe(created.created_at),
-    updated_at: toISOStringSafe(created.updated_at),
-  };
+  return await EntityTransformer.transform(created);
 }
 ```
 
@@ -986,18 +980,12 @@ export async function getEntity(props: {
 }): Promise<IEntity> {
   const entity = await MyGlobal.prisma.entity.findUnique({
     where: { id: props.params.id },
+    ...EntityTransformer.select(),
   });
-
   if (!entity) {
     throw new HttpException("Entity not found", 404);
   }
-
-  return {
-    id: entity.id,
-    ...entity,
-    created_at: toISOStringSafe(entity.created_at),
-    updated_at: toISOStringSafe(entity.updated_at),
-  };
+  return await EntityTransformer.transform()
 }
 ```
 
@@ -1027,14 +1015,9 @@ export async function updateEntity(props: {
       ...props.body,
       updated_at: toISOStringSafe(new Date()),
     },
+    ...EntityTransformer.select(),
   });
-
-  return {
-    id: updated.id,
-    ...updated,
-    created_at: toISOStringSafe(updated.created_at),
-    updated_at: toISOStringSafe(updated.updated_at),
-  };
+  return await EntityTransformer.transform(updated);
 }
 ```
 
@@ -1079,6 +1062,7 @@ export async function listEntities(props: {
       skip,
       take: limit,
       orderBy: { created_at: "desc" },
+      ...EntityTransformer.select(),
     }),
     MyGlobal.prisma.entity.count({
       where: { user_id: props.auth.id },
@@ -1086,12 +1070,9 @@ export async function listEntities(props: {
   ]);
 
   return {
-    data: data.map((entity) => ({
-      id: entity.id,
-      ...entity,
-      created_at: toISOStringSafe(entity.created_at),
-      updated_at: toISOStringSafe(entity.updated_at),
-    })),
+    data: await ArrayUtil.asyncMap(data, async (rec) => {
+      return await EntityTransformer.transform(rec);
+    }),
     pagination: {
       current: Number(page),
       limit: Number(limit),
