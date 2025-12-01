@@ -72,7 +72,7 @@ thinking: "Generated complete controller with error handling and transaction sup
 thinking: "All operations follow NestJS patterns, properly typed with Typia"
 
 // ❌ WRONG - too verbose, listing everything
-thinking: "Implemented POST /users with validation, GET /users with pagination, PUT /users/{id} with auth, DELETE /users/{id} with..."
+thinking: "Implemented POST /users with validation, PATCH /users with pagination, PUT /users/{id} with auth, DELETE /users/{id} with..."
 ```
 
 **IMPORTANT: Strategic Preliminary Data Retrieval**:
@@ -950,12 +950,12 @@ export async function deleteBbsArticlesById(props: {
 **Concept Applied**: Use transformer with `ArrayUtil.asyncMap` for array transformations.
 
 ```typescript
-// GET /shopping/sales - List shopping sales with pagination
-export async function getShoppingSales(props: {
-  query: IPage.IRequest;
+// PATCH /shopping/sales - List shopping sales with pagination
+export async function patchShoppingSales(props: {
+  body: IShoppingSale.IRequest;
 }): Promise<IPage<IShoppingSale.ISummary>> {
-  const page = props.query.page ?? 1;
-  const limit = props.query.limit ?? 100;
+  const page = props.body.page ?? 1;
+  const limit = props.body.limit ?? 100;
   const skip = (page - 1) * limit;
 
   // Step 1: Query data with transformer's select
@@ -1975,28 +1975,35 @@ export async function getCustomEntitiesById(props: {
 **Concept Applied**: Manual update data construction and response transformation.
 
 ```typescript
-// PUT /custom/entities/{id} - Update entity without collector
-export async function putCustomEntitiesById(props: {
-  auth: ActorPayload;
-  entityId: string & tags.Format<"uuid">;
-  body: ICustomEntity.IUpdate;
-}): Promise<ICustomEntity> {
-  // Step 1: Verify entity exists and user owns it
-  const existing = await MyGlobal.prisma.custom_entities.findUnique({
-    where: { id: props.entityId },
+// PUT /bbs/articles/{articleId}/comments/{commentId} - Update article comment
+export async function putBbsArticleCommentsById(props: {
+  member: ActorPayload;
+  articleId: string & tags.Format<"uuid">;
+  commentId: string & tags.Format<"uuid">;
+  body: IBbsComment.IUpdate;
+}): Promise<IBbsComment> {
+  // Step 1: Verify comment exists
+  const existing = await MyGlobal.prisma.bbs_article_comments.findUnique({
+    where: { id: props.commentId },
   });
 
   if (!existing) {
-    throw new HttpException("Entity not found", 404);
+    throw new HttpException("Comment not found", 404);
   }
 
-  if (existing.user_id !== props.auth.id) {
-    throw new HttpException("Forbidden", 403);
+  // Verify comment belongs to the article
+  if (existing.bbs_article_id !== props.articleId) {
+    throw new HttpException("Comment does not belong to this article", 400);
+  }
+
+  // Verify user can only update their own comment
+  if (existing.writer_id !== props.member.id) {
+    throw new HttpException("Forbidden - You can only edit your own comments", 403);
   }
 
   // Step 2: Manually construct update data
-  const updated = await MyGlobal.prisma.custom_entities.update({
-    where: { id: props.entityId },
+  const updated = await MyGlobal.prisma.bbs_article_comments.update({
+    where: { id: props.commentId },
     data: {
       ...props.body,  // Spread update fields
       updated_at: toISOStringSafe(new Date()),  // Manual timestamp update
@@ -2006,9 +2013,9 @@ export async function putCustomEntitiesById(props: {
   // Step 3: Manually construct response
   return {
     id: updated.id,
-    title: updated.title,
     content: updated.content,
-    user_id: updated.user_id,
+    writer_id: updated.writer_id,
+    bbs_article_id: updated.bbs_article_id,
     created_at: toISOStringSafe(updated.created_at),
     updated_at: toISOStringSafe(updated.updated_at),
   };
@@ -2016,7 +2023,7 @@ export async function putCustomEntitiesById(props: {
 ```
 
 **What YOU had to do manually**:
-- ✅ Authorization checks before update
+- ✅ Multi-level authorization checks (article ownership, comment ownership)
 - ✅ Update `updated_at` timestamp
 - ✅ Manual response construction with date conversion
 
@@ -2060,38 +2067,38 @@ export async function deleteShoppingSaleReviews(props: {
 **Concept Applied**: Manual array transformation with `.map()` instead of `ArrayUtil.asyncMap`.
 
 ```typescript
-// GET /custom/entities - List entities without transformer
-export async function getCustomEntities(props: {
-  auth: ActorPayload;
-  query: IPage.IRequest;
-}): Promise<IPage<ICustomEntity>> {
-  const page = props.query.page ?? 1;
-  const limit = props.query.limit ?? 100;
+// PATCH /bbs/articles/{articleId}/comments - List article comments with pagination
+export async function patchBbsArticleComments(props: {
+  articleId: string & tags.Format<"uuid">;
+  body: IBbsComment.IRequest;
+}): Promise<IPage<IBbsComment>> {
+  const page = props.body.page ?? 1;
+  const limit = props.body.limit ?? 100;
   const skip = (page - 1) * limit;
 
   // Step 1: Query data (DO NOT use Promise.all)
-  const data = await MyGlobal.prisma.custom_entities.findMany({
-    where: { user_id: props.auth.id },
+  const data = await MyGlobal.prisma.bbs_article_comments.findMany({
+    where: { bbs_article_id: props.articleId },
     skip,
     take: limit,
     orderBy: { created_at: "desc" },
   });
 
   // Step 2: Count total
-  const total = await MyGlobal.prisma.custom_entities.count({
-    where: { user_id: props.auth.id },
+  const total = await MyGlobal.prisma.bbs_article_comments.count({
+    where: { bbs_article_id: props.articleId },
   });
 
   // Step 3: Manually transform each record
   // Use regular .map() because transformations are synchronous
   return {
-    data: data.map((entity) => ({
-      id: entity.id,
-      title: entity.title,
-      content: entity.content,
-      user_id: entity.user_id,
-      created_at: toISOStringSafe(entity.created_at),  // Manual date conversion
-      updated_at: toISOStringSafe(entity.updated_at),
+    data: data.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      writer_id: comment.writer_id,
+      bbs_article_id: comment.bbs_article_id,
+      created_at: toISOStringSafe(comment.created_at),  // Manual date conversion
+      updated_at: toISOStringSafe(comment.updated_at),
     })),
     pagination: {
       current: page,
@@ -2235,18 +2242,43 @@ Before writing code, analyze:
 
 Before finalizing implementation, verify:
 
+### HTTP Methods & Conventions
+- [ ] ✅ POST for create operations
+- [ ] ✅ GET for single resource retrieval (at operations)
+- [ ] ✅ PUT for update operations (NOT PATCH)
+- [ ] ✅ DELETE for delete operations
+- [ ] ✅ PATCH for list/pagination operations (index operations with body)
+
+### Request Parameters
+- [ ] ✅ NEVER use `query: IPage.IRequest` - AutoBE does not use query parameters
+- [ ] ✅ List/pagination operations use `body: IEntityName.IRequest` (NOT query)
+- [ ] ✅ Path parameters use entity-specific names (articleId, commentId, NOT generic id)
+- [ ] ✅ Path parameters are direct properties (props.articleId, NOT props.params.articleId)
+
+### Type System
 - [ ] ✅ No runtime type validation on parameters
 - [ ] ✅ No use of `typeof`, `instanceof`, or String.trim() validation
 - [ ] ✅ All Date fields converted with `toISOStringSafe()`
-- [ ] ✅ All error handling uses HttpException with numeric status codes
-- [ ] ✅ Prisma operations use inline parameters (no intermediate variables except complex WHERE)
 - [ ] ✅ Proper null vs undefined handling based on interface definitions
-- [ ] ✅ No import statements (handled automatically by system)
+- [ ] ✅ Type-safe throughout
+
+### Actor & Authentication
+- [ ] ✅ Provider functions receive `ActorPayload` (full context with session_id)
+- [ ] ✅ Collector functions receive `IEntity` (minimal id-only entity)
+- [ ] ✅ Convert ActorPayload to IEntity: `{ id: props.actor.session_id }`
 - [ ] ✅ Authorization checks where needed
+
+### Error Handling
+- [ ] ✅ All error handling uses HttpException with numeric status codes
 - [ ] ✅ Clear, descriptive error messages
+
+### Database Operations
+- [ ] ✅ Prisma operations use inline parameters (no intermediate variables except complex WHERE)
 - [ ] ✅ Efficient database queries
 - [ ] ✅ Proper async/await usage
-- [ ] ✅ Type-safe throughout
+
+### Code Structure
+- [ ] ✅ No import statements (handled automatically by system)
 - [ ] ✅ Used Collector/Transformer when available (Pattern A)
 - [ ] ✅ Manual construction follows all rules (Pattern B)
 
