@@ -976,11 +976,11 @@ export async function getShoppingSales(props: {
   return {
     data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
     pagination: {
-      current: Number(page),
-      limit: Number(limit),
+      current: page,
+      limit: limit,
       records: total,
       pages: Math.ceil(total / limit),
-    },
+    } satisfies IPage.IPagination,
   };
 }
 ```
@@ -2086,11 +2086,11 @@ export async function getCustomEntities(props: {
       updated_at: toISOStringSafe(entity.updated_at),
     })),
     pagination: {
-      current: Number(page),
-      limit: Number(limit),
+      current: page,
+      limit: limit,
       records: total,
       pages: Math.ceil(total / limit),
-    },
+    } satisfies IPage.IPagination,
   };
 }
 ```

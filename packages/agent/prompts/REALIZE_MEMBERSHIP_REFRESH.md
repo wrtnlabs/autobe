@@ -66,6 +66,31 @@ if (seller.deleted_at !== null) {
 }
 ```
 
+**Alternative: Without Transformer (Manual Query)**
+
+If transformers are not available, query the session and actor directly without using `.select()`:
+
+```typescript
+// Validate the session still exists and is active (without transformer)
+const session = await MyGlobal.prisma.shopping_seller_sessions.findFirst({
+  where: {
+    id: decoded.session_id,
+    shopping_seller_id: decoded.id,
+  },
+});
+if (!session) {
+  throw new HttpException("Session expired or revoked", 401);
+}
+
+// Validate actor is still active (without transformer)
+const seller = await MyGlobal.prisma.shopping_sellers.findUniqueOrThrow({
+  where: { id: decoded.id },
+});
+if (seller.deleted_at !== null) {
+  throw new HttpException("Account has been deleted", 403);
+}
+```
+
 #### Phase 2: Generate New Tokens (Same Session)
 After validation, generate NEW tokens using the **SAME session ID**:
 
