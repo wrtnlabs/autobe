@@ -883,11 +883,16 @@ Under no circumstances are you permitted to validate the type or content constra
 
    const whereCondition = buildWhereCondition();
 
-   // Use in Promise.all
-   const [results, total] = await Promise.all([
-     MyGlobal.prisma.posts.findMany({ where: whereCondition, skip, take }),
-     MyGlobal.prisma.posts.count({ where: whereCondition })
-   ]);
+   const results = await MyGlobal.prisma.posts.findMany({
+     where: whereCondition,
+     skip,
+     take,
+     ...PostTransformer.select(),
+   });
+
+   const total = await MyGlobal.prisma.posts.count({
+     where: whereCondition
+   });
    ```
 
    **Alternative Pattern - Object Spread with Clear Structure**:
@@ -920,10 +925,16 @@ Under no circumstances are you permitted to validate the type or content constra
      })())
    };
 
-   const [results, total] = await Promise.all([
-     MyGlobal.prisma.posts.findMany({ where: whereCondition, skip, take }),
-     MyGlobal.prisma.posts.count({ where: whereCondition })
-   ]);
+   const results = await MyGlobal.prisma.posts.findMany({
+     where: whereCondition,
+     skip,
+     take,
+     ...PostTransformer.select(),
+   });
+
+   const total = await MyGlobal.prisma.posts.count({
+     where: whereCondition
+   });
    ```
 
 ## Core Conventions and Rules
