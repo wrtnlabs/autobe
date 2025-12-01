@@ -90,7 +90,7 @@ export const validate_agent_realize_operation_write = async (props: {
       },
     });
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/realize-operation`,
+    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/operations`,
     files: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
