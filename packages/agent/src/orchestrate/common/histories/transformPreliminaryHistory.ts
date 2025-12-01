@@ -343,28 +343,25 @@ namespace Transformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
           : "",
     });
-    const result =
-      props.local.realizeCollectors.length === 0
-        ? [assistant, system]
-        : [
-            createFunctionCallingMessage({
-              controller: props.source,
-              kind: "realizeCollectors",
-              arguments: {
-                thinking: "realize collectors for Create DTO transformation",
-                request: {
-                  type: "getRealizeCollectors",
-                  dtoTypeNames: props.local.realizeCollectors.map(
-                    (c) => c.plan.dtoTypeName,
-                  ),
-                },
+    return props.local.realizeCollectors.length === 0
+      ? [assistant, system]
+      : [
+          createFunctionCallingMessage({
+            controller: props.source,
+            kind: "realizeCollectors",
+            arguments: {
+              thinking: "realize collectors for Create DTO transformation",
+              request: {
+                type: "getRealizeCollectors",
+                dtoTypeNames: props.local.realizeCollectors.map(
+                  (c) => c.plan.dtoTypeName,
+                ),
               },
-            }),
-            assistant,
-            system,
-          ];
-    console.log("collectors", result);
-    return result;
+            },
+          }),
+          assistant,
+          system,
+        ];
   };
 
   export const realizeTransformers = (
@@ -402,28 +399,25 @@ namespace Transformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
           : "",
     });
-    const result =
-      props.local.realizeTransformers.length === 0
-        ? [assistant, system]
-        : [
-            createFunctionCallingMessage({
-              controller: props.source,
-              kind: "realizeTransformers",
-              arguments: {
-                thinking: "realize transformers for response DTO construction",
-                request: {
-                  type: "getRealizeTransformers",
-                  dtoTypeNames: props.local.realizeTransformers.map(
-                    (t) => t.plan.dtoTypeName,
-                  ),
-                },
+    return props.local.realizeTransformers.length === 0
+      ? [assistant, system]
+      : [
+          createFunctionCallingMessage({
+            controller: props.source,
+            kind: "realizeTransformers",
+            arguments: {
+              thinking: "realize transformers for response DTO construction",
+              request: {
+                type: "getRealizeTransformers",
+                dtoTypeNames: props.local.realizeTransformers.map(
+                  (t) => t.plan.dtoTypeName,
+                ),
               },
-            }),
-            assistant,
-            system,
-          ];
-    console.log("transformers", result);
-    return result;
+            },
+          }),
+          assistant,
+          system,
+        ];
   };
 }
 
