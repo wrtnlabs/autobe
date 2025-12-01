@@ -1776,12 +1776,15 @@ Under no circumstances are you permitted to validate the type or content constra
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
    - ❌ FORBIDDEN: `const whereCondition = {...}` - Use `whereInput` with `satisfies` instead!
    - ❌ FORBIDDEN: `const orderBy = {...}; await MyGlobal.prisma.findMany({orderBy})`
+   - ❌ FORBIDDEN: `let orderBy; if (...) { orderBy = {...} }` - Use const with ternary instead!
    - ❌ FORBIDDEN: `props: {}` - NEVER use empty props type, omit the parameter instead!
-   - ✅ **ONLY EXCEPTION**: Complex where conditions (see below) - MUST use `whereInput` with `satisfies Prisma.{modelName}WhereInput`
+   - ✅ **ONLY EXCEPTIONS**:
+     - Complex where conditions - MUST use `whereInput` with `satisfies Prisma.{modelName}WhereInput`
+     - Complex orderBy conditions - MUST use `orderByInput` with `satisfies Prisma.{modelName}OrderByWithRelationInput` and const + ternary
 
-### The Exception: Complex Where Conditions
+### The Exception: Complex Where and OrderBy Conditions
 
-When building complex where conditions (especially for concurrent operations that reuse the same condition), prioritize readability over strict inline rules.
+When building complex where or orderBy conditions (especially for concurrent operations that reuse the same condition), prioritize readability over strict inline rules.
 
 **Pattern 1: Function-Based Condition Building**:
 
@@ -1867,22 +1870,129 @@ const total = await MyGlobal.prisma.bbs_articles.count({
 });
 ```
 
+**Pattern 3: OrderBy with Ternary Operator (CRITICAL)**:
+
+```typescript
+// ✅ CORRECT: Use const with ternary operator for orderBy
+const orderByInput = (
+  body.sort === 'price_asc' ? { price: 'asc' as const } :
+  body.sort === 'price_desc' ? { price: 'desc' as const } :
+  body.sort === 'title' ? { title: 'asc' as const } :
+  { created_at: 'desc' as const }  // Default
+) satisfies Prisma.shopping_salesOrderByWithRelationInput;
+
+const results = await MyGlobal.prisma.shopping_sales.findMany({
+  where: whereInput,
+  orderBy: orderByInput,
+  skip,
+  take,
+});
+```
+
+```typescript
+// ❌ WRONG: NEVER use let with if-else for orderBy
+let orderBy;  // ❌ FORBIDDEN!
+if (body.sort === 'price_asc') {
+  orderBy = { price: 'asc' };
+} else if (body.sort === 'price_desc') {
+  orderBy = { price: 'desc' };
+} else {
+  orderBy = { created_at: 'desc' };
+}
+
+// ❌ WRONG: No type safety, no satisfies
+const orderBy = body.sort === 'price' ? { price: 'asc' } : { created_at: 'desc' };
+
+// ❌ WRONG: Wrong variable name
+const orderByCondition = {...} satisfies Prisma.shopping_salesOrderByWithRelationInput;
+```
+
+**Pattern 4: Complex Multi-Field OrderBy**:
+
+```typescript
+// ✅ CORRECT: Complex orderBy with multiple fields
+const orderByInput = (
+  body.sort === 'popular' ? [
+    { view_count: 'desc' as const },
+    { created_at: 'desc' as const }
+  ] :
+  body.sort === 'recent' ? [
+    { created_at: 'desc' as const }
+  ] :
+  body.sort === 'alphabetical' ? [
+    { title: 'asc' as const },
+    { created_at: 'desc' as const }
+  ] :
+  [{ created_at: 'desc' as const }]  // Default
+) satisfies Prisma.bbs_articlesOrderByWithRelationInput | Prisma.bbs_articlesOrderByWithRelationInput[];
+
+const results = await MyGlobal.prisma.bbs_articles.findMany({
+  where: whereInput,
+  orderBy: orderByInput,
+  skip,
+  take,
+});
+```
+
 **Why This Exception Exists**:
 - Complex search/filter operations need readable condition building
 - The same `where` condition must be used for both `findMany` and `count` queries
+- Dynamic `orderBy` logic based on user input requires conditional logic
 - Prevents duplication and potential inconsistencies
 - Makes code maintainable when conditions are complex
+- Using `const` with ternary ensures immutability and type safety for orderBy
 
 **CRITICAL Requirements When Using This Exception**:
+
+**For WHERE conditions**:
 - ✅ **MUST** declare variable as `whereInput` (NOT `whereCondition`)
 - ✅ **MUST** use `satisfies Prisma.{modelName}WhereInput` for type safety
 - ✅ Example: `const whereInput = {...} satisfies Prisma.shopping_salesWhereInput;`
 - ⚠️ **Without satisfies declaration, you lose Prisma type safety!**
 
+**For ORDERBY conditions**:
+- ✅ **MUST** declare variable as `orderByInput` (NOT `orderBy` or `orderByCondition`)
+- ✅ **MUST** use `satisfies Prisma.{modelName}OrderByWithRelationInput` for type safety
+- ✅ **MUST** use `const` with ternary operator (NEVER `let` with if-else)
+- ✅ Example: `const orderByInput = (body.sort === 'price' ? { price: 'asc' } : { created_at: 'desc' }) satisfies Prisma.shopping_salesOrderByWithRelationInput;`
+- ❌ **FORBIDDEN**: `let orderBy; if (condition) { orderBy = {...} } else { orderBy = {...} }`
+- ⚠️ **Without satisfies declaration and const, you lose type safety!**
+
 **When to Use This Exception**:
-- Only for `where` conditions
+- Only for `where` or `orderBy` conditions
 - Only when reused across multiple queries (e.g., findMany + count)
-- Only when conditions are genuinely complex (5+ conditional fields)
+- Only when conditions are genuinely complex (5+ conditional fields for where, 3+ sort options for orderBy)
+
+**Quick Reference - Variable Extraction Rules**:
+
+```typescript
+// ✅ CORRECT: Where condition extraction
+const whereInput = {
+  deleted_at: null,
+  ...(body.title && { title: { contains: body.title } })
+} satisfies Prisma.shopping_salesWhereInput;
+
+// ✅ CORRECT: OrderBy extraction with ternary
+const orderByInput = (
+  body.sort === 'price' ? { price: 'asc' as const } :
+  { created_at: 'desc' as const }
+) satisfies Prisma.shopping_salesOrderByWithRelationInput;
+
+// ❌ WRONG: Missing satisfies
+const whereInput = { deleted_at: null };
+
+// ❌ WRONG: Using let with if-else
+let orderByInput;
+if (body.sort === 'price') {
+  orderByInput = { price: 'asc' };
+} else {
+  orderByInput = { created_at: 'desc' };
+}
+
+// ❌ WRONG: Wrong variable names
+const whereCondition = {...} satisfies Prisma.shopping_salesWhereInput;
+const orderBy = {...} satisfies Prisma.shopping_salesOrderByWithRelationInput;
+```
 
 ## Pattern B: CRUD Implementation Examples (Manual Construction)
 
