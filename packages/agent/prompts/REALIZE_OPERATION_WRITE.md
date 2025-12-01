@@ -502,11 +502,11 @@ START: Implementing operation
 4. Implement: Use Pattern A (WITH Transformer)
 ```
 
-**Example 3: PUT /custom/entity/{id} - Updating custom entity**
+**Example 3: GET /shopping/sales/{saleId} - Reading a sale**
 ```
-1. Analyze: Need to update custom_entities record
+1. Analyze: Need to fetch shopping_sales record
 2. Check collector: Not creating, skip
-3. Check transformer: Request getRealizeTransformers(["ICustomEntity"])
+3. Check transformer: Request getRealizeTransformers(["IShoppingSale"])
    → Result: No transformer found ❌
 4. Implement: Use Pattern B (WITHOUT - manual construction)
 ```
@@ -1886,31 +1886,43 @@ Now that you understand all the concepts and responsibilities, here are complete
 **Concept Applied**: You are the collector - handle UUIDs, timestamps, field mapping manually.
 
 ```typescript
-// POST /custom/entities - Create entity without collector
-export async function postCustomEntities(props: {
-  auth: ActorPayload;
-  body: ICustomEntity.ICreate;
-}): Promise<ICustomEntity> {
-  // Step 1: Manually construct Prisma CreateInput
+// POST /shopping/sales/{saleId}/reviews - Create sale review without collector
+export async function postShoppingSaleReview(props: {
+  customer: ActorPayload;
+  saleId: string & tags.Format<"uuid">;
+  body: IShoppingSaleReview.ICreate;
+}): Promise<IShoppingSaleReview> {
+  // Step 1: Verify sale exists
+  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+    where: { id: props.saleId },
+  });
+
+  if (!sale) {
+    throw new HttpException("Sale not found", 404);
+  }
+
+  // Step 2: Manually construct Prisma CreateInput
   // You must handle everything a collector would do
-  const created = await MyGlobal.prisma.custom_entities.create({
+  const created = await MyGlobal.prisma.shopping_sale_reviews.create({
     data: {
       id: v4(),  // Manual UUID generation
-      title: props.body.title,
       content: props.body.content,
-      user_id: props.auth.id,
+      rating: props.body.rating,
+      shopping_sale_id: props.saleId,
+      shopping_customer_id: props.customer.id,
       created_at: toISOStringSafe(new Date()),   // Manual timestamp
       updated_at: toISOStringSafe(new Date()),
     },
   });
 
-  // Step 2: Manually construct response DTO
+  // Step 3: Manually construct response DTO
   // You must handle everything a transformer would do
   return {
     id: created.id,
-    title: created.title,
     content: created.content,
-    user_id: created.user_id,
+    rating: created.rating,
+    shopping_sale_id: created.shopping_sale_id,
+    shopping_customer_id: created.shopping_customer_id,
     created_at: toISOStringSafe(created.created_at),  // Manual date conversion
     updated_at: toISOStringSafe(created.updated_at),
   };
@@ -1929,36 +1941,37 @@ export async function postCustomEntities(props: {
 **Concept Applied**: You are the transformer - handle date conversion, null/undefined mapping manually.
 
 ```typescript
-// GET /custom/entities/{id} - Read entity without transformer
-export async function getCustomEntitiesById(props: {
-  auth: ActorPayload;
-  entityId: string & tags.Format<"uuid">;
-}): Promise<ICustomEntity> {
+// GET /shopping/sales/{saleId} - Read sale without transformer
+export async function getShoppingSaleById(props: {
+  saleId: string & tags.Format<"uuid">;
+}): Promise<IShoppingSale> {
   // Step 1: Query database
-  const entity = await MyGlobal.prisma.custom_entities.findUnique({
-    where: { id: props.entityId },
+  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+    where: { id: props.saleId },
   });
 
-  if (!entity) {
-    throw new HttpException("Entity not found", 404);
+  if (!sale) {
+    throw new HttpException("Sale not found", 404);
   }
 
   // Step 2: Manually construct response DTO with proper null/undefined handling
   return {
-    id: entity.id,
-    title: entity.title,
-    content: entity.content,
-    user_id: entity.user_id,
+    id: sale.id,
+    title: sale.title,
+    price: sale.price,
+    description: sale.description,
+    customer_id: sale.customer_id,
+    category_id: sale.category_id,
     // ✅ CRITICAL: Convert null → undefined for optional fields
-    optional_field: entity.optional_field === null
+    thumbnail_url: sale.thumbnail_url === null
       ? undefined
-      : entity.optional_field,
+      : sale.thumbnail_url,
     // ✅ CRITICAL: Keep null for nullable fields
-    deleted_at: entity.deleted_at
-      ? toISOStringSafe(entity.deleted_at)
+    deleted_at: sale.deleted_at
+      ? toISOStringSafe(sale.deleted_at)
       : null,
-    created_at: toISOStringSafe(entity.created_at),
-    updated_at: toISOStringSafe(entity.updated_at),
+    created_at: toISOStringSafe(sale.created_at),
+    updated_at: toISOStringSafe(sale.updated_at),
   };
 }
 ```
