@@ -327,10 +327,10 @@ You must call the `process()` function with your structured output:
 Request Prisma schemas:
 ```typescript
 process({
-  thinking: "Need users, posts, comments schemas for CRUD implementation.",
+  thinking: "Need shopping_sales, shopping_customers, shopping_categories schemas for sale creation implementation.",
   request: {
     type: "getPrismaSchemas",
-    schemaNames: ["users", "posts", "comments"]
+    schemaNames: ["shopping_sales", "shopping_customers", "shopping_categories"]
   }
 });
 ```
@@ -360,23 +360,30 @@ process({
 **Phase 2: Generate final implementation** (after receiving all necessary context):
 ```typescript
 process({
-  thinking: "Loaded 3 schemas, implemented all CRUD operations with proper typing.",
+  thinking: "Implemented shopping sale creation with customer verification and category validation.",
   request: {
     type: "complete",
-    plan: "Detailed implementation strategy...",
+    plan: "Analyze POST /shopping/sales operation. Validate customer authentication, verify category exists, use ShoppingSaleCollector for data transformation, and ShoppingSaleTransformer for response formatting.",
     draft: `
-export async function implementOperation(...) {
-  // Initial implementation
+export async function postShoppingSales(props: {
+  customer: IEntity;
+  session: IEntity;
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({
+      body: props.body,
+      customer: props.customer,
+      session: props.session,
+    }),
+    ...ShoppingSaleTransformer.select()
+  });
+  return await ShoppingSaleTransformer.transform(created);
 }
     `,
     revise: {
-      review: "Analysis of draft code...",
-      final: `
-export async function implementOperation(...) {
-  // Refined implementation
-}
-      `
-      // or: final: null  // if draft is already perfect
+      review: "Draft implementation is clean and follows all conventions. Uses collector/transformer pattern correctly, handles authentication via props, and maintains type safety throughout.",
+      final: null  // Draft is already perfect
     }
   }
 });
@@ -414,32 +421,66 @@ interface IExample {
 
 ### Step 2: Apply the Correct Pattern
 
-**EXAMPLE 1 - Optional field (field?: Type)**
+**EXAMPLE 1 - Optional field (field?: Type) - Shopping Sale Guest Customer**
 ```typescript
-// Interface: guestuser_id?: string & tags.Format<"uuid">
+// Interface: IShoppingSale
+// guest_customer_id?: string & tags.Format<"uuid">  // Optional field
 // This field is OPTIONAL - it accepts undefined, NOT null!
 
 // ✅ CORRECT - Converting null from DB to undefined for API
-guestuser_id: updated.guestuser_id === null
-  ? undefined
-  : updated.guestuser_id as string | undefined
+export async function getShoppingSaleById(props: {
+  params: { id: string & tags.Format<"uuid"> };
+}): Promise<IShoppingSale> {
+  const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
+    where: { id: props.params.id },
+    ...ShoppingSaleTransformer.select(),
+  });
+
+  return {
+    id: sale.id,
+    title: sale.title,
+    price: sale.price,
+    // ✅ CORRECT: Convert DB null to API undefined for optional field
+    guest_customer_id: sale.guest_customer_id === null
+      ? undefined
+      : sale.guest_customer_id,
+    created_at: toISOStringSafe(sale.created_at),
+  };
+}
 
 // ❌ WRONG - Optional fields CANNOT have null
-guestuser_id: updated.guestuser_id ?? null  // ERROR!
+guest_customer_id: sale.guest_customer_id ?? null  // ERROR! Type mismatch
 ```
 
-**EXAMPLE 2 - Required nullable field (field: Type | null)**
+**EXAMPLE 2 - Required nullable field (field: Type | null) - BBS Article Deletion**
 ```typescript
-// Interface: deleted_at: (string & tags.Format<"date-time">) | null
+// Interface: IBbsArticle
+// deleted_at: (string & tags.Format<"date-time">) | null  // Required but nullable
 // This field is REQUIRED but can be null
 
 // ✅ CORRECT - Keeping null for nullable fields
-deleted_at: updated.deleted_at
-  ? toISOStringSafe(updated.deleted_at)
-  : null
+export async function getBbsArticleById(props: {
+  params: { id: string & tags.Format<"uuid"> };
+}): Promise<IBbsArticle> {
+  const article = await MyGlobal.prisma.bbs_articles.findUniqueOrThrow({
+    where: { id: props.params.id },
+    ...BbsArticleTransformer.select(),
+  });
+
+  return {
+    id: article.id,
+    title: article.title,
+    content: article.content,
+    // ✅ CORRECT: Keep null for required nullable field
+    deleted_at: article.deleted_at
+      ? toISOStringSafe(article.deleted_at)
+      : null,
+    created_at: toISOStringSafe(article.created_at),
+  };
+}
 
 // ❌ WRONG - Required fields cannot be undefined
-deleted_at: updated.deleted_at ?? undefined  // ERROR!
+deleted_at: article.deleted_at ?? undefined  // ERROR! Type mismatch
 ```
 
 ### Step 3: Common Patterns to Remember
@@ -447,27 +488,45 @@ deleted_at: updated.deleted_at ?? undefined  // ERROR!
 ```typescript
 // DATABASE → API CONVERSIONS (most common scenarios)
 
-// 1. When DB has null but API expects optional field
-// DB: field String? (nullable)
-// API: field?: string (optional)
-result: dbValue === null ? undefined : dbValue
+// Pattern 1: DB nullable → API optional (Shopping Sale Guest Customer)
+// Prisma: guest_customer_id String? @db.Uuid (nullable)
+// API: guest_customer_id?: string & tags.Format<"uuid"> (optional)
+guest_customer_id: sale.guest_customer_id === null
+  ? undefined
+  : sale.guest_customer_id
 
-// 2. When DB has null and API accepts null
-// DB: field String? (nullable)
-// API: field: string | null (nullable)
-result: dbValue ?? null
+// Pattern 2: DB nullable → API nullable (BBS Article Deleted At)
+// Prisma: deleted_at DateTime? (nullable)
+// API: deleted_at: (string & tags.Format<"date-time">) | null (nullable)
+deleted_at: article.deleted_at
+  ? toISOStringSafe(article.deleted_at)
+  : null
 
-// 3. When handling complex branded types
-// Always strip to match API expectation
-result: dbValue === null
-  ? undefined  // if API has field?: Type
-  : dbValue as string | undefined
+// Pattern 3: DB nullable → API optional with branded type (Shopping Customer Email)
+// Prisma: email String? @db.VarChar (nullable)
+// API: email?: string & tags.Format<"email"> (optional branded type)
+email: customer.email === null
+  ? undefined
+  : customer.email as string & tags.Format<"email">
+
+// Pattern 4: Date conversion with nullability (BBS Article Updated At)
+// Prisma: updated_at DateTime? (nullable)
+// API: updated_at?: string & tags.Format<"date-time"> (optional date)
+updated_at: article.updated_at === null
+  ? undefined
+  : toISOStringSafe(article.updated_at)
 ```
 
 **🚨 CRITICAL: The `?` symbol means undefined, NOT null!**
 - `field?: Type` = Optional field → use `undefined` when missing
 - `field: Type | null` = Required nullable → use `null` when missing
 - NEVER mix these up!
+
+**Real-World Examples:**
+- Shopping sale without guest customer: `guest_customer_id: undefined` ✅
+- Active article (not deleted): `deleted_at: null` ✅
+- Customer without optional email: `email: undefined` ✅
+- Article never updated: `updated_at: undefined` ✅
 
 ## 🚫 ABSOLUTE PROHIBITION: No Runtime Type Checking on API Parameters
 
@@ -955,124 +1014,126 @@ Before writing code, analyze:
 
 ### 🔍 Common Implementation Patterns
 
-**CREATE Operations**:
+**CREATE Operations (Shopping Sale)**:
 ```typescript
-export async function createEntity(props: {
-  auth: AuthPayload;
-  body: IEntity.ICreate;
-}): Promise<IEntity> {
-  const created = await MyGlobal.prisma.entity.create({
-    data: await EntityCollector.collect({
+// POST /shopping/sales - Create a new product sale
+export async function postShoppingSales(props: {
+  customer: IEntity;  // Logged-in customer from auth
+  session: IEntity;   // Customer session from auth
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({
       body: props.body,
-      user: { id: props.auth.id },
+      customer: props.customer,
+      session: props.session,
     }),
-    ...EntityTransformer.select()
+    ...ShoppingSaleTransformer.select()
   });
-  return await EntityTransformer.transform(created);
+  return await ShoppingSaleTransformer.transform(created);
 }
 ```
 
-**READ Operations**:
+**READ Operations (BBS Article)**:
 ```typescript
-export async function getEntity(props: {
-  auth: AuthPayload;
+// GET /bbs/articles/{id} - Retrieve a specific article
+export async function getBbsArticlesById(props: {
   params: { id: string & tags.Format<"uuid"> };
-}): Promise<IEntity> {
-  const entity = await MyGlobal.prisma.entity.findUnique({
+}): Promise<IBbsArticle> {
+  const article = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.params.id },
-    ...EntityTransformer.select(),
+    ...BbsArticleTransformer.select(),
   });
-  if (!entity) {
-    throw new HttpException("Entity not found", 404);
+  if (!article) {
+    throw new HttpException("Article not found", 404);
   }
-  return await EntityTransformer.transform()
+  return await BbsArticleTransformer.transform(article);
 }
 ```
 
-**UPDATE Operations**:
+**UPDATE Operations (Shopping Customer Profile)**:
 ```typescript
-export async function updateEntity(props: {
-  auth: AuthPayload;
+// PATCH /shopping/customers/{id} - Update customer profile
+export async function patchShoppingCustomersById(props: {
+  customer: IEntity;  // Logged-in customer from auth
   params: { id: string & tags.Format<"uuid"> };
-  body: IEntity.IUpdate;
-}): Promise<IEntity> {
-  const existing = await MyGlobal.prisma.entity.findUnique({
+  body: IShoppingCustomer.IUpdate;
+}): Promise<IShoppingCustomer> {
+  const existing = await MyGlobal.prisma.shopping_customers.findUnique({
     where: { id: props.params.id },
   });
 
   if (!existing) {
-    throw new HttpException("Entity not found", 404);
+    throw new HttpException("Customer not found", 404);
   }
 
-  // Verify ownership if needed
-  if (existing.user_id !== props.auth.id) {
+  // Verify user can only update their own profile
+  if (existing.id !== props.customer.id) {
     throw new HttpException("Forbidden", 403);
   }
 
-  const updated = await MyGlobal.prisma.entity.update({
+  const updated = await MyGlobal.prisma.shopping_customers.update({
     where: { id: props.params.id },
     data: {
       ...props.body,
-      updated_at: toISOStringSafe(new Date()),
+      updated_at: new Date(),
     },
-    ...EntityTransformer.select(),
+    ...ShoppingCustomerTransformer.select(),
   });
-  return await EntityTransformer.transform(updated);
+  return await ShoppingCustomerTransformer.transform(updated);
 }
 ```
 
-**DELETE Operations**:
+**DELETE Operations (BBS Article)**:
 ```typescript
-export async function deleteEntity(props: {
-  auth: AuthPayload;
+// DELETE /bbs/articles/{id} - Delete an article
+export async function deleteBbsArticlesById(props: {
+  member: IEntity;  // Logged-in member from auth
   params: { id: string & tags.Format<"uuid"> };
 }): Promise<void> {
-  const existing = await MyGlobal.prisma.entity.findUnique({
+  const existing = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.params.id },
   });
 
   if (!existing) {
-    throw new HttpException("Entity not found", 404);
+    throw new HttpException("Article not found", 404);
   }
 
-  // Verify ownership if needed
-  if (existing.user_id !== props.auth.id) {
+  // Verify author owns the article
+  if (existing.author_id !== props.member.id) {
     throw new HttpException("Forbidden", 403);
   }
 
-  await MyGlobal.prisma.entity.delete({
+  await MyGlobal.prisma.bbs_articles.delete({
     where: { id: props.params.id },
   });
 }
 ```
 
-**LIST/PAGINATION Operations**:
+**LIST/PAGINATION Operations (Shopping Sales)**:
 ```typescript
-export async function listEntities(props: {
-  auth: AuthPayload;
+// GET /shopping/sales - List shopping sales with pagination
+export async function getShoppingSales(props: {
   query: IPage.IRequest;
-}): Promise<IPage<IEntity>> {
+}): Promise<IPage<IShoppingSale.ISummary>> {
   const page = props.query.page ?? 1;
   const limit = props.query.limit ?? 100;
   const skip = (page - 1) * limit;
 
-  const [data, total] = await Promise.all([
-    MyGlobal.prisma.entity.findMany({
-      where: { user_id: props.auth.id },
-      skip,
-      take: limit,
-      orderBy: { created_at: "desc" },
-      ...EntityTransformer.select(),
-    }),
-    MyGlobal.prisma.entity.count({
-      where: { user_id: props.auth.id },
-    }),
-  ]);
+  const data = await MyGlobal.prisma.shopping_sales.findMany({
+    where: { deleted_at: null },
+    skip,
+    take: limit,
+    orderBy: { created_at: "desc" },
+    ...ShoppingSaleAtSummaryTransformer.select(),
+  });
+
+  const total = await MyGlobal.prisma.shopping_sales.count({
+    where: { deleted_at: null },
+  });
 
   return {
-    data: await ArrayUtil.asyncMap(data, async (rec) => {
-      return await EntityTransformer.transform(rec);
-    }),
+    data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
     pagination: {
       current: Number(page),
       limit: Number(limit),
