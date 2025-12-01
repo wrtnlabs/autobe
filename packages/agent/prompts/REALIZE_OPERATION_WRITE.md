@@ -366,15 +366,14 @@ process({
     plan: "Analyze POST /shopping/sales operation. Validate customer authentication, verify category exists, use ShoppingSaleCollector for data transformation, and ShoppingSaleTransformer for response formatting.",
     draft: `
 export async function postShoppingSales(props: {
-  customer: IEntity;
-  session: IEntity;
+  customer: ActorPayload;
   body: IShoppingSale.ICreate;
 }): Promise<IShoppingSale> {
   const created = await MyGlobal.prisma.shopping_sales.create({
     data: await ShoppingSaleCollector.collect({
       body: props.body,
       customer: props.customer,
-      session: props.session,
+      session: { id: props.customer.session_id },
     }),
     ...ShoppingSaleTransformer.select()
   });
@@ -503,7 +502,7 @@ START: Implementing operation
 4. Implement: Use Pattern A (WITH Transformer)
 ```
 
-**Example 3: PATCH /custom/entity/{id} - Updating custom entity**
+**Example 3: PUT /custom/entity/{id} - Updating custom entity**
 ```
 1. Analyze: Need to update custom_entities record
 2. Check collector: Not creating, skip
@@ -573,7 +572,7 @@ Collectors take care of complex transformations that you would otherwise have to
 
 1. **UUID Generation**
    - Generates unique IDs for new records
-   - Applies correct branded types: `v4() as string & tags.Format<"uuid">`
+   - Applies correct branded types: `v4()`
    - Ensures all ID fields are properly formatted
 
 2. **Timestamp Creation**
@@ -603,8 +602,8 @@ Collectors take care of complex transformations that you would otherwise have to
 export namespace ShoppingSaleCollector {
   export async function collect(props: {
     body: IShoppingSale.ICreate;  // API DTO
-    customer: IEntity;             // Auth context
-    session: IEntity;              // Session context
+    customer: IEntity;        // Auth context
+    session: IEntity;         // Session context
   }): Promise<Prisma.shopping_salesCreateInput> {
     // Returns Prisma CreateInput object
   }
@@ -660,20 +659,24 @@ Transformers take care of complex conversions that you would otherwise have to w
 ```typescript
 // Typical transformer signature
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<
+    ReturnType<typeof select>
+  >;
+
   // Select which fields to fetch from database
-  export function select(): Prisma.shopping_salesSelect {
+  export function select() {
     return {
       id: true,
       title: true,
       price: true,
       created_at: true,
       // ... includes nested relations if needed
-    };
+    } satisfies Prisma.shopping_salesFindManyArgs;
   }
 
   // Transform Prisma result to API DTO
   export async function transform(
-    input: Prisma.shopping_salesGetPayload<{ select: ReturnType<typeof select> }>
+    input: Payload
   ): Promise<IShoppingSale> {
     // Returns API DTO
   }
@@ -729,14 +732,14 @@ Understanding how collectors and transformers work together is crucial for imple
 
 ```
 1. API Request arrives
-   ↓ (params: { id: uuid })
+   ↓ (articleId: uuid)
 
 2. Provider receives request
    ↓
 
 3. Prisma queries database record
    await MyGlobal.prisma.bbs_articles.findUnique({
-     where: { id: props.params.id },
+     where: { id: props.articleId },
      ...BbsArticleTransformer.select()  // Fetch fields needed by transformer
    })
    ↓ (Prisma result with Date objects, nulls)
@@ -778,8 +781,7 @@ Now that you understand the concepts, here are complete examples showing Pattern
 ```typescript
 // POST /shopping/sales - Create a new product sale
 export async function postShoppingSales(props: {
-  customer: IEntity;  // Logged-in customer from auth
-  session: IEntity;   // Customer session from auth
+  customer: ActorPayload;  // Logged-in customer from auth
   body: IShoppingSale.ICreate;
 }): Promise<IShoppingSale> {
   // Step 1: Collector transforms API DTO → Prisma CreateInput
@@ -788,7 +790,7 @@ export async function postShoppingSales(props: {
     data: await ShoppingSaleCollector.collect({
       body: props.body,
       customer: props.customer,
-      session: props.session,
+      session: { id: props.customer.session_id },
     }),
     ...ShoppingSaleTransformer.select()  // Fetch fields needed by transformer
   });
@@ -800,7 +802,7 @@ export async function postShoppingSales(props: {
 ```
 
 **What you DON'T have to write manually**:
-- ❌ No `id: v4() as string & tags.Format<"uuid">` - collector does it
+- ❌ No `id: v4()` - collector does it
 - ❌ No `created_at: toISOStringSafe(new Date())` - collector does it
 - ❌ No manual date conversion in response - transformer does it
 - ❌ No null/undefined handling - transformer does it
@@ -810,11 +812,11 @@ export async function postShoppingSales(props: {
 // WITHOUT Pattern A - you'd have to write all this:
 const created = await MyGlobal.prisma.shopping_sales.create({
   data: {
-    id: v4() as string & tags.Format<"uuid">,  // Manual UUID
+    id: v4(),  // Manual UUID
     title: props.body.title,
     price: props.body.price,
     customer_id: props.customer.id,
-    session_id: props.session.id,
+    customer_session_id: props.customer.session_id,
     created_at: toISOStringSafe(new Date()),  // Manual timestamp
     updated_at: toISOStringSafe(new Date()),
     // ... many more fields
@@ -841,12 +843,12 @@ return {
 ```typescript
 // GET /bbs/articles/{id} - Retrieve a specific article
 export async function getBbsArticlesById(props: {
-  params: { id: string & tags.Format<"uuid"> };
+  articleId: string & tags.Format<"uuid">;
 }): Promise<IBbsArticle> {
   // Step 1: Query database with transformer's select
   // This ensures we fetch all fields the transformer needs (including nested relations)
   const article = await MyGlobal.prisma.bbs_articles.findUnique({
-    where: { id: props.params.id },
+    where: { id: props.articleId },
     ...BbsArticleTransformer.select(),
   });
 
@@ -871,39 +873,40 @@ export async function getBbsArticlesById(props: {
 **Concept Applied**: Use collector for update data preparation, transformer for response formatting.
 
 ```typescript
-// PATCH /shopping/customers/{id} - Update customer profile
-export async function patchShoppingCustomersById(props: {
-  customer: IEntity;  // Logged-in customer from auth
-  params: { id: string & tags.Format<"uuid"> };
-  body: IShoppingCustomer.IUpdate;
-}): Promise<IShoppingCustomer> {
-  // Step 1: Verify record exists and user has permission
-  const existing = await MyGlobal.prisma.shopping_customers.findUnique({
-    where: { id: props.params.id },
+// PUT /bbs/articles/{id} - Update article (only by author)
+export async function putBbsArticlesById(props: {
+  member: ActorPayload;  // Logged-in member from auth
+  articleId: string & tags.Format<"uuid">;
+  body: IBbsArticle.IUpdate;
+}): Promise<IBbsArticle> {
+  // Step 1: Verify record exists and user is the author
+  const existing = await MyGlobal.prisma.bbs_articles.findUnique({
+    where: { id: props.articleId },
   });
 
   if (!existing) {
-    throw new HttpException("Customer not found", 404);
+    throw new HttpException("Article not found", 404);
   }
 
-  // Verify user can only update their own profile
-  if (existing.id !== props.customer.id) {
-    throw new HttpException("Forbidden", 403);
+  // Verify user can only update their own article
+  if (existing.writer_id !== props.member.id) {
+    throw new HttpException("Forbidden - You can only edit your own articles", 403);
   }
 
   // Step 2: Collector transforms update DTO → Prisma UpdateInput
   // Handles: timestamp updates, field mapping, nested updates
-  const updated = await MyGlobal.prisma.shopping_customers.update({
-    where: { id: props.params.id },
-    data: await ShoppingCustomerCollector.collect({
+  const updated = await MyGlobal.prisma.bbs_articles.update({
+    where: { id: props.articleId },
+    data: await BbsArticleCollector.collect({
       body: props.body,
-      customer: props.customer,
+      member: props.member,
+      session: { id: props.member.session_id },
     }),
-    ...ShoppingCustomerTransformer.select(),
+    ...BbsArticleTransformer.select(),
   });
 
   // Step 3: Transformer converts result → API DTO
-  return await ShoppingCustomerTransformer.transform(updated);
+  return await BbsArticleTransformer.transform(updated);
 }
 ```
 
@@ -916,12 +919,12 @@ export async function patchShoppingCustomersById(props: {
 ```typescript
 // DELETE /bbs/articles/{id} - Delete an article
 export async function deleteBbsArticlesById(props: {
-  member: IEntity;  // Logged-in member from auth
-  params: { id: string & tags.Format<"uuid"> };
+  member: ActorPayload;  // Logged-in member from auth
+  articleId: string & tags.Format<"uuid">;
 }): Promise<void> {
   // Step 1: Verify record exists and user owns it
   const existing = await MyGlobal.prisma.bbs_articles.findUnique({
-    where: { id: props.params.id },
+    where: { id: props.articleId },
   });
 
   if (!existing) {
@@ -935,7 +938,7 @@ export async function deleteBbsArticlesById(props: {
 
   // Step 2: Delete (no transformer needed for void return)
   await MyGlobal.prisma.bbs_articles.delete({
-    where: { id: props.params.id },
+    where: { id: props.articleId },
   });
 }
 ```
@@ -1045,7 +1048,7 @@ When you don't have a collector, you must manually handle these responsibilities
 import { v4 } from "uuid";
 
 // Generate and apply branded type
-id: v4() as string & tags.Format<"uuid">
+id: v4()
 ```
 
 **Critical Points**:
@@ -1105,7 +1108,7 @@ password: await PasswordUtil.hash(props.body.password)
 ```typescript
 // Example: Creating article with nested author reference
 data: {
-  id: v4() as string & tags.Format<"uuid">,
+  id: v4(),
   title: props.body.title,
   // Nested relationship
   author: {
@@ -1264,7 +1267,7 @@ return {
 **How**:
 ```typescript
 const article = await MyGlobal.prisma.bbs_articles.findUnique({
-  where: { id: props.params.id },
+  where: { id: props.articleId },
   select: {
     id: true,
     title: true,
@@ -1341,10 +1344,10 @@ interface IExample {
 
 // ✅ CORRECT - Converting null from DB to undefined for API
 export async function getShoppingSaleById(props: {
-  params: { id: string & tags.Format<"uuid"> };
+  saleId: string & tags.Format<"uuid">;
 }): Promise<IShoppingSale> {
   const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
-    where: { id: props.params.id },
+    where: { id: props.saleId },
   });
 
   return {
@@ -1372,10 +1375,10 @@ export async function getShoppingSaleById(props: {
 
 // ✅ CORRECT - Keeping null for nullable fields
 export async function getBbsArticleById(props: {
-  params: { id: string & tags.Format<"uuid"> };
+  articleId: string & tags.Format<"uuid">;
 }): Promise<IBbsArticle> {
   const article = await MyGlobal.prisma.bbs_articles.findUniqueOrThrow({
-    where: { id: props.params.id },
+    where: { id: props.articleId },
   });
 
   return {
@@ -1588,7 +1591,7 @@ export async function postBbsArticles(props: {
   // Use parameters directly - they are GUARANTEED to be the correct type
   const article = await MyGlobal.prisma.bbs_articles.create({
     data: {
-      id: v4() as string & tags.Format<"uuid">,
+      id: v4(),
       title: props.body.title,      // Already validated
       content: props.body.content,  // Already validated
       author_id: props.body.author_id,
@@ -1885,14 +1888,14 @@ Now that you understand all the concepts and responsibilities, here are complete
 ```typescript
 // POST /custom/entities - Create entity without collector
 export async function postCustomEntities(props: {
-  auth: AuthPayload;
+  auth: ActorPayload;
   body: ICustomEntity.ICreate;
 }): Promise<ICustomEntity> {
   // Step 1: Manually construct Prisma CreateInput
   // You must handle everything a collector would do
   const created = await MyGlobal.prisma.custom_entities.create({
     data: {
-      id: v4() as string & tags.Format<"uuid">,  // Manual UUID generation
+      id: v4(),  // Manual UUID generation
       title: props.body.title,
       content: props.body.content,
       user_id: props.auth.id,
@@ -1928,12 +1931,12 @@ export async function postCustomEntities(props: {
 ```typescript
 // GET /custom/entities/{id} - Read entity without transformer
 export async function getCustomEntitiesById(props: {
-  auth: AuthPayload;
-  params: { id: string & tags.Format<"uuid"> };
+  auth: ActorPayload;
+  entityId: string & tags.Format<"uuid">;
 }): Promise<ICustomEntity> {
   // Step 1: Query database
   const entity = await MyGlobal.prisma.custom_entities.findUnique({
-    where: { id: props.params.id },
+    where: { id: props.entityId },
   });
 
   if (!entity) {
@@ -1972,15 +1975,15 @@ export async function getCustomEntitiesById(props: {
 **Concept Applied**: Manual update data construction and response transformation.
 
 ```typescript
-// PATCH /custom/entities/{id} - Update entity without collector
-export async function patchCustomEntitiesById(props: {
-  auth: AuthPayload;
-  params: { id: string & tags.Format<"uuid"> };
+// PUT /custom/entities/{id} - Update entity without collector
+export async function putCustomEntitiesById(props: {
+  auth: ActorPayload;
+  entityId: string & tags.Format<"uuid">;
   body: ICustomEntity.IUpdate;
 }): Promise<ICustomEntity> {
   // Step 1: Verify entity exists and user owns it
   const existing = await MyGlobal.prisma.custom_entities.findUnique({
-    where: { id: props.params.id },
+    where: { id: props.entityId },
   });
 
   if (!existing) {
@@ -1993,7 +1996,7 @@ export async function patchCustomEntitiesById(props: {
 
   // Step 2: Manually construct update data
   const updated = await MyGlobal.prisma.custom_entities.update({
-    where: { id: props.params.id },
+    where: { id: props.entityId },
     data: {
       ...props.body,  // Spread update fields
       updated_at: toISOStringSafe(new Date()),  // Manual timestamp update
@@ -2022,25 +2025,30 @@ export async function patchCustomEntitiesById(props: {
 **Concept Applied**: DELETE operations rarely need transformers (void return).
 
 ```typescript
-// DELETE /custom/entities/{id} - Delete entity
-export async function deleteCustomEntitiesById(props: {
-  auth: AuthPayload;
-  params: { id: string & tags.Format<"uuid"> };
+// DELETE /shopping/sales/{saleId}/reviews/{reviewId} - Delete sale review
+export async function deleteShoppingSaleReviews(props: {
+  customer: ActorPayload;
+  saleId: string & tags.Format<"uuid">;
+  reviewId: string & tags.Format<"uuid">;
 }): Promise<void> {
-  const existing = await MyGlobal.prisma.custom_entities.findUnique({
-    where: { id: props.params.id },
+  const existing = await MyGlobal.prisma.shopping_sale_reviews.findUnique({
+    where: { id: props.reviewId },
   });
 
   if (!existing) {
-    throw new HttpException("Entity not found", 404);
+    throw new HttpException("Review not found", 404);
   }
 
-  if (existing.user_id !== props.auth.id) {
-    throw new HttpException("Forbidden", 403);
+  if (existing.shopping_sale_id !== props.saleId) {
+    throw new HttpException("Review does not belong to this sale", 400);
   }
 
-  await MyGlobal.prisma.custom_entities.delete({
-    where: { id: props.params.id },
+  if (existing.shopping_customer_id !== props.customer.id) {
+    throw new HttpException("Forbidden - You can only delete your own reviews", 403);
+  }
+
+  await MyGlobal.prisma.shopping_sale_reviews.delete({
+    where: { id: props.reviewId },
   });
 }
 ```
@@ -2054,7 +2062,7 @@ export async function deleteCustomEntitiesById(props: {
 ```typescript
 // GET /custom/entities - List entities without transformer
 export async function getCustomEntities(props: {
-  auth: AuthPayload;
+  auth: ActorPayload;
   query: IPage.IRequest;
 }): Promise<IPage<ICustomEntity>> {
   const page = props.query.page ?? 1;
