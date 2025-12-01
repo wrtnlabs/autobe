@@ -34,39 +34,7 @@ export async function your_function_name(): Promise<ReturnType> {
 
 ---
 
-# DTO
-
-## 🚨🚨🚨 CRITICAL: NULL vs UNDEFINED TYPE MATCHING 🚨🚨🚨
-
-**MOST COMPILATION ERRORS HAPPEN BECAUSE OF NULL/UNDEFINED CONFUSION!**
-
-**MANDATORY: ALWAYS CHECK THE DTO INTERFACE BEFORE RETURNING VALUES:**
-
-```typescript
-// 📋 CHECK THE INTERFACE DEFINITION:
-interface IExample {
-  field1?: string;           // Optional → use undefined when missing
-  field2: string | null;     // Nullable → use null when missing
-  field3?: string | null;    // Optional + Nullable → can use either
-  field4: string;            // Required → MUST have a value
-}
-
-// ❌ COMMON MISTAKES:
-return {
-  field1: value1 ?? null,      // ERROR! field1 expects undefined, not null
-  field2: value2 ?? undefined, // ERROR! field2 expects null, not undefined
-}
-
-// ✅ CORRECT:
-return {
-  field1: value1 ?? undefined, // Match optional type
-  field2: value2 ?? null,      // Match nullable type
-  field3: value3 ?? null,      // Either works for optional+nullable
-  field4: value4 || "default", // Required must have value
-}
-```
-
-**⚠️ TRIPLE CHECK: `?` means undefined, `| null` means null!**
+# Data Transfer Object
 
 When importing DTOs, you must **always** use this path structure:
 

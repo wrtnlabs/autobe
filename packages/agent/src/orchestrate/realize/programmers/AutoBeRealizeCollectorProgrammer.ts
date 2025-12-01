@@ -23,7 +23,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
 
   export function getNeighbors(code: string): string[] {
     const unique: Set<string> = new Set();
-    const regex: RegExp = /(\w+Transformer)\.(collect)/g;
+    const regex: RegExp = /(\w+Collector)\.collect/g;
     while (true) {
       const match: RegExpExecArray | null = regex.exec(code);
       if (match === null) break;

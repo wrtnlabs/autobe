@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
@@ -32,13 +33,13 @@ export async function orchestrateRealizeTransformerWrite<
     plans: AutoBeRealizeTransformerPlan[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent[]> {
+): Promise<AutoBeRealizeTransformerFunction[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize transformer write without interface.");
 
   props.progress.total += props.plans.length;
-  const result: Array<AutoBeRealizeWriteEvent | false> =
+  const result: Array<AutoBeRealizeTransformerFunction | false> =
     await executeCachedBatch(
       ctx,
       props.plans.map(
@@ -62,7 +63,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent | false> {
+): Promise<AutoBeRealizeTransformerFunction | false> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
   const preliminary: AutoBePreliminaryController<
@@ -115,27 +116,27 @@ async function process<Model extends ILlmSchema.Model>(
           schemas: document.components.schemas,
           code: pointer.value.revise.final ?? pointer.value.draft,
         });
-      const event: AutoBeRealizeWriteEvent = {
+      const functor: AutoBeRealizeTransformerFunction = {
+        kind: "transformer",
+        plan: props.plan,
+        neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
+        location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
+          dtoTypeName,
+        )}.ts`,
+        content,
+      };
+      ctx.dispatch({
         id: v7(),
         type: "realizeWrite",
-        function: {
-          kind: "transformer",
-          plan: props.plan,
-          neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
-          location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
-            dtoTypeName,
-          )}.ts`,
-          content,
-        },
+        function: functor,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
-      };
-      ctx.dispatch(event);
-      return out(result)(event);
+      } satisfies AutoBeRealizeWriteEvent);
+      return out(result)(functor);
     }
     return out(result)(null);
   });

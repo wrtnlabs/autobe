@@ -1,13 +1,14 @@
 import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
+import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
+  AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
-  AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import typia from "typia";
 
@@ -34,8 +35,6 @@ export const validate_agent_realize_transformer_write = async (props: {
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-
-  agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
@@ -46,7 +45,7 @@ export const validate_agent_realize_transformer_write = async (props: {
         completed: 0,
       },
     });
-  const writes: AutoBeRealizeWriteEvent[] =
+  const transformers: AutoBeRealizeTransformerFunction[] =
     await orchestrateRealizeTransformerWrite(agent.getContext(), {
       plans,
       progress: {
@@ -59,10 +58,11 @@ export const validate_agent_realize_transformer_write = async (props: {
     files: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
+      ...AutoBeCompilerRealizeTemplateOfSQLite,
       ...Object.fromEntries(
-        writes
+        transformers
           .filter((w) => w !== null)
-          .map((w) => [w.function.location, w.function.content]),
+          .map((w) => [w.location, w.content]),
       ),
       "pnpm-workspace.yaml": "",
     },

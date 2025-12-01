@@ -22,17 +22,17 @@ import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenar
  * @returns A scenario object containing all structural information needed to
  *   generate the function
  */
-export function generateRealizeScenario(
-  operation: AutoBeOpenApi.IOperation,
-  authorizations: AutoBeRealizeAuthorization[],
-): IAutoBeRealizeScenarioResult {
-  const authorization = authorizations.find(
-    (el) => el.actor.name === operation.authorizationActor,
-  );
-  const functionName: string = transformFunctionName(operation);
-
+export function generateRealizeScenario(props: {
+  operation: AutoBeOpenApi.IOperation;
+  authorizations: AutoBeRealizeAuthorization[];
+}): IAutoBeRealizeScenarioResult {
+  const authorization: AutoBeRealizeAuthorization | undefined =
+    props.authorizations.find(
+      (el) => el.actor.name === props.operation.authorizationActor,
+    );
+  const functionName: string = getFunctionName(props.operation);
   return {
-    operation: operation,
+    operation: props.operation,
     functionName: functionName,
     location: `src/providers/${functionName}.ts`,
     decoratorEvent: authorization,
@@ -56,7 +56,7 @@ export function generateRealizeScenario(
  * @returns A unique function name that will be the actual function name in the
  *   generated code by Realize Write/Correct agents
  */
-function transformFunctionName(operation: AutoBeOpenApi.IOperation): string {
+function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
   const functionName = `${operation.method}${operation.path
     .split("/")
     .filter(Boolean)

@@ -3,26 +3,28 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeCollectorPlan,
   AutoBeRealizeHistory,
-  AutoBeRealizeValidateEvent,
-  AutoBeRealizeWriteEvent,
+  AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
+  AutoBeRealizeTransformerPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
-import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorizationWrite } from "./orchestrateRealizeAuthorizationWrite";
-import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
-import { orchestrateRealizeCorrectCasting } from "./orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
+import { orchestrateRealizeCollectorWrite } from "./orchestrateRealizeCollectorWrite";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
-import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { generateRealizeScenario } from "./utils/generateRealizeScenario";
+import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
+import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
+import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -57,129 +59,60 @@ export const orchestrateRealize =
     });
 
     // PREPARE ASSETS
+    const planProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total:
+        Object.keys(document.components.schemas).filter(
+          AutoBeRealizeCollectorProgrammer.filter,
+        ).length +
+        Object.keys(document.components.schemas).filter(
+          AutoBeRealizeTransformerProgrammer.filter,
+        ).length,
+    };
+    const writeProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: document.operations.length,
+    };
+
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorizationWrite(ctx);
+    const collectors: AutoBeRealizeCollectorFunction[] = await getCollectors(
+      ctx,
+      {
+        planProgress,
+        writeProgress,
+      },
+    );
+    const transformers: AutoBeRealizeTransformerFunction[] =
+      await getTransformers(ctx, {
+        planProgress,
+        writeProgress,
+      });
 
-    const writeProgress: AutoBeProgressEventBase = {
-      total: document.operations.length,
-      completed: 0,
-    };
-    const correctProgress: AutoBeProgressEventBase = {
-      total: document.operations.length,
-      completed: 0,
-    };
-
-    const process = async (
-      artifacts: IAutoBeRealizeScenarioResult[],
-    ): Promise<IBucket> => {
-      const writes: AutoBeRealizeWriteEvent[] = (
-        await executeCachedBatch(
-          ctx,
-          artifacts.map((art) => async (promptCacheKey) => {
-            const write = async (): Promise<AutoBeRealizeWriteEvent | null> => {
-              try {
-                return await orchestrateRealizeOperationWrite(ctx, {
-                  totalAuthorizations: authorizations,
-                  authorization: art.decoratorEvent ?? null,
-                  scenario: art,
-                  document,
-                  progress: writeProgress,
-                  promptCacheKey,
-                });
-              } catch {
-                return null;
-              }
-            };
-            return (await write()) ?? (await write());
-          }),
-        )
-      ).filter((w) => w !== null);
-      const functions: AutoBeRealizeFunction[] = writes.map((w) => w.function);
-      const corrected: AutoBeRealizeFunction[] =
-        await orchestrateRealizeCorrectCasting(
-          ctx,
-          artifacts,
-          authorizations,
-          functions,
-          correctProgress,
-        ).then(async (res) => {
-          return await orchestrateRealizeCorrect(
-            ctx,
-            artifacts,
-            authorizations,
-            res,
-            [],
-            correctProgress,
-          );
-        });
-      const validate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
-        ctx,
-        {
-          authorizations,
-          functions: corrected,
-        },
-      );
-      return {
-        corrected,
-        validate,
-      };
-    };
-
-    // SCENARIOS
-    const entireScenarios: IAutoBeRealizeScenarioResult[] =
-      document.operations.map((operation) =>
-        generateRealizeScenario(operation, authorizations),
-      );
-    let bucket: IBucket = await process(entireScenarios);
-    for (let i: number = 0; i < 2; ++i) {
-      if (bucket.validate.result.type !== "failure") break;
-
-      const failedScenarios: IAutoBeRealizeScenarioResult[] = Array.from(
-        new Set(bucket.validate.result.diagnostics.map((f) => f.file)),
-      )
-        .map((location) =>
-          bucket.corrected.find((f) => f.location === location),
-        )
-        .filter((f) => f !== undefined)
-        .map((f) =>
-          entireScenarios.find(
-            (s) =>
-              f.kind === "operation" &&
-              s.operation.path === f.endpoint.path &&
-              s.operation.method === f.endpoint.method,
-          ),
-        )
-        .filter((o) => o !== undefined);
-      if (failedScenarios.length === 0) break;
-
-      writeProgress.total += failedScenarios.length;
-      correctProgress.total += failedScenarios.length;
-
-      const newBucket: IBucket = await process(failedScenarios);
-      const corrected: Map<string, AutoBeRealizeFunction> = new Map([
-        ...bucket.corrected.map((f) => [f.location, f] as const),
-        ...newBucket.corrected.map((f) => [f.location, f] as const),
-      ]);
-      bucket = {
-        corrected: Array.from(corrected.values()),
-        validate: newBucket.validate,
-      };
-    }
+    const operations: AutoBeRealizeOperationFunction[] =
+      await orchestrateRealizeOperationWrite(ctx, {
+        authorizations,
+        collectors,
+        transformers,
+        progress: writeProgress,
+      });
 
     const controllers: Record<string, string> =
       await compiler.realize.controller({
         document: ctx.state().interface!.document,
-        functions: bucket.corrected,
+        functions: operations,
         authorizations,
       });
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
-      functions: bucket.corrected,
+      functions: [...collectors, ...transformers, ...operations],
       authorizations,
       controllers,
-      compiled: bucket.validate.result,
+      compiled: {
+        type: "success", // @todo fake
+      },
       aggregates: ctx.getCurrentAggregates("realize"),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
@@ -187,7 +120,36 @@ export const orchestrateRealize =
     });
   };
 
-interface IBucket {
-  corrected: AutoBeRealizeFunction[];
-  validate: AutoBeRealizeValidateEvent;
+async function getCollectors(
+  ctx: AutoBeContext<any>,
+  props: {
+    planProgress: AutoBeProgressEventBase;
+    writeProgress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeCollectorFunction[]> {
+  const plans: AutoBeRealizeCollectorPlan[] =
+    await orchestrateRealizeCollectorPlan(ctx, {
+      progress: props.planProgress,
+    });
+  return await orchestrateRealizeCollectorWrite(ctx, {
+    plans,
+    progress: props.writeProgress,
+  });
+}
+
+async function getTransformers(
+  ctx: AutoBeContext<any>,
+  props: {
+    planProgress: AutoBeProgressEventBase;
+    writeProgress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeTransformerFunction[]> {
+  const plans: AutoBeRealizeTransformerPlan[] =
+    await orchestrateRealizeTransformerPlan(ctx, {
+      progress: props.planProgress,
+    });
+  return await orchestrateRealizeTransformerWrite(ctx, {
+    plans,
+    progress: props.writeProgress,
+  });
 }

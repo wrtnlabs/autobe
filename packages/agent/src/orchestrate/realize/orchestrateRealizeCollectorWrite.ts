@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeCollectorPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
@@ -32,13 +33,13 @@ export async function orchestrateRealizeCollectorWrite<
     plans: AutoBeRealizeCollectorPlan[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent[]> {
+): Promise<AutoBeRealizeCollectorFunction[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize collector write without interface.");
 
   props.progress.total += props.plans.length;
-  const result: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
+  const result: AutoBeRealizeCollectorFunction[] = await executeCachedBatch(
     ctx,
     props.plans.map(
       (x) => (promptCacheKey) =>
@@ -63,7 +64,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeWriteEvent> {
+): Promise<AutoBeRealizeCollectorFunction> {
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<
@@ -108,25 +109,25 @@ async function process<Model extends ILlmSchema.Model>(
         schemas: props.document.components.schemas,
         code: pointer.value.revise.final ?? pointer.value.draft,
       });
-    const event: AutoBeRealizeWriteEvent = {
+    const functor: AutoBeRealizeCollectorFunction = {
+      kind: "collector",
+      plan: props.plan,
+      neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
+      location,
+      content,
+    };
+    ctx.dispatch({
       id: v7(),
       type: "realizeWrite",
-      function: {
-        kind: "collector",
-        plan: props.plan,
-        neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
-        location,
-        content,
-      },
+      function: functor,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,
       total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(event);
+    } satisfies AutoBeRealizeWriteEvent);
+    return out(result)(functor);
   });
 }
 

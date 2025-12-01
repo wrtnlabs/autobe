@@ -22,12 +22,12 @@ import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCorrectHistory } from "./histories/transformRealizeCorrectHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
-import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -250,26 +250,20 @@ async function step<Model extends ILlmSchema.Model>(
       }),
     });
     if (pointer.value !== null) {
-      pointer.value.draft = await replaceImportStatements(ctx, {
-        operation: props.scenario.operation,
-        schemas: ctx.state().interface!.document.components.schemas,
-        code: pointer.value.draft,
-        decoratorType: props.authorization?.payload.name,
-      });
-      if (pointer.value.revise.final)
-        pointer.value.revise.final = await replaceImportStatements(ctx, {
-          operation: props.scenario.operation,
-          schemas: ctx.state().interface!.document.components.schemas,
-          code: pointer.value.revise.final,
-          decoratorType: props.authorization?.payload.name,
-        });
-
       const event: AutoBeRealizeCorrectEvent = {
         type: "realizeCorrect",
         kind: "overall",
         id: v7(),
         location: props.scenario.location,
-        content: pointer.value.revise.final ?? pointer.value.draft,
+        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+          ctx,
+          {
+            operation: props.scenario.operation,
+            schemas: ctx.state().interface!.document.components.schemas,
+            code: pointer.value.revise.final ?? pointer.value.draft,
+            decoratorType: props.authorization?.payload.name,
+          },
+        ),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,

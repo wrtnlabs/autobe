@@ -327,6 +327,7 @@ Collectors accept **ONLY** the following parameter types:
 1. ✅ **`body`**: The Create DTO (e.g., `IShoppingSale.ICreate`)
 2. ✅ **References from `AutoBeRealizeCollectorPlan.references`**: IEntity parameters from path parameters or auth context
 3. ✅ **Nested collector context**: `sequence`, `options`, or other data passed from parent collectors
+4. ✅ **SPECIAL CASE - Session collectors only**: `ip` parameter for server-extracted IP address (see Session Collector pattern below)
 
 **FORBIDDEN - You MUST NOT add these**:
 - ❌ **Transformed/derived fields** (e.g., `passwordHash`, `hashedPassword`)
@@ -481,6 +482,46 @@ export async function collect(props: {
     // ...
   } satisfies Prisma.shopping_sale_snapshot_unit_stocksCreateInput;
 }
+```
+
+5. **Session Collector - Special IP Handling**:
+```typescript
+// CRITICAL: Session collectors have special IP handling for SSR environments
+export async function collect(props: {
+  body: IShoppingSellerSession.ICreate;
+  shoppingSeller: IEntity;  // ✅ From references - actor being authenticated
+  ip: string;               // ✅ SPECIAL - Server-extracted IP address
+}) {
+  return {
+    id: v4(),
+    shopping_seller_id: props.shoppingSeller.id,
+    // ✅ CRITICAL IP PATTERN: Prioritize client-provided IP (SSR), fallback to server IP
+    ip: props.body.ip ?? props.ip,
+    href: props.body.href,
+    referrer: props.body.referrer,
+    user_agent: props.body.user_agent,
+    created_at: new Date().toISOString(),
+    // ...
+  } satisfies Prisma.shopping_seller_sessionsCreateInput;
+}
+```
+
+**Why the `ip: props.body.ip ?? props.ip` pattern?**
+- **SSR (Server-Side Rendering)**: In SSR environments, the backend server makes the API call on behalf of the client. The real client IP must be passed in `body.ip` to track the actual user's IP, not the SSR server's IP.
+- **Direct Client Calls**: When the client directly calls the API (CSR), `body.ip` is typically undefined, so we fallback to `props.ip` (the IP extracted from the HTTP request).
+- **Security & Audit**: Accurate IP tracking is critical for session management, security auditing, and detecting suspicious login patterns.
+
+**Usage in Operation Code**:
+```typescript
+// In login/join/refresh operations
+const session = await MyGlobal.prisma.shopping_seller_sessions.create({
+  data: await ShoppingSellerSessionCollector.collect({
+    body: props.body,
+    shoppingSeller: { id: seller.id },
+    ip: props.ip,  // Server-extracted IP passed as separate parameter
+  }),
+  ...ShoppingSellerSessionTransformer.select(),
+});
 ```
 
 ### 2. The collect() Function - Data Collection

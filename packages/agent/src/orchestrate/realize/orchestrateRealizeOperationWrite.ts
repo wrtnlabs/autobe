@@ -3,6 +3,9 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import {
@@ -17,27 +20,68 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeWriteHistory } from "./histories/transformRealizeWriteHistory";
+import { complementPreliminaryCollection } from "../common/internal/complementPreliminaryCollection";
+import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
+import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
-import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeOperationWrite<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
+    authorizations: AutoBeRealizeAuthorization[];
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeOperationFunction[]> {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
+    (operation) =>
+      generateRealizeScenario({
+        authorizations: props.authorizations,
+        operation,
+      }),
+  );
+  return await executeCachedBatch(
+    ctx,
+    scenarios.map(
+      (s) => (promptCacheKey) =>
+        process(ctx, {
+          document,
+          totalAuthorizations: props.authorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
+          authorization: s.decoratorEvent ?? null,
+          scenario: s,
+          progress: props.progress,
+          promptCacheKey,
+        }),
+    ),
+  );
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
     document: AutoBeOpenApi.IDocument;
-    totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
+    collectors: AutoBeRealizeCollectorFunction[];
+    totalAuthorizations: AutoBeRealizeAuthorization[];
     scenario: IAutoBeRealizeScenarioResult;
+    transformers: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeRealizeWriteEvent> {
+): Promise<AutoBeRealizeOperationFunction> {
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
   > = new AutoBePreliminaryController({
@@ -46,7 +90,31 @@ export async function orchestrateRealizeOperationWrite<
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
     kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
     state: ctx.state(),
+    all: {
+      realizeCollectors: props.collectors,
+      realizeTransformers: props.transformers,
+    },
   });
+  complementPreliminaryCollection({
+    kinds: [
+      "prismaSchemas",
+      "interfaceOperations",
+      "interfaceSchemas",
+      "realizeCollectors",
+      "realizeTransformers",
+    ],
+    all: {
+      ...preliminary.getAll(),
+      interfaceOperations: props.document.operations,
+      interfaceSchemas: props.document.components.schemas,
+    } as IAutoBePreliminaryCollection,
+    local: {
+      ...(preliminary.getLocal() as IAutoBePreliminaryCollection),
+      interfaceOperations: [props.scenario.operation],
+      interfaceSchemas: {},
+    },
+  });
+
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
       {
@@ -68,7 +136,7 @@ export async function orchestrateRealizeOperationWrite<
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeWriteHistory({
+      ...transformRealizeOperationWriteHistory({
         state: ctx.state(),
         scenario: props.scenario,
         authorization: props.authorization,
@@ -78,42 +146,36 @@ export async function orchestrateRealizeOperationWrite<
       }),
     });
     if (pointer.value !== null) {
-      pointer.value.draft = await replaceImportStatements(ctx, {
-        operation: props.scenario.operation,
-        schemas: props.document.components.schemas,
-        code: pointer.value.draft,
-        decoratorType: props.authorization?.payload.name,
-      });
-      if (pointer.value.revise.final)
-        pointer.value.revise.final = await replaceImportStatements(ctx, {
-          operation: props.scenario.operation,
-          schemas: props.document.components.schemas,
-          code: pointer.value.revise.final,
-          decoratorType: props.authorization?.payload.name,
-        });
-
-      const event: AutoBeRealizeWriteEvent = {
+      const functor: AutoBeRealizeOperationFunction = {
+        kind: "operation",
+        endpoint: {
+          method: props.scenario.operation.method,
+          path: props.scenario.operation.path,
+        },
+        location: props.scenario.location,
+        name: props.scenario.functionName,
+        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+          ctx,
+          {
+            operation: props.scenario.operation,
+            schemas: props.document.components.schemas,
+            code: pointer.value.revise.final ?? pointer.value.draft,
+            decoratorType: props.authorization?.payload.name,
+          },
+        ),
+      };
+      ctx.dispatch({
         id: v7(),
         type: "realizeWrite",
-        function: {
-          kind: "operation",
-          endpoint: {
-            method: props.scenario.operation.method,
-            path: props.scenario.operation.path,
-          },
-          location: props.scenario.location,
-          name: props.scenario.functionName,
-          content: pointer.value.revise.final ?? pointer.value.draft,
-        },
+        function: functor,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
-      };
-      ctx.dispatch(event);
-      return out(result)(event);
+      } satisfies AutoBeRealizeWriteEvent);
+      return out(result)(functor);
     }
     return out(result)(null);
   });

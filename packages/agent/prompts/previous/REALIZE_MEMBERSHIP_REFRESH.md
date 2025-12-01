@@ -49,44 +49,16 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.findFirst({
   where: {
     id: decoded.session_id,
     shopping_seller_id: decoded.id,
+    // Check session validity (e.g., not revoked, not expired)
   },
-  ...ShoppingSellerSessionTransformer.select(),
+  include: {
+    seller: true,  // Include actor for validation
+    // Add other relations if needed
+  }
 });
 if (!session) {
   throw new HttpException("Session expired or revoked", 401);
-}
-
-// Validate actor is still active
-const seller = await MyGlobal.prisma.shopping_sellers.findUniqueOrThrow({
-  where: { id: decoded.id },
-  ...ShoppingSellerTransformer.select(),
-});
-if (seller.deleted_at !== null) {
-  throw new HttpException("Account has been deleted", 403);
-}
-```
-
-**Alternative: Without Transformer (Manual Query)**
-
-If transformers are not available, query the session and actor directly without using `.select()`:
-
-```typescript
-// Validate the session still exists and is active (without transformer)
-const session = await MyGlobal.prisma.shopping_seller_sessions.findFirst({
-  where: {
-    id: decoded.session_id,
-    shopping_seller_id: decoded.id,
-  },
-});
-if (!session) {
-  throw new HttpException("Session expired or revoked", 401);
-}
-
-// Validate actor is still active (without transformer)
-const seller = await MyGlobal.prisma.shopping_sellers.findUniqueOrThrow({
-  where: { id: decoded.id },
-});
-if (seller.deleted_at !== null) {
+} else if (session.seller.deleted_at !== null) {
   throw new HttpException("Account has been deleted", 403);
 }
 ```
@@ -219,17 +191,14 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.findFirst({
     id: decoded.session_id,
     shopping_seller_id: decoded.id,
   },
-  ...ShoppingSellerSessionTransformer.select(),
+  include: {
+    shopping_seller: true,
+    // Add other relations if needed
+  }
 });
 if (!session) {
   throw new HttpException("Session expired or revoked", 401);
-}
-
-const seller = await MyGlobal.prisma.shopping_sellers.findUniqueOrThrow({
-  where: { id: decoded.id },
-  ...ShoppingSellerTransformer.select(),
-});
-if (seller.deleted_at !== null) {
+} else if (session.shopping_seller.deleted_at !== null) {
   throw new HttpException("Account has been deleted", 403);
 }
 
@@ -336,18 +305,14 @@ export async function postAuthSellerRefresh(props: {
       id: decoded.session_id,
       shopping_seller_id: decoded.id,
     },
-    ...ShoppingSellerSessionTransformer.select(),
+    include: {
+      seller: true,
+      // Add other relations if needed
+    }
   });
   if (!session) {
     throw new HttpException("Session expired or revoked", 401);
-  }
-
-  // 4. Validate actor is still active
-  const seller = await MyGlobal.prisma.shopping_sellers.findUniqueOrThrow({
-    where: { id: decoded.id },
-    ...ShoppingSellerTransformer.select(),
-  });
-  if (seller.deleted_at !== null) {
+  } else if (session.shopping_seller.deleted_at !== null) {
     throw new HttpException("Account has been deleted", 403);
   }
 

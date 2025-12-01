@@ -51,8 +51,6 @@ export async function orchestrateRealizeTransformerPlan<
       .map((m) => m.name),
   );
 
-  props.progress.total += dtoTypeNames.length;
-
   const matrix: string[][] = divideArray({
     array: Array.from(dtoTypeNames),
     capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
