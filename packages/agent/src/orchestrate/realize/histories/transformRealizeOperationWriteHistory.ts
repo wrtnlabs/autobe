@@ -22,6 +22,8 @@ export const transformRealizeOperationWriteHistory = (props: {
     "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
   >;
 }): IAutoBeOrchestrateHistory => {
+  console.log(props.preliminary.getLocal());
+
   const payloads: Record<string, string> = Object.fromEntries(
     props.totalAuthorizations.map((el) => [
       el.payload.location,

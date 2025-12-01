@@ -17,6 +17,7 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
+  IAutoBeCompiler,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -49,6 +50,7 @@ export const validate_agent_realize_operation_write = async (props: {
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
+  const compiler: IAutoBeCompiler = await agent.getContext().compiler();
   const document: AutoBeOpenApi.IDocument = agent.getContext().state()
     .interface!.document;
 
@@ -92,8 +94,13 @@ export const validate_agent_realize_operation_write = async (props: {
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/operations`,
     files: {
-      ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
+      ...(await agent.getFiles()),
+      ...(await compiler.realize.controller({
+        document: agent.getContext().state().interface!.document,
+        functions: operations,
+        authorizations,
+      })),
       ...Object.fromEntries(
         authorizations
           .map((auth) => [

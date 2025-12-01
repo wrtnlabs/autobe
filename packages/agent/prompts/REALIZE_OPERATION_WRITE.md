@@ -466,17 +466,7 @@ export async function getBbsArticleById(props: {
     where: { id: props.params.id },
     ...BbsArticleTransformer.select(),
   });
-
-  return {
-    id: article.id,
-    title: article.title,
-    content: article.content,
-    // ✅ CORRECT: Keep null for required nullable field
-    deleted_at: article.deleted_at
-      ? toISOStringSafe(article.deleted_at)
-      : null,
-    created_at: toISOStringSafe(article.created_at),
-  };
+  return await BbsArticleTransformer.transform(article);
 }
 
 // ❌ WRONG - Required fields cannot be undefined
@@ -666,17 +656,11 @@ Performing these validations again violates the principle of trusting the framew
 ```typescript
 // ✅ CORRECT - Trust the type system
 export async function postBbsArticles(props: {
-  title: string;
-  content: string;
-  tags: string[];
+  body: IBbsArticle.ICreate,
 }) {
   // Use parameters directly - they are GUARANTEED to be the correct type
   const article = await MyGlobal.prisma.bbs_articles.create({
-    data: {
-      title: props.title,      // Already validated as string
-      content: props.content,  // Already validated as string
-      tags: props.tags,        // Already validated as string[]
-    }
+    data: await BbsArticleCollector.collect(props.body),
     ...BbsArticleTransformer.select(),
   });
   return await BbsArticleTransformer.transform(article);

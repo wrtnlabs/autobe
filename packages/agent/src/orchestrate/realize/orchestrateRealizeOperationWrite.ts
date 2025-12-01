@@ -43,7 +43,11 @@ export async function orchestrateRealizeOperationWrite<
 ): Promise<AutoBeRealizeOperationFunction[]> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
-    (operation) => generateRealizeScenario(operation, props.authorizations),
+    (operation) =>
+      generateRealizeScenario({
+        authorizations: props.authorizations,
+        operation,
+      }),
   );
   return await executeCachedBatch(
     ctx,

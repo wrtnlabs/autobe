@@ -2,6 +2,8 @@ import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 import { getRealizeWriteImportStatements } from "./getRealizeWriteImportStatements";
 
 export async function replaceImportStatements<Model extends ILlmSchema.Model>(
@@ -28,7 +30,7 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
     .join("\n");
 
   // Build the standard imports
-  const imports = getRealizeWriteImportStatements(props);
+  const imports: string[] = getRealizeWriteImportStatements(props);
 
   // Only add decoratorType import if it exists
   if (decoratorType) {
@@ -36,6 +38,14 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
       `import { ${decoratorType} } from "../decorators/payload/${decoratorType}"`,
     );
   }
+  imports.push(
+    ...AutoBeRealizeCollectorProgrammer.getNeighbors(code).map(
+      (c) => `import { ${c} } from "../collectors/${c}"`,
+    ),
+    ...AutoBeRealizeTransformerProgrammer.getNeighbors(code).map(
+      (c) => `import { ${c} } from "../transformers/${c}"`,
+    ),
+  );
 
   code = [...imports, "", code].join("\n");
 
