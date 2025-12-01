@@ -24,6 +24,7 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestStorage } from "../../../TestStorage";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
@@ -52,11 +53,32 @@ export const validate_agent_realize_operation_write = async (props: {
     .interface!.document;
 
   const authorizations: AutoBeRealizeAuthorization[] =
-    await orchestrateRealizeAuthorizationWrite(agent.getContext());
+    await TestStorage.emplace(
+      {
+        vendor: props.vendor,
+        project: props.project,
+        file: "realize.authorizations",
+      },
+      () => orchestrateRealizeAuthorizationWrite(agent.getContext()),
+    );
   const collectors: AutoBeRealizeCollectorFunction[] =
-    await getCollectors(agent);
+    await TestStorage.emplace(
+      {
+        vendor: props.vendor,
+        project: props.project,
+        file: "realize.collectors",
+      },
+      () => getCollectors(agent),
+    );
   const transformers: AutoBeRealizeTransformerFunction[] =
-    await getTransformers(agent);
+    await TestStorage.emplace(
+      {
+        vendor: props.vendor,
+        project: props.project,
+        file: "realize.transformers",
+      },
+      () => getTransformers(agent),
+    );
   const operations: AutoBeRealizeOperationFunction[] =
     await orchestrateRealizeOperationWrite(agent.getContext(), {
       authorizations,
@@ -67,7 +89,6 @@ export const validate_agent_realize_operation_write = async (props: {
         total: document.operations.length,
       },
     });
-
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/realize-operation`,
     files: {

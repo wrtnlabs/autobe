@@ -23,7 +23,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeWriteHistory } from "./histories/transformRealizeWriteHistory";
+import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
@@ -102,7 +102,7 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeWriteHistory({
+      ...transformRealizeOperationWriteHistory({
         state: ctx.state(),
         scenario: props.scenario,
         authorization: props.authorization,

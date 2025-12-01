@@ -12,7 +12,7 @@ import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplat
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteMembershipHistory } from "./transformRealizeWriteMembershipHistory";
 
-export const transformRealizeWriteHistory = (props: {
+export const transformRealizeOperationWriteHistory = (props: {
   state: AutoBeState;
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
