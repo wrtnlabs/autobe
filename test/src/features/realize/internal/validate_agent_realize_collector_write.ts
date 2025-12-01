@@ -35,8 +35,6 @@ export const validate_agent_realize_collector_write = async (props: {
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-
-  agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 

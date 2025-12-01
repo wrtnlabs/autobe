@@ -1,4 +1,10 @@
+import { AutoBeAgent } from "@autobe/agent";
+import { orchestrateRealizeAuthorizationWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorizationWrite";
+import { orchestrateRealizeCollectorPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorPlan";
+import { orchestrateRealizeCollectorWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorWrite";
 import { orchestrateRealizeOperationWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeOperationWrite";
+import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
+import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { executeCachedBatch } from "@autobe/agent/src/utils/executeCachedBatch";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
@@ -8,15 +14,21 @@ import {
   AutoBeEventSnapshot,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeCollectorPlan,
+  AutoBeRealizeTransformerFunction,
+  AutoBeRealizeTransformerPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
+import { IEntitySchema } from "./IEntitySchema";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
 export const validate_agent_realize_operation_write = async (props: {
@@ -37,10 +49,12 @@ export const validate_agent_realize_operation_write = async (props: {
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-
-  agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("realize")) agent.on(type, listen);
+    agent.on(type, listen);
+
+  const collector = await getCollectors(agent);
+  const transformers = await getTransformers(agent);
+  const writes: AutoBeRealizeWriteEvent[] = [];
 
   const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
@@ -120,21 +134,54 @@ export const validate_agent_realize_operation_write = async (props: {
       ...Object.fromEntries(
         retried.map((el) => [el?.function.location, el?.function.content]),
       ),
+      "src/api/structures/IEntity.ts": JSON.stringify(IEntitySchema),
     },
   });
-  if (TestGlobal.archive)
-    await AutoBeExampleStorage.save({
-      vendor: props.vendor,
-      project: props.project,
-      files: {
-        [`realize.writes.json`]: JSON.stringify(
-          [...writes, ...retried].filter((w) => w !== null),
-        ),
-      },
-    });
 };
 
-export interface IProgress {
-  total: number;
-  completed: number;
-}
+const getAuthorizations = <Model extends ILlmSchema.Model>(
+  agent: AutoBeAgent<Model>,
+): Promise<AutoBeRealizeAuthorization[]> =>
+  orchestrateRealizeAuthorizationWrite(agent.getContext());
+
+const getCollectors = async <Model extends ILlmSchema.Model>(
+  agent: AutoBeAgent<Model>,
+): Promise<AutoBeRealizeCollectorFunction[]> => {
+  const plans: AutoBeRealizeCollectorPlan[] =
+    await orchestrateRealizeCollectorPlan(agent.getContext(), {
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
+  const events: AutoBeRealizeWriteEvent[] =
+    await orchestrateRealizeCollectorWrite(agent.getContext(), {
+      plans,
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
+  return events.map((e) => e.function).filter((f) => f.kind === "collector");
+};
+
+const getTransformers = async <Model extends ILlmSchema.Model>(
+  agent: AutoBeAgent<Model>,
+): Promise<AutoBeRealizeTransformerFunction[]> => {
+  const plans: AutoBeRealizeTransformerPlan[] =
+    await orchestrateRealizeTransformerPlan(agent.getContext(), {
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
+  const events: AutoBeRealizeWriteEvent[] =
+    await orchestrateRealizeTransformerWrite(agent.getContext(), {
+      plans,
+      progress: {
+        total: 0,
+        completed: 0,
+      },
+    });
+  return events.map((e) => e.function).filter((f) => f.kind === "transformer");
+};

@@ -3,6 +3,9 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import {
@@ -17,17 +20,48 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeWriteHistory } from "./histories/transformRealizeWriteHistory";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeOperationWrite<
   Model extends ILlmSchema.Model,
 >(
+  ctx: AutoBeContext<Model>,
+  props: {
+    authorizations: AutoBeRealizeAuthorization[];
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeOperationFunction[]> {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
+    (operation) => generateRealizeScenario(operation, props.authorizations),
+  );
+  return await executeCachedBatch(
+    ctx,
+    scenarios.map(
+      (s) => (promptCacheKey) =>
+        process(ctx, {
+          document,
+          totalAuthorizations: props.authorizations,
+          authorization: s.decoratorEvent ?? null,
+          scenario: s,
+          progress: props.progress,
+          promptCacheKey,
+        }),
+    ),
+  );
+}
+
+async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -37,7 +71,7 @@ export async function orchestrateRealizeOperationWrite<
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeRealizeWriteEvent> {
+): Promise<AutoBeRealizeOperationFunction> {
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
   > = new AutoBePreliminaryController({
@@ -92,28 +126,28 @@ export async function orchestrateRealizeOperationWrite<
           decoratorType: props.authorization?.payload.name,
         });
 
-      const event: AutoBeRealizeWriteEvent = {
+      const functor: AutoBeRealizeOperationFunction = {
+        kind: "operation",
+        endpoint: {
+          method: props.scenario.operation.method,
+          path: props.scenario.operation.path,
+        },
+        location: props.scenario.location,
+        name: props.scenario.functionName,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+      };
+      ctx.dispatch({
         id: v7(),
         type: "realizeWrite",
-        function: {
-          kind: "operation",
-          endpoint: {
-            method: props.scenario.operation.method,
-            path: props.scenario.operation.path,
-          },
-          location: props.scenario.location,
-          name: props.scenario.functionName,
-          content: pointer.value.revise.final ?? pointer.value.draft,
-        },
+        function: functor,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
-      };
-      ctx.dispatch(event);
-      return out(result)(event);
+      } satisfies AutoBeRealizeWriteEvent);
+      return out(result)(functor);
     }
     return out(result)(null);
   });
