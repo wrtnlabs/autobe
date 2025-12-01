@@ -1,6 +1,7 @@
 import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
+import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
@@ -57,6 +58,7 @@ export const validate_agent_realize_transformer_write = async (props: {
     files: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
+      ...AutoBeCompilerRealizeTemplateOfSQLite,
       ...Object.fromEntries(
         transformers
           .filter((w) => w !== null)

@@ -526,7 +526,11 @@ Use Pattern A when:
 
 ## How to Request Collectors/Transformers
 
+Before implementing with Pattern A, you must request the necessary collectors and transformers via RAG functions.
+
 ### Requesting Collectors
+
+For POST/CREATE operations that need to transform API DTOs into Prisma CreateInput:
 
 ```typescript
 // For POST /shopping/sales operation
@@ -541,6 +545,8 @@ process({
 
 ### Requesting Transformers
 
+For GET/READ operations that need to transform Prisma results into API DTOs:
+
 ```typescript
 // For GET /bbs/articles operation
 process({
@@ -552,9 +558,222 @@ process({
 });
 ```
 
+## Understanding Collectors (Concept)
+
+### What is a Collector?
+
+A **Collector** is a specialized function that transforms API request DTOs into Prisma CreateInput objects. It encapsulates all the data preparation logic needed to insert records into the database.
+
+**Input**: API DTO (e.g., `IShoppingSale.ICreate`) + contextual data (auth, session)
+**Output**: Prisma CreateInput object ready for `MyGlobal.prisma.{model}.create()`
+
+### What Collectors Automatically Handle
+
+Collectors take care of complex transformations that you would otherwise have to write manually:
+
+1. **UUID Generation**
+   - Generates unique IDs for new records
+   - Applies correct branded types: `v4() as string & tags.Format<"uuid">`
+   - Ensures all ID fields are properly formatted
+
+2. **Timestamp Creation**
+   - Generates `created_at` timestamps automatically
+   - Uses `toISOStringSafe(new Date())` for proper formatting
+   - Handles timezone conversions correctly
+
+3. **Password Hashing**
+   - Automatically hashes password fields using `PasswordUtil.hash()`
+   - You **never** pass pre-hashed passwords to collectors
+   - Security handled centrally and consistently
+
+4. **Nested Object Construction**
+   - Constructs complex nested relationships
+   - Maps foreign keys correctly
+   - Handles optional nested objects
+
+5. **Field Mapping and Validation**
+   - Maps API field names to Prisma field names
+   - Applies business logic transformations
+   - Ensures type compatibility
+
+### Collector Function Signature
+
+```typescript
+// Typical collector signature
+export namespace ShoppingSaleCollector {
+  export async function collect(props: {
+    body: IShoppingSale.ICreate;  // API DTO
+    customer: IEntity;             // Auth context
+    session: IEntity;              // Session context
+  }): Promise<Prisma.shopping_salesCreateInput> {
+    // Returns Prisma CreateInput object
+  }
+}
+```
+
+**Key Points**:
+- Takes API DTO + contextual data (auth, session, etc.)
+- Returns Prisma CreateInput type (NOT the API DTO)
+- Handles all transformations internally
+- Async because it may perform hashing or other async operations
+
+## Understanding Transformers (Concept)
+
+### What is a Transformer?
+
+A **Transformer** is a specialized function that transforms Prisma query results into API response DTOs. It encapsulates all the data formatting logic needed to return properly typed API responses.
+
+**Input**: Prisma query result (database record with `Date` objects, null values)
+**Output**: API DTO (with ISO date strings, proper null/undefined handling)
+
+### What Transformers Automatically Handle
+
+Transformers take care of complex conversions that you would otherwise have to write manually:
+
+1. **Date Conversion**
+   - Converts Prisma `Date` objects → `string & tags.Format<"date-time">`
+   - Uses `toISOStringSafe()` for proper ISO 8601 formatting
+   - Handles all timestamp fields consistently
+
+2. **Null/Undefined Conversion**
+   - Converts database `null` → API `undefined` for optional fields (`field?: Type`)
+   - Preserves `null` for nullable fields (`field: Type | null`)
+   - Ensures type compatibility with API interfaces
+
+3. **Branded Type Casting**
+   - Applies branded types: `uuid`, `email`, `url`, etc.
+   - Ensures type safety at API boundaries
+   - Handles type narrowing correctly
+
+4. **Nested Object Transformation**
+   - Recursively transforms nested relations
+   - Handles arrays of nested objects
+   - Preserves relationship integrity
+
+5. **Field Selection (Prisma Select)**
+   - Provides `.select()` method to specify which fields to fetch
+   - Optimizes database queries
+   - Ensures all necessary data is loaded for transformation
+
+### Transformer Function Signature
+
+```typescript
+// Typical transformer signature
+export namespace ShoppingSaleTransformer {
+  // Select which fields to fetch from database
+  export function select(): Prisma.shopping_salesSelect {
+    return {
+      id: true,
+      title: true,
+      price: true,
+      created_at: true,
+      // ... includes nested relations if needed
+    };
+  }
+
+  // Transform Prisma result to API DTO
+  export async function transform(
+    input: Prisma.shopping_salesGetPayload<{ select: ReturnType<typeof select> }>
+  ): Promise<IShoppingSale> {
+    // Returns API DTO
+  }
+}
+```
+
+**Key Points**:
+- Provides two methods: `select()` and `transform()`
+- `select()` returns Prisma select object for efficient queries
+- `transform()` converts Prisma result → API DTO
+- Handles all type conversions internally
+- Async because nested transformations may be async
+
+## The Complete Transformation Flow (How It All Works Together)
+
+Understanding how collectors and transformers work together is crucial for implementing Pattern A correctly.
+
+### CREATE Operation Flow (with Collector + Transformer)
+
+```
+1. API Request arrives
+   ↓ (IShoppingSale.ICreate)
+
+2. Provider receives request
+   ↓
+
+3. Collector transforms API DTO → Prisma CreateInput
+   await ShoppingSaleCollector.collect({
+     body: props.body,           // API DTO
+     customer: props.customer,   // Auth context
+     session: props.session      // Session context
+   })
+   ↓ (Prisma.shopping_salesCreateInput)
+   ↓ [Collector internally: UUIDs, timestamps, password hashing, etc.]
+
+4. Prisma creates database record
+   await MyGlobal.prisma.shopping_sales.create({
+     data: <collector output>,
+     ...ShoppingSaleTransformer.select()  // Fetch fields needed by transformer
+   })
+   ↓ (Prisma result with Date objects, nulls)
+
+5. Transformer converts Prisma result → API DTO
+   await ShoppingSaleTransformer.transform(created)
+   ↓ [Transformer internally: date conversion, null→undefined, etc.]
+   ↓ (IShoppingSale)
+
+6. API Response returned
+   return <transformer output>
+```
+
+### READ Operation Flow (with Transformer only)
+
+```
+1. API Request arrives
+   ↓ (params: { id: uuid })
+
+2. Provider receives request
+   ↓
+
+3. Prisma queries database record
+   await MyGlobal.prisma.bbs_articles.findUnique({
+     where: { id: props.params.id },
+     ...BbsArticleTransformer.select()  // Fetch fields needed by transformer
+   })
+   ↓ (Prisma result with Date objects, nulls)
+
+4. Transformer converts Prisma result → API DTO
+   await BbsArticleTransformer.transform(article)
+   ↓ [Transformer internally: date conversion, null→undefined, etc.]
+   ↓ (IBbsArticle)
+
+5. API Response returned
+   return <transformer output>
+```
+
+### Key Insights
+
+**Why use `...Transformer.select()`?**
+- Ensures you fetch ALL fields the transformer needs (including nested relations)
+- Optimizes database query (only fetches what's needed)
+- Prevents runtime errors from missing fields
+
+**Why collectors are async?**
+- Password hashing is async (`PasswordUtil.hash()`)
+- May perform additional async validations
+- Always use `await` when calling collectors
+
+**Why transformers are async?**
+- Nested transformations may be async
+- Allows for future extensibility
+- Always use `await` when calling transformers
+
 ## Pattern A: CRUD Implementation Examples
 
+Now that you understand the concepts, here are complete examples showing Pattern A in action.
+
 ### CREATE Operation with Collector + Transformer
+
+**Concept Applied**: Use collector to prepare data, use transformer to format response.
 
 ```typescript
 // POST /shopping/sales - Create a new product sale
@@ -563,57 +782,93 @@ export async function postShoppingSales(props: {
   session: IEntity;   // Customer session from auth
   body: IShoppingSale.ICreate;
 }): Promise<IShoppingSale> {
-  // Step 1: Use collector to transform API DTO → Prisma CreateInput
+  // Step 1: Collector transforms API DTO → Prisma CreateInput
+  // Automatically handles: UUIDs, timestamps, nested relationships
   const created = await MyGlobal.prisma.shopping_sales.create({
     data: await ShoppingSaleCollector.collect({
       body: props.body,
       customer: props.customer,
       session: props.session,
     }),
-    ...ShoppingSaleTransformer.select()  // Select fields needed by transformer
+    ...ShoppingSaleTransformer.select()  // Fetch fields needed by transformer
   });
 
-  // Step 2: Use transformer to transform Prisma result → API DTO
+  // Step 2: Transformer converts Prisma result → API DTO
+  // Automatically handles: date conversion, null/undefined, branded types
   return await ShoppingSaleTransformer.transform(created);
 }
 ```
 
-**Key Points**:
-- Collector handles all data preparation (UUIDs, timestamps, relationships)
-- `...ShoppingSaleTransformer.select()` ensures we fetch the fields transformer needs
-- Transformer handles all response formatting (dates, nullability)
-- **NO manual UUID generation** - collector does it
-- **NO manual date conversion** - transformer does it
-- **NO manual null/undefined handling** - transformer does it
+**What you DON'T have to write manually**:
+- ❌ No `id: v4() as string & tags.Format<"uuid">` - collector does it
+- ❌ No `created_at: toISOStringSafe(new Date())` - collector does it
+- ❌ No manual date conversion in response - transformer does it
+- ❌ No null/undefined handling - transformer does it
+
+**What the code WOULD look like without collector/transformer** (Pattern B):
+```typescript
+// WITHOUT Pattern A - you'd have to write all this:
+const created = await MyGlobal.prisma.shopping_sales.create({
+  data: {
+    id: v4() as string & tags.Format<"uuid">,  // Manual UUID
+    title: props.body.title,
+    price: props.body.price,
+    customer_id: props.customer.id,
+    session_id: props.session.id,
+    created_at: toISOStringSafe(new Date()),  // Manual timestamp
+    updated_at: toISOStringSafe(new Date()),
+    // ... many more fields
+  },
+});
+
+return {
+  id: created.id,
+  title: created.title,
+  price: created.price,
+  customer_id: created.customer_id,
+  created_at: toISOStringSafe(created.created_at),  // Manual conversion
+  updated_at: toISOStringSafe(created.updated_at),
+  // ... many more fields with conversions
+};
+```
+
+**Pattern A is cleaner, safer, and easier to maintain!**
 
 ### READ Operation with Transformer
+
+**Concept Applied**: Use transformer to format database results into API response.
 
 ```typescript
 // GET /bbs/articles/{id} - Retrieve a specific article
 export async function getBbsArticlesById(props: {
   params: { id: string & tags.Format<"uuid"> };
 }): Promise<IBbsArticle> {
-  // Step 1: Query with transformer's select
+  // Step 1: Query database with transformer's select
+  // This ensures we fetch all fields the transformer needs (including nested relations)
   const article = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.params.id },
-    ...BbsArticleTransformer.select(),  // Fetch fields needed by transformer
+    ...BbsArticleTransformer.select(),
   });
 
   if (!article) {
     throw new HttpException("Article not found", 404);
   }
 
-  // Step 2: Transform Prisma result → API DTO
+  // Step 2: Transformer converts Prisma result → API DTO
+  // Automatically handles: date conversion, null/undefined mapping, branded types
   return await BbsArticleTransformer.transform(article);
 }
 ```
 
-**Key Points**:
-- Use `...BbsArticleTransformer.select()` to include necessary fields (including nested relations)
-- Transformer automatically handles date conversion, null/undefined mapping
-- **NO manual field mapping** - transformer does it all
+**What you DON'T have to write manually**:
+- ❌ No manual field mapping - transformer does it
+- ❌ No date conversion - transformer does it
+- ❌ No null → undefined conversion for optional fields - transformer does it
+- ❌ No nested object transformation - transformer does it
 
 ### UPDATE Operation with Collector + Transformer
+
+**Concept Applied**: Use collector for update data preparation, transformer for response formatting.
 
 ```typescript
 // PATCH /shopping/customers/{id} - Update customer profile
@@ -636,7 +891,8 @@ export async function patchShoppingCustomersById(props: {
     throw new HttpException("Forbidden", 403);
   }
 
-  // Step 2: Use collector for update data transformation
+  // Step 2: Collector transforms update DTO → Prisma UpdateInput
+  // Handles: timestamp updates, field mapping, nested updates
   const updated = await MyGlobal.prisma.shopping_customers.update({
     where: { id: props.params.id },
     data: await ShoppingCustomerCollector.collect({
@@ -646,17 +902,16 @@ export async function patchShoppingCustomersById(props: {
     ...ShoppingCustomerTransformer.select(),
   });
 
-  // Step 3: Transform result with transformer
+  // Step 3: Transformer converts result → API DTO
   return await ShoppingCustomerTransformer.transform(updated);
 }
 ```
 
-**Key Points**:
-- Collector can also handle UPDATE operations (not just CREATE)
-- Authorization checks happen BEFORE database operations
-- Transformer handles response formatting
+**Key Concept**: Collectors work for both CREATE and UPDATE operations. They handle the appropriate transformations based on context.
 
 ### DELETE Operation
+
+**Concept Applied**: DELETE operations typically don't need transformers (void return).
 
 ```typescript
 // DELETE /bbs/articles/{id} - Delete an article
@@ -685,12 +940,11 @@ export async function deleteBbsArticlesById(props: {
 }
 ```
 
-**Key Points**:
-- DELETE typically doesn't need collectors/transformers (void return)
-- Still need authorization checks
-- Hard delete vs soft delete depends on business requirements
+**Key Concept**: DELETE operations return `void`, so transformers are not needed. Authorization checks are still critical.
 
 ### LIST/PAGINATION Operation with Transformer
+
+**Concept Applied**: Use transformer with `ArrayUtil.asyncMap` for array transformations.
 
 ```typescript
 // GET /shopping/sales - List shopping sales with pagination
@@ -701,7 +955,8 @@ export async function getShoppingSales(props: {
   const limit = props.query.limit ?? 100;
   const skip = (page - 1) * limit;
 
-  // Step 1: Query data with transformer select
+  // Step 1: Query data with transformer's select
+  // Ensures we fetch all fields needed for transformation
   const data = await MyGlobal.prisma.shopping_sales.findMany({
     where: { deleted_at: null },
     skip,
@@ -710,12 +965,14 @@ export async function getShoppingSales(props: {
     ...ShoppingSaleAtSummaryTransformer.select(),
   });
 
-  // Step 2: Count total (use same where condition)
+  // Step 2: Count total records (use same where condition)
+  // IMPORTANT: Do NOT use Promise.all - use sequential await
   const total = await MyGlobal.prisma.shopping_sales.count({
     where: { deleted_at: null },
   });
 
-  // Step 3: Transform each record with transformer
+  // Step 3: Transform each record using ArrayUtil.asyncMap
+  // This handles async transformation of arrays correctly
   return {
     data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
     pagination: {
@@ -728,11 +985,11 @@ export async function getShoppingSales(props: {
 }
 ```
 
-**Key Points**:
-- Use separate `await` for data and total (NOT Promise.all)
-- Use `ArrayUtil.asyncMap` for transforming array results
-- Transformers handle all field formatting consistently
-- **NEVER use Promise.all** for data and count queries
+**Key Concepts**:
+- Use separate `await` for data and total (NEVER Promise.all)
+- Use `ArrayUtil.asyncMap` for transforming arrays (NOT regular `.map()`)
+- Transformer handles each item consistently
+- Summary transformers (e.g., `ISummary`) for list views with fewer fields
 
 ---
 
@@ -743,28 +1000,294 @@ export async function getShoppingSales(props: {
 Use Pattern B when:
 - ❌ Collector doesn't exist for the Create DTO
 - ❌ Transformer doesn't exist for the response DTO
-- ❌ Custom transformation logic is required
-- ❌ Simple operations where collector/transformer would be overkill
+- ❌ Custom transformation logic is required beyond what collectors/transformers provide
+- ❌ Simple operations where creating a collector/transformer would be excessive overhead
 
-**CRITICAL**: When using Pattern B, you MUST manually handle all data transformations that collectors/transformers normally handle automatically.
+**CRITICAL**: Pattern B requires you to manually implement ALL the transformations that collectors/transformers normally handle automatically.
 
-## Manual Construction Responsibilities
+## Why Manual Construction is Sometimes Necessary (Concept)
 
-When implementing Pattern B, YOU are responsible for:
+### The Reality of Development
 
-### For CREATE/UPDATE Operations (replacing Collector):
-1. ✅ **UUID Generation**: Use `v4()` with proper type casting
-2. ✅ **Timestamp Creation**: Use `toISOStringSafe(new Date())`
-3. ✅ **Password Hashing**: Use `PasswordUtil.hash()` for password fields
-4. ✅ **Nested Object Construction**: Manually construct nested relationships
-5. ✅ **Field Mapping**: Map from API DTO to Prisma CreateInput format
+Not every DTO will have a corresponding collector or transformer. This can happen for several reasons:
 
-### For READ Operations (replacing Transformer):
-1. ✅ **Date Conversion**: Convert `Date` → `string & tags.Format<"date-time">` using `toISOStringSafe()`
-2. ✅ **Null/Undefined Conversion**: Handle null → undefined for optional fields
-3. ✅ **Branded Type Casting**: Cast to branded types (UUID, email, etc.)
-4. ✅ **Nested Object Transformation**: Manually transform nested objects
-5. ✅ **Field Selection**: Ensure you query all necessary fields from Prisma
+1. **Rapid Prototyping**: During early development, you may implement operations before creating reusable transformation logic
+2. **Custom Business Logic**: Some operations have unique transformation requirements that don't fit the standard collector/transformer pattern
+3. **Simple One-Off Operations**: For very simple DTOs, creating a full collector/transformer might be overkill
+4. **Legacy Code**: Older operations may predate the collector/transformer pattern
+
+### The Responsibility Shift
+
+When using Pattern B, **YOU become the collector and transformer**. All the automatic handling that Pattern A provides must now be done manually by you in the operation code.
+
+**This means**:
+- You must understand EXACTLY what collectors do and replicate it
+- You must understand EXACTLY what transformers do and replicate it
+- You must handle every edge case correctly
+- You become responsible for maintaining consistency
+
+## Understanding Each Responsibility (Concept)
+
+Before diving into examples, let's understand each manual responsibility in detail.
+
+### For CREATE/UPDATE Operations (Replacing Collector)
+
+When you don't have a collector, you must manually handle these responsibilities:
+
+#### 1. UUID Generation
+
+**What**: Generate unique identifiers for new records.
+
+**Why**: Every database record needs a unique ID. Prisma doesn't auto-generate UUIDs.
+
+**How**:
+```typescript
+import { v4 } from "uuid";
+
+// Generate and apply branded type
+id: v4() as string & tags.Format<"uuid">
+```
+
+**Critical Points**:
+- Import `v4` from `"uuid"` library
+- MUST cast to branded type: `as string & tags.Format<"uuid">`
+- Without branded type, TypeScript compilation will fail
+- Generate for ALL ID fields (primary keys, foreign keys if creating nested objects)
+
+#### 2. Timestamp Creation
+
+**What**: Set `created_at` and `updated_at` timestamps.
+
+**Why**: Track when records are created and modified.
+
+**How**:
+```typescript
+import { toISOStringSafe } from "some-utility";
+
+created_at: toISOStringSafe(new Date())
+updated_at: toISOStringSafe(new Date())
+```
+
+**Critical Points**:
+- ALWAYS use `toISOStringSafe()` wrapper (handles edge cases)
+- NEVER use `new Date().toISOString()` directly
+- For CREATE: set both `created_at` and `updated_at`
+- For UPDATE: only update `updated_at`
+- Timestamps must be ISO 8601 format strings, not Date objects
+
+#### 3. Password Hashing
+
+**What**: Hash password fields before storing in database.
+
+**Why**: NEVER store plain text passwords - critical security requirement.
+
+**How**:
+```typescript
+import { PasswordUtil } from "some-utility";
+
+password: await PasswordUtil.hash(props.body.password)
+```
+
+**Critical Points**:
+- ALWAYS hash passwords before database storage
+- PasswordUtil.hash() is async - use `await`
+- NEVER store `props.body.password` directly
+- Hash is one-way - cannot reverse
+- Used for user passwords, admin passwords, any authentication credentials
+
+#### 4. Nested Object Construction
+
+**What**: Build nested relationship objects when creating related records.
+
+**Why**: Database relationships require proper foreign key mapping.
+
+**How**:
+```typescript
+// Example: Creating article with nested author reference
+data: {
+  id: v4() as string & tags.Format<"uuid">,
+  title: props.body.title,
+  // Nested relationship
+  author: {
+    connect: { id: props.member.id }  // Connect to existing author
+  }
+}
+```
+
+**Critical Points**:
+- Use Prisma's `connect`, `create`, `connectOrCreate` syntax
+- `connect`: Link to existing record
+- `create`: Create new nested record
+- Understand Prisma relationship syntax deeply
+
+#### 5. Field Mapping
+
+**What**: Map from API DTO field names to Prisma schema field names.
+
+**Why**: API and database schemas may have different field names or structures.
+
+**How**:
+```typescript
+// API DTO might have: customerName
+// Database might have: customer_name
+
+data: {
+  customer_name: props.body.customerName,  // Map field names
+  is_active: props.body.isActive,
+  total_amount: props.body.totalAmount,
+}
+```
+
+**Critical Points**:
+- Check actual Prisma schema for field names
+- Handle case conversion (camelCase ↔ snake_case)
+- Map nested structures correctly
+- Validate required vs optional fields
+
+### For READ Operations (Replacing Transformer)
+
+When you don't have a transformer, you must manually handle these responsibilities:
+
+#### 1. Date Conversion
+
+**What**: Convert Prisma `Date` objects to ISO 8601 string format.
+
+**Why**: API responses expect `string & tags.Format<"date-time">`, not `Date` objects.
+
+**How**:
+```typescript
+import { toISOStringSafe } from "some-utility";
+
+// Prisma returns: created_at: Date
+// API expects: created_at: string & tags.Format<"date-time">
+
+return {
+  created_at: toISOStringSafe(record.created_at),
+  updated_at: toISOStringSafe(record.updated_at),
+}
+```
+
+**Critical Points**:
+- ALWAYS use `toISOStringSafe()` wrapper
+- Convert ALL date fields (created_at, updated_at, published_at, etc.)
+- Handle nullable dates: `value ? toISOStringSafe(value) : null`
+- NEVER return Date objects directly - causes serialization errors
+
+#### 2. Null/Undefined Conversion
+
+**What**: Convert database `null` values to correct API representation.
+
+**Why**: Database uses `null`, but TypeScript API uses both `null` and `undefined` with different meanings.
+
+**How**:
+```typescript
+// For OPTIONAL fields (field?: Type)
+// Database null → API undefined
+optional_field: record.optional_field === null
+  ? undefined
+  : record.optional_field
+
+// For NULLABLE fields (field: Type | null)
+// Database null → API null (keep it)
+nullable_field: record.nullable_field
+  ? record.nullable_field
+  : null
+```
+
+**Critical Points**:
+- **CRITICAL**: This is the #1 source of AI failures
+- Optional (`field?: Type`) → use `undefined` when missing
+- Nullable (`field: Type | null`) → use `null` when missing
+- Check the EXACT interface definition - NEVER guess
+- See detailed section below for complete patterns
+
+#### 3. Branded Type Casting
+
+**What**: Cast string values to branded types (UUID, email, URL, etc.).
+
+**Why**: API interfaces use branded types for type safety.
+
+**How**:
+```typescript
+// UUID field
+id: record.id as string & tags.Format<"uuid">
+
+// Email field
+email: record.email
+  ? record.email as string & tags.Format<"email">
+  : undefined
+
+// URL field
+website: record.website as string & tags.Format<"url">
+```
+
+**Critical Points**:
+- Apply branded types to match API interface
+- Common branded types: "uuid", "email", "url", "date-time", "uri"
+- Handle optional fields: only cast when value exists
+- Check API interface for exact branded type expected
+
+#### 4. Nested Object Transformation
+
+**What**: Recursively transform nested relations from Prisma results to API DTOs.
+
+**Why**: API responses often include nested objects (author, comments, etc.).
+
+**How**:
+```typescript
+// If you have nested author
+return {
+  id: article.id,
+  title: article.title,
+  // Nested transformation
+  author: article.author ? {
+    id: article.author.id,
+    name: article.author.name,
+    email: article.author.email as string & tags.Format<"email">,
+    created_at: toISOStringSafe(article.author.created_at),
+  } : undefined,
+}
+```
+
+**Critical Points**:
+- Transform nested objects recursively
+- Handle nullable nested objects
+- Apply all transformation rules to nested data (dates, nulls, branded types)
+- For arrays: use `.map()` to transform each item
+
+#### 5. Field Selection
+
+**What**: Explicitly specify which fields to fetch from Prisma.
+
+**Why**: Avoid fetching unnecessary data, ensure you have all needed fields.
+
+**How**:
+```typescript
+const article = await MyGlobal.prisma.bbs_articles.findUnique({
+  where: { id: props.params.id },
+  select: {
+    id: true,
+    title: true,
+    content: true,
+    created_at: true,
+    updated_at: true,
+    // Include nested relations
+    author: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
+    }
+  }
+});
+```
+
+**Critical Points**:
+- Explicitly select all fields you'll use in response
+- Include nested relations with their select
+- Avoid selecting unnecessary fields (performance)
+- Ensure you don't miss required fields
 
 ## 🚨 CRITICAL: NULL vs UNDEFINED Handling
 
@@ -772,7 +1295,19 @@ When implementing Pattern B, YOU are responsible for:
 
 **AI CONSTANTLY FAILS BECAUSE OF NULL/UNDEFINED CONFUSION!**
 
-When using Pattern B (manual construction), you MUST correctly handle null vs undefined based on the EXACT interface definition.
+When using Pattern B (manual construction), you MUST correctly handle null vs undefined based on the EXACT interface definition. This is THE most important concept to master.
+
+### The TypeScript Type System Reality
+
+TypeScript distinguishes between THREE different nullability patterns:
+
+1. **Optional field** (`field?: Type`) - Field can be **omitted** (undefined)
+2. **Nullable field** (`field: Type | null`) - Field must be **present** but can be null
+3. **Optional AND nullable** (`field?: Type | null`) - Field can be omitted OR null (rare)
+
+**Database Reality**: Prisma represents all nullable fields as `null`. It doesn't distinguish between optional and nullable.
+
+**Your Job**: Convert database `null` to the correct TypeScript representation (`undefined` or `null`) based on the API interface definition.
 
 ### Step 1: Identify the Interface Pattern
 
@@ -798,6 +1333,7 @@ interface IExample {
 ### Step 2: Apply the Correct Pattern
 
 **EXAMPLE 1 - Optional field (field?: Type) - Shopping Sale Guest Customer**
+
 ```typescript
 // Interface: IShoppingSale
 // guest_customer_id?: string & tags.Format<"uuid">  // Optional field
@@ -828,6 +1364,7 @@ export async function getShoppingSaleById(props: {
 ```
 
 **EXAMPLE 2 - Required nullable field (field: Type | null) - BBS Article Deletion**
+
 ```typescript
 // Interface: IBbsArticle
 // deleted_at: (string & tags.Format<"date-time">) | null  // Required but nullable
@@ -908,34 +1445,40 @@ updated_at: article.updated_at === null
 
 **This is an ABSOLUTE PROHIBITION that must be followed without exception.**
 
-#### Why This Rule Exists:
+### Why This Rule Exists (Concept)
 
-1. **Already Validated at Controller Level**
-   - All parameters passed to API provider functions have ALREADY been validated by the NestJS controller layer
-   - The controller uses class-validator decorators and transformation pipes
-   - By the time parameters reach your function, they are GUARANTEED to match their declared types
-   - **JSON Schema validation is PERFECT and COMPLETE** - it handles ALL constraints including minLength, maxLength, pattern, format, etc.
-   - **ABSOLUTE TRUST**: Never doubt that JSON Schema has already validated everything perfectly
+#### 1. Already Validated at Controller Level
 
-2. **TypeScript Type System is Sufficient**
-   - The TypeScript compiler ensures type safety at compile time
-   - The `props` parameter types are enforced by the function signature
-   - Additional runtime checks are redundant and violate the single responsibility principle
+All parameters passed to API provider functions have **ALREADY been validated** by the NestJS controller layer:
 
-3. **Framework Contract**
-   - NestJS + class-validator handle ALL input validation
-   - Your provider functions should trust the framework's validation pipeline
-   - Adding duplicate validation creates maintenance burden and potential inconsistencies
-   - **JSON Schema is INFALLIBLE** - if a parameter passes through, it means ALL constraints are satisfied
-   - **NEVER second-guess JSON Schema** - it has already checked length, format, pattern, and every other constraint
+- The controller uses **class-validator decorators**
+- The controller uses **transformation pipes**
+- By the time parameters reach your function, they are **GUARANTEED** to match their declared types
+- **JSON Schema validation is PERFECT and COMPLETE** - it handles ALL constraints including minLength, maxLength, pattern, format, etc.
+- **ABSOLUTE TRUST**: Never doubt that JSON Schema has already validated everything perfectly
 
-4. **Business Logic vs Type Validation**
-   - Business logic validation (e.g., checking if a value exceeds a limit) is ALLOWED and EXPECTED
-   - Type validation (e.g., checking if a string is actually a string) is FORBIDDEN
-   - The distinction: If TypeScript already knows the type, don't check it at runtime
-   - **CRITICAL CLARIFICATION**: String.length checks, String.trim().length checks, and pattern validation are NOT business logic - they are TYPE/FORMAT validation that JSON Schema has ALREADY handled perfectly
+#### 2. TypeScript Type System is Sufficient
 
-#### ❌ ABSOLUTELY FORBIDDEN Patterns:
+- The TypeScript compiler ensures type safety at compile time
+- The `props` parameter types are enforced by the function signature
+- Additional runtime checks are redundant and violate the single responsibility principle
+
+#### 3. Framework Contract
+
+- NestJS + class-validator handle ALL input validation
+- Your provider functions should **trust the framework's validation pipeline**
+- Adding duplicate validation creates maintenance burden and potential inconsistencies
+- **JSON Schema is INFALLIBLE** - if a parameter passes through, it means ALL constraints are satisfied
+- **NEVER second-guess JSON Schema** - it has already checked length, format, pattern, and every other constraint
+
+#### 4. Business Logic vs Type Validation
+
+- **Business logic validation** (e.g., checking if quantity exceeds stock) is **ALLOWED and EXPECTED**
+- **Type validation** (e.g., checking if a string is actually a string) is **FORBIDDEN**
+- **The distinction**: If TypeScript already knows the type, don't check it at runtime
+- **CRITICAL CLARIFICATION**: String.length checks, String.trim().length checks, and pattern validation are NOT business logic - they are TYPE/FORMAT validation that JSON Schema has ALREADY handled perfectly
+
+### ❌ ABSOLUTELY FORBIDDEN Patterns:
 
 ```typescript
 // ❌ NEVER check parameter types at runtime
@@ -1035,7 +1578,7 @@ These constraints are ALREADY validated by NestJS using JSON Schema decorators i
 
 Performing these validations again violates the principle of trusting the framework's validation pipeline.
 
-#### ✅ CORRECT Approach:
+### ✅ CORRECT Approach:
 
 ```typescript
 // ✅ CORRECT - Trust the type system
@@ -1063,14 +1606,14 @@ export async function postBbsArticles(props: {
 }
 ```
 
-#### Key Principles:
+### Key Principles:
 
 1. **Trust the Framework**: Parameters have been validated before reaching your function
 2. **Trust TypeScript**: The compiler ensures type correctness
 3. **No Defensive Programming**: Don't write defensive checks for impossible scenarios
 4. **Focus on Business Logic**: Your job is implementation, not validation
 
-#### The ONLY Acceptable Checks:
+### The ONLY Acceptable Checks:
 
 ✅ **Business logic conditions** (NOT type validation):
 ```typescript
@@ -1110,7 +1653,7 @@ In JSON, the backslash (`\`) is interpreted as an escape character and gets cons
 
 When writing code that will be generated through function calling (JSON), escape sequences require special handling:
 
-#### ❌ WRONG - Single Backslash (Will be consumed by JSON parsing)
+### ❌ WRONG - Single Backslash (Will be consumed by JSON parsing)
 ```typescript
 //----
 // This will become a newline character after JSON parsing!
@@ -1140,7 +1683,7 @@ if (/[\r
 }
 ```
 
-#### ✅ CORRECT - Double Backslash for Escape Sequences
+### ✅ CORRECT - Double Backslash for Escape Sequences
 ```typescript
 //----
 // This will remain a literal '\n' after JSON parsing!
@@ -1167,7 +1710,7 @@ if (/[\r\n]/.test(title)) {
 }
 ```
 
-#### 📋 Escape Sequence Reference
+### 📋 Escape Sequence Reference
 
 When your code will be transmitted through JSON (function calling):
 
@@ -1180,7 +1723,7 @@ When your code will be transmitted through JSON (function calling):
 | `\"` | `\\"` | `\"` |
 | `\'` | `\\'` | `\'` |
 
-#### ⚠️ WARNING: You Should Never Need Newline Characters
+### ⚠️ WARNING: You Should Never Need Newline Characters
 
 **CRITICAL**: In this TypeScript code generation agent, there is NO legitimate reason to use newline characters (`\n`) in your implementation. If you find yourself writing code that checks for newline characters, you are likely making a fundamental error.
 
@@ -1222,102 +1765,122 @@ Under no circumstances are you permitted to validate the type or content constra
 
 ## 🚨 CRITICAL: Prisma Inline Parameter Rule
 
-1. **NEVER create intermediate variables for ANY Prisma operation parameters**
+### The Rule
+
+**NEVER create intermediate variables for ANY Prisma operation parameters**
    - ❌ FORBIDDEN: `const updateData = {...}; await MyGlobal.prisma.update({data: updateData})`
    - ❌ FORBIDDEN: `const where = {...}; await MyGlobal.prisma.findMany({where})`
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
    - ❌ FORBIDDEN: `const orderBy = {...}; await MyGlobal.prisma.findMany({orderBy})`
    - ❌ FORBIDDEN: `props: {}` - NEVER use empty props type, omit the parameter instead!
 
-   **EXCEPTION for Complex Where Conditions**:
+### The Exception: Complex Where Conditions
 
-   When building complex where conditions (especially for concurrent operations), prioritize readability:
+When building complex where conditions (especially for concurrent operations that reuse the same condition), prioritize readability over strict inline rules.
 
-   ```typescript
-   // ✅ ALLOWED: Extract complex conditions WITHOUT type annotations
-   // Let TypeScript infer the type from usage
-   const buildWhereCondition = () => {
-     // Build conditions object step by step for clarity
-     const conditions: Record<string, unknown> = {
-       deleted_at: null,
-     };
+**Pattern 1: Function-Based Condition Building**:
 
-     // Add conditions clearly and readably
-     if (body.is_active !== undefined && body.is_active !== null) {
-       conditions.is_active = body.is_active;
-     }
+```typescript
+// ✅ ALLOWED: Extract complex conditions using a builder function
+// Let TypeScript infer the type from usage
+const buildWhereCondition = () => {
+  // Build conditions object step by step for clarity
+  const conditions: Record<string, unknown> = {
+    deleted_at: null,
+  };
 
-     if (body.title) {
-       conditions.title = { contains: body.title };
-     }
+  // Add conditions clearly and readably
+  if (body.is_active !== undefined && body.is_active !== null) {
+    conditions.is_active = body.is_active;
+  }
 
-     // Date ranges
-     if (body.created_at_from || body.created_at_to) {
-       conditions.created_at = {};
-       if (body.created_at_from) conditions.created_at.gte = body.created_at_from;
-       if (body.created_at_to) conditions.created_at.lte = body.created_at_to;
-     }
+  if (body.title) {
+    conditions.title = { contains: body.title };
+  }
 
-     return conditions;
-   };
+  // Date ranges
+  if (body.created_at_from || body.created_at_to) {
+    conditions.created_at = {};
+    if (body.created_at_from) conditions.created_at.gte = body.created_at_from;
+    if (body.created_at_to) conditions.created_at.lte = body.created_at_to;
+  }
 
-   const whereCondition = buildWhereCondition();
+  return conditions;
+};
 
-   const results = await MyGlobal.prisma.shopping_sales.findMany({
-     where: whereCondition,
-     skip,
-     take,
-   });
+const whereCondition = buildWhereCondition();
 
-   const total = await MyGlobal.prisma.shopping_sales.count({
-     where: whereCondition
-   });
-   ```
+const results = await MyGlobal.prisma.shopping_sales.findMany({
+  where: whereCondition,
+  skip,
+  take,
+});
 
-   **Alternative Pattern - Object Spread with Clear Structure**:
-   ```typescript
-   // ✅ ALSO ALLOWED: Structured object building
-   const whereCondition = {
-     deleted_at: null,
-     // Simple conditions
-     ...(body.is_active !== undefined && body.is_active !== null && {
-       is_active: body.is_active
-     }),
-     ...(body.category_id && {
-       category_id: body.category_id
-     }),
+const total = await MyGlobal.prisma.shopping_sales.count({
+  where: whereCondition
+});
+```
 
-     // Text search conditions
-     ...(body.title && {
-       title: { contains: body.title }
-     }),
+**Pattern 2: Object Spread with Clear Structure**:
 
-     // Complex date ranges - extract for readability
-     ...((() => {
-       if (!body.created_at_from && !body.created_at_to) return {};
-       return {
-         created_at: {
-           ...(body.created_at_from && { gte: body.created_at_from }),
-           ...(body.created_at_to && { lte: body.created_at_to })
-         }
-       };
-     })())
-   };
+```typescript
+// ✅ ALSO ALLOWED: Structured object building with spread syntax
+const whereCondition = {
+  deleted_at: null,
+  // Simple conditions
+  ...(body.is_active !== undefined && body.is_active !== null && {
+    is_active: body.is_active
+  }),
+  ...(body.category_id && {
+    category_id: body.category_id
+  }),
 
-   const results = await MyGlobal.prisma.bbs_articles.findMany({
-     where: whereCondition,
-     skip,
-     take,
-   });
+  // Text search conditions
+  ...(body.title && {
+    title: { contains: body.title }
+  }),
 
-   const total = await MyGlobal.prisma.bbs_articles.count({
-     where: whereCondition
-   });
-   ```
+  // Complex date ranges - extract for readability
+  ...((() => {
+    if (!body.created_at_from && !body.created_at_to) return {};
+    return {
+      created_at: {
+        ...(body.created_at_from && { gte: body.created_at_from }),
+        ...(body.created_at_to && { lte: body.created_at_to })
+      }
+    };
+  })())
+};
+
+const results = await MyGlobal.prisma.bbs_articles.findMany({
+  where: whereCondition,
+  skip,
+  take,
+});
+
+const total = await MyGlobal.prisma.bbs_articles.count({
+  where: whereCondition
+});
+```
+
+**Why This Exception Exists**:
+- Complex search/filter operations need readable condition building
+- The same `where` condition must be used for both `findMany` and `count` queries
+- Prevents duplication and potential inconsistencies
+- Makes code maintainable when conditions are complex
+
+**When to Use This Exception**:
+- Only for `where` conditions
+- Only when reused across multiple queries (e.g., findMany + count)
+- Only when conditions are genuinely complex (5+ conditional fields)
 
 ## Pattern B: CRUD Implementation Examples (Manual Construction)
 
+Now that you understand all the concepts and responsibilities, here are complete examples showing Pattern B in action.
+
 ### CREATE Operation - Manual Construction
+
+**Concept Applied**: You are the collector - handle UUIDs, timestamps, field mapping manually.
 
 ```typescript
 // POST /custom/entities - Create entity without collector
@@ -1326,6 +1889,7 @@ export async function postCustomEntities(props: {
   body: ICustomEntity.ICreate;
 }): Promise<ICustomEntity> {
   // Step 1: Manually construct Prisma CreateInput
+  // You must handle everything a collector would do
   const created = await MyGlobal.prisma.custom_entities.create({
     data: {
       id: v4() as string & tags.Format<"uuid">,  // Manual UUID generation
@@ -1338,6 +1902,7 @@ export async function postCustomEntities(props: {
   });
 
   // Step 2: Manually construct response DTO
+  // You must handle everything a transformer would do
   return {
     id: created.id,
     title: created.title,
@@ -1349,13 +1914,16 @@ export async function postCustomEntities(props: {
 }
 ```
 
-**Key Points**:
-- YOU must generate UUIDs with `v4() as string & tags.Format<"uuid">`
-- YOU must create timestamps with `toISOStringSafe(new Date())`
-- YOU must convert Date objects to ISO strings for response
-- YOU must handle all field mapping
+**What YOU had to do manually**:
+- ✅ Generate UUID with proper branded type
+- ✅ Create timestamps with toISOStringSafe
+- ✅ Map all fields correctly
+- ✅ Convert dates in response
+- ✅ Ensure type safety throughout
 
 ### READ Operation - Manual Construction
+
+**Concept Applied**: You are the transformer - handle date conversion, null/undefined mapping manually.
 
 ```typescript
 // GET /custom/entities/{id} - Read entity without transformer
@@ -1392,13 +1960,16 @@ export async function getCustomEntitiesById(props: {
 }
 ```
 
-**Key Points**:
-- YOU must handle null → undefined conversion for optional fields
-- YOU must preserve null for nullable fields
-- YOU must convert all Date objects with `toISOStringSafe()`
-- YOU must map all fields manually
+**What YOU had to do manually**:
+- ✅ Fetch all necessary fields (no transformer.select())
+- ✅ Handle null → undefined conversion for optional fields
+- ✅ Preserve null for nullable fields
+- ✅ Convert all Date objects to ISO strings
+- ✅ Map all fields to API DTO structure
 
 ### UPDATE Operation - Manual Construction
+
+**Concept Applied**: Manual update data construction and response transformation.
 
 ```typescript
 // PATCH /custom/entities/{id} - Update entity without collector
@@ -1441,12 +2012,14 @@ export async function patchCustomEntitiesById(props: {
 }
 ```
 
-**Key Points**:
-- Authorization checks before update
-- Update `updated_at` timestamp manually
-- Manual response construction with date conversion
+**What YOU had to do manually**:
+- ✅ Authorization checks before update
+- ✅ Update `updated_at` timestamp
+- ✅ Manual response construction with date conversion
 
 ### DELETE Operation - Same as Pattern A
+
+**Concept Applied**: DELETE operations rarely need transformers (void return).
 
 ```typescript
 // DELETE /custom/entities/{id} - Delete entity
@@ -1472,7 +2045,11 @@ export async function deleteCustomEntitiesById(props: {
 }
 ```
 
+**Key Point**: DELETE is similar in both Pattern A and Pattern B because there's no response transformation needed (void return).
+
 ### LIST/PAGINATION Operation - Manual Construction
+
+**Concept Applied**: Manual array transformation with `.map()` instead of `ArrayUtil.asyncMap`.
 
 ```typescript
 // GET /custom/entities - List entities without transformer
@@ -1498,6 +2075,7 @@ export async function getCustomEntities(props: {
   });
 
   // Step 3: Manually transform each record
+  // Use regular .map() because transformations are synchronous
   return {
     data: data.map((entity) => ({
       id: entity.id,
@@ -1517,11 +2095,15 @@ export async function getCustomEntities(props: {
 }
 ```
 
-**Key Points**:
-- Use separate `await` for data and total (NOT Promise.all)
-- Use `.map()` for synchronous array transformation
-- Manual date conversion for each record
-- Manual field mapping for entire array
+**What YOU had to do manually**:
+- ✅ Sequential await for data and total (NOT Promise.all)
+- ✅ Use regular `.map()` for array transformation (synchronous)
+- ✅ Manual date conversion for EACH record
+- ✅ Manual field mapping for entire array
+
+**Key Difference from Pattern A**:
+- Pattern A: Use `ArrayUtil.asyncMap` with transformer (async)
+- Pattern B: Use regular `.map()` with manual transformation (sync)
 
 ---
 

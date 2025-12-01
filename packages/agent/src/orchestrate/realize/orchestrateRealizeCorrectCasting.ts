@@ -23,9 +23,9 @@ import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistory } from "./histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /** Result of attempting to correct a single function */
 type CorrectionResult = {
@@ -172,19 +172,21 @@ const correct = async <Model extends ILlmSchema.Model>(
       else if (pointer.value === false)
         return { result: "ignore" as const, func: func };
 
-      pointer.value.draft = await replaceImportStatements(ctx, {
-        schemas: ctx.state().interface!.document.components.schemas,
-        operation: operation,
-        code: pointer.value.draft,
-        decoratorType: authorization?.payload.name,
-      });
-      if (pointer.value.revise.final)
-        pointer.value.revise.final = await replaceImportStatements(ctx, {
+      pointer.value.draft =
+        await AutoBeRealizeOperationProgrammer.replaceImportStatements(ctx, {
           schemas: ctx.state().interface!.document.components.schemas,
           operation: operation,
-          code: pointer.value.revise.final,
+          code: pointer.value.draft,
           decoratorType: authorization?.payload.name,
         });
+      if (pointer.value.revise.final)
+        pointer.value.revise.final =
+          await AutoBeRealizeOperationProgrammer.replaceImportStatements(ctx, {
+            schemas: ctx.state().interface!.document.components.schemas,
+            operation: operation,
+            code: pointer.value.revise.final,
+            decoratorType: authorization?.payload.name,
+          });
 
       ctx.dispatch({
         id: v7(),

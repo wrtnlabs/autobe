@@ -6,6 +6,7 @@ import { orchestrateRealizeOperationWrite } from "@autobe/agent/src/orchestrate/
 import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
+import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
@@ -94,8 +95,9 @@ export const validate_agent_realize_operation_write = async (props: {
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize/operations`,
     files: {
-      ...AutoBeCompilerRealizeTemplate,
       ...(await agent.getFiles()),
+      ...AutoBeCompilerRealizeTemplate,
+      ...AutoBeCompilerRealizeTemplateOfSQLite,
       ...(await compiler.realize.controller({
         document: agent.getContext().state().interface!.document,
         functions: operations,

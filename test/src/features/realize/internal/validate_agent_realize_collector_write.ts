@@ -1,6 +1,7 @@
 import { orchestrateRealizeCollectorPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorWrite";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
+import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
@@ -57,6 +58,7 @@ export const validate_agent_realize_collector_write = async (props: {
     files: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
+      ...AutoBeCompilerRealizeTemplateOfSQLite,
       ...Object.fromEntries(
         collectors
           .filter((w) => w !== null)
