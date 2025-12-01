@@ -29,12 +29,7 @@ import { IAutoBeRealizeTransformerPlanApplication } from "./structures/IAutoBeRe
 
 export async function orchestrateRealizeTransformerPlan<
   Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
-  props: {
-    progress: AutoBeProgressEventBase;
-  },
-): Promise<AutoBeRealizeTransformerPlan[]> {
+>(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeTransformerPlan[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize transformer write without interface.");
@@ -51,8 +46,10 @@ export async function orchestrateRealizeTransformerPlan<
       .map((m) => m.name),
   );
 
-  props.progress.total += dtoTypeNames.length;
-
+  const progress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: dtoTypeNames.length,
+  };
   const matrix: string[][] = divideArray({
     array: Array.from(dtoTypeNames),
     capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
@@ -66,7 +63,7 @@ export async function orchestrateRealizeTransformerPlan<
           dtoTypeNames: it,
           prismaSchemaNames,
           promptCacheKey,
-          progress: props.progress,
+          progress,
         }),
     ),
   );

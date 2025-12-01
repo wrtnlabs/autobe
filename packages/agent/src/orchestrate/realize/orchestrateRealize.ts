@@ -3,8 +3,10 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeFunction,
   AutoBeRealizeHistory,
+  AutoBeRealizeTransformerFunction,
   AutoBeRealizeValidateEvent,
   AutoBeRealizeWriteEvent,
   IAutoBeCompiler,
@@ -18,9 +20,13 @@ import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorizationWrite } from "./orchestrateRealizeAuthorizationWrite";
+import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
+import { orchestrateRealizeCollectorWrite } from "./orchestrateRealizeCollectorWrite";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeCorrectCasting } from "./orchestrateRealizeCorrectCasting";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
+import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
+import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 
@@ -57,14 +63,17 @@ export const orchestrateRealize =
     });
 
     // PREPARE ASSETS
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    const authorizations: AutoBeRealizeAuthorization[] =
-      await orchestrateRealizeAuthorizationWrite(ctx);
-
     const writeProgress: AutoBeProgressEventBase = {
       total: document.operations.length,
       completed: 0,
     };
+
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const authorizations: AutoBeRealizeAuthorization[] =
+      await orchestrateRealizeAuthorizationWrite(ctx);
+    const collector = await getCollectors(ctx, writeProgress);
+    const transformer = await getTransformers(ctx, writeProgress);
+
     const correctProgress: AutoBeProgressEventBase = {
       total: document.operations.length,
       completed: 0,
@@ -186,6 +195,28 @@ export const orchestrateRealize =
       created_at: new Date().toISOString(),
     });
   };
+
+async function getCollectors(
+  ctx: AutoBeContext<any>,
+  progress: AutoBeProgressEventBase,
+): Promise<AutoBeRealizeCollectorFunction[]> {
+  const plans = await orchestrateRealizeCollectorPlan(ctx);
+  return await orchestrateRealizeCollectorWrite(ctx, {
+    plans,
+    progress,
+  });
+}
+
+async function getTransformers(
+  ctx: AutoBeContext<any>,
+  progress: AutoBeProgressEventBase,
+): Promise<AutoBeRealizeTransformerFunction[]> {
+  const plans = await orchestrateRealizeTransformerPlan(ctx);
+  return await orchestrateRealizeTransformerWrite(ctx, {
+    plans,
+    progress,
+  });
+}
 
 interface IBucket {
   corrected: AutoBeRealizeFunction[];
