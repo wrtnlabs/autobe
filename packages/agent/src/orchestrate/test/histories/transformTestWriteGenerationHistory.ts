@@ -13,7 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
 export function transformTestWriteGenerationHistory<
   Model extends ILlmSchema.Model,
@@ -21,7 +21,7 @@ export function transformTestWriteGenerationHistory<
   instruction: string,
   prepareFunction: AutoBeTestWritePrepareFunction,
   operation: AutoBeOpenApi.IOperation,
-  artifacts: IAutoBeTestScenarioArtifacts,
+  artifacts: IAutoBeTestArtifacts,
 ): IAutoBeOrchestrateHistory {
   return {
     histories: [
@@ -105,7 +105,7 @@ export function transformTestWriteGenerationHistory<
 }
 
 export namespace transformTestWriteGenerationHistory {
-  export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)
         .map((k) => `- ${k}`)
@@ -117,7 +117,7 @@ export namespace transformTestWriteGenerationHistory {
     `;
   }
 
-  export function functional(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export function functional(artifacts: IAutoBeTestArtifacts): string {
     const document: OpenApi.IDocument = transformOpenApiDocument(
       artifacts.document,
     );

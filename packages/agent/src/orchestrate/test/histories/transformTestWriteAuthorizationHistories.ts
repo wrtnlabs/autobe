@@ -9,11 +9,11 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
 export function transformTestWriteAuthorizationHistories(props: {
   operation: AutoBeOpenApi.IOperation;
-  artifacts: IAutoBeTestScenarioArtifacts;
+  artifacts: IAutoBeTestArtifacts;
 }): IAutoBeOrchestrateHistory {
   return {
     histories: [
@@ -57,7 +57,7 @@ export function transformTestWriteAuthorizationHistories(props: {
 }
 
 export namespace transformTestWriteAuthorizationHistories {
-  export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)
         .map((k) => `- ${k}`)
@@ -69,7 +69,7 @@ export namespace transformTestWriteAuthorizationHistories {
     `;
   }
 
-  export function functional(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export function functional(artifacts: IAutoBeTestArtifacts): string {
     const document: OpenApi.IDocument = transformOpenApiDocument(
       artifacts.document,
     );

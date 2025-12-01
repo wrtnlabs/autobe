@@ -16,9 +16,9 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteGenerationHistory } from "./histories/transformTestWriteGenerationHistory";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestWriteGenerationApplication } from "./structures/IAutoBeTestWriteGenerationApplication";
 
 interface IAutoBeTestWriteGenerationResult {
@@ -100,12 +100,9 @@ async function process<Model extends ILlmSchema.Model>(
   const { prepareFunction, operation, progress, promptCacheKey } = props;
 
   // Get artifacts for this specific operation
-  const artifacts: IAutoBeTestScenarioArtifacts =
-    await getTestScenarioArtifacts(ctx, {
-      endpoint: prepareFunction.endpoint,
-      dependencies: [],
-      functionName: prepareFunction.functionName,
-    });
+  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+    endpoint: prepareFunction.endpoint,
+  });
 
   const pointer: IPointer<IAutoBeTestWriteGenerationApplication.IProps | null> =
     {

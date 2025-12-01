@@ -15,7 +15,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteHistory } from "./histories/transformTestWriteHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";

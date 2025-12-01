@@ -16,9 +16,9 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWritePrepareHistories } from "./histories/transformTestWritePrepareHistories";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWritePrepareApplication";
 
 /**
@@ -134,12 +134,9 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestWriteEvent> {
   const { operation, schema, promptCacheKey, progress, instruction } = props;
 
-  const artifacts: IAutoBeTestScenarioArtifacts =
-    await getTestScenarioArtifacts(ctx, {
-      endpoint: operation,
-      dependencies: [],
-      functionName: "",
-    });
+  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+    endpoint: operation,
+  });
 
   // Validate schema is an object schema
   if (!("properties" in schema)) {

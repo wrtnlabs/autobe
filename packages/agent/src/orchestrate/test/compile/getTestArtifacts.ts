@@ -6,8 +6,46 @@ import {
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 import { getTestTemplateCode } from "./getTestTemplateCode";
+
+export async function getTestArtifacts<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    endpoint: AutoBeOpenApi.IEndpoint;
+    dependencies?: AutoBeOpenApi.IEndpoint[];
+  },
+): Promise<IAutoBeTestArtifacts> {
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const document: AutoBeOpenApi.IDocument = filterDocument(
+    ctx.state().interface!.document,
+    {
+      endpoint: props.endpoint,
+      dependencies: props.dependencies ?? [],
+    },
+  );
+
+  const entries: [string, string][] = Object.entries(
+    await compiler.interface.write(document, []),
+  );
+  const filter = (prefix: string, exclude?: string) => {
+    const result: [string, string][] = entries.filter(
+      ([key]) => key.startsWith(prefix) === true,
+    );
+    return Object.fromEntries(
+      exclude
+        ? result.filter(([key]) => key.startsWith(exclude) === false)
+        : result,
+    );
+  };
+  return {
+    document,
+    sdk: filter("src/api", "src/api/structures"),
+    dto: filter("src/api/structures"),
+    e2e: filter("test/features"),
+  };
+}
 
 export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -18,8 +56,11 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
 ): Promise<IAutoBeTestScenarioArtifacts> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const document: AutoBeOpenApi.IDocument = filterDocument(
-    scenario,
     ctx.state().interface!.document,
+    {
+      endpoint: scenario.endpoint,
+      dependencies: scenario.dependencies.map((dp) => dp.endpoint),
+    },
   );
   const entries: [string, string][] = Object.entries(
     await compiler.interface.write(document, []),
@@ -44,16 +85,18 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
 }
 
 function filterDocument(
-  scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
   document: AutoBeOpenApi.IDocument,
+  props: {
+    endpoint: AutoBeOpenApi.IEndpoint;
+    dependencies: AutoBeOpenApi.IEndpoint[];
+  },
 ): AutoBeOpenApi.IDocument {
   const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
     (op) =>
-      (scenario.endpoint.method === op.method &&
-        scenario.endpoint.path === op.path) ||
-      scenario.dependencies.some(
-        (dp) =>
-          dp.endpoint.method === op.method && dp.endpoint.path === op.path,
+      (props.endpoint.method === op.method &&
+        props.endpoint.path === op.path) ||
+      props.dependencies.some(
+        (dp) => dp.method === op.method && dp.path === op.path,
       ),
   );
   const components: AutoBeOpenApi.IComponents = {

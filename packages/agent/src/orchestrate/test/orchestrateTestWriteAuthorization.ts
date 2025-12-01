@@ -15,9 +15,9 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteAuthorizationHistories } from "./histories/transformTestWriteAuthorizationHistories";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestWriteAuthorizationApplication } from "./structures/IAutoBeTestWriteAuthorizationApplication";
 
 /**
@@ -84,15 +84,12 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestWriteEvent> {
   const { operation, progress, promptCacheKey } = props;
   // Get artifacts for this specific operation
-  const artifacts: IAutoBeTestScenarioArtifacts =
-    await getTestScenarioArtifacts(ctx, {
-      endpoint: {
-        method: operation.method,
-        path: operation.path,
-      },
-      dependencies: [],
-      functionName: "",
-    });
+  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+    endpoint: {
+      method: operation.method,
+      path: operation.path,
+    },
+  });
 
   const pointer: IPointer<IAutoBeTestWriteAuthorizationApplication.IProps | null> =
     {
