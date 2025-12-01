@@ -23,12 +23,14 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { complementPreliminaryCollection } from "../common/internal/complementPreliminaryCollection";
+import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
-import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeOperationWrite<
   Model extends ILlmSchema.Model,
@@ -56,6 +58,8 @@ export async function orchestrateRealizeOperationWrite<
         process(ctx, {
           document,
           totalAuthorizations: props.authorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
           authorization: s.decoratorEvent ?? null,
           scenario: s,
           progress: props.progress,
@@ -69,9 +73,11 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     document: AutoBeOpenApi.IDocument;
-    totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
+    collectors: AutoBeRealizeCollectorFunction[];
+    totalAuthorizations: AutoBeRealizeAuthorization[];
     scenario: IAutoBeRealizeScenarioResult;
+    transformers: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -84,7 +90,31 @@ async function process<Model extends ILlmSchema.Model>(
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
     kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
     state: ctx.state(),
+    all: {
+      realizeCollectors: props.collectors,
+      realizeTransformers: props.transformers,
+    },
   });
+  complementPreliminaryCollection({
+    kinds: [
+      "prismaSchemas",
+      "interfaceOperations",
+      "interfaceSchemas",
+      "realizeCollectors",
+      "realizeTransformers",
+    ],
+    all: {
+      ...preliminary.getAll(),
+      interfaceOperations: props.document.operations,
+      interfaceSchemas: props.document.components.schemas,
+    } as IAutoBePreliminaryCollection,
+    local: {
+      ...(preliminary.getLocal() as IAutoBePreliminaryCollection),
+      interfaceOperations: [props.scenario.operation],
+      interfaceSchemas: {},
+    },
+  });
+
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
       {
@@ -116,20 +146,6 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     });
     if (pointer.value !== null) {
-      pointer.value.draft = await replaceImportStatements(ctx, {
-        operation: props.scenario.operation,
-        schemas: props.document.components.schemas,
-        code: pointer.value.draft,
-        decoratorType: props.authorization?.payload.name,
-      });
-      if (pointer.value.revise.final)
-        pointer.value.revise.final = await replaceImportStatements(ctx, {
-          operation: props.scenario.operation,
-          schemas: props.document.components.schemas,
-          code: pointer.value.revise.final,
-          decoratorType: props.authorization?.payload.name,
-        });
-
       const functor: AutoBeRealizeOperationFunction = {
         kind: "operation",
         endpoint: {
@@ -138,7 +154,15 @@ async function process<Model extends ILlmSchema.Model>(
         },
         location: props.scenario.location,
         name: props.scenario.functionName,
-        content: pointer.value.revise.final ?? pointer.value.draft,
+        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+          ctx,
+          {
+            operation: props.scenario.operation,
+            schemas: props.document.components.schemas,
+            code: pointer.value.revise.final ?? pointer.value.draft,
+            decoratorType: props.authorization?.payload.name,
+          },
+        ),
       };
       ctx.dispatch({
         id: v7(),

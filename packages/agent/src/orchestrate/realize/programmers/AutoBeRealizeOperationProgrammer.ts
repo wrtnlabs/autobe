@@ -3,6 +3,8 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerProgrammer";
 
 export namespace AutoBeRealizeOperationProgrammer {
   export function writeImportStatements(props: {
@@ -78,7 +80,14 @@ export namespace AutoBeRealizeOperationProgrammer {
         `import { ${decoratorType} } from "../decorators/payload/${decoratorType}"`,
       );
     }
-
+    imports.push(
+      ...AutoBeRealizeCollectorProgrammer.getNeighbors(code).map(
+        (c) => `import { ${c} } from "../collectors/${c}"`,
+      ),
+      ...AutoBeRealizeTransformerProgrammer.getNeighbors(code).map(
+        (c) => `import { ${c} } from "../transformers/${c}"`,
+      ),
+    );
     code = [...imports, "", code].join("\n");
 
     // Clean up formatting issues
