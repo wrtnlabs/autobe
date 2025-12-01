@@ -1774,8 +1774,10 @@ Under no circumstances are you permitted to validate the type or content constra
    - ❌ FORBIDDEN: `const updateData = {...}; await MyGlobal.prisma.update({data: updateData})`
    - ❌ FORBIDDEN: `const where = {...}; await MyGlobal.prisma.findMany({where})`
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
+   - ❌ FORBIDDEN: `const whereCondition = {...}` - Use `whereInput` with `satisfies` instead!
    - ❌ FORBIDDEN: `const orderBy = {...}; await MyGlobal.prisma.findMany({orderBy})`
    - ❌ FORBIDDEN: `props: {}` - NEVER use empty props type, omit the parameter instead!
+   - ✅ **ONLY EXCEPTION**: Complex where conditions (see below) - MUST use `whereInput` with `satisfies Prisma.{modelName}WhereInput`
 
 ### The Exception: Complex Where Conditions
 
@@ -1785,8 +1787,7 @@ When building complex where conditions (especially for concurrent operations tha
 
 ```typescript
 // ✅ ALLOWED: Extract complex conditions using a builder function
-// Let TypeScript infer the type from usage
-const buildWhereCondition = () => {
+const buildWhereInput = () => {
   // Build conditions object step by step for clarity
   const conditions: Record<string, unknown> = {
     deleted_at: null,
@@ -1811,16 +1812,16 @@ const buildWhereCondition = () => {
   return conditions;
 };
 
-const whereCondition = buildWhereCondition();
+const whereInput = buildWhereInput() satisfies Prisma.shopping_salesWhereInput;
 
 const results = await MyGlobal.prisma.shopping_sales.findMany({
-  where: whereCondition,
+  where: whereInput,
   skip,
   take,
 });
 
 const total = await MyGlobal.prisma.shopping_sales.count({
-  where: whereCondition
+  where: whereInput
 });
 ```
 
@@ -1828,7 +1829,7 @@ const total = await MyGlobal.prisma.shopping_sales.count({
 
 ```typescript
 // ✅ ALSO ALLOWED: Structured object building with spread syntax
-const whereCondition = {
+const whereInput = {
   deleted_at: null,
   // Simple conditions
   ...(body.is_active !== undefined && body.is_active !== null && {
@@ -1853,16 +1854,16 @@ const whereCondition = {
       }
     };
   })())
-};
+} satisfies Prisma.bbs_articlesWhereInput;
 
 const results = await MyGlobal.prisma.bbs_articles.findMany({
-  where: whereCondition,
+  where: whereInput,
   skip,
   take,
 });
 
 const total = await MyGlobal.prisma.bbs_articles.count({
-  where: whereCondition
+  where: whereInput
 });
 ```
 
@@ -1871,6 +1872,12 @@ const total = await MyGlobal.prisma.bbs_articles.count({
 - The same `where` condition must be used for both `findMany` and `count` queries
 - Prevents duplication and potential inconsistencies
 - Makes code maintainable when conditions are complex
+
+**CRITICAL Requirements When Using This Exception**:
+- ✅ **MUST** declare variable as `whereInput` (NOT `whereCondition`)
+- ✅ **MUST** use `satisfies Prisma.{modelName}WhereInput` for type safety
+- ✅ Example: `const whereInput = {...} satisfies Prisma.shopping_salesWhereInput;`
+- ⚠️ **Without satisfies declaration, you lose Prisma type safety!**
 
 **When to Use This Exception**:
 - Only for `where` conditions
