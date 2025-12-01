@@ -29,7 +29,12 @@ import { IAutoBeRealizeCollectorPlanApplication } from "./structures/IAutoBeReal
 
 export async function orchestrateRealizeCollectorPlan<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeCollectorPlan[]> {
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeCollectorPlan[]> {
   const history: AutoBeInterfaceHistory | null = ctx.state().interface;
   if (history === null)
     throw new Error("Cannot realize collector plan without interface.");
@@ -46,10 +51,6 @@ export async function orchestrateRealizeCollectorPlan<
       .map((m) => m.name),
   );
 
-  const progress: AutoBeProgressEventBase = {
-    total: dtoTypeNames.length,
-    completed: 0,
-  };
   const matrix: string[][] = divideArray({
     array: Array.from(dtoTypeNames),
     capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
@@ -63,7 +64,7 @@ export async function orchestrateRealizeCollectorPlan<
           dtoTypeNames: it,
           prismaSchemaNames,
           promptCacheKey,
-          progress,
+          progress: props.progress,
         }),
     ),
   );

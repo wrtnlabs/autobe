@@ -6,10 +6,9 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeCollectorPlan,
-  AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -45,7 +44,7 @@ export const validate_agent_realize_collector_write = async (props: {
         completed: 0,
       },
     });
-  const writes: AutoBeRealizeWriteEvent[] =
+  const collectors: AutoBeRealizeCollectorFunction[] =
     await orchestrateRealizeCollectorWrite(agent.getContext(), {
       plans,
       progress: {
@@ -59,24 +58,11 @@ export const validate_agent_realize_collector_write = async (props: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
       ...Object.fromEntries(
-        writes
+        collectors
           .filter((w) => w !== null)
-          .map((w) => [w.function.location, w.function.content]),
+          .map((c) => [c.location, c.content]),
       ),
       "pnpm-workspace.yaml": "",
-      "src/api/structures/IEntity.ts": StringUtil.trim`
-        import { tags } from "typia";
-
-        /**
-         * Just a basic entity interface for referencing.
-         */
-        export interface IEntity {
-          /**
-           * Primary Key.
-           */
-          id: string & tags.Format<"uuid">;
-        }
-      `,
     },
   });
 };
