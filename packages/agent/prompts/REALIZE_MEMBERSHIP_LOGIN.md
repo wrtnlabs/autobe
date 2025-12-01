@@ -37,7 +37,8 @@ First, verify the actor's credentials and retrieve the actor record. This is **m
 ```typescript
 // Example: Validating seller credentials
 const seller = await MyGlobal.prisma.shopping_sellers.findFirst({
-  where: { email: props.body.email }
+  where: { email: props.body.email },
+  ...ShoppingSellerTransformer.select(),
 });
 if (!seller) {
   throw new HttpException("Invalid credentials", 401);
@@ -61,15 +62,12 @@ After successful authentication, create a NEW session record for this login. Thi
 const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
 const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 const session = await MyGlobal.prisma.shopping_seller_sessions.create({
-  data: {
-    id: v4(),
-    shopping_seller_id: seller.id,  // Foreign key to actor
-    ip: props.body.ip ?? props.ip,  // IP is optional - use client-provided (SSR case) or server-extracted
-    href: props.body.href,
-    referrer: props.body.referrer,
-    created_at: new Date().toISOString(),
-    expired_at: toISOStringSafe(accessExpires),
-  }
+  data: await ShoppingSellerSessionTransformer.collect({
+    body: props.body,
+    ip: props.body.ip ?? props.ip,
+    shoppingSeller: { id: seller.id },
+  }),
+  ...ShoppingSellerSessionTransformer.select(),
 });
 ```
 
@@ -248,7 +246,8 @@ export async function postAuthSellerLogin(props: {
 }): Promise<IShoppingSeller.ILoginOutput> {
   // 1. Find actor by credentials (MANDATORY)
   const seller = await MyGlobal.prisma.shopping_sellers.findFirst({
-    where: { email: props.body.email }
+    where: { email: props.body.email },
+    ...ShoppingSellerTransformer.transform(),
   });
   if (!seller) {
     throw new HttpException("Invalid credentials", 401);
@@ -267,15 +266,11 @@ export async function postAuthSellerLogin(props: {
   const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
   const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await MyGlobal.prisma.shopping_seller_sessions.create({
-    data: {
-      id: v4(),
-      shopping_seller_id: seller.id,
-      ip: props.body.ip ?? props.ip,
-      href: props.body.href,
-      referrer: props.body.referrer,
-      created_at: new Date().toISOString(),
-      expired_at: toISOStringSafe(accessExpires),
-    },
+    data: await ShoppingSellerSessionCollector.colect({
+      body: props.body,
+      shoppingSeller: { id: seller.id },
+      ip: props.ip,
+    }),
   });
 
   // 4. Generate JWT tokens (MANDATORY)
@@ -312,10 +307,10 @@ export async function postAuthSellerLogin(props: {
   };
 
   // 5. Return with authorization token
+  // IShoppingSeller.IAuthorized = IShoppingSeller & { token: IAuthorizationToken }
+  // This pattern adds the token field to the seller data
   return {
-    id: seller.id,
-    email: seller.email,
-    // ... other fields
+    ...await ShoppingSellerTransformer.transform(seller),
     token,
   } satisfies IShoppingSeller.IAuthorized;
 }
@@ -331,7 +326,8 @@ export async function postAuthUserLogin(props: {
 }): Promise<IUser.ILoginOutput> {
   // 1. Find actor by credentials (MANDATORY)
   const user = await MyGlobal.prisma.users.findFirst({
-    where: { email: props.body.email }
+    where: { email: props.body.email },
+    ...UserTransformer.select(),
   });
   if (!user) {
     throw new HttpException("Invalid credentials", 401);
@@ -466,11 +462,10 @@ export async function postAuthUserLogin(props: {
   // NotificationService.sendLoginAlert(user.email, props.body.ip).catch(console.error);
 
   // 11. Return with authorization token
+  // IUser.IAuthorized = IUser & { token: IAuthorizationToken }
+  // This pattern adds the token field to the user data
   return {
-    id: user.id,
-    email: user.email,
-    last_login_at: user.last_login_at,
-    // ... other fields
+    ...await UserTransformer.transform(user),
     token,
   } satisfies IUser.IAuthorized;
 }
@@ -482,3 +477,39 @@ export async function postAuthUserLogin(props: {
 - Consider security implications of additional logic (e.g., rate limiting, account status checks)
 - Consider transaction boundaries if multiple database operations must succeed or fail together
 - Since this is a login operation, it must be publicly accessible without authentication
+
+## Understanding the IAuthorized Pattern
+
+The `IAuthorized` interface pattern is a TypeScript type composition that combines actor data with authentication tokens:
+
+```typescript
+// Type definition pattern
+interface IShoppingSeller {
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  name: string;
+  // ... other seller fields
+}
+
+namespace IShoppingSeller {
+  export interface IAuthorized extends IShoppingSeller {
+    token: IAuthorizationToken;  // Only adds this field
+  }
+}
+```
+
+**Why this pattern exists**:
+1. **Type Safety**: Enforces that login/join responses MUST include both actor data and tokens
+2. **Code Clarity**: Makes it explicit that this is an authenticated response
+3. **Reusability**: The same actor type is used across authenticated and non-authenticated contexts
+
+**Implementation**:
+```typescript
+// Spread the transformed actor data, then add the token field
+return {
+  ...await ShoppingSellerTransformer.transform(seller),  // All IShoppingSeller fields
+  token,  // Adds the IAuthorizationToken field
+} satisfies IShoppingSeller.IAuthorized;
+```
+
+This is why we use the spread operator with transformer - it ensures we return ALL actor fields plus the token, satisfying the `IAuthorized` interface contract.

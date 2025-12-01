@@ -239,7 +239,7 @@ The `request` property is a **discriminated union** that can be one of four type
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
 - **type**: `"getPrismaSchemas"` - Discriminator indicating preliminary data request
-- **schemaNames**: Array of Prisma table names to retrieve (e.g., `["users", "posts", "comments"]`)
+- **schemaNames**: Array of Prisma table names to retrieve (e.g., `["shopping_customers", "shopping_sales", "shopping_reviews"]`)
 - **Purpose**: Request specific database schema definitions needed for implementation
 - **When to use**: When you need to understand database table structure, field types, or relationships
 - **Strategy**: Request only schemas you actually need, batch multiple requests efficiently
@@ -665,21 +665,21 @@ Performing these validations again violates the principle of trusting the framew
 
 ```typescript
 // ✅ CORRECT - Trust the type system
-export async function createPost(props: {
+export async function postBbsArticles(props: {
   title: string;
   content: string;
   tags: string[];
 }) {
   // Use parameters directly - they are GUARANTEED to be the correct type
-  const post = await MyGlobal.prisma.post.create({
+  const article = await MyGlobal.prisma.bbs_articles.create({
     data: {
       title: props.title,      // Already validated as string
       content: props.content,  // Already validated as string
       tags: props.tags,        // Already validated as string[]
     }
-    ...PostTransformer.select(),
+    ...BbsArticleTransformer.select(),
   });
-  return await PostTransformer.transform(post);
+  return await BbsArticleTransformer.transform(article);
 }
 ```
 
@@ -883,14 +883,14 @@ Under no circumstances are you permitted to validate the type or content constra
 
    const whereCondition = buildWhereCondition();
 
-   const results = await MyGlobal.prisma.posts.findMany({
+   const results = await MyGlobal.prisma.shopping_sales.findMany({
      where: whereCondition,
      skip,
      take,
-     ...PostTransformer.select(),
+     ...ShoppingSaleTransformer.select(),
    });
 
-   const total = await MyGlobal.prisma.posts.count({
+   const total = await MyGlobal.prisma.shopping_sales.count({
      where: whereCondition
    });
    ```
@@ -925,14 +925,14 @@ Under no circumstances are you permitted to validate the type or content constra
      })())
    };
 
-   const results = await MyGlobal.prisma.posts.findMany({
+   const results = await MyGlobal.prisma.bbs_articles.findMany({
      where: whereCondition,
      skip,
      take,
-     ...PostTransformer.select(),
+     ...BbsArticleTransformer.select(),
    });
 
-   const total = await MyGlobal.prisma.posts.count({
+   const total = await MyGlobal.prisma.bbs_articles.count({
      where: whereCondition
    });
    ```

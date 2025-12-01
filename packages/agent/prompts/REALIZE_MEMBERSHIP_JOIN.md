@@ -37,15 +37,12 @@ First, create the primary actor record (e.g., `shopping_sellers`, `users`, `admi
 
 ```typescript
 // Example: Creating a seller actor
-const hashedPassword: string = await PasswordUtil.hash(props.body.password);
+// The collector handles password hashing internally via PasswordUtil.hash()
 const seller = await MyGlobal.prisma.shopping_sellers.create({
-  data: {
-    id: v4(),
-    email: props.body.email,
-    password_hash: hashedPassword,  // Never store plain passwords
-    created_at: toISOStringSafe(new Date()),
-    // ... other actor-specific fields
-  }
+  data: await ShoppingSellerCollector.collect({
+    body: props.body,
+  }),
+  ...ShoppingSellerTransformer.select(),
 });
 ```
 
@@ -57,15 +54,12 @@ After creating the actor, create an associated session record (e.g., `shopping_s
 const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
 const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 const session = await MyGlobal.prisma.shopping_seller_sessions.create({
-  data: {
-    id: v4(),
-    shopping_seller_id: seller.id,  // Foreign key to actor
-    ip: props.body.ip ?? props.ip,  // IP is optional - use client-provided (SSR case) or server-extracted
-    href: props.body.href,
-    referrer: props.body.referrer,
-    created_at: toISOStringSafe(new Date()),
-    expired_at: toISOStringSafe(accessExpires),
-  }
+  data: await ShoppingSellerSessionCollector.collect({
+    body: props.body,
+    shoppingSeller: { id: seller.id },
+    ip: props.body.ip ?? props.ip,
+  }),
+  ...ShoppingSellerSessionTransformer.select(),
 });
 ```
 
@@ -98,30 +92,31 @@ Registration operations typically involve two related tables:
 
 Refer to **REALIZE_AUTHORIZATION.md** for detailed session architecture and relationship patterns.
 
-## MANDATORY: Use PasswordUtil for Password Hashing
+## CRITICAL: Password Hashing is Handled by Collectors
 
-**CRITICAL**: You MUST use PasswordUtil utilities for password hashing to ensure consistency across all authentication operations:
+**IMPORTANT**: Password hashing is **automatically handled by the Collector** - you do NOT need to hash passwords manually.
+
+The Collector internally uses `PasswordUtil.hash()` to securely hash passwords before storing them in the database. This ensures:
+- **Consistency**: All password hashing uses the same algorithm across the application
+- **Security**: Passwords are NEVER stored in plain text
+- **Simplicity**: You don't need to manage hashing logic in operation code
 
 ```typescript
-// Example: Password hashing in join/registration
-const hashedPassword: string = await PasswordUtil.hash(props.body.password);
-
-// Store the hashed password in database
-await MyGlobal.prisma.users.create({
-  data: {
-    id: v4(),
-    email: props.body.email,
-    password_hash: hashedPassword,  // Store the hash, never plain password
-    created_at: toISOStringSafe(new Date()),
-    // ... other fields
-  }
+// ✅ CORRECT - Collector handles password hashing internally
+const user = await MyGlobal.prisma.users.create({
+  data: await UserCollector.collect({
+    body: props.body,  // Contains password field
+  }),
+  ...UserTransformer.select(),
 });
+// The collector automatically calls: await PasswordUtil.hash(props.body.password)
 ```
 
 **DO NOT**:
-- Store plain passwords in the database
-- Use bcrypt, argon2, or any other hashing library directly
-- Implement your own hashing logic
+- ❌ Manually hash passwords before passing to collector
+- ❌ Pass `password_hash` as a separate parameter to collector
+- ❌ Store plain passwords in the database
+- ❌ Use bcrypt, argon2, or any other hashing library directly
 
 ## JWT Token Generation After Registration
 
@@ -158,31 +153,24 @@ interface IJwtSignIn {
 // JWT is already imported: import jwt from "jsonwebtoken";
 
 // After creating BOTH the actor and session records:
-// Phase 1: Create actor
-const hashedPassword: string = await PasswordUtil.hash(props.body.password);
+// Phase 1: Create actor (collector handles password hashing internally)
 const seller = await MyGlobal.prisma.shopping_sellers.create({
-  data: {
-    id: v4(),
-    email: props.body.email,
-    password_hash: hashedPassword,
-    created_at: new Date().toISOString(),
-    // ... other fields
-  }
+  data: await ShoppingSellerCollector.collect({
+    body: props.body,
+  }),
+  ...ShoppingSellerTransformer.select(),
 });
 
 // Phase 2: Create session
 const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
 const refreshExpires: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 const session = await MyGlobal.prisma.shopping_seller_sessions.create({
-  data: {
-    id: v4(),
-    shopping_seller_id: seller.id,
+  data: await ShoppingSellerSessionCollector.collect({
+    body: props.body,
+    shoppingSeller: { id: seller.id },
     ip: props.body.ip ?? props.ip,
-    href: props.body.href,
-    referrer: props.body.referrer,
-    created_at: new Date().toISOString(),
-    expired_at: toISOStringSafe(accessExpires),
-  }
+  }),
+  ...ShoppingSellerSessionTransformer.select(),
 });
 
 // Phase 3: Generate JWT token with EXACT payload structure
@@ -248,36 +236,27 @@ export async function postAuthSellerJoin(props: {
     throw new HttpException("Email already registered", 409);
   }
 
-  // 2. Hash password (MANDATORY)
-  const hashedPassword = await PasswordUtil.hash(props.body.password);
-
-  // 3. Create actor record (MANDATORY)
+  // 2. Create actor record (MANDATORY - collector handles password hashing)
   const seller = await MyGlobal.prisma.shopping_sellers.create({
-    data: {
-      id: v4(),
-      email: props.body.email,
-      password_hash: hashedPassword,
-      created_at: new Date().toISOString(),
-      // ... other fields
-    }
+    data: await ShoppingSellerCollector.collect({
+      body: props.body,
+    }),
+    ...ShoppingSellerTransformer.select(),
   });
 
-  // 4. Create session record (MANDATORY)
+  // 3. Create session record (MANDATORY)
   const accessExpires = new Date(Date.now() + 60 * 60 * 1000);
   const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await MyGlobal.prisma.shopping_seller_sessions.create({
-    data: {
-      id: v4(),
-      shopping_seller_id: seller.id,
+    data: await ShoppingSellerSessionCollector.collect({
+      body: props.body,
+      shoppingSeller: { id: seller.id },
       ip: props.body.ip ?? props.ip,
-      href: props.body.href,
-      referrer: props.body.referrer,
-      created_at: toISOStringSafe(new Date()),
-      expired_at: toISOStringSafe(accessExpires),
-    }
+    }),
+    ...ShoppingSellerSessionTransformer.select(),
   });
 
-  // 5. Generate JWT tokens (MANDATORY)
+  // 4. Generate JWT tokens (MANDATORY)
   const token = {
     accessToken: jwt.sign(
       {
@@ -310,11 +289,11 @@ export async function postAuthSellerJoin(props: {
     refreshable_until: toISOStringSafe(refreshExpires),
   };
 
-  // 6. Return with authorization token
+  // 5. Return with authorization token
+  // IShoppingSeller.IAuthorized = IShoppingSeller & { token: IAuthorizationToken }
+  // This pattern adds the token field to the seller data
   return {
-    id: seller.id,
-    email: seller.email,
-    // ... other fields
+    ...await ShoppingSellerTransformer.transform(seller),
     token,
   } satisfies IShoppingSeller.IAuthorized;
 }
@@ -336,21 +315,15 @@ export async function postAuthUserJoin(props: {
     throw new HttpException("Email already registered", 409);
   }
 
-  // 2. Hash password (MANDATORY)
-  const hashedPassword = await PasswordUtil.hash(props.body.password);
-
-  // 3. Create actor record (MANDATORY)
+  // 2. Create actor record (MANDATORY - collector handles password hashing)
   const user = await MyGlobal.prisma.users.create({
-    data: {
-      id: v4(),
-      email: props.body.email,
-      password_hash: hashedPassword,
-      created_at: new Date().toISOString(),
-      // ... other fields
-    }
+    data: await UserCollector.collect({
+      body: props.body,
+    }),
+    ...UserTransformer.select(),
   });
 
-  // 4. ADDITIONAL BUSINESS LOGIC: Create user profile
+  // 3. ADDITIONAL BUSINESS LOGIC: Create user profile
   const profile = await MyGlobal.prisma.user_profiles.create({
     data: {
       id: v4(),
@@ -361,7 +334,7 @@ export async function postAuthUserJoin(props: {
     }
   });
 
-  // 5. ADDITIONAL BUSINESS LOGIC: Initialize user preferences
+  // 4. ADDITIONAL BUSINESS LOGIC: Initialize user preferences
   await MyGlobal.prisma.user_preferences.create({
     data: {
       id: v4(),
@@ -372,7 +345,7 @@ export async function postAuthUserJoin(props: {
     }
   });
 
-  // 6. ADDITIONAL BUSINESS LOGIC: Create audit log
+  // 5. ADDITIONAL BUSINESS LOGIC: Create audit log
   await MyGlobal.prisma.audit_logs.create({
     data: {
       id: v4(),
@@ -383,22 +356,19 @@ export async function postAuthUserJoin(props: {
     }
   });
 
-  // 7. Create session record (MANDATORY)
-  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);
+  // 6. Create session record (MANDATORY)
+  const accessExpires = new Date(Date.now() + 60 * 60 * 60 * 1000);
   const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await MyGlobal.prisma.user_sessions.create({
-    data: {
-      id: v4(),
-      user_id: user.id,
+    data: await UserSessionCollector.collect({
+      body: props.body,
+      user: { id: user.id },
       ip: props.body.ip ?? props.ip,
-      href: props.body.href,
-      referrer: props.body.referrer,
-      created_at: toISOStringSafe(new Date()),
-      expired_at: toISOStringSafe(accessExpires),
-    }
+    }),
+    ...UserSessionTransformer.select(),
   });
 
-  // 8. Generate JWT tokens (MANDATORY)
+  // 7. Generate JWT tokens (MANDATORY)
   const token = {
     accessToken: jwt.sign(
       {
@@ -431,25 +401,59 @@ export async function postAuthUserJoin(props: {
     refreshable_until: toISOStringSafe(refreshExpires),
   };
 
-  // 9. ADDITIONAL BUSINESS LOGIC: Send welcome email (async, don't await)
+  // 8. ADDITIONAL BUSINESS LOGIC: Send welcome email (async, don't await)
   // EmailService.sendWelcomeEmail(user.email, user.nickname).catch(console.error);
 
-  // 10. Return with authorization token and additional data
+  // 9. Return with authorization token and additional data
+  // IUser.IAuthorized = IUser & { token: IAuthorizationToken }
+  // This pattern adds the token field to the user data, along with the profile
   return {
-    id: user.id,
-    email: user.email,
-    profile: {
-      nickname: profile.nickname,
-      avatar_url: profile.avatar_url,
-    },
+    ...await UserTransformer.transform(user),
+    profile: await UserProfileTransformer.transform(profile),
     token,
   } satisfies IUser.IAuthorized;
 }
 ```
 
 **IMPORTANT**:
-- The mandatory phases (password hashing, actor creation, session creation, JWT generation) must always be present
+- The mandatory phases (actor creation, session creation, JWT generation) must always be present
+- Password hashing is handled automatically by the collector - do NOT hash manually
 - Additional business logic can be inserted at any appropriate point in the flow
 - Consider transaction boundaries if multiple database operations must succeed or fail together
 - Since this is a registration operation, it must be publicly accessible
-- Always hash passwords before storing
+
+## Understanding the IAuthorized Pattern
+
+The `IAuthorized` interface pattern is a TypeScript type composition that combines actor data with authentication tokens:
+
+```typescript
+// Type definition pattern
+interface IShoppingSeller {
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  name: string;
+  // ... other seller fields
+}
+
+namespace IShoppingSeller {
+  export interface IAuthorized extends IShoppingSeller {
+    token: IAuthorizationToken;  // Only adds this field
+  }
+}
+```
+
+**Why this pattern exists**:
+1. **Type Safety**: Enforces that login/join responses MUST include both actor data and tokens
+2. **Code Clarity**: Makes it explicit that this is an authenticated response
+3. **Reusability**: The same actor type is used across authenticated and non-authenticated contexts
+
+**Implementation**:
+```typescript
+// Spread the transformed actor data, then add the token field
+return {
+  ...await ShoppingSellerTransformer.transform(seller),  // All IShoppingSeller fields
+  token,  // Adds the IAuthorizationToken field
+} satisfies IShoppingSeller.IAuthorized;
+```
+
+This is why we use the spread operator with transformer - it ensures we return ALL actor fields plus the token, satisfying the `IAuthorized` interface contract.

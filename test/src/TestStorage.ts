@@ -15,7 +15,6 @@ export namespace TestStorage {
     closure: () => Promise<T>,
   ): Promise<T> => {
     const location: string = `${TestGlobal.ROOT}/results/storage/${props.vendor}/${props.project}/${props.file}.json.gz`;
-    console.log(props, path.resolve(location), fs.existsSync(location));
     if (fs.existsSync(location))
       return JSON.parse(
         await CompressUtil.gunzip(await fs.promises.readFile(location)),
