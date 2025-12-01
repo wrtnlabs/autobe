@@ -116,6 +116,7 @@ export const validate_agent_realize_operation_write = async (props: {
           func.content,
         ]),
       ),
+      "pnpm-workspace.yaml": "",
     },
   });
 };
