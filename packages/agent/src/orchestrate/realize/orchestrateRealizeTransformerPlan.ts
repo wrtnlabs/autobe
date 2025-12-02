@@ -23,7 +23,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeTransformerPlanHistories } from "./histories/transformRealizeTransformerPlanHistories";
+import { transformRealizeTransformerPlanHistory } from "./histories/transformRealizeTransformerPlanHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerPlanApplication } from "./structures/IAutoBeRealizeTransformerPlanApplication";
 
@@ -115,7 +115,7 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerPlanHistories({
+      ...transformRealizeTransformerPlanHistory({
         state: ctx.state(),
         preliminary,
       }),
