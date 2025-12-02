@@ -3,7 +3,6 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestWriteEvent,
-  AutoBeTestWritePrepareFunction,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -19,6 +18,7 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWritePrepareHistories } from "./histories/transformTestWritePrepareHistories";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWritePrepareApplication";
 
 /**
@@ -44,7 +44,7 @@ export const orchestrateTestWritePrepare = async <
 >(
   ctx: AutoBeContext<Model>,
   instruction: string,
-): Promise<AutoBeTestWritePrepareFunction[]> => {
+): Promise<IAutoBeTestPrepareWriteResult[]> => {
   // Extract OpenAPI document from interface phase
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
@@ -85,7 +85,7 @@ export const orchestrateTestWritePrepare = async <
   progress.total = dict.size();
 
   // Generate prepare functions using LLM in parallel with prompt caching
-  const prepareFunctions: Array<AutoBeTestWritePrepareFunction | null> =
+  const result: Array<IAutoBeTestPrepareWriteResult | null> =
     await executeCachedBatch(
       ctx,
       createOperations.map((op) => async (promptCacheKey) => {
@@ -98,26 +98,35 @@ export const orchestrateTestWritePrepare = async <
           const typeName: string | undefined = op.requestBody?.typeName;
           if (typeName === undefined) return null;
 
-          const result = await process(ctx, {
+          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+            endpoint,
+          });
+
+          const event = await process(ctx, {
             operation: op,
+            artifacts,
             typeName,
             schema,
             promptCacheKey,
             progress,
             instruction,
           });
-          if (result.function.kind !== "prepare") return null;
+          if (event.function.kind !== "prepare") return null;
 
-          return result.function;
+          ctx.dispatch(event);
+          return {
+            type: "prepare",
+            artifacts,
+            function: event.function,
+          };
         } catch {
-          ++progress.completed;
           return null;
         }
       }),
     );
 
   // Filter out null results and return successful generations
-  return prepareFunctions.filter((f) => f !== null);
+  return result.filter((r) => r !== null);
 };
 
 /** Processes the generation of a single prepare function using LLM. */
@@ -125,6 +134,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     operation: AutoBeOpenApi.IOperation;
+    artifacts: IAutoBeTestArtifacts;
     schema: AutoBeOpenApi.IJsonSchema;
     typeName: string;
     promptCacheKey: string;
@@ -132,11 +142,14 @@ async function process<Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { operation, schema, promptCacheKey, progress, instruction } = props;
-
-  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-    endpoint: operation,
-  });
+  const {
+    operation,
+    artifacts,
+    schema,
+    promptCacheKey,
+    progress,
+    instruction,
+  } = props;
 
   // Validate schema is an object schema
   if (!("properties" in schema)) {
@@ -168,6 +181,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
   // Validate LLM response
   if (pointer.value === null) {
+    ++progress.completed;
     throw new Error(
       `Failed to generate prepare function for ${props.typeName}`,
     );
@@ -205,7 +219,6 @@ async function process<Model extends ILlmSchema.Model>(
     metric,
     created_at: new Date().toISOString(),
   };
-  ctx.dispatch(event);
   return event;
 }
 
