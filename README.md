@@ -90,7 +90,7 @@ Find comprehensive resources at our [official website](https://autobe.dev).
 - 📅 Roadmap
   - [Alpha Release (done)](https://autobe.dev/docs/roadmap/alpha)
   - [Beta Release (done)](https://autobe.dev/docs/roadmap/beta)
-  - [v1.0 Official Release (active)](https://autobe.dev/docs/roadmap/v1.0)
+  - [Gamma Release (active)](https://autobe.dev/docs/roadmap/gamma)
 - 🔧 [API Documentation](https://autobe.dev/api)
 
 ## How AutoBE Works
@@ -198,8 +198,8 @@ gantt
   section Modularization
   (Test) Authorization    : active, 2025-11-10, 14d
   (Test) Data Creation    : active, 2025-11-17, 14d
-  (Realize) Transformation: active, 2025-11-17, 20d
-  (Realize) Collector     : active, 2025-11-24, 13d
+  (Realize) Transformation: done,   2025-11-17, 20d
+  (Realize) Collector     : done, 2025-11-24, 13d
 
   section Complementation
   Analyze  : planned, 2025-11-17,  7d
