@@ -43,17 +43,9 @@ export const orchestrateTestWritePrepare = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  instruction: string,
+  props: { instruction: string; document: AutoBeOpenApi.IDocument },
 ): Promise<IAutoBeTestPrepareWriteResult[]> => {
-  // Extract OpenAPI document from interface phase
-  const document: AutoBeOpenApi.IDocument | undefined =
-    ctx.state().interface?.document;
-  if (document === undefined) {
-    throw new Error(
-      "Unreachable: Cannot prepare test utilities without interface document.",
-    );
-  }
-
+  const { instruction, document } = props;
   const createOperations: AutoBeOpenApi.IOperation[] =
     document.operations.filter(
       (op) =>

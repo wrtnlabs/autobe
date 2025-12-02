@@ -16,6 +16,12 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { orchestrateTestWrite } from "./orchestrateTestWrite";
+import { orchestrateTestWriteAuthorization } from "./orchestrateTestWriteAuthorization";
+import { orchestrateTestWriteGeneration } from "./orchestrateTestWriteGeneration";
+import { orchestrateTestWritePrepare } from "./orchestrateTestWritePrepare";
+import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
+import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
+import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTest =
@@ -41,6 +47,10 @@ export const orchestrateTest =
       reason: props.instruction,
       step: ctx.state().analyze?.step ?? 0,
     });
+    const document: AutoBeOpenApi.IDocument | undefined =
+      ctx.state().interface?.document;
+    if (document === undefined)
+      throw new Error("No document found. Please check the logs.");
 
     // CHECK OPERATIONS
     const operations: AutoBeOpenApi.IOperation[] =
@@ -54,6 +64,45 @@ export const orchestrateTest =
         text:
           "Unable to write test code because there are no Operations, " +
           "please check if the Interface agent is called.",
+      });
+
+    // PREPARE UTILITIES
+    const prepare: IAutoBeTestPrepareWriteResult[] =
+      await orchestrateTestWritePrepare(ctx, {
+        instruction: props.instruction,
+        document,
+      });
+
+    const prepareCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: prepare,
+      });
+
+    // GENERATE UTILITIES
+    const generation: IAutoBeTestGenerationWriteResult[] =
+      await orchestrateTestWriteGeneration(ctx, {
+        document,
+        instruction: props.instruction,
+        preparedFunctions: prepare.map((s) => s.function),
+      });
+
+    const generationCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: generation,
+      });
+
+    // AUTHORIZATION UTILITIES
+    const authorization: IAutoBeTestAuthorizationWriteResult[] =
+      await orchestrateTestWriteAuthorization(ctx, {
+        operations,
+      });
+
+    const authorizationCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: authorization,
       });
 
     // PLAN
