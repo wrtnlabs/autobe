@@ -29,21 +29,25 @@ import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenari
 import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 
-export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
+export async function orchestrateRealizeOperationCorrect<
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
-  scenarios: IAutoBeRealizeScenarioResult[],
-  authorizations: AutoBeRealizeAuthorization[],
-  functions: AutoBeRealizeFunction[],
-  previousFailures: IAutoBeRealizeFunctionFailure[][],
-  progress: AutoBeProgressEventBase,
+  props: {
+    scenarios: IAutoBeRealizeScenarioResult[];
+    authorizations: AutoBeRealizeAuthorization[];
+    functions: AutoBeRealizeFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure[][];
+    progress: AutoBeProgressEventBase;
+  },
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
   const event = await compileRealizeFiles(ctx, {
-    authorizations,
-    functions,
+    authorizations: props.authorizations,
+    functions: props.functions,
   });
-  if (event.result.type !== "failure") return functions;
-  else if (life < 0) return functions;
+  if (event.result.type !== "failure") return props.functions;
+  else if (life < 0) return props.functions;
 
   // Extract and process diagnostics
   const diagnostics = event.result.diagnostics;
@@ -54,7 +58,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ) === true
   ) {
     // No diagnostics related to provider functions, stop correcting
-    return functions;
+    return props.functions;
   }
 
   const locations: string[] = Array.from(
@@ -66,7 +70,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ),
   );
 
-  progress.total += locations.length;
+  props.progress.total += locations.length;
 
   // Group diagnostics by file and add to failures
   const diagnosticsByFile: Record<string, IAutoBeRealizeFunctionFailure> = {};
@@ -76,7 +80,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     if (!location.startsWith("src/providers")) return;
 
     if (!diagnosticsByFile[location]) {
-      const func: AutoBeRealizeFunction | undefined = functions.find(
+      const func: AutoBeRealizeFunction | undefined = props.functions.find(
         (f) => f.location === location,
       );
       if (func === undefined) {
@@ -96,23 +100,25 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     Object.values(diagnosticsByFile);
   const corrected: AutoBeRealizeFunction[] = await correct(ctx, {
     locations,
-    scenarios,
-    authorizations,
-    functions,
-    previousFailures,
+    scenarios: props.scenarios,
+    authorizations: props.authorizations,
+    functions: props.functions,
+    previousFailures: props.previousFailures,
     failures: filterDiagnostics(
       newFailures,
-      functions.map((fn) => fn.location),
+      props.functions.map((fn) => fn.location),
     ),
-    progress,
+    progress: props.progress,
   });
-  return orchestrateRealizeCorrect(
+  return orchestrateRealizeOperationCorrect(
     ctx,
-    scenarios,
-    authorizations,
-    corrected,
-    [...previousFailures, newFailures],
-    progress,
+    {
+      scenarios: props.scenarios,
+      authorizations: props.authorizations,
+      functions: corrected,
+      previousFailures: [...props.previousFailures, newFailures],
+      progress: props.progress,
+    },
     life - 1,
   );
 }
