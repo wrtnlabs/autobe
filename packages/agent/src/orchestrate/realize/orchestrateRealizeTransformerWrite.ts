@@ -117,7 +117,7 @@ async function process<Model extends ILlmSchema.Model>(
           code: pointer.value.revise.final ?? pointer.value.draft,
         });
       const functor: AutoBeRealizeTransformerFunction = {
-        kind: "transformer",
+        type: "transformer",
         plan: props.plan,
         neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
         location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(

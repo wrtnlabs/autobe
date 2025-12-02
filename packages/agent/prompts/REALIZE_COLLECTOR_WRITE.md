@@ -283,9 +283,10 @@ export async function collect(props: {
 }) {
   return {
     id: v4(),
-    shopping_sale_id: props.sale.id,       // UUID from path parameter
-    customer_id: props.customer.id,        // UUID from auth actor
-    session_id: props.session.id,          // UUID from auth session
+    // ✅ CORRECT: Use connect for relationships
+    sale: { connect: { id: props.sale.id } },
+    customer: { connect: { id: props.customer.id } },
+    session: { connect: { id: props.session.id } },
     // ...
   } satisfies Prisma.shopping_sale_reviewsCreateInput;
 }
@@ -298,7 +299,8 @@ export async function collect(props: {
 }) {
   return {
     id: v4(),
-    category_id: props.category.id,  // UUID from resolved entity
+    // ✅ CORRECT: Use connect for category relationship
+    category: { connect: { id: props.category.id } },
     // ...
   } satisfies Prisma.bbs_articlesCreateInput;
 }
@@ -312,8 +314,9 @@ export async function collect(props: {
 }) {
   return {
     id: v4(),
-    author_id: props.member.id,   // UUID from logged-in member
-    session_id: props.session.id, // UUID from current session
+    // ✅ CORRECT: Use connect for author and session relationships
+    author: { connect: { id: props.member.id } },
+    session: { connect: { id: props.session.id } },
     // ...
   } satisfies Prisma.bbs_articlesCreateInput;
 }
@@ -528,12 +531,50 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 
 **Purpose**: Transform API request DTO to Prisma CreateInput with proper field mapping, UUID generation, and relationship handling. The `collect()` function prepares data for database insertion.
 
-**Basic Pattern**:
+**🚨 CRITICAL RULE: ALWAYS Use `connect` for Relationships, NEVER Direct Foreign Key Assignment**
+
+When establishing relationships in Prisma CreateInput, you MUST use Prisma's relationship syntax with `connect`, NOT direct foreign key field assignment.
+
+**❌ ABSOLUTELY FORBIDDEN - Direct Foreign Key Assignment:**
+```typescript
+// ❌ WRONG - This will cause compilation errors!
+return {
+  id: v4(),
+  title: props.body.title,
+  shopping_sale_id: props.sale.id,        // ❌ FORBIDDEN!
+  bbs_article_id: props.article.id,       // ❌ FORBIDDEN!
+  customer_id: props.customer.id,         // ❌ FORBIDDEN!
+  session_id: props.session.id,           // ❌ FORBIDDEN!
+} satisfies Prisma.shopping_sale_reviewsCreateInput;
+```
+
+**✅ CORRECT - Use Prisma Relation Connect Syntax:**
+```typescript
+// ✅ CORRECT - Use connect for all relationships
+return {
+  id: v4(),
+  title: props.body.title,
+  sale: { connect: { id: props.sale.id } },           // ✅ Correct!
+  article: { connect: { id: props.article.id } },     // ✅ Correct!
+  customer: { connect: { id: props.customer.id } },   // ✅ Correct!
+  session: { connect: { id: props.session.id } },     // ✅ Correct!
+} satisfies Prisma.shopping_sale_reviewsCreateInput;
+```
+
+**Why This Rule Exists:**
+
+1. **Type Safety**: Prisma's CreateInput types expect relation objects (`{ connect: { id } }`), not raw foreign key values
+2. **Consistency**: Using relation syntax ensures uniform handling across all relationship types
+3. **Framework Contract**: Prisma manages foreign key columns automatically when you use relation syntax
+4. **Compilation Guarantee**: Direct foreign key assignment will fail TypeScript compilation with `satisfies` operator
+
+**The Pattern in Context:**
+
 ```typescript
 export async function collect(props: {
   body: IShoppingSale.ICreate;
-  shoppingSeller: IEntity;
-  shoppingSellerSession: IEntity;
+  seller: IEntity;       // From auth or path parameter
+  session: IEntity;      // From auth session
 }) {
   return {
     // UUID generation for primary key
@@ -550,15 +591,18 @@ export async function collect(props: {
     created_at: new Date(),
     updated_at: new Date(),
 
-    // Relationship: connect to existing record
+    // ✅ CRITICAL: Relationship connections using connect syntax
+    // Connect to existing category from body DTO
     category: {
       connect: { id: props.body.categoryId },
     },
+    // Connect to seller from IEntity parameter
     seller: {
-      connect: { id: props.shoppingSeller.id },
+      connect: { id: props.seller.id },
     },
+    // Connect to session from IEntity parameter
     sellerSession: {
-      connect: { id: props.shoppingSellerSession.id },
+      connect: { id: props.session.id },
     },
 
     // Nested creates - reuse other Collectors
@@ -572,6 +616,48 @@ export async function collect(props: {
       ),
     },
   } satisfies Prisma.shopping_salesCreateInput;
+}
+```
+
+**Complete Comparison - Wrong vs Right:**
+
+```typescript
+// ❌ ABSOLUTELY WRONG - Will fail compilation
+export async function collect(props: {
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;
+  customer: IEntity;
+  session: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // ❌ Direct foreign key assignment - FORBIDDEN!
+    shopping_sale_id: props.sale.id,
+    customer_id: props.customer.id,
+    session_id: props.session.id,
+    created_at: new Date(),
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ❌ Type error!
+}
+
+// ✅ CORRECT - Using connect for all relationships
+export async function collect(props: {
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;
+  customer: IEntity;
+  session: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // ✅ Prisma relation syntax - REQUIRED!
+    sale: { connect: { id: props.sale.id } },
+    customer: { connect: { id: props.customer.id } },
+    session: { connect: { id: props.session.id } },
+    created_at: new Date(),
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ✅ Type-safe!
 }
 ```
 
@@ -1226,7 +1312,10 @@ export async function createShoppingSale(props: {
 - [ ] No missing UUIDs on new records
 
 ### Relationship Handling
-- [ ] BelongsTo relationships use `connect: { id: ... }`
+- [ ] BelongsTo relationships use `connect: { id: ... }` (NEVER direct foreign key assignment like `shopping_sale_id: props.sale.id`)
+- [ ] ALL foreign key relationships use Prisma relation syntax: `relationName: { connect: { id: props.entity.id } }`
+- [ ] ❌ FORBIDDEN: Direct assignment like `customer_id: props.customer.id`, `session_id: props.session.id`, `bbs_article_id: props.article.id`
+- [ ] ✅ REQUIRED: Relation connect like `customer: { connect: { id: props.customer.id } }`, `session: { connect: { id: props.session.id } }`
 - [ ] HasMany relationships use `create: [...array]`
 - [ ] HasOne relationships use `create: {...object}`
 - [ ] Optional relationships handled conditionally
@@ -1402,15 +1491,75 @@ export async function collect(props: {
 } satisfies Prisma.shopping_salesCreateInput;
 ```
 
-### MISTAKE 3: Incorrect Relationship Syntax
-```typescript
-// WRONG - Direct field instead of relation object
-category_id: props.body.categoryId,
+### MISTAKE 3: Incorrect Relationship Syntax (MOST CRITICAL)
 
-// CORRECT - Relation object with connect
-category: {
-  connect: { id: props.body.categoryId },
-},
+**🚨 THIS IS THE #1 MISTAKE - Direct Foreign Key Assignment**
+
+```typescript
+// ❌ ABSOLUTELY WRONG - Direct foreign key assignment
+// This will FAIL TypeScript compilation with satisfies!
+return {
+  id: v4(),
+  title: props.body.title,
+  shopping_sale_id: props.sale.id,        // ❌ FORBIDDEN!
+  customer_id: props.customer.id,         // ❌ FORBIDDEN!
+  session_id: props.session.id,           // ❌ FORBIDDEN!
+  bbs_article_id: props.article.id,       // ❌ FORBIDDEN!
+  category_id: props.body.categoryId,     // ❌ FORBIDDEN!
+} satisfies Prisma.shopping_sale_reviewsCreateInput;
+
+// ✅ CORRECT - Prisma relation connect syntax
+return {
+  id: v4(),
+  title: props.body.title,
+  // Use relation name (from Prisma schema), not foreign key field name
+  sale: { connect: { id: props.sale.id } },           // ✅ Correct!
+  customer: { connect: { id: props.customer.id } },   // ✅ Correct!
+  session: { connect: { id: props.session.id } },     // ✅ Correct!
+  article: { connect: { id: props.article.id } },     // ✅ Correct!
+  category: { connect: { id: props.body.categoryId } }, // ✅ Correct!
+} satisfies Prisma.shopping_sale_reviewsCreateInput;
+```
+
+**Why This Is Critical:**
+
+When you define a Prisma relationship in the schema:
+```prisma
+model shopping_sale_reviews {
+  id                   String  @id @db.Uuid
+  shopping_sale_id     String  @db.Uuid
+  customer_id          String  @db.Uuid
+
+  // Relation fields (not database columns!)
+  sale      shopping_sales     @relation(fields: [shopping_sale_id], references: [id])
+  customer  shopping_customers @relation(fields: [customer_id], references: [id])
+}
+```
+
+Prisma's CreateInput type expects you to use the **relation field names** (`sale`, `customer`), NOT the foreign key column names (`shopping_sale_id`, `customer_id`).
+
+**The Rule:**
+- ❌ NEVER use `_id` suffixed fields directly: `shopping_sale_id`, `customer_id`, `bbs_article_id`, etc.
+- ✅ ALWAYS use relation field names with connect: `sale: { connect: ... }`, `customer: { connect: ... }`
+
+**More Examples:**
+
+```typescript
+// ❌ WRONG - All these will fail compilation
+{
+  bbs_article_id: props.article.id,              // ❌ Wrong!
+  writer_id: props.member.id,                    // ❌ Wrong!
+  shopping_customer_session_id: props.session.id, // ❌ Wrong!
+  parent_id: props.body.parentId,                 // ❌ Wrong!
+}
+
+// ✅ CORRECT - Use relation names from Prisma schema
+{
+  article: { connect: { id: props.article.id } },          // ✅ Correct!
+  writer: { connect: { id: props.member.id } },            // ✅ Correct!
+  session: { connect: { id: props.session.id } },          // ✅ Correct!
+  parent: { connect: { id: props.body.parentId } },        // ✅ Correct!
+}
 ```
 
 ### MISTAKE 4: Missing Nested UUIDs

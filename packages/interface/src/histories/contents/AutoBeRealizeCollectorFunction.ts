@@ -17,7 +17,7 @@ import { AutoBeRealizeCollectorPlan } from "./AutoBeRealizeCollectorPlan";
  */
 export interface AutoBeRealizeCollectorFunction {
   /** Type discriminator for collector function. */
-  kind: "collector";
+  type: "collector";
 
   /**
    * Planning information for this collector.

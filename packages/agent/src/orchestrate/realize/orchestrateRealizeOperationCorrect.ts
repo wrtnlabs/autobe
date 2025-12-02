@@ -2,8 +2,11 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
+  AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import {
   ILlmApplication,
@@ -29,21 +32,32 @@ import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenari
 import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 
-export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
+export async function orchestrateRealizeOperationCorrect<
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
-  scenarios: IAutoBeRealizeScenarioResult[],
-  authorizations: AutoBeRealizeAuthorization[],
-  functions: AutoBeRealizeFunction[],
-  previousFailures: IAutoBeRealizeFunctionFailure[][],
-  progress: AutoBeProgressEventBase,
+  props: {
+    scenarios: IAutoBeRealizeScenarioResult[];
+    authorizations: AutoBeRealizeAuthorization[];
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
+    functions: AutoBeRealizeOperationFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[][];
+    progress: AutoBeProgressEventBase;
+  },
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
   const event = await compileRealizeFiles(ctx, {
-    authorizations,
-    functions,
+    functions: props.functions,
+    additional: AutoBeRealizeOperationProgrammer.getAdditional({
+      functions: props.functions,
+      authorizations: props.authorizations,
+      collectors: props.collectors,
+      transformers: props.transformers,
+    }),
   });
-  if (event.result.type !== "failure") return functions;
-  else if (life < 0) return functions;
+  if (event.result.type !== "failure") return props.functions;
+  else if (life < 0) return props.functions;
 
   // Extract and process diagnostics
   const diagnostics = event.result.diagnostics;
@@ -54,7 +68,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ) === true
   ) {
     // No diagnostics related to provider functions, stop correcting
-    return functions;
+    return props.functions;
   }
 
   const locations: string[] = Array.from(
@@ -66,53 +80,61 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ),
   );
 
-  progress.total += locations.length;
+  props.progress.total += locations.length;
 
   // Group diagnostics by file and add to failures
-  const diagnosticsByFile: Record<string, IAutoBeRealizeFunctionFailure> = {};
+  const diagnosticsByFile: Record<
+    string,
+    IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>
+  > = {};
   diagnostics.forEach((diagnostic) => {
     const location: string | null = diagnostic.file;
     if (location === null) return;
     if (!location.startsWith("src/providers")) return;
 
     if (!diagnosticsByFile[location]) {
-      const func: AutoBeRealizeFunction | undefined = functions.find(
+      const func: AutoBeRealizeFunction | undefined = props.functions.find(
         (f) => f.location === location,
       );
       if (func === undefined) {
         return;
       }
 
-      const failure: IAutoBeRealizeFunctionFailure = {
-        function: func,
-        diagnostics: [],
-      };
+      const failure: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction> =
+        {
+          function: func,
+          diagnostics: [],
+        };
       diagnosticsByFile[location] = failure;
     }
     diagnosticsByFile[location].diagnostics.push(diagnostic);
   });
 
-  const newFailures: IAutoBeRealizeFunctionFailure[] =
+  const newFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[] =
     Object.values(diagnosticsByFile);
-  const corrected: AutoBeRealizeFunction[] = await correct(ctx, {
+  const corrected: AutoBeRealizeOperationFunction[] = await correct(ctx, {
     locations,
-    scenarios,
-    authorizations,
-    functions,
-    previousFailures,
+    scenarios: props.scenarios,
+    authorizations: props.authorizations,
+    functions: props.functions,
+    previousFailures: props.previousFailures,
     failures: filterDiagnostics(
       newFailures,
-      functions.map((fn) => fn.location),
+      props.functions.map((fn) => fn.location),
     ),
-    progress,
+    progress: props.progress,
   });
-  return orchestrateRealizeCorrect(
+  return orchestrateRealizeOperationCorrect(
     ctx,
-    scenarios,
-    authorizations,
-    corrected,
-    [...previousFailures, newFailures],
-    progress,
+    {
+      scenarios: props.scenarios,
+      collectors: props.collectors,
+      transformers: props.transformers,
+      authorizations: props.authorizations,
+      functions: corrected,
+      previousFailures: [...props.previousFailures, newFailures],
+      progress: props.progress,
+    },
     life - 1,
   );
 }
@@ -123,20 +145,20 @@ async function correct<Model extends ILlmSchema.Model>(
     locations: string[];
     scenarios: IAutoBeRealizeScenarioResult[];
     authorizations: AutoBeRealizeAuthorization[];
-    functions: AutoBeRealizeFunction[];
-    previousFailures: IAutoBeRealizeFunctionFailure[][];
-    failures: IAutoBeRealizeFunctionFailure[];
+    functions: AutoBeRealizeOperationFunction[];
+    previousFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[][];
+    failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeFunction[]> {
+): Promise<AutoBeRealizeOperationFunction[]> {
   if (props.locations.length === 0) {
     return props.functions;
   }
 
-  const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
+  const corrected: AutoBeRealizeOperationFunction[] = await executeCachedBatch(
     ctx,
     props.locations.map(
-      (location) => async (): Promise<AutoBeRealizeFunction> => {
+      (location) => async (): Promise<AutoBeRealizeOperationFunction> => {
         const scenario = props.scenarios.find((el) => el.location === location);
         const func = props.functions.find((el) => el.location === location);
 
@@ -144,9 +166,8 @@ async function correct<Model extends ILlmSchema.Model>(
           throw new Error("No function found for location: " + location);
         }
 
-        const failures: IAutoBeRealizeFunctionFailure[] = props.failures.filter(
-          (f) => f.function?.location === location,
-        );
+        const failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[] =
+          props.failures.filter((f) => f.function?.location === location);
         if (failures.length && scenario) {
           try {
             const correctEvent: AutoBeRealizeCorrectEvent | null = await step(
@@ -158,7 +179,7 @@ async function correct<Model extends ILlmSchema.Model>(
                 function: func,
                 previousFailures: props.previousFailures
                   .map((pf) => {
-                    const previousFailures: IAutoBeRealizeFunctionFailure[] =
+                    const previousFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[] =
                       pf.filter((f) => f.function.location === location);
                     if (previousFailures.length === 0) return null;
                     return {
@@ -204,9 +225,9 @@ async function step<Model extends ILlmSchema.Model>(
     authorization: AutoBeRealizeAuthorization | null;
     totalAuthorizations: AutoBeRealizeAuthorization[];
     scenario: IAutoBeRealizeScenarioResult;
-    function: AutoBeRealizeFunction;
-    previousFailures: IAutoBeRealizeFunctionFailure[];
-    failure: IAutoBeRealizeFunctionFailure;
+    function: AutoBeRealizeOperationFunction;
+    previousFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
+    failure: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>;
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCorrectEvent | null> {

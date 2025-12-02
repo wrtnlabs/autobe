@@ -18,7 +18,7 @@ export const test_compiler_realize_controller = async (
     document,
     functions: [
       {
-        kind: "operation",
+        type: "operation",
         name: "createShoppingSale",
         location: "src/providers/createShoppingSale.ts",
         content: "",

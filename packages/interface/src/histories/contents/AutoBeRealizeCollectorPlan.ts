@@ -11,7 +11,8 @@ import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReferen
  * Collectors transform API request DTOs into Prisma CreateInput structures,
  * handling UUID generation, nested relationships, and proper connect/create
  * syntax. The planning phase determines which DTOs are collectable (Create DTO
- * + DB-backed + Direct mapping) and which are not.
+ *
+ * - DB-backed + Direct mapping) and which are not.
  *
  * This planning information is consumed by the REALIZE_COLLECTOR_WRITE phase to
  * generate actual TypeScript collector modules with type-safe collect()
@@ -21,7 +22,7 @@ import { AutoBeRealizeCollectorReference } from "./AutoBeRealizeCollectorReferen
  */
 export interface AutoBeRealizeCollectorPlan {
   /** Type discriminator for plan kind. */
-  kind: "collector";
+  type: "collector";
 
   /**
    * Create DTO type name for which the collector will be generated.

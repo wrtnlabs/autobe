@@ -17,7 +17,10 @@ export namespace AutoBeRealizeTransformerProgrammer {
       key.endsWith(".IRequest") === false &&
       key.endsWith(".ICreate") === false &&
       key.endsWith(".IUpdate") === false &&
-      key.endsWith(".IAuthorized") === false
+      key.endsWith(".IAuthorized") === false &&
+      key.endsWith(".IJoin") === false &&
+      key.endsWith(".ILogin") === false &&
+      key.endsWith(".IRefresh") === false
     );
   }
 
@@ -41,35 +44,22 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
-  export function writeImportStatements(props: {
-    dtoTypeName: string;
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  }): string[] {
-    const typeReferences: Set<string> = new Set();
-    const visit = (key: string) =>
-      OpenApiTypeChecker.visit({
-        schema: {
-          $ref: `#/components/schemas/${key}`,
-        },
-        components: { schemas: props.schemas },
-        closure: (next) => {
-          if (OpenApiTypeChecker.isReference(next))
-            typeReferences.add(next.$ref.split("/").pop()!.split(".")[0]!);
-        },
-      });
-    visit(props.dtoTypeName);
+  export function getTemplate(plan: AutoBeRealizeTransformerPlan): string {
+    return StringUtil.trim`
+      export namespace ${getName(plan.dtoTypeName)} {
+        export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {
+          ...
+        }
 
-    const imports: string[] = [
-      `import { Prisma } from "@prisma/sdk";`,
-      `import { ArrayUtil } from "@nestia/e2e";`,
-      "",
-      ...Array.from(typeReferences).map(
-        (ref) =>
-          `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-      ),
-      "",
-    ];
-    return imports;
+        export function select() {
+          return {
+            ...
+          } satisfies Prisma.${plan.prismaSchemaName}FindManyArgs;
+        }
+
+        export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
+      }
+    `;
   }
 
   export async function replaceImportStatements<Model extends ILlmSchema.Model>(
@@ -138,6 +128,37 @@ export namespace AutoBeRealizeTransformerProgrammer {
       });
     }
     return errors;
+  }
+
+  function writeImportStatements(props: {
+    dtoTypeName: string;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }): string[] {
+    const typeReferences: Set<string> = new Set();
+    const visit = (key: string) =>
+      OpenApiTypeChecker.visit({
+        schema: {
+          $ref: `#/components/schemas/${key}`,
+        },
+        components: { schemas: props.schemas },
+        closure: (next) => {
+          if (OpenApiTypeChecker.isReference(next))
+            typeReferences.add(next.$ref.split("/").pop()!.split(".")[0]!);
+        },
+      });
+    visit(props.dtoTypeName);
+
+    const imports: string[] = [
+      `import { Prisma } from "@prisma/sdk";`,
+      `import { ArrayUtil } from "@nestia/e2e";`,
+      "",
+      ...Array.from(typeReferences).map(
+        (ref) =>
+          `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+      ),
+      "",
+    ];
+    return imports;
   }
 
   function validateEmptyCode(props: {

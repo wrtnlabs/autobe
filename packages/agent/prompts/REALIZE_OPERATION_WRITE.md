@@ -1100,28 +1100,81 @@ password: await PasswordUtil.hash(props.body.password)
 
 #### 4. Nested Object Construction
 
-**What**: Build nested relationship objects when creating related records.
+**🚨 CRITICAL RULE: ALWAYS Use `connect` for Relationships, NEVER Direct Foreign Key Assignment**
 
-**Why**: Database relationships require proper foreign key mapping.
+When establishing relationships in Prisma CreateInput, you MUST use Prisma's relationship syntax with `connect`, NOT direct foreign key field assignment.
 
-**How**:
+**❌ ABSOLUTELY FORBIDDEN - Direct Foreign Key Assignment:**
 ```typescript
-// Example: Creating article with nested author reference
+// ❌ WRONG - This will cause compilation errors!
 data: {
   id: v4(),
   title: props.body.title,
-  // Nested relationship
-  author: {
-    connect: { id: props.member.id }  // Connect to existing author
-  }
+  shopping_sale_id: props.saleId,        // ❌ FORBIDDEN!
+  customer_id: props.customer.id,        // ❌ FORBIDDEN!
+  bbs_article_id: props.articleId,       // ❌ FORBIDDEN!
+  author_id: props.member.id,            // ❌ FORBIDDEN!
 }
 ```
 
+**✅ CORRECT - Use Prisma Relation Connect Syntax:**
+```typescript
+// ✅ CORRECT - Use connect for all relationships
+data: {
+  id: v4(),
+  title: props.body.title,
+  // Use relation field names from Prisma schema, not foreign key columns
+  sale: { connect: { id: props.saleId } },           // ✅ Correct!
+  customer: { connect: { id: props.customer.id } },  // ✅ Correct!
+  article: { connect: { id: props.articleId } },     // ✅ Correct!
+  author: { connect: { id: props.member.id } },      // ✅ Correct!
+}
+```
+
+**Why This Rule Exists:**
+
+1. **Type Safety**: Prisma's CreateInput types expect relation objects (`{ connect: { id } }`), not raw foreign key values
+2. **Consistency**: Using relation syntax ensures uniform handling across all relationship types
+3. **Framework Contract**: Prisma manages foreign key columns automatically when you use relation syntax
+4. **Compilation Guarantee**: Direct foreign key assignment will fail TypeScript compilation with `satisfies` operator
+
 **Critical Points**:
 - Use Prisma's `connect`, `create`, `connectOrCreate` syntax
-- `connect`: Link to existing record
+- `connect`: Link to existing record (use this for all foreign key relationships)
 - `create`: Create new nested record
+- ❌ NEVER use direct foreign key assignment: `shopping_sale_id`, `customer_id`, `bbs_article_id`, `session_id`
+- ✅ ALWAYS use relation field names: `sale: { connect: ... }`, `customer: { connect: ... }`, `article: { connect: ... }`
 - Understand Prisma relationship syntax deeply
+
+**Complete Example - Wrong vs Right:**
+
+```typescript
+// ❌ ABSOLUTELY WRONG - Will fail compilation
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // ❌ Direct foreign key assignment - FORBIDDEN!
+    shopping_sale_id: props.saleId,
+    customer_id: props.customer.id,
+    created_at: toISOStringSafe(new Date()),
+  },
+});  // ❌ Type error with satisfies!
+
+// ✅ CORRECT - Using connect for all relationships
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // ✅ Prisma relation syntax - REQUIRED!
+    sale: { connect: { id: props.saleId } },
+    customer: { connect: { id: props.customer.id } },
+    created_at: toISOStringSafe(new Date()),
+  },
+});  // ✅ Type-safe!
+```
 
 #### 5. Field Mapping
 
@@ -2025,8 +2078,10 @@ export async function postShoppingSaleReview(props: {
       id: v4(),  // Manual UUID generation
       content: props.body.content,
       rating: props.body.rating,
-      shopping_sale_id: props.saleId,
-      shopping_customer_id: props.customer.id,
+      // ✅ CRITICAL: Use connect for relationships, NOT direct foreign key assignment
+      sale: { connect: { id: props.saleId } },            // ✅ Correct!
+      customer: { connect: { id: props.customer.id } },   // ✅ Correct!
+      session: { connect: { id: props.customer.session_id } },  // ✅ Correct!
       created_at: toISOStringSafe(new Date()),   // Manual timestamp
       updated_at: toISOStringSafe(new Date()),
     },
@@ -2038,8 +2093,8 @@ export async function postShoppingSaleReview(props: {
     id: created.id,
     content: created.content,
     rating: created.rating,
-    shopping_sale_id: created.shopping_sale_id,
-    shopping_customer_id: created.shopping_customer_id,
+    sale_id: created.shopping_sale_id,
+    customer_id: created.shopping_customer_id,
     created_at: toISOStringSafe(created.created_at),  // Manual date conversion
     updated_at: toISOStringSafe(created.updated_at),
   };
@@ -2049,9 +2104,11 @@ export async function postShoppingSaleReview(props: {
 **What YOU had to do manually**:
 - ✅ Generate UUID with proper branded type
 - ✅ Create timestamps with toISOStringSafe
-- ✅ Map all fields correctly
+- ✅ Map all fields correctly - including using `connect` for relationships (NOT direct foreign key assignment!)
 - ✅ Convert dates in response
 - ✅ Ensure type safety throughout
+
+**⚠️ CRITICAL NOTE**: Notice the use of `sale: { connect: { id: props.saleId } }` instead of `shopping_sale_id: props.saleId`. This is MANDATORY for all relationship fields!
 
 ### READ Operation - Manual Construction
 

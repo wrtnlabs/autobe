@@ -29,7 +29,6 @@ import { transformRealizeOperationWriteHistory } from "./histories/transformReal
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 
 export async function orchestrateRealizeOperationWrite<
@@ -46,7 +45,7 @@ export async function orchestrateRealizeOperationWrite<
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
     (operation) =>
-      generateRealizeScenario({
+      AutoBeRealizeOperationProgrammer.getScenario({
         authorizations: props.authorizations,
         operation,
       }),
@@ -147,7 +146,7 @@ async function process<Model extends ILlmSchema.Model>(
     });
     if (pointer.value !== null) {
       const functor: AutoBeRealizeOperationFunction = {
-        kind: "operation",
+        type: "operation",
         endpoint: {
           method: props.scenario.operation.method,
           path: props.scenario.operation.path,
