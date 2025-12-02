@@ -1,4 +1,4 @@
-export interface IAutoBeTestWriteGenerationApplication {
+export interface IAutoBeTestGenerationWriteApplication {
   /**
    * Main entry point for AI Function Call - generates resource generation
    * function.
@@ -11,10 +11,10 @@ export interface IAutoBeTestWriteGenerationApplication {
    * @param props Complete specification for generation function including
    *   prepare function details, operation info, and implementation
    */
-  generate(props: IAutoBeTestWriteGenerationApplication.IProps): void;
+  generate(props: IAutoBeTestGenerationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeTestWriteGenerationApplication {
+export namespace IAutoBeTestGenerationWriteApplication {
   export interface IProps {
     /**
      * Step 1: Strategic analysis and planning.

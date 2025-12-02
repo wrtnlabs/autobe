@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 
-export function transformTestWritePrepareHistories(props: {
+export function transformTestPrepareWriteHistories(props: {
   operation: AutoBeOpenApi.IOperation;
   schema: AutoBeOpenApi.IJsonSchema;
   instruction: string;
@@ -16,7 +16,7 @@ export function transformTestWritePrepareHistories(props: {
         id: v7(),
         type: "systemMessage",
         created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.TEST_WRITE_PREPARE,
+        text: AutoBeSystemPromptConstant.TEST_PREPARE_WRITE,
       },
       {
         id: v7(),

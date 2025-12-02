@@ -1,6 +1,6 @@
 import {
   AutoBeOpenApi,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestPrepareWriteFunction,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
@@ -15,11 +15,11 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
-export function transformTestWriteGenerationHistory<
+export function transformTestGenerationWriteHistory<
   Model extends ILlmSchema.Model,
 >(
   instruction: string,
-  prepareFunction: AutoBeTestWritePrepareFunction,
+  prepareFunction: AutoBeTestPrepareWriteFunction,
   operation: AutoBeOpenApi.IOperation,
   artifacts: IAutoBeTestArtifacts,
 ): IAutoBeOrchestrateHistory {
@@ -29,7 +29,7 @@ export function transformTestWriteGenerationHistory<
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.TEST_WRITE_GENERATION,
+        text: AutoBeSystemPromptConstant.TEST_GENERATION_WRITE,
       },
       {
         id: v7(),
@@ -80,14 +80,14 @@ export function transformTestWriteGenerationHistory<
           These are the DTO type definitions available in the codebase.
           Use these to understand the structure of request and response types.
 
-          ${transformTestWriteGenerationHistory.structures(artifacts)}
+          ${transformTestGenerationWriteHistory.structures(artifacts)}
 
           ## API SDK Functions
 
           Here are the available SDK functions you can use to call the API.
           Find the appropriate function that matches the operation endpoint.
 
-          ${transformTestWriteGenerationHistory.functional(artifacts)}
+          ${transformTestGenerationWriteHistory.functional(artifacts)}
 
           ## E2E Mockup Functions
 
@@ -104,7 +104,7 @@ export function transformTestWriteGenerationHistory<
   };
 }
 
-export namespace transformTestWriteGenerationHistory {
+export namespace transformTestGenerationWriteHistory {
   export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)

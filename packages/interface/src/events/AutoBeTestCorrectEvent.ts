@@ -1,8 +1,8 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { 
-  AutoBeTestWritePrepareFunction,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestPrepareWriteFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestWriteFunction,
   AutoBeTestFile 
 } from "../histories";
@@ -41,9 +41,9 @@ export interface AutoBeTestCorrectEvent
    * strategy will be applied.
    */
   function: 
-    | AutoBeTestWritePrepareFunction
-    | AutoBeTestWriteGenerationFunction
-    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizationWriteFunction
     | AutoBeTestWriteFunction;
 
   /**

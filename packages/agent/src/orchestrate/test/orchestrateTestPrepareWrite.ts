@@ -16,10 +16,10 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestWritePrepareHistories } from "./histories/transformTestWritePrepareHistories";
+import { transformTestPrepareWriteHistories } from "./histories/transformTestPrepareWriteHistories";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrepareWriteApplication";
 import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
-import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWritePrepareApplication";
 
 /**
  * Orchestrates the generation of test data preparation functions.
@@ -39,7 +39,7 @@ import { IAutoBeTestWritePrepareApplication } from "./structures/IAutoBeTestWrit
  * @param instruction User instructions for test data generation context
  * @returns Array of generated prepare function definitions
  */
-export const orchestrateTestWritePrepare = async <
+export const orchestrateTestPrepareWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -150,7 +150,7 @@ async function process<Model extends ILlmSchema.Model>(
     );
   }
 
-  const pointer: IPointer<IAutoBeTestWritePrepareApplication.IProps | null> = {
+  const pointer: IPointer<IAutoBeTestPrepareWriteApplication.IProps | null> = {
     value: null,
   };
   // Execute LLM conversation with function calling
@@ -165,7 +165,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...transformTestWritePrepareHistories({
+    ...transformTestPrepareWriteHistories({
       operation,
       schema,
       instruction,
@@ -218,14 +218,14 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   dtoTypeName: string;
-  build: (app: IAutoBeTestWritePrepareApplication.IProps) => void;
+  build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
     // Basic typia validation
-    const result: IValidation<IAutoBeTestWritePrepareApplication.IProps> =
-      typia.validate<IAutoBeTestWritePrepareApplication.IProps>(input);
+    const result: IValidation<IAutoBeTestPrepareWriteApplication.IProps> =
+      typia.validate<IAutoBeTestPrepareWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     // Custom business logic validation
@@ -256,32 +256,32 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   return {
     protocol: "class",
-    name: "testWritePrepare",
+    name: "testPrepareWrite",
     application,
     execute: {
       write: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeTestWritePrepareApplication,
+    } satisfies IAutoBeTestPrepareWriteApplication,
   };
 }
 
 /** LLM application collection for different models. */
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWritePrepareApplication, "chatgpt">({
+    typia.llm.application<IAutoBeTestPrepareWriteApplication, "chatgpt">({
       validate: {
         write: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWritePrepareApplication, "claude">({
+    typia.llm.application<IAutoBeTestPrepareWriteApplication, "claude">({
       validate: {
         write: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWritePrepareApplication, "gemini">({
+    typia.llm.application<IAutoBeTestPrepareWriteApplication, "gemini">({
       validate: {
         write: validate,
       },
@@ -290,4 +290,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeTestWritePrepareApplication.IProps>;
+) => IValidation<IAutoBeTestPrepareWriteApplication.IProps>;

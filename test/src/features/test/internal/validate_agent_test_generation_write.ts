@@ -1,11 +1,11 @@
-import { orchestrateTestWriteGeneration } from "@autobe/agent/src/orchestrate/test/orchestrateTestWriteGeneration";
+import { orchestrateTestGenerationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestGenerationWrite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -17,7 +17,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-export const validate_agent_test_write_generation = async (props: {
+export const validate_agent_test_generation_write = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -33,7 +33,7 @@ export const validate_agent_test_write_generation = async (props: {
   const document: AutoBeOpenApi.IDocument = interfaceState.document;
 
   // Create mock prepare functions for testing
-  const preparedFunctions: AutoBeTestWritePrepareFunction[] = [];
+  const preparedFunctions: AutoBeTestPrepareWriteFunction[] = [];
 
   // Create prepare functions based on create operations
   operations
@@ -65,8 +65,8 @@ export const validate_agent_test_write_generation = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE GENERATION FUNCTIONS
-  const generationFunctions: AutoBeTestWriteGenerationFunction[] =
-    await orchestrateTestWriteGeneration(agent.getContext(), {
+  const generationFunctions: AutoBeTestGenerationWriteFunction[] =
+    await orchestrateTestGenerationWrite(agent.getContext(), {
       instruction: "Generate generation functions for the prepared functions.",
       document,
       preparedFunctions,

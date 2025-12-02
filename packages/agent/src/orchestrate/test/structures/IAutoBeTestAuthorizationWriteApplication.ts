@@ -1,4 +1,4 @@
-export interface IAutoBeTestWriteAuthorizationApplication {
+export interface IAutoBeTestAuthorizationWriteApplication {
   /**
    * Main entry point for AI Function Call - generates authorization utility
    * functions.
@@ -10,10 +10,10 @@ export interface IAutoBeTestWriteAuthorizationApplication {
    *
    * @param props Complete specification for authorization function generation
    */
-  write(props: IAutoBeTestWriteAuthorizationApplication.IProps): void;
+  write(props: IAutoBeTestAuthorizationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeTestWriteAuthorizationApplication {
+export namespace IAutoBeTestAuthorizationWriteApplication {
   export interface IProps {
     /**
      * Step 1: Strategic authorization analysis.

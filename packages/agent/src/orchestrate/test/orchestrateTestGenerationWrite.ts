@@ -2,8 +2,8 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeTestPrepareWriteFunction,
   AutoBeTestWriteEvent,
-  AutoBeTestWritePrepareFunction,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -16,19 +16,19 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestWriteGenerationHistory } from "./histories/transformTestWriteGenerationHistory";
+import { transformTestGenerationWriteHistory } from "./histories/transformTestGenerationWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
 import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
-import { IAutoBeTestWriteGenerationApplication } from "./structures/IAutoBeTestWriteGenerationApplication";
 
-export const orchestrateTestWriteGeneration = async <
+export const orchestrateTestGenerationWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
-    preparedFunctions: AutoBeTestWritePrepareFunction[];
+    preparedFunctions: AutoBeTestPrepareWriteFunction[];
   },
 ): Promise<IAutoBeTestGenerationWriteResult[]> => {
   const progress: AutoBeProgressEventBase = {
@@ -87,7 +87,7 @@ export const orchestrateTestWriteGeneration = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    prepareFunction: AutoBeTestWritePrepareFunction;
+    prepareFunction: AutoBeTestPrepareWriteFunction;
     artifacts: IAutoBeTestArtifacts;
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
@@ -98,7 +98,7 @@ async function process<Model extends ILlmSchema.Model>(
   const { prepareFunction, artifacts, operation, progress, promptCacheKey } =
     props;
 
-  const pointer: IPointer<IAutoBeTestWriteGenerationApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeTestGenerationWriteApplication.IProps | null> =
     {
       value: null,
     };
@@ -113,7 +113,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...transformTestWriteGenerationHistory(
+    ...transformTestGenerationWriteHistory(
       props.instruction,
       prepareFunction,
       operation,
@@ -165,13 +165,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeTestWriteGenerationApplication.IProps) => void;
+  build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeTestWriteGenerationApplication.IProps> =
-      typia.validate<IAutoBeTestWriteGenerationApplication.IProps>(input);
+    const result: IValidation<IAutoBeTestGenerationWriteApplication.IProps> =
+      typia.validate<IAutoBeTestGenerationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
@@ -201,31 +201,31 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   return {
     protocol: "class",
-    name: "testWriteGeneration",
+    name: "testGenerationWrite",
     application,
     execute: {
       generate: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeTestWriteGenerationApplication,
+    } satisfies IAutoBeTestGenerationWriteApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteGenerationApplication, "chatgpt">({
+    typia.llm.application<IAutoBeTestGenerationWriteApplication, "chatgpt">({
       validate: {
         generate: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteGenerationApplication, "claude">({
+    typia.llm.application<IAutoBeTestGenerationWriteApplication, "claude">({
       validate: {
         generate: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteGenerationApplication, "gemini">({
+    typia.llm.application<IAutoBeTestGenerationWriteApplication, "gemini">({
       validate: {
         generate: validate,
       },
@@ -234,4 +234,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeTestWriteGenerationApplication.IProps>;
+) => IValidation<IAutoBeTestGenerationWriteApplication.IProps>;

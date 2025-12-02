@@ -1,4 +1,4 @@
-import { orchestrateTestWritePrepare } from "@autobe/agent/src/orchestrate/test/orchestrateTestWritePrepare";
+import { orchestrateTestPrepareWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestPrepareWrite";
 import { IAutoBeTestPrepareWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestPrepareWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -11,7 +11,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-export const validate_agent_test_write_prepare = async (props: {
+export const validate_agent_test_prepare_write = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -28,7 +28,7 @@ export const validate_agent_test_write_prepare = async (props: {
   const operations: AutoBeOpenApi.IOperation[] =
     interfaceState.document.operations;
   const result: IAutoBeTestPrepareWriteResult[] =
-    await orchestrateTestWritePrepare(
+    await orchestrateTestPrepareWrite(
       agent.getContext(),
       "Generate test data preparation functions for all ICreate DTOs.",
     );

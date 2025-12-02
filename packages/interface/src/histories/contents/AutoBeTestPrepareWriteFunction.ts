@@ -11,7 +11,7 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestWritePrepareFunction
+export interface AutoBeTestPrepareWriteFunction
   extends AutoBeTestWriteFunctionBase<"prepare"> {
   /**
    * OpenAPI endpoint specification that this prepare function corresponds to.

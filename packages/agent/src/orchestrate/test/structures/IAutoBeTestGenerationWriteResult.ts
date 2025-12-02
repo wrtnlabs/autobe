@@ -1,6 +1,6 @@
 import {
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
 } from "@autobe/interface";
 
 import { IAutoBeTestArtifacts } from "./IAutoBeTestArtifacts";
@@ -8,6 +8,6 @@ import { IAutoBeTestArtifacts } from "./IAutoBeTestArtifacts";
 export interface IAutoBeTestGenerationWriteResult {
   type: "generation";
   artifacts: IAutoBeTestArtifacts;
-  prepareFunction: AutoBeTestWritePrepareFunction;
-  function: AutoBeTestWriteGenerationFunction;
+  prepareFunction: AutoBeTestPrepareWriteFunction;
+  function: AutoBeTestGenerationWriteFunction;
 }

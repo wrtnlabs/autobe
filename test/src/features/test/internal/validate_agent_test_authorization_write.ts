@@ -1,11 +1,11 @@
-import { orchestrateTestWriteAuthorization } from "@autobe/agent/src/orchestrate/test/orchestrateTestWriteAuthorization";
+import { orchestrateTestAuthorizationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestAuthorizationWrite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestAuthorizationWriteFunction,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -17,7 +17,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-export const validate_agent_test_write_authorization = async (props: {
+export const validate_agent_test_authorization_write = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -42,8 +42,8 @@ export const validate_agent_test_write_authorization = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE AUTHORIZATION FUNCTIONS
-  const authFunctions: AutoBeTestWriteAuthorizationFunction[] =
-    await orchestrateTestWriteAuthorization(agent.getContext(), {
+  const authFunctions: AutoBeTestAuthorizationWriteFunction[] =
+    await orchestrateTestAuthorizationWrite(agent.getContext(), {
       operations,
     });
 

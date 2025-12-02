@@ -11,7 +11,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
-export function transformTestWriteAuthorizationHistories(props: {
+export function transformTestAuthorizationWriteHistories(props: {
   operation: AutoBeOpenApi.IOperation;
   artifacts: IAutoBeTestArtifacts;
 }): IAutoBeOrchestrateHistory {
@@ -21,7 +21,7 @@ export function transformTestWriteAuthorizationHistories(props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.TEST_WRITE_AUTHORIZATION,
+        text: AutoBeSystemPromptConstant.TEST_AUTHORIZATION_WRITE,
       },
       {
         id: v7(),
@@ -39,13 +39,13 @@ export function transformTestWriteAuthorizationHistories(props: {
           
           You can use these DTO definitions:
           
-          ${transformTestWriteAuthorizationHistories.structures(props.artifacts)}
+          ${transformTestAuthorizationWriteHistories.structures(props.artifacts)}
           
           ## API (SDK) Functions
           
           You can use these API functions:
           
-          ${transformTestWriteAuthorizationHistories.functional(props.artifacts)}
+          ${transformTestAuthorizationWriteHistories.functional(props.artifacts)}
         `,
       },
     ],
@@ -56,7 +56,7 @@ export function transformTestWriteAuthorizationHistories(props: {
   };
 }
 
-export namespace transformTestWriteAuthorizationHistories {
+export namespace transformTestAuthorizationWriteHistories {
   export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)

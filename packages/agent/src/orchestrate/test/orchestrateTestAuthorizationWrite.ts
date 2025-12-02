@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -16,18 +16,18 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestWriteAuthorizationHistories } from "./histories/transformTestWriteAuthorizationHistories";
+import { transformTestAuthorizationWriteHistories } from "./histories/transformTestAuthorizationWriteHistories";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestAuthorizationWriteApplication } from "./structures/IAutoBeTestAuthorizationWriteApplication";
 import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
-import { IAutoBeTestWriteAuthorizationApplication } from "./structures/IAutoBeTestWriteAuthorizationApplication";
 
 /**
- * Test Write Authorization Orchestrator
+ * Test Authorization Write Orchestrator
  *
  * Creates authorization utility functions for test scenarios using LLM to
  * generate proper authentication handling code.
  */
-export const orchestrateTestWriteAuthorization = async <
+export const orchestrateTestAuthorizationWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -89,7 +89,7 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestWriteEvent> {
   const { operation, artifacts, progress, promptCacheKey } = props;
 
-  const pointer: IPointer<IAutoBeTestWriteAuthorizationApplication.IProps | null> =
+  const pointer: IPointer<IAutoBeTestAuthorizationWriteApplication.IProps | null> =
     {
       value: null,
     };
@@ -104,7 +104,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...transformTestWriteAuthorizationHistories({
+    ...transformTestAuthorizationWriteHistories({
       operation,
       artifacts,
     }),
@@ -129,7 +129,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   // Create the authorization function object
-  const authorizationFunction: AutoBeTestWriteAuthorizationFunction = {
+  const authorizationFunction: AutoBeTestAuthorizationWriteFunction = {
     kind: "authorization",
     endpoint: {
       method: operation.method,
@@ -157,13 +157,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeTestWriteAuthorizationApplication.IProps) => void;
+  build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeTestWriteAuthorizationApplication.IProps> =
-      typia.validate<IAutoBeTestWriteAuthorizationApplication.IProps>(input);
+    const result: IValidation<IAutoBeTestAuthorizationWriteApplication.IProps> =
+      typia.validate<IAutoBeTestAuthorizationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
@@ -193,31 +193,31 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
   return {
     protocol: "class",
-    name: "TestWriteAuthorization",
+    name: "TestAuthorizationWrite",
     application,
     execute: {
       write: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeTestWriteAuthorizationApplication,
+    } satisfies IAutoBeTestAuthorizationWriteApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteAuthorizationApplication, "chatgpt">({
+    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "chatgpt">({
       validate: {
         write: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteAuthorizationApplication, "claude">({
+    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "claude">({
       validate: {
         write: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteAuthorizationApplication, "gemini">({
+    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "gemini">({
       validate: {
         write: validate,
       },
@@ -226,4 +226,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeTestWriteAuthorizationApplication.IProps>;
+) => IValidation<IAutoBeTestAuthorizationWriteApplication.IProps>;

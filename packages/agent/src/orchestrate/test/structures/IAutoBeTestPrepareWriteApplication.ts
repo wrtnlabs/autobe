@@ -1,4 +1,4 @@
-export interface IAutoBeTestWritePrepareApplication {
+export interface IAutoBeTestPrepareWriteApplication {
   /**
    * Generates type-safe test data preparation functions for E2E testing.
    *
@@ -14,10 +14,10 @@ export interface IAutoBeTestWritePrepareApplication {
    *
    * @param props Complete prepare function specification with draft, review, and final code
    */
-  write(props: IAutoBeTestWritePrepareApplication.IProps): void;
+  write(props: IAutoBeTestPrepareWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeTestWritePrepareApplication {
+export namespace IAutoBeTestPrepareWriteApplication {
   /**
    * Properties for generating a test data preparation function.
    */

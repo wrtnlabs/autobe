@@ -3,9 +3,9 @@ import { tags } from "typia";
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import {
-  AutoBeTestWriteAuthorizationFunction,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
 } from "./contents";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 import { AutoBeTestWriteFunction } from "./contents/AutoBeTestWriteFunction";
@@ -48,9 +48,9 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
    * conditions.
    */
   functions: Array<
-    | AutoBeTestWritePrepareFunction
-    | AutoBeTestWriteGenerationFunction
-    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizationWriteFunction
     | AutoBeTestWriteFunction
   >;
 

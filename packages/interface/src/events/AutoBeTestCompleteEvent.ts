@@ -1,9 +1,9 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import {
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestWriteFunction,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
 } from "../histories";
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
@@ -44,9 +44,9 @@ export interface AutoBeTestCompleteEvent
    * of expected system behavior.
    */
   functions: Array<
-    | AutoBeTestWritePrepareFunction
-    | AutoBeTestWriteGenerationFunction
-    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizationWriteFunction
     | AutoBeTestWriteFunction
   >;
 

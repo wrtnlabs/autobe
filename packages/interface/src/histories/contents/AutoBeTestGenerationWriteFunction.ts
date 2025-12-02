@@ -15,7 +15,7 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestWriteGenerationFunction
+export interface AutoBeTestGenerationWriteFunction
   extends AutoBeTestWriteFunctionBase<"generation"> {
   /**
    * OpenAPI endpoint specification that this generation function corresponds
