@@ -18,6 +18,7 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteAuthorizationHistories } from "./histories/transformTestWriteAuthorizationHistories";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
 import { IAutoBeTestWriteAuthorizationApplication } from "./structures/IAutoBeTestWriteAuthorizationApplication";
 
 /**
@@ -33,7 +34,7 @@ export const orchestrateTestWriteAuthorization = async <
   props: {
     operations: AutoBeOpenApi.IOperation[];
   },
-): Promise<AutoBeTestWriteAuthorizationFunction[]> => {
+): Promise<IAutoBeTestAuthorizationWriteResult[]> => {
   const authOperations: AutoBeOpenApi.IOperation[] = props.operations.filter(
     (op) => op.authorizationType !== null,
   );
@@ -43,53 +44,50 @@ export const orchestrateTestWriteAuthorization = async <
     total: authOperations.length,
   };
 
-  const results = await executeCachedBatch(
-    ctx,
-    authOperations.map((operation) => async (promptCacheKey) => {
-      try {
-        const event = await process(ctx, {
-          operation,
-          progress,
-          promptCacheKey,
-        });
+  const results: Array<IAutoBeTestAuthorizationWriteResult | null> =
+    await executeCachedBatch(
+      ctx,
+      authOperations.map((operation) => async (promptCacheKey) => {
+        try {
+          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+            endpoint: {
+              method: operation.method,
+              path: operation.path,
+            },
+          });
+          const event = await process(ctx, {
+            operation,
+            artifacts,
+            progress,
+            promptCacheKey,
+          });
+          if (event.function.kind !== "authorization") return null;
 
-        ctx.dispatch(event);
-        return event;
-      } catch (error) {
-        console.error(error);
-        return null;
-      }
-    }),
-  );
+          ctx.dispatch(event);
+          return {
+            type: "authorization",
+            artifacts,
+            function: event.function,
+          };
+        } catch (error) {
+          return null;
+        }
+      }),
+    );
 
-  const authorizationFunctions: AutoBeTestWriteAuthorizationFunction[] = results
-    .filter((event): event is AutoBeTestWriteEvent => event !== null)
-    .map((event) => {
-      if (event.function.kind !== "authorization") {
-        throw new Error("Unexpected function kind in authorization event");
-      }
-      return event.function;
-    });
-
-  return authorizationFunctions;
+  return results.filter((r) => r !== null);
 };
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     operation: AutoBeOpenApi.IOperation;
+    artifacts: IAutoBeTestArtifacts;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { operation, progress, promptCacheKey } = props;
-  // Get artifacts for this specific operation
-  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-    endpoint: {
-      method: operation.method,
-      path: operation.path,
-    },
-  });
+  const { operation, artifacts, progress, promptCacheKey } = props;
 
   const pointer: IPointer<IAutoBeTestWriteAuthorizationApplication.IProps | null> =
     {
