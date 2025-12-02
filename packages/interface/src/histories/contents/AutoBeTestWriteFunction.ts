@@ -49,33 +49,4 @@ export interface AutoBeTestWriteFunction
    * areas.
    */
   domain: string;
-
-  /**
-   * Initial test code implementation draft.
-   *
-   * First working version of the TypeScript E2E test function that implements
-   * the complete business scenario. This draft includes proper SDK usage, type
-   * safety, assertion logic, and follows basic testing patterns while
-   * potentially requiring refinement for production quality.
-   *
-   * The draft code demonstrates functional correctness but may need
-   * improvements in areas such as error handling, edge case coverage,
-   * performance optimization, or code organization based on review feedback.
-   */
-  draft: string;
-
-  /**
-   * Code review feedback and improvement recommendations.
-   *
-   * Detailed quality assessment results identifying potential issues, best
-   * practice violations, missing edge cases, or opportunities for code
-   * enhancement. The review provides specific, actionable feedback on improving
-   * test reliability, readability, maintainability, and comprehensive
-   * validation coverage.
-   *
-   * Review feedback may address concerns such as insufficient error scenarios,
-   * unclear test descriptions, missing data validation, performance issues, or
-   * deviations from established testing patterns and conventions.
-   */
-  review?: string;
 }
