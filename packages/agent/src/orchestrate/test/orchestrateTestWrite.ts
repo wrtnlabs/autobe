@@ -58,9 +58,9 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           );
 
         return {
-          scenario,
+          type: "write",
           artifacts,
-          event: event.function,
+          function: event.function,
         } satisfies IAutoBeTestWriteResult;
       } catch {
         return null;
@@ -125,8 +125,6 @@ async function process<Model extends ILlmSchema.Model>(
     function: {
       kind: "write",
       domain: pointer.value.domain,
-      draft: pointer.value.draft,
-      review: pointer.value.revise?.review,
       content: pointer.value.revise.final ?? pointer.value.draft,
       functionName: props.scenario.functionName,
       location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
