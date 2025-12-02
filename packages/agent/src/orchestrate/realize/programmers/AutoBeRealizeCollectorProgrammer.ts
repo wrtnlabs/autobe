@@ -37,7 +37,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
         export async function collect(props: {
-          body: Payload;
+          body: ${plan.dtoTypeName};
           ${plan.references
             .map(
               (r) =>
