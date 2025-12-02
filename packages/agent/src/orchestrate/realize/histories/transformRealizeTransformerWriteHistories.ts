@@ -50,7 +50,7 @@ export const transformRealizeTransformerWriteHistories = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here is the declaration of the collector function for
+          Here is the declaration of the transformer function for
           the DTO type ${props.plan.dtoTypeName} and its corresponding
           Prisma schema ${props.plan.prismaSchemaName}:
 
