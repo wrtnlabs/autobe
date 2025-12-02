@@ -22,6 +22,7 @@ import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectIn
 import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
+import { getPrepareImport } from "./utils/getPrepareImport";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
@@ -170,16 +171,25 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
+  const prepareFunctionImport: string | undefined =
+    props.target.type === "generation"
+      ? getPrepareImport({
+          prepareFunction: props.target.prepareFunction,
+        })
+      : undefined;
+
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
       props.target.artifacts,
       pointer.value.revise.final,
+      prepareFunctionImport,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
     props.target.artifacts,
     pointer.value.draft,
+    prepareFunctionImport,
   );
 
   ctx.dispatch({

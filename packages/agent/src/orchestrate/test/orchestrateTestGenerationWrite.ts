@@ -20,6 +20,7 @@ import { transformTestGenerationWriteHistory } from "./histories/transformTestGe
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
 import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
+import { getPrepareImport } from "./utils/getPrepareImport";
 
 export const orchestrateTestGenerationWrite = async <
   Model extends ILlmSchema.Model,
@@ -127,7 +128,9 @@ async function process<Model extends ILlmSchema.Model>(
   }
 
   // Generate prepare function import statement
-  const prepareFunctionImport = `import { ${prepareFunction.functionName} } from "../prepare/${prepareFunction.functionName}";`;
+  const prepareFunctionImport: string = getPrepareImport({
+    prepareFunction,
+  });
 
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
