@@ -20,20 +20,18 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - DTO type name to collect
    - Prisma table name already determined by planning
    - Planning reasoning explaining why this collector is needed
-2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume
+2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
-   - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
-   - Request schemas strategically - you need BOTH to understand the mapping
+   - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
 4. **Review Neighbor Collectors**: Check which other collectors are being generated - you can reuse them for nested creates
 5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
 - Use the provided **Prisma schema name** from the plan (don't discover it yourself)
-- Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate")
+- Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate") - the system provides complete type information transitively
 - Request Prisma schemas to understand database structure and relationships
-- Request Interface schemas to understand exact DTO shape
 - Review neighbor collectors for potential reuse in nested creates
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
 - Generate collect() function that transforms DTO to Prisma CreateInput
@@ -61,7 +59,7 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed for completion
 - Think through the DTO-to-Prisma input mapping
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceSchemas):
+**For preliminary requests** (getPrismaSchemas only):
 ```typescript
 {
   thinking: "Need Prisma schema to understand shopping_sale_snapshot_unit_stocks relationships.",
@@ -71,6 +69,7 @@ This is a required self-reflection step that helps you:
 - State what's MISSING that you don't already have
 - Be brief - explain the gap, not what you'll request
 - Don't list specific schema names in thinking
+- Note: All DTO type information is available transitively from the plan's DTO type names
 
 **For completion** (type: "complete"):
 ```typescript
@@ -92,7 +91,7 @@ This is a required self-reflection step that helps you:
 **Good examples**:
 ```typescript
 // CORRECT - brief, focused on gap or accomplishment
-thinking: "Missing Interface schema for DTO structure analysis. Need it."
+thinking: "Missing Prisma schema for DB structure analysis. Need it."
 thinking: "Implemented collector with nested creates for choices and inventory"
 
 // WRONG - too verbose or listing items
@@ -154,10 +153,11 @@ You will receive:
   - **Planning Reasoning**: Explanation of why this collector is needed
 - **Neighbor Collectors**: List of other collectors being generated that you can reuse for nested creates
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
-- **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
+- **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 **IMPORTANT**:
 - The prismaSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
+- All DTO type information is **obtained transitively** from the DTO type names in the plan. The system automatically provides complete type information for the DTO and all referenced types.
 - **Review neighbor collectors** to see which nested collectors are available for reuse.
 - **Reuse neighbor collectors** whenever possible for nested create operations.
 
@@ -970,8 +970,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     thinking: string;
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetPrismaSchemas;
   }
 
   export interface IComplete {
@@ -1072,18 +1071,7 @@ process({
 });
 ```
 
-**Phase 2: Request Interface schemas**:
-```typescript
-process({
-  thinking: "Need Interface schema to understand DTO fields.",
-  request: {
-    type: "getInterfaceSchemas",
-    schemaNames: ["IShoppingSaleUnitStock"]
-  }
-});
-```
-
-**Phase 3: Generate collector** (after receiving both schemas):
+**Phase 2: Generate collector** (after receiving Prisma schemas - DTO type information is already available transitively):
 ```typescript
 process({
   thinking: "Understood DTO structure and Prisma relationships, ready to implement collector.",

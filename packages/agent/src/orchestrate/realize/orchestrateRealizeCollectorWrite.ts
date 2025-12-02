@@ -2,6 +2,7 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeProgressEventBase,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeCollectorPlan,
@@ -65,17 +66,26 @@ async function process<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorFunction> {
+  const models: AutoBePrisma.IModel[] = ctx
+    .state()
+    .prisma!.result.data.files.map((f) => f.models)
+    .flat();
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
-  const preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
-  > = new AutoBePreliminaryController({
-    state: ctx.state(),
-    source: SOURCE,
-    application:
-      typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
-    kinds: ["prismaSchemas", "interfaceSchemas"],
-  });
+  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+    new AutoBePreliminaryController({
+      state: ctx.state(),
+      source: SOURCE,
+      application:
+        typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
+      kinds: ["prismaSchemas"],
+      local: {
+        prismaSchemas: models.filter(
+          (m) => m.name === props.plan.prismaSchemaName,
+        ),
+      },
+    });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeCollectorWriteApplication.IComplete | null> =
       {
@@ -95,9 +105,9 @@ async function process<Model extends ILlmSchema.Model>(
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformRealizeCollectorWriteHistories({
-        state: ctx.state(),
         plan: props.plan,
         neighbors: props.neighbors,
+        document,
         preliminary,
       }),
     });
@@ -136,9 +146,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   plan: AutoBeRealizeCollectorPlan;
   neighbors: AutoBeRealizeCollectorPlan[];
   build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
-  >;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 

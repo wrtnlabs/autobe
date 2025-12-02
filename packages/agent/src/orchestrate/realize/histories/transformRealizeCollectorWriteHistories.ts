@@ -1,21 +1,29 @@
-import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApi, AutoBeRealizeCollectorPlan } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 
 export const transformRealizeCollectorWriteHistories = (props: {
-  state: AutoBeState;
-  plan: AutoBeRealizeCollectorPlan;
+  document: AutoBeOpenApi.IDocument;
   neighbors: AutoBeRealizeCollectorPlan[];
-  preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
-  >;
+  plan: AutoBeRealizeCollectorPlan;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): IAutoBeOrchestrateHistory => {
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = {};
+  AutoBeOpenApiTypeChecker.visit({
+    components: props.document.components,
+    closure: (next: AutoBeOpenApi.IJsonSchema) => {
+      if (AutoBeOpenApiTypeChecker.isReference(next)) {
+        const key: string = next.$ref.split("/").pop()!;
+        schemas[key] ??= props.document.components.schemas[key];
+      }
+    },
+    schema: { $ref: `#/components/schemas/${props.plan.dtoTypeName}` },
+  });
   return {
     histories: [
       {
@@ -25,6 +33,18 @@ export const transformRealizeCollectorWriteHistories = (props: {
         text: AutoBeSystemPromptConstant.REALIZE_COLLECTOR_WRITE,
       },
       ...props.preliminary.getHistories(),
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          Here are the relevant schemas for the DTO type ${props.plan.dtoTypeName}:
+
+          \`\`\`json
+          ${JSON.stringify(schemas)}
+          \`\`\`
+        `,
+      },
       {
         id: v7(),
         created_at: new Date().toISOString(),
