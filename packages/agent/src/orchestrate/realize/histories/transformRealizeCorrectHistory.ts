@@ -17,16 +17,19 @@ import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenar
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { transformRealizeOperationWriteHistory } from "./transformRealizeOperationWriteHistory";
 
-export function transformRealizeCorrectHistory<Model extends ILlmSchema.Model>(
+export function transformRealizeCorrectHistory<
+  Model extends ILlmSchema.Model,
+  RealizeFunction extends AutoBeRealizeFunction,
+>(
   ctx: AutoBeContext<Model>,
   props: {
     state: AutoBeState;
     scenario: IAutoBeRealizeScenarioResult;
     authorization: AutoBeRealizeAuthorization | null;
-    function: AutoBeRealizeFunction;
+    function: RealizeFunction;
     totalAuthorizations: AutoBeRealizeAuthorization[];
     dto: Record<string, string>;
-    failures: IAutoBeRealizeFunctionFailure[];
+    failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
     preliminary: AutoBePreliminaryController<
       "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
     >;

@@ -5,6 +5,7 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
@@ -32,7 +33,56 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function writeImportStatements(props: {
+  export function template(plan: AutoBeRealizeCollectorPlan): string {
+    return StringUtil.trim`
+      export namespace ${getName(plan.dtoTypeName)} {
+        export async function collect(props: {
+          body: Payload;
+          ${plan.references
+            .map(
+              (r) =>
+                `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+            )
+            .join("\n")}
+        }) {
+          return {
+            ...
+          } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
+        }
+      }
+    `;
+  }
+
+  export async function replaceImportStatements<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    props: {
+      dtoTypeName: string;
+      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+      code: string;
+    },
+  ): Promise<string> {
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    let code: string = props.code;
+    code = await compiler.typescript.beautify(code);
+    code = code
+      .split("\r\n")
+      .join("\n")
+      .split("\n")
+      .filter((str) => str.trim().startsWith("import") === false)
+      .join("\n");
+
+    const imports: string[] = writeImportStatements(props);
+    code = [
+      ...imports,
+      "",
+      ...getNeighbors(code).map((trs) => `import { ${trs} } from "./${trs}";`),
+      "",
+      code,
+    ].join("\n");
+    return await compiler.typescript.beautify(code);
+  }
+
+  function writeImportStatements(props: {
     dtoTypeName: string;
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }): string[] {
@@ -64,35 +114,6 @@ export namespace AutoBeRealizeCollectorProgrammer {
       `import { PasswordUtil } from "../utils/PasswordUtil";`,
     ];
     return imports;
-  }
-
-  export async function replaceImportStatements<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
-    props: {
-      dtoTypeName: string;
-      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-      code: string;
-    },
-  ): Promise<string> {
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    let code: string = props.code;
-    code = await compiler.typescript.beautify(code);
-    code = code
-      .split("\r\n")
-      .join("\n")
-      .split("\n")
-      .filter((str) => str.trim().startsWith("import") === false)
-      .join("\n");
-
-    const imports: string[] = writeImportStatements(props);
-    code = [
-      ...imports,
-      "",
-      ...getNeighbors(code).map((trs) => `import { ${trs} } from "./${trs}";`),
-      "",
-      code,
-    ].join("\n");
-    return await compiler.typescript.beautify(code);
   }
 
   export function validate(props: {

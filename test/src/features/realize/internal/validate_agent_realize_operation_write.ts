@@ -60,7 +60,7 @@ export const validate_agent_realize_operation_write = async (props: {
       {
         vendor: props.vendor,
         project: props.project,
-        file: "realize.authorizations",
+        file: "realize.authorization",
       },
       () => orchestrateRealizeAuthorizationWrite(agent.getContext()),
     );
@@ -69,7 +69,7 @@ export const validate_agent_realize_operation_write = async (props: {
       {
         vendor: props.vendor,
         project: props.project,
-        file: "realize.collectors",
+        file: "realize.collector.write",
       },
       () => getCollectors(agent),
     );
@@ -78,7 +78,7 @@ export const validate_agent_realize_operation_write = async (props: {
       {
         vendor: props.vendor,
         project: props.project,
-        file: "realize.transformers",
+        file: "realize.transformer.write",
       },
       () => getTransformers(agent),
     );

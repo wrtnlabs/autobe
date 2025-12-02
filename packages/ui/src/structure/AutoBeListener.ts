@@ -197,6 +197,7 @@ export class AutoBeListener {
       //----
       // REALIZE-MAIN
       realizeStart: async (event) => {
+        this.dict_.delete("realizePlan");
         this.dict_.delete("realizeWrite");
         this.dict_.delete("realizeValidate");
         this.dict_.delete("realizeCorrect");
@@ -216,6 +217,7 @@ export class AutoBeListener {
         this.accumulate(event);
       },
       realizeComplete: async (event) => {
+        this.dict_.delete("realizePlan");
         this.dict_.delete("realizeWrite");
         this.dict_.delete("realizeValidate");
         this.dict_.delete("realizeCorrect");

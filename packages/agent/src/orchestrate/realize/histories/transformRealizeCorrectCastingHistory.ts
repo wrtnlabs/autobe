@@ -1,30 +1,19 @@
-import {
-  AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
-} from "@autobe/interface";
+import { AutoBeRealizeFunction } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
-import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 
 export const transformRealizeCorrectCastingHistory = <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
-  props: {
-    scenario: IAutoBeRealizeScenarioResult;
-    authorization: AutoBeRealizeAuthorization | undefined;
-    function: AutoBeRealizeFunction;
-    failures: IAutoBeRealizeFunctionFailure[];
-  },
-): IAutoBeOrchestrateHistory => {
+  RealizeFunction extends AutoBeRealizeFunction,
+>(props: {
+  template: string;
+  function: RealizeFunction;
+  failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
+}): IAutoBeOrchestrateHistory => {
   return {
     histories: [
       {
@@ -57,12 +46,7 @@ export const transformRealizeCorrectCastingHistory = <
 
       Below is template code you wrote:
 
-      ${getRealizeWriteCodeTemplate({
-        scenario: props.scenario,
-        schemas: ctx.state().interface!.document.components.schemas,
-        operation: props.scenario.operation,
-        authorization: props.authorization ?? null,
-      })}
+      ${props.template}
 
       Current code is as follows:
 

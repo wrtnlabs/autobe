@@ -7,7 +7,7 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
+  AutoBeRealizeOperationFunction,
   AutoBeRealizeValidateEvent,
   AutoBeRealizeWriteEvent,
   IAutoBeCompiler,
@@ -69,9 +69,9 @@ export const validate_agent_realize_correct = async (props: {
     ),
   );
 
-  const functions: AutoBeRealizeFunction[] = writeEvents.map(
-    (event) => event.function,
-  );
+  const functions: AutoBeRealizeOperationFunction[] = writeEvents
+    .map((event) => event.function)
+    .filter((f) => f.type === "operation");
   const compilation: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     agent.getContext(),
     {

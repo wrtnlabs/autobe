@@ -20,6 +20,7 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestrateRealizeAuthorizationWrite } from "./orchestrateRealizeAuthorizationWrite";
 import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "./orchestrateRealizeCollectorWrite";
+import { orchestrateRealizeCorrectCasting } from "./orchestrateRealizeCorrectCasting";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
@@ -73,21 +74,27 @@ export const orchestrateRealize =
       completed: 0,
       total: document.operations.length,
     };
+    const correctProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: 0,
+    };
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorizationWrite(ctx);
-    const collectors: AutoBeRealizeCollectorFunction[] = await getCollectors(
+    const collectors: AutoBeRealizeCollectorFunction[] = await makeCollectors(
       ctx,
       {
         planProgress,
         writeProgress,
+        correctProgress,
       },
     );
     const transformers: AutoBeRealizeTransformerFunction[] =
-      await getTransformers(ctx, {
+      await makeTransformers(ctx, {
         planProgress,
         writeProgress,
+        correctProgress,
       });
 
     const operations: AutoBeRealizeOperationFunction[] =
@@ -120,36 +127,69 @@ export const orchestrateRealize =
     });
   };
 
-async function getCollectors(
+async function makeCollectors(
   ctx: AutoBeContext<any>,
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;
+    correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorFunction[]> {
   const plans: AutoBeRealizeCollectorPlan[] =
     await orchestrateRealizeCollectorPlan(ctx, {
       progress: props.planProgress,
     });
-  return await orchestrateRealizeCollectorWrite(ctx, {
-    plans,
-    progress: props.writeProgress,
+  const functions: AutoBeRealizeCollectorFunction[] =
+    await orchestrateRealizeCollectorWrite(ctx, {
+      plans,
+      progress: props.writeProgress,
+    });
+  return await orchestrateRealizeCorrectCasting(ctx, {
+    programmer: {
+      template: (func) => AutoBeRealizeCollectorProgrammer.template(func.plan),
+      replaceImportStatements: (next) =>
+        AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {
+          dtoTypeName: next.function.plan.dtoTypeName,
+          schemas: ctx.state().interface!.document.components.schemas,
+          code: next.code,
+        }),
+      authorizations: [],
+    },
+    functions,
+    progress: props.correctProgress,
   });
 }
 
-async function getTransformers(
+async function makeTransformers(
   ctx: AutoBeContext<any>,
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;
+    correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerFunction[]> {
   const plans: AutoBeRealizeTransformerPlan[] =
     await orchestrateRealizeTransformerPlan(ctx, {
       progress: props.planProgress,
     });
-  return await orchestrateRealizeTransformerWrite(ctx, {
-    plans,
-    progress: props.writeProgress,
+  const functions: AutoBeRealizeTransformerFunction[] =
+    await orchestrateRealizeTransformerWrite(ctx, {
+      plans,
+      progress: props.writeProgress,
+    });
+  return await orchestrateRealizeCorrectCasting(ctx, {
+    programmer: {
+      template: (func) =>
+        AutoBeRealizeTransformerProgrammer.template(func.plan),
+      replaceImportStatements: (next) =>
+        AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
+          dtoTypeName: next.function.plan.dtoTypeName,
+          schemas: ctx.state().interface!.document.components.schemas,
+          code: next.code,
+        }),
+      authorizations: [],
+    },
+    functions,
+    progress: props.correctProgress,
   });
 }

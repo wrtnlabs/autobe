@@ -1,3 +1,5 @@
+import { AutoBeRealizeFunction } from "@autobe/interface";
+
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
 /**
@@ -11,10 +13,12 @@ import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunct
  *          If f.function is undefined, this will throw a runtime error.
  *          Consider using optional chaining: f.function?.location
  */
-export function filterDiagnostics(
-  failures: IAutoBeRealizeFunctionFailure[],
+export function filterDiagnostics<
+  RealizeFunction extends AutoBeRealizeFunction,
+>(
+  failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[],
   locations: string[],
-): IAutoBeRealizeFunctionFailure[] {
+): IAutoBeRealizeFunctionFailure<RealizeFunction>[] {
   return failures
     .filter((f) => f.function.location.startsWith("src/providers"))
     .filter((f) => locations.includes(f.function.location));

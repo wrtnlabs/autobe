@@ -1,6 +1,5 @@
 import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -76,9 +75,6 @@ export const transformRealizeCollectorWriteHistories = (props: {
 };
 
 function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
-  const modulo: string = AutoBeRealizeCollectorProgrammer.getName(
-    plan.dtoTypeName,
-  );
   return StringUtil.trim`
     Here is the declaration of the collector function for 
     the DTO type ${plan.dtoTypeName} and its corresponding
@@ -96,21 +92,7 @@ function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
     }
 
     \`\`\`typescript
-    export namespace ${modulo} {
-      export async function collect(props: {
-        body: ${plan.dtoTypeName};
-        ${plan.references
-          .map(
-            (r) =>
-              `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
-          )
-          .join("\n")}
-      }) {
-        return {
-          ...
-        } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
-      }
-    }
+    ${AutoBeRealizeCollectorProgrammer.template(plan)}
     \`\`\`
   `;
 }
