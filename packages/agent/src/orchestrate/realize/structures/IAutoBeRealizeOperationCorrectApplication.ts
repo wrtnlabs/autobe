@@ -2,7 +2,7 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
-export interface IAutoBeRealizeCorrectApplication {
+export interface IAutoBeRealizeOperationCorrectApplication {
   /**
    * Process provider correction task or preliminary data requests.
    *
@@ -13,10 +13,10 @@ export interface IAutoBeRealizeCorrectApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeRealizeCorrectApplication.IProps): void;
+  process(props: IAutoBeRealizeOperationCorrectApplication.IProps): void;
 }
 
-export namespace IAutoBeRealizeCorrectApplication {
+export namespace IAutoBeRealizeOperationCorrectApplication {
   export interface IProps {
     /**
      * Think before you act.

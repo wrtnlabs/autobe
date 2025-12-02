@@ -36,20 +36,18 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 
 **EXECUTION STRATEGY**:
 1. **Receive Plan Information**: The Prisma schema name is provided to you - no discovery needed
-2. **Analyze DTO Structure**: Understand the target DTO fields and nesting
+2. **Analyze DTO Structure**: Understand the target DTO fields and nesting (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
-   - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
-   - Request schemas strategically - you need BOTH to understand the mapping
+   - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
 4. **Generate Implementation**: Create transform() and select() functions
 5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
-- Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock")
+- Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock") - the system provides complete type information transitively
 - **Use the provided `prismaSchemaName`** from the plan (no discovery needed!)
 - Request Prisma schemas to understand table structure
-- Request Interface schemas to understand exact DTO shape
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
 - Generate both transform() and select() functions in the transformer module
 
@@ -76,7 +74,7 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through the DTO-to-Prisma mapping
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceSchemas):
+**For preliminary requests** (getPrismaSchemas only):
 ```typescript
 {
   thinking: "Need Prisma schemas to find table for IShoppingSaleUnitStock. Don't have it.",
@@ -86,6 +84,7 @@ This is a required self-reflection step that helps you:
 - State what's MISSING that you don't already have
 - Be brief - explain the gap, not what you'll request
 - Don't list specific schema names in thinking
+- Note: All DTO type information is available transitively from the plan's DTO type names
 
 **For completion** (type: "complete"):
 ```typescript
@@ -120,7 +119,7 @@ This is a required self-reflection step that helps you:
 **Good examples**:
 ```typescript
 // CORRECT - brief, focused on gap or accomplishment
-thinking: "Missing Interface schema for DTO structure analysis. Need it."
+thinking: "Missing Prisma schema for DB structure analysis. Need it."
 thinking: "Implemented select+transform with nested relations for provided table"
 thinking: "IAuthorizationToken is business logic type, no DB mapping. Rejecting."
 thinking: "IPageIBbsArticleComment is pagination wrapper, not DB-backed. Rejecting."
@@ -190,7 +189,7 @@ You will receive:
 - **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
 - **Planning Reasoning**: The thinking behind why this DTO needs a transformer
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
-- **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
+- **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 ## Implementation Focus: Using the Provided Prisma Table
 
@@ -214,18 +213,7 @@ You will receive:
    });
    ```
 
-3. **Request Interface schema** to understand DTO structure:
-   ```typescript
-   process({
-     thinking: "Need Interface schema to understand DTO structure.",
-     request: {
-       type: "getInterfaceSchemas",
-       schemaNames: ["IShoppingSaleUnitStock"]
-     }
-   });
-   ```
-
-4. **Analyze the mapping**:
+3. **Analyze the mapping** (DTO type information is already available transitively):
    - Look at DTO fields vs Prisma table columns
    - Identify field name patterns (camelCase in DTO, snake_case in DB)
    - Check for nested objects that indicate relations
@@ -757,8 +745,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     request:
       | IComplete
       | IReject
-      | IAutoBePreliminaryGetPrismaSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetPrismaSchemas;
   }
 
   export interface IComplete {
@@ -894,18 +881,7 @@ process({
 });
 ```
 
-**Phase 2: Request Interface schemas**:
-```typescript
-process({
-  thinking: "Need Interface schema to understand DTO fields.",
-  request: {
-    type: "getInterfaceSchemas",
-    schemaNames: ["IShoppingSaleUnitStock"]
-  }
-});
-```
-
-**Phase 3: Generate transformer** (after receiving both schemas):
+**Phase 2: Generate transformer** (after receiving Prisma schemas - DTO type information is already available transitively):
 ```typescript
 process({
   thinking: "Ready to implement transformer using provided prismaSchemaName.",
@@ -1362,8 +1338,7 @@ export async function transform(input: Payload): Promise<IShoppingSale> {
    - **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - provided by planning phase
    - Planning reasoning
 2. **Request Prisma schema** for the provided table name to understand structure
-3. **Request Interface schema** to understand DTO fields and nesting
-4. **Analyze the mapping**:
+3. **Analyze the mapping** (DTO type information is already available transitively):
    - Compare DTO fields with Prisma table columns
    - Identify field name transformations (snake_case → camelCase)
    - Identify nested objects and relations

@@ -1,4 +1,3 @@
-import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
@@ -10,8 +9,10 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * specifications for efficient data loading.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (Prisma schemas, DTO schemas) → implementation planning → code
- * generation → review and refinement.
+ * gathering (Prisma schemas only) → implementation planning → code generation →
+ * review and refinement. All necessary DTO type information is obtained
+ * transitively from the DTO type names provided in the plan
+ * (AutoBeRealizeTransformerPlan).
  *
  * **Special Case - Rejection**: Not all DTO types require transformers. Some
  * DTOs represent request parameters or business logic types without direct
@@ -42,7 +43,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * For preliminary requests:
      *
-     * - What schemas (Prisma or DTO) are missing that you need?
+     * - What Prisma schemas are missing that you need?
      * - Why do you need them for transformer generation?
      * - Be brief - state the gap, don't list everything you have.
      *
@@ -59,6 +60,9 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - Why doesn't it map to a Prisma table?
      * - Be specific about incompatibility.
      *
+     * Note: All necessary DTO type information is available transitively from
+     * the DTO type names in the plan. You only need to request Prisma schemas.
+     *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
      */
@@ -70,18 +74,19 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Determines which action to perform:
      *
      * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
-     * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final transformer implementation
      * - "reject": Reject transformer generation for incompatible DTO types
+     *
+     * All necessary DTO type information is obtained transitively from the DTO
+     * type names provided in the plan (AutoBeRealizeTransformerPlan). Each DTO
+     * type name allows the system to recursively fetch all referenced types,
+     * providing complete type information without requiring explicit schema
+     * requests.
      *
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request:
-      | IComplete
-      | IReject
-      | IAutoBePreliminaryGetPrismaSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+    request: IComplete | IReject | IAutoBePreliminaryGetPrismaSchemas;
   }
 
   /**
@@ -169,13 +174,11 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    *
    * Use this when the target DTO falls into one of these categories:
    *
-   * 1. **Request Parameter Types**: DTOs used for API input parameters rather
-   *    than response data (e.g., `IPage.IRequest`, `ISort`, `IFilter`)
-   *
-   * 2. **Business Logic Types**: DTOs constructed from business logic rather
-   *    than direct database queries (e.g., `IAuthorizationToken`,
-   *    `IStatistics`, `IDashboardSummary`)
-   *
+   * 1. **Request Parameter Types**: DTOs used for API input parameters rather than
+   *    response data (e.g., `IPage.IRequest`, `ISort`, `IFilter`)
+   * 2. **Business Logic Types**: DTOs constructed from business logic rather than
+   *    direct database queries (e.g., `IAuthorizationToken`, `IStatistics`,
+   *    `IDashboardSummary`)
    * 3. **Computed/Aggregated Types**: DTOs that aggregate data from multiple
    *    tables or require complex business logic (e.g., `IReportSummary`,
    *    `IAnalytics`)
@@ -185,15 +188,14 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    * explanation.
    */
   export interface IReject {
-    /**
-     * Type discriminator for rejection request.
-     */
+    /** Type discriminator for rejection request. */
     type: "reject";
 
     /**
      * Detailed explanation of why transformer generation is rejected.
      *
      * Should clearly explain:
+     *
      * - What category the DTO falls into (request param, business logic, etc.)
      * - Why it doesn't map to a Prisma table
      * - What the DTO represents instead

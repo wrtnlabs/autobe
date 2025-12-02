@@ -2,6 +2,7 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
@@ -21,7 +22,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeTransformerWriteHistories } from "./histories/transformRealizeTransformerWriteHistories";
+import { transformRealizeTransformerWriteHistory } from "./histories/transformRealizeTransformerWriteHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerWriteApplication } from "./structures/IAutoBeRealizeTransformerWriteApplication";
 
@@ -64,22 +65,25 @@ async function process<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerFunction | false> {
+  const models: AutoBePrisma.IModel[] = ctx
+    .state()
+    .prisma!.result.data.files.map((f) => f.models)
+    .flat();
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
-  const preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
-  > = new AutoBePreliminaryController({
-    state: ctx.state(),
-    source: SOURCE,
-    application:
-      typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
-    kinds: ["prismaSchemas", "interfaceSchemas"],
-    local: {
-      interfaceSchemas: {
-        [dtoTypeName]: document.components.schemas[dtoTypeName],
+  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+    new AutoBePreliminaryController({
+      state: ctx.state(),
+      source: SOURCE,
+      application:
+        typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
+      kinds: ["prismaSchemas"],
+      local: {
+        prismaSchemas: models.filter(
+          (m) => m.name === props.plan.prismaSchemaName,
+        ),
       },
-    },
-  });
+    });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<
       | IAutoBeRealizeTransformerWriteApplication.IComplete
@@ -101,10 +105,10 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerWriteHistories({
-        state: ctx.state(),
+      ...transformRealizeTransformerWriteHistory({
         plan: props.plan,
         neighbors: props.neighbors,
+        document,
         preliminary,
       }),
     });
@@ -151,9 +155,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       | IAutoBeRealizeTransformerWriteApplication.IComplete
       | IAutoBeRealizeTransformerWriteApplication.IReject,
   ) => void;
-  preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas"
-  >;
+  preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
 

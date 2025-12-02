@@ -26,8 +26,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformRealizeCorrectHistory } from "./histories/transformRealizeCorrectHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
-import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
+import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
@@ -239,12 +239,13 @@ async function step<Model extends ILlmSchema.Model>(
     "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
   > = new AutoBePreliminaryController({
     source: SOURCE,
-    application: typia.json.application<IAutoBeRealizeCorrectApplication>(),
+    application:
+      typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
     kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeCorrectApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeOperationCorrectApplication.IComplete | null> =
       {
         value: null,
       };
@@ -302,7 +303,7 @@ async function step<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
-  build: (next: IAutoBeRealizeCorrectApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeOperationCorrectApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
   >;
@@ -310,8 +311,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeRealizeCorrectApplication.IProps> =
-      typia.validate<IAutoBeRealizeCorrectApplication.IProps>(input);
+    const result: IValidation<IAutoBeRealizeOperationCorrectApplication.IProps> =
+      typia.validate<IAutoBeRealizeOperationCorrectApplication.IProps>(input);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
@@ -350,25 +351,27 @@ function createController<Model extends ILlmSchema.Model>(props: {
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeRealizeCorrectApplication,
+    } satisfies IAutoBeRealizeOperationCorrectApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCorrectApplication, "chatgpt">({
-      validate: {
-        process: validate,
+    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "chatgpt">(
+      {
+        validate: {
+          process: validate,
+        },
       },
-    }),
+    ),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCorrectApplication, "claude">({
+    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCorrectApplication, "gemini">({
+    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "gemini">({
       validate: {
         process: validate,
       },
@@ -377,6 +380,6 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeRealizeCorrectApplication.IProps>;
+) => IValidation<IAutoBeRealizeOperationCorrectApplication.IProps>;
 
 const SOURCE = "realizeCorrect" satisfies AutoBeEventSource;

@@ -1,4 +1,3 @@
-import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
@@ -10,8 +9,10 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * connect/create syntax.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (Prisma schemas, DTO schemas) → implementation planning → code
- * generation → review and refinement.
+ * gathering (Prisma schemas only) → implementation planning → code generation →
+ * review and refinement. All necessary DTO type information is obtained
+ * transitively from the DTO type names provided in the plan
+ * (AutoBeRealizeCollectorPlan).
  */
 export interface IAutoBeRealizeCollectorWriteApplication {
   /**
@@ -36,15 +37,20 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
-     * - What schemas (Prisma or DTO) are missing that you need?
+     *
+     * - What Prisma schemas are missing that you need?
      * - Why do you need them for collector generation?
      * - Be brief - state the gap, don't list everything you have.
      *
      * For completion:
+     *
      * - What schemas did you acquire?
      * - What collector patterns did you implement?
      * - Why is it sufficient to complete?
      * - Summarize - don't enumerate every field mapping.
+     *
+     * Note: All necessary DTO type information is available transitively from
+     * the DTO type names in the plan. You only need to request Prisma schemas.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -55,24 +61,28 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform:
+     *
      * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
-     * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final collector implementation
+     *
+     * All necessary DTO type information is obtained transitively from the DTO
+     * type names provided in the plan (AutoBeRealizeCollectorPlan). Each DTO
+     * type name allows the system to recursively fetch all referenced types,
+     * providing complete type information without requiring explicit schema
+     * requests.
      *
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request:
-      | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
 
   /**
    * Request to generate collector module implementation.
    *
    * Executes three-phase generation to create complete collector with:
-   * - collect() function: Converts DTO to Prisma input
+   *
+   * - Collect() function: Converts DTO to Prisma input
    * - Proper handling of nested relationships
    * - UUID generation for new records
    * - Type-safe Prisma create/connect syntax
@@ -81,15 +91,14 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
    * relationship handling.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for completion request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
      * Collector implementation plan and strategy.
      *
      * Analyzes the DTO type and Prisma schema to plan the collection logic:
+     *
      * - Identifies field mappings (DTO property → Prisma input field)
      * - Plans nested relationship handling (create vs connect)
      * - Determines UUID generation points
@@ -101,8 +110,9 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * Initial collector implementation draft.
      *
      * The first complete implementation including:
+     *
      * - Namespace declaration
-     * - collect() function with proper types
+     * - Collect() function with proper types
      * - Nested collector calls if needed
      * - UUID generation using v4()
      * - Proper Prisma CreateInput types
@@ -123,6 +133,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * Review and improvement suggestions.
      *
      * Identifies areas for improvement in the draft code:
+     *
      * - Type safety (proper Prisma input types)
      * - Field mapping accuracy
      * - Relationship handling (create/connect/disconnect)

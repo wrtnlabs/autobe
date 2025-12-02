@@ -6,7 +6,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformRealizeTransformerPlanHistories = (props: {
+export const transformRealizeTransformerPlanHistory = (props: {
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"

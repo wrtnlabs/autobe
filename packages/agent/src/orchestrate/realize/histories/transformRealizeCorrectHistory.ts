@@ -48,7 +48,7 @@ export function transformRealizeCorrectHistory<
       {
         id: v7(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
+        text: AutoBeSystemPromptConstant.REALIZE_OPERATION_CORRECT,
         created_at: new Date().toISOString(),
       },
       ...transformPreviousAndLatestCorrectHistory(
