@@ -1,9 +1,9 @@
-import { AutoBeTestScenario, AutoBeTestWriteFunction } from "@autobe/interface";
+import { AutoBeTestWriteFunction } from "@autobe/interface";
 
 import { IAutoBeTestScenarioArtifacts } from "./IAutoBeTestScenarioArtifacts";
 
 export interface IAutoBeTestWriteResult {
-  scenario: AutoBeTestScenario;
+  type: "write";
   artifacts: IAutoBeTestScenarioArtifacts;
-  event: AutoBeTestWriteFunction;
+  function: AutoBeTestWriteFunction;
 }
