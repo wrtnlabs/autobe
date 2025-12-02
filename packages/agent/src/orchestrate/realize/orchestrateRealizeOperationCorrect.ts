@@ -2,9 +2,11 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
   AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import {
   ILlmApplication,
@@ -37,6 +39,8 @@ export async function orchestrateRealizeOperationCorrect<
   props: {
     scenarios: IAutoBeRealizeScenarioResult[];
     authorizations: AutoBeRealizeAuthorization[];
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
     functions: AutoBeRealizeOperationFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -44,8 +48,13 @@ export async function orchestrateRealizeOperationCorrect<
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
   const event = await compileRealizeFiles(ctx, {
-    authorizations: props.authorizations,
     functions: props.functions,
+    additional: AutoBeRealizeOperationProgrammer.getAdditional({
+      functions: props.functions,
+      authorizations: props.authorizations,
+      collectors: props.collectors,
+      transformers: props.transformers,
+    }),
   });
   if (event.result.type !== "failure") return props.functions;
   else if (life < 0) return props.functions;
@@ -119,6 +128,8 @@ export async function orchestrateRealizeOperationCorrect<
     ctx,
     {
       scenarios: props.scenarios,
+      collectors: props.collectors,
+      transformers: props.transformers,
       authorizations: props.authorizations,
       functions: corrected,
       previousFailures: [...props.previousFailures, newFailures],

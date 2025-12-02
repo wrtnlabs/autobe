@@ -1,8 +1,8 @@
 import {
-  AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeCompiler,
+  IAutoBePrismaCompileResult,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -13,14 +13,12 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    authorizations: AutoBeRealizeAuthorization[];
     functions: AutoBeRealizeFunction[];
+    additional: Record<string, string>;
   },
 ): Promise<AutoBeRealizeValidateEvent> {
-  const prisma = ctx.state().prisma?.compiled;
-  const payloads: Record<string, string> = Object.fromEntries(
-    props.authorizations.map((el) => [el.payload.location, el.payload.content]),
-  );
+  const prisma: IAutoBePrismaCompileResult | undefined =
+    ctx.state().prisma?.compiled;
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const templateFiles: Record<string, string> = await compiler.getTemplate({
     phase: "realize",
@@ -34,7 +32,7 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
 
   const files: Record<string, string> = {
     ...client,
-    ...payloads,
+    ...props.additional,
     ...Object.fromEntries(
       Object.entries(await ctx.files({ dbms: "sqlite" })).filter(([key]) =>
         filterTsFiles(key),

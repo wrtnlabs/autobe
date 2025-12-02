@@ -44,7 +44,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
-  export function template(plan: AutoBeRealizeTransformerPlan): string {
+  export function getTemplate(plan: AutoBeRealizeTransformerPlan): string {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
         export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {

@@ -46,8 +46,13 @@ export const test_compiler_realize_files = async () => {
   const event: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     agent.getContext(),
     {
-      authorizations: realize.authorizations,
       functions: realize.functions,
+      additional: Object.fromEntries(
+        realize.authorizations.map((auth) => [
+          auth.payload.location,
+          auth.payload.content,
+        ]),
+      ),
     },
   );
   if (event.result.type === "failure") console.log(event.result.diagnostics);

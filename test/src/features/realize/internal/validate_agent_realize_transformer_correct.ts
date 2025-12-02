@@ -74,7 +74,7 @@ export const validate_agent_realize_transformer_correct = async (props: {
     await orchestrateRealizeCorrectCasting(agent.getContext(), {
       programmer: {
         template: (func) =>
-          AutoBeRealizeTransformerProgrammer.template(func.plan),
+          AutoBeRealizeTransformerProgrammer.getTemplate(func.plan),
         replaceImportStatements: (next) =>
           AutoBeRealizeTransformerProgrammer.replaceImportStatements(
             agent.getContext(),
@@ -85,7 +85,7 @@ export const validate_agent_realize_transformer_correct = async (props: {
               code: next.code,
             },
           ),
-        authorizations: [],
+        additional: () => ({}),
       },
       functions: writes,
       progress: {

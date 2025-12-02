@@ -92,7 +92,7 @@ function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
     }
 
     \`\`\`typescript
-    ${AutoBeRealizeCollectorProgrammer.template(plan)}
+    ${AutoBeRealizeCollectorProgrammer.getTemplate(plan)}
     \`\`\`
   `;
 }

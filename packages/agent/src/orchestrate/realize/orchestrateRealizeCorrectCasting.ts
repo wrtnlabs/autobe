@@ -1,6 +1,5 @@
 import {
   AutoBeProgressEventBase,
-  AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
@@ -34,7 +33,7 @@ interface IProgrammer<RealizeFunction extends AutoBeRealizeFunction> {
     function: RealizeFunction;
     code: string;
   }): Promise<string>;
-  authorizations: AutoBeRealizeAuthorization[];
+  additional(functions: RealizeFunction[]): Record<string, string>;
 }
 
 export const orchestrateRealizeCorrectCasting = async <
@@ -52,8 +51,8 @@ export const orchestrateRealizeCorrectCasting = async <
   const validateEvent: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
     {
-      authorizations: props.programmer.authorizations,
       functions: props.functions,
+      additional: props.programmer.additional(props.functions),
     },
   );
   return predicate(
@@ -218,8 +217,8 @@ const correct = async <
   const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
     {
-      authorizations: props.programmer.authorizations,
       functions: allFunctionsForValidation,
+      additional: props.programmer.additional(allFunctionsForValidation),
     },
   );
 

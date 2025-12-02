@@ -25,7 +25,9 @@ import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationW
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -79,7 +81,6 @@ export const orchestrateRealize =
       total: 0,
     };
 
-    const compiler: IAutoBeCompiler = await ctx.compiler();
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorizationWrite(ctx);
     const collectors: AutoBeRealizeCollectorFunction[] = await makeCollectors(
@@ -96,15 +97,18 @@ export const orchestrateRealize =
         writeProgress,
         correctProgress,
       });
-
-    const operations: AutoBeRealizeOperationFunction[] =
-      await orchestrateRealizeOperationWrite(ctx, {
+    const operations: AutoBeRealizeOperationFunction[] = await makeOperations(
+      ctx,
+      {
         authorizations,
         collectors,
         transformers,
-        progress: writeProgress,
-      });
+        writeProgress,
+        correctProgress,
+      },
+    );
 
+    const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
       await compiler.realize.controller({
         document: ctx.state().interface!.document,
@@ -139,23 +143,24 @@ async function makeCollectors(
     await orchestrateRealizeCollectorPlan(ctx, {
       progress: props.planProgress,
     });
-  const functions: AutoBeRealizeCollectorFunction[] =
+  const writes: AutoBeRealizeCollectorFunction[] =
     await orchestrateRealizeCollectorWrite(ctx, {
       plans,
       progress: props.writeProgress,
     });
   return await orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
-      template: (func) => AutoBeRealizeCollectorProgrammer.template(func.plan),
+      template: (func) =>
+        AutoBeRealizeCollectorProgrammer.getTemplate(func.plan),
       replaceImportStatements: (next) =>
         AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {
           dtoTypeName: next.function.plan.dtoTypeName,
           schemas: ctx.state().interface!.document.components.schemas,
           code: next.code,
         }),
-      authorizations: [],
+      additional: () => ({}),
     },
-    functions,
+    functions: writes,
     progress: props.correctProgress,
   });
 }
@@ -172,7 +177,7 @@ async function makeTransformers(
     await orchestrateRealizeTransformerPlan(ctx, {
       progress: props.planProgress,
     });
-  const functions: AutoBeRealizeTransformerFunction[] =
+  const writes: AutoBeRealizeTransformerFunction[] =
     await orchestrateRealizeTransformerWrite(ctx, {
       plans,
       progress: props.writeProgress,
@@ -180,16 +185,81 @@ async function makeTransformers(
   return await orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
       template: (func) =>
-        AutoBeRealizeTransformerProgrammer.template(func.plan),
+        AutoBeRealizeTransformerProgrammer.getTemplate(func.plan),
       replaceImportStatements: (next) =>
         AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
           dtoTypeName: next.function.plan.dtoTypeName,
           schemas: ctx.state().interface!.document.components.schemas,
           code: next.code,
         }),
-      authorizations: [],
+      additional: () => ({}),
     },
-    functions,
+    functions: writes,
     progress: props.correctProgress,
   });
+}
+
+async function makeOperations<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    authorizations: AutoBeRealizeAuthorization[];
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
+    writeProgress: AutoBeProgressEventBase;
+    correctProgress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeOperationFunction[]> {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const writes: AutoBeRealizeOperationFunction[] =
+    await orchestrateRealizeOperationWrite(ctx, {
+      authorizations: props.authorizations,
+      collectors: props.collectors,
+      transformers: props.transformers,
+      progress: props.writeProgress,
+    });
+  const castings: AutoBeRealizeOperationFunction[] =
+    await orchestrateRealizeCorrectCasting(ctx, {
+      programmer: {
+        template: (func) =>
+          AutoBeRealizeOperationProgrammer.getTemplate({
+            authorizations: props.authorizations,
+            schemas: document.components.schemas,
+            operation: document.operations.find(
+              (o) =>
+                o.method === func.endpoint.method &&
+                o.path === func.endpoint.path,
+            )!,
+          }),
+        replaceImportStatements: async (next) => {
+          const scenario: IAutoBeRealizeScenarioResult =
+            AutoBeRealizeOperationProgrammer.getScenario({
+              authorizations: props.authorizations,
+              operation: document.operations.find(
+                (o) =>
+                  o.method === next.function.endpoint.method &&
+                  o.path === next.function.endpoint.path,
+              )!,
+            });
+          return await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+            ctx,
+            {
+              operation: scenario.operation,
+              schemas: document.components.schemas,
+              code: next.code,
+              decoratorType: scenario.decoratorEvent?.decorator.name,
+            },
+          );
+        },
+        additional: (functions) =>
+          AutoBeRealizeOperationProgrammer.getAdditional({
+            authorizations: props.authorizations,
+            collectors: props.collectors,
+            transformers: props.transformers,
+            functions,
+          }),
+      },
+      functions: writes,
+      progress: props.correctProgress,
+    });
+  return castings;
 }

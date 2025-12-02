@@ -33,7 +33,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function template(plan: AutoBeRealizeCollectorPlan): string {
+  export function getTemplate(plan: AutoBeRealizeCollectorPlan): string {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
         export async function collect(props: {
