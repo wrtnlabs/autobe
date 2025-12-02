@@ -1,11 +1,8 @@
 import { orchestrateTestWritePrepare } from "@autobe/agent/src/orchestrate/test/orchestrateTestWritePrepare";
+import { IAutoBeTestPrepareWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestPrepareWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
-import {
-  AutoBeEventOfSerializable,
-  AutoBeOpenApi,
-  AutoBeTestWritePrepareFunction,
-} from "@autobe/interface";
+import { AutoBeEventOfSerializable, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import typia from "typia";
 
@@ -30,7 +27,7 @@ export const validate_agent_test_write_prepare = async (props: {
   // GENERATE TEST PREPARE FUNCTIONS
   const operations: AutoBeOpenApi.IOperation[] =
     interfaceState.document.operations;
-  const result: AutoBeTestWritePrepareFunction[] =
+  const result: IAutoBeTestPrepareWriteResult[] =
     await orchestrateTestWritePrepare(
       agent.getContext(),
       "Generate test data preparation functions for all ICreate DTOs.",
@@ -52,7 +49,7 @@ export const validate_agent_test_write_prepare = async (props: {
     }
   }
 
-  const generatedTypes = new Set(result.map((func) => func.dtoTypeName));
+  const generatedTypes = new Set(result.map((res) => res.function.dtoTypeName));
   const missingTypes = Array.from(createDtoTypes).filter(
     (type) => !generatedTypes.has(type),
   );
@@ -64,15 +61,17 @@ export const validate_agent_test_write_prepare = async (props: {
   }
 
   // Validate function content
-  for (const func of result) {
+  for (const res of result) {
     // Check that function has proper structure
-    if (!func.content.includes("export")) {
-      throw new Error(`Prepare function ${func.functionName} does not export`);
+    if (!res.function.content.includes("export")) {
+      throw new Error(
+        `Prepare function ${res.function.functionName} does not export`,
+      );
     }
     // Check function name convention
-    if (!func.functionName.startsWith("prepare_random_")) {
+    if (!res.function.functionName.startsWith("prepare_random_")) {
       throw new Error(
-        `Function name ${func.functionName} does not follow naming convention`,
+        `Function name ${res.function.functionName} does not follow naming convention`,
       );
     }
   }
@@ -83,8 +82,8 @@ export const validate_agent_test_write_prepare = async (props: {
   };
 
   // Add generated prepare functions to files
-  for (const func of result) {
-    files[func.location] = func.content;
+  for (const res of result) {
+    files[res.function.location] = res.function.content;
   }
 
   await FileSystemIterator.save({
@@ -102,6 +101,5 @@ export const validate_agent_test_write_prepare = async (props: {
     });
   }
 
-  console.log(`Generated ${result.length} prepare functions`);
   return true;
 };
