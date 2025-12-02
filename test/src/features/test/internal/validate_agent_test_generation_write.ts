@@ -1,10 +1,10 @@
 import { orchestrateTestGenerationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestGenerationWrite";
+import { IAutoBeTestGenerationWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestGenerationWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestGenerationWriteFunction,
   AutoBeTestPrepareWriteFunction,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -65,7 +65,7 @@ export const validate_agent_test_generation_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE GENERATION FUNCTIONS
-  const generationFunctions: AutoBeTestGenerationWriteFunction[] =
+  const generationResults: IAutoBeTestGenerationWriteResult[] =
     await orchestrateTestGenerationWrite(agent.getContext(), {
       instruction: "Generate generation functions for the prepared functions.",
       document,
@@ -77,7 +77,7 @@ export const validate_agent_test_generation_write = async (props: {
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.endsWith(".ts") && !key.startsWith("test/"),
     ),
-    ...generationFunctions.map((func) => [func.location, func.content]),
+    ...generationResults.map((r) => [r.function.location, r.function.content]),
   ]);
 
   const compiler: IAutoBeCompiler = await agent.getContext().compiler();
@@ -93,8 +93,8 @@ export const validate_agent_test_generation_write = async (props: {
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/test/generation`,
     files: {
       ...files,
-      "logs/generation_functions.json": JSON.stringify(
-        generationFunctions,
+      "logs/generation-functions.json": JSON.stringify(
+        generationResults.map((r) => r.function),
         null,
         2,
       ),
@@ -107,13 +107,13 @@ export const validate_agent_test_generation_write = async (props: {
       vendor: props.vendor,
       project: props.project,
       files: {
-        [`test.generation_functions.json`]: JSON.stringify(generationFunctions),
+        [`test.write-generation.json`]: JSON.stringify(generationResults),
       },
     });
   }
 
   // VALIDATE RESULTS
-  if (generationFunctions.length === 0) {
+  if (generationResults.length === 0) {
     console.warn(
       `⚠️  No generation functions were created for ${props.project}`,
     );
@@ -129,8 +129,5 @@ export const validate_agent_test_generation_write = async (props: {
     return false;
   }
 
-  console.log(
-    `✅ Generated ${generationFunctions.length} generation functions for ${props.project}`,
-  );
   return true;
 };

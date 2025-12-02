@@ -1,11 +1,11 @@
 import { orchestrateTestAuthorizationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestAuthorizationWrite";
+import { IAutoBeTestAuthorizationWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestAuthorizationWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestAuthorizationWriteFunction,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -42,7 +42,7 @@ export const validate_agent_test_authorization_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE AUTHORIZATION FUNCTIONS
-  const authFunctions: AutoBeTestAuthorizationWriteFunction[] =
+  const authResults: IAutoBeTestAuthorizationWriteResult[] =
     await orchestrateTestAuthorizationWrite(agent.getContext(), {
       operations,
     });
@@ -53,7 +53,7 @@ export const validate_agent_test_authorization_write = async (props: {
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.startsWith("test") === false,
     ),
-    ...authFunctions.map((f) => [f.location, f.content]),
+    ...authResults.map((r) => [r.function.location, r.function.content]),
   ]);
 
   const result: IAutoBeTypeScriptCompileResult =
@@ -73,7 +73,9 @@ export const validate_agent_test_authorization_write = async (props: {
       ...files,
       "test/tsconfig.json":
         AutoBeCompilerInterfaceTemplate["test/tsconfig.json"],
-      "logs/auth_functions.json": JSON.stringify(authFunctions),
+      "logs/authorization-functions.json": JSON.stringify(
+        authResults.map((r) => r.function),
+      ),
       "logs/compiled.json": JSON.stringify(result),
     },
   });
@@ -83,7 +85,7 @@ export const validate_agent_test_authorization_write = async (props: {
       vendor: props.vendor,
       project: props.project,
       files: {
-        [`test.write_authorization.json`]: JSON.stringify(authFunctions),
+        [`test.write-authorization.json`]: JSON.stringify(authResults),
       },
     });
 };
