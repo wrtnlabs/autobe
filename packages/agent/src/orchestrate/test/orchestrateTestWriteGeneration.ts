@@ -3,7 +3,6 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestWriteEvent,
-  AutoBeTestWriteGenerationFunction,
   AutoBeTestWritePrepareFunction,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -19,13 +18,8 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteGenerationHistory } from "./histories/transformTestWriteGenerationHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
 import { IAutoBeTestWriteGenerationApplication } from "./structures/IAutoBeTestWriteGenerationApplication";
-
-interface IAutoBeTestWriteGenerationResult {
-  prepareFunction: AutoBeTestWritePrepareFunction;
-  operation: AutoBeOpenApi.IOperation;
-  event: AutoBeTestWriteGenerationFunction;
-}
 
 export const orchestrateTestWriteGeneration = async <
   Model extends ILlmSchema.Model,
@@ -36,13 +30,13 @@ export const orchestrateTestWriteGeneration = async <
     document: AutoBeOpenApi.IDocument;
     preparedFunctions: AutoBeTestWritePrepareFunction[];
   },
-): Promise<AutoBeTestWriteGenerationFunction[]> => {
+): Promise<IAutoBeTestGenerationWriteResult[]> => {
   const progress: AutoBeProgressEventBase = {
     total: props.preparedFunctions.length,
     completed: 0,
   };
 
-  const result: Array<IAutoBeTestWriteGenerationResult | null> =
+  const result: Array<IAutoBeTestGenerationWriteResult | null> =
     await executeCachedBatch(
       ctx,
       props.preparedFunctions.map(
@@ -56,25 +50,30 @@ export const orchestrateTestWriteGeneration = async <
             );
             if (!operation) return null;
 
+            const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(
+              ctx,
+              {
+                endpoint: prepareFunction.endpoint,
+              },
+            );
+
             const event: AutoBeTestWriteEvent = await process(ctx, {
               prepareFunction,
+              artifacts,
               operation,
               progress,
               promptCacheKey,
               instruction: props.instruction,
             });
+            if (event.function.kind !== "generation") return null;
+
             ctx.dispatch(event);
-
-            if (event.function.kind !== "generation")
-              throw new Error(
-                `Unexpected testWrite function kind: ${event.function.kind}`,
-              );
-
             return {
+              type: "generation",
               prepareFunction,
-              operation,
-              event: event.function,
-            } satisfies IAutoBeTestWriteGenerationResult;
+              artifacts,
+              function: event.function,
+            } satisfies IAutoBeTestGenerationWriteResult;
           } catch {
             return null;
           }
@@ -82,27 +81,22 @@ export const orchestrateTestWriteGeneration = async <
       ),
     );
 
-  return result
-    .filter((r): r is IAutoBeTestWriteGenerationResult => r !== null)
-    .map((r) => r.event);
+  return result.filter((r) => r !== null);
 };
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     prepareFunction: AutoBeTestWritePrepareFunction;
+    artifacts: IAutoBeTestArtifacts;
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { prepareFunction, operation, progress, promptCacheKey } = props;
-
-  // Get artifacts for this specific operation
-  const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-    endpoint: prepareFunction.endpoint,
-  });
+  const { prepareFunction, artifacts, operation, progress, promptCacheKey } =
+    props;
 
   const pointer: IPointer<IAutoBeTestWriteGenerationApplication.IProps | null> =
     {
@@ -127,8 +121,10 @@ async function process<Model extends ILlmSchema.Model>(
     ),
   });
 
-  if (pointer.value === null)
+  if (pointer.value === null) {
+    ++progress.completed;
     throw new Error("Failed to create generation function.");
+  }
 
   // Generate prepare function import statement
   const prepareFunctionImport = `import { ${prepareFunction.functionName} } from "../prepare/${prepareFunction.functionName}";`;
