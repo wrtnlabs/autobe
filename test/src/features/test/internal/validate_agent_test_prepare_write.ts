@@ -28,10 +28,11 @@ export const validate_agent_test_prepare_write = async (props: {
   const operations: AutoBeOpenApi.IOperation[] =
     interfaceState.document.operations;
   const result: IAutoBeTestPrepareWriteResult[] =
-    await orchestrateTestPrepareWrite(
-      agent.getContext(),
-      "Generate test data preparation functions for all ICreate DTOs.",
-    );
+    await orchestrateTestPrepareWrite(agent.getContext(), {
+      instruction:
+        "Generate test data preparation functions for all ICreate DTOs.",
+      document: interfaceState.document,
+    });
   typia.assert(result);
 
   // VALIDATE PREPARE FUNCTIONS
