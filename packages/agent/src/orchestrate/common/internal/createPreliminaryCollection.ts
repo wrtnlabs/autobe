@@ -32,11 +32,11 @@ export function createPreliminaryCollection(
       {},
     realizeCollectors:
       defined?.realizeCollectors ??
-      state.realize?.functions.filter((f) => f.kind === "collector") ??
+      state.realize?.functions.filter((f) => f.type === "collector") ??
       [],
     realizeTransformers:
       defined?.realizeTransformers ??
-      state.realize?.functions.filter((f) => f.kind === "transformer") ??
+      state.realize?.functions.filter((f) => f.type === "transformer") ??
       [],
   };
 }

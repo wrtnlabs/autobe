@@ -30,7 +30,7 @@ export const writeRealizeControllers = async (
             (o) => o.method === ctx.route.method && o.path === ctx.route.path,
           );
         const func: AutoBeRealizeOperationFunction | undefined = props.functions
-          .filter((f) => f.kind === "operation")
+          .filter((f) => f.type === "operation")
           .find(
             (f) =>
               f.endpoint.method === ctx.route.method &&

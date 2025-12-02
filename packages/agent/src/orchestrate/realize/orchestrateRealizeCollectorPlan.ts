@@ -130,7 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
     const plans: AutoBeRealizeCollectorPlan[] = pointer.value.plans
       .filter((p) => p.prismaSchemaName !== null)
       .map((p) => ({
-        kind: "collector" as const,
+        type: "collector",
         dtoTypeName: p.dtoTypeName,
         thinking: p.thinking,
         prismaSchemaName: p.prismaSchemaName!,

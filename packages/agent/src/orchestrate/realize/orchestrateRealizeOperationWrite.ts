@@ -147,7 +147,7 @@ async function process<Model extends ILlmSchema.Model>(
     });
     if (pointer.value !== null) {
       const functor: AutoBeRealizeOperationFunction = {
-        kind: "operation",
+        type: "operation",
         endpoint: {
           method: props.scenario.operation.method,
           path: props.scenario.operation.path,

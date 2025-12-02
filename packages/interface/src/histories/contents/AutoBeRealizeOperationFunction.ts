@@ -11,10 +11,8 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * @author Kakasoo
  */
 export interface AutoBeRealizeOperationFunction {
-  /**
-   * Type discriminator for operation function.
-   */
-  kind: "operation";
+  /** Type discriminator for operation function. */
+  type: "operation";
 
   /**
    * OpenAPI endpoint specification

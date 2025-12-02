@@ -110,7 +110,7 @@ async function process<Model extends ILlmSchema.Model>(
         code: pointer.value.revise.final ?? pointer.value.draft,
       });
     const functor: AutoBeRealizeCollectorFunction = {
-      kind: "collector",
+      type: "collector",
       plan: props.plan,
       neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
       location,

@@ -1,5 +1,5 @@
 import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compileRealizeFiles";
-import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrect";
+import { orchestrateRealizeOperationCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeOperationCorrect";
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
@@ -96,14 +96,13 @@ export const validate_agent_realize_correct = async (props: {
   };
 
   reviewProgress.total += Object.keys(failedFiles).length;
-  await orchestrateRealizeCorrect(
-    agent.getContext(),
+  await orchestrateRealizeOperationCorrect(agent.getContext(), {
     scenarios,
     authorizations,
     functions,
-    [],
-    reviewProgress,
-  );
+    previousFailures: [],
+    progress: reviewProgress,
+  });
 
   const compiler: IAutoBeCompiler = await agent.getContext().compiler();
   const controllers: Record<string, string> = await compiler.realize.controller(

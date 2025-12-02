@@ -19,7 +19,7 @@
  */
 export interface AutoBeRealizeTransformerPlan {
   /** Type discriminator for plan kind. */
-  kind: "transformer";
+  type: "transformer";
 
   /**
    * Response DTO type name for which the transformer will be generated.

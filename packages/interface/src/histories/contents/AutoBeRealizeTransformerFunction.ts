@@ -15,7 +15,7 @@ import { AutoBeRealizeTransformerPlan } from "./AutoBeRealizeTransformerPlan";
  */
 export interface AutoBeRealizeTransformerFunction {
   /** Type discriminator for transformer function. */
-  kind: "transformer";
+  type: "transformer";
 
   /**
    * Planning information for this transformer.
