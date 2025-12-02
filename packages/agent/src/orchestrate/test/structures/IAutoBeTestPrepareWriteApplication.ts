@@ -3,11 +3,11 @@ export interface IAutoBeTestPrepareWriteApplication {
    * Generates type-safe test data preparation functions for E2E testing.
    *
    * This function analyzes ICreate DTO schemas and generates prepare functions
-   * that create realistic, constraint-compliant test data while maintaining
-   * security by excluding sensitive fields from user control.
+   * that create realistic, constraint-compliant test data while including only
+   * fields that benefit from test-time customization in input parameters.
    *
    * Key responsibilities:
-   * - Classify properties into user-controllable vs system-managed fields
+   * - Classify properties into test-customizable vs auto-generated fields
    * - Generate functions using Pick<ICreate, "field1" | "field2"> pattern (NEVER Partial)
    * - Utilize RandomGenerator utilities for realistic data generation
    * - Respect all schema validation constraints (min/max, patterns, formats)
@@ -40,9 +40,9 @@ export namespace IAutoBeTestPrepareWriteApplication {
      *
      * Requirements:
      * - Import namespaces for DTOs (e.g., IBbsArticle, not IBbsArticle.ICreate)
-     * - Use Pick<> to explicitly select user-controllable fields
+     * - Use Pick<> to explicitly select test-customizable fields
      * - NEVER use Partial<> for input parameter type
-     * - Generate system fields (id, timestamps) internally
+     * - Generate auto-fields (id, timestamps) internally
      * - Use RandomGenerator utilities for realistic data
      */
     draft: string;
@@ -69,11 +69,11 @@ export namespace IAutoBeTestPrepareWriteApplication {
    */
   export interface IReviseProps {
     /**
-     * Security and quality review of the draft implementation.
+     * Field selection and quality review of the draft implementation.
      *
      * Checks for:
      * - Proper use of Pick<> instead of Partial<>
-     * - Exclusion of sensitive fields from input parameter
+     * - Inclusion of only test-beneficial fields in input parameter
      * - Realistic data generation patterns
      * - Constraint compliance (validation rules)
      * - Proper use of RandomGenerator utilities
@@ -84,7 +84,7 @@ export namespace IAutoBeTestPrepareWriteApplication {
      * Final optimized implementation after review.
      *
      * Contains the production-ready prepare function with:
-     * - All security concerns addressed
+     * - Optimal field selection for test efficiency
      * - Optimized RandomGenerator usage
      * - Complete constraint compliance
      * - Clean, maintainable code structure
