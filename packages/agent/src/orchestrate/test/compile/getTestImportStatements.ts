@@ -14,6 +14,7 @@ export const getTestImportStatements = (
     import { IConnection } from "@nestia/fetcher";
     import { randint } from "tstl";
     import typia, { tags } from "typia";
+    import { DeepPartial } from "test/utils/DeepPartial";
     
     import api from "@ORGANIZATION/PROJECT-api";
     ${typeReferences
