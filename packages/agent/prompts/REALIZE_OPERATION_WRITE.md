@@ -1029,185 +1029,313 @@ When using Pattern B, **YOU become the collector and transformer**. All the auto
 - You must handle every edge case correctly
 - You become responsible for maintaining consistency
 
-## Understanding Each Responsibility (Concept)
+---
 
-Before diving into examples, let's understand each manual responsibility in detail.
+## 📖 PART 1: Fundamental Principles
 
-### For CREATE/UPDATE Operations (Replacing Collector)
+### The Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH
 
-When you don't have a collector, you must manually handle these responsibilities:
+**CRITICAL**: Before writing ANY Prisma query or CreateInput, you MUST:
 
-#### 1. UUID Generation
+1. **READ the Prisma schema thoroughly** - Every model, every field, every relation
+2. **VERIFY field names** - Exact spelling, case-sensitive
+3. **VERIFY relation names** - Use relation names (e.g., `customer`), NOT foreign key columns (e.g., `customer_id`)
+4. **VERIFY field types** - Scalar field (direct assignment) vs Relation field (connect/create syntax)
+5. **NEVER fabricate, imagine, or guess** - Only use what EXISTS in the schema
 
-**What**: Generate unique identifiers for new records.
+**The schema defines**:
+- What tables (models) exist
+- What fields each model has
+- What relationships exist between models
+- Which fields are required vs optional
+- Which fields are unique or indexed
 
-**Why**: Every database record needs a unique ID. Prisma doesn't auto-generate UUIDs.
+**You MUST consult the Prisma schema before**:
+- Writing any `select` statement (READ operations)
+- Writing any CreateInput data (CREATE operations)
+- Referencing any field or relation name
+- Assuming anything about the database structure
 
-**How**:
+---
+
+## 🔍 PART 2: TRANSFORMER REPLACEMENT (READ Operations)
+
+When Transformer doesn't exist, you must manually handle Prisma query results and transform them into API response DTOs.
+
+### Section 2.1: Understanding Prisma Select Syntax
+
+#### What is Prisma Select?
+
+**Prisma Select** is the mechanism for specifying which fields to fetch from the database. It's the foundation of efficient database queries and correct type inference.
+
+**Input**: A select object specifying fields to fetch
+**Output**: Prisma query result with only the selected fields
+
+#### Why Use Select Instead of Include?
+
+**select vs include**:
+- `select`: **Explicitly specify** which fields to fetch (✅ **REQUIRED**)
+- `include`: Add relations to default fields (❌ **FORBIDDEN** - causes over-fetching and type issues)
+
 ```typescript
-import { v4 } from "uuid";
+// ✅ CORRECT - Using select
+const article = await MyGlobal.prisma.bbs_articles.findUnique({
+  where: { id: props.articleId },
+  select: {
+    id: true,
+    title: true,
+    content: true,
+    created_at: true,
+    // Nested relation
+    author: {
+      select: {
+        id: true,
+        name: true,
+      }
+    }
+  }
+});
 
-// Generate and apply branded type
-id: v4()
+// ❌ WRONG - Using include (FORBIDDEN!)
+const article = await MyGlobal.prisma.bbs_articles.findUnique({
+  where: { id: props.articleId },
+  include: {
+    author: true,  // ❌ Fetches ALL author fields, causes type issues
+  }
+});
 ```
 
-**Critical Points**:
-- Import `v4` from `"uuid"` library
-- MUST cast to branded type: `as string & tags.Format<"uuid">`
-- Without branded type, TypeScript compilation will fail
-- Generate for ALL ID fields (primary keys, foreign keys if creating nested objects)
+**Why select is required**:
+1. **Performance**: Only fetch data you actually need
+2. **Type Safety**: TypeScript knows exactly which fields are present
+3. **Consistency**: Matches transformer pattern used in Pattern A
+4. **Over-fetching Prevention**: Avoid loading unnecessary data from database
 
-#### 2. Timestamp Creation
+#### Scalar Fields vs Relation Fields in SELECT
 
-**What**: Set `created_at` and `updated_at` timestamps.
+**Scalar Fields**: Regular database columns - set to `true` to fetch
+**Relation Fields**: Foreign key relationships - use nested select object
 
-**Why**: Track when records are created and modified.
-
-**How**:
 ```typescript
-import { toISOStringSafe } from "some-utility";
+// Prisma Schema Example:
+model shopping_sales {
+  id          String   @id @db.Uuid
+  title       String   @db.VarChar
+  price       Int
+  created_at  DateTime
 
-created_at: toISOStringSafe(new Date())
-updated_at: toISOStringSafe(new Date())
-```
+  // Relation fields (NOT columns, these are Prisma relations)
+  customer    shopping_customers @relation(fields: [customer_id], references: [id])
+  customer_id String             @db.Uuid
+}
 
-**Critical Points**:
-- ALWAYS use `toISOStringSafe()` wrapper (handles edge cases)
-- NEVER use `new Date().toISOString()` directly
-- For CREATE: set both `created_at` and `updated_at`
-- For UPDATE: only update `updated_at`
-- Timestamps must be ISO 8601 format strings, not Date objects
-
-#### 3. Password Hashing
-
-**What**: Hash password fields before storing in database.
-
-**Why**: NEVER store plain text passwords - critical security requirement.
-
-**How**:
-```typescript
-import { PasswordUtil } from "some-utility";
-
-password: await PasswordUtil.hash(props.body.password)
-```
-
-**Critical Points**:
-- ALWAYS hash passwords before database storage
-- PasswordUtil.hash() is async - use `await`
-- NEVER store `props.body.password` directly
-- Hash is one-way - cannot reverse
-- Used for user passwords, admin passwords, any authentication credentials
-
-#### 4. Nested Object Construction
-
-**🚨 CRITICAL RULE: ALWAYS Use `connect` for Relationships, NEVER Direct Foreign Key Assignment**
-
-When establishing relationships in Prisma CreateInput, you MUST use Prisma's relationship syntax with `connect`, NOT direct foreign key field assignment.
-
-**🚨 VERIFY AGAINST PRISMA SCHEMA FIRST:**
-- **READ the Prisma schema** to find the exact relation field name (e.g., `customer`, `sale`, `article`)
-- **Use the RELATION NAME**, NOT the foreign key column (e.g., use `customer`, NOT `customer_id`)
-- **NEVER fabricate or guess** relation names - verify they exist in the schema
-
-**❌ ABSOLUTELY FORBIDDEN - Direct Foreign Key Assignment:**
-```typescript
-// ❌ WRONG - This will cause compilation errors!
-data: {
-  id: v4(),
-  title: props.body.title,
-  shopping_sale_id: props.saleId,        // ❌ FORBIDDEN!
-  customer_id: props.customer.id,        // ❌ FORBIDDEN!
-  bbs_article_id: props.articleId,       // ❌ FORBIDDEN!
-  author_id: props.member.id,            // ❌ FORBIDDEN!
+model shopping_customers {
+  id    String @id @db.Uuid
+  name  String @db.VarChar
+  email String @db.VarChar
 }
 ```
 
-**✅ CORRECT - Use Prisma Relation Connect Syntax:**
 ```typescript
-// ✅ CORRECT - Use connect for all relationships
-data: {
-  id: v4(),
-  title: props.body.title,
-  // Use relation field names from Prisma schema, not foreign key columns
-  sale: { connect: { id: props.saleId } },           // ✅ Correct!
-  customer: { connect: { id: props.customer.id } },  // ✅ Correct!
-  article: { connect: { id: props.articleId } },     // ✅ Correct!
-  author: { connect: { id: props.member.id } },      // ✅ Correct!
-}
+// ✅ CORRECT Select Usage:
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    // Scalar fields - set to true
+    id: true,
+    title: true,
+    price: true,
+    created_at: true,
+    customer_id: true,  // This is a scalar field (the foreign key column)
+
+    // Relation fields - use nested select
+    customer: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
+    }
+  }
+});
 ```
 
-**Why This Rule Exists:**
+**CRITICAL**:
+- Scalar field names: Exact column names from Prisma schema (e.g., `title`, `price`, `customer_id`)
+- Relation field names: Relation names from Prisma schema (e.g., `customer`, NOT `customer_id`)
+- Foreign key columns ARE scalar fields: You can select `customer_id` as a scalar field
+- But to load the related customer object, use the `customer` relation field
 
-1. **Type Safety**: Prisma's CreateInput types expect relation objects (`{ connect: { id } }`), not raw foreign key values
-2. **Consistency**: Using relation syntax ensures uniform handling across all relationship types
-3. **Framework Contract**: Prisma manages foreign key columns automatically when you use relation syntax
-4. **Compilation Guarantee**: Direct foreign key assignment will fail TypeScript compilation with `satisfies` operator
+#### Field Selection Patterns
 
-**Critical Points**:
-- Use Prisma's `connect`, `create`, `connectOrCreate` syntax
-- `connect`: Link to existing record (use this for all foreign key relationships)
-- `create`: Create new nested record
-- ❌ NEVER use direct foreign key assignment: `shopping_sale_id`, `customer_id`, `bbs_article_id`, `session_id`
-- ✅ ALWAYS use relation field names: `sale: { connect: ... }`, `customer: { connect: ... }`, `article: { connect: ... }`
-- Understand Prisma relationship syntax deeply
-
-**Complete Example - Wrong vs Right:**
+**Pattern 1: Simple Scalar Fields Only**
 
 ```typescript
-// ❌ ABSOLUTELY WRONG - Will fail compilation
-await MyGlobal.prisma.shopping_sale_reviews.create({
-  data: {
-    id: v4(),
-    content: props.body.content,
-    rating: props.body.rating,
-    // ❌ Direct foreign key assignment - FORBIDDEN!
-    shopping_sale_id: props.saleId,
-    customer_id: props.customer.id,
-    created_at: toISOStringSafe(new Date()),
-  },
-});  // ❌ Type error with satisfies!
-
-// ✅ CORRECT - Using connect for all relationships
-await MyGlobal.prisma.shopping_sale_reviews.create({
-  data: {
-    id: v4(),
-    content: props.body.content,
-    rating: props.body.rating,
-    // ✅ Prisma relation syntax - REQUIRED!
-    sale: { connect: { id: props.saleId } },
-    customer: { connect: { id: props.customer.id } },
-    created_at: toISOStringSafe(new Date()),
-  },
-});  // ✅ Type-safe!
+// When you only need scalar fields (no nested objects)
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    title: true,
+    price: true,
+    description: true,
+    customer_id: true,  // Just the foreign key ID, not the full customer object
+    created_at: true,
+  }
+});
 ```
 
-#### 5. Field Mapping
+**Pattern 2: With BelongsTo Relation (Single Nested Object)**
 
-**What**: Map from API DTO field names to Prisma schema field names.
-
-**Why**: API and database schemas may have different field names or structures.
-
-**How**:
 ```typescript
-// API DTO might have: customerName
-// Database might have: customer_name
-
-data: {
-  customer_name: props.body.customerName,  // Map field names
-  is_active: props.body.isActive,
-  total_amount: props.body.totalAmount,
-}
+// When you need a related object (e.g., sale belongs to customer)
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    title: true,
+    price: true,
+    // Fetch the related customer object
+    customer: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
+    },
+    created_at: true,
+  }
+});
 ```
 
-**Critical Points**:
-- Check actual Prisma schema for field names
-- Handle case conversion (camelCase ↔ snake_case)
-- Map nested structures correctly
-- Validate required vs optional fields
+**Pattern 3: With HasMany Relation (Array of Nested Objects)**
 
-### For READ Operations (Replacing Transformer)
+```typescript
+// When you need a collection of related objects (e.g., sale has many reviews)
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    title: true,
+    price: true,
+    // Fetch array of related reviews
+    reviews: {
+      select: {
+        id: true,
+        rating: true,
+        content: true,
+        created_at: true,
+      }
+    },
+    created_at: true,
+  }
+});
+```
 
-When you don't have a transformer, you must manually handle these responsibilities:
+**Pattern 4: Optional Nested Relations**
+
+```typescript
+// When a relation might be null (optional foreign key)
+const article = await MyGlobal.prisma.bbs_articles.findUnique({
+  where: { id: props.articleId },
+  select: {
+    id: true,
+    title: true,
+    content: true,
+    // parent_article might be null
+    parent_article: {
+      select: {
+        id: true,
+        title: true,
+      }
+    },
+    created_at: true,
+  }
+});
+
+// In response transformation, handle nullable relation:
+return {
+  id: article.id,
+  title: article.title,
+  content: article.content,
+  parent_article: article.parent_article ? {
+    id: article.parent_article.id,
+    title: article.parent_article.title,
+  } : undefined,  // or null, depending on API interface
+  created_at: toISOStringSafe(article.created_at),
+};
+```
+
+#### Complete Select Example with Multiple Relation Types
+
+```typescript
+// Complex example with multiple relation types
+const article = await MyGlobal.prisma.bbs_articles.findUnique({
+  where: { id: props.articleId },
+  select: {
+    // Scalar fields
+    id: true,
+    title: true,
+    content: true,
+    view_count: true,
+    created_at: true,
+    updated_at: true,
+
+    // BelongsTo relation (article belongs to author)
+    author: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
+    },
+
+    // HasMany relation (article has many comments)
+    comments: {
+      select: {
+        id: true,
+        content: true,
+        created_at: true,
+        writer: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    },
+
+    // Optional BelongsTo (article might belong to category)
+    category: {
+      select: {
+        id: true,
+        name: true,
+      }
+    },
+  }
+});
+```
+
+#### 🚨 CRITICAL: Prisma Schema Verification for SELECT
+
+**Before writing ANY select statement**:
+
+1. **READ the Prisma schema** - Find the exact model definition
+2. **VERIFY each field name** - Character-by-character, case-sensitive
+3. **VERIFY relation names** - Use relation name (e.g., `author`), NOT foreign key column (e.g., `author_id`)
+4. **VERIFY field types** - Scalar vs Relation
+5. **NEVER assume or guess** - Only use fields that EXIST in the schema
+
+**Common Mistakes to Avoid**:
+- ❌ Using foreign key column name as relation: `author_id: { select: ... }` (WRONG!)
+- ✅ Using relation name: `author: { select: ... }` (CORRECT!)
+- ❌ Guessing field names: `customer_name` when schema has `customerName`
+- ❌ Typos: `create_at` instead of `created_at`
+- ❌ Wrong case: `CustomerId` when schema has `customer_id`
+
+### Section 2.2: Understanding Data Transformation from Prisma to API
+
+After fetching data with Prisma select, you must transform it to match the API response DTO.
 
 #### 1. Date Conversion
 
@@ -1316,44 +1444,581 @@ return {
 - Apply all transformation rules to nested data (dates, nulls, branded types)
 - For arrays: use `.map()` to transform each item
 
-#### 5. Field Selection
+### Section 2.3: Prisma Schema Verification for READ Operations
 
-**What**: Explicitly specify which fields to fetch from Prisma.
+**🚨 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
 
-**Why**: Avoid fetching unnecessary data, ensure you have all needed fields.
+**Before writing ANY select or field transformation:**
 
-**🚨 VERIFY AGAINST PRISMA SCHEMA FIRST:**
-- **READ the Prisma schema** to find exact field names (scalar fields and relation names)
-- **NEVER fabricate or guess** field names - verify they exist in the schema
-- **Use `select` ONLY** - NEVER use `include` (causes over-fetching and type issues)
+1. **READ the Prisma schema thoroughly** - Every line, every field, every relation
+2. **VERIFY each field EXISTS** in the exact model with EXACT spelling (case-sensitive)
+3. **VERIFY field type** - Scalar field vs Relation field
+4. **For relations, VERIFY the RELATION NAME** - NOT the foreign key column name
+   - Use `customer` (relation name), NOT `customer_id` (column name)
+   - Use `author` (relation name), NOT `author_id` (column name)
+5. **NEVER fabricate, imagine, or guess** - Only use what you SEE in the schema
 
-**How**:
+**Example Verification Process**:
+
 ```typescript
-const article = await MyGlobal.prisma.bbs_articles.findUnique({
-  where: { id: props.articleId },
+// Step 1: READ the Prisma schema
+model shopping_sales {
+  id          String   @id @db.Uuid
+  title       String   @db.VarChar
+  price       Int
+  customer_id String   @db.Uuid
+  created_at  DateTime
+
+  customer    shopping_customers @relation(fields: [customer_id], references: [id])
+}
+
+// Step 2: VERIFY each field in your select
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
   select: {
-    id: true,
-    title: true,
-    content: true,
-    created_at: true,
-    updated_at: true,
-    // Include nested relations
-    author: {
+    id: true,          // ✅ Verified: exists as String @id @db.Uuid
+    title: true,       // ✅ Verified: exists as String @db.VarChar
+    price: true,       // ✅ Verified: exists as Int
+    customer_id: true, // ✅ Verified: exists as String @db.Uuid (scalar field)
+    customer: {        // ✅ Verified: exists as relation field
       select: {
         id: true,
         name: true,
-        email: true,
+      }
+    },
+    created_at: true,  // ✅ Verified: exists as DateTime
+  }
+});
+
+// ❌ WRONG - Fabricated field names
+const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    sale_title: true,  // ❌ FABRICATED! Schema has `title`, not `sale_title`
+    customer_name: true, // ❌ FABRICATED! This field doesn't exist in shopping_sales
+    buyer: {           // ❌ FABRICATED! Relation is named `customer`, not `buyer`
+      select: {
+        id: true,
       }
     }
   }
 });
 ```
 
+**CRITICAL Rules**:
+1. **Every field in select MUST exist** in the Prisma schema
+2. **Every relation name MUST match** the schema definition exactly
+3. **NO typos, NO guesses, NO assumptions** - verify character-by-character
+4. **When unsure** - READ the schema again
+
+---
+
+## 🛠️ PART 3: COLLECTOR REPLACEMENT (CREATE/UPDATE Operations)
+
+When Collector doesn't exist, you must manually construct Prisma CreateInput data for database insertions.
+
+### Section 3.1: Understanding Prisma CreateInput Syntax
+
+#### What is Prisma CreateInput?
+
+**Prisma CreateInput** is a TypeScript type that defines the EXACT structure required to create a new database record. It's generated automatically by Prisma based on your schema.
+
+**Input**: Your application data (from API DTO)
+**Output**: Prisma CreateInput object (ready for `.create()` operation)
+
+**Example**:
+```typescript
+// For model: shopping_sales
+type Prisma.shopping_salesCreateInput = {
+  id: string;
+  title: string;
+  price: number;
+  customer: { connect: { id: string } };  // Relation field
+  created_at: string;
+}
+
+// Your code must produce this exact structure
+const created = await MyGlobal.prisma.shopping_sales.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    price: props.body.price,
+    customer: { connect: { id: props.customer.id } },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+#### Scalar Fields vs Relation Fields in CreateInput
+
+**This is THE MOST CRITICAL distinction to understand.**
+
+**Scalar Fields**: Regular database columns - use DIRECT assignment
+**Relation Fields**: Foreign key relationships - use `connect` or `create` syntax
+
+```typescript
+// Prisma Schema Example:
+model shopping_sale_reviews {
+  id                    String   @id @db.Uuid
+  content               String   @db.Text
+  rating                Int
+  shopping_sale_id      String   @db.Uuid
+  shopping_customer_id  String   @db.Uuid
+  created_at            DateTime
+
+  // Relation fields (these are NOT columns, they are Prisma relations)
+  sale     shopping_sales     @relation(fields: [shopping_sale_id], references: [id])
+  customer shopping_customers @relation(fields: [shopping_customer_id], references: [id])
+}
+```
+
+**Understanding the Schema**:
+- `shopping_sale_id` is a **scalar field** (a database column containing UUID)
+- `sale` is a **relation field** (NOT a column - it's a Prisma relation that uses `shopping_sale_id`)
+- Same for `shopping_customer_id` (scalar) vs `customer` (relation)
+
+**Critical Insight**: In Prisma CreateInput, you NEVER assign to `shopping_sale_id` directly. You ALWAYS use the relation field `sale` with `connect` syntax.
+
+#### Why Use Relation Names, NOT Column Names?
+
+**FORBIDDEN Pattern** (Direct Foreign Key Assignment):
+```typescript
+// ❌ ABSOLUTELY WRONG - This will cause TypeScript compilation errors!
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    shopping_sale_id: props.saleId,        // ❌ FORBIDDEN!
+    shopping_customer_id: props.customer.id, // ❌ FORBIDDEN!
+    created_at: toISOStringSafe(new Date()),
+  }
+});  // ❌ Type error with satisfies Prisma.shopping_sale_reviewsCreateInput!
+```
+
+**REQUIRED Pattern** (Relation Connect Syntax):
+```typescript
+// ✅ CORRECT - Use relation field names with connect
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // Use relation field name "sale", not foreign key column "shopping_sale_id"
+    sale: { connect: { id: props.saleId } },        // ✅ Correct!
+    // Use relation field name "customer", not foreign key column "shopping_customer_id"
+    customer: { connect: { id: props.customer.id } }, // ✅ Correct!
+    created_at: toISOStringSafe(new Date()),
+  }
+});  // ✅ Type-safe!
+```
+
+**Why This Matters**:
+
+1. **Type Safety**: Prisma CreateInput types expect `{ connect: { id } }` objects, NOT raw UUIDs
+2. **Compilation Guarantee**: Direct foreign key assignment fails TypeScript compilation
+3. **Framework Contract**: Prisma manages foreign key columns automatically
+4. **Consistency**: Same pattern across ALL relationship types
+
+#### Understanding `connect` vs `create`
+
+**connect**: Link to an **existing** record
+**create**: Create a **new** nested record
+
+**When to use connect** (Most Common):
+```typescript
+// ✅ Linking to existing customer
+await MyGlobal.prisma.shopping_sales.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    price: props.body.price,
+    // Connect to existing customer record
+    customer: { connect: { id: props.customer.id } },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+**When to use create** (Nested Creation):
+```typescript
+// ✅ Creating new sale WITH new customer in one operation
+await MyGlobal.prisma.shopping_sales.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    price: props.body.price,
+    // Create new customer record nested
+    customer: {
+      create: {
+        id: v4(),
+        name: props.body.customerName,
+        email: props.body.customerEmail,
+        created_at: toISOStringSafe(new Date()),
+      }
+    },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+**CRITICAL RULE**: In most operation implementations, you use `connect` because you're linking to existing records (authenticated users, existing resources, etc.).
+
+#### Relationship Type Patterns
+
+**Pattern 1: BelongsTo Relationship** (Most Common)
+
+```typescript
+// Example: Review belongs to Sale (connect to existing sale)
+// Prisma Schema:
+// model shopping_sale_reviews {
+//   sale_id String @db.Uuid
+//   sale    shopping_sales @relation(fields: [sale_id], references: [id])
+// }
+
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    // ✅ BelongsTo: Use connect with single ID
+    sale: { connect: { id: props.saleId } },
+    customer: { connect: { id: props.customer.id } },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+**Pattern 2: HasMany Relationship** (Creating Parent with Children)
+
+```typescript
+// Example: Article has many Comments (create article with initial comments)
+// Prisma Schema:
+// model bbs_articles {
+//   comments bbs_article_comments[]
+// }
+
+await MyGlobal.prisma.bbs_articles.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    author: { connect: { id: props.member.id } },
+    // ✅ HasMany: Use create with array
+    comments: {
+      create: props.body.initialComments.map(comment => ({
+        id: v4(),
+        content: comment.content,
+        writer: { connect: { id: comment.writerId } },
+        created_at: toISOStringSafe(new Date()),
+      }))
+    },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+**Pattern 3: Optional BelongsTo** (Nullable Foreign Key)
+
+```typescript
+// Example: Article optionally belongs to Category
+// Prisma Schema:
+// model bbs_articles {
+//   category_id String? @db.Uuid
+//   category    bbs_categories? @relation(fields: [category_id], references: [id])
+// }
+
+await MyGlobal.prisma.bbs_articles.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    author: { connect: { id: props.member.id } },
+    // ✅ Optional: Conditionally connect if provided
+    ...(props.body.categoryId && {
+      category: { connect: { id: props.body.categoryId } }
+    }),
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+**Pattern 4: ManyToMany Relationship** (Junction Table)
+
+```typescript
+// Example: Article has many Tags (many-to-many)
+// Prisma Schema:
+// model bbs_articles {
+//   article_tags bbs_article_tags[]
+// }
+// model bbs_article_tags {
+//   article_id String @db.Uuid
+//   tag_id     String @db.Uuid
+//   article    bbs_articles @relation(fields: [article_id], references: [id])
+//   tag        bbs_tags     @relation(fields: [tag_id], references: [id])
+// }
+
+await MyGlobal.prisma.bbs_articles.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    author: { connect: { id: props.member.id } },
+    // ✅ ManyToMany: Create junction records with connect to both sides
+    article_tags: {
+      create: props.body.tagIds.map(tagId => ({
+        id: v4(),
+        tag: { connect: { id: tagId } },
+      }))
+    },
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+#### Complete CreateInput Examples
+
+**Example 1: Simple BelongsTo Relations Only**
+
+```typescript
+// Creating a sale review (belongs to sale, belongs to customer)
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    // Scalar fields - direct assignment
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    created_at: toISOStringSafe(new Date()),
+    updated_at: toISOStringSafe(new Date()),
+
+    // Relation fields - connect syntax
+    sale: { connect: { id: props.saleId } },
+    customer: { connect: { id: props.customer.id } },
+    session: { connect: { id: props.customer.session_id } },
+  }
+});
+```
+
+**Example 2: Mix of connect and Optional Relations**
+
+```typescript
+// Creating an article with optional category and parent
+await MyGlobal.prisma.bbs_articles.create({
+  data: {
+    // Scalar fields
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    view_count: 0,
+    created_at: toISOStringSafe(new Date()),
+
+    // Required relations
+    author: { connect: { id: props.member.id } },
+    board: { connect: { id: props.boardId } },
+
+    // Optional relations (conditionally add)
+    ...(props.body.categoryId && {
+      category: { connect: { id: props.body.categoryId } }
+    }),
+    ...(props.body.parentArticleId && {
+      parent_article: { connect: { id: props.body.parentArticleId } }
+    }),
+  }
+});
+```
+
+**Example 3: Complex with Nested Creation**
+
+```typescript
+// Creating a sale with nested items
+await MyGlobal.prisma.shopping_sales.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    description: props.body.description,
+    price: props.body.totalPrice,
+    created_at: toISOStringSafe(new Date()),
+
+    // Connect to existing customer
+    customer: { connect: { id: props.customer.id } },
+
+    // Create nested sale items
+    items: {
+      create: props.body.items.map(item => ({
+        id: v4(),
+        product: { connect: { id: item.productId } },
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        created_at: toISOStringSafe(new Date()),
+      }))
+    },
+  }
+});
+```
+
+### Section 3.2: Manual Data Preparation Responsibilities
+
+When you don't have a collector, you must manually handle these data preparation tasks:
+
+#### 1. UUID Generation
+
+**What**: Generate unique identifiers for new records.
+
+**Why**: Every database record needs a unique ID. Prisma doesn't auto-generate UUIDs.
+
+**How**:
+```typescript
+import { v4 } from "uuid";
+
+// Generate and apply branded type
+id: v4()
+```
+
 **Critical Points**:
-- Explicitly select all fields you'll use in response
-- Include nested relations with their select
-- Avoid selecting unnecessary fields (performance)
-- Ensure you don't miss required fields
+- Import `v4` from `"uuid"` library
+- MUST cast to branded type: `as string & tags.Format<"uuid">`
+- Without branded type, TypeScript compilation will fail
+- Generate for ALL ID fields (primary keys, foreign keys if creating nested objects)
+
+#### 2. Timestamp Creation
+
+**What**: Set `created_at` and `updated_at` timestamps.
+
+**Why**: Track when records are created and modified.
+
+**How**:
+```typescript
+import { toISOStringSafe } from "some-utility";
+
+created_at: toISOStringSafe(new Date())
+updated_at: toISOStringSafe(new Date())
+```
+
+**Critical Points**:
+- ALWAYS use `toISOStringSafe()` wrapper (handles edge cases)
+- NEVER use `new Date().toISOString()` directly
+- For CREATE: set both `created_at` and `updated_at`
+- For UPDATE: only update `updated_at`
+- Timestamps must be ISO 8601 format strings, not Date objects
+
+#### 3. Password Hashing
+
+**What**: Hash password fields before storing in database.
+
+**Why**: NEVER store plain text passwords - critical security requirement.
+
+**How**:
+```typescript
+import { PasswordUtil } from "some-utility";
+
+password: await PasswordUtil.hash(props.body.password)
+```
+
+**Critical Points**:
+- ALWAYS hash passwords before database storage
+- PasswordUtil.hash() is async - use `await`
+- NEVER store `props.body.password` directly
+- Hash is one-way - cannot reverse
+- Used for user passwords, admin passwords, any authentication credentials
+
+#### 4. Field Mapping
+
+**What**: Map from API DTO field names to Prisma schema field names.
+
+**Why**: API and database schemas may have different field names or structures.
+
+**How**:
+```typescript
+// API DTO might have: customerName
+// Database might have: customer_name
+
+data: {
+  customer_name: props.body.customerName,  // Map field names
+  is_active: props.body.isActive,
+  total_amount: props.body.totalAmount,
+}
+```
+
+**Critical Points**:
+- Check actual Prisma schema for field names
+- Handle case conversion (camelCase ↔ snake_case)
+- Map nested structures correctly
+- Validate required vs optional fields
+
+### Section 3.3: Prisma Schema Verification for CREATE/UPDATE Operations
+
+**🚨 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
+
+**Before writing ANY CreateInput data object:**
+
+1. **READ the Prisma schema thoroughly** - Every model, every field, every relation
+2. **VERIFY each field EXISTS** in the exact table with EXACT spelling (case-sensitive)
+3. **VERIFY field type** - Scalar field (direct assignment) vs Relation field (connect/create)
+4. **For relations, VERIFY the RELATION NAME** - NOT the foreign key column name
+   - Use `customer` (relation name), NOT `customer_id` (foreign key column)
+   - Use `sale` (relation name), NOT `shopping_sale_id` (foreign key column)
+5. **NEVER fabricate, imagine, or guess** - Only use what you SEE in the schema
+
+**Example Verification Process**:
+
+```typescript
+// Step 1: READ the Prisma schema
+model shopping_sale_reviews {
+  id                   String   @id @db.Uuid
+  content              String   @db.Text
+  rating               Int
+  shopping_sale_id     String   @db.Uuid
+  shopping_customer_id String   @db.Uuid
+  created_at           DateTime
+
+  sale     shopping_sales     @relation(fields: [shopping_sale_id], references: [id])
+  customer shopping_customers @relation(fields: [shopping_customer_id], references: [id])
+}
+
+// Step 2: VERIFY each field in your CreateInput
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),              // ✅ Verified: exists as String @id @db.Uuid
+    content: props.body.content,  // ✅ Verified: exists as String @db.Text
+    rating: props.body.rating,    // ✅ Verified: exists as Int
+    created_at: toISOStringSafe(new Date()), // ✅ Verified: exists as DateTime
+
+    // ✅ CRITICAL: Use RELATION NAMES, not foreign key columns
+    sale: { connect: { id: props.saleId } },       // ✅ Verified: "sale" is relation name
+    customer: { connect: { id: props.customer.id } }, // ✅ Verified: "customer" is relation name
+  }
+});
+
+// ❌ WRONG - Using foreign key column names
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    rating: props.body.rating,
+    shopping_sale_id: props.saleId,        // ❌ FORBIDDEN! Use relation name "sale"
+    shopping_customer_id: props.customer.id, // ❌ FORBIDDEN! Use relation name "customer"
+    created_at: toISOStringSafe(new Date()),
+  }
+});  // ❌ Type error with satisfies!
+```
+
+**CRITICAL Rules for CreateInput**:
+1. **Every scalar field MUST exist** in the Prisma schema as a database column
+2. **Every relation MUST use the relation name** from the schema, NOT the foreign key column
+3. **All relations MUST use `connect` or `create` syntax** - NEVER direct foreign key assignment
+4. **NO typos, NO guesses, NO assumptions** - verify character-by-character
+5. **When unsure** - READ the schema again
+
+**Common Mistakes to Avoid**:
+- ❌ Using `shopping_sale_id: props.saleId` (direct foreign key - FORBIDDEN!)
+- ✅ Using `sale: { connect: { id: props.saleId } }` (relation connect - CORRECT!)
+- ❌ Fabricating field names that don't exist in schema
+- ❌ Guessing relation names instead of verifying in schema
+- ❌ Typos in field names: `create_at` instead of `created_at`
+- ❌ Wrong case: `CustomerId` when schema has `customer_id`
+
+---
 
 ## 🚨 CRITICAL: NULL vs UNDEFINED Handling
 
@@ -2474,10 +3139,59 @@ Before finalizing implementation, verify:
 - [ ] ✅ Efficient database queries
 - [ ] ✅ Proper async/await usage
 
+### Pattern A: WITH Collector/Transformer
+- [ ] ✅ Checked if Collector exists for Create DTO (requested via getRealizeCollectors)
+- [ ] ✅ Checked if Transformer exists for response DTO (requested via getRealizeTransformers)
+- [ ] ✅ Used `...Transformer.select()` when querying database
+- [ ] ✅ Used `await Transformer.transform()` for response formatting
+- [ ] ✅ Used `await Collector.collect()` for CREATE/UPDATE operations
+
+### Pattern B: WITHOUT Collector/Transformer (Manual Construction)
+
+#### 🚨 Prisma Schema Verification (MOST CRITICAL!)
+- [ ] ✅ **READ the Prisma schema thoroughly** before writing ANY code
+- [ ] ✅ **VERIFY every field name** exists in schema (character-by-character, case-sensitive)
+- [ ] ✅ **VERIFY every relation name** exists in schema (NOT foreign key column names!)
+- [ ] ✅ **NEVER fabricate, imagine, or guess** field or relation names
+
+#### Pattern B: READ Operations (Transformer Replacement)
+- [ ] ✅ Used `select` (NOT `include`) for all Prisma queries
+- [ ] ✅ Distinguished Scalar Fields (set to `true`) vs Relation Fields (nested select)
+- [ ] ✅ Used relation names for nested selects (e.g., `author: { select: {...} }`)
+- [ ] ✅ NOT foreign key column names (e.g., NOT `author_id: { select: {...} }`)
+- [ ] ✅ Converted ALL Date fields with `toISOStringSafe()`
+- [ ] ✅ Handled null → undefined for optional fields (`field?: Type`)
+- [ ] ✅ Handled null → null for nullable fields (`field: Type | null`)
+- [ ] ✅ Applied branded types correctly (uuid, email, url, date-time)
+- [ ] ✅ Transformed nested objects recursively with correct types
+- [ ] ✅ Used `.map()` for array transformations (synchronous transformation)
+
+#### Pattern B: CREATE/UPDATE Operations (Collector Replacement)
+- [ ] ✅ Generated UUIDs with `v4()` for all new records
+- [ ] ✅ Created timestamps with `toISOStringSafe(new Date())`
+- [ ] ✅ Hashed passwords with `await PasswordUtil.hash()` (if applicable)
+- [ ] ✅ **Used RELATION NAMES in CreateInput** (e.g., `customer`, `sale`, `author`)
+- [ ] ✅ **NOT foreign key column names** (e.g., NOT `customer_id`, `shopping_sale_id`)
+- [ ] ✅ Used `connect` for linking to existing records (most common)
+- [ ] ✅ Used `create` for nested record creation (when needed)
+- [ ] ✅ **NEVER used direct foreign key assignment** (e.g., `customer_id: props.customerId` ❌)
+- [ ] ✅ **ALWAYS used connect syntax** (e.g., `customer: { connect: { id: props.customerId } }` ✅)
+- [ ] ✅ Handled optional relations with conditional spread (`...(condition && { relation: { connect: {...} } })`)
+- [ ] ✅ Mapped API DTO field names to Prisma schema field names correctly
+
+#### Pattern B: Critical Verification Points
+- [ ] ✅ **Re-verified Prisma schema one more time** before completing
+- [ ] ✅ **Every field in select/CreateInput EXISTS** in Prisma schema (no fabricated fields!)
+- [ ] ✅ **Every relation uses RELATION NAME** from schema (not `_id` suffixed column names!)
+- [ ] ✅ **No direct foreign key assignment** anywhere in CreateInput
+- [ ] ✅ **All relationships use `connect` or `create` syntax**
+- [ ] ✅ Field names match EXACTLY (case-sensitive, no typos)
+- [ ] ✅ No assumptions - only what's explicitly in the schema
+
 ### Code Structure
 - [ ] ✅ No import statements (handled automatically by system)
-- [ ] ✅ Used Collector/Transformer when available (Pattern A)
-- [ ] ✅ Manual construction follows all rules (Pattern B)
+- [ ] ✅ Clean, readable, and well-structured code
+- [ ] ✅ Follows all AutoBE conventions consistently
 
 ## Final Reminder
 
