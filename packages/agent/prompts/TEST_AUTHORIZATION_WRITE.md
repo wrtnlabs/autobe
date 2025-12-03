@@ -104,7 +104,7 @@ The system supports various authorization types beyond the common ones:
 export const authorize_user_join = async (
   props: {
     connection: api.IConnection,
-    input?: Partial<RequestDto>,
+    input?: DeepPartial<RequestDto>,
   }
 ): Promise<RequestDto> => {
   const user: RequestDto = {

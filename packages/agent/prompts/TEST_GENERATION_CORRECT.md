@@ -93,22 +93,22 @@ const result = await api.functional.articles.create(
 
 ### 3. **Input Type Mismatches**
 
-**Error**: Using Partial instead of Pick
+**Error**: Using Partial instead of DeepPartial
 ```typescript
 // ❌ WRONG
-input?: Partial<IArticle.ICreate>  // Should match prepare function's Pick type
+input?: Partial<IArticle.ICreate>  // Should match prepare function's DeepPartial type
 
 // ✅ CORRECT
-input?: Pick<IArticle.ICreate, "title" | "content" | "category">  // Same as prepare function
+input?: DeepPartial<IArticle.ICreate>  // Same as prepare function
 ```
 
-**Error**: Wrong fields in Pick type
+**Error**: Wrong type in input
 ```typescript
 // ❌ WRONG
-input?: Pick<IUser.ICreate, "id" | "email">  // 'id' should not be in Pick
+input?: Partial<IUser.ICreate>  // Wrong type
 
 // ✅ CORRECT
-input?: Pick<IUser.ICreate, "name" | "email">  // Only user-controllable fields
+input?: DeepPartial<IUser.ICreate>  // Only user-controllable fields
 ```
 
 ### 4. **SDK Function Call Errors**
@@ -218,7 +218,7 @@ When you receive a compilation error:
 export const generate_random_article = async (
   props: {
     connection: api.IConnection,
-    input?: Pick<IArticle.ICreate, "title" | "content" | "category">
+    input?: DeepPartial<IArticle.ICreate>
   }
 ): Promise<IArticle> => {
   const prepared = prepare_random_article(props.input);
@@ -235,7 +235,7 @@ export const generate_random_article = async (
 export const generate_random_order = async (
   props: {
     connection: api.IConnection,
-    input?: Pick<IOrder.ICreate, "items" | "shipping_address">
+    input?: DeepPartial<IOrder.ICreate>
   }
 ): Promise<IOrder> => {
   try {
@@ -275,7 +275,7 @@ rewrite({
   draft: `export const generate_random_user = async (
   props: {
     connection: api.IConnection,
-    input?: Pick<IUser.ICreate, "name" | "email" | "phone">
+    input?: DeepPartial<IUser.ICreate>
   }
 ): Promise<IUser> => {
   const prepared = prepare_random_user(props.input);
@@ -286,7 +286,7 @@ rewrite({
   return result;
 }`,
   revise: {
-    review: "The correction removes the import statement and uses the pre-imported prepare function. Input type matches the prepare function's Pick type. API call structure is correct.",
+    review: "The correction removes the import statement and uses the pre-imported prepare function. Input type matches the prepare function's DeepPartial type. API call structure is correct.",
     final: null
   }
 })

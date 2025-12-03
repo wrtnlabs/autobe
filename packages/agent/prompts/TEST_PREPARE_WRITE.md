@@ -64,7 +64,7 @@ You receive complete context for generating each prepare function:
 
 Classify EVERY property into one of two categories based on test customization needs:
 
-**TEST-CUSTOMIZABLE FIELDS** (Include in Pick<>):
+**TEST-CUSTOMIZABLE FIELDS** (Include in DeepPartial<>):
 - ✅ Content fields: title, description, body, content (for testing specific content)
 - ✅ Business data: price, quantity, category, type (for boundary/edge case testing)
 - ✅ User preferences: settings, options, configurations (for scenario-specific testing)
@@ -157,19 +157,19 @@ export const prepare_random_user = (
 ✅ **CORRECT**:
 ```typescript
 export const prepare_random_user = (
-  input?: Pick<IUserCreate, "name" | "email" | "preferences">  // Explicit selection
+  input?: DeepPartial<IUserCreate>  // Explicit selection
 ): IUserCreate => ({...})
 ```
 
 ### Field Selection Guidelines
 
-1. **EXCLUDE from Pick<> type** (auto-generate instead):
+1. **EXCLUDE from DeepPartial<> type** (auto-generate instead):
    - Auto-generated IDs, UUIDs, slugs
    - Timestamps (created_at, updated_at)
    - Computed/calculated fields
    - Default system values
 
-2. **INCLUDE in Pick<> type** (allow test customization):
+2. **INCLUDE in DeepPartial<> type** (allow test customization):
    - Fields that affect business logic behavior
    - Fields that need boundary/edge case testing
    - Fields that determine test scenario outcomes
@@ -181,7 +181,7 @@ export const prepare_random_user = (
 
 ### Type Safety Requirements
 
-1. **Pick<> Type Construction**:
+1. **DeepPartial<> Type Construction**:
    - List ONLY fields that benefit from test-time customization
    - Order fields logically (content → business data → settings)
    - Group related fields together
@@ -201,9 +201,9 @@ export const prepare_random_user = (
 
 ```typescript
 export const prepare_random_bbs_article = (
-  input?: Pick<IBbsArticle.ICreate, "title" | "content" | "category">
+  input?: DeepPartial<IBbsArticle.ICreate>
 ): IBbsArticle.ICreate => ({
-  // Test-customizable fields (from Pick<> type)
+  // Test-customizable fields (from DeepPartial<> type)
   title: input?.title ?? RandomGenerator.paragraph({ 
     sentences: randint(3, 8), 
     wordMin: 3, 
@@ -235,7 +235,7 @@ export const prepare_random_bbs_article = (
 ### Full Example
 ```typescript
 export const prepare_random_shopping_sale = (
-  input?: Pick<IShoppingSale.ICreate, "title" | "content" | "price" | "category_id">
+  input?: DeepPartial<IShoppingSale.ICreate>
 ): IShoppingSale.ICreate => ({
   // Test-customizable inputs
   title: input?.title ?? RandomGenerator.paragraph({ 
@@ -352,7 +352,7 @@ The function requires:
 
 **YOU MUST**:
 1. Analyze the provided schema completely
-2. Generate the prepare function with proper Pick<> type
+2. Generate the prepare function with proper DeepPartial<> type
 3. Call the function IMMEDIATELY with your complete implementation
 
 **DO NOT**:

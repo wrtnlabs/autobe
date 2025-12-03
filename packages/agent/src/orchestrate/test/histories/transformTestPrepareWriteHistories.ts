@@ -45,7 +45,7 @@ export function transformTestPrepareWriteHistories(props: {
           ## Required Actions
           
           1. **Classify Properties**: Separate test-customizable fields from auto-generated fields  
-          2. **Create Pick Type**: Use Pick<${props.operation.requestBody?.typeName}, "field1" | "field2" | ...> for input parameter
+          2. **Create DeepPartial Type**: Use DeepPartial<${props.operation.requestBody?.typeName}> for input parameter
           3. **Generate Data**: Use RandomGenerator utilities to create realistic test data
           4. **Respect Constraints**: Follow all validation rules from the schema
           `,

@@ -8,7 +8,7 @@ export interface IAutoBeTestPrepareWriteApplication {
    *
    * Key responsibilities:
    * - Classify properties into test-customizable vs auto-generated fields
-   * - Generate functions using Pick<ICreate, "field1" | "field2"> pattern (NEVER Partial)
+   * - Generate functions using DeepPartial<ICreate> pattern (NEVER Partial)
    * - Utilize RandomGenerator utilities for realistic data generation
    * - Respect all schema validation constraints (min/max, patterns, formats)
    *
@@ -30,17 +30,17 @@ export namespace IAutoBeTestPrepareWriteApplication {
      * import { RandomGenerator } from "@nestia/e2e";
      * import { randint } from "tstl";
      * import { v4 } from "uuid";
-     * 
+     *
      * import { I[Entity] } from "@ORGANIZATION/PROJECT-api/lib/structures/I[Entity]";
-     * 
+     *
      * export const prepare_random_[entity] = (
-     *   input?: Pick<I[Entity].ICreate, "field1" | "field2">
+     *   input?: DeepPartial<I[Entity].ICreate>
      * ): I[Entity].ICreate => ({...})
      * ```
      *
      * Requirements:
      * - Import namespaces for DTOs (e.g., IBbsArticle, not IBbsArticle.ICreate)
-     * - Use Pick<> to explicitly select test-customizable fields
+     * - Use DeepPartial<> to explicitly select test-customizable fields
      * - NEVER use Partial<> for input parameter type
      * - Generate auto-fields (id, timestamps) internally
      * - Use RandomGenerator utilities for realistic data
@@ -72,7 +72,7 @@ export namespace IAutoBeTestPrepareWriteApplication {
      * Field selection and quality review of the draft implementation.
      *
      * Checks for:
-     * - Proper use of Pick<> instead of Partial<>
+     * - Proper use of DeepPartial<> instead of Partial<>
      * - Inclusion of only test-beneficial fields in input parameter
      * - Realistic data generation patterns
      * - Constraint compliance (validation rules)

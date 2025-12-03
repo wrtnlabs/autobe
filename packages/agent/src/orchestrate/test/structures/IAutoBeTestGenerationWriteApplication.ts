@@ -45,7 +45,7 @@ export namespace IAutoBeTestGenerationWriteApplication {
      *
      * AI generates the first working version of the generation function that:
      *
-     * 1. Accepts connection and optional input parameters (using the same Pick type as prepare function)
+     * 1. Accepts connection and optional input parameters (using the same DeepPartial type as prepare function)
      * 2. Calls the prepare function to create test data
      * 3. Uses the SDK to create the actual resource via API
      * 4. Returns the created resource
@@ -94,7 +94,7 @@ export namespace IAutoBeTestGenerationWriteApplication {
      * **Functional Correctness:**
      *
      * - Correct use of prepare function with proper parameters
-     * - Input type matches prepare function's input type (same Pick fields)
+     * - Input type matches prepare function's input type (same DeepPartial type)
      * - Correct SDK function selection and usage
      * - Proper handling of optional input parameter passing
      *

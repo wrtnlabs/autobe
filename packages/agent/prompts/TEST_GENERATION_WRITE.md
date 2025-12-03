@@ -55,7 +55,7 @@ You MUST execute the following 3-step workflow through a single function call:
   - What SDK function to use (from the SDK functions table)
 - Analyze the prepare function's input parameter:
   - What fields it accepts as optional input
-  - The type definition (e.g., Pick<IResource.ICreate, "field1" | "field2">)
+  - The type definition (e.g., DeepPartial<IResource.ICreate>)
 - Plan the implementation approach:
   - Function naming (must be generate_random_{resource})
   - Data flow from prepare → API → response
@@ -67,14 +67,14 @@ You MUST execute the following 3-step workflow through a single function call:
   export const generate_random_resource = async (
       props: {
           connection: api.IConnection,
-          input?: Pick<CreateType, "field1" | "field2">
+          input?: DeepPartial<CreateType>
       }
   ): Promise<[ResponseTypeName]> => {
       // Implementation
   };
   ```
   **CRITICAL**: Use the EXACT type name from operation.responseBody.typeName for return type
-- MUST use the same input type as the prepare function (Pick type, not Partial)
+- MUST use the same input type as the prepare function (DeepPartial type)
 - MUST include proper typing with response types
 - MUST pass input parameters to prepare function
 - MUST use async/await patterns correctly
@@ -115,14 +115,14 @@ Perform a thorough review checking for:
 export const generate_random_{resource} = async (
     props: {
         connection: api.IConnection,
-        input?: Pick<{ResourceType}.ICreate, "field1" | "field2">
+        input?: DeepPartial<{ResourceType}.ICreate>
     }
 ): Promise<{ResponseType}> => {
     // Implementation
 };
 ```
 
-**IMPORTANT**: The input type MUST match the prepare function's input type exactly. Do NOT use Partial - use Pick with the same fields that the prepare function accepts.
+**IMPORTANT**: The input type MUST match the prepare function's input type exactly. Use DeepPartial with the same type that the prepare function accepts.
 
 ### 2.2. Implementation Pattern
 
@@ -160,7 +160,7 @@ export const generate_random_{resource} = async (
 export const generate_random_bbs_article = async (
     props: {
         connection: api.IConnection,
-        input?: Pick<IBbsArticle.ICreate, "category" | "tags">
+        input?: DeepPartial<IBbsArticle.ICreate>
     }
 ): Promise<IBbsArticle> => {
     const prepared = prepare_random_bbs_article({
@@ -182,7 +182,7 @@ export const generate_random_bbs_article = async (
 export const generate_random_user = async (
     props: {
         connection: api.IConnection,
-        input?: Pick<IUser.ICreate, "name" | "email">
+        input?: DeepPartial<IUser.ICreate>
     }
 ): Promise<IUser> => {
     const prepared = prepare_random_user({
@@ -202,7 +202,7 @@ export const generate_random_user = async (
 ## 4. Critical Rules
 
 1. **ALWAYS use the prepare function** - Never generate data inline
-3. **ALWAYS use the same input type as the prepare function** - Use Pick, not Partial
+3. **ALWAYS use the same input type as the prepare function** - Use DeepPartial
 4. **ALWAYS use the correct SDK accessor** based on the operation
 5. **ALWAYS return the EXACT response type from operation.responseBody.typeName**
 6. **NEVER use 'any' type** - Always use proper typing

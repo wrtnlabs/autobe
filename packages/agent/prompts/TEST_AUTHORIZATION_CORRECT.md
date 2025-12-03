@@ -145,10 +145,10 @@ export const authorize_user_join = async (...): Promise<IUserCreate> => {
 **Error**: Wrong optional parameter type
 ```typescript
 // ❌ WRONG
-input?: RequestDto  // Should be Partial for optional override
+input?: RequestDto  // Should be DeepPartial for optional override
 
 // ✅ CORRECT
-input?: Partial<RequestDto>
+input?: DeepPartial<RequestDto>
 ```
 
 **Error**: Missing required input for LOGIN

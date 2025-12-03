@@ -37,9 +37,9 @@ interface IAutoBeTestPrepareCorrectApplication {
 
 ## Common Error Patterns and Solutions
 
-### 1. **Pick Type Errors** - Most Critical
+### 1. **DeepPartial Type Errors** - Most Critical
 
-**Error**: Using Partial<> instead of Pick<>
+**Error**: Using Partial<> instead of DeepPartial<>
 ```typescript
 // ❌ WRONG
 export const prepare_random_user = (
@@ -48,17 +48,17 @@ export const prepare_random_user = (
 
 // ✅ CORRECT
 export const prepare_random_user = (
-  input?: Pick<IUserCreate, "name" | "email" | "preferences">
+  input?: DeepPartial<IUserCreate>
 ): IUserCreate => ({...})
 ```
 
-**Error**: Including auto-generated fields in Pick<>
+**Error**: Including auto-generated fields in DeepPartial<>
 ```typescript
 // ❌ WRONG
-input?: Pick<IUserCreate, "id" | "created_at" | "name">  // Never include id!
+input?: DeepPartial<IUserCreate>  // Never include id!
 
 // ✅ CORRECT
-input?: Pick<IUserCreate, "name" | "email">  // Only user-controllable fields
+input?: DeepPartial<IUserCreate>  // Only user-controllable fields
 ```
 
 ### 2. **RandomGenerator API Errors**
@@ -155,7 +155,7 @@ status: RandomGenerator.pick(["draft", "published", "archived"])
 ```typescript
 // ❌ WRONG - missing required 'title' field
 export const prepare_random_article = (
-  input?: Pick<IArticleCreate, "content">
+  input?: DeepPartial<IArticleCreate>
 ): IArticleCreate => ({
   content: input?.content ?? RandomGenerator.content(),
   // title is required but missing!
@@ -163,7 +163,7 @@ export const prepare_random_article = (
 
 // ✅ CORRECT
 export const prepare_random_article = (
-  input?: Pick<IArticleCreate, "title" | "content">
+  input?: DeepPartial<IArticleCreate>
 ): IArticleCreate => ({
   title: input?.title ?? RandomGenerator.paragraph({ sentences: randint(2, 5) }),
   content: input?.content ?? RandomGenerator.content(),
@@ -199,7 +199,7 @@ When you receive a compilation error:
 
 ## Security Reminders
 
-**NEVER** allow these in Pick<> type:
+**NEVER** allow these in DeepPartial<> type:
 - `id`, `uuid`, `code` (when auto-generated)
 - `created_at`, `updated_at`, `deleted_at`
 - `password`, `token`, `api_key`, `secret`
@@ -219,15 +219,15 @@ When calling `rewrite()`:
 
 **Input Error**:
 ```
-Type 'Partial<IUserCreate>' is not assignable to type 'Pick<IUserCreate, "name" | "email">'
+Type 'Partial<IUserCreate>' is not assignable to type 'DeepPartial<IUserCreate>'
 ```
 
 **rewrite() call**:
 ```typescript
 rewrite({
-  think: "The error indicates using Partial<> instead of Pick<>. The function parameter type must be changed to explicitly Pick only the user-controllable fields 'name' and 'email'.",
+  think: "The error indicates using Partial<> instead of DeepPartial<>. The function parameter type must be changed to DeepPartial for the user-controllable fields.",
   draft: `export const prepare_random_user = (
-  input?: Pick<IUserCreate, "name" | "email">
+  input?: DeepPartial<IUserCreate>
 ): IUserCreate => ({
   name: input?.name ?? RandomGenerator.name(),
   email: input?.email ?? \`\${RandomGenerator.alphabets(8)}@example.com\`,
@@ -236,7 +236,7 @@ rewrite({
   updated_at: new Date().toISOString(),
 })`,
   revise: {
-    review: "The correction properly uses Pick<> with only user-controllable fields. System fields remain internally generated. Type safety is maintained.",
+    review: "The correction properly uses DeepPartial<> with only user-controllable fields. System fields remain internally generated. Type safety is maintained.",
     final: null
   }
 })
@@ -247,7 +247,7 @@ rewrite({
 ```
 Compilation Error in Prepare Function?
 ├── Is it a prepare function type error? → rewrite()
-│   ├── Pick/Partial type issues
+│   ├── DeepPartial/Partial type issues
 │   ├── RandomGenerator API usage
 │   ├── Date/time format errors
 │   ├── Number type mismatches
