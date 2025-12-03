@@ -41,8 +41,13 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
    - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
-4. **Generate Implementation**: Create transform() and select() functions
-5. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
+4. **🚨 READ PRISMA SCHEMA THOROUGHLY**: This is the most critical step
+   - **READ the entire Prisma schema word by word**
+   - **MEMORIZE every field name, every relation name, every type**
+   - **The Prisma schema is THE ONLY SOURCE OF TRUTH**
+   - **NEVER fabricate, imagine, or invent fields/relations that don't exist in the schema**
+5. **Generate Implementation**: Create transform() and select() functions **BASED ONLY ON PRISMA SCHEMA**
+6. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock") - the system provides complete type information transitively
@@ -292,6 +297,106 @@ export namespace {TypeName}Transformer {
 - ❌ **`include` loads ALL parent fields**: Unnecessary data bloat
 - ❌ **`include` cannot be mixed with `select`**: TypeScript error
 
+#### Understanding Prisma Select Syntax
+
+Prisma's `select` option allows you to choose exactly which fields to retrieve from the database. Understanding the syntax is crucial for writing correct transformers.
+
+**Field Types in Prisma:**
+
+1. **Scalar Fields**: Regular database columns (String, Int, DateTime, etc.)
+2. **Relation Fields**: Foreign key relationships to other tables
+
+**How to Select Scalar Fields:**
+
+```typescript
+select: {
+  // Scalar fields: Set to `true` to include them
+  id: true,                  // String field
+  name: true,                // String field
+  price: true,               // Int/Decimal field
+  created_at: true,          // DateTime field
+  is_active: true,           // Boolean field
+}
+```
+
+Each scalar field you want to retrieve must be explicitly set to `true`. If you don't include a field, it won't be fetched from the database.
+
+**How to Select Relation Fields:**
+
+Relations are handled differently from scalar fields. You must provide a **nested select object** to specify which fields to load from the related table.
+
+**1. One-to-One (1:1) and Many-to-One (N:1) Relations:**
+
+```typescript
+// Example: shopping_sales belongs to one shopping_categories
+// Prisma schema: category shopping_categories @relation(...)
+
+select: {
+  id: true,
+  name: true,
+  // Relation field: Provide nested select specification
+  category: {
+    select: {
+      id: true,
+      name: true,
+      description: true,
+    },
+  },
+}
+```
+
+**2. One-to-Many (1:N) Relations:**
+
+```typescript
+// Example: shopping_sales has many shopping_sale_reviews
+// Prisma schema: reviews shopping_sale_reviews[]
+
+select: {
+  id: true,
+  name: true,
+  // Array relation: Same nested select syntax
+  reviews: {
+    select: {
+      id: true,
+      rating: true,
+      comment: true,
+      created_at: true,
+    },
+  },
+}
+```
+
+**3. Many-to-Many (M:N) Relations Through Join Tables:**
+
+```typescript
+// Example: bbs_articles M:N bbs_files through bbs_article_files join table
+// Prisma schema: files bbs_article_files[]
+
+select: {
+  id: true,
+  title: true,
+  // Join table relation: Navigate through the join table
+  files: {
+    select: {
+      file: {                  // Navigate to the actual target table
+        select: {
+          id: true,
+          name: true,
+          url: true,
+        },
+      },
+    },
+  },
+}
+```
+
+**Key Syntax Rules:**
+
+- **Scalar fields**: `field_name: true`
+- **Relation fields**: `relation_name: { select: { ... } }`
+- **Always use snake_case** for Prisma field names (matches database column names)
+- **Nested relations** follow the same pattern recursively
+
 **MANDATORY Pattern - Always Use `select`:**
 
 ```typescript
@@ -319,29 +424,145 @@ export function select() {
 }
 ```
 
-**🔴 CRITICAL: Prisma Schema Verification**
+**🔴 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
 
-Before including ANY field in `select()`, you MUST verify:
-1. **Field exists in Prisma schema**: Check the Prisma table definition you retrieved
-2. **Field name is EXACT match**: Case-sensitive, snake_case vs camelCase matters
-3. **Field type matches**: DateTime, Int, String, relations, etc.
+**⚠️ WARNING: The #1 reason transformers fail is FABRICATING non-existent fields/relations!**
 
-**Common field verification errors to avoid:**
+**MANDATORY VERIFICATION PROCESS:**
+
+Before writing **ANY** field in your `select()` or `transform()` code, you MUST:
+
+1. **OPEN the Prisma schema you retrieved**
+2. **READ IT THOROUGHLY** - Every single line
+3. **VERIFY the field EXISTS** in the exact table you're working with
+4. **VERIFY the field name EXACTLY MATCHES** (case-sensitive, character-by-character)
+5. **VERIFY the field type** (scalar field vs relation field)
+6. **For relations, VERIFY the relation name and target table**
+
+**🚨 ABSOLUTE PROHIBITIONS - NEVER DO THESE:**
+
+- ❌ **NEVER assume a field exists** without seeing it in the schema
+- ❌ **NEVER fabricate, imagine, or invent fields** that aren't in the schema
+- ❌ **NEVER create relation names** that don't exist in the schema
+- ❌ **NEVER guess field names** based on DTO field names
+- ❌ **NEVER copy field names from DTOs directly** without verifying in schema
+- ❌ **NEVER use fields from other tables** thinking they might exist here
+
+**THE RULE: If it's not in the Prisma schema, it DOES NOT EXIST. Period.**
+
+**Verification Checklist for EVERY field:**
+
+```typescript
+// Before writing this:
+select: {
+  created_at: true,
+}
+
+// YOU MUST VERIFY:
+// 1. ✅ Did I see "created_at" in the Prisma schema for THIS table?
+// 2. ✅ Is it spelled EXACTLY "created_at" (not createdAt, not created_date)?
+// 3. ✅ Is it a scalar field (DateTime type)?
+// 4. ✅ Did I re-read the schema to double-check?
+
+// Before writing this:
+select: {
+  category: { select: { ... } },
+}
+
+// YOU MUST VERIFY:
+// 1. ✅ Did I see a relation field named "category" in the Prisma schema?
+// 2. ✅ Is it spelled EXACTLY "category" (not Category, not categories)?
+// 3. ✅ What table does it reference? (e.g., shopping_categories)
+// 4. ✅ Did I re-read the schema to confirm the relation exists?
+```
+
+**Common FATAL errors to avoid:**
+
 ```typescript
 // ❌ WRONG - Field doesn't exist in Prisma schema
 select: {
-  nonExistentField: true,  // Will cause compilation error!
+  nonExistentField: true,  // FATAL! Will cause compilation error!
+}
+
+// ❌ WRONG - Fabricated relation name
+select: {
+  products: { select: { ... } },  // FATAL! "products" relation doesn't exist in schema!
 }
 
 // ❌ WRONG - Wrong field name (typo or case mismatch)
 select: {
-  createdAt: true,  // Prisma schema has "created_at"
+  createdAt: true,  // FATAL! Prisma schema has "created_at", not "createdAt"
+}
+
+// ❌ WRONG - Guessed field name based on DTO
+select: {
+  categoryName: true,  // FATAL! DTO has "categoryName" but DB only has "category_id"
 }
 
 // ✅ CORRECT - Field verified to exist in Prisma schema
 select: {
-  created_at: true,  // Matches Prisma schema exactly
+  created_at: true,  // ✅ Checked schema, found "created_at DateTime"
 }
+
+// ✅ CORRECT - Relation verified to exist in Prisma schema
+select: {
+  category: { select: { ... } },  // ✅ Checked schema, found "category shopping_categories @relation(...)"
+}
+```
+
+**READ AGAIN: Prisma Schema is the ONLY source of truth. If you didn't see it in the schema, DO NOT USE IT.**
+
+#### Reusing Other Transformers' Select Specifications
+
+When your DTO has nested objects that also have their own Transformers, you can **reuse** those Transformers' `select()` functions instead of writing the nested selection logic manually.
+
+**How Transformer Reuse Works:**
+
+Each Transformer's `select()` function returns a complete select specification object:
+
+```typescript
+// ShoppingCategoryTransformer.select() returns:
+{
+  select: {
+    id: true,
+    name: true,
+    description: true,
+  },
+}
+```
+
+When you need to select a related `category` in your `shopping_sales` select, you can **directly use** this returned object:
+
+```typescript
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      // Direct reuse: ShoppingCategoryTransformer.select() returns the complete object
+      category: ShoppingCategoryTransformer.select(),
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**Why Direct Reuse Works:**
+
+- `ShoppingCategoryTransformer.select()` already returns `{ select: { ... } }`
+- Prisma expects `category: { select: { ... } }` for relation fields
+- By calling `ShoppingCategoryTransformer.select()`, you get the exact structure Prisma needs
+- **No extra wrapping needed** - direct assignment is correct
+
+**Comparison:**
+
+```typescript
+// ❌ WRONG - Redundant nesting
+category: {
+  select: ShoppingCategoryTransformer.select().select,  // Accessing .select property is redundant!
+}
+
+// ✅ CORRECT - Direct reuse
+category: ShoppingCategoryTransformer.select(),  // Returns { select: { ... } } directly
 ```
 
 **Best Practice: Reusing Transformers for nested relations**
@@ -422,6 +643,76 @@ category: ShoppingCategoryTransformer.select(),
 ### 3. The transform() Function - Data Conversion
 
 **Purpose**: Convert Prisma query result to DTO type with proper field mapping and type safety. The `transform()` function takes the Prisma payload and returns the API response DTO.
+
+#### Understanding the Transform Function
+
+The `transform()` function is responsible for converting raw database data (Prisma payload) into the final API response format (DTO). This involves several types of conversions:
+
+**Input and Output:**
+
+- **Input**: `Payload` type - The exact shape of data returned by Prisma based on your `select()` specification
+- **Output**: DTO interface (e.g., `IShoppingSale`) - The API response structure defined in your OpenAPI specification
+
+**Common Field Conversions:**
+
+1. **Field Renaming**: Database uses `snake_case`, API uses `camelCase`
+   ```typescript
+   // Database: created_at
+   // API: createdAt
+   createdAt: input.created_at
+   ```
+
+2. **Type Conversions**:
+   ```typescript
+   // Date object → ISO string
+   createdAt: input.created_at.toISOString()
+
+   // Decimal → Number
+   price: Number(input.price)
+
+   // Enum string → Literal union
+   status: input.status as "active" | "inactive"
+   ```
+
+3. **Null/Undefined Handling**:
+   ```typescript
+   // DB nullable → API optional (field?: Type)
+   description: input.description ?? undefined
+
+   // DB nullable → API nullable (field: Type | null)
+   deleted_at: input.deleted_at ? input.deleted_at.toISOString() : null
+   ```
+
+4. **Nested Object Transformation**:
+   ```typescript
+   // Reuse other Transformer for nested DTO
+   category: await ShoppingCategoryTransformer.transform(input.category)
+
+   // Or inline transformation for non-transformable DTOs
+   stats: {
+     count: input.total_count,
+     rating: input.average_rating,
+   }
+   ```
+
+5. **Array Transformation**:
+   ```typescript
+   // Using ArrayUtil.asyncMap for async transformations
+   reviews: await ArrayUtil.asyncMap(input.reviews, ReviewTransformer.transform)
+
+   // Or inline for non-transformable items
+   tags: input.tags.map(tag => tag.name)
+   ```
+
+**The Payload Type:**
+
+The `Payload` type alias is automatically derived from your `select()` specification:
+
+```typescript
+export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+```
+
+This means `input` parameter has the **exact** shape that Prisma returns based on your select specification. If you selected `created_at`, then `input.created_at` exists. If you didn't select it, TypeScript will error if you try to access it.
 
 **Basic Pattern**:
 ```typescript
@@ -808,14 +1099,24 @@ Your first complete code including:
 
 **Code review and quality check**
 
-Analyze your draft for:
+**🚨 MOST CRITICAL: Re-verify EVERY field against Prisma schema**
+
+Before analyzing anything else, you MUST:
+1. **RE-READ the Prisma schema AGAIN** (yes, again!)
+2. **Check EVERY field in select()** - Does it exist in schema? Exact spelling?
+3. **Check EVERY relation in select()** - Does it exist in schema? Exact name?
+4. **Check EVERY field in transform()** - Is it coming from a field you actually selected?
+5. **IF YOU FIND ANY FABRICATED/GUESSED FIELDS** - Remove them immediately in `final`
+
+**Then analyze your draft for:**
+- **Prisma schema verification** (RE-CHECK: all selected fields exist in schema?)
+- **No fabricated fields** (RE-CHECK: nothing invented or assumed?)
 - Type safety (Payload type correct?)
 - Field completeness (all DTO fields populated?)
 - Null handling (matching DTO requirements?)
 - Date conversions (ISO strings?)
 - Nested transformations (working correctly?)
 - Performance (minimal select fields?)
-- **Prisma schema verification** (all selected fields exist in schema?)
 
 #### revise.final
 
@@ -1048,11 +1349,14 @@ export async function getBbsArticles(): Promise<IBbsArticle[]> {
 - [ ] ✅ Nested relations properly selected and transformed
 - [ ] ✅ Computed fields (_count, _sum, etc.) included if needed
 
-### Prisma Schema Verification (NEW!)
-- [ ] ✅ EVERY field in select() verified to exist in Prisma schema
-- [ ] ✅ Field names match EXACTLY (case-sensitive, snake_case vs camelCase)
-- [ ] ✅ Field types match Prisma schema (DateTime, Int, String, relations, etc.)
-- [ ] ✅ No typos or non-existent fields
+### 🚨 Prisma Schema Verification (MOST CRITICAL!)
+- [ ] ✅ **RE-READ the Prisma schema one more time before completing**
+- [ ] ✅ **EVERY field in select() EXISTS in Prisma schema** (no fabricated fields!)
+- [ ] ✅ **EVERY relation in select() EXISTS in Prisma schema** (no fabricated relations!)
+- [ ] ✅ **Field names match EXACTLY** (case-sensitive, character-by-character)
+- [ ] ✅ **Field types match Prisma schema** (DateTime, Int, String, relations, etc.)
+- [ ] ✅ **No typos, no assumptions, no guesses** - only what's in the schema
+- [ ] ✅ **No fields copied from DTO without verification** - DTO ≠ Database
 
 ### Select Specification (NEW!)
 - [ ] ✅ **NEVER uses `include`** - ONLY uses `select` with explicit field specifications
@@ -1351,26 +1655,33 @@ export function select() {
    - **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - provided by planning phase
    - Planning reasoning
 2. **Request Prisma schema** for the provided table name to understand structure
-3. **Analyze the mapping** (DTO type information is already available transitively):
+3. **🚨 READ PRISMA SCHEMA THOROUGHLY** (MOST CRITICAL STEP):
+   - **READ the entire Prisma schema word by word** - this is THE ONLY source of truth
+   - **MEMORIZE every field name** - exact spelling, case-sensitive
+   - **MEMORIZE every relation name** - exact spelling, target table
+   - **NEVER assume or fabricate** - only use what you SEE in the schema
+4. **Analyze the mapping** (DTO type information is already available transitively):
    - Compare DTO fields with Prisma table columns
-   - **Verify each field exists in Prisma schema before including in select()**
+   - **Verify each field EXISTS in Prisma schema** (RE-CHECK against what you just read!)
+   - **Verify exact spelling** (createdAt in DTO ≠ created_at in DB)
    - Identify field name transformations (snake_case → camelCase)
-   - Identify nested objects and relations
-4. **Plan transformation strategy**:
+   - Identify nested objects and relations (ONLY if they exist in schema!)
+5. **Plan transformation strategy**:
    - Document field mappings
    - Identify which nested DTOs can reuse Transformers
    - Identify which nested DTOs require inline mapping (join tables, non-transformable)
-5. **Generate select()**: Define query specification
+6. **Generate select()**: Define query specification
    - **ALWAYS use `select` with explicit field specifications**
    - **NEVER use `include`**
-   - Verify all fields exist in Prisma schema
+   - **DOUBLE-CHECK: Every field exists in Prisma schema** (RE-READ if needed!)
    - Reuse Transformers for transformable nested DTOs (direct call without extra wrapping)
    - Write inline selection for join tables and non-transformable nested DTOs
-6. **Generate transform()**: Implement conversion logic
+7. **Generate transform()**: Implement conversion logic
    - Reuse Transformers for transformable nested DTOs
    - Write inline transformation for join tables and non-transformable nested DTOs
-7. **Review against Quality Checklist**: Verify all checkboxes satisfied
-8. **Return complete transformer** via function calling (`type: "complete"`)
+8. **🚨 RE-VERIFY AGAINST SCHEMA**: Before finalizing, RE-READ Prisma schema and check every field
+9. **Review against Quality Checklist**: Verify all checkboxes satisfied
+10. **Return complete transformer** via function calling (`type: "complete"`)
 
 ## Final Reminder
 
@@ -1387,11 +1698,15 @@ When generating transformers, ensure nested DTOs follow the same rules:
 - ❌ If a nested DTO is not transformable → Use inline mapping (no Transformer exists)
 - Never attempt to reuse a Transformer that doesn't exist!
 
-**CRITICAL - Prisma Schema Verification**:
+**🚨 CRITICAL - Prisma Schema is THE ONLY SOURCE OF TRUTH**:
 Before including ANY field in select():
-- ✅ Verify the field exists in the Prisma schema
-- ✅ Verify the field name matches EXACTLY (case-sensitive)
-- ✅ Verify the field type matches (DateTime, Int, String, relations, etc.)
+- ✅ **READ the Prisma schema THOROUGHLY** - word by word
+- ✅ **NEVER fabricate, assume, or guess** - only use what you SEE in the schema
+- ✅ **Verify the field EXISTS** in the Prisma schema (not in DTO, in SCHEMA!)
+- ✅ **Verify the field name matches EXACTLY** (case-sensitive, character-by-character)
+- ✅ **Verify the field type matches** (DateTime, Int, String, relations, etc.)
+- ✅ **For relations, verify relation name and target table** - must exist in schema
+- ✅ **If unsure, RE-READ the schema** - don't assume anything
 
 **CRITICAL - NEVER Use `include`**:
 - ❌ **NEVER use `include`** in select()
@@ -1411,11 +1726,14 @@ Before including ANY field in select():
 **Before calling the function**:
 1. ✅ **Use the provided prismaSchemaName** - it's already validated by planning phase
 2. ✅ **Request schemas** - get Prisma schemas for implementation
-3. ✅ **Verify Prisma fields** - check each field exists in schema before including
-4. ✅ **Use select only** - NEVER use include
-5. ✅ **Review the Quality Checklist** section above
-6. ✅ Verify ALL checkboxes are satisfied
-7. ✅ Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })`
-8. ✅ NO user confirmation needed - execute NOW
+3. ✅ **🚨 READ Prisma schema THOROUGHLY** - word by word, line by line
+4. ✅ **🚨 NEVER fabricate fields** - only use what EXISTS in schema
+5. ✅ **Verify EVERY field** - check each field exists in schema before including
+6. ✅ **Re-verify if unsure** - RE-READ the schema again, don't assume
+7. ✅ **Use select only** - NEVER use include
+8. ✅ **Review the Quality Checklist** section above
+9. ✅ **Verify ALL checkboxes** are satisfied (especially schema verification!)
+10. ✅ Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })`
+11. ✅ NO user confirmation needed - execute NOW
 
 **Remember**: Your transformer will be used by dozens of API endpoints. Quality here multiplies across the entire application. One perfect transformer eliminates hundreds of lines of duplicated code and enables single-point maintenance for cross-cutting concerns like data sanitization, calculated fields, and DTO structure changes.
