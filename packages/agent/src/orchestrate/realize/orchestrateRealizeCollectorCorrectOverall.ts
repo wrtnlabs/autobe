@@ -1,0 +1,153 @@
+import {
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+  AutoBeRealizeCollectorFunction,
+} from "@autobe/interface";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import typia from "typia";
+
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformRealizeCollectorCorrectHistory } from "./histories/transformRealizeCollectorCorrectHistory";
+import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
+import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
+import { IAutoBeRealizeCollectorCorrectApplication } from "./structures/IAutoBeRealizeCollectorCorrectApplication";
+
+export const orchestrateRealizeCollectorCorrectOverall = async <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    functions: AutoBeRealizeCollectorFunction[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeRealizeCollectorFunction[]> => {
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+
+  return await orchestrateRealizeCorrectOverall(ctx, {
+    programmer: {
+      location: "src/collectors",
+
+      // Replace import statements using Collector-specific programmer
+      replaceImportStatements: async (next) => {
+        return await AutoBeRealizeCollectorProgrammer.replaceImportStatements(
+          ctx,
+          {
+            dtoTypeName: next.function.plan.dtoTypeName,
+            schemas: document.components.schemas,
+            code: next.code,
+          },
+        );
+      },
+
+      // No additional files needed for collectors (unlike operations)
+      additional: (_functions) => ({}),
+
+      // Create preliminary controller with only prismaSchemas support
+      preliminary: (next) =>
+        new AutoBePreliminaryController<"prismaSchemas">({
+          source: next.source,
+          application:
+            typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
+          kinds: ["prismaSchemas"],
+          state: ctx.state(),
+        }),
+
+      // Transform history using Collector-specific transformer
+      histories: async (next) => {
+        return transformRealizeCollectorCorrectHistory({
+          plan: next.function.plan,
+          function: next.function,
+          document,
+          failures: next.failures,
+          preliminary: next.preliminary,
+        });
+      },
+
+      // Create controller with Collector-specific validation
+      controller: (next) => {
+        assertSchemaModel(next.model);
+        const validate: Validator = (input) => {
+          const result: IValidation<IAutoBeRealizeCollectorCorrectApplication.IProps> =
+            typia.validate<IAutoBeRealizeCollectorCorrectApplication.IProps>(
+              input,
+            );
+          if (result.success === false) return result;
+          else if (result.data.request.type !== "complete")
+            return next.preliminary.validate({
+              thinking: result.data.thinking,
+              request: result.data.request,
+            });
+
+          // Validate collector-specific constraints
+          const errors: IValidation.IError[] =
+            AutoBeRealizeCollectorProgrammer.validate({
+              plan: next.function.plan,
+              neighbors: props.functions.map((f) => f.plan),
+              draft: result.data.request.draft,
+              revise: result.data.request.revise,
+            });
+
+          return errors.length
+            ? {
+                success: false,
+                errors,
+                data: result.data,
+              }
+            : result;
+        };
+
+        const application: ILlmApplication<Model> = collection[
+          next.model === "chatgpt"
+            ? "chatgpt"
+            : next.model === "gemini"
+              ? "gemini"
+              : "claude"
+        ](
+          validate,
+        ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+
+        return {
+          protocol: "class",
+          name: next.source,
+          application,
+          execute: {
+            process: (v) => {
+              if (v.request.type === "complete") next.build(v.request);
+            },
+          } satisfies IAutoBeRealizeCollectorCorrectApplication,
+        };
+      },
+    },
+    functions: props.functions,
+    progress: props.progress,
+  });
+};
+
+const collection = {
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "chatgpt">(
+      {
+        validate: {
+          process: validate,
+        },
+      },
+    ),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "claude">({
+      validate: {
+        process: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "gemini">({
+      validate: {
+        process: validate,
+      },
+    }),
+};
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeRealizeCollectorCorrectApplication.IProps>;

@@ -18,16 +18,19 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestrateRealizeAuthorizationWrite } from "./orchestrateRealizeAuthorizationWrite";
+import { orchestrateRealizeCollectorCorrectCasting } from "./orchestrateRealizeCollectorCorrectCasting";
+import { orchestrateRealizeCollectorCorrectOverall } from "./orchestrateRealizeCollectorCorrectOverall";
 import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "./orchestrateRealizeCollectorWrite";
-import { orchestrateRealizeCorrectCasting } from "./orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeOperationCorrectCasting } from "./orchestrateRealizeOperationCorrectCasting";
+import { orchestrateRealizeOperationCorrectOverall } from "./orchestrateRealizeOperationCorrectOverall";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
+import { orchestrateRealizeTransformerCorrectCasting } from "./orchestrateRealizeTransformerCorrectCasting";
+import { orchestrateRealizeTransformerCorrectOverall } from "./orchestrateRealizeTransformerCorrectOverall";
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
-import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
-import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -148,19 +151,13 @@ async function makeCollectors(
       plans,
       progress: props.writeProgress,
     });
-  return await orchestrateRealizeCorrectCasting(ctx, {
-    programmer: {
-      template: (func) =>
-        AutoBeRealizeCollectorProgrammer.getTemplate(func.plan),
-      replaceImportStatements: (next) =>
-        AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {
-          dtoTypeName: next.function.plan.dtoTypeName,
-          schemas: ctx.state().interface!.document.components.schemas,
-          code: next.code,
-        }),
-      additional: () => ({}),
-    },
-    functions: writes,
+  const castings: AutoBeRealizeCollectorFunction[] =
+    await orchestrateRealizeCollectorCorrectCasting(ctx, {
+      functions: writes,
+      progress: props.correctProgress,
+    });
+  return await orchestrateRealizeCollectorCorrectOverall(ctx, {
+    functions: castings,
     progress: props.correctProgress,
   });
 }
@@ -182,19 +179,13 @@ async function makeTransformers(
       plans,
       progress: props.writeProgress,
     });
-  return await orchestrateRealizeCorrectCasting(ctx, {
-    programmer: {
-      template: (func) =>
-        AutoBeRealizeTransformerProgrammer.getTemplate(func.plan),
-      replaceImportStatements: (next) =>
-        AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
-          dtoTypeName: next.function.plan.dtoTypeName,
-          schemas: ctx.state().interface!.document.components.schemas,
-          code: next.code,
-        }),
-      additional: () => ({}),
-    },
-    functions: writes,
+  const castings: AutoBeRealizeTransformerFunction[] =
+    await orchestrateRealizeTransformerCorrectCasting(ctx, {
+      functions: writes,
+      progress: props.correctProgress,
+    });
+  return await orchestrateRealizeTransformerCorrectOverall(ctx, {
+    functions: castings,
     progress: props.correctProgress,
   });
 }
@@ -209,7 +200,6 @@ async function makeOperations<Model extends ILlmSchema.Model>(
     correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
-  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const writes: AutoBeRealizeOperationFunction[] =
     await orchestrateRealizeOperationWrite(ctx, {
       authorizations: props.authorizations,
@@ -218,48 +208,18 @@ async function makeOperations<Model extends ILlmSchema.Model>(
       progress: props.writeProgress,
     });
   const castings: AutoBeRealizeOperationFunction[] =
-    await orchestrateRealizeCorrectCasting(ctx, {
-      programmer: {
-        template: (func) =>
-          AutoBeRealizeOperationProgrammer.getTemplate({
-            authorizations: props.authorizations,
-            schemas: document.components.schemas,
-            operation: document.operations.find(
-              (o) =>
-                o.method === func.endpoint.method &&
-                o.path === func.endpoint.path,
-            )!,
-          }),
-        replaceImportStatements: async (next) => {
-          const scenario: IAutoBeRealizeScenarioResult =
-            AutoBeRealizeOperationProgrammer.getScenario({
-              authorizations: props.authorizations,
-              operation: document.operations.find(
-                (o) =>
-                  o.method === next.function.endpoint.method &&
-                  o.path === next.function.endpoint.path,
-              )!,
-            });
-          return await AutoBeRealizeOperationProgrammer.replaceImportStatements(
-            ctx,
-            {
-              operation: scenario.operation,
-              schemas: document.components.schemas,
-              code: next.code,
-              decoratorType: scenario.decoratorEvent?.decorator.name,
-            },
-          );
-        },
-        additional: (functions) =>
-          AutoBeRealizeOperationProgrammer.getAdditional({
-            authorizations: props.authorizations,
-            collectors: props.collectors,
-            transformers: props.transformers,
-            functions,
-          }),
-      },
+    await orchestrateRealizeOperationCorrectCasting(ctx, {
+      authorizations: props.authorizations,
+      collectors: props.collectors,
+      transformers: props.transformers,
       functions: writes,
       progress: props.correctProgress,
     });
-  return castings;
+  return await orchestrateRealizeOperationCorrectOverall(ctx, {
+    functions: castings,
+    authorizations: props.authorizations,
+    collectors: props.collectors,
+    transformers: props.transformers,
+    progress: props.correctProgress,
+  });
 }

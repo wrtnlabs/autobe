@@ -1,5 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compileRealizeFiles";
+import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/programmers/compileRealizeFiles";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";

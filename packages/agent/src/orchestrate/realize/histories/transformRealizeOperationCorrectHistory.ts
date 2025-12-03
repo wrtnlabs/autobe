@@ -1,41 +1,52 @@
 import {
+  AutoBeOpenApi,
   AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
+  AutoBeRealizeOperationFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
+import { AutoBeRealizeOperationProgrammer } from "../programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { transformRealizeOperationWriteHistory } from "./transformRealizeOperationWriteHistory";
 
-export function transformRealizeCorrectHistory<
-  Model extends ILlmSchema.Model,
-  RealizeFunction extends AutoBeRealizeFunction,
->(
-  ctx: AutoBeContext<Model>,
-  props: {
-    state: AutoBeState;
-    scenario: IAutoBeRealizeScenarioResult;
-    authorization: AutoBeRealizeAuthorization | null;
-    function: RealizeFunction;
-    totalAuthorizations: AutoBeRealizeAuthorization[];
-    dto: Record<string, string>;
-    failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
-    preliminary: AutoBePreliminaryController<
-      "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
-    >;
-  },
-): IAutoBeOrchestrateHistory {
-  const writeHistories = transformRealizeOperationWriteHistory(props);
+export function transformRealizeOperationCorrectHistory(props: {
+  state: AutoBeState;
+  authorizations: AutoBeRealizeAuthorization[];
+  function: AutoBeRealizeOperationFunction;
+  dto: Record<string, string>;
+  failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
+  preliminary: AutoBePreliminaryController<
+    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+  >;
+}): IAutoBeOrchestrateHistory {
+  const document: AutoBeOpenApi.IDocument = props.state.interface!.document;
+  const operation: AutoBeOpenApi.IOperation = document.operations.find(
+    (o) =>
+      o.method === props.function.endpoint.method &&
+      o.path === props.function.endpoint.path,
+  )!;
+  const scenario: IAutoBeRealizeScenarioResult =
+    AutoBeRealizeOperationProgrammer.getScenario({
+      authorizations: props.authorizations,
+      operation,
+    });
+  const writeHistories: IAutoBeOrchestrateHistory =
+    transformRealizeOperationWriteHistory({
+      state: props.state,
+      scenario,
+      authorization: scenario.decoratorEvent ?? null,
+      totalAuthorizations: props.authorizations,
+      dto: props.dto,
+      preliminary: props.preliminary,
+    });
   return {
     histories: [
       ...writeHistories.histories,
@@ -67,10 +78,10 @@ export function transformRealizeCorrectHistory<
       Below is template code you wrote:
 
       ${getRealizeWriteCodeTemplate({
-        scenario: props.scenario,
-        schemas: ctx.state().interface!.document.components.schemas,
-        operation: props.scenario.operation,
-        authorization: props.authorization ?? null,
+        scenario,
+        operation,
+        authorization: scenario.decoratorEvent ?? null,
+        schemas: props.state.interface!.document.components.schemas,
       })}
 
       Current code is as follows:
