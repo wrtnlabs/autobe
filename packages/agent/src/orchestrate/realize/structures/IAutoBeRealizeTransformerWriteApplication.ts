@@ -14,10 +14,9 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAut
  * transitively from the DTO type names provided in the plan
  * (AutoBeRealizeTransformerPlan).
  *
- * **Special Case - Rejection**: Not all DTO types require transformers. Some
- * DTOs represent request parameters or business logic types without direct
- * Prisma mappings (e.g., IPage.IRequest, IAuthorizationToken). The agent can
- * reject transformer generation for such incompatible types.
+ * The planning phase has already filtered out incompatible DTO types (e.g.,
+ * IPage*, *.IRequest, *.ICreate, *.IUpdate), so the write phase only receives
+ * DTOs that require transformers.
  */
 export interface IAutoBeRealizeTransformerWriteApplication {
   /**
@@ -54,12 +53,6 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - Why is it sufficient to complete?
      * - Summarize - don't enumerate every field mapping.
      *
-     * For rejection:
-     *
-     * - What type of DTO is this (request param, business logic, etc.)?
-     * - Why doesn't it map to a Prisma table?
-     * - Be specific about incompatibility.
-     *
      * Note: All necessary DTO type information is available transitively from
      * the DTO type names in the plan. You only need to request Prisma schemas.
      *
@@ -75,7 +68,6 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
      * - "complete": Generate final transformer implementation
-     * - "reject": Reject transformer generation for incompatible DTO types
      *
      * All necessary DTO type information is obtained transitively from the DTO
      * type names provided in the plan (AutoBeRealizeTransformerPlan). Each DTO
@@ -86,7 +78,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IComplete | IReject | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
 
   /**
@@ -163,47 +155,5 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Returns `null` if the draft is already perfect and needs no changes.
      */
     final: string | null;
-  }
-
-  /**
-   * Request to reject transformer generation for incompatible DTO types.
-   *
-   * Not all DTO types require or support transformer generation. Some DTOs
-   * represent concepts that don't map directly to Prisma database tables,
-   * making transformer generation inappropriate or impossible.
-   *
-   * Use this when the target DTO falls into one of these categories:
-   *
-   * 1. **Request Parameter Types**: DTOs used for API input parameters rather than
-   *    response data (e.g., `IPage.IRequest`, `ISort`, `IFilter`)
-   * 2. **Business Logic Types**: DTOs constructed from business logic rather than
-   *    direct database queries (e.g., `IAuthorizationToken`, `IStatistics`,
-   *    `IDashboardSummary`)
-   * 3. **Computed/Aggregated Types**: DTOs that aggregate data from multiple
-   *    tables or require complex business logic (e.g., `IReportSummary`,
-   *    `IAnalytics`)
-   *
-   * The agent should analyze the DTO structure and determine if it maps to a
-   * Prisma table. If no clear mapping exists, reject with a detailed
-   * explanation.
-   */
-  export interface IReject {
-    /** Type discriminator for rejection request. */
-    type: "reject";
-
-    /**
-     * Detailed explanation of why transformer generation is rejected.
-     *
-     * Should clearly explain:
-     *
-     * - What category the DTO falls into (request param, business logic, etc.)
-     * - Why it doesn't map to a Prisma table
-     * - What the DTO represents instead
-     *
-     * Example: "IPage.IRequest is a pagination parameter DTO used for API
-     * input. It contains query parameters like page number and limit, not data
-     * from database tables. No Prisma mapping exists."
-     */
-    reason: string;
   }
 }

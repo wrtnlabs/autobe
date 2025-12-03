@@ -40,20 +40,18 @@ export async function orchestrateRealizeTransformerWrite<
     throw new Error("Cannot realize transformer write without interface.");
 
   props.progress.total += props.plans.length;
-  const result: Array<AutoBeRealizeTransformerFunction | false> =
-    await executeCachedBatch(
-      ctx,
-      props.plans.map(
-        (x) => (promptCacheKey) =>
-          process(ctx, {
-            progress: props.progress,
-            neighbors: props.plans.filter((y) => x !== y),
-            plan: x,
-            promptCacheKey,
-          }),
-      ),
-    );
-  return result.filter((r) => r !== false);
+  return await executeCachedBatch(
+    ctx,
+    props.plans.map(
+      (x) => (promptCacheKey) =>
+        process(ctx, {
+          progress: props.progress,
+          neighbors: props.plans.filter((y) => x !== y),
+          plan: x,
+          promptCacheKey,
+        }),
+    ),
+  );
 }
 
 async function process<Model extends ILlmSchema.Model>(
@@ -64,7 +62,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeTransformerFunction | false> {
+): Promise<AutoBeRealizeTransformerFunction> {
   const models: AutoBePrisma.IModel[] = ctx
     .state()
     .prisma!.result.data.files.map((f) => f.models)
@@ -85,13 +83,10 @@ async function process<Model extends ILlmSchema.Model>(
       },
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<
-      | IAutoBeRealizeTransformerWriteApplication.IComplete
-      | IAutoBeRealizeTransformerWriteApplication.IReject
-      | null
-    > = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeRealizeTransformerWriteApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "realizeWrite",
       controller: createController({
@@ -113,7 +108,6 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     });
     if (pointer.value !== null) {
-      if (pointer.value.type === "reject") return out(result)(false);
       const content: string =
         await AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
           dtoTypeName,
@@ -150,11 +144,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];
-  build: (
-    next:
-      | IAutoBeRealizeTransformerWriteApplication.IComplete
-      | IAutoBeRealizeTransformerWriteApplication.IReject,
-  ) => void;
+  build: (next: IAutoBeRealizeTransformerWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
@@ -162,8 +152,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerWriteApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "reject")
-      return result; // @todo -> reject must be erased
+    if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
@@ -200,8 +189,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete" || next.request.type === "reject")
-          props.build(next.request);
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeRealizeTransformerWriteApplication,
   };
