@@ -192,10 +192,10 @@ function getEventDetails(
               <span style={valueStyle}>Step {testEvent.step}</span>
             </div>
 
-            {testEvent.file?.location && (
+            {testEvent.function?.location && (
               <div style={infoItemStyle}>
                 <span style={labelStyle}>Test File:</span>
-                <span style={valueStyle}>{testEvent.file.location}</span>
+                <span style={valueStyle}>{testEvent.function.location}</span>
               </div>
             )}
 

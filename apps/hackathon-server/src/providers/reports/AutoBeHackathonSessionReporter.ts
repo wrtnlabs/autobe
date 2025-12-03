@@ -214,7 +214,7 @@ export namespace AutoBeHackathonSessionReporter {
         let value: string = StringUtil.trim`
           ${title("Test")}
 
-          - functions: ${h.files.length.toLocaleString()}
+          - functions: ${h.functions.length.toLocaleString()}
           - success: ${h.compiled.type === "success"}
         `;
         if (h.compiled.type === "failure")
