@@ -1,48 +1,64 @@
 import {
+  AutoBeEventSource,
+  AutoBePreliminaryKind,
   AutoBeProgressEventBase,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmController, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
-import { transformRealizeCorrectCastingHistory } from "./histories/transformRealizeCorrectCastingHistory";
-import { compileRealizeFiles } from "./internal/compileRealizeFiles";
-import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
+import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
+import { IAutoBeRealizeCollectorCorrectApplication } from "../structures/IAutoBeRealizeCollectorCorrectApplication";
+import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
-/** Result of attempting to correct a single function */
 interface ICorrectionResult<RealizeFunction extends AutoBeRealizeFunction> {
   type: "success" | "ignore" | "exception";
   function: RealizeFunction;
 }
-interface IProgrammer<RealizeFunction extends AutoBeRealizeFunction> {
-  template: (func: RealizeFunction) => string;
+interface IProgrammer<
+  Model extends ILlmSchema.Model,
+  RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
+> {
   replaceImportStatements(props: {
     function: RealizeFunction;
     code: string;
   }): Promise<string>;
   additional(functions: RealizeFunction[]): Record<string, string>;
+  histories(props: {
+    function: RealizeFunction;
+    failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
+    preliminary: AutoBePreliminaryController<PreliminaryKind>;
+  }): Promise<IAutoBeOrchestrateHistory>;
+  controller(next: {
+    model: Model;
+    function: RealizeFunction;
+    preliminary: AutoBePreliminaryController<PreliminaryKind>;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    build(next: IAutoBeRealizeCollectorCorrectApplication.IComplete): void;
+  }): ILlmController<Model>;
+  preliminary(props: {
+    function: RealizeFunction;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+  }): AutoBePreliminaryController<PreliminaryKind>;
+  location: string;
 }
 
-export const orchestrateRealizeCorrectCasting = async <
+export const orchestrateRealizeCorrectOverall = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<RealizeFunction>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
     functions: RealizeFunction[];
     progress: AutoBeProgressEventBase;
   },
@@ -71,10 +87,11 @@ export const orchestrateRealizeCorrectCasting = async <
 const predicate = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<RealizeFunction>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -92,10 +109,11 @@ const predicate = async <
 const correct = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<RealizeFunction>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -108,10 +126,11 @@ const correct = async <
     return props.functions;
   }
 
-  const failure = props.event.result;
-  const errorLocations: string[] = diagnose(props.event).filter((l) =>
-    props.functions.map((f) => f.location).includes(l),
-  );
+  const failure: IAutoBeTypeScriptCompileResult.IFailure = props.event.result;
+  const errorLocations: string[] = getErrorFiles({
+    location: props.programmer.location,
+    failure,
+  }).filter((l) => props.functions.map((f) => f.location).includes(l));
 
   // If no locations to correct, return original functions
   if (errorLocations.length === 0) {
@@ -125,80 +144,32 @@ const correct = async <
       ctx,
       errorLocations.map(
         (location) => async (): Promise<ICorrectionResult<RealizeFunction>> => {
-          const func: RealizeFunction = props.functions.find(
+          const localFunction: RealizeFunction = props.functions.find(
             (f) => f.location === location,
           )!;
-          const template: string = props.programmer.template(func);
-
-          const pointer: IPointer<
-            IAutoBeCommonCorrectCastingApplication.IProps | false | null
-          > = {
-            value: null,
-          };
-          const { metric, tokenUsage } = await ctx.conversate({
-            source: "realizeCorrect",
-            controller: createController({
-              model: ctx.model,
-              then: (next) => {
-                pointer.value = next;
+          const localFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[] =
+            [
+              ...props.previousFailures
+                .map(
+                  (pf) =>
+                    pf.find(
+                      (f) => f.function.location === localFunction.location,
+                    ) ?? null,
+                )
+                .filter((x) => x !== null),
+              {
+                function: localFunction,
+                diagnostics: failure.diagnostics.filter(
+                  (d) => d.file === localFunction.location,
+                ),
               },
-              reject: () => {
-                pointer.value = false;
-              },
-            }),
-            enforceFunctionCall: true,
-            ...transformRealizeCorrectCastingHistory({
-              template,
-              function: func,
-              failures: [
-                ...props.previousFailures
-                  .map(
-                    (pf) =>
-                      pf.find((f) => f.function.location === func.location) ??
-                      null,
-                  )
-                  .filter((x) => x !== null),
-                {
-                  function: func,
-                  diagnostics: failure.diagnostics.filter(
-                    (d) => d.file === func.location,
-                  ),
-                },
-              ],
-            }),
+            ];
+          return await process(ctx, {
+            programmer: props.programmer,
+            progress: props.progress,
+            function: localFunction,
+            failures: localFailures,
           });
-          ++props.progress.completed;
-
-          if (pointer.value === null)
-            return { type: "exception" as const, function: func };
-          else if (pointer.value === false)
-            return { type: "ignore" as const, function: func };
-
-          const content: string =
-            await props.programmer.replaceImportStatements({
-              function: func,
-              code: pointer.value.revise.final ?? pointer.value.draft,
-            });
-          ctx.dispatch({
-            id: v7(),
-            type: "realizeCorrect",
-            kind: "casting",
-            content,
-            created_at: new Date().toISOString(),
-            location: func.location,
-            step: ctx.state().analyze?.step ?? 0,
-            metric,
-            tokenUsage,
-            completed: props.progress.completed,
-            total: props.progress.total,
-          });
-          return {
-            type: "success" as const,
-            function: {
-              ...func,
-              content,
-            },
-          };
         },
       ),
     );
@@ -209,11 +180,10 @@ const correct = async <
   );
 
   // Merge converted functions with unchanged functions for validation
-  const allFunctionsForValidation = [
+  const allFunctionsForValidation: RealizeFunction[] = [
     ...converted.map((c) => c.function),
     ...unchangedFunctions,
   ];
-
   const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
     {
@@ -221,7 +191,6 @@ const correct = async <
       additional: props.programmer.additional(allFunctionsForValidation),
     },
   );
-
   const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
   if (newResult.type === "success") {
     return allFunctionsForValidation;
@@ -237,7 +206,13 @@ const correct = async <
     return allFunctionsForValidation;
   }
 
-  const newLocations: string[] = diagnose(newValidate);
+  const newLocations: string[] =
+    newValidate.result.type === "failure"
+      ? getErrorFiles({
+          failure: newValidate.result,
+          location: props.programmer.location,
+        })
+      : [];
 
   // Separate successful, failed, and ignored corrections
   const { success, failed, ignored } = separateCorrectionResults(
@@ -279,23 +254,95 @@ const correct = async <
   return [...success, ...ignored, ...retriedFunctions, ...unchangedFunctions];
 };
 
+const process = async <
+  Model extends ILlmSchema.Model,
+  RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
+    function: RealizeFunction;
+    failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<ICorrectionResult<RealizeFunction>> => {
+  const preliminary: AutoBePreliminaryController<PreliminaryKind> =
+    props.programmer.preliminary({
+      function: props.function,
+      source: SOURCE,
+    });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeRealizeCollectorCorrectApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const controller: ILlmController<Model> = props.programmer.controller({
+      model: ctx.model,
+      preliminary,
+      build(next: IAutoBeRealizeCollectorCorrectApplication.IComplete) {
+        pointer.value = next;
+      },
+      function: props.function,
+      source: SOURCE,
+    });
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: SOURCE,
+      controller,
+      enforceFunctionCall: true,
+      ...(await props.programmer.histories({
+        preliminary,
+        function: props.function,
+        failures: props.failures,
+      })),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    ++props.progress.completed;
+
+    const content: string = await props.programmer.replaceImportStatements({
+      function: props.function,
+      code: pointer.value.revise.final ?? pointer.value.draft,
+    });
+    ctx.dispatch({
+      id: v7(),
+      type: "realizeCorrect",
+      kind: "overall",
+      content,
+      created_at: new Date().toISOString(),
+      location: props.function.location,
+      step: ctx.state().analyze?.step ?? 0,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: props.progress.completed,
+      total: props.progress.total,
+    });
+    return out(result)({
+      type: "success" as const,
+      function: {
+        ...props.function,
+        content,
+      },
+    });
+  });
+};
+
 /**
  * Extract unique file locations from validation event diagnostics
  *
  * @param event - Validation event containing compilation results
  * @returns Array of unique file paths that have errors
  */
-const diagnose = (event: AutoBeRealizeValidateEvent): string[] => {
-  if (event.result.type !== "failure") {
-    return [];
-  }
-
-  const diagnostics = event.result.diagnostics;
-  const locations = diagnostics
+const getErrorFiles = (props: {
+  failure: IAutoBeTypeScriptCompileResult.IFailure;
+  location: string;
+}): string[] => {
+  const diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+    props.failure.diagnostics;
+  const locations: string[] = diagnostics
     .map((d) => d.file)
     .filter((f): f is string => f !== null)
-    .filter((f) => f.startsWith("src/providers"));
-
+    .filter((f) => f.startsWith(props.location));
   return Array.from(new Set(locations));
 };
 
@@ -334,74 +381,4 @@ const separateCorrectionResults = <
   return { success, failed, ignored };
 };
 
-const createController = <Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
-  reject: () => void;
-}): ILlmController<Model> => {
-  assertSchemaModel(props.model);
-  const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeCommonCorrectCastingApplication.IProps> =
-      typia.validate<IAutoBeCommonCorrectCastingApplication.IProps>(input);
-    if (result.success === false) return result;
-    // @todo: validate empty code?
-    return result;
-  };
-  const application = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
-  return {
-    protocol: "class",
-    name: "correctInvalidRequest",
-    application,
-    execute: {
-      rewrite: (next) => {
-        props.then(next);
-      },
-      reject: () => {
-        props.reject();
-      },
-    } satisfies IAutoBeCommonCorrectCastingApplication,
-  };
-};
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeCommonCorrectCastingApplication, "chatgpt">({
-      validate: {
-        rewrite: validate,
-        reject: () => ({
-          success: true,
-          data: undefined,
-        }),
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeCommonCorrectCastingApplication, "claude">({
-      validate: {
-        rewrite: validate,
-        reject: () => ({
-          success: true,
-          data: undefined,
-        }),
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeCommonCorrectCastingApplication, "gemini">({
-      validate: {
-        rewrite: validate,
-        reject: () => ({
-          success: true,
-          data: undefined,
-        }),
-      },
-    }),
-};
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeCommonCorrectCastingApplication.IProps>;
+const SOURCE = "realizeCorrect" satisfies AutoBeEventSource;

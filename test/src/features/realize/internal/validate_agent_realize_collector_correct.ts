@@ -1,6 +1,6 @@
+import { orchestrateRealizeCorrectCasting } from "@autobe/agent/src/orchestrate/realize/internal/orchestrateRealizeCorrectCasting";
 import { orchestrateRealizeCollectorPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorWrite";
-import { orchestrateRealizeCorrectCasting } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeCollectorProgrammer } from "@autobe/agent/src/orchestrate/realize/programmers/AutoBeRealizeCollectorProgrammer";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
@@ -86,6 +86,7 @@ export const validate_agent_realize_collector_correct = async (props: {
             },
           ),
         additional: () => ({}),
+        location: "src/collectors",
       },
       functions: writes,
       progress: {
