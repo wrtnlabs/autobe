@@ -1104,6 +1104,11 @@ password: await PasswordUtil.hash(props.body.password)
 
 When establishing relationships in Prisma CreateInput, you MUST use Prisma's relationship syntax with `connect`, NOT direct foreign key field assignment.
 
+**🚨 VERIFY AGAINST PRISMA SCHEMA FIRST:**
+- **READ the Prisma schema** to find the exact relation field name (e.g., `customer`, `sale`, `article`)
+- **Use the RELATION NAME**, NOT the foreign key column (e.g., use `customer`, NOT `customer_id`)
+- **NEVER fabricate or guess** relation names - verify they exist in the schema
+
 **❌ ABSOLUTELY FORBIDDEN - Direct Foreign Key Assignment:**
 ```typescript
 // ❌ WRONG - This will cause compilation errors!
@@ -1316,6 +1321,11 @@ return {
 **What**: Explicitly specify which fields to fetch from Prisma.
 
 **Why**: Avoid fetching unnecessary data, ensure you have all needed fields.
+
+**🚨 VERIFY AGAINST PRISMA SCHEMA FIRST:**
+- **READ the Prisma schema** to find exact field names (scalar fields and relation names)
+- **NEVER fabricate or guess** field names - verify they exist in the schema
+- **Use `select` ONLY** - NEVER use `include` (causes over-fetching and type issues)
 
 **How**:
 ```typescript

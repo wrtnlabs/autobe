@@ -119,11 +119,9 @@ if (!isValid) {
 
 ## IMPORTANT: Retrieving Password Hash for Verification
 
-When retrieving the actor record for login, you MUST include the `password_hash` field (or `password` field, depending on your schema) to verify the password. The approach differs based on whether your Transformer uses `select` or `include`:
+When retrieving the actor record for login, you MUST include the `password_hash` field (or `password` field, depending on your schema) to verify the password.
 
-### When Transformer Uses `select`
-
-If your Transformer uses `select` to specify columns explicitly, the `password_hash` field is typically **excluded** for security reasons (to prevent accidental password exposure in API responses). For login operations, you must **explicitly add** the password field:
+Transformers use `select` to specify columns explicitly. The `password_hash` field is typically **excluded** for security reasons (to prevent accidental password exposure in API responses). For login operations, you must **explicitly add** the password field:
 
 ```typescript
 // Transformer uses select (password_hash excluded by default)
@@ -156,36 +154,7 @@ const isValid = await PasswordUtil.verify(
 );
 ```
 
-### When Transformer Uses `include`
-
-If your Transformer uses `include` to specify relations, all columns are retrieved by default, so `password_hash` is automatically available:
-
-```typescript
-// Transformer uses include (all columns included by default)
-export namespace ShoppingSellerTransformer {
-  export function select() {
-    return {
-      include: {  // All columns automatically included
-        // ... relations
-      },
-    } satisfies Prisma.shopping_sellersFindManyArgs;
-  }
-}
-
-// In your login provider - password_hash automatically available
-const seller = await MyGlobal.prisma.shopping_sellers.findFirst({
-  where: { email: props.body.email },
-  ...ShoppingSellerTransformer.select(),  // No additional select needed
-});
-
-// Verify password
-const isValid = await PasswordUtil.verify(
-  props.body.password,
-  seller.password_hash,  // Available from include
-);
-```
-
-**KEY POINT**: When using `select`, you MUST explicitly add `password_hash: true` to retrieve the password field for verification. When using `include`, the field is automatically available.
+**KEY POINT**: You MUST explicitly add `password_hash: true` to the select object to retrieve the password field for verification.
 
 ## JWT Token Generation
 
