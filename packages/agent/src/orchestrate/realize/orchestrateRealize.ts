@@ -185,7 +185,6 @@ async function makeTransformers(
       progress: props.correctProgress,
     });
   return await orchestrateRealizeTransformerCorrectOverall(ctx, {
-    programmer: {},
     functions: castings,
     progress: props.correctProgress,
   });
