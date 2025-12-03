@@ -104,7 +104,7 @@ export const orchestrateTest =
       functions: corrects.map((s) => s.function),
       compiled: compileResult,
       aggregates: ctx.getCurrentAggregates("test"),
-      step: ctx.state().interface?.step ?? 0,
+      step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
       created_at: new Date().toISOString(),
     });

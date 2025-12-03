@@ -116,7 +116,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     result: event.result,
     metric,
     tokenUsage,
-    step: ctx.state().interface?.step ?? 0,
+    step: ctx.state().analyze?.step ?? 0,
     think: pointer.value.think,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
