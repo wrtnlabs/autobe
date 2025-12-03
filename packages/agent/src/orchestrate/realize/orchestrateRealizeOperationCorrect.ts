@@ -23,7 +23,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeCorrectHistory } from "./histories/transformRealizeCorrectHistory";
+import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
@@ -260,7 +260,7 @@ async function step<Model extends ILlmSchema.Model>(
         preliminary,
       }),
       enforceFunctionCall: true,
-      ...transformRealizeCorrectHistory(ctx, {
+      ...transformRealizeOperationCorrectHistory(ctx, {
         state: ctx.state(),
         scenario: props.scenario,
         authorization: props.authorization,

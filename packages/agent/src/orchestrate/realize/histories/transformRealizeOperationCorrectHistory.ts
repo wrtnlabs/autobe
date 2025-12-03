@@ -17,7 +17,7 @@ import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenar
 import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { transformRealizeOperationWriteHistory } from "./transformRealizeOperationWriteHistory";
 
-export function transformRealizeCorrectHistory<
+export function transformRealizeOperationCorrectHistory<
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
 >(

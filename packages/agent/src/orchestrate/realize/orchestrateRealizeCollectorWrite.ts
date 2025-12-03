@@ -22,7 +22,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformRealizeCollectorWriteHistories } from "./histories/transformRealizeCollectorWriteHistories";
+import { transformRealizeCollectorWriteHistory } from "./histories/transformRealizeCollectorWriteHistory";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorWriteApplication } from "./structures/IAutoBeRealizeCollectorWriteApplication";
 
@@ -104,7 +104,7 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeCollectorWriteHistories({
+      ...transformRealizeCollectorWriteHistory({
         plan: props.plan,
         neighbors: props.neighbors,
         document,

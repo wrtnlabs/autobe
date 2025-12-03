@@ -7,7 +7,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 
-export const transformRealizeCollectorWriteHistories = (props: {
+export const transformRealizeCollectorWriteHistory = (props: {
   document: AutoBeOpenApi.IDocument;
   neighbors: AutoBeRealizeCollectorPlan[];
   plan: AutoBeRealizeCollectorPlan;
