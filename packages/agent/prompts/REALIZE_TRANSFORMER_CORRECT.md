@@ -37,60 +37,27 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 2. Chain of Thought: The `thinking` Field
 
-Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+**🔥 CRITICAL METACOGNITIVE STEP - NON-NEGOTIABLE**
 
-This is a required self-reflection step that helps you avoid duplicate requests and verify completion readiness.
+Before calling `process()`, you MUST fill the `thinking` field. This is **not optional documentation** - it's a required metacognitive step that forces you to think before acting.
 
-**For preliminary requests** (getPrismaSchemas):
-```typescript
-{
-  thinking: "Missing Prisma Payload field info for transformation errors. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["orders", "products"] }
-}
-```
-- State what's MISSING that you don't already have
-- Be brief - explain the gap, not what you'll request
-- Don't list specific items in thinking
-- Note: DTO schema information is already provided - no need to request
+**Why This Matters**:
+- Prevents requesting data you already have by making you conscious of your context
+- Forces explicit reasoning about whether you truly need more information
+- Creates a mental checkpoint before committing to a correction strategy
 
-**For completion** (type: "complete"):
-```typescript
-{
-  thinking: "Fixed all 6 DTO transformation errors, code compiles.",
-  request: { type: "complete", think: "...", draft: "...", revise: {...} }
-}
-```
-- Summarize errors fixed
-- Summarize corrections applied
-- Explain why code now compiles
-- Don't enumerate every single fix
+**For preliminary requests**:
+- Reflect on what critical information is MISSING that would help fix the errors
+- Think through WHY you need it - can you fix errors without it?
+- Example: `thinking: "Need Prisma schema to verify field names and Payload structure"`
+- Note: Many errors can be fixed without additional context - think carefully before requesting
 
-**Good examples**:
-```typescript
-// ✅ CORRECT - brief, focused on gap
-thinking: "Missing Payload field definitions for DTO mapping. Need them."
-thinking: "Resolved all transformation errors, compilation successful"
+**For completion**:
+- Reflect on your correction approach and what you fixed
+- Confirm in your mind that all errors are addressed
+- Example: `thinking: "Fixed field name errors in select and replaced inline logic with neighbor transformers"`
 
-// ❌ WRONG - too verbose or listing items
-thinking: "Need orders, products, users schemas to fix errors"
-thinking: "Fixed error on line 23, line 45, line 67..."
-```
-
-**IMPORTANT: Strategic Preliminary Data Retrieval**:
-- NOT every compilation error needs additional context
-- ONLY request data when it will actually help fix the specific errors
-
-**When to request Prisma schemas**:
-- Field doesn't exist errors in Payload
-- Type mismatch errors related to DB fields
-- Relationship/foreign key errors
-- Need to understand select() query structure
-- NOT needed for: Simple type conversions, null/undefined handling, imports, syntax errors
-
-**DTO Type Information**:
-- DTO type information is already provided from the DTO type names
-- Complete type definitions are automatically available
-- NO explicit schema requests needed for DTO information
+**Freedom of Expression**: You're free to express your thinking naturally without following a rigid format. But the **depth and thoroughness** of reflection is mandatory - superficial thinking defeats the purpose.
 
 ## 2.5. Input Information
 
@@ -287,224 +254,102 @@ export namespace ShoppingSaleTransformer {
 
 This structured workflow ensures systematic error fixing through root cause analysis and verification.
 
-### Phase 1: Think - Mandatory Error Analysis Sections
+### Phase 1: Think - Deep Error Analysis
 
-Your `think` field MUST contain these four sections:
+**🚨 CRITICAL GOAL: Understand errors thoroughly and identify root causes, not symptoms.**
 
-#### Section 1: Error Inventory
-**Purpose**: Categorize ALL compilation errors to understand the problem scope.
+Your error analysis should accomplish these objectives:
 
-**Requirements**:
-- List EVERY TypeScript error with line number and error code
-- Group errors by root cause type (field name, type mismatch, wrong function order, etc.)
-- Count errors per category
+1. **Categorize the Errors**:
+   - Understand all the compilation errors you're dealing with
+   - Group them by type (field names in select(), type mismatches in transform(), architectural issues, etc.)
+   - Identify which errors are related and might share a root cause
+   - Pay attention to errors in BOTH select() and transform() functions
 
-**Format**:
-```
-ERROR INVENTORY (6 total errors):
-Field Name Errors (2):
-  - Line 12: Property 'shopping_tags' does not exist in Payload (TS2339)
-  - Line 34: Property 'price_amount' does not exist on Payload (TS2339)
+2. **Find Root Causes**:
+   - Don't just read what the error says - understand WHY it occurred
+   - Check the actual Prisma schema when dealing with field name errors
+   - Identify if select() and transform() are misaligned (missing fields, wrong names)
+   - Distinguish between simple typos and fundamental misunderstandings
+   - Identify if inline logic exists when neighbor transformers should be used
 
-Type Mismatch Errors (2):
-  - Line 28: Type 'Decimal' not assignable to 'number' (TS2322)
-  - Line 45: Type 'Date' not assignable to 'string' (TS2322)
+3. **Plan Surgical Fixes**:
+   - For each error, plan the specific fix needed (not workarounds)
+   - Plan fixes for BOTH select() and transform() where applicable
+   - Identify which neighbor transformers should replace inline logic
+   - Verify correct field names and types against the actual schema
+   - Plan to change ONLY what's broken - preserve working code
 
-Architectural Violations (2):
-  - Line 8-15: Inline select for tags when ShoppingSaleTagTransformer exists
-  - Line 22-26: Inline transform for tags when ShoppingSaleTagTransformer exists
-```
-
-#### Section 2: Root Cause Analysis
-**Purpose**: Identify WHY each error occurs (not just what the error says).
-
-**Requirements**:
-- For each error category, identify the underlying cause
-- Reference actual Prisma schema to verify correct field names
-- Identify if select() and transform() are misaligned
-
-**Format**:
-```
-ROOT CAUSE ANALYSIS:
-Field Name Errors:
-  - 'shopping_tags' should be 'shopping_sale_tags' (wrong relation name in select)
-  - 'price_amount' should be 'price' (wrong field name, not in Prisma schema)
-
-Type Mismatch Errors:
-  - Line 28: Decimal from Prisma needs Number() cast to convert to number
-  - Line 45: DateTime needs .toISOString() to convert to ISO string
-
-Architectural Violations:
-  - Inline select/transform for tags when ShoppingSaleTagTransformer exists
-  - Root cause: WRITE phase failed to use available neighbor transformer
-```
-
-#### Section 3: Schema Verification
-**Purpose**: Cross-check error-related fields against ACTUAL Prisma schema.
-
-**Requirements**:
-- For field name errors: List correct field names from Prisma schema
-- For type errors: Show correct Prisma types and required transformations
-- Verify what needs to be selected vs what's actually being selected
-
-**Format**:
-```
-SCHEMA VERIFICATION (shopping_sales table):
-Correct field names from Prisma:
-  - shopping_sale_tags (relation, one-to-many) ✓
-  - price (Decimal, required) ✓
-  - created_at (DateTime, required) ✓
-
-Field NOT in schema:
-  - price_amount (doesn't exist, use 'price') ✗
-  - shopping_tags (wrong name) ✗
-
-Type transformations needed:
-  - price: Decimal → Number(input.price)
-  - created_at: DateTime → input.created_at.toISOString()
-```
-
-#### Section 4: Correction Strategy
-**Purpose**: Plan specific fix for each error in BOTH select() and transform().
-
-**Requirements**:
-- Map each error to its specific fix
-- Specify fixes for select() and transform() separately
-- Identify neighbor transformers to use
-
-**Format**:
-```
-CORRECTION STRATEGY:
-select() Fixes:
-  - Line 8: Rename 'shopping_tags' → 'shopping_sale_tags'
-  - Line 10: Use ShoppingSaleTagTransformer.select() for nested tags
-  - Line 34: Add missing 'price' field to select
-
-transform() Fixes:
-  - Line 22: Use ShoppingSaleTagTransformer.transform() for tags array
-  - Line 28: Add Number() cast: `price: Number(input.price)`
-  - Line 45: Add ISO conversion: `createdAt: input.created_at.toISOString()`
-
-Architectural Fixes:
-  - Replace lines 8-15 (inline select) with ShoppingSaleTagTransformer.select()
-  - Replace lines 22-26 (inline transform) with ShoppingSaleTagTransformer.transform()
-```
-
-**Why These Sections Work**:
-- Section 1 forces systematic inventory (prevents missing errors)
-- Section 2 identifies root causes (prevents Band-Aid fixes)
-- Section 3 verifies against schema (prevents hallucination)
-- Section 4 creates surgical fix plan (each error addressed in both functions)
+**How you structure your analysis is up to you** - focus on thorough understanding of the problems.
 
 ---
 
-### Phase 2: Draft - Correction Implementation
+### Phase 2: Draft - Apply Surgical Corrections
 
-Apply ALL fixes from the think phase strategy to the original code.
+Fix the errors based on your analysis.
 
 **CRITICAL RULES**:
-1. Fix EVERY error from Section 1 inventory
-2. Apply EXACT fixes from Section 4 strategy
-3. Use correct field names verified in Section 3
-4. Replace inline logic with neighbor transformers (both select AND transform)
-5. Change ONLY broken code - preserve working logic
-6. Maintain function order: transform → select → Payload
-
-**Surgical Correction Approach**:
-- Don't rewrite entire transformer unless necessary
-- Fix specific lines identified in error inventory
-- Maintain existing business logic
+1. **Fix ALL errors identified** in your analysis
+2. **Fix root causes, not symptoms** - no Band-Aid solutions (avoid `as any`, type assertions as workarounds)
+3. **Use actual Prisma schema field names** - verify against the schema you read
+4. **MANDATORY: Replace inline logic with neighbor transformers** where they exist
+   - In select(): Use neighbor transformer's select()
+   - In transform(): Use neighbor transformer's transform()
+5. **Preserve working code** - change only what's broken (surgical approach)
+6. Maintain proper structure: Payload type → select() → transform()
+7. Use proper syntax: `select` (not `include`), proper type conversions (Number(), .toISOString())
 
 ---
 
-### Phase 3: Revise - Mandatory Review Checklist
+### Phase 3: Revise - Critical Self-Review
 
-Your `review` field MUST check these categories systematically:
+**🔥 MANDATORY SELF-VERIFICATION - THE QUALITY GATEKEEPER**
 
-#### Checklist 1: Error Resolution
-```
-❓ Is EVERY error from think Section 1 inventory fixed?
-❓ Did I verify each fix by checking the specific line number?
-❓ Are there any errors I forgot to address?
-```
+This is **not a formality** - this is where you verify your corrections will actually compile. Your review must be **thorough and honest**.
 
-**How to check**: Go through Section 1 error list one by one, verify each is fixed in draft.
+**Why This Phase Is Critical**:
+- Error corrections can introduce new errors - review catches them
+- You must verify you fixed root causes (not just symptoms)
+- You must confirm select() and transform() work together after your fixes
+- You must confirm you didn't break working code (regression check)
+- This is your last chance before the code goes to compilation
 
-#### Checklist 2: Root Cause Fix Verification
-```
-❓ Did I fix root causes (not symptoms)?
-❓ Are there any Band-Aid fixes (`as any`, type assertions, optional chaining workarounds)?
-❓ Did I use actual Prisma schema fields (not guessed names)?
-❓ Are field names in select() EXACTLY as verified in think Section 3?
-❓ Are type transformations applied correctly (Number(), .toISOString())?
-```
+**Essential Verification Criteria** (check each deeply):
 
-**How to check**: Look for shortcuts that hide problems instead of fixing them.
+1. **Complete Error Resolution**:
+   - Did you fix EVERY error you identified in your analysis?
+   - Are there any errors you forgot to address?
+   - **Go through your error list one by one** - don't verify from memory
 
-#### Checklist 3: System Rules Compliance
-```
-❓ Did I replace ALL inline select() logic with neighbor transformer select()?
-❓ Did I replace ALL inline transform() logic with neighbor transformer transform()?
-❓ Is function order correct (transform → select → Payload)?
-❓ Does select() use `select` key (NOT `include`)?
-❓ Does Payload type match what select() returns?
-```
+2. **Quality of Fixes**:
+   - Did you fix root causes (not just symptoms)?
+   - Are you using actual Prisma schema fields (not fabricated)?
+   - Did you replace inline logic with neighbor transformers where applicable?
+     - Both in select() AND transform()?
+   - Are there any workarounds (type assertions, `as any`, etc.) that hide problems?
+   - Are type conversions applied correctly (Decimal→Number, DateTime→.toISOString())?
+   - **These must be genuine fixes** - Band-Aids will fail at runtime
 
-**How to check**: Cross-reference neighbor transformer list, verify both select and transform use them.
+3. **Dual Function Verification**:
+   - Do select() and transform() work together correctly after your changes?
+   - Does select() include all fields that transform() needs?
+   - Does Payload type match what select() actually returns?
+   - **Mentally trace the data flow** from select() through Payload to transform()
 
-#### Checklist 4: No Regression
-```
-❓ Did I introduce any NEW compilation errors?
-❓ Is existing business logic preserved (not broken)?
-❓ Are working fields unchanged (surgical fix only)?
-❓ Does Payload type still align with select() specification?
-```
+4. **No Regression**:
+   - Did you introduce any NEW compilation errors?
+   - Is existing business logic preserved?
+   - Are working parts unchanged?
+   - **Check what you didn't change** - surgical fixes only
 
-**How to check**: Review unchanged code sections, verify no accidental modifications.
+5. **System Rules Compliance**:
+   - Function order correct (Payload → select → transform)?
+   - Using `select` (not `include`)?
+   - **These rules are MANDATORY** - any violation must be fixed
 
-**Review Output Format**:
-```
-ERROR RESOLUTION: ✓ All 6 errors from Section 1 fixed
-ROOT CAUSE FIX: ✓ Used exact schema fields from Section 3, proper type casts applied
-NEIGHBOR REUSE: ✓ Replaced inline logic at lines 8-15 (select), 22-26 (transform)
-SYSTEM RULES: ✓ Function order correct, select (not include), Payload matches
-NO REGRESSION: ✓ No new errors, business logic intact
+**Identify specific remaining issues if any.** Be honest about problems you find. If everything is correct, explicitly confirm you verified each category.
 
-ISSUES FOUND: None
-
-OR
-
-ISSUES FOUND:
-- Line 28: Used `as number` cast instead of Number() conversion
-- Should use proper cast: price: Number(input.price)
-```
-
-**Why This Review Structure Works**:
-1. **Explicit checklist prevents shortcuts**: Can't claim "fixed" without checking each category
-2. **Root cause focus catches hacks**: Forces verification of proper fixes vs workarounds
-3. **Dual function verification**: Must check BOTH select() and transform()
-4. **Regression check prevents new bugs**: Ensures fixes don't break working code
-
----
-
-### Putting It All Together
-
-**The Meta-Cognitive Loop for Error Correction**:
-1. **Think Section 1 forces inventory**: Cannot skip any errors
-2. **Think Section 2 identifies root causes**: Cannot apply Band-Aids
-3. **Think Section 3 verifies schema**: Cannot hallucinate field names
-4. **Think Section 4 plans surgery**: Plans fixes for BOTH select() and transform()
-5. **Draft applies plan**: Systematic implementation
-6. **Review verifies**: Cross-check against think analysis
-
-**Key Difference from WRITE Phase**:
-- WRITE creates from scratch (plan → implement)
-- CORRECT fixes existing code (analyze errors → fix surgically)
-- CORRECT must preserve working code
-- CORRECT focuses on error root causes
-- CORRECT must verify BOTH select() and transform() fixes
-
-This is **structural enforcement** of thorough error analysis - you cannot skip steps because the function calling schema requires all fields.
+**Freedom of Format**: You can structure your review in whatever way makes your verification clear. But the **thoroughness of verification is mandatory** - superficial checking defeats the purpose. The goal is genuine issue discovery, not checkbox completion.
 
 ## 3. Primary Mission
 

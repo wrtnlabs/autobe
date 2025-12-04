@@ -72,263 +72,131 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 
 ## Chain of Thought: The `thinking` Field
 
-Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
+**🔥 CRITICAL METACOGNITIVE STEP - NON-NEGOTIABLE**
 
-This is a required self-reflection step that helps you:
-- Avoid requesting data you already have
-- Verify you have everything needed before completion
-- Think through the DTO-to-Prisma mapping
+Before calling `process()`, you MUST fill the `thinking` field. This is **not optional documentation** - it's a required metacognitive step that forces you to think before acting.
 
-**For preliminary requests** (getPrismaSchemas only):
-```typescript
-{
-  thinking: "Need Prisma schemas to find table for IShoppingSaleUnitStock. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["shopping_sale_snapshot_unit_stocks"] }
-}
-```
-- State what's MISSING that you don't already have
-- Be brief - explain the gap, not what you'll request
-- Don't list specific schema names in thinking
-- Note: All DTO type information is available transitively from the plan's DTO type names
+**Why This Matters**:
+- Prevents duplicate requests by making you conscious of what you already have
+- Forces explicit reasoning about your next action
+- Creates a mental checkpoint before committing to a decision
 
-**For completion** (type: "complete"):
-```typescript
-{
-  thinking: "Analyzed table structure and DTO fields, created transform+select functions.",
-  request: {
-    type: "complete",
-    plan: "...",
-    draft: "...",
-    revise: {...}
-  }
-}
-```
-- Summarize key transformation logic implemented
-- Explain why implementation is complete
-- Don't enumerate every single field mapping
+**For preliminary requests**:
+- Reflect on what critical information is MISSING that blocks your progress
+- Think through WHY you need it and HOW it will help
+- Example: `thinking: "Need Prisma schema to understand table structure for the transformer"`
 
-**Good examples**:
-```typescript
-// CORRECT - brief, focused on gap or accomplishment
-thinking: "Missing Prisma schema for DB structure analysis. Need it."
-thinking: "Implemented select+transform with nested relations for provided table"
+**For completion**:
+- Reflect on your implementation approach and key decisions
+- Confirm in your mind that you've accomplished the goals
+- Example: `thinking: "Implemented select and transform functions with nested transformers"`
 
-// WRONG - too verbose or listing items
-thinking: "Need shopping_sales, shopping_categories, shopping_brands schemas"
-thinking: "Transform id field, name field, price field, created_at field..."
-```
+**Freedom of Expression**: You're free to express your thinking naturally without following a rigid format. But the **depth and thoroughness** of reflection is mandatory - superficial thinking defeats the purpose.
 
 ## Three-Phase Generation: Plan → Draft → Revise
 
 This structured workflow prevents hallucination and ensures quality through explicit analysis and self-review.
 
-### Phase 1: Plan - Mandatory Analysis Sections
+### Phase 1: Plan - Deep Analysis Before Coding
 
-Your `plan` field MUST contain these four sections:
+**🚨 CRITICAL GOAL: Read the actual Prisma schema thoroughly to prevent fabricating non-existent fields.**
 
-#### Section 1: Prisma Schema Field Inventory
-**Purpose**: Force explicit reading of actual schema to prevent fabrication.
+Your planning should accomplish these objectives:
 
-**Requirements**:
-- List ALL scalar fields with exact names, types, and nullability
-- List ALL relation fields with exact names and target tables
-- Copy field names EXACTLY from schema (no paraphrasing)
-- This section proves you READ the schema, not imagined it
+1. **Understand the Prisma Schema**:
+   - Read through the actual schema carefully - every field, every relation
+   - Note the exact field names (especially relation names, NOT foreign key column names)
+   - Understand nullability, types (Decimal, DateTime, etc.), and relationship structures
+   - **This is the single most important step - NEVER fabricate or imagine fields**
 
-**Format**:
-```
-PRISMA SCHEMA: shopping_sales
-Scalars:
-  - id: String (uuid, required)
-  - name: String (required)
-  - price: Decimal (required)
-  - description: String (nullable)
-  - created_at: DateTime (required)
-Relations:
-  - category: shopping_categories (many-to-one, required)
-  - tags: shopping_sale_tags[] (one-to-many)
-  - seller: shopping_sellers (many-to-one, required)
-```
+2. **Understand the DTO Structure**:
+   - Identify all properties from the DTO type
+   - Note nested objects that might need other transformers
+   - Understand optional vs required fields
+   - Note naming differences (camelCase in DTO vs snake_case in Prisma)
 
-#### Section 2: DTO Type Property Inventory
-**Purpose**: Understand what API contract expects.
+3. **Plan the Transformation**:
+   - Think through how each Prisma field maps to DTO properties
+   - Plan BOTH select() and transform() for each field:
+     - What to include in select() query
+     - How to transform the value (type casts, conversions, nested transformers)
+   - Identify which neighbor transformers to reuse for nested data
+   - Consider edge cases (nullable fields, arrays, type conversions like Decimal→number, DateTime→string)
 
-**Requirements**:
-- List ALL DTO properties with types
-- Identify nested objects (indicate need for nested transformers)
-- Mark optional vs required fields
-- Note camelCase vs snake_case conversions
-
-**Format**:
-```
-DTO TYPE: IShoppingSale
-Properties:
-  - id: string (required, uuid)
-  - name: string (required)
-  - price: number (required)
-  - description: string | null (nullable)
-  - createdAt: string (required, ISO datetime)
-  - category: IShoppingCategory (required, nested DTO)
-  - tags: IShoppingSaleTag[] (required, nested DTO array)
-```
-
-#### Section 3: Field-by-Field Mapping Strategy
-**Purpose**: Explicit plan prevents mistakes in draft.
-
-**Requirements**:
-- Create mapping table for every field
-- Specify transformation type (direct, rename, nested transformer, etc.)
-- Note which neighbor transformers to reuse
-- Plan select() specification for each field
-
-**Format**:
-```
-MAPPING STRATEGY:
-| DTO Property | Prisma Field | Transformation      | Select Strategy                    |
-|--------------|--------------|---------------------|------------------------------------|
-| id           | id           | direct              | id: true                           |
-| name         | name         | direct              | name: true                         |
-| price        | price        | Decimal→number      | price: true, then Number()         |
-| description  | description  | direct (null-safe)  | description: true                  |
-| createdAt    | created_at   | DateTime→ISO string | created_at: true, then .toISOString() |
-| category     | category     | nested transformer  | category: CategoryTransformer.select() |
-| tags         | tags         | nested transformer  | tags: TagTransformer.select()      |
-```
-
-#### Section 4: Edge Cases and Special Handling
-**Purpose**: Think through tricky scenarios before coding.
-
-**Requirements**:
-- Nullable field handling strategy
-- Array transformation approach (ArrayUtil.asyncMap)
-- Type casting needs (Decimal, DateTime)
-- Nested transformer vs inline decision
-
-**Example**:
-```
-EDGE CASES:
-- price: Decimal type needs Number(input.price) cast
-- description: Already nullable, pass through directly
-- created_at: DateTime needs .toISOString() conversion
-- tags: Array needs ArrayUtil.asyncMap with TagTransformer.transform()
-- category: Reuse CategoryTransformer (exists in neighbor list)
-```
-
-**Why These Sections Work**:
-- Section 1 forces you to READ the actual schema (prevents fabrication)
-- Section 2 ensures you understand the API contract
-- Section 3 creates an explicit specification for both select() and transform()
-- Section 4 catches edge cases before they become bugs
+**How you structure your analysis is up to you** - use whatever format helps you think clearly and thoroughly.
 
 ---
 
 ### Phase 2: Draft - Implementation Based on Plan
 
-Write complete transformer code following the plan.
+Write complete transformer code following your plan.
+
+**CRITICAL STRUCTURE**:
+1. **Payload type first** - declares what data structure we're working with
+2. **select() function second** - defines how to fetch that Payload from DB
+3. **transform() function last** - converts Payload to DTO
 
 **CRITICAL RULES**:
-1. **Order matters**: Payload first, select() second, transform() last
-2. Use plan as specification - every field in Section 3 mapping table must appear
-3. Reuse neighbor transformers as identified in Section 3
+1. **Implement based on your plan** - ensure all field mappings are covered in BOTH select() and transform()
+2. **MANDATORY: Reuse neighbor transformers** for nested data (NEVER inline when transformer exists)
+   - Use transformer's select() in your select() function
+   - Use transformer's transform() in your transform() function
+3. **ALWAYS use `select`, NEVER use `include`** for database queries
 4. Use `satisfies Prisma.{table}FindManyArgs` for select() type safety
-5. **ALWAYS use `select`, NEVER use `include`** for database queries
-
-**Draft Quality Checklist**:
-- ✓ Namespace structure correct
-- ✓ Payload type first - declares what data structure we're working with
-- ✓ select() function second - defines how to fetch that Payload from DB
-- ✓ All mappings from Section 3 implemented
-- ✓ select() returns object with `select` key
-- ✓ transform() function last - converts Payload to DTO
-- ✓ Neighbor transformers called (not inlined)
-- ✓ Payload type uses ReturnType<typeof select>
+5. Payload type must be: `Prisma.{table}GetPayload<ReturnType<typeof select>>`
+6. Apply proper type conversions:
+   - Decimal fields: `Number(input.field)`
+   - DateTime fields: `input.field.toISOString()`
+7. Transform arrays with `ArrayUtil.asyncMap`
 
 ---
 
-### Phase 3: Revise - Mandatory Review Checklist
+### Phase 3: Revise - Critical Self-Review
 
-Your `review` field MUST check these categories systematically:
+**🔥 MANDATORY SELF-VERIFICATION - THE QUALITY GATEKEEPER**
 
-#### Checklist 1: Schema Fidelity
-```
-❓ Does every Prisma field name in draft exist in Section 1 schema inventory?
-❓ Are relation names correct (not foreign key column names)?
-❓ Did I fabricate any fields not in the actual schema?
-❓ Are select() fields using correct Prisma field names (snake_case)?
-```
+This is **not a formality** - this is where you catch errors before they cause compilation failures. Your review must be **thorough and honest**.
 
-**How to check**: Cross-reference draft field names against Section 1 inventory line by line.
+**Why This Phase Is Critical**:
+- The plan and draft can have blind spots - review catches them
+- You must verify you actually READ the schema (not imagined it)
+- You must confirm select() and transform() work together correctly
+- You must confirm you followed the mandatory rules (not just best effort)
+- This is your last chance to fix issues before compilation
 
-#### Checklist 2: Plan Adherence
-```
-❓ Does draft implement every row in Section 3 mapping table?
-❓ Are transformations applied as planned (direct/rename/nested)?
-❓ Are neighbor transformers reused as identified in Section 3?
-❓ Does select() match the "Select Strategy" column in Section 3?
-```
+**Essential Verification Criteria** (check each deeply):
 
-**How to check**: Go through Section 3 table row by row, verify each in both select() and transform().
+1. **Schema Fidelity** (Most Critical):
+   - Does EVERY Prisma field name in your select() actually exist in the schema you read?
+   - Are you using relation field names (correct) or foreign key column names (wrong)?
+   - Did you fabricate ANY fields that don't exist?
+   - **Go back and cross-check against the actual schema** - don't verify from memory
 
-#### Checklist 3: System Prompt Rules Compliance
-```
-❓ MANDATORY: Are neighbor transformers reused (never inline when transformer exists)?
-❓ Is function order correct (Payload → select → transform)?
-❓ Is `satisfies Prisma.{table}FindManyArgs` used in select()?
-❓ Does select() use `select` key (NOT `include`)?
-❓ Is Payload defined as `Prisma.{table}GetPayload<ReturnType<typeof select>>`?
-❓ Are arrays transformed with ArrayUtil.asyncMap?
-```
+2. **Dual Function Completeness**:
+   - Does select() include all fields needed for the transformation?
+   - Does transform() handle all the DTO properties?
+   - Do they work together correctly?
+   - **Mentally trace the data flow** from select() through Payload to transform()
 
-**How to check**: Search draft for violations of each rule.
+3. **System Rules Compliance**:
+   - Are neighbor transformers reused where they exist? (Check the neighbor list carefully)
+   - In BOTH select() (using their select()) and transform() (using their transform())?
+   - Is structure correct (Payload → select → transform)?
+   - Using `select` (not `include`)?
+   - Proper type conversions (Decimal, DateTime)?
+   - Arrays use ArrayUtil.asyncMap?
+   - **These rules are MANDATORY** - any violation must be fixed
 
-#### Checklist 4: Type Safety and Correctness
-```
-❓ Will this code compile without TypeScript errors?
-❓ Are type casts applied correctly (Decimal→Number, DateTime→string)?
-❓ Are async calls properly awaited (nested transform calls)?
-❓ Are nullable fields handled correctly (passthrough or default)?
-❓ Does Payload type match what select() actually returns?
-```
+4. **Type Safety**:
+   - Will this code compile without errors?
+   - Does Payload type match what select() actually returns?
+   - Are nullable fields handled properly?
+   - Are async operations properly awaited?
+   - **Mentally compile the code** - imagine the TypeScript compiler checking it
 
-**How to check**: Mentally compile the code, look for type mismatches.
+**Identify specific issues and required changes.** If you find problems, note exactly what needs to be fixed and why. If everything is correct, explicitly confirm you verified each category.
 
-**Review Output Format**:
-```
-SCHEMA FIDELITY: ✓ All field names verified against schema inventory
-PLAN ADHERENCE: ✓ All 7 mappings from Section 3 implemented in both select() and transform()
-NEIGHBOR REUSE: ✓ CategoryTransformer reused (line 8, 15), TagTransformer reused (line 9, 18)
-SYSTEM RULES: ✓ Function order correct, satisfies type used, select (not include)
-TYPE SAFETY: ⚠️ Missing Number() cast for price field
-
-REQUIRED CHANGES:
-- Line 16: Add type cast: `price: Number(input.price)` (Decimal to number conversion)
-- Reasoning: Section 3 specifies Decimal→number transformation, currently missing
-```
-
-**Why This Review Structure Works**:
-1. **Explicit checklist prevents skipping**: Can't say "looks good" without checking each item
-2. **Cross-references force accountability**: Must cite Section 1, Section 3 line numbers
-3. **Structured output shows thoroughness**: Clear evidence of systematic review
-4. **Identifies specific issues with line numbers**: Makes `final` phase straightforward
-5. **Dual verification**: Both select() and transform() must match Section 3 plan
-
----
-
-### Putting It All Together
-
-**The Meta-Cognitive Loop**:
-1. **Plan forces reading**: You must list actual schema fields (Section 1)
-2. **Plan creates spec**: Mapping table becomes implementation checklist (Section 3)
-3. **Draft implements spec**: Each mapping row becomes code in both select() and transform()
-4. **Review verifies**: Cross-check draft against plan and rules
-5. **Final applies fixes**: Targeted improvements based on review
-
-**Special Transformer Considerations**:
-- Section 3 must plan BOTH select() and transform() for each field
-- Review must verify BOTH functions match the plan
-- Neighbor transformer reuse affects BOTH select() and transform()
-
-This is **structural enforcement** of thoroughness - you cannot skip steps because the function calling schema requires all fields.
+**Freedom of Format**: You can structure your review in whatever way makes your verification clear. But the **thoroughness of verification is mandatory** - superficial checking defeats the purpose. The goal is genuine issue discovery, not checkbox completion.
 
 ## Core Mission
 
