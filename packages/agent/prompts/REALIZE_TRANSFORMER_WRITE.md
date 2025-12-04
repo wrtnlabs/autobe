@@ -202,7 +202,9 @@ You will receive:
 
 3. **Analyze the mapping** (DTO type information is already available transitively):
    - Look at DTO fields vs Prisma table columns
-   - Identify field name patterns (camelCase in DTO, snake_case in DB)
+   - Identify field name patterns:
+     - Scalar fields: `snake_case` in DB, `camelCase` in DTO
+     - Relation fields: `camelCase` in both DB and DTO
    - Check for nested objects that indicate relations
    - **CRITICAL**: Verify each field you select actually exists in the Prisma schema
    - Plan the transformation logic
@@ -394,7 +396,9 @@ select: {
 
 - **Scalar fields**: `field_name: true`
 - **Relation fields**: `relation_name: { select: { ... } }`
-- **Always use snake_case** for Prisma field names (matches database column names)
+- **Naming conventions in Prisma schemas**:
+  - **Scalar fields** (columns): `snake_case` (e.g., `id`, `created_at`, `category_id`)
+  - **Relation fields**: `camelCase` (e.g., `category`, `author`, `tags`)
 - **Nested relations** follow the same pattern recursively
 
 **MANDATORY Pattern - Always Use `select`:**
@@ -697,9 +701,9 @@ The `transform()` function is responsible for converting raw database data (Pris
 
 **Common Field Conversions:**
 
-1. **Field Renaming**: Database uses `snake_case`, API uses `camelCase`
+1. **Field Renaming (Scalar Fields)**: Scalar columns use `snake_case` in DB, `camelCase` in API
    ```typescript
-   // Database: created_at
+   // Database scalar field: created_at
    // API: createdAt
    createdAt: input.created_at
    ```
@@ -760,7 +764,7 @@ This means `input` parameter has the **exact** shape that Prisma returns based o
 ```typescript
 export async function transform(input: Payload): Promise<IShoppingSale> {
   return {
-    // Direct field mapping (rename snake_case -> camelCase)
+    // Scalar field mapping (DB snake_case -> API camelCase)
     id: input.id,
     name: input.name,
     createdAt: input.created_at,
@@ -768,7 +772,7 @@ export async function transform(input: Payload): Promise<IShoppingSale> {
     // Null handling (DB null -> API undefined)
     description: input.description ?? undefined,
 
-    // Nested objects - reuse other Transformers
+    // Nested objects - reuse other Transformers (relation fields use camelCase)
     category: await ShoppingCategoryTransformer.transform(input.category),
 
     // Aggregations (direct mapping)
@@ -1346,7 +1350,7 @@ export namespace BbsArticleTransformer {
    * Transform Prisma bbs_articles payload to IBbsArticle DTO.
    *
    * Converts database representation to API response format with:
-   * - Snake_case -> camelCase field names
+   * - Scalar fields: snake_case (DB) -> camelCase (API)
    * - Date -> ISO string conversion
    * - Nested author object (reuses BbsMemberTransformer)
    * - Nested category object (reuses BbsCategoryTransformer)
@@ -1755,7 +1759,9 @@ export function select() {
    - Compare DTO fields with Prisma table columns
    - **Verify each field EXISTS in Prisma schema** (RE-CHECK against what you just read!)
    - **Verify exact spelling** (createdAt in DTO ≠ created_at in DB)
-   - Identify field name transformations (snake_case → camelCase)
+   - Identify field name transformations:
+     - Scalar fields: `snake_case` (DB) → `camelCase` (API)
+     - Relation fields: `camelCase` (DB and API, same naming)
    - Identify nested objects and relations (ONLY if they exist in schema!)
 5. **Plan transformation strategy**:
    - Document field mappings

@@ -81,7 +81,7 @@ const validate_agent_realize_collector = async (props: {
       },
     });
 
-  const cwd: string = `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector-write`;
+  const cwd: string = `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector-all`;
   await FileSystemIterator.save({
     root: cwd,
     files: {
@@ -96,6 +96,7 @@ const validate_agent_realize_collector = async (props: {
       "pnpm-workspace.yaml": "",
     },
   });
+  console.log(`code ${cwd}`);
   cp.execSync("pnpm install", { cwd, stdio: "ignore" });
   cp.execSync("pnpm tsc", { cwd, stdio: "inherit" });
 };
