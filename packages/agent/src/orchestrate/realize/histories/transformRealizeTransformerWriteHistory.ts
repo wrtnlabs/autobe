@@ -1,29 +1,29 @@
-import { AutoBeOpenApi, AutoBeRealizeTransformerPlan } from "@autobe/interface";
-import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { AutoBeRealizeTransformerPlan } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 
-export const transformRealizeTransformerWriteHistory = (props: {
-  document: AutoBeOpenApi.IDocument;
-  plan: AutoBeRealizeTransformerPlan;
-  neighbors: AutoBeRealizeTransformerPlan[];
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
-}): IAutoBeOrchestrateHistory => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = {};
-  AutoBeOpenApiTypeChecker.visit({
-    components: props.document.components,
-    closure: (next: AutoBeOpenApi.IJsonSchema) => {
-      if (AutoBeOpenApiTypeChecker.isReference(next)) {
-        const key: string = next.$ref.split("/").pop()!;
-        schemas[key] ??= props.document.components.schemas[key];
-      }
-    },
-    schema: { $ref: `#/components/schemas/${props.plan.dtoTypeName}` },
-  });
+export const transformRealizeTransformerWriteHistory = async <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    plan: AutoBeRealizeTransformerPlan;
+    neighbors: AutoBeRealizeTransformerPlan[];
+    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  },
+): Promise<IAutoBeOrchestrateHistory> => {
+  const dto: Record<string, string> =
+    await AutoBeRealizeTransformerProgrammer.writeStructures(
+      ctx,
+      props.plan.dtoTypeName,
+    );
   return {
     histories: [
       {
@@ -41,7 +41,7 @@ export const transformRealizeTransformerWriteHistory = (props: {
           Here are the relevant schemas for the DTO type ${props.plan.dtoTypeName}:
 
           \`\`\`json
-          ${JSON.stringify(schemas)}
+          ${JSON.stringify(dto)}
           \`\`\`
         `,
       },
@@ -55,7 +55,7 @@ export const transformRealizeTransformerWriteHistory = (props: {
           Prisma schema ${props.plan.prismaSchemaName}:
 
           \`\`\`typescript
-          ${AutoBeRealizeTransformerProgrammer.getTemplate(props.plan)}
+          ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.plan)}
           \`\`\`
 
           Here is the neighbor transformers you can utilize:

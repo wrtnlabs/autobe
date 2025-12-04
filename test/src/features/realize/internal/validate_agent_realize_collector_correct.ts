@@ -74,7 +74,7 @@ export const validate_agent_realize_collector_correct = async (props: {
     await orchestrateRealizeCorrectCasting(agent.getContext(), {
       programmer: {
         template: (func) =>
-          AutoBeRealizeCollectorProgrammer.getTemplate(func.plan),
+          AutoBeRealizeCollectorProgrammer.writeTemplate(func.plan),
         replaceImportStatements: (next) =>
           AutoBeRealizeCollectorProgrammer.replaceImportStatements(
             agent.getContext(),

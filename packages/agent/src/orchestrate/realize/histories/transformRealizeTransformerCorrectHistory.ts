@@ -73,7 +73,7 @@ export function transformRealizeTransformerCorrectHistory(props: {
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeTransformerProgrammer.getTemplate(props.plan)}
+      ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.plan)}
 
       Current code is as follows:
 

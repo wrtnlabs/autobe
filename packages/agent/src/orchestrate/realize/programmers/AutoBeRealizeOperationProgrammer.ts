@@ -36,26 +36,6 @@ export namespace AutoBeRealizeOperationProgrammer {
     };
   }
 
-  export function getTemplate(props: {
-    authorizations: AutoBeRealizeAuthorization[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    operation: AutoBeOpenApi.IOperation;
-  }): string {
-    const scenario: IAutoBeRealizeScenarioResult = getScenario({
-      authorizations: props.authorizations,
-      operation: props.operation,
-    });
-    return writeTemplateCode({
-      scenario,
-      operation: props.operation,
-      schemas: props.schemas,
-      authorization:
-        props.authorizations.find(
-          (a) => a.actor.name === props.operation.authorizationActor,
-        ) ?? null,
-    });
-  }
-
   export function getAdditional(props: {
     functions: AutoBeRealizeOperationFunction[];
     authorizations: AutoBeRealizeAuthorization[];
@@ -139,6 +119,43 @@ export namespace AutoBeRealizeOperationProgrammer {
     code = await compiler.typescript.beautify(code);
     code = code.replaceAll("typia.tags.assert", "typia.assert");
     return code;
+  }
+
+  export function writeTemplate(props: {
+    authorizations: AutoBeRealizeAuthorization[];
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    operation: AutoBeOpenApi.IOperation;
+  }): string {
+    const scenario: IAutoBeRealizeScenarioResult = getScenario({
+      authorizations: props.authorizations,
+      operation: props.operation,
+    });
+    return writeTemplateCode({
+      scenario,
+      operation: props.operation,
+      schemas: props.schemas,
+      authorization:
+        props.authorizations.find(
+          (a) => a.actor.name === props.operation.authorizationActor,
+        ) ?? null,
+    });
+  }
+
+  export async function writeStructures<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    operation: AutoBeOpenApi.IOperation,
+  ): Promise<Record<string, string>> {
+    const document: AutoBeOpenApi.IDocument = filterDocument(
+      operation,
+      ctx.state().interface!.document,
+    );
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const entries: [string, string][] = Object.entries(
+      await compiler.interface.write(document, []),
+    );
+    return Object.fromEntries(
+      entries.filter(([key]) => key.startsWith("src/api/structures")),
+    );
   }
 
   export function validateEmptyCode(props: {
@@ -341,3 +358,31 @@ const description = (func: string): string => StringUtil.trim`
   Please make sure that the code snippet includes the function ${func}.
   Note that, you never have to write empty code or different function name.
 `;
+
+function filterDocument(
+  operation: AutoBeOpenApi.IOperation,
+  document: AutoBeOpenApi.IDocument,
+): AutoBeOpenApi.IDocument {
+  const components: AutoBeOpenApi.IComponents = {
+    authorizations: document.components.authorizations,
+    schemas: {},
+  };
+  const visit = (typeName: string) => {
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${typeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = document.components.schemas[key];
+        }
+      },
+    });
+  };
+  if (operation.requestBody) visit(operation.requestBody.typeName);
+  if (operation.responseBody) visit(operation.responseBody.typeName);
+  return {
+    operations: [operation],
+    components,
+  };
+}

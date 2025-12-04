@@ -70,7 +70,6 @@ async function process<Model extends ILlmSchema.Model>(
     .state()
     .prisma!.result.data.files.map((f) => f.models)
     .flat();
-  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
@@ -104,12 +103,11 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeCollectorWriteHistory({
+      ...(await transformRealizeCollectorWriteHistory(ctx, {
         plan: props.plan,
         neighbors: props.neighbors,
-        document,
         preliminary,
-      }),
+      })),
     });
     if (pointer.value === null) return out(result)(null);
 

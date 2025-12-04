@@ -52,6 +52,13 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
             typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
           kinds: ["prismaSchemas"],
           state: ctx.state(),
+          local: {
+            prismaSchemas: ctx
+              .state()
+              .prisma!.result.data.files.map((f) => f.models)
+              .flat()
+              .filter((m) => m.name === next.function.plan.prismaSchemaName),
+          },
         }),
 
       // Transform history using Collector-specific transformer

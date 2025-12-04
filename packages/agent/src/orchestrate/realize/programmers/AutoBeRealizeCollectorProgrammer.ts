@@ -33,7 +33,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function getTemplate(plan: AutoBeRealizeCollectorPlan): string {
+  export function writeTemplate(plan: AutoBeRealizeCollectorPlan): string {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
         export async function collect(props: {
@@ -51,6 +51,41 @@ export namespace AutoBeRealizeCollectorProgrammer {
         }
       }
     `;
+  }
+
+  export async function writeStructures<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    dtoTypeName: string,
+  ): Promise<Record<string, string>> {
+    const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+    const components: AutoBeOpenApi.IComponents = {
+      authorizations: [],
+      schemas: {},
+    };
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${dtoTypeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = document.components.schemas[key];
+        }
+      },
+    });
+
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const entries: [string, string][] = Object.entries(
+      await compiler.interface.write(
+        {
+          components,
+          operations: [],
+        },
+        [],
+      ),
+    );
+    return Object.fromEntries(
+      entries.filter(([key]) => key.startsWith("src/api/structures")),
+    );
   }
 
   export async function replaceImportStatements<Model extends ILlmSchema.Model>(

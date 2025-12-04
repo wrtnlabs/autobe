@@ -100,12 +100,11 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerWriteHistory({
+      ...(await transformRealizeTransformerWriteHistory(ctx, {
         plan: props.plan,
         neighbors: props.neighbors,
-        document,
         preliminary,
-      }),
+      })),
     });
     if (pointer.value !== null) {
       const content: string =

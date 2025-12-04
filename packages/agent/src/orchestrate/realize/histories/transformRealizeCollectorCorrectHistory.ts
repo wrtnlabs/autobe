@@ -73,7 +73,7 @@ export function transformRealizeCollectorCorrectHistory(props: {
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeCollectorProgrammer.getTemplate(props.plan)}
+      ${AutoBeRealizeCollectorProgrammer.writeTemplate(props.plan)}
 
       Current code is as follows:
 

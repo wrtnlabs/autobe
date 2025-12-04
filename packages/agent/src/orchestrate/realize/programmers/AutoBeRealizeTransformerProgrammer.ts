@@ -7,6 +7,7 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 
 export namespace AutoBeRealizeTransformerProgrammer {
   export function filter(key: string): boolean {
@@ -44,7 +45,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
-  export function getTemplate(plan: AutoBeRealizeTransformerPlan): string {
+  export function writeTemplate(plan: AutoBeRealizeTransformerPlan): string {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
         export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {
@@ -60,6 +61,13 @@ export namespace AutoBeRealizeTransformerProgrammer {
         export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
       }
     `;
+  }
+
+  export function writeStructures<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    dtoTypeName: string,
+  ): Promise<Record<string, string>> {
+    return AutoBeRealizeCollectorProgrammer.writeStructures(ctx, dtoTypeName);
   }
 
   export async function replaceImportStatements<Model extends ILlmSchema.Model>(

@@ -1,29 +1,29 @@
-import { AutoBeOpenApi, AutoBeRealizeCollectorPlan } from "@autobe/interface";
-import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 
-export const transformRealizeCollectorWriteHistory = (props: {
-  document: AutoBeOpenApi.IDocument;
-  neighbors: AutoBeRealizeCollectorPlan[];
-  plan: AutoBeRealizeCollectorPlan;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
-}): IAutoBeOrchestrateHistory => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = {};
-  AutoBeOpenApiTypeChecker.visit({
-    components: props.document.components,
-    closure: (next: AutoBeOpenApi.IJsonSchema) => {
-      if (AutoBeOpenApiTypeChecker.isReference(next)) {
-        const key: string = next.$ref.split("/").pop()!;
-        schemas[key] ??= props.document.components.schemas[key];
-      }
-    },
-    schema: { $ref: `#/components/schemas/${props.plan.dtoTypeName}` },
-  });
+export const transformRealizeCollectorWriteHistory = async <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    plan: AutoBeRealizeCollectorPlan;
+    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+    neighbors: AutoBeRealizeCollectorPlan[];
+  },
+): Promise<IAutoBeOrchestrateHistory> => {
+  const dto: Record<string, string> =
+    await AutoBeRealizeCollectorProgrammer.writeStructures(
+      ctx,
+      props.plan.dtoTypeName,
+    );
   return {
     histories: [
       {
@@ -41,7 +41,7 @@ export const transformRealizeCollectorWriteHistory = (props: {
           Here are the relevant schemas for the DTO type ${props.plan.dtoTypeName}:
 
           \`\`\`json
-          ${JSON.stringify(schemas)}
+          ${JSON.stringify(dto)}
           \`\`\`
         `,
       },
@@ -54,17 +54,18 @@ export const transformRealizeCollectorWriteHistory = (props: {
 
           Here are the neighbor collectors you can utilize.
 
-          Collector Name | DTO Type Name | Prisma Schema Name
-          ---------------|---------------|--------------------
-          ${props.neighbors
-            .map((n) =>
-              [
-                AutoBeRealizeCollectorProgrammer.getName(n.dtoTypeName),
-                n.dtoTypeName,
-                n.prismaSchemaName,
-              ].join(" | "),
-            )
-            .join("\n")}
+          You can call their functions by using the function property of below.
+
+          \`\`\`json
+          ${JSON.stringify(
+            props.neighbors.map((n) => ({
+              function: `${AutoBeRealizeCollectorProgrammer.getName(n.dtoTypeName)}.collect()`,
+              dtoTypeName: n.dtoTypeName,
+              prismaSchemaName: n.prismaSchemaName,
+              references: n.references,
+            })),
+          )}
+          \`\`\`
         `,
       },
     ],
@@ -112,7 +113,7 @@ function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
     }
 
     \`\`\`typescript
-    ${AutoBeRealizeCollectorProgrammer.getTemplate(plan)}
+    ${AutoBeRealizeCollectorProgrammer.writeTemplate(plan)}
     \`\`\`
   `;
 }
