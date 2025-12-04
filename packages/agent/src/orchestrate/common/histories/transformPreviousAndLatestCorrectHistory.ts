@@ -11,7 +11,7 @@ export const transformPreviousAndLatestCorrectHistory = (
     diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
   }>,
 ): IAgenticaHistoryJson.IAssistantMessage[] => {
-  console.log(printErrorHints(array.at(-1)!.script, array.at(-1)!.diagnostics));
+  // console.log(printErrorHints(array.at(-1)!.script, array.at(-1)!.diagnostics));
   return array.map((failure, i) => ({
     id: v7(),
     type: "assistantMessage",

@@ -936,9 +936,12 @@ Property 'updated_at' is missing in type '{ id: string; ... created_at: Date; }'
 
 **Root Cause**: The CreateInput is missing required Prisma fields. Common causes: (1) Field exists in Prisma but not DTO, (2) AI ignored DTO value, (3) Critical DTO omission.
 
-**🚨 #1 MOST COMMON MISTAKE: Forgetting `updated_at`**
+**🚨 #1 MOST COMMON MISTAKE: Forgetting `created_at` and `updated_at`**
 
-The single most frequent compilation error is **forgetting `updated_at`** when the table has it. Almost every table with `created_at` also has `updated_at`, but AI consistently forgets to include it.
+The single most frequent compilation error is **forgetting timestamp fields** (`created_at`, `updated_at`) when the table has them. Almost every table with `created_at` also has `updated_at`, but AI consistently forgets to include one or both.
+
+**Most Common Pattern**: AI forgets `updated_at` even though `created_at` is present.
+**Also Common**: AI forgets both `created_at` and `updated_at` entirely.
 
 ```typescript
 // ❌ WRONG - Forgot updated_at (EXTREMELY COMMON!)
@@ -949,16 +952,25 @@ return {
   // ← WHERE IS updated_at?! COMPILATION ERROR!
 } satisfies Prisma.usersCreateInput;
 
-// ✅ CORRECT - Always include updated_at when table has it
+// ❌ WRONG - Forgot both timestamps (ALSO COMMON!)
+return {
+  id: v4(),
+  name: props.body.name,
+  // ← WHERE ARE created_at AND updated_at?! COMPILATION ERROR!
+} satisfies Prisma.usersCreateInput;
+
+// ✅ CORRECT - Always include both timestamps when table has them
 return {
   id: v4(),
   name: props.body.name,
   created_at: new Date(),
-  updated_at: new Date(),  // ← NEVER FORGET THIS!
+  updated_at: new Date(),  // ← NEVER FORGET THESE!
 } satisfies Prisma.usersCreateInput;
 ```
 
-**Self-Check Before Submitting**: Does the Prisma schema have `updated_at`? If yes, did you include it? **CHECK NOW.**
+**Self-Check Before Submitting**:
+- Does the Prisma schema have `created_at`? If yes, did you include it? **CHECK NOW.**
+- Does the Prisma schema have `updated_at`? If yes, did you include it? **CHECK NOW.**
 
 ---
 
@@ -2049,3 +2061,285 @@ Required Corrections:
 - **Pattern**: `ip: props.body.ip ?? props.ip` (ALWAYS!)
 - **Why**: Accurate IP tracking across SSR and CSR architectures
 - **Compilation**: Dual reference ensures type safety (string, not string | undefined)
+
+## 7. Final Checklist: Before Submitting Corrected Code
+
+**This is your LAST CHANCE to catch mistakes before compilation. AI models make frequent errors - this checklist exists to prevent them.**
+
+Before calling `process({ request: { type: "complete", ... } })`, systematically verify EVERY item below. If you skip this checklist, you WILL introduce new compilation errors.
+
+---
+
+### ✅ Section 1: Compilation Error Resolution
+
+**Purpose**: Ensure EVERY error from the original diagnostics is fixed.
+
+```
+□ Reviewed ALL TypeScript diagnostics from the input
+□ Created error inventory in think phase (Section 1)
+□ Fixed EVERY error identified in the inventory
+□ No errors were forgotten or skipped
+□ Root cause fixed (not Band-Aid workaround)
+```
+
+**How to verify**:
+- Go through your think Section 1 error inventory line by line
+- For each error, verify the corresponding line in your draft/final code
+- Check that the exact issue described in the diagnostic is resolved
+
+**Common mistakes to catch**:
+- ❌ Forgot one of the errors in the list
+- ❌ Fixed symptom but not root cause (used type assertion instead of fixing field name)
+- ❌ Introduced new error while fixing old one
+
+---
+
+### ✅ Section 2: Prisma Schema Compliance
+
+**Purpose**: Verify EVERY field and relation matches the ACTUAL Prisma schema exactly.
+
+**🚨 MOST CRITICAL SECTION - AI Mistakes Happen Here! 🚨**
+
+```
+□ Re-read the ACTUAL Prisma schema (don't rely on memory)
+□ EVERY field name in collect() return value EXISTS in Prisma schema
+□ EVERY field name matches EXACTLY (character-by-character, case-sensitive)
+□ NO fabricated/hallucinated fields (verify each field in actual schema)
+□ NO fields copied from DTO without verification
+□ snake_case used for all Prisma fields (not camelCase)
+```
+
+**Relation Verification**:
+```
+□ EVERY relation uses RELATION NAME from Prisma schema
+□ NO direct foreign key assignment (no `customer_id:`, `sale_id:`, etc.)
+□ ALL relations use connect syntax: `relationName: { connect: { id: ... } }`
+□ Relation names verified against actual schema (not guessed)
+```
+
+**Timestamp Verification** (🚨 #1 Most Common Mistake):
+```
+□ Does Prisma schema have `created_at`? If YES → Included in collect()
+□ Does Prisma schema have `updated_at`? If YES → Included in collect()
+□ BOTH timestamps present if schema has both
+```
+
+**How to verify**:
+- Open the Prisma schema you received
+- Read it line by line
+- For EVERY field in your collect() return value, find it in the schema
+- If you can't find it → DELETE IT from your code (you fabricated it)
+
+**Common mistakes to catch**:
+- ❌ Field name typo: `udpated_at` instead of `updated_at`
+- ❌ Wrong case: `userName` instead of `user_name`
+- ❌ Fabricated field: `totalPrice` when schema doesn't have `total_price` column
+- ❌ Direct FK: `customer_id: props.customer.id` instead of `customer: { connect: { id: props.customer.id } }`
+- ❌ Forgot `created_at` or `updated_at`
+
+---
+
+### ✅ Section 3: DTO-to-Prisma Field Mapping
+
+**Purpose**: Verify correct transformation from DTO structure to Prisma CreateInput.
+
+```
+□ ALL DTO properties accessed correctly (props.body.field paths)
+□ NO DTO properties ignored that should be mapped
+□ Computed/read-only DTO fields IGNORED (not stored in DB)
+□ camelCase (DTO) → snake_case (Prisma) conversion correct
+□ Type conversions applied (string → Date, number types, etc.)
+□ Nested objects/arrays handled correctly
+```
+
+**Value Priority Hierarchy Check**:
+```
+□ For missing fields: Checked DTO first (props.body.X)
+□ Then checked props parameters
+□ Then checked indirect reference (query if needed)
+□ Only then used semantic fallback (new Date(), null, false, 0)
+□ Never hardcoded values when DTO might provide them
+```
+
+**Common mistakes to catch**:
+- ❌ Hardcoded `completed_at: null` when DTO might have `props.body.completedAt`
+- ❌ Tried to store computed field like `totalPrice` that doesn't exist in schema
+- ❌ Wrong access path: `props.field` when it should be `props.body.field`
+- ❌ Ignored DTO value and used hardcoded fallback unnecessarily
+
+---
+
+### ✅ Section 4: Relationship Syntax Correctness
+
+**Purpose**: Ensure ALL relationships use correct Prisma syntax.
+
+**Required FK Relations**:
+```
+□ Uses `{ connect: { id: value } }` syntax
+□ NEVER direct assignment like `foreign_key_id: value`
+□ Relation name from schema (NOT column name)
+```
+
+**Optional FK Relations**:
+```
+□ Conditional: `value ? { connect: { id: value } } : undefined`
+□ Uses `undefined` in false branch (NOT `null`)
+□ NEVER: `value ? { connect: { id: value } } : null`
+```
+
+**Nested Creates (Arrays)**:
+```
+□ Uses `ArrayUtil.asyncMap()` for async collectors
+□ Reuses neighbor collectors (NO inline logic)
+□ Passes correct props to nested collector
+```
+
+**Common mistakes to catch**:
+- ❌ `customer_id: props.customer.id` → Should be `customer: { connect: { id: props.customer.id } }`
+- ❌ `parent: props.body.parentId ? { connect: { id: props.body.parentId } } : null` → Should use `undefined`
+- ❌ Inline array mapping when neighbor collector exists
+
+---
+
+### ✅ Section 5: Special Cases Verification
+
+**Purpose**: Verify special patterns are correctly applied.
+
+**Session Collectors** (if applicable):
+```
+□ Identified as Session collector (table name contains "session")
+□ Has `ip: string` parameter in props
+□ Uses dual-reference pattern: `ip: props.body.ip ?? props.ip`
+□ NEVER uses only `props.body.ip` (compilation error)
+□ NEVER uses only `props.ip` (loses SSR accuracy)
+```
+
+**Computed/Read-only Fields**:
+```
+□ Identified all DTO fields that DON'T exist in Prisma schema
+□ Verified these are computed/aggregated/derived fields
+□ IGNORED them completely (not included in collect())
+□ Added comment explaining why ignored (optional but helpful)
+```
+
+**Neighbor Collectors**:
+```
+□ Checked neighbor collector list for nested DTO types
+□ Replaced ALL inline logic with neighbor collector calls
+□ NO architectural violations (inline when collector exists)
+```
+
+**Common mistakes to catch**:
+- ❌ Session collector using only `props.body.ip` (type error)
+- ❌ Trying to store `reviewCount`, `averageRating`, etc. (doesn't exist in schema)
+- ❌ Inline nested create when `ShoppingSaleTagCollector` exists
+
+---
+
+### ✅ Section 6: Type Safety Verification
+
+**Purpose**: Ensure type-safe code that will compile.
+
+```
+□ Return value uses `satisfies Prisma.{table}CreateInput`
+□ NO `any` type used anywhere
+□ NO type assertions (`as`, `!`) used to bypass type errors
+□ NO optional chaining (`?.`) used as workaround
+□ Nullable vs non-nullable handled correctly
+```
+
+**Common mistakes to catch**:
+- ❌ Used `as any` to suppress type error instead of fixing it
+- ❌ Used `field?.subfield` to hide null/undefined issue
+- ❌ Assigned `string | null` to `string` field without null check
+
+---
+
+### ✅ Section 7: No New Errors Introduced
+
+**Purpose**: Ensure fixes didn't break working code.
+
+```
+□ Reviewed UNCHANGED sections of code
+□ No accidental modifications to working logic
+□ Business logic preserved (not broken)
+□ No new compilation errors introduced
+```
+
+**How to verify**:
+- Compare your draft/final against the original code
+- Check sections you didn't intend to change
+- Verify no accidental edits, deletions, or typos
+
+**Common mistakes to catch**:
+- ❌ Accidentally deleted a working field while fixing nearby error
+- ❌ Changed a correct field name to wrong one
+- ❌ Broke working logic while adding fixes
+
+---
+
+### ✅ Section 8: Three-Phase Workflow Compliance
+
+**Purpose**: Verify you followed the required workflow structure.
+
+```
+□ think phase completed all 4 sections:
+  □ Section 1: Error Inventory
+  □ Section 2: Root Cause Analysis
+  □ Section 3: Schema Verification
+  □ Section 4: Correction Strategy
+□ draft phase implemented ALL fixes from Section 4
+□ revise.review phase verified against actual schemas
+□ revise.final is null OR contains all refinements from review
+```
+
+**Common mistakes to catch**:
+- ❌ Skipped error inventory (missed some errors)
+- ❌ Didn't verify against actual schema in think Section 3
+- ❌ review phase just said "looks good" without actual verification
+- ❌ final is null but review found issues (should have refinements)
+
+---
+
+### ✅ Section 9: Compilation Guarantee
+
+**Purpose**: Final sanity check before submission.
+
+**Ask yourself honestly**:
+```
+❓ Would this code actually compile if I ran TypeScript compiler?
+❓ Did I verify EVERY field against the actual Prisma schema?
+❓ Did I fix EVERY error from the original diagnostics?
+❓ Are there ANY assumptions I made without verifying?
+❓ Did I use ANY "should work" or "probably correct" code?
+```
+
+**If you answered "no" or "unsure" to ANY question**:
+- ⚠️ STOP and go back to that section
+- ⚠️ Re-read the relevant schema or diagnostic
+- ⚠️ Verify against actual source material (not memory)
+- ⚠️ Fix before proceeding
+
+**The Golden Rule**:
+> **When in doubt, RE-READ the Prisma schema. NEVER guess. NEVER assume. Only use what you SEE.**
+
+---
+
+## Final Submission Checklist
+
+Before calling the function, verify:
+
+1. ✅ **All 9 sections above checked** - Every checkbox verified
+2. ✅ **No skipped items** - Didn't skip any verification step
+3. ✅ **Schemas re-read** - Verified against ACTUAL Prisma schema (not memory)
+4. ✅ **All errors fixed** - Every diagnostic from input resolved
+5. ✅ **No new errors** - Didn't introduce new compilation issues
+6. ✅ **Honest assessment** - Would this ACTUALLY compile?
+
+**If ALL items checked**: You may call `process({ request: { type: "complete", ... } })`
+
+**If ANY item uncertain**: Go back and verify it properly. Don't submit code you're not confident will compile.
+
+---
+
+**Remember**: The compiler is ALWAYS right. Your job is to fix errors, not to judge them. If you're uncertain about a field name, relation name, or type - RE-READ the Prisma schema. Don't guess. Don't assume. Verify.
