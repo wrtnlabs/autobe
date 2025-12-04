@@ -1,4 +1,5 @@
 import { orchestrateRealizeCorrectCasting } from "@autobe/agent/src/orchestrate/realize/internal/orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeTransformerCorrectOverall } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerCorrectOverall";
 import { orchestrateRealizeTransformerPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformerWrite";
 import { AutoBeRealizeTransformerProgrammer } from "@autobe/agent/src/orchestrate/realize/programmers/AutoBeRealizeTransformerProgrammer";
@@ -70,25 +71,41 @@ export const validate_agent_realize_transformer_correct = async (props: {
         },
       }),
   );
-  const corrects: AutoBeRealizeTransformerFunction[] =
-    await orchestrateRealizeCorrectCasting(agent.getContext(), {
-      programmer: {
-        template: (func) =>
-          AutoBeRealizeTransformerProgrammer.writeTemplate(func.plan),
-        replaceImportStatements: (next) =>
-          AutoBeRealizeTransformerProgrammer.replaceImportStatements(
-            agent.getContext(),
-            {
-              dtoTypeName: next.function.plan.dtoTypeName,
-              schemas: agent.getContext().state().interface!.document.components
-                .schemas,
-              code: next.code,
-            },
-          ),
-        additional: () => ({}),
-        location: "src/transformers",
+  const castings: AutoBeRealizeTransformerFunction[] =
+    await TestStorage.emplace(
+      {
+        vendor: props.vendor,
+        project: props.project,
+        file: "realize.transformer.casting",
       },
-      functions: writes,
+      () =>
+        orchestrateRealizeCorrectCasting(agent.getContext(), {
+          programmer: {
+            template: (func) =>
+              AutoBeRealizeTransformerProgrammer.writeTemplate(func.plan),
+            replaceImportStatements: (next) =>
+              AutoBeRealizeTransformerProgrammer.replaceImportStatements(
+                agent.getContext(),
+                {
+                  dtoTypeName: next.function.plan.dtoTypeName,
+                  schemas: agent.getContext().state().interface!.document
+                    .components.schemas,
+                  code: next.code,
+                },
+              ),
+            additional: () => ({}),
+            location: "src/transformers",
+          },
+          functions: writes,
+          progress: {
+            total: 0,
+            completed: 0,
+          },
+        }),
+    );
+  const corrects: AutoBeRealizeTransformerFunction[] =
+    await orchestrateRealizeTransformerCorrectOverall(agent.getContext(), {
+      functions: castings,
       progress: {
         total: 0,
         completed: 0,

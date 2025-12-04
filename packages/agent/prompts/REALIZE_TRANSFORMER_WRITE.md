@@ -572,6 +572,48 @@ When a DTO has nested objects, **prefer reusing** existing Transformers' `select
 - Maintains single responsibility (each Transformer owns its own selection logic)
 - Automatically stays in sync when nested DTO requirements change
 
+**🚨 CRITICAL - Use the CORRECT Transformer Name!**
+
+When reusing transformers for nested DTOs, you MUST use the **EXACT** Transformer name that corresponds to the **EXACT** DTO type.
+
+**FATAL ERROR Pattern - Using Wrong Transformer for Nested Interface Types:**
+
+```typescript
+// ❌ WRONG - Using parent Transformer for nested interface type
+// DTO type: IShoppingSale.ISummary
+category: ShoppingSaleTransformer.select(),  // ❌ FATAL! Creates IShoppingSale, NOT IShoppingSale.ISummary!
+
+// ✅ CORRECT - Using correct Transformer for nested interface type
+// DTO type: IShoppingSale.ISummary
+category: ShoppingSaleAtSummaryTransformer.select(),  // ✅ Correct! Creates IShoppingSale.ISummary
+
+// ❌ WRONG - Using parent Transformer for IInvert type
+// DTO type: IBbsArticleComment.IInvert
+comment: BbsArticleCommentTransformer.select(),  // ❌ FATAL! Creates IBbsArticleComment, NOT IBbsArticleComment.IInvert!
+
+// ✅ CORRECT - Using correct Transformer for IInvert type
+// DTO type: IBbsArticleComment.IInvert
+comment: BbsArticleCommentAtInvertTransformer.select(),  // ✅ Correct! Creates IBbsArticleComment.IInvert
+```
+
+**Transformer Naming Pattern Reminder:**
+- `IShoppingSale` → `ShoppingSaleTransformer`
+- `IShoppingSale.ISummary` → `ShoppingSaleAtSummaryTransformer` (NOT `ShoppingSaleTransformer`!)
+- `IBbsArticle.IContent` → `BbsArticleAtContentTransformer` (NOT `BbsArticleTransformer`!)
+- `IBbsArticleComment.IInvert` → `BbsArticleCommentAtInvertTransformer` (NOT `BbsArticleCommentTransformer`!)
+
+**Algorithm:**
+1. Split DTO type name by `.` → `["IShoppingSale", "ISummary"]`
+2. Remove `I` prefix from each part → `["ShoppingSale", "Summary"]`
+3. Join with `At` → `"ShoppingSaleAtSummary"`
+4. Append `Transformer` → `"ShoppingSaleAtSummaryTransformer"`
+
+**Why This Matters:**
+- Using `ShoppingSaleTransformer` for `IShoppingSale.ISummary` creates a **TYPE MISMATCH**
+- The transformer returns `IShoppingSale` but the DTO expects `IShoppingSale.ISummary`
+- This causes **compilation errors** in the final code
+- **ALWAYS match the EXACT DTO type with its corresponding Transformer**
+
 **CRITICAL - Transformer Reuse Eligibility**:
 You can ONLY reuse a Transformer if the nested DTO meets the same transformability criteria:
 - ✅ The nested DTO is a **Read DTO** (API response type)
@@ -766,6 +808,48 @@ When your DTO contains nested objects (category, tags, etc.), **prefer reusing**
 - Eliminates code duplication across multiple endpoints
 - Maintains single responsibility (each Transformer handles one DTO type)
 - Automatically stays in sync when nested DTO structure changes
+
+**🚨 CRITICAL - Use the CORRECT Transformer Name!**
+
+When reusing transformers for nested DTOs, you MUST use the **EXACT** Transformer name that corresponds to the **EXACT** DTO type.
+
+**FATAL ERROR Pattern - Using Wrong Transformer for Nested Interface Types:**
+
+```typescript
+// ❌ WRONG - Using parent Transformer for nested interface type
+// DTO field type: IShoppingSale.ISummary
+sale: await ShoppingSaleTransformer.transform(input.sale),  // ❌ FATAL! Returns IShoppingSale, NOT IShoppingSale.ISummary!
+
+// ✅ CORRECT - Using correct Transformer for nested interface type
+// DTO field type: IShoppingSale.ISummary
+sale: await ShoppingSaleAtSummaryTransformer.transform(input.sale),  // ✅ Correct! Returns IShoppingSale.ISummary
+
+// ❌ WRONG - Using parent Transformer for IInvert type
+// DTO field type: IBbsArticleComment.IInvert
+comment: await BbsArticleCommentTransformer.transform(input.comment),  // ❌ FATAL! Returns IBbsArticleComment, NOT IBbsArticleComment.IInvert!
+
+// ✅ CORRECT - Using correct Transformer for IInvert type
+// DTO field type: IBbsArticleComment.IInvert
+comment: await BbsArticleCommentAtInvertTransformer.transform(input.comment),  // ✅ Correct! Returns IBbsArticleComment.IInvert
+```
+
+**Transformer Naming Pattern Reminder:**
+- DTO type `IShoppingSale` → Use `ShoppingSaleTransformer.transform()`
+- DTO type `IShoppingSale.ISummary` → Use `ShoppingSaleAtSummaryTransformer.transform()` (NOT `ShoppingSaleTransformer`!)
+- DTO type `IBbsArticle.IContent` → Use `BbsArticleAtContentTransformer.transform()` (NOT `BbsArticleTransformer`!)
+- DTO type `IBbsArticleComment.IInvert` → Use `BbsArticleCommentAtInvertTransformer.transform()` (NOT `BbsArticleCommentTransformer`!)
+
+**How to Determine Correct Transformer:**
+1. Look at the **EXACT DTO field type** in the interface (e.g., `sale: IShoppingSale.ISummary`)
+2. Apply naming algorithm: `IShoppingSale.ISummary` → `ShoppingSaleAtSummaryTransformer`
+3. Use that EXACT Transformer: `ShoppingSaleAtSummaryTransformer.transform()`
+
+**Why This Matters:**
+- Using `ShoppingSaleTransformer` for `IShoppingSale.ISummary` field creates a **TYPE MISMATCH**
+- The transformer returns `IShoppingSale` but the field expects `IShoppingSale.ISummary`
+- Different nested interface types have **different fields** (Summary has fewer fields, Invert has different structure)
+- This causes **compilation errors** in the final code
+- **ALWAYS match the EXACT field type with its corresponding Transformer**
 
 **CRITICAL - Transformer Reuse Eligibility**:
 You can ONLY reuse a Transformer if the nested DTO meets the same transformability criteria:
@@ -1385,6 +1469,13 @@ export async function getBbsArticles(): Promise<IBbsArticle[]> {
 - [ ] ✅ Using inline mapping for non-transformable nested DTOs (request params, pagination results, business logic)
 - [ ] ✅ Using inline mapping for M:N join tables (no corresponding DTO exists)
 - [ ] ✅ Never attempting to reuse a Transformer that doesn't exist
+
+### 🚨 Correct Transformer Name Usage (CRITICAL!)
+- [ ] ✅ **ALWAYS use EXACT Transformer name matching EXACT DTO type**
+- [ ] ✅ For `IShoppingSale.ISummary` type → Use `ShoppingSaleAtSummaryTransformer` (NOT `ShoppingSaleTransformer`!)
+- [ ] ✅ For `IBbsArticleComment.IInvert` type → Use `BbsArticleCommentAtInvertTransformer` (NOT `BbsArticleCommentTransformer`!)
+- [ ] ✅ Applied naming algorithm correctly: Split by `.`, remove `I`, join with `At`, append `Transformer`
+- [ ] ✅ Verified Transformer name matches field type EXACTLY (no parent/child type mismatches)
 
 ### Completeness
 - [ ] ✅ Both transform() and select() functions present
