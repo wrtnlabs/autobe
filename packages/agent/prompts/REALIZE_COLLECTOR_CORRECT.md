@@ -707,25 +707,108 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 This section covers compilation error patterns specific to Collector functions. These errors occur during TypeScript compilation when AI fails to follow REALIZE_COLLECTOR_WRITE.md guidelines or makes common type system mistakes.
 
-### 6.1. Missing Required Fields in CreateInput
+### 6.1. Handling Fields Missing from DTO
 
 **Error Pattern**: Property 'X' is missing in type but required in 'Prisma.YCreateInput'
 
-**Solution**:
+**Root Cause**: The CreateInput is missing required Prisma fields. Common causes: (1) Field exists in Prisma but not DTO, (2) AI ignored DTO value, (3) Critical DTO omission.
+
+**CRITICAL**: Missing field ≠ "use hardcoded default". Follow **value priority**: DTO value → Props parameter → Indirect reference → Semantic fallback → Critical omission.
+
+See **REALIZE_COLLECTOR_WRITE.md Section 3.5** for detailed field handling strategies.
+
+**Value Priority Hierarchy (Quick Reference)**:
+```
+1. Check DTO: Does props.body.X exist? → Use it (even for completedAt, isCompleted)
+2. Check props params: Passed as parameter? → Use it
+3. Try indirect reference: Required FK? → Query with findFirstOrThrow
+4. Semantic fallback by field type:
+   - created_at/updated_at → new Date()
+   - Event timestamps (completed_at, closed_at, deleted_at, etc.) → null
+   - Status booleans (completed, is_published, etc.) → false
+   - Non-nullable numbers → 0, strings → ""
+5. Critical omission: Non-nullable FK with no source → DTO design flaw
+```
+
+**Common Mistake - Ignoring DTO Values:**
+
 ```typescript
-// ❌ WRONG - missing required fields
-return {
-  name: props.body.name,
+// DTO interface
+interface IShoppingOrder.ICreate {
+  totalPrice: number;
+  completedAt?: string;   // ← DTO might provide this!
+  isCompleted?: boolean;  // ← DTO might provide this!
 }
 
-// ✅ CORRECT - include all required fields
+// ❌ WRONG - Hardcoded fallbacks ignoring DTO
 return {
   id: v4(),
-  name: props.body.name,
-  created_at: new Date(),
-  updated_at: new Date(),
-}
+  total_price: props.body.totalPrice,
+  completed_at: null,        // ❌ What if props.body.completedAt exists?
+  is_completed: false,       // ❌ What if props.body.isCompleted exists?
+} satisfies Prisma.shopping_ordersCreateInput;
+
+// ✅ CORRECT - Check DTO first, then fallback
+return {
+  id: v4(),
+  total_price: props.body.totalPrice,
+  completed_at: props.body.completedAt ? new Date(props.body.completedAt) : null,
+  is_completed: props.body.isCompleted ?? false,
+} satisfies Prisma.shopping_ordersCreateInput;
 ```
+
+**Field-Specific Correction Patterns:**
+
+**Creation Timestamps** (`created_at`, `updated_at`):
+- **Pattern**: `props.body.createdAt ? new Date(props.body.createdAt) : new Date()`
+- **Fallback**: `new Date()` when DTO doesn't provide (rare, but check for data import)
+
+**Event Timestamps** (`completed_at`, `closed_at`, `deleted_at`, `expired_at`, `published_at`, `cancelled_at`, `shipped_at`, etc.):
+- **Pattern**: `props.body.completedAt ? new Date(props.body.completedAt) : null`
+- **Fallback**: `null` when DTO doesn't provide (important: check DTO for importing completed records)
+- **Never** hardcode `new Date()` - this claims event already happened
+
+**Status Booleans** (`completed`, `done`, `is_published`, `is_deleted`, `is_active`, `is_expired`, `is_cancelled`, `is_approved`, `is_paid`, `is_shipped`):
+- **Pattern**: `props.body.isCompleted ?? false`
+- **Fallback**: `false` when DTO doesn't provide (check DTO for importing records in specific states)
+- **Never** hardcode `true` - this claims status already achieved
+
+**Non-nullable Primitives**:
+- **Numbers**: `props.body.retryCount ?? 0`
+- **Strings**: `props.body.description ?? ""` (use sparingly)
+
+**Critical Omission (Non-nullable FK without source)**:
+```typescript
+// ❌ CRITICAL DESIGN FLAW - Cannot fix in collector
+model shopping_order_items {
+  product_id String @db.Uuid  // ← Required FK
+  product shopping_products @relation(fields: [product_id], references: [id])
+}
+
+// Tried all 3 options:
+// 1. DTO doesn't have productId
+// 2. Not in props parameters (no path parameter, no actor reference)
+// 3. Cannot obtain via even indirect reference query
+//
+// This is an API operation + DTO design flaw - report it
+```
+
+**Quick Fix Decision Tree:**
+```
+Missing field 'X'?
+│
+├─ props.body.X exists? → Use props.body.X (or props.body.X ?? fallback)
+├─ props parameter? → Use parameter
+├─ Required FK? → Query with findFirstOrThrow
+├─ created_at/updated_at? → new Date()
+├─ Event timestamp? → null
+├─ Status boolean? → false
+├─ Nullable field? → null
+├─ Non-nullable number? → 0
+├─ Non-nullable string? → ""
+└─ Non-nullable FK with no source? → Critical DTO omission
+```
+
 
 ### 6.2. Wrong Field Names (DTO vs Prisma Mismatch)
 

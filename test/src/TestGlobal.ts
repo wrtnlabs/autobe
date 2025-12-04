@@ -48,8 +48,8 @@ export class TestGlobal {
 
   public static readonly ROOT: string =
     __filename.substring(__filename.length - 2) === "js"
-      ? path.join(__dirname, "..", "..")
-      : path.join(__dirname, "..");
+      ? path.resolve(path.join(__dirname, "..", ".."))
+      : path.resolve(path.join(__dirname, ".."));
 
   public static readonly PLAYGROUND_PORT: number = 37198;
 

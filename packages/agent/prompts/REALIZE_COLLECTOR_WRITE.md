@@ -1504,8 +1504,16 @@ shopping_sale_tags: {
 - **For nested creates**: Prefer reusing other Collectors' `collect()` functions with `await ArrayUtil.asyncMap` when the Collector exists
 - For M:N join tables without DTOs: write nested logic inline (no Collector exists)
 - Generate UUIDs with `v4()`
-- Use `new Date()` for timestamp fields
-- Optional fields: use `null`
+- **Fields missing from DTO** - When Prisma requires a field not provided by the DTO, apply this value priority:
+  1. **Check DTO first**: If DTO provides the value (even for `closed_at`, `completed`, etc.), use it
+  2. **Try indirect reference**: If it's a required FK, query related table (see indirect reference pattern)
+  3. **Apply appropriate fallback**: Based on field type and semantics
+     - **Creation timestamps** (`created_at`, `updated_at`): `new Date()` when DTO doesn't provide
+     - **Event timestamps** (`closed_at`, `completed_at`, `deleted_at`, etc.): `null` when DTO doesn't provide
+     - **Status booleans** (`completed`, `is_published`, etc.): `false` when DTO doesn't provide
+     - **Nullable fields**: `null`
+     - **Non-nullable primitives**: `0` for numbers, `""` for strings
+  4. **Critical omission**: If non-nullable FK can't be obtained via even indirect reference → API operation + DTO design flaw
 - Handle relationships with `connect` (existing) or `create` (new, reuse Collector if available)
 - Map camelCase DTO fields to snake_case database columns
 
@@ -1523,6 +1531,240 @@ id: v4(),
 - Primary keys (`id` field)
 - Foreign keys for newly created nested records
 - Any UUID field that represents a new database record
+
+### 3.5. Handling Fields Missing from DTO
+
+**CRITICAL**: Prisma CreateInput often requires fields that the DTO doesn't provide. You must understand the **value priority hierarchy** to correctly populate these fields.
+
+#### Value Decision Priority (Apply in Order)
+
+When a Prisma field is required but not in the DTO, follow this decision process:
+
+```
+For field 'X' required by Prisma but missing from DTO:
+
+1. ✅ Check DTO properties
+   └─ Does DTO provide this value? (check props.body.X, even for lifecycle fields)
+      └─ YES → Use DTO value: props.body.X
+
+2. ✅ Check props parameters
+   └─ Is it passed as separate parameter? (props.ip, props.shoppingSeller, etc.)
+      └─ YES → Use parameter value
+
+3. ✅ Try indirect reference
+   └─ Is it a required FK? Can you query a related table to obtain it?
+      └─ YES → Use findFirstOrThrow to query it (see indirect reference pattern)
+
+4. ✅ Apply semantic fallback
+   └─ Choose based on field type and semantic meaning:
+      ├─ Creation timestamps (created_at, updated_at) → new Date()
+      ├─ Event timestamps (closed_at, completed_at, deleted_at, etc.) → null
+      ├─ Status booleans (completed, is_published, etc.) → false
+      ├─ Nullable fields → null
+      └─ Non-nullable primitives → 0 (number), "" (string)
+
+5. ❌ Critical omission detected
+   └─ Non-nullable FK with no indirect reference path?
+      └─ This is an API operation + DTO design flaw - missing critical information
+```
+
+**Key Insight**: The fallback values (step 4) are **defaults for when DTO doesn't provide them**. If DTO includes `closed_at` or `completed`, you MUST use those values.
+
+#### Field Categories and Fallback Strategies
+
+**1. Creation Timestamps** (`created_at`, `updated_at`)
+
+```typescript
+// Fallback: new Date() (when DTO doesn't provide)
+created_at: props.body.createdAt ?? new Date(),  // Prefer DTO, fallback to now
+updated_at: new Date(),  // Almost always "now"
+```
+
+**2. Event Timestamps** (`closed_at`, `completed_at`, `deleted_at`, `expired_at`, `published_at`, etc.)
+
+```typescript
+// Fallback: null (when DTO doesn't provide)
+// DTO MIGHT provide these if creating an already-completed/closed record
+completed_at: props.body.completedAt ?? null,  // Use DTO if provided, else null
+closed_at: props.body.closedAt ?? null,
+deleted_at: props.body.deletedAt ?? null,
+```
+
+**3. Status Booleans** (`completed`, `done`, `is_published`, `is_active`, etc.)
+
+```typescript
+// Fallback: false (when DTO doesn't provide)
+// DTO MIGHT provide these for importing existing records
+is_completed: props.body.isCompleted ?? false,  // Use DTO if provided, else false
+is_published: props.body.isPublished ?? false,
+is_active: props.body.isActive ?? false,
+```
+
+**4. Non-nullable Primitives Without Semantic Meaning**
+
+```typescript
+// Fallback: 0 for numbers, "" for strings
+retry_count: props.body.retryCount ?? 0,  // Number fallback
+description: props.body.description ?? "",  // String fallback (if non-nullable)
+```
+
+**5. Critical Omission: Non-nullable FK Without Value**
+
+```typescript
+// Prisma schema
+model bbs_article_comments {
+  bbs_article_id  String  @db.Uuid  // ← Required FK
+  article  bbs_articles @relation(fields: [bbs_article_id], references: [id])
+}
+
+// Tried all 3 options:
+// 1. DTO doesn't have articleId
+// 2. Not in props parameters (no path parameter like :articleId)
+// 3. Cannot query via indirect reference (no related table to find it)
+//
+// ❌ CRITICAL DESIGN FLAW - Cannot create this record without article reference
+// This is an API operation + DTO design flaw that should be caught at Interface phase
+```
+
+#### Comprehensive Example: Conditional Value Assignment
+
+```typescript
+// Prisma schema
+model shopping_orders {
+  id            String     @id @db.Uuid
+  customer_id   String     @db.Uuid
+
+  created_at    DateTime   @db.Timestamptz
+  updated_at    DateTime   @db.Timestamptz
+  completed_at  DateTime?  @db.Timestamptz
+  cancelled_at  DateTime?  @db.Timestamptz
+
+  is_paid       Boolean
+  is_completed  Boolean
+
+  retry_count   Int
+  note          String?    @db.VarChar
+
+  customer shopping_customers @relation(fields: [customer_id], references: [id])
+}
+
+// DTO - May or may not include lifecycle fields
+interface IShoppingOrder.ICreate {
+  // Always provided
+  totalPrice: number;
+
+  // Sometimes provided (e.g., when importing historical data)
+  completedAt?: string;  // ← DTO might include this!
+  isCompleted?: boolean; // ← DTO might include this!
+  retryCount?: number;   // ← DTO might include this!
+  note?: string;
+}
+
+// ❌ WRONG - Ignoring DTO values for lifecycle fields
+export async function collect(props: {
+  body: IShoppingOrder.ICreate;
+  shoppingCustomer: IEntity;
+}) {
+  return {
+    id: v4(),
+    customer: { connect: { id: props.shoppingCustomer.id } },
+
+    created_at: new Date(),
+    updated_at: new Date(),
+
+    // ❌ WRONG: Ignoring DTO.completedAt even if provided!
+    completed_at: null,
+    cancelled_at: null,
+
+    // ❌ WRONG: Ignoring DTO.isCompleted even if provided!
+    is_paid: false,
+    is_completed: false,
+
+    // ❌ WRONG: Ignoring DTO.retryCount even if provided!
+    retry_count: 0,
+    note: null,
+  } satisfies Prisma.shopping_ordersCreateInput;
+}
+
+// ✅ CORRECT - Respecting DTO values with appropriate fallbacks
+export async function collect(props: {
+  body: IShoppingOrder.ICreate;
+  shoppingCustomer: IEntity;
+}) {
+  return {
+    id: v4(),
+    customer: { connect: { id: props.shoppingCustomer.id } },
+
+    // Creation timestamps: Usually "now", but respect DTO if provided
+    created_at: props.body.createdAt ? new Date(props.body.createdAt) : new Date(),
+    updated_at: new Date(),
+
+    // ✅ Event timestamps: Use DTO if provided, else null
+    completed_at: props.body.completedAt ? new Date(props.body.completedAt) : null,
+    cancelled_at: props.body.cancelledAt ? new Date(props.body.cancelledAt) : null,
+
+    // ✅ Status booleans: Use DTO if provided, else false
+    is_paid: props.body.isPaid ?? false,
+    is_completed: props.body.isCompleted ?? false,
+
+    // ✅ Primitives: Use DTO if provided, else appropriate default
+    retry_count: props.body.retryCount ?? 0,
+    note: props.body.note ?? null,  // Nullable, so null is fine
+
+  } satisfies Prisma.shopping_ordersCreateInput;
+}
+```
+
+#### When DTO Omission is Critical
+
+Some missing fields indicate **API operation + DTO design flaws** that should have been caught earlier:
+
+**Scenario**: Non-nullable FK with no way to obtain it
+
+```typescript
+// Prisma schema
+model shopping_order_items {
+  id                  String  @id @db.Uuid
+  shopping_order_id   String  @db.Uuid  // ← Required FK
+  product_id          String  @db.Uuid  // ← Required FK
+
+  order    shopping_orders   @relation(fields: [shopping_order_id], references: [id])
+  product  shopping_products @relation(fields: [product_id], references: [id])
+}
+
+// DTO - MISSING productId
+interface IShoppingOrderItem.ICreate {
+  quantity: number;
+  // ❌ No productId! How do we know which product?
+}
+
+// API operation - No path parameter
+// POST /shopping/orders/:orderId/items (no :productId in path)
+
+// Tried all 3 options:
+// 1. DTO doesn't have productId
+// 2. Not in props parameters (shopping_order_id is in path, but product_id is not)
+// 3. Cannot query via indirect reference (no way to infer which product)
+//
+// ❌ CRITICAL DESIGN FLAW - Cannot create this record
+// The collector CANNOT fabricate a product reference
+// This should have been caught at Interface design phase
+```
+
+**What to do**: This indicates the API operation + DTO design is fundamentally incomplete. The collector cannot and should not try to "guess" required foreign keys.
+
+#### Quick Reference
+
+**Priority**: DTO value → Props parameter → Indirect reference → Semantic fallback → Error
+
+**Fallback values** (only when DTO doesn't provide):
+- Creation timestamps → `new Date()`
+- Event timestamps → `null`
+- Status booleans → `false`
+- Nullable fields → `null`
+- Non-nullable numbers → `0`
+- Non-nullable strings → `""`
+- Non-nullable FKs → Indirect reference or **API operation + DTO design flaw**
 
 ### 4. Handling Nested Relationships
 
@@ -2285,8 +2527,15 @@ export async function createShoppingSale(props: {
 ### Data Transformation
 - [ ] camelCase DTO fields mapped to snake_case database columns
 - [ ] Nested objects flattened correctly (e.g., price.real to real_price)
-- [ ] Date fields set to `new Date()`
-- [ ] Array mappings use `.map()` correctly
+- [ ] Fields missing from DTO handled with value priority hierarchy:
+  - [ ] Check if DTO provides the value first (even for lifecycle fields like `completedAt`, `isCompleted`)
+  - [ ] Use conditional patterns: `props.body.X ?? fallback` or `props.body.X ? transform : fallback`
+  - [ ] **Fallback values** (only when DTO doesn't provide):
+    - [ ] Creation timestamps (`created_at`, `updated_at`) → `new Date()`
+    - [ ] Event timestamps (`closed_at`, `completed_at`, `deleted_at`, etc.) → `null`
+    - [ ] Status booleans (`completed`, `is_published`, etc.) → `false`
+    - [ ] Non-nullable numbers → `0`, Non-nullable strings → `""`
+- [ ] Array mappings use `.map()` or `ArrayUtil.asyncMap()` correctly
 
 ### Code Quality
 - [ ] NO import statements (handled automatically by system)
