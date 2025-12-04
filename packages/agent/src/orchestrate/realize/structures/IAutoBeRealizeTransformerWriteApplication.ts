@@ -102,24 +102,32 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     /**
      * Transformer implementation plan and strategy.
      *
-     * Analyzes the Prisma schema and DTO type to plan the transformation logic:
+     * MUST contain thorough analysis with these four mandatory sections:
      *
-     * - Identifies field mappings (Prisma column → DTO property)
-     * - Plans nested object transformations
-     * - Determines required Prisma includes/selects
-     * - Outlines type casting and validation needs
+     * 1. Prisma Schema Field Inventory - List ALL fields with exact names from
+     *    schema
+     * 2. DTO Property Inventory - List ALL properties with types
+     * 3. Field-by-Field Mapping Strategy - Explicit table for BOTH select() and
+     *    transform()
+     * 4. Edge Cases and Special Handling - Type casts (Decimal, DateTime),
+     *    nullables
+     *
+     * This forces you to READ the actual schema (not imagine it) and creates an
+     * explicit specification for both select() and transform() functions.
      */
     plan: string;
 
     /**
      * Initial transformer implementation draft.
      *
-     * The first complete implementation including:
+     * Complete implementation that strictly follows the plan's mapping table.
+     * EVERY field in the plan's Section 3 MUST appear in BOTH select() and
+     * transform(). Implement:
      *
-     * - Namespace declaration
-     * - Transform() function with proper types
-     * - Select() function returning Prisma specification
-     * - Nested transformer calls if needed
+     * - Transform() first, select() second, Payload last (correct order)
+     * - All field mappings from plan with correct transformations
+     * - Neighbor transformer reuse (NEVER inline when transformer exists)
+     * - ALWAYS use `select`, NEVER use `include`
      */
     draft: string;
 
@@ -134,25 +142,34 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
   export interface IReviseProps {
     /**
-     * Review and improvement suggestions.
+     * Critical review and improvement analysis.
      *
-     * Identifies areas for improvement in the draft code:
+     * MUST systematically verify using four checklists:
      *
-     * - Type safety (proper Prisma payload types)
-     * - Field mapping accuracy
-     * - Null/undefined handling
-     * - Nested transformation correctness
-     * - Select specification completeness
+     * 1. Schema Fidelity - Cross-check EVERY field name against plan Section 1
+     *    inventory
+     * 2. Plan Adherence - Verify EVERY mapping from Section 3 in BOTH select() and
+     *    transform()
+     * 3. System Rules - Mandatory neighbor reuse, function order, select (not
+     *    include)
+     * 4. Type Safety - Type casts (Decimal→Number, DateTime→ISO), nullable
+     *    handling
+     *
+     * Identify specific issues with line numbers and provide clear reasoning.
+     * This catches hallucinated fields, missing transformations, and rule
+     * violations.
      */
     review: string;
 
     /**
-     * Final transformer code.
+     * Final transformer code with all review improvements applied.
      *
-     * The complete, production-ready transformer module with all review
-     * suggestions applied.
+     * Apply ALL fixes identified in the review to produce production-ready
+     * code. If review found issues, this MUST contain the corrected
+     * implementation.
      *
-     * Returns `null` if the draft is already perfect and needs no changes.
+     * Return `null` ONLY if the draft is already perfect and review found zero
+     * issues.
      */
     final: string | null;
   }

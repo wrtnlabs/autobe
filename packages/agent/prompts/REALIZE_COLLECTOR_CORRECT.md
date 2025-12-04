@@ -210,6 +210,224 @@ export namespace ShoppingSaleCollector {
 - [ ] Replaced inline logic with neighbor collector calls where applicable
 - [ ] Verified no architectural violations remain
 
+## 2.6. Three-Phase Correction: Think → Draft → Revise
+
+This structured workflow ensures systematic error fixing through root cause analysis and verification.
+
+### Phase 1: Think - Mandatory Error Analysis Sections
+
+Your `think` field MUST contain these four sections:
+
+#### Section 1: Error Inventory
+**Purpose**: Categorize ALL compilation errors to understand the problem scope.
+
+**Requirements**:
+- List EVERY TypeScript error with line number and error code
+- Group errors by root cause type (field name, type mismatch, missing import, etc.)
+- Count errors per category
+
+**Format**:
+```
+ERROR INVENTORY (8 total errors):
+Field Name Errors (3):
+  - Line 23: Property 'shopping_tags' does not exist (TS2339)
+  - Line 45: Property 'seller_id' does not exist (TS2339)
+  - Line 67: Property 'category' does not exist (TS2339)
+
+Type Mismatch Errors (2):
+  - Line 34: Type 'string' not assignable to 'Date' (TS2322)
+  - Line 56: Type 'number[]' not assignable to '{ create: ... }' (TS2322)
+
+Architectural Violations (3):
+  - Line 40-48: Inline tag creation when ShoppingSaleTagCollector exists
+  - Line 60-65: Inline image creation when ShoppingSaleImageCollector exists
+  - Line 70-72: Direct field assignment instead of connect syntax
+```
+
+#### Section 2: Root Cause Analysis
+**Purpose**: Identify WHY each error occurs (not just what the error says).
+
+**Requirements**:
+- For each error category, identify the underlying cause
+- Reference actual Prisma schema to verify correct field names
+- Distinguish between simple typos vs fundamental misunderstandings
+
+**Format**:
+```
+ROOT CAUSE ANALYSIS:
+Field Name Errors:
+  - 'shopping_tags' should be 'shopping_sale_tags' (wrong table name)
+  - 'seller_id' should be 'seller' (relation field, not FK column)
+  - 'category' is correct but missing in code (omission error)
+
+Type Mismatch Errors:
+  - Line 34: Using string date instead of new Date() for created_at
+  - Line 56: Passing array directly instead of { create: [...] } wrapper
+
+Architectural Violations:
+  - Inline logic exists because neighbor collectors not utilized
+  - Root cause: WRITE phase failed to use available collectors
+```
+
+#### Section 3: Schema Verification
+**Purpose**: Cross-check error-related fields against ACTUAL Prisma schema.
+
+**Requirements**:
+- For field name errors: List correct field names from Prisma schema
+- For type errors: Show correct Prisma types
+- Prove you're fixing based on schema, not guessing
+
+**Format**:
+```
+SCHEMA VERIFICATION (shopping_sales table):
+Correct field names from Prisma:
+  - shopping_sale_tags (relation, one-to-many) ✓
+  - seller (relation, many-to-one) ✓
+  - category (relation, many-to-one) ✓
+  - created_at (DateTime, required) ✓
+
+Field NOT in schema:
+  - seller_id (FK column, use 'seller' relation instead) ✗
+  - shopping_tags (wrong table name) ✗
+```
+
+#### Section 4: Correction Strategy
+**Purpose**: Plan specific fix for each error (not workarounds).
+
+**Requirements**:
+- Map each error to its specific fix
+- Specify exact code changes needed
+- Identify neighbor collectors to use
+
+**Format**:
+```
+CORRECTION STRATEGY:
+Field Name Fixes:
+  - Line 23: Rename 'shopping_tags' → 'shopping_sale_tags'
+  - Line 45: Replace 'seller_id' field with 'seller: { connect: { id: ... } }'
+  - Line 67: Add missing 'category: { connect: { id: props.body.categoryId } }'
+
+Type Fixes:
+  - Line 34: Change string → new Date() for created_at
+  - Line 56: Wrap array in { create: await ArrayUtil.asyncMap(...) }
+
+Architectural Fixes:
+  - Line 40-48: Replace inline logic with ShoppingSaleTagCollector.collect()
+  - Line 60-65: Replace inline logic with ShoppingSaleImageCollector.collect()
+  - Line 70-72: Use connect syntax for relationship
+```
+
+**Why These Sections Work**:
+- Section 1 forces systematic inventory (prevents missing errors)
+- Section 2 identifies root causes (prevents Band-Aid fixes)
+- Section 3 verifies against schema (prevents hallucination)
+- Section 4 creates surgical fix plan (each error addressed)
+
+---
+
+### Phase 2: Draft - Correction Implementation
+
+Apply ALL fixes from the think phase strategy to the original code.
+
+**CRITICAL RULES**:
+1. Fix EVERY error from Section 1 inventory
+2. Apply EXACT fixes from Section 4 strategy
+3. Use correct field names verified in Section 3
+4. Replace inline logic with neighbor collectors
+5. Change ONLY broken code - preserve working logic
+
+**Surgical Correction Approach**:
+- Don't rewrite entire function unless necessary
+- Fix specific lines identified in error inventory
+- Maintain existing business logic
+
+---
+
+### Phase 3: Revise - Mandatory Review Checklist
+
+Your `review` field MUST check these categories systematically:
+
+#### Checklist 1: Error Resolution
+```
+❓ Is EVERY error from think Section 1 inventory fixed?
+❓ Did I verify each fix by checking the specific line number?
+❓ Are there any errors I forgot to address?
+```
+
+**How to check**: Go through Section 1 error list one by one, verify each is fixed in draft.
+
+#### Checklist 2: Root Cause Fix Verification
+```
+❓ Did I fix root causes (not symptoms)?
+❓ Are there any Band-Aid fixes (type assertions, `as any`, optional chaining workarounds)?
+❓ Did I use actual Prisma schema fields (not guessed names)?
+❓ Are field names EXACTLY as verified in think Section 3?
+```
+
+**How to check**: Look for shortcuts (type assertions, `as`, `!`, `??`) that hide problems instead of fixing them.
+
+#### Checklist 3: System Rules Compliance
+```
+❓ Did I replace ALL inline logic with neighbor collectors where they exist?
+❓ Are relationship fields using proper syntax ({ connect: { id: ... } })?
+❓ Is `satisfies Prisma.{table}CreateInput` still present?
+❓ Are no fabricated fields introduced (all from Prisma schema)?
+```
+
+**How to check**: Cross-reference neighbor collector list, verify each nested create uses collector.
+
+#### Checklist 4: No Regression
+```
+❓ Did I introduce any NEW compilation errors?
+❓ Is existing business logic preserved (not broken)?
+❓ Are working fields unchanged (surgical fix only)?
+```
+
+**How to check**: Review unchanged code sections, verify no accidental modifications.
+
+**Review Output Format**:
+```
+ERROR RESOLUTION: ✓ All 8 errors from Section 1 fixed
+ROOT CAUSE FIX: ✓ Used exact schema fields from Section 3, no workarounds
+NEIGHBOR REUSE: ✓ Replaced inline logic at lines 40-48, 60-65 with collectors
+SYSTEM RULES: ✓ Proper connect syntax, satisfies type present
+NO REGRESSION: ✓ No new errors, business logic intact
+
+ISSUES FOUND: None
+
+OR
+
+ISSUES FOUND:
+- Line 56: Used optional chaining (?.) as workaround instead of fixing null handling
+- Should use ternary: field: value ? { create: ... } : undefined
+```
+
+**Why This Review Structure Works**:
+1. **Explicit checklist prevents shortcuts**: Can't claim "fixed" without checking each category
+2. **Root cause focus catches hacks**: Forces verification of proper fixes vs workarounds
+3. **Neighbor reuse enforced**: Must verify architectural compliance
+4. **Regression check prevents new bugs**: Ensures fixes don't break working code
+
+---
+
+### Putting It All Together
+
+**The Meta-Cognitive Loop for Error Correction**:
+1. **Think Section 1 forces inventory**: Cannot skip any errors
+2. **Think Section 2 identifies root causes**: Cannot apply Band-Aids
+3. **Think Section 3 verifies schema**: Cannot hallucinate field names
+4. **Think Section 4 plans surgery**: Cannot make random changes
+5. **Draft applies plan**: Systematic implementation
+6. **Review verifies**: Cross-check against think analysis
+
+**Key Difference from WRITE Phase**:
+- WRITE creates from scratch (plan → implement)
+- CORRECT fixes existing code (analyze errors → fix surgically)
+- CORRECT must preserve working code
+- CORRECT focuses on error root causes
+
+This is **structural enforcement** of thorough error analysis - you cannot skip steps because the function calling schema requires all fields.
+
 ## 3. Primary Mission
 
 Fix TypeScript compilation errors in collector functions while maintaining type safety.

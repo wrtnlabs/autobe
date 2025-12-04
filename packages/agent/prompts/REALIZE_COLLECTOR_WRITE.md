@@ -105,6 +105,193 @@ thinking: "Need shopping_sales, shopping_categories, shopping_brands schemas"
 thinking: "Collect id field, name field, price field, created_at field..."
 ```
 
+## Three-Phase Generation: Plan → Draft → Revise
+
+This structured workflow prevents hallucination and ensures quality through explicit analysis and self-review.
+
+### Phase 1: Plan - Mandatory Analysis Sections
+
+Your `plan` field MUST contain these four sections:
+
+#### Section 1: Prisma Schema Field Inventory
+**Purpose**: Force explicit reading of actual schema to prevent fabrication.
+
+**Requirements**:
+- List ALL scalar fields with exact names, types, and nullability
+- List ALL relation fields with exact names and target tables
+- Copy field names EXACTLY from schema (no paraphrasing)
+- This section proves you READ the schema, not imagined it
+
+**Format**:
+```
+PRISMA SCHEMA: shopping_sale_reviews
+Scalars:
+  - id: String (uuid, required)
+  - content: String (required)
+  - rating: Int (required)
+  - created_at: DateTime (required)
+Relations:
+  - sale: shopping_sales (many-to-one, required)
+  - customer: shopping_customers (many-to-one, required)
+```
+
+#### Section 2: DTO Type Property Inventory
+**Purpose**: Understand what API contract expects.
+
+**Requirements**:
+- List ALL DTO properties with types
+- Identify nested objects (indicate need for nested collectors)
+- Mark optional vs required fields
+
+**Format**:
+```
+DTO TYPE: IShoppingSaleReview.ICreate
+Properties:
+  - content: string (required)
+  - rating: number (required, 1-5)
+  - images?: IShoppingSaleReviewImage.ICreate[] (optional, nested)
+```
+
+#### Section 3: Field-by-Field Mapping Strategy
+**Purpose**: Explicit plan prevents mistakes in draft.
+
+**Requirements**:
+- Create mapping table for every field
+- Specify transformation type (direct, connect, nested collector, etc.)
+- Note which neighbor collectors to reuse
+
+**Format**:
+```
+MAPPING STRATEGY:
+| DTO Property | Prisma Field | Transformation   | Notes                          |
+|--------------|--------------|------------------|--------------------------------|
+| content      | content      | direct           | String → String                |
+| rating       | rating       | direct           | number → Int                   |
+| images       | images       | nested create    | Reuse SaleReviewImageCollector |
+| -            | id           | generate         | v4()                           |
+| -            | sale         | connect          | From sale: IEntity parameter   |
+| -            | customer     | connect          | From customer: IEntity (auth)  |
+| -            | created_at   | generate         | new Date()                     |
+```
+
+#### Section 4: Edge Cases and Special Handling
+**Purpose**: Think through tricky scenarios before coding.
+
+**Requirements**:
+- Nullable/optional field strategy
+- Array handling approach
+- Conditional logic needs
+- Type casting requirements
+
+**Example**:
+```
+EDGE CASES:
+- images is optional: Use ternary `images: props.body.images ? { create: ... } : undefined`
+- rating validation: Assume validated by DTO (no collector validation)
+- customer context: From IEntity reference (auth context)
+```
+
+**Why These Sections Work**:
+- Section 1 forces you to READ the actual schema (prevents fabrication)
+- Section 2 ensures you understand the API contract
+- Section 3 creates an explicit specification for the draft
+- Section 4 catches edge cases before they become bugs
+
+---
+
+### Phase 2: Draft - Implementation Based on Plan
+
+Write complete collector code following the plan.
+
+**CRITICAL RULES**:
+1. Use plan as specification - every field in Section 3 mapping table must appear in draft
+2. Reuse neighbor collectors as identified in Section 3
+3. Follow props structure from planning phase (body + IEntity references)
+4. Use `satisfies Prisma.{table}CreateInput` for type safety
+
+**Draft Quality Checklist**:
+- ✓ Namespace structure correct
+- ✓ All mappings from Section 3 implemented
+- ✓ Neighbor collectors called (not inlined)
+- ✓ Type annotations present
+
+---
+
+### Phase 3: Revise - Mandatory Review Checklist
+
+Your `review` field MUST check these categories systematically:
+
+#### Checklist 1: Schema Fidelity
+```
+❓ Does every Prisma field name in draft exist in Section 1 schema inventory?
+❓ Are relation names correct (not foreign key column names)?
+❓ Did I fabricate any fields not in the actual schema?
+```
+
+**How to check**: Cross-reference draft field names against Section 1 inventory line by line.
+
+#### Checklist 2: Plan Adherence
+```
+❓ Does draft implement every row in Section 3 mapping table?
+❓ Are transformations applied as planned (direct/connect/nested)?
+❓ Are neighbor collectors reused as identified in Section 3?
+```
+
+**How to check**: Go through Section 3 table row by row, verify each in draft.
+
+#### Checklist 3: System Prompt Rules Compliance
+```
+❓ MANDATORY: Are neighbor collectors reused (never inline when collector exists)?
+❓ Are props limited to body + IEntity references + nested context only?
+❓ Is `satisfies Prisma.{table}CreateInput` used?
+❓ Are UUIDs generated with v4()?
+❓ Are dates generated with `new Date()`?
+```
+
+**How to check**: Search draft for violations of each rule.
+
+#### Checklist 4: Type Safety and Correctness
+```
+❓ Will this code compile without TypeScript errors?
+❓ Are nullable/optional fields handled with ternary operators?
+❓ Are async calls properly awaited (ArrayUtil.asyncMap)?
+❓ Are relation fields using correct syntax ({ connect: { id: ... } })?
+```
+
+**How to check**: Mentally compile the code, look for type mismatches.
+
+**Review Output Format**:
+```
+SCHEMA FIDELITY: ✓ All field names verified against schema inventory
+PLAN ADHERENCE: ✓ All 7 mappings from Section 3 implemented correctly
+NEIGHBOR REUSE: ✓ SaleReviewImageCollector reused at line 15 (not inlined)
+SYSTEM RULES: ✓ Props structure correct, satisfies type used, v4() for UUIDs
+TYPE SAFETY: ⚠️ Optional field handling needed for images
+
+REQUIRED CHANGES:
+- Line 15: Add optional handling: `images: props.body.images ? { create: await ... } : undefined`
+- Reasoning: images is optional in DTO (Section 2), must handle undefined case
+```
+
+**Why This Review Structure Works**:
+1. **Explicit checklist prevents skipping**: Can't say "looks good" without checking each item
+2. **Cross-references force accountability**: Must cite Section 1, Section 3 line numbers
+3. **Structured output shows thoroughness**: Clear evidence of systematic review
+4. **Identifies specific issues with line numbers**: Makes `final` phase straightforward
+
+---
+
+### Putting It All Together
+
+**The Meta-Cognitive Loop**:
+1. **Plan forces reading**: You must list actual schema fields (Section 1)
+2. **Plan creates spec**: Mapping table becomes implementation checklist (Section 3)
+3. **Draft implements spec**: Each mapping row becomes code
+4. **Review verifies**: Cross-check draft against plan and rules
+5. **Final applies fixes**: Targeted improvements based on review
+
+This is **structural enforcement** of thoroughness - you cannot skip steps because the function calling schema requires all fields.
+
 ## Core Mission
 
 Generate a **collector module** that provides the essential `collect()` function:
