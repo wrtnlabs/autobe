@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -36,6 +37,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
   export function writeTemplate(props: {
     plan: AutoBeRealizeCollectorPlan;
     body: AutoBeOpenApi.IJsonSchema;
+    model: AutoBePrisma.IModel;
   }): string {
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
@@ -49,7 +51,8 @@ export namespace AutoBeRealizeCollectorProgrammer {
             .join("\n")}
           ${
             AutoBeOpenApiTypeChecker.isObject(props.body) &&
-            props.body.properties.ip !== undefined
+            props.body.properties.ip !== undefined &&
+            props.model.plainFields.some((f) => f.name === "ip")
               ? `ip: string;`
               : ""
           }

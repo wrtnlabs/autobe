@@ -1,4 +1,8 @@
-import { AutoBeOpenApi, AutoBeRealizeCollectorPlan } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBePrisma,
+  AutoBeRealizeCollectorPlan,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -55,6 +59,11 @@ export const transformRealizeCollectorWriteHistory = async <
             body: ctx.state().interface!.document.components.schemas[
               props.plan.dtoTypeName
             ],
+            model: ctx
+              .state()
+              .prisma!.result.data.files.map((f) => f.models)
+              .flat()
+              .find((m) => m.name === props.plan.prismaSchemaName)!,
           })}
 
           Here are the neighbor collectors you can utilize.
@@ -103,6 +112,7 @@ export const transformRealizeCollectorWriteHistory = async <
 function getDeclaration(props: {
   plan: AutoBeRealizeCollectorPlan;
   body: AutoBeOpenApi.IJsonSchema;
+  model: AutoBePrisma.IModel;
 }): string {
   return StringUtil.trim`
     Here is the declaration of the collector function for 

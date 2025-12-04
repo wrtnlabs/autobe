@@ -98,6 +98,11 @@ export const transformRealizeCollectorCorrectHistory = async <
         body: ctx.state().interface!.document.components.schemas[
           props.function.plan.dtoTypeName
         ],
+        model: ctx
+          .state()
+          .prisma!.result.data.files.map((f) => f.models)
+          .flat()
+          .find((m) => m.name === props.function.plan.prismaSchemaName)!,
       })}
 
       Current code is as follows:

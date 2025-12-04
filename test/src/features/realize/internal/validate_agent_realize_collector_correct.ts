@@ -85,6 +85,12 @@ export const validate_agent_realize_collector_correct = async (props: {
               plan: func.plan,
               body: agent.getContext().state().interface!.document.components
                 .schemas[func.plan.dtoTypeName],
+              model: agent
+                .getContext()
+                .state()
+                .prisma!.result.data.files.map((f) => f.models)
+                .flat()
+                .find((m) => m.name === func.plan.prismaSchemaName)!,
             }),
           replaceImportStatements: (next) =>
             AutoBeRealizeCollectorProgrammer.replaceImportStatements(
