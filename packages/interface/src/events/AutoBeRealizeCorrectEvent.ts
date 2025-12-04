@@ -1,3 +1,4 @@
+import { AutoBeRealizeFunction } from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -23,25 +24,7 @@ export interface AutoBeRealizeCorrectEvent
     AutoBeAggregateEventBase {
   kind: "casting" | "overall";
 
-  /**
-   * Name of the implementation file that has been corrected and finalized.
-   *
-   * Specifies the filename of the TypeScript implementation file that was
-   * corrected. This may represent service classes, business logic modules,
-   * DAOs, or integration handlers that initially failed validation and have now
-   * been successfully revised.
-   */
-  location: string;
-
-  /**
-   * Corrected content of the implementation file.
-   *
-   * Contains the finalized TypeScript code that was previously incorrect but
-   * has now been updated to compile and align with project requirements. This
-   * code bridges the gap between the flawed implementation and a working
-   * production-quality version.
-   */
-  content: string;
+  function: AutoBeRealizeFunction;
 
   /**
    * Iteration number of the requirements analysis this corrected file

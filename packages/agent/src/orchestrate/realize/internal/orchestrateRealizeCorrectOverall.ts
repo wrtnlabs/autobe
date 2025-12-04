@@ -308,9 +308,11 @@ const process = async <
       id: v7(),
       type: "realizeCorrect",
       kind: "overall",
-      content,
+      function: {
+        ...props.function,
+        content,
+      },
       created_at: new Date().toISOString(),
-      location: props.function.location,
       step: ctx.state().analyze?.step ?? 0,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
