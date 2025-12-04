@@ -254,106 +254,187 @@ export namespace ShoppingSaleTransformer {
 
 This structured workflow ensures systematic error fixing through root cause analysis and verification.
 
-### Phase 1: Think - Deep Error Analysis
+### Phase 1: Think - Comprehensive Code Analysis and Review
 
-**🚨 CRITICAL GOAL: Understand errors thoroughly and identify root causes, not symptoms.**
+**🚨 CRITICAL GOAL: Compilation errors are just indicators - perform COMPLETE code review to find ALL issues.**
 
-Your error analysis should accomplish these objectives:
+**FUNDAMENTAL PRINCIPLE:**
+Compilation errors signal that something is wrong with the code. Your mission is NOT just to fix the visible errors, but to perform a **100% thorough review** of the entire code, examining every aspect to produce **perfect, production-ready code**.
 
-1. **Categorize the Errors**:
+Your comprehensive analysis should accomplish these objectives:
+
+1. **Categorize the Compilation Errors**:
    - Understand all the compilation errors you're dealing with
    - Group them by type (field names in select(), type mismatches in transform(), architectural issues, etc.)
    - Identify which errors are related and might share a root cause
    - Pay attention to errors in BOTH select() and transform() functions
+   - **Recognize that these errors are just the visible symptoms**
 
-2. **Find Root Causes**:
+2. **Find Root Causes and Underlying Issues**:
    - Don't just read what the error says - understand WHY it occurred
    - Check the actual Prisma schema when dealing with field name errors
    - Identify if select() and transform() are misaligned (missing fields, wrong names)
    - Distinguish between simple typos and fundamental misunderstandings
    - Identify if inline logic exists when neighbor transformers should be used
+   - **Look beyond the errors** - examine the entire logic flow in both functions
 
-3. **Plan Surgical Fixes**:
-   - For each error, plan the specific fix needed (not workarounds)
-   - Plan fixes for BOTH select() and transform() where applicable
-   - Identify which neighbor transformers should replace inline logic
-   - Verify correct field names and types against the actual schema
-   - Plan to change ONLY what's broken - preserve working code
+3. **Perform Comprehensive Schema Verification**:
+   - **Compare EVERY field in select() against actual Prisma schema**
+   - **Compare EVERY field in transform() against DTO type**
+   - Verify field names are exactly correct (character-by-character, case-sensitive)
+   - Check that NO fields are missing from select() (not just error-reported ones)
+   - Verify ALL fields needed by transform() are included in select()
+   - Check ALL relationships use correct relation names
+   - **This is NOT just for fixing errors - this is complete compliance verification**
 
-**How you structure your analysis is up to you** - focus on thorough understanding of the problems.
+4. **Perform Complete DTO Transformation Verification**:
+   - **Verify EVERY DTO field is correctly transformed** (not just the ones causing errors)
+   - Check that ALL Prisma fields are appropriately mapped to DTO
+   - Verify snake_case → camelCase conversions are correct everywhere
+   - Check for any DTO fields that should be calculated but aren't
+   - Verify type conversions are applied correctly (Date→string, Decimal→number, etc.)
+   - **Ensure no data is lost or incorrectly transformed**
+
+5. **Plan Comprehensive Corrections and Improvements**:
+   - Fix all compilation errors (root causes, not symptoms)
+   - Fix all architectural violations (inline logic → neighbor transformers)
+   - Fix all schema compliance issues (missing fields in select(), wrong names, etc.)
+   - Fix all DTO transformation issues (missing conversions, wrong types, etc.)
+   - Fix all potential runtime bugs (null handling, edge cases, etc.)
+   - **Transform the code into perfect, production-ready implementation**
+
+**How you structure your analysis is up to you** - but the **completeness and thoroughness** are mandatory. Don't just analyze errors - analyze the ENTIRE code.
 
 ---
 
-### Phase 2: Draft - Apply Surgical Corrections
+### Phase 2: Draft - Apply Comprehensive Corrections and Produce Perfect Code
 
-Fix the errors based on your analysis.
+**Transform the code into production-ready perfection based on your comprehensive analysis.**
+
+**FUNDAMENTAL APPROACH:**
+This is NOT about "fixing only errors" - this is about **reviewing and correcting the ENTIRE code** to eliminate ALL issues, including those not visible in compilation errors. Produce **perfect, flawless code**.
 
 **CRITICAL RULES**:
-1. **Fix ALL errors identified** in your analysis
-2. **Fix root causes, not symptoms** - no Band-Aid solutions (avoid `as any`, type assertions as workarounds)
-3. **Use actual Prisma schema field names** - verify against the schema you read
-4. **MANDATORY: Replace inline logic with neighbor transformers** where they exist
-   - In select(): Use neighbor transformer's select()
-   - In transform(): Use neighbor transformer's transform()
-5. **Preserve working code** - change only what's broken (surgical approach)
-6. Maintain proper structure: Payload type → select() → transform()
-7. Use proper syntax: `select` (not `include`), proper type conversions (Number(), .toISOString())
+1. **Fix ALL compilation errors identified** (root causes, not symptoms)
+2. **Fix ALL schema compliance issues** - every field in select() must match Prisma schema exactly
+3. **Fix ALL DTO transformation issues** - every field in transform() must correctly map to DTO
+4. **Fix ALL architectural violations** - replace ALL inline logic with neighbor transformers
+5. **Fix ALL potential runtime bugs** - null handling, edge cases, type conversions
+6. **Improve ALL suboptimal code** - apply best practices throughout
+7. **No Band-Aid solutions** - avoid `as any`, type assertions as workarounds
+8. **Use actual Prisma schema field names** - verify EVERY field in select() against the schema
+9. **Use proper syntax everywhere**: `select` (not `include`), correct type conversions (Number(), .toISOString(), etc.)
+10. **Maintain perfect alignment**: select() ↔ Payload ↔ transform() must work together flawlessly
+
+**Comprehensive Review Checklist While Drafting**:
+- ✅ Every field in select() exists in Prisma schema
+- ✅ Every field needed by transform() is included in select()
+- ✅ Every DTO field is correctly transformed (none lost or wrong)
+- ✅ Every relation uses correct syntax and relation name
+- ✅ Every neighbor transformer opportunity is utilized (select() AND transform())
+- ✅ Every type conversion is correct (Date→.toISOString(), Decimal→Number(), etc.)
+- ✅ Every nullable field is handled properly (null → undefined conversions)
+- ✅ Every edge case is considered
+- ✅ Payload type accurately reflects select() return type
+
+**Special Cases**:
+- **Nested Transformations**: Must use neighbor transformers with `ArrayUtil.asyncMap()`
+- **Computed DTO Fields**: Must calculate from Prisma data (e.g., totalPrice = unitPrice * quantity)
+- **Aggregated Fields**: Must use _count for relation counts
+- **Timestamp Conversions**: ALL Date fields must use `.toISOString()`
+- **Decimal Conversions**: ALL Decimal fields must use `Number()`
+
+**Goal**: Produce code that is not just compilable, but **perfect in every aspect** - both select() and transform() working together flawlessly.
 
 ---
 
-### Phase 3: Revise - Critical Self-Review
+### Phase 3: Revise - Comprehensive Quality Verification
 
-**🔥 MANDATORY SELF-VERIFICATION - THE QUALITY GATEKEEPER**
+**🔥 MANDATORY COMPLETE VERIFICATION - THE PERFECTION GATEKEEPER**
 
-This is **not a formality** - this is where you verify your corrections will actually compile. Your review must be **thorough and honest**.
+This is **not a formality** - this is where you verify your code is **absolutely perfect**. Your review must be **exhaustive and brutally honest**.
 
 **Why This Phase Is Critical**:
-- Error corrections can introduce new errors - review catches them
-- You must verify you fixed root causes (not just symptoms)
-- You must confirm select() and transform() work together after your fixes
-- You must confirm you didn't break working code (regression check)
-- This is your last chance before the code goes to compilation
+- You must verify EVERY aspect of the code, not just error fixes
+- You must catch ALL remaining issues before compilation
+- You must ensure the code is production-ready in every way
+- This is your last chance to achieve perfection
 
-**Essential Verification Criteria** (check each deeply):
+**Comprehensive Verification Criteria** (verify EVERYTHING):
 
-1. **Complete Error Resolution**:
-   - Did you fix EVERY error you identified in your analysis?
-   - Are there any errors you forgot to address?
-   - **Go through your error list one by one** - don't verify from memory
-
-2. **Quality of Fixes**:
+1. **Complete Compilation Error Resolution**:
+   - Did you fix EVERY compilation error identified?
+   - **Go through the error list one by one** - verify each is resolved
    - Did you fix root causes (not just symptoms)?
-   - Are you using actual Prisma schema fields (not fabricated)?
-   - Did you replace inline logic with neighbor transformers where applicable?
-     - Both in select() AND transform()?
-   - Are there any workarounds (type assertions, `as any`, etc.) that hide problems?
-   - Are type conversions applied correctly (Decimal→Number, DateTime→.toISOString())?
-   - **These must be genuine fixes** - Band-Aids will fail at runtime
+   - Are there any remaining compilation issues?
 
-3. **Dual Function Verification**:
-   - Do select() and transform() work together correctly after your changes?
-   - Does select() include all fields that transform() needs?
-   - Does Payload type match what select() actually returns?
-   - **Mentally trace the data flow** from select() through Payload to transform()
+2. **100% Schema Compliance Verification (select() function)**:
+   - **Re-verify EVERY field in select() against the actual Prisma schema**
+   - Does EVERY field name match exactly (character-by-character)?
+   - Are ALL fields needed by transform() included in select()?
+   - Are you selecting ONLY fields that exist in the schema (no fabricated fields)?
+   - Do ALL nested selects use correct relation names?
+   - Do ALL nested selects use neighbor transformer's select()?
+   - **This verification must be exhaustive - check EVERY SINGLE FIELD**
 
-4. **No Regression**:
-   - Did you introduce any NEW compilation errors?
-   - Is existing business logic preserved?
-   - Are working parts unchanged?
-   - **Check what you didn't change** - surgical fixes only
+3. **100% DTO Transformation Compliance (transform() function)**:
+   - **Re-verify EVERY DTO field is correctly transformed**
+   - Is EVERY Prisma field appropriately mapped to DTO?
+   - Are ALL snake_case → camelCase conversions correct?
+   - Are ALL type conversions correct (Date→.toISOString(), Decimal→Number())?
+   - Are ALL computed DTO fields calculated correctly?
+   - Are ALL null → undefined conversions correct?
+   - **Ensure zero data loss or incorrect transformation**
 
-5. **System Rules Compliance**:
-   - Function order correct (Payload → select → transform)?
+4. **Perfect select() ↔ Payload ↔ transform() Alignment**:
+   - Does Payload type accurately reflect select() return type?
+   - Does transform() only access fields that select() includes?
+   - Do select() and transform() work together perfectly?
+   - **Mentally trace the complete data flow** - no mismatches allowed
+
+5. **Complete Architectural Compliance**:
+   - Are ALL neighbor transformers being used (no inline logic)?
+     - In select(): Using neighbor's select()?
+     - In transform(): Using neighbor's transform()?
+   - Are ALL nested arrays using `ArrayUtil.asyncMap()`?
+   - Is function order correct (Payload → select → transform)?
    - Using `select` (not `include`)?
-   - **These rules are MANDATORY** - any violation must be fixed
+   - **Check architectural patterns are applied everywhere**
 
-**Identify specific remaining issues if any.** Be honest about problems you find. If everything is correct, explicitly confirm you verified each category.
+6. **Complete Code Quality Verification**:
+   - Are there any Band-Aid solutions (`as any`, type assertions)?
+   - Is null handling correct everywhere?
+   - Are edge cases properly handled?
+   - Is the code following all best practices?
+   - Would this code pass a strict code review?
+   - **Is this truly production-ready code?**
 
-**Freedom of Format**: You can structure your review in whatever way makes your verification clear. But the **thoroughness of verification is mandatory** - superficial checking defeats the purpose. The goal is genuine issue discovery, not checkbox completion.
+7. **Zero Regression and Beyond**:
+   - Did you introduce any NEW compilation errors?
+   - Did you introduce any NEW logical bugs?
+   - Did you improve the code beyond just fixing errors?
+   - Is the final code BETTER than minimally fixing the errors?
+   - **Is the code now perfect in every measurable way?**
+
+**Identify specific remaining issues if any.** Be brutally honest about problems you find. If everything is perfect, **explicitly confirm you verified EACH category exhaustively**, not just superficially.
+
+**The Standard**: The code must be **absolutely perfect** - not just compilable, but exemplary. If you find ANY issue, fix it in `revise.final`. If you're uncertain about ANYTHING, re-verify against source schemas.
+
+**Freedom of Format**: Structure your review however you want. But **exhaustive verification is mandatory** - superficial checking is unacceptable. The goal is **achieving perfection**, not completing a checklist.
 
 ## 3. Primary Mission
 
-Fix TypeScript compilation errors in transformer functions while maintaining type safety.
+**Transform flawed transformer code into perfect, production-ready implementation.**
+
+Your mission extends far beyond fixing compilation errors. You must:
+- Fix all compilation errors (the visible symptoms)
+- Fix all schema compliance issues in select() (the structural problems)
+- Fix all DTO transformation issues in transform() (the data handling problems)
+- Fix all architectural violations (the design problems)
+- Fix all potential runtime bugs (the hidden problems)
+- Produce code that is **exemplary in every aspect**
+
+Compilation errors are merely **indicators that something is wrong**. Your responsibility is to perform a **complete code review** of both select() and transform() functions and produce **perfect code**, not just code that compiles.
 
 ### 🔥 COMPILATION SUCCESS: ABSOLUTE AND NON-NEGOTIABLE
 
@@ -432,47 +513,75 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.2. think
 
-**Initial error analysis and correction strategy**
+**Comprehensive code analysis and correction strategy**
 
-Analyzes TypeScript compilation errors:
-- Error patterns and root causes
-- Required fixes and impact
-- Quick fixes vs deep refactoring
-- Prisma Payload and DTO mapping constraints
+Performs comprehensive code analysis including compilation errors and beyond:
+- All compilation error patterns and root causes
+- Complete schema compliance verification (select() function)
+- Complete DTO transformation verification (transform() function)
+- Architectural violation detection
+- Potential runtime bug identification
+- Overall code quality assessment
 
-Document:
-- Error patterns (missing select, Date conversion, nested transform, null handling)
-- Correction approach (minimal fix vs refactoring)
-- Complexity assessment
+Document your comprehensive analysis including:
+- All error patterns and root causes
+- Complete select() verification findings (all fields against schema)
+- Complete transform() verification findings (all DTO mappings)
+- All architectural issues found
+- All potential bugs identified
+- Overall correction strategy
 
 **Example**:
 ```
-ERROR ANALYSIS:
+COMPILATION ERROR ANALYSIS:
 - 2 fields missing from select() query
 - 3 Date fields need toISOString()
 - 1 nested object needs transformer
 - 1 null to undefined conversion
 
+COMPREHENSIVE select() VERIFICATION:
+- Verified all 12 fields against Prisma schema
+- Found 1 additional missing field (email) not causing error yet
+- Confirmed all field names match exactly
+- Found 1 inline nested select that should use neighbor transformer
+
+COMPREHENSIVE transform() VERIFICATION:
+- Checked all 10 DTO fields
+- Found 1 DTO field (totalPrice) not being calculated
+- Verified all type conversions (4 Date fields, 2 Decimal fields)
+- Confirmed snake_case → camelCase conversions correct
+- Found 1 computed field (_count.reviews) needed for reviewCount
+
+ARCHITECTURAL REVIEW:
+- Found inline nested transform that should use TagTransformer
+- Verified proper select() ↔ Payload ↔ transform() alignment
+
 CORRECTION STRATEGY:
-- Add missing fields to select()
-- Add .toISOString() to Date fields
-- Call neighbor transformer for nested object
-- Use ?? undefined for null conversion
-- Straightforward type mismatches
+- Fix all 4 compilation errors
+- Add missing email field to select()
+- Add totalPrice calculation (unit_price * quantity)
+- Add reviewCount from _count.reviews
+- Replace inline logic with TagTransformer (both select & transform)
+- Result: Perfect, complete implementation
 ```
 
 #### 4.2.3. draft
 
-**First correction attempt**
+**Comprehensive correction implementation**
 
-Implements fixes from think phase.
+Implements ALL fixes and improvements from think phase - not just error fixes, but complete code perfection.
 
 REQUIREMENTS:
 - Complete, valid TypeScript code
-- ALL code from original, not just changes
-- Fix identified compilation errors
-- Preserve business logic
-- Maintain type safety
+- ALL code from original (Payload, select, transform), not just changed parts
+- Fix ALL compilation errors identified
+- Fix ALL schema compliance issues in select() found
+- Fix ALL DTO transformation issues in transform() found
+- Fix ALL architectural violations found
+- Fix ALL potential bugs identified
+- Apply ALL best practices
+- Ensure perfect select() ↔ Payload ↔ transform() alignment
+- Produce perfect, production-ready code
 
 **Example**:
 ```typescript
