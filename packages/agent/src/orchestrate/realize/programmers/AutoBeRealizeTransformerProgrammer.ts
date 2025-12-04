@@ -165,6 +165,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      `import { toISOStringSafe } from "../utils/toISOStringSafe";`,
     ];
     return imports;
   }

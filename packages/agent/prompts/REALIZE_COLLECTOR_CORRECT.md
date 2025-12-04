@@ -929,9 +929,38 @@ This section covers compilation error patterns specific to Collector functions. 
 
 ### 6.1. Handling Fields Missing from DTO
 
-**Error Pattern**: Property 'X' is missing in type but required in 'Prisma.YCreateInput'
+**Error Pattern**:
+```
+Property 'updated_at' is missing in type '{ id: string; ... created_at: Date; }' but required in type 'yyyCreateInput'
+```
 
 **Root Cause**: The CreateInput is missing required Prisma fields. Common causes: (1) Field exists in Prisma but not DTO, (2) AI ignored DTO value, (3) Critical DTO omission.
+
+**🚨 #1 MOST COMMON MISTAKE: Forgetting `updated_at`**
+
+The single most frequent compilation error is **forgetting `updated_at`** when the table has it. Almost every table with `created_at` also has `updated_at`, but AI consistently forgets to include it.
+
+```typescript
+// ❌ WRONG - Forgot updated_at (EXTREMELY COMMON!)
+return {
+  id: v4(),
+  name: props.body.name,
+  created_at: new Date(),
+  // ← WHERE IS updated_at?! COMPILATION ERROR!
+} satisfies Prisma.usersCreateInput;
+
+// ✅ CORRECT - Always include updated_at when table has it
+return {
+  id: v4(),
+  name: props.body.name,
+  created_at: new Date(),
+  updated_at: new Date(),  // ← NEVER FORGET THIS!
+} satisfies Prisma.usersCreateInput;
+```
+
+**Self-Check Before Submitting**: Does the Prisma schema have `updated_at`? If yes, did you include it? **CHECK NOW.**
+
+---
 
 **CRITICAL**: Missing field ≠ "use hardcoded default". Follow **value priority**: DTO value → Props parameter → Indirect reference → Semantic fallback → Critical omission.
 
@@ -1030,22 +1059,177 @@ Missing field 'X'?
 ```
 
 
-### 6.2. Wrong Field Names (DTO vs Prisma Mismatch)
+### 6.2. Non-Existent Field Errors (Field Does Not Exist in CreateInput)
 
-**Error Pattern**: Object literal may only specify known properties, and 'X' does not exist in type
+**🚨 CRITICAL ERROR: Using fields that don't exist in the Prisma schema**
 
-**Solution**:
+**Error Pattern**:
+```
+Object literal may only specify known properties, and 'xxx' does not exist in type 'yyyCreateInput'.
+```
+
+This error means you're trying to assign a value to a field that **DOES NOT EXIST** in the Prisma CreateInput type. This is one of the most common and critical errors.
+
+**TWO POSSIBLE CAUSES - You MUST determine which one:**
+
+---
+
+#### Cause 1: Wrong Field Name (Typo or Naming Convention Mismatch)
+
+You intended to use a valid field, but used the wrong name.
+
+**Common Mistakes:**
+- Used camelCase instead of snake_case: `userName` → should be `user_name`
+- Used DTO property name instead of DB column name: `totalPrice` → should be `total_price`
+- Simple typo: `udpated_at` → should be `updated_at`
+- Used FK column name instead of relation name: `customer_id` → should be `customer`
+
+**How to Fix:**
+1. **Check the Prisma schema** for the EXACT field name
+2. **Find the correct spelling** and replace it
+3. **Verify case convention**: Prisma uses snake_case, DTO uses camelCase
+
 ```typescript
-// ❌ WRONG - using DTO field name instead of DB column name
+// ❌ WRONG - Wrong field names
 return {
-  userName: props.body.userName, // DTO uses camelCase
+  userName: props.body.userName,      // ❌ camelCase, not in CreateInput
+  totalPrice: props.body.totalPrice,  // ❌ camelCase, not in CreateInput
+  customer_id: props.customer.id,     // ❌ FK column, not relation name
 }
 
-// ✅ CORRECT - use exact Prisma schema field names
+// ✅ CORRECT - Exact Prisma schema field names
 return {
-  user_name: props.body.userName, // DB uses snake_case
+  user_name: props.body.userName,     // ✅ snake_case matches DB
+  total_price: props.body.totalPrice, // ✅ snake_case matches DB
+  customer: { connect: { id: props.customer.id } }, // ✅ relation name
 }
 ```
+
+---
+
+#### Cause 2: Fabricated/Imagined Field (Field Does Not Exist in DB)
+
+**🚫 ABSOLUTE PROHIBITION: You invented a field that doesn't exist in the database schema.**
+
+This is a **CRITICAL AI HALLUCINATION ERROR**. You imagined a column that was never defined in the Prisma schema.
+
+**Why This Happens:**
+- AI "assumed" a field should exist based on DTO structure
+- AI copied a DTO property without checking if DB column exists
+- AI invented a "logical" field that makes sense but doesn't exist
+
+**How to Diagnose:**
+1. Look at the field name in the error message
+2. **Search the Prisma schema** for that exact field
+3. If the field **DOES NOT EXIST** in Prisma schema → You fabricated it
+4. If the field **EXISTS but with different name** → It's Cause 1 (wrong name)
+
+**How to Fix:**
+1. **VERIFY** the field exists in Prisma schema (not just in DTO!)
+2. If field doesn't exist → **DELETE IT COMPLETELY** from your code
+3. **NEVER** try to store DTO-only fields in the database
+
+```typescript
+// Prisma Schema (ACTUAL database structure)
+model shopping_sales {
+  id          String   @id @db.Uuid
+  name        String   @db.VarChar
+  unit_price  Decimal  @db.Decimal
+  quantity    Int
+  created_at  DateTime
+  updated_at  DateTime
+  // ⚠️ NO totalPrice, NO discountRate, NO reviewCount columns!
+}
+
+// DTO (what client sends)
+interface IShoppingSale.ICreate {
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;     // ← Computed field, NOT in DB!
+  discountRate: number;   // ← Computed field, NOT in DB!
+  reviewCount: number;    // ← Aggregated field, NOT in DB!
+}
+
+// ❌ FATAL ERROR - Trying to store non-existent fields
+return {
+  id: v4(),
+  name: props.body.name,
+  unit_price: props.body.unitPrice,
+  quantity: props.body.quantity,
+  total_price: props.body.totalPrice,      // ❌ FABRICATED! Not in schema!
+  discount_rate: props.body.discountRate,  // ❌ FABRICATED! Not in schema!
+  review_count: props.body.reviewCount,    // ❌ FABRICATED! Not in schema!
+  created_at: new Date(),
+  updated_at: new Date(),
+} satisfies Prisma.shopping_salesCreateInput;  // ❌ Compilation error!
+
+// ✅ CORRECT - Only use fields that ACTUALLY EXIST in Prisma schema
+return {
+  id: v4(),
+  name: props.body.name,
+  unit_price: props.body.unitPrice,
+  quantity: props.body.quantity,
+  // ✅ DELETED: total_price, discount_rate, review_count
+  // These are computed by Transformer at READ time, not stored!
+  created_at: new Date(),
+  updated_at: new Date(),
+} satisfies Prisma.shopping_salesCreateInput;  // ✅ Compiles!
+```
+
+---
+
+#### Decision Tree for "does not exist in type" Error
+
+```
+Error: 'xxx' does not exist in type 'yyyCreateInput'
+│
+├─ Step 1: Search Prisma schema for field 'xxx'
+│   │
+│   ├─ Found with EXACT name? → Impossible (error wouldn't occur)
+│   │
+│   ├─ Found with SIMILAR name (typo/case difference)?
+│   │   └─ → Cause 1: FIX the field name to match exactly
+│   │
+│   └─ NOT FOUND at all?
+│       └─ → Cause 2: DELETE the field (you fabricated it)
+│
+└─ Step 2: After fix, verify CreateInput compiles
+```
+
+---
+
+#### Common Fabricated Fields to Watch For
+
+**These fields are often in DTOs but NEVER in database:**
+
+| Field Pattern | Why It's Not in DB | What to Do |
+|---------------|-------------------|------------|
+| `totalPrice`, `totalAmount` | Computed: `unit_price × quantity` | DELETE - Transformer calculates |
+| `discountRate`, `discountAmount` | Computed from prices | DELETE - Transformer calculates |
+| `reviewCount`, `orderCount`, `*Count` | Aggregated from relations | DELETE - Transformer uses `_count` |
+| `averageRating`, `average*` | Aggregated calculation | DELETE - Transformer calculates |
+| `isExpired`, `isActive` | Derived from dates/status | DELETE - Transformer derives |
+| `displayName`, `fullName` | Formatted string | DELETE - Transformer formats |
+| `remainingStock` | Computed from inventory | DELETE - Transformer calculates |
+
+**GOLDEN RULE**: If a field exists in DTO but NOT in Prisma schema as a column, it's a computed/derived field. **DELETE IT** from your Collector code.
+
+---
+
+#### Self-Verification Checklist
+
+Before submitting corrected code, verify EVERY field:
+
+```
+For each field in your CreateInput return object:
+□ Does this EXACT field name exist in Prisma schema? (not just similar!)
+□ If it's from DTO, did I convert camelCase → snake_case?
+□ If it's a relation, did I use relation name (not FK column name)?
+□ Am I NOT trying to store computed/aggregated/derived values?
+```
+
+**If ANY answer is "no" or "unsure"**: Check the Prisma schema again. **When in doubt, DELETE the field.**
 
 ### 6.3. Foreign Key Errors
 
