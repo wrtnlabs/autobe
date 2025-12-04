@@ -2083,7 +2083,319 @@ When selecting relations in Prisma:
 - **This is the #1 cause of "cannot recover" compilation errors**
 - **Read the Prisma schema CAREFULLY before correcting**
 
-### 7.6. Summary of REALIZE_TRANSFORMER_WRITE Violations
+### 7.6. Using Shortened Names for 1:N Relations Instead of Table Full Names
+
+**🔥 CRITICAL ERROR: Using shortened relation names (reviews, orders) when Prisma schema defines table full names (shopping_sale_reviews, shopping_orders)**
+
+**Error Pattern**:
+- Type error: "Property 'reviews' does not exist on type 'Prisma.shopping_salesSelect'"
+- Type error: "Property 'orders' does not exist on type 'Prisma.YSelect'"
+- Type error: "Property 'comments' does not exist on type 'Prisma.bbs_articlesSelect'"
+- Compilation error with _count aggregation
+- Cannot access relation array even though it exists in schema
+
+**Root Cause**:
+You used a shortened relation name (e.g., `reviews`, `orders`, `comments`) instead of verifying the EXACT relation field name in the Prisma schema. The schema typically defines 1:N relation fields as **table full names** (e.g., `shopping_sale_reviews`, `shopping_orders`, `bbs_article_comments`), but you MUST always verify.
+
+**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
+- **1:N relations typically use TABLE FULL NAMES as relation field names**
+- **NOT shortened versions** - you must use the EXACT name from the schema
+- **Do NOT assume or guess** - the Prisma schema is the ONLY source of truth
+- **Always READ the Prisma schema carefully** to verify the exact relation field name
+
+**Understanding 1:N Relation Naming**:
+
+```prisma
+model shopping_sales {
+  id                     String  @id @db.Uuid
+  name                   String
+  shopping_sale_reviews  shopping_sale_reviews[]
+  ^^^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^
+  RELATION FIELD NAME    TABLE TYPE
+
+  // ✅ The relation field name IS "shopping_sale_reviews"
+  // ❌ NOT "reviews", NOT "saleReviews"
+}
+
+model bbs_articles {
+  id                    String  @id @db.Uuid
+  title                 String
+  bbs_article_comments  bbs_article_comments[]
+  ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^
+  RELATION FIELD NAME   TABLE TYPE
+
+  // ✅ The relation field name IS "bbs_article_comments"
+  // ❌ NOT "comments", NOT "articleComments"
+}
+```
+
+**Why This Matters**:
+- Prisma generates TypeScript types based on EXACT schema definitions
+- 1:N relations are typically defined with table full names, not shortened names
+- Using `reviews` when schema says `shopping_sale_reviews` = compilation error
+- `_count` also requires the EXACT relation field name from the schema
+- **Always verify the schema** - do not assume the naming pattern
+
+**Fatal Mistake #1: Using Shortened Name in select()**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id                     String  @id @db.Uuid
+  name                   String
+  shopping_sale_reviews  shopping_sale_reviews[]  // ← EXACT field name
+}
+
+// DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  reviewCount: number;  // Computed from _count.shopping_sale_reviews
+}
+
+// ❌ FATAL ERROR - Using shortened name
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          reviews: true,  // ❌ WRONG! Schema says "shopping_sale_reviews"!
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+  // ERROR: Property 'reviews' does not exist on type '_shopping_salesCountOutputTypeSelect'
+}
+
+// ✅ CORRECT - Using table full name from schema
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          shopping_sale_reviews: true,  // ✅ EXACT name from Prisma schema!
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**Fatal Mistake #2: Using Shortened Name in Relation Selection**
+
+```typescript
+// Prisma schema
+model bbs_articles {
+  id                    String  @id @db.Uuid
+  title                 String
+  bbs_article_comments  bbs_article_comments[]  // ← EXACT field name
+}
+
+// DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  comments: IBbsArticleComment[];  // DTO field name can be anything
+}
+
+// ❌ FATAL ERROR - Using shortened name matching DTO
+export function select() {
+  return {
+    select: {
+      id: true,
+      title: true,
+      comments: BbsArticleCommentTransformer.select(),
+      // ^^^^^^^ WRONG! Schema field is "bbs_article_comments"!
+    },
+  } satisfies Prisma.bbs_articlesFindManyArgs;
+  // ERROR: Property 'comments' does not exist on type 'Prisma.bbs_articlesSelect'
+}
+
+// ✅ CORRECT - Using table full name from schema
+export function select() {
+  return {
+    select: {
+      id: true,
+      title: true,
+      bbs_article_comments: BbsArticleCommentTransformer.select(),
+      // ^^^^^^^^^^^^^^^^^^^^ ✅ EXACT name from Prisma schema!
+    },
+  } satisfies Prisma.bbs_articlesFindManyArgs;
+}
+
+// In transform() - map schema field to DTO field
+export function transform(input: any): IBbsArticle {
+  return {
+    id: input.id,
+    title: input.title,
+    // Map Prisma field to DTO field
+    comments: input.bbs_article_comments.map(BbsArticleCommentTransformer.transform),
+    // ^^^^^^^ DTO field name
+    //        ^^^^^^^^^^^^^^^^^^^^^ Prisma schema field name
+  };
+}
+```
+
+**Fatal Mistake #3: Using Shortened Name in Aggregation**
+
+```typescript
+// Prisma schema
+model shopping_customers {
+  id               String  @id @db.Uuid
+  name             String
+  shopping_orders  shopping_orders[]  // ← EXACT field name
+}
+
+// DTO
+interface IShoppingCustomer {
+  id: string;
+  name: string;
+  totalOrders: number;      // Computed from _count
+  averageOrderAmount: number; // Computed from shopping_orders
+}
+
+// ❌ FATAL ERROR - Using shortened names
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          orders: true,  // ❌ WRONG!
+        },
+      },
+      orders: {  // ❌ WRONG!
+        select: {
+          total_amount: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_customersFindManyArgs;
+  // ERROR: Property 'orders' does not exist
+}
+
+// ✅ CORRECT - Using table full names from schema
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          shopping_orders: true,  // ✅ Table full name!
+        },
+      },
+      shopping_orders: {  // ✅ Table full name!
+        select: {
+          total_amount: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_customersFindManyArgs;
+}
+
+export function transform(input: any): IShoppingCustomer {
+  return {
+    id: input.id,
+    name: input.name,
+    // Use Prisma schema field names in input
+    totalOrders: input._count.shopping_orders,
+    averageOrderAmount: input.shopping_orders.length > 0
+      ? input.shopping_orders.reduce((sum, o) => sum + Number(o.total_amount), 0) / input.shopping_orders.length
+      : 0,
+  };
+}
+```
+
+**How to Identify This Mistake**:
+
+1. **Check compilation error message**:
+   - Does it say "Property 'X' does not exist on type 'Prisma.YSelect'"?
+   - Is X a shortened name like `reviews`, `orders`, `comments`, `items`?
+   - Does it look like a plural noun without a table prefix?
+
+2. **Check if it's a 1:N relation**:
+   - Open the Prisma schema
+   - Find the relation field
+   - Is it defined as `{table_name} {table_name}[]`?
+   - If YES, use the EXACT table name, NOT a shortened version
+
+3. **Compare with schema**:
+   ```
+   Your code:     reviews: true
+   Schema says:   shopping_sale_reviews shopping_sale_reviews[]
+                  ^^^^^^^^^^^^^^^^^^^^^ ← Use THIS!
+   ```
+
+**How to Fix During Correction**:
+
+**Step 1: Find EXACT relation field name in Prisma schema**
+
+```prisma
+model shopping_sales {
+  shopping_sale_reviews shopping_sale_reviews[]
+  ^^^^^^^^^^^^^^^^^^^^^ ← THIS is the field name!
+}
+```
+
+**Step 2: Replace ALL shortened names with table full names**
+
+```typescript
+// ❌ Remove all shortened names:
+reviews: true
+orders: true
+comments: true
+items: true
+
+// ✅ Replace with table full names from Prisma schema:
+shopping_sale_reviews: true
+shopping_orders: true
+bbs_article_comments: true
+shopping_sale_items: true
+```
+
+**Step 3: Update _count, select, and transform() consistently**
+
+```typescript
+// In select()
+_count: {
+  select: {
+    shopping_sale_reviews: true,  // ✅ Table full name
+  },
+}
+
+// In transform()
+reviewCount: input._count.shopping_sale_reviews,  // ✅ Same name
+```
+
+**Decision Rule**:
+
+```
+Is this a 1:N relation (array)?
+│
+├─ YES → Check Prisma schema for EXACT relation field name
+│  │
+│  ├─ Schema says: shopping_sale_reviews shopping_sale_reviews[]
+│  │   → Use: shopping_sale_reviews (table full name)
+│  │
+│  └─ Schema says: bbs_article_comments bbs_article_comments[]
+│      → Use: bbs_article_comments (table full name)
+│
+└─ NO (1:1 or M:1) → Usually camelCase (category, author, createdBy)
+```
+
+**Remember**:
+- **1:N relations = Table full names** (shopping_sale_reviews, bbs_article_comments)
+- **1:1 or M:1 relations = camelCase** (category, author, createdBy)
+- **ALWAYS check Prisma schema** - never guess relation names
+- **Prisma schema is NON-NEGOTIABLE** - use EXACT names only
+
+### 7.7. Summary of REALIZE_TRANSFORMER_WRITE Violations
 
 **Common Pattern**: AI doesn't carefully read REALIZE_TRANSFORMER_WRITE.md guidelines
 
@@ -2097,7 +2409,9 @@ When selecting relations in Prisma:
 - [ ] Using `BbsArticleAtContentTransformer` for `IBbsArticle.IContent` (not parent)?
 - [ ] **Verified EVERY select() field exists in Prisma schema?**
 - [ ] **Not trying to select DTO-only fields that are computed/aggregated?**
-- [ ] **🔥 Using RELATION names (camelCase) NOT table names (snake_case)?**
+- [ ] **🔥 For M:1/1:1 relations: Using RELATION names (camelCase) NOT table names (snake_case)?**
+- [ ] **🔥 For 1:N relations: Using TABLE FULL NAMES from Prisma schema (NOT shortened names)?**
+- [ ] **🔥 NOT using shortened names (reviews, orders, comments) when schema says table full names?**
 - [ ] **🔥 NOT selecting FK columns (category_id) instead of relations (category)?**
 - [ ] **🔥 If Transformer exists for relation, USING it (not inline)?**
 
@@ -2105,10 +2419,13 @@ When selecting relations in Prisma:
 - "Type 'IXxx' is not assignable to type 'IXxx.ISummary'" → Wrong Transformer name (Section 7.2)
 - "Property 'X' does not exist on type 'Y'" in transform() → Mismatched select/transform (Section 7.1)
 - "Property 'X' does not exist on type 'Prisma.YSelect'" → Selecting non-existent column (Section 7.3)
-- "Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'" → Using table name instead of relation name (Section 7.5)
+- "Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'" → Using table name instead of relation name for M:1 (Section 7.5)
+- "Property 'reviews' does not exist on type 'Prisma.shopping_salesSelect'" → Using shortened name for 1:N relation (Section 7.6)
+- "Property 'orders' does not exist on type..." → Using shortened name instead of table full name (Section 7.6)
+- "Property 'comments' does not exist on type..." → Using shortened name instead of table full name (Section 7.6)
 - "Property 'category_id' does not exist on type..." in transform() → Selected FK column instead of relation (Section 7.5)
 - Type mismatch in nested object → Check both Section 7.1 AND 7.2
-- Cannot recover after multiple attempts → Probably snake_case/camelCase confusion (Section 7.5)
+- Cannot recover after multiple attempts → Probably snake_case/camelCase confusion (Section 7.5) or shortened name issue (Section 7.6)
 
 **THE GOLDEN RULE**:
 Read REALIZE_TRANSFORMER_WRITE.md guidelines THOROUGHLY. Most of these errors are preventable by following the write-phase rules correctly!

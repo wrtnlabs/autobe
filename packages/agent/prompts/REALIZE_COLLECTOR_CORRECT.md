@@ -124,7 +124,7 @@ When fixing compilation errors, if you find inline collection logic that should 
 
 ```typescript
 // ❌ WRONG - Inline logic when ShoppingSaleTagCollector exists
-tags: {
+shopping_sale_tags: {
   create: props.body.tags.map((tag, i) => ({
     id: v4(),
     name: tag.name,
@@ -134,7 +134,7 @@ tags: {
 }
 
 // ✅ CORRECT - Replace with neighbor collector call
-tags: {
+shopping_sale_tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => ShoppingSaleTagCollector.collect({
@@ -169,7 +169,7 @@ export namespace ShoppingSaleCollector {
       id: v4(),
       name: props.body.name,
       // ❌ Inline logic + type errors
-      tags: {
+      shopping_sale_tags: {
         create: props.body.tags.map((tag, i) => ({
           id: v4(),
           name: tag.name,
@@ -190,7 +190,7 @@ export namespace ShoppingSaleCollector {
       id: v4(),
       name: props.body.name,
       // ✅ Using neighbor collector (fixes both issues)
-      tags: {
+      shopping_sale_tags: {
         create: await ArrayUtil.asyncMap(
           props.body.tags,
           (tag, i) => ShoppingSaleTagCollector.collect({
@@ -705,6 +705,8 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 6. Common Compilation Errors in Collectors
 
+This section covers compilation error patterns specific to Collector functions. These errors occur during TypeScript compilation when AI fails to follow REALIZE_COLLECTOR_WRITE.md guidelines or makes common type system mistakes.
+
 ### 6.1. Missing Required Fields in CreateInput
 
 **Error Pattern**: Property 'X' is missing in type but required in 'Prisma.YCreateInput'
@@ -742,23 +744,262 @@ return {
 }
 ```
 
-### 6.3. Incorrect Foreign Key Connection
+### 6.3. Foreign Key Errors
 
-**Error Pattern**: Type error in nested object assignment
+Foreign key handling is one of the most common sources of compilation errors in Collectors. This section covers two critical FK-related mistakes.
 
-**Solution**:
+#### 6.3.1. Direct FK Assignment Instead of Relation Connect
+
+**🚨 CRITICAL ERROR: Assigning FK column values directly instead of using Prisma relation syntax**
+
+**Error Pattern**:
+- Type error: Property 'shopping_sale_id' does not exist on type 'shopping_salesCreateInput'
+- Type error: Property 'customer_id' does not exist on type 'CreateInput'
+- Compilation error with `satisfies` operator
+- Wrong field names in CreateInput
+
+**Root Cause**:
+You directly assigned foreign key column values (`shopping_sale_id`, `customer_id`) instead of using Prisma relation syntax (`sale: { connect: ... }`). Prisma's CreateInput types expect **relation objects**, not raw FK values.
+
+**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
+- **NEVER** assign `_id` suffixed columns directly
+- **ALWAYS** use relation field names with `{ connect: { id: ... } }` syntax
+- **Relation names** are defined in Prisma schema (e.g., `sale`, `customer`)
+- **FK column names** (`shopping_sale_id`, `customer_id`) are FORBIDDEN in CreateInput
+
+**Fatal Mistake:**
+
 ```typescript
-// ❌ WRONG - directly assigning ID
-return {
-  organization: props.body.organization_id,
+// Prisma schema
+model shopping_sale_reviews {
+  id                   String  @id @db.Uuid
+  shopping_sale_id     String  @db.Uuid   // FK COLUMN
+  customer_id          String  @db.Uuid   // FK COLUMN
+
+  sale      shopping_sales     @relation(fields: [shopping_sale_id], references: [id])
+  customer  shopping_customers @relation(fields: [customer_id], references: [id])
+  // ^^^^ RELATION NAMES (use these!)
 }
 
-// ✅ CORRECT - use connect for foreign keys
-return {
-  organization: {
-    connect: { id: props.organization.id }
-  },
+// ❌ FATAL ERROR - Direct FK assignment
+export async function collect(props: {
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;
+  customer: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    // ❌ WRONG! Direct FK column assignment!
+    shopping_sale_id: props.sale.id,  // ❌ Compilation error!
+    customer_id: props.customer.id,   // ❌ Compilation error!
+    created_at: new Date(),
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ❌ Type error!
 }
+
+// ✅ CORRECT - Prisma relation syntax
+export async function collect(props: {
+  body: IShoppingSaleReview.ICreate;
+  sale: IEntity;
+  customer: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    // ✅ CORRECT! Use relation names with connect!
+    sale: { connect: { id: props.sale.id } },        // ✅ Correct!
+    customer: { connect: { id: props.customer.id } }, // ✅ Correct!
+    created_at: new Date(),
+  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ✅ Type-safe!
+}
+```
+
+**Why This Causes Compilation Errors**:
+- Prisma's CreateInput types only include **relation field names**
+- FK column names (`_id` suffixed) don't exist in CreateInput types
+- Direct assignment violates Prisma's type system contract
+- `satisfies` operator catches this error immediately
+
+**More Examples:**
+
+```typescript
+// ❌ ALL WRONG - Direct FK assignment
+{
+  bbs_article_id: props.article.id,              // ❌ Wrong!
+  shopping_customer_session_id: props.session.id, // ❌ Wrong!
+  parent_id: props.body.parentId,                 // ❌ Wrong!
+  category_id: props.body.categoryId,             // ❌ Wrong!
+}
+
+// ✅ ALL CORRECT - Relation connect syntax
+{
+  article: { connect: { id: props.article.id } },          // ✅ Correct!
+  session: { connect: { id: props.session.id } },          // ✅ Correct!
+  parent: { connect: { id: props.body.parentId } },        // ✅ Correct!
+  category: { connect: { id: props.body.categoryId } },    // ✅ Correct!
+}
+```
+
+**How to Fix During Correction**:
+
+1. **Read the compilation error** - it tells you the FK column doesn't exist
+2. **Check Prisma schema** - find the RELATION NAME (not column name)
+3. **Replace direct assignment** with relation connect syntax
+4. **Pattern**: `relationName: { connect: { id: fkValue } }`
+
+**The Pattern:**
+
+```typescript
+// ❌ NEVER do this:
+{
+  foreign_key_column_id: someId,  // ❌ Direct FK assignment
+}
+
+// ✅ ALWAYS do this:
+{
+  relationName: { connect: { id: someId } },  // ✅ Relation syntax
+}
+```
+
+#### 6.3.2. Using `null` for Nullable FK Instead of `undefined`
+
+**🚨 CRITICAL ERROR: Using `null` for optional foreign key relations when you should use `undefined`**
+
+**Error Pattern**:
+- Prisma runtime error: "Cannot set relation to null using connect syntax"
+- Type error: Type 'null' is not assignable to type 'undefined'
+- Unexpected Prisma behavior when creating records with optional relations
+- Tests fail with FK constraint errors
+
+**Root Cause**:
+You used `null` for an optional foreign key relationship instead of `undefined`. Prisma ORM's type system treats these differently:
+- `undefined` = "don't set this field" (skip the field)
+- `null` = "explicitly set this field to null" (causes errors for relations)
+
+**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
+- **Optional FK exists** → Use `{ connect: { id: value } }`
+- **Optional FK is null/undefined** → Use `undefined` (NOT `null`!)
+- **This is fundamental Prisma ORM behavior, not a TypeScript quirk**
+
+**Fatal Mistake:**
+
+```typescript
+// Prisma schema
+model bbs_article_comments {
+  id                     String  @id @db.Uuid
+  parent_comment_id      String? @db.Uuid  // Optional FK
+  mentioned_member_id    String? @db.Uuid  // Optional FK
+
+  parentComment    bbs_article_comments?  @relation("CommentReplies", fields: [parent_comment_id], references: [id])
+  mentionedMember  bbs_members?           @relation(fields: [mentioned_member_id], references: [id])
+}
+
+// DTO
+interface IBbsArticleComment.ICreate {
+  parent_comment_id?: string;     // Optional
+  mentioned_member_id?: string;   // Optional
+}
+
+// ❌ FATAL ERROR - Using null for optional FK
+export async function collect(props: {
+  body: IBbsArticleComment.ICreate;
+  article: IEntity;
+  author: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    article: { connect: { id: props.article.id } },
+    author: { connect: { id: props.author.id } },
+    // ❌ WRONG! Using null causes Prisma errors!
+    parentComment: props.body.parent_comment_id
+      ? { connect: { id: props.body.parent_comment_id } }
+      : null,  // ❌ FATAL!
+    mentionedMember: props.body.mentioned_member_id
+      ? { connect: { id: props.body.mentioned_member_id } }
+      : null,  // ❌ FATAL!
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_commentsCreateInput;
+}
+
+// ✅ CORRECT - Using undefined for optional FK
+export async function collect(props: {
+  body: IBbsArticleComment.ICreate;
+  article: IEntity;
+  author: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    article: { connect: { id: props.article.id } },
+    author: { connect: { id: props.author.id } },
+    // ✅ CORRECT! Use undefined when FK doesn't exist
+    parentComment: props.body.parent_comment_id
+      ? { connect: { id: props.body.parent_comment_id } }
+      : undefined,  // ✅ Correct!
+    mentionedMember: props.body.mentioned_member_id
+      ? { connect: { id: props.body.mentioned_member_id } }
+      : undefined,  // ✅ Correct!
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_commentsCreateInput;
+}
+```
+
+**Why This Causes Errors**:
+- Prisma ORM treats `null` as "set this field to null in DB"
+- Relations cannot be set to null using connect syntax
+- `undefined` means "skip this field in the operation"
+- For optional FK, you want to SKIP, not NULL
+
+**The Pattern:**
+
+```typescript
+// For optional FK relations (nullable in Prisma schema):
+relationField: dtoValue
+  ? { connect: { id: dtoValue } }
+  : undefined  // ← MUST be undefined, NOT null!
+
+// For required FK relations (non-nullable in Prisma schema):
+relationField: { connect: { id: dtoValue } }  // Always connect
+```
+
+**Common Scenarios:**
+
+```typescript
+// Scenario 1: Optional parent
+parent: props.body.parent_id
+  ? { connect: { id: props.body.parent_id } }
+  : undefined,  // ✅ Not null!
+
+// Scenario 2: Optional category
+category: props.body.category_id
+  ? { connect: { id: props.body.category_id } }
+  : undefined,  // ✅ Not null!
+
+// Scenario 3: Optional user from IEntity | undefined
+user: props.user
+  ? { connect: { id: props.user.id } }
+  : undefined,  // ✅ Not null!
+```
+
+**How to Fix During Correction**:
+
+1. **Check Prisma schema**: Is the FK nullable (`String?`)?
+2. **Check the error**: Does it mention null assignment or relation errors?
+3. **Find all ternary operators** with `connect` syntax
+4. **Replace ALL `null` with `undefined`** in the false branch
+5. **Verify**: Every optional relation uses `undefined`, not `null`
+
+**Decision Rule:**
+
+```
+Is FK nullable in Prisma schema?
+│
+├─ NO (required FK) → Always: { connect: { id: value } }
+│
+└─ YES (optional FK) → Conditional:
+   ├─ Value exists? → { connect: { id: value } }
+   └─ Value null/undefined? → undefined (NOT null!)
 ```
 
 ### 6.4. Nullable vs Non-nullable Mismatch
@@ -778,7 +1019,11 @@ return {
 }
 ```
 
-### 6.5. Nested Array Creation
+### 6.5. Nested Array Creation Errors
+
+Nested array creation requires using `ArrayUtil.asyncMap` and potentially calling existing neighbor Collectors. This section covers two common mistakes.
+
+#### 6.5.1. Basic Pattern
 
 **Error Pattern**: Type error when calling another collector
 
@@ -786,7 +1031,7 @@ return {
 ```typescript
 // ✅ CORRECT - use ArrayUtil.asyncMap for nested creates
 return {
-  posts: {
+  blog_posts: {
     create: await ArrayUtil.asyncMap(
       props.body.posts,
       async (post) =>
@@ -798,6 +1043,80 @@ return {
   },
 }
 ```
+
+#### 6.5.2. Ignoring Existing Neighbor Collectors
+
+**🚨 CRITICAL ERROR: Writing inline collection logic when a neighbor Collector already exists**
+
+**Error Pattern**:
+- Duplicated code across collectors
+- Inconsistent field mappings
+- Missing fields that neighbor collector includes
+- Architecture violation - not reusing existing code
+
+**Root Cause**:
+You wrote inline collection logic for nested creates instead of calling the existing neighbor Collector. This violates the **Single Source of Truth** principle.
+
+**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
+- **If a Collector exists for a DTO + Prisma schema → YOU MUST USE IT**
+- **This is NOT optional, NOT a suggestion - it is MANDATORY**
+- **NEVER write inline code when Collector exists**
+- **Check neighbor collectors BEFORE implementing nested creates**
+
+**Fatal Mistake:**
+
+```typescript
+// Neighbor collectors provided:
+// ShoppingSaleTagCollector.collect({ body: IShoppingSaleTag.ICreate, sequence: number })
+
+// ❌ FATAL ERROR - Inline logic when Collector exists
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    // ❌ WRONG! ShoppingSaleTagCollector exists but ignored!
+    shopping_sale_tags: {
+      create: props.body.tags.map((tag, i) => ({
+        id: v4(),
+        name: tag.name,
+        sequence: i,
+        created_at: new Date(),
+      })),
+    },
+  } satisfies Prisma.shopping_salesCreateInput;
+}
+
+// ✅ CORRECT - Using neighbor Collector
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    // ✅ CORRECT! Reusing ShoppingSaleTagCollector!
+    shopping_sale_tags: {
+      create: await ArrayUtil.asyncMap(
+        props.body.tags,
+        (tag, i) => ShoppingSaleTagCollector.collect({
+          body: tag,
+          sequence: i,
+        })
+      ),
+    },
+  } satisfies Prisma.shopping_salesCreateInput;
+}
+```
+
+**Why This Is Critical**:
+- **Single Source of Truth**: Only TagCollector knows how to collect tags
+- **Consistency**: All code uses same collection logic
+- **Maintainability**: DTO changes only affect one Collector
+- **Bug Prevention**: Inline code WILL diverge and cause bugs
+
+**How to Fix During Correction**:
+
+1. **Check neighbor collectors** - does one exist for this DTO type?
+2. **Find the inline logic** - nested `create` with inline object mapping
+3. **Replace with Collector call** - use `ArrayUtil.asyncMap` + `Collector.collect()`
+4. **Verify parameters** - pass correct props (body, sequence, etc.)
 
 ### 6.6. Trying to Store Computed/Aggregated/Read-only Fields
 

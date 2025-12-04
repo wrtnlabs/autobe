@@ -214,7 +214,7 @@ export namespace ShoppingSaleCollector {
       id: v4(),
       name: props.body.name,
       // ✅ CORRECT - ShoppingSaleTagCollector exists, MUST use it
-      tags: {
+      shopping_sale_tags: {
         create: await ArrayUtil.asyncMap(
           props.body.tags,
           (tag, i) => ShoppingSaleTagCollector.collect({
@@ -224,7 +224,7 @@ export namespace ShoppingSaleCollector {
         ),
       },
       // ✅ CORRECT - ShoppingSaleAttachmentCollector exists, MUST use it
-      attachments: {
+      shopping_sale_attachments: {
         create: await ArrayUtil.asyncMap(
           props.body.attachments,
           (attachment) => ShoppingSaleAttachmentCollector.collect({
@@ -243,7 +243,7 @@ export namespace ShoppingSaleCollector {
       id: v4(),
       name: props.body.name,
       // ❌ FORBIDDEN! ShoppingSaleTagCollector exists but ignored!
-      tags: {
+      shopping_sale_tags: {
         create: props.body.tags.map((tag, i) => ({
           id: v4(),
           name: tag.name,
@@ -252,7 +252,7 @@ export namespace ShoppingSaleCollector {
         })),
       },
       // ❌ FORBIDDEN! ShoppingSaleAttachmentCollector exists but ignored!
-      attachments: {
+      shopping_sale_attachments: {
         create: props.body.attachments.map((attachment) => ({
           id: v4(),
           filename: attachment.filename,
@@ -620,7 +620,7 @@ export async function collect(props: {
   return {
     id: v4(),
     sequence: props.sequence,
-    choices: {
+    shopping_sale_unit_stock_choices: {
       create: await ArrayUtil.asyncMap(
         props.body.choices,
         (choice, i) => ChoiceCollector.collect({
@@ -746,6 +746,137 @@ model shopping_sale_reviews {
 }
 ```
 
+**🚨 CRITICAL: Nullable FK - Use `undefined`, NOT `null`**
+
+**MOST COMMON MISTAKE: Using `null` for optional foreign keys when you should use `undefined`**
+
+When a foreign key is **optional** (nullable in Prisma), Prisma ORM requires:
+- **If FK value exists** → Use `{ connect: { id: value } }`
+- **If FK value is null/undefined** → Use `undefined` (NOT `null`!)
+
+**Why `undefined` and NOT `null`?**
+- Prisma's CreateInput type system treats `undefined` as "don't set this field"
+- `null` means "set this field to null in the database"
+- For optional relations, you want to SKIP the field, not set it to null
+- Setting `relationField: null` will cause Prisma errors
+
+**Example Scenario:**
+
+```prisma
+model bbs_article_comments {
+  id                  String  @id @db.Uuid
+  content             String  @db.Text
+  parent_comment_id   String? @db.Uuid  // Optional FK (for nested replies)
+  mentioned_member_id String? @db.Uuid  // Optional FK (for @mentions)
+
+  parentComment    bbs_article_comments?  @relation("CommentReplies", fields: [parent_comment_id], references: [id])
+  mentionedMember  bbs_members?           @relation(fields: [mentioned_member_id], references: [id])
+}
+```
+
+```typescript
+// DTO field (optional FK)
+interface IBbsArticleComment.ICreate {
+  content: string;
+  parent_comment_id?: string;     // May be undefined (top-level comment)
+  mentioned_member_id?: string;   // May be undefined (no mention)
+}
+```
+
+**❌ ABSOLUTELY WRONG - Using `null` for optional FK:**
+
+```typescript
+export async function collect(props: {
+  body: IBbsArticleComment.ICreate;
+  article: IEntity;
+  author: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    article: { connect: { id: props.article.id } },
+    author: { connect: { id: props.author.id } },
+    // ❌ FATAL ERROR: Using null causes Prisma errors!
+    parentComment: props.body.parent_comment_id
+      ? { connect: { id: props.body.parent_comment_id } }
+      : null,  // ❌ WRONG! Should be undefined!
+    mentionedMember: props.body.mentioned_member_id
+      ? { connect: { id: props.body.mentioned_member_id } }
+      : null,  // ❌ WRONG! Should be undefined!
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_commentsCreateInput;
+}
+```
+
+**✅ CORRECT - Using `undefined` for optional FK:**
+
+```typescript
+export async function collect(props: {
+  body: IBbsArticleComment.ICreate;
+  article: IEntity;
+  author: IEntity;
+}) {
+  return {
+    id: v4(),
+    content: props.body.content,
+    article: { connect: { id: props.article.id } },
+    author: { connect: { id: props.author.id } },
+    // ✅ CORRECT: Use undefined when FK value doesn't exist
+    parentComment: props.body.parent_comment_id
+      ? { connect: { id: props.body.parent_comment_id } }
+      : undefined,  // ✅ Correct!
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_commentsCreateInput;
+}
+```
+
+**The Pattern:**
+
+```typescript
+// For optional FK relations (nullable in Prisma schema):
+relationField: dtoValue
+  ? { connect: { id: dtoValue } }
+  : undefined  // ← MUST be undefined, NOT null!
+
+// For required FK relations (non-nullable in Prisma schema):
+relationField: { connect: { id: dtoValue } }  // Always connect
+```
+
+**Why This Matters:**
+- Prisma ORM's type system is strict about null vs undefined
+- `undefined` = "don't include this field in the operation"
+- `null` = "explicitly set this field to null" (causes errors for relations)
+- Using `null` for optional relations will cause runtime Prisma errors
+- **This is a fundamental Prisma ORM concept, not a TypeScript quirk**
+
+**Common Scenarios:**
+
+```typescript
+// Scenario 1: Optional parent relationship
+// Prisma: parent_id String? @db.Uuid, parent entity?
+parent: props.body.parent_id
+  ? { connect: { id: props.body.parent_id } }
+  : undefined,
+
+// Scenario 2: Optional category relationship
+// Prisma: category_id String? @db.Uuid, category shopping_categories?
+category: props.body.category_id
+  ? { connect: { id: props.body.category_id } }
+  : undefined,
+```
+
+**Decision Rule:**
+
+```
+Is the FK nullable in Prisma schema?
+│
+├─ NO (required FK) → Always use { connect: { id: value } }
+│
+└─ YES (optional FK) → Check if value exists:
+   ├─ Value exists? → Use { connect: { id: value } }
+   └─ Value is null/undefined? → Use undefined (NOT null!)
+```
+
 **Why This Rule Exists:**
 
 1. **Type Safety**: Prisma's CreateInput types expect relation objects, not raw foreign key values
@@ -779,7 +910,7 @@ Use `create` when you need to create a new related record simultaneously.
 
 ```typescript
 // Creating a single nested record (HasOne relationship)
-content: {
+bbs_article_contents: {
   create: {
     id: v4(),
     body: props.body.contentText,
@@ -788,7 +919,7 @@ content: {
 }
 
 // Creating multiple nested records (HasMany relationship)
-tags: {
+shopping_sale_tags: {
   create: [
     { id: v4(), name: "tag1", sequence: 0 },
     { id: v4(), name: "tag2", sequence: 1 },
@@ -813,9 +944,9 @@ sale: {
 
 ```typescript
 // Article has many Attachments
-// Prisma schema: attachments bbs_article_attachments[]
+// Prisma schema: bbs_article_attachments bbs_article_attachments[]
 
-attachments: {
+bbs_article_attachments: {
   create: await ArrayUtil.asyncMap(
     props.body.attachments,
     (attachment, i) => AttachmentCollector.collect({
@@ -830,9 +961,9 @@ attachments: {
 
 ```typescript
 // Article has one Content
-// Prisma schema: content bbs_article_contents?
+// Prisma schema: bbs_article_contents bbs_article_contents?
 
-content: {
+bbs_article_contents: {
   create: await ContentCollector.collect({
     body: props.body.content,
   }),
@@ -845,8 +976,9 @@ content: {
 // Sale M:N Categories through shopping_sale_categories join table
 // DTO provides categoryIds array, not nested objects
 // No Collector exists for join table - handle inline
+// Prisma schema: shopping_sale_categories shopping_sale_categories[]
 
-categories: {
+shopping_sale_categories: {
   create: await ArrayUtil.asyncMap(
     props.body.categoryIds,
     (categoryId, i) => ({
@@ -958,6 +1090,223 @@ The #1 reason collectors fail is fabricating non-existent fields/relations or us
 ```
 
 **If unsure, RE-READ the schema. Never guess relation names.**
+
+#### Indirect Reference Pattern - When FK Information Requires Database Lookup
+
+**🚨 ADVANCED PATTERN: Obtaining Foreign Key Values Through Indirect References**
+
+Sometimes, the foreign key value you need for a relation is NOT directly available in `props` or `props.body`. Instead, you need to **query another table** to obtain it. This is called **indirect reference**.
+
+**When This Happens:**
+
+You're creating a record that has relationships to multiple entities, but:
+- Some FK values are directly available in props
+- Other FK values exist in a **parent/related table** that you need to query first
+
+**Common Scenario:**
+
+Creating a like on a comment requires connecting to both the comment AND the article:
+- `comment_id` is directly available in `props.body` ✓
+- `article_id` is NOT in props, but exists in the comment record ✗
+- You must query the comment table to get `article_id`
+
+**The Pattern:**
+
+```typescript
+// 1. Query the related table to get missing FK information
+const relatedRecord = await MyGlobal.prisma.{table_name}.findFirstOrThrow({
+  where: { id: props.body.{related_id} },
+});
+
+// 2. Use both direct and indirect FK values in CreateInput
+return {
+  id: v4(),
+  // Direct relation (FK available in props)
+  relatedEntity: { connect: { id: relatedRecord.id } },
+  // Indirect relation (FK obtained from query)
+  parentEntity: { connect: { id: relatedRecord.{parent_fk} } },
+  // ... other fields
+}
+```
+
+**Real Example - BBS Article Comment Likes:**
+
+**Scenario:**
+- User likes a comment on an article
+- Database requires BOTH `comment_id` AND `article_id`
+- `props.body` only contains `comment_id`
+- `article_id` must be obtained by querying the comment
+
+**Prisma Schema:**
+
+```prisma
+model bbs_article_comment_likes {
+  id                      String  @id @db.Uuid
+  bbs_article_id          String  @db.Uuid   // Need this!
+  bbs_article_comment_id  String  @db.Uuid   // Have this in props.body
+  bbs_member_id           String  @db.Uuid   // Have this in props.member
+
+  article  bbs_articles          @relation(fields: [bbs_article_id], references: [id])
+  comment  bbs_article_comments  @relation(fields: [bbs_article_comment_id], references: [id])
+  member   bbs_members           @relation(fields: [bbs_member_id], references: [id])
+
+  created_at  DateTime  @db.Timestamptz
+}
+
+model bbs_article_comments {
+  id              String  @id @db.Uuid
+  bbs_article_id  String  @db.Uuid   // ← This is what we need!
+  content         String  @db.Text
+
+  article  bbs_articles  @relation(fields: [bbs_article_id], references: [id])
+  // ... other fields
+}
+```
+
+**DTO Type:**
+
+```typescript
+interface IBbsArticleCommentLike.ICreate {
+  bbs_article_comment_id: string;  // Only have comment_id
+  // article_id NOT provided - must be obtained from comment!
+}
+```
+
+**❌ IMPOSSIBLE - article_id not in props:**
+
+```typescript
+export async function collect(props: {
+  body: IBbsArticleCommentLike.ICreate;
+  member: IEntity;
+}) {
+  return {
+    id: v4(),
+    comment: { connect: { id: props.body.bbs_article_comment_id } },
+    article: { connect: { id: ??? } },  // ❌ Don't have article_id!
+    member: { connect: { id: props.member.id } },
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_comment_likesCreateInput;
+}
+```
+
+**✅ CORRECT - Query comment to get article_id:**
+
+```typescript
+export async function collect(props: {
+  body: IBbsArticleCommentLike.ICreate;
+  member: IEntity;
+}) {
+  // Step 1: Query comment to get article_id (indirect reference)
+  const comment = await MyGlobal.prisma.bbs_article_comments.findFirstOrThrow({
+    where: {
+      id: props.body.bbs_article_comment_id,
+    },
+  });
+
+  // Step 2: Use both direct and indirect FK values
+  return {
+    id: v4(),
+    // Direct reference: comment_id from props.body
+    comment: { connect: { id: comment.id } },
+    // Indirect reference: article_id from comment query
+    article: { connect: { id: comment.bbs_article_id } },
+    // Direct reference: member_id from props
+    member: { connect: { id: props.member.id } },
+    created_at: new Date(),
+  } satisfies Prisma.bbs_article_comment_likesCreateInput;
+}
+```
+
+**Why This Works:**
+
+1. **Query the intermediate table** (`bbs_article_comments`) using the available FK
+2. **Extract the parent FK** (`bbs_article_id`) from the query result
+3. **Connect to both entities** - the queried entity and its parent
+4. **Type safety guaranteed** - `findFirstOrThrow` ensures the record exists
+
+**Key Guidelines for Indirect References:**
+
+**When to Use This Pattern:**
+- Database schema requires FK to a parent/ancestor entity
+- That parent FK is NOT directly available in props
+- Parent FK exists in a related table you can query
+
+**How to Implement:**
+1. **Identify missing FK** - which relation needs a FK that's not in props?
+2. **Find the path** - which table contains the missing FK?
+3. **Query that table** - use `findFirstOrThrow` with the available FK
+4. **Extract parent FK** - access the column containing the missing FK
+5. **Connect both** - use both direct and indirect FKs in CreateInput
+
+**Common Patterns:**
+
+```typescript
+// Pattern 1: Child → Parent → Grandparent
+// Creating reply_like requires: reply_id (have it), comment_id (don't have it)
+const reply = await MyGlobal.prisma.comment_replies.findFirstOrThrow({
+  where: { id: props.body.reply_id },
+});
+// Now have: reply.comment_id
+
+// Pattern 2: Detail → Master → Organization
+// Creating order_item_review requires: item_id (have it), order_id (don't have it)
+const orderItem = await MyGlobal.prisma.order_items.findFirstOrThrow({
+  where: { id: props.body.order_item_id },
+});
+// Now have: orderItem.order_id
+
+// Pattern 3: Nested Resource → Container → Owner
+// Creating post_tag_vote requires: tag_id (have it), post_id (don't have it)
+const postTag = await MyGlobal.prisma.blog_post_tags.findFirstOrThrow({
+  where: { id: props.body.post_tag_id },
+});
+// Now have: postTag.blog_post_id
+```
+
+**Table Naming Conventions Help:**
+
+AutoBE follows predictable table naming patterns:
+- Main entity: `bbs_articles`
+- Child entity: `bbs_article_comments`
+- Foreign key column: `bbs_article_id`
+
+This consistency makes indirect references straightforward - FK column names follow the parent table pattern.
+
+**Use `findFirstOrThrow` for Safety:**
+
+```typescript
+// ✅ CORRECT - Throws error if record doesn't exist
+const comment = await MyGlobal.prisma.bbs_article_comments.findFirstOrThrow({
+  where: { id: props.body.comment_id },
+});
+
+// ❌ WRONG - Returns null if not found, causes downstream errors
+const comment = await MyGlobal.prisma.bbs_article_comments.findFirst({
+  where: { id: props.body.comment_id },
+});
+```
+
+**When NOT to Use This Pattern:**
+
+- If the FK is already available in props → use it directly
+- If you can pass the FK through function params → refactor to include it
+- If querying creates performance issues → consider denormalization
+
+**Performance Consideration:**
+
+Indirect reference requires an additional database query. This is acceptable because:
+1. Ensures data integrity (FK relationships are valid)
+2. Queries are by primary key (fast indexed lookup)
+3. Alternative would be passing more params (more complex API)
+
+**Summary:**
+
+Indirect reference is a powerful pattern when:
+- Database schema requires hierarchical FK relationships
+- Not all FKs are directly available in API request
+- You need to traverse the entity graph to obtain missing FKs
+
+Use `findFirstOrThrow` to query intermediate tables and extract parent FKs safely.
 
 ### 2. The collect() Function - Data Collection
 
@@ -1112,7 +1461,7 @@ Example: `bbs_articles` M:N `bbs_files` through `bbs_article_files` join table
 // DTO: IBbsArticle.files: IBbsFile[]  (no IBbsArticleFile DTO!)
 // No BbsArticleFileCollector exists - must handle join table inline
 
-files: {
+bbs_article_files: {
   create: await ArrayUtil.asyncMap(
     props.body.files,
     (file, i) => ({
@@ -1131,7 +1480,7 @@ files: {
 **Example of when reuse is better:**
 ```typescript
 // ❌ Manually constructing when a Collector exists
-tags: {
+shopping_sale_tags: {
   create: props.body.tags.map(tag => ({
     id: v4(),
     name: tag.name,
@@ -1140,7 +1489,7 @@ tags: {
 },
 
 // ✅ Reuse ShoppingSaleTagCollector when it exists
-tags: {
+shopping_sale_tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => ShoppingSaleTagCollector.collect({ body: tag, sequence: i })
@@ -1200,7 +1549,7 @@ Use `create` array when the DTO provides nested objects to create. Always reuse 
 // DTO: { tags: Array<IShoppingSaleTag.ICreate> }
 // Prisma: tags relation field
 
-tags: {
+shopping_sale_tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => ShoppingSaleTagCollector.collect({
@@ -1214,7 +1563,7 @@ tags: {
 Avoid manually constructing nested objects:
 ```typescript
 // ❌ Don't do this - duplicates ShoppingSaleTagCollector logic
-tags: {
+shopping_sale_tags: {
   create: props.body.tags.map(tag => ({
     id: v4(),
     name: tag.name,
@@ -1457,7 +1806,7 @@ category: {
 ```typescript
 // BbsArticle has many BbsArticleAttachments
 // Reuse BbsArticleAttachmentCollector
-attachments: {
+bbs_article_attachments: {
   create: await ArrayUtil.asyncMap(
     props.body.attachments,
     (attachment, i) => BbsArticleAttachmentCollector.collect({
@@ -1708,7 +2057,7 @@ export namespace ShoppingSaleUnitStockCollector {
       id: v4(),
       name: props.body.name,
       sequence: props.sequence,
-      choices: {
+      shopping_sale_unit_stock_choices: {
         create: await ArrayUtil.asyncMap(
           props.body.choices,
           (value, i) => ShoppingSaleSnapshotUnitStockChoiceCollector.collect({
@@ -1920,10 +2269,18 @@ export async function createShoppingSale(props: {
 - [ ] ALL foreign key relationships use Prisma relation syntax: `relationName: { connect: { id: props.entity.id } }`
 - [ ] ❌ FORBIDDEN: Direct assignment like `customer_id: props.customer.id`, `session_id: props.session.id`, `bbs_article_id: props.article.id`
 - [ ] ✅ REQUIRED: Relation connect like `customer: { connect: { id: props.customer.id } }`, `session: { connect: { id: props.session.id } }`
+- [ ] 🚨 **CRITICAL: Nullable FK handling** - Optional relations use `undefined` (NOT `null`!)
+  - [ ] ✅ `relationField: value ? { connect: { id: value } } : undefined`
+  - [ ] ❌ NEVER: `relationField: value ? { connect: { id: value } } : null`
 - [ ] HasMany relationships use `create: [...array]`
 - [ ] HasOne relationships use `create: {...object}`
 - [ ] Optional relationships handled conditionally
 - [ ] Nested collectors reused where appropriate
+- [ ] 🚨 **CRITICAL: Indirect reference handling** - If FK not in props, query related table using `findFirstOrThrow`
+  - [ ] ✅ Identified all required FKs for relations (check Prisma schema)
+  - [ ] ✅ For missing FKs: queried parent/related table to obtain them
+  - [ ] ✅ Used `findFirstOrThrow` (NOT `findFirst`) for safe lookup
+  - [ ] ✅ Connected to both direct (from props) and indirect (from query) relations
 
 ### Data Transformation
 - [ ] camelCase DTO fields mapped to snake_case database columns
@@ -1969,7 +2326,7 @@ When creating multiple nested records, always reuse the appropriate Collector.
 // Prisma: tags relation to bbs_article_tags table
 
 // Reuse BbsArticleTagCollector
-tags: {
+bbs_article_tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => BbsArticleTagCollector.collect({
@@ -1983,7 +2340,7 @@ tags: {
 Avoid manual construction:
 ```typescript
 // ❌ Don't do this - duplicates BbsArticleTagCollector logic
-tags: {
+bbs_article_tags: {
   create: props.body.tags.map((tag, index) => ({
     id: v4(),
     name: tag.name,
@@ -2009,7 +2366,7 @@ Collectors can be nested multiple levels deep, each reusing appropriate sub-Coll
 
 ```typescript
 // Reuse ShoppingSaleUnitStockCollector for complex nested data
-stocks: {
+shopping_sale_unit_stocks: {
   create: await ArrayUtil.asyncMap(
     props.body.stocks,
     (stock, index) => ShoppingSaleUnitStockCollector.collect({
@@ -2028,13 +2385,13 @@ stocks: {
 sale: {
   create: {
     id: v4(),
-    units: {
+    shopping_sale_units: {
       create: await ArrayUtil.asyncMap(
         props.body.units,
         async (unit, unitIndex) => ({
           id: v4(),
           sequence: unitIndex,
-          stocks: {
+          shopping_sale_unit_stocks: {
             create: await ArrayUtil.asyncMap(
               unit.stocks,
               (stock, stockIndex) => StockCollector.collect({

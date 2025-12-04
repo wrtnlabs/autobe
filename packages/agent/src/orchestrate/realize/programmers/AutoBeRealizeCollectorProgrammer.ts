@@ -146,6 +146,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      `import { MyGlobal } from "../MyGlobal";`,
       `import { PasswordUtil } from "../utils/PasswordUtil";`,
     ];
     return imports;

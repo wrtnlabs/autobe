@@ -536,15 +536,31 @@ select: {
 
 **2. One-to-Many (1:N) Relations:**
 
+**🚨 CRITICAL: 1:N Relation Field Names - Always Verify Prisma Schema**
+
+In Prisma schemas, **One-to-Many relation field names typically match the table's full name** (e.g., `bbs_article_comments[]`, `shopping_sale_reviews[]`), but **you MUST verify the exact relation field name in the Prisma schema** - never assume or guess.
+
+**Why This Matters:**
+- Prisma typically defines 1:N relations using table full names: `bbs_article_comments bbs_article_comments[]`
+- The relation field name is usually `bbs_article_comments`, NOT shortened like `comments`
+- However, the schema definition is THE ONLY source of truth - always verify
+- Using names not in the schema (like `reviews`, `orders`, `comments`) will cause compilation errors
+- **Do NOT assume - READ the Prisma schema carefully for the EXACT relation field name**
+
 ```typescript
 // Example: shopping_sales has many shopping_sale_reviews
-// Prisma schema: reviews shopping_sale_reviews[]
+// Prisma schema:
+// model shopping_sales {
+//   id                     String  @id @db.Uuid
+//   name                   String
+//   shopping_sale_reviews  shopping_sale_reviews[]  // ← RELATION FIELD NAME
+// }
 
 select: {
   id: true,
   name: true,
-  // Array relation: Same nested select syntax
-  reviews: {
+  // ✅ CORRECT: Use EXACT relation field name from Prisma schema
+  shopping_sale_reviews: {  // ← Table full name, NOT shortened!
     select: {
       id: true,
       rating: true,
@@ -553,6 +569,29 @@ select: {
     },
   },
 }
+
+// ❌ WRONG: Using shortened name not in schema
+select: {
+  reviews: {  // ❌ This will FAIL if Prisma schema says shopping_sale_reviews!
+    select: { ... },
+  },
+}
+```
+
+**Typical Pattern for 1:N Relations:**
+```
+model {parent_table} {
+  {child_table_full_name}  {child_table}[]
+  ^^^^^^^^^^^^^^^^^^^^^^^ ← This is the relation field name - VERIFY in schema!
+}
+
+Example (typical case):
+model bbs_articles {
+  bbs_article_comments  bbs_article_comments[]
+  ^^^^^^^^^^^^^^^^^^^^ ← ALWAYS check the schema for the exact name!
+}
+
+⚠️ Do NOT assume this pattern - READ the actual Prisma schema to confirm!
 ```
 
 **3. Many-to-Many (M:N) Relations Through Join Tables:**
@@ -604,10 +643,10 @@ export function select() {
       category: ShoppingCategoryTransformer.select(),
       tags: ShoppingTagTransformer.select(),
 
-      // Computed/aggregated fields
+      // Computed/aggregated fields - MUST use table full names!
       _count: {
         select: {
-          reviews: true,
+          shopping_sale_reviews: true,  // ✅ Table full name from Prisma schema
         },
       },
     },
@@ -739,17 +778,18 @@ select: {
 select: {
   id: true,
   name: true,
+  // ✅ CRITICAL: Use EXACT relation field names from Prisma schema!
   _count: {
     select: {
-      reviews: true,  // For reviewCount
+      shopping_sale_reviews: true,  // ✅ Table full name for reviewCount
     },
   },
-  reviews: {
+  shopping_sale_reviews: {  // ✅ Table full name, NOT shortened!
     select: {
       rating: true,   // For averageRating
     },
   },
-  orders: {
+  shopping_orders: {  // ✅ Table full name, NOT shortened!
     select: {
       total_amount: true,  // For totalRevenue
     },
@@ -761,34 +801,37 @@ select: {
 
 **Pattern 1: Aggregated/Computed Fields from Relations**
 
-When DTO field doesn't exist in DB schema, it's usually computed from related tables:
+**🚨 CRITICAL: Use EXACT Relation Field Names from Prisma Schema**
+
+When DTO field doesn't exist in DB schema, it's usually computed from related tables. **You MUST use the EXACT relation field names defined in Prisma schema** - these are typically table full names for 1:N relations.
 
 ```typescript
 // DTO fields NOT in schema:
-reviewCount: number;     // → Computed from _count.reviews
-averageRating: number;   // → Computed from reviews.rating array
-totalOrders: number;     // → Computed from _count.orders
-activeOrderCount: number; // → Computed from filtered orders.length
+reviewCount: number;     // → Computed from _count.shopping_sale_reviews
+averageRating: number;   // → Computed from shopping_sale_reviews.rating array
+totalOrders: number;     // → Computed from _count.shopping_orders
+activeOrderCount: number; // → Computed from filtered shopping_orders.length
 
-// In select() - Select the SOURCE data
+// In select() - Select the SOURCE data using EXACT relation names
+// ✅ CRITICAL: Check Prisma schema for EXACT relation field names!
 _count: {
   select: {
-    reviews: true,
-    orders: true,
+    shopping_sale_reviews: true,  // ✅ Table full name from Prisma schema
+    shopping_orders: true,         // ✅ Table full name from Prisma schema
   },
 },
-reviews: {
+shopping_sale_reviews: {  // ✅ NOT shortened to "reviews"!
   select: {
     rating: true,
   },
 },
 
-// In transform() - COMPUTE the DTO field
-reviewCount: input._count.reviews,
-averageRating: input.reviews.length > 0
-  ? input.reviews.reduce((sum, r) => sum + r.rating, 0) / input.reviews.length
+// In transform() - COMPUTE the DTO field using the EXACT field names
+reviewCount: input._count.shopping_sale_reviews,
+averageRating: input.shopping_sale_reviews.length > 0
+  ? input.shopping_sale_reviews.reduce((sum, r) => sum + r.rating, 0) / input.shopping_sale_reviews.length
   : 0,
-totalOrders: input._count.orders,
+totalOrders: input._count.shopping_orders,
 ```
 
 **Pattern 2: Derived/Calculated Fields from Other Columns**
@@ -908,29 +951,50 @@ DTO has field X, but Prisma schema doesn't have column X?
 ```typescript
 // Example 1: Count-based field
 // DTO: commentCount: number
-// Schema: comments bbs_article_comments[]
-// Solution: _count.select.comments
+// Prisma schema: bbs_article_comments bbs_article_comments[]
+//                ^^^^^^^^^^^^^^^^^^^^^ ← RELATION FIELD NAME (use THIS!)
+// Solution: _count.select.bbs_article_comments  // ✅ Table full name!
 
 // Example 2: Status check
 // DTO: isActive: boolean
-// Schema: status String
+// Prisma schema: status String
 // Solution: Select status, transform to boolean
 
 // Example 3: Full name
 // DTO: fullName: string
-// Schema: first_name String, last_name String
+// Prisma schema: first_name String, last_name String
 // Solution: Select both, concatenate in transform
 
 // Example 4: Average rating
 // DTO: averageRating: number
-// Schema: reviews shopping_sale_reviews[] (reviews.rating)
-// Solution: Select reviews.rating, calculate average in transform
+// Prisma schema: shopping_sale_reviews shopping_sale_reviews[]
+//                ^^^^^^^^^^^^^^^^^^^^^ ← RELATION FIELD NAME (use THIS!)
+// Solution: Select shopping_sale_reviews.rating, calculate average in transform
+//           ^^^^^^^^^^^^^^^^^^^^^ ✅ NOT "reviews"!
 
 // Example 5: Price formatting
 // DTO: formattedPrice: string
-// Schema: price Decimal
+// Prisma schema: price Decimal
 // Solution: Select price, format as string in transform
 ```
+
+**🚨 ABSOLUTE RULE: Prisma Schema Definitions Are NON-NEGOTIABLE**
+
+The Prisma schema file is the **ABSOLUTE SOURCE OF TRUTH**. It is **NOT open to negotiation, interpretation, or approximation**.
+
+- **If Prisma schema says** `shopping_sale_reviews` → Use `shopping_sale_reviews`
+- **NOT** `reviews`, **NOT** `saleReviews`, **NOT** any variation
+- **EXACT match ONLY** - character by character, case sensitive
+- **Zero tolerance for deviations** - the compiler will reject anything else
+
+**This applies to:**
+- ✅ Scalar field names (columns)
+- ✅ Relation field names (especially 1:N which use table full names)
+- ✅ Table names
+- ✅ Field types
+- ✅ Everything in the Prisma schema
+
+**The schema is LAW. Follow it exactly.**
 
 **🚨 CRITICAL VERIFICATION STEPS:**
 

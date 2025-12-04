@@ -34,6 +34,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         source: preliminary.getSource(),
         all: preliminary.getAll() as IAutoBePreliminaryCollection,
         local: preliminary.getLocal() as IAutoBePreliminaryCollection,
+        config: preliminary.getConfig() as any,
       }),
     )
     .flat(),
@@ -44,6 +45,7 @@ namespace Transformer {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     all: Pick<IAutoBePreliminaryCollection, Kind>;
     local: Pick<IAutoBePreliminaryCollection, Kind>;
+    config: AutoBePreliminaryController.IConfig<Kind>;
   }
 
   export const analysisFiles = (
@@ -116,28 +118,31 @@ namespace Transformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
-        content: StringUtil.trim`
-          ## Prisma AST Data
-          
-          ${toJsonBlock(oldbie)}
+        content:
+          props.config.prisma === "ast"
+            ? StringUtil.trim`
+                ## Prisma AST Data
 
-          ## Prisma Schema Files
+                ${toJsonBlock(oldbie)}
+              `
+            : StringUtil.trim`
+                ## Prisma Schema Files
 
-          \`\`\`prisma
-          ${writePrismaApplication({
-            dbms: "postgres",
-            application: {
-              files: [
-                {
-                  filename: "all.prisma",
-                  namespace: "All",
-                  models: Object.values(oldbie),
-                },
-              ],
-            },
-          })}
-          \`\`\
-        `,
+                \`\`\`prisma
+                ${writePrismaApplication({
+                  dbms: "postgres",
+                  application: {
+                    files: [
+                      {
+                        filename: "all.prisma",
+                        namespace: "All",
+                        models: Object.values(oldbie),
+                      },
+                    ],
+                  },
+                })}
+                \`\`\
+              `,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,

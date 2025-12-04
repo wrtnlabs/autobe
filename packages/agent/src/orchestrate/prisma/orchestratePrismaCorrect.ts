@@ -137,6 +137,9 @@ async function execute<Model extends ILlmSchema.Model>(
         )
         .filter((m) => m !== undefined),
     },
+    config: {
+      prisma: "ast",
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaCorrectApplication.IComplete | null> =
