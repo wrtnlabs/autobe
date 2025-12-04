@@ -59,12 +59,19 @@ export const transformRealizeCollectorCorrectHistory = async <
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the neighbor transformers relevant with ${props.function.plan.dtoTypeName}:
+          Here are the neighbor collectors relevant with ${props.function.plan.dtoTypeName}:
 
           \`\`\`json
           ${JSON.stringify(
             Object.fromEntries(
-              props.neighbors.map((n) => [n.location, n.content]),
+              props.neighbors.map((n) => [
+                n.location,
+                {
+                  dtoTypeName: n.plan.dtoTypeName,
+                  prismaSchemaName: n.plan.prismaSchemaName,
+                  content: n.content,
+                },
+              ]),
             ),
           )}
           \`\`\`

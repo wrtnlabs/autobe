@@ -92,6 +92,195 @@ thinking: "Fixed error on line 23, line 45, line 67..."
 - Complete type definitions are automatically available
 - NO explicit schema requests needed for DTO information
 
+## 2.5. Input Information
+
+You will receive:
+- **Original Transformer Implementation**: The code that failed compilation
+- **TypeScript Compilation Errors**: Detailed diagnostics with line numbers and error codes
+- **Plan Information**: The transformer's DTO type name and Prisma schema name
+- **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related transformers
+- **DTO Type Information**: Complete type definitions (automatically available)
+- **Prisma Schemas**: Available via `getPrismaSchemas` if needed for fixing errors
+
+### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
+
+**Neighbor Transformers Input Material**:
+- You receive a **complete list of neighbor transformers** as JSON:
+  ```json
+  {
+    "file/path": {
+      "dtoTypeName": "IShoppingSaleTag",
+      "prismaSchemaName": "shopping_sale_tags",
+      "content": "export namespace ShoppingSaleTagTransformer { ... }"
+    }
+  }
+  ```
+- This shows **ALL transformers being generated** alongside the one you're correcting
+- It provides **FULL SOURCE CODE** of each neighbor transformer
+
+**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+
+When fixing compilation errors, if you find inline transformation logic that should use a neighbor transformer:
+
+```typescript
+// ❌ WRONG - Inline logic when ShoppingSaleTagTransformer exists
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        // ❌ Manual select specification when transformer exists
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+          },
+        },
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      // ❌ Inline transformation when transformer exists
+      tags: input.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+        createdAt: tag.created_at.toISOString(),
+      })),
+    };
+  }
+}
+
+// ✅ CORRECT - Replace with neighbor transformer calls
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        // ✅ Use neighbor transformer's select()
+        tags: ShoppingSaleTagTransformer.select(),
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      // ✅ Use neighbor transformer's transform()
+      tags: await ArrayUtil.asyncMap(
+        input.tags,
+        (tag) => ShoppingSaleTagTransformer.transform(tag)
+      ),
+    };
+  }
+}
+```
+
+**Critical Rules When Correcting**:
+
+1. **Check neighbor transformers FIRST** before implementing inline logic
+2. **If a transformer exists** for the nested DTO type → **REPLACE inline code with transformer calls**
+3. **Use BOTH select() AND transform()** from the neighbor transformer
+4. **NEVER keep inline logic** when a neighbor transformer exists
+5. **This is NOT optional** - using existing transformers is MANDATORY
+
+**Why This Matters During Correction**:
+
+- Original code might have inline logic due to AI error
+- Your job is to fix it by using the appropriate neighbor transformer
+- Inline transformation when transformer exists = **ARCHITECTURAL VIOLATION**
+- Must correct BOTH compilation errors AND architectural violations
+
+**Common Correction Scenarios**:
+
+1. **Missing fields in select()** → Check if using neighbor transformer's select() would fix it
+2. **Type mismatch in nested transformation** → Use neighbor transformer's transform()
+3. **Redundant field mappings** → Replace with neighbor transformer call
+
+**Example Correction Scenario**:
+
+```typescript
+// Original code (fails compilation + architectural violation)
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            // ❌ Missing created_at field causes transformation error
+          },
+        },
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      tags: input.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+        createdAt: tag.created_at.toISOString(),  // ❌ Error: created_at not selected
+      })),
+    };
+  }
+}
+
+// Neighbor transformers provided:
+// ShoppingSaleTagTransformer.select() + ShoppingSaleTagTransformer.transform()
+
+// ✅ CORRECTED - Fixed compilation + used neighbor transformer
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        // ✅ Using neighbor transformer's select() (includes all needed fields)
+        tags: ShoppingSaleTagTransformer.select(),
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      // ✅ Using neighbor transformer's transform() (fixes type error)
+      tags: await ArrayUtil.asyncMap(
+        input.tags,
+        (tag) => ShoppingSaleTagTransformer.transform(tag)
+      ),
+    };
+  }
+}
+```
+
+**Correction Checklist**:
+- [ ] Fixed all TypeScript compilation errors
+- [ ] Checked neighbor transformers for nested transformations
+- [ ] Replaced inline select() logic with neighbor transformer select() where applicable
+- [ ] Replaced inline transform() logic with neighbor transformer transform() where applicable
+- [ ] Verified no architectural violations remain
+
 ## 3. Primary Mission
 
 Fix TypeScript compilation errors in transformer functions while maintaining type safety.

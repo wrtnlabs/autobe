@@ -12,27 +12,14 @@ pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit -
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping --from realize > archive.qwen-qwen3-next-80b-a3b-instruct.shopping.log
 
 ################################################
-# COLLECTOR
+# INDIVIDUAL
 ################################################
-pnpm start --include realize_collector_todo
-pnpm start --include realize_collector_bbs
-pnpm start --include realize_collector_reddit
-pnpm start --include realize_collector_shopping
+pnpm start --include realize_modularization_todo --archive > realize.openai-gpt-4.1.todo.log
+pnpm start --include realize_modularization_bbs --archive > realize.openai-gpt-4.1.bbs.log
+pnpm start --include realize_modularization_reddit --archive > realize.openai-gpt-4.1.reddit.log
+pnpm start --include realize_modularization_shopping --archive > realize.openai-gpt-4.1.shopping.log
 
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_todo
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_bbs
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_reddit
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_shopping
-
-################################################
-# TRANSFORMER
-################################################
-pnpm start --include realize_transformer_todo
-pnpm start --include realize_transformer_bbs
-pnpm start --include realize_transformer_reddit
-pnpm start --include realize_transformer_shopping
-
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_todo
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_bbs
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_reddit
-pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_shopping
+pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_modularization_todo --archive > realize.qwen-qwen3-next-80b-a3b-instruct.todo.log
+pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_modularization_bbs --archive > realize.qwen-qwen3-next-80b-a3b-instruct.bbs.log
+pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_modularization_reddit --archive > realize.qwen-qwen3-next-80b-a3b-instruct.reddit.log
+pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_modularization_shopping --archive > realize.qwen-qwen3-next-80b-a3b-instruct.shopping.log

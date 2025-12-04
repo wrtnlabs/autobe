@@ -157,15 +157,157 @@ You will receive:
   - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
   - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
   - **Planning Reasoning**: Explanation of why this collector is needed
-- **Neighbor Collectors**: List of other collectors being generated that you can reuse for nested creates
+- **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - `Record<string, { dtoTypeName, prismaSchemaName, content }>` mapping file path to collector implementation
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 **IMPORTANT**:
 - The prismaSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
 - All DTO type information is **obtained transitively** from the DTO type names in the plan. The system automatically provides complete type information for the DTO and all referenced types.
-- **Review neighbor collectors** to see which nested collectors are available for reuse.
-- **Reuse neighbor collectors** whenever possible for nested create operations.
+
+### 🔥 CRITICAL: Neighbor Collectors ARE PROVIDED - YOU MUST REUSE THEM
+
+**Neighbor Collectors Input Material**:
+- You will receive a **complete list of neighbor collectors** as JSON mapping:
+  ```json
+  {
+    "file/path": {
+      "dtoTypeName": "IShoppingSaleTag.ICreate",
+      "prismaSchemaName": "shopping_sale_tags",
+      "content": "export namespace ShoppingSaleTagCollector { ... }"
+    }
+  }
+  ```
+- This data is **AUTOMATICALLY PROVIDED** - you don't request it
+- It shows **ALL collectors being generated** alongside yours
+- It provides **FULL SOURCE CODE** of each neighbor collector
+
+**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+
+**The Rule**:
+```
+Does a neighbor collector exist for the DTO type you need to collect?
+│
+├─ YES → YOU MUST USE IT
+│         1. Call {CollectorName}.collect() for nested creates
+│         2. NO inline implementation allowed
+│         3. NO "I can write it better" attitude
+│         4. NO "I only need a few fields" excuse
+│         5. ZERO EXCEPTIONS
+│
+└─ NO → Then and ONLY then:
+          - You may write inline collection logic
+          - But check neighbor list carefully first!
+```
+
+**Examples**:
+
+```typescript
+// Neighbor collectors provided:
+// - ShoppingSaleTagCollector.collect({ body: IShoppingSaleTag.ICreate, sequence: number })
+// - ShoppingSaleAttachmentCollector.collect({ body: IShoppingSaleAttachment.ICreate })
+
+// ✅ CORRECT - Reusing neighbor collectors (MANDATORY)
+export namespace ShoppingSaleCollector {
+  export async function collect(props: { body: IShoppingSale.ICreate }) {
+    return {
+      id: v4(),
+      name: props.body.name,
+      // ✅ CORRECT - ShoppingSaleTagCollector exists, MUST use it
+      tags: {
+        create: await ArrayUtil.asyncMap(
+          props.body.tags,
+          (tag, i) => ShoppingSaleTagCollector.collect({
+            body: tag,
+            sequence: i,
+          })
+        ),
+      },
+      // ✅ CORRECT - ShoppingSaleAttachmentCollector exists, MUST use it
+      attachments: {
+        create: await ArrayUtil.asyncMap(
+          props.body.attachments,
+          (attachment) => ShoppingSaleAttachmentCollector.collect({
+            body: attachment,
+          })
+        ),
+      },
+    } satisfies Prisma.shopping_salesCreateInput;
+  }
+}
+
+// ❌ ABSOLUTELY FORBIDDEN - Ignoring existing collectors
+export namespace ShoppingSaleCollector {
+  export async function collect(props: { body: IShoppingSale.ICreate }) {
+    return {
+      id: v4(),
+      name: props.body.name,
+      // ❌ FORBIDDEN! ShoppingSaleTagCollector exists but ignored!
+      tags: {
+        create: props.body.tags.map((tag, i) => ({
+          id: v4(),
+          name: tag.name,
+          sequence: i,
+          created_at: new Date(),
+        })),
+      },
+      // ❌ FORBIDDEN! ShoppingSaleAttachmentCollector exists but ignored!
+      attachments: {
+        create: props.body.attachments.map((attachment) => ({
+          id: v4(),
+          filename: attachment.filename,
+          url: attachment.url,
+        })),
+      },
+    } satisfies Prisma.shopping_salesCreateInput;
+  }
+}
+```
+
+**Why This Rule is NON-NEGOTIABLE**:
+
+1. **Single Source of Truth**: Only {CollectorName}.collect() knows how to collect that DTO type
+2. **Consistency**: All code uses the same collection logic - no divergence
+3. **Maintainability**: When DTO changes, only one Collector updates
+4. **Bug Prevention**: Your inline code WILL diverge and cause bugs
+5. **Architecture Respect**: Collectors exist for reuse - ignoring them breaks the system
+
+**FORBIDDEN ATTITUDES**:
+- ❌ "I can write inline code faster" - Speed doesn't matter, correctness does
+- ❌ "I only need a few fields" - Use the full Collector anyway
+- ❌ "The Collector does too much" - That's not your decision
+- ❌ "My implementation is better" - Irrelevant, use existing code
+- ❌ "I don't need all that logic" - Use it anyway, consistency matters
+
+**How to Check if a Collector Exists**:
+
+1. **Check the neighbor collectors input**:
+   - Look at the provided JSON mapping
+   - Find collectors with matching `dtoTypeName` and `prismaSchemaName`
+   - Example: Need to collect `IShoppingSaleTag.ICreate` for `shopping_sale_tags`?
+   - Search neighbor collectors for: `dtoTypeName: "IShoppingSaleTag.ICreate"` AND `prismaSchemaName: "shopping_sale_tags"`
+
+2. **If you find a match**:
+   - Extract the collector name from the content (e.g., `ShoppingSaleTagCollector`)
+   - Call `{CollectorName}.collect()` with appropriate props
+   - DO NOT implement inline
+
+3. **If you don't find a match**:
+   - Triple-check the neighbor collectors list
+   - Only if absolutely no match exists, implement inline
+   - But this should be rare - most nested collectors are provided
+
+**When Inline is Acceptable** (ONLY these cases):
+
+1. **M:N join tables**: When a join table has no corresponding DTO (e.g., `shopping_sale_categories` resolving M:N between sales and categories)
+2. **No neighbor exists**: After carefully checking neighbor collectors, truly no match exists
+3. **Simple scalar mapping**: When you're not creating a nested record, just mapping scalar values
+
+**Remember**:
+- Neighbor collectors are **INPUT MATERIAL** - provided automatically
+- If a collector exists for a DTO + Prisma schema → **MUST USE IT**
+- AI judgment to ignore existing collectors → **ABSOLUTELY FORBIDDEN**
+- Inline implementation when collector exists → **COMPILATION ERROR IN CODE REVIEW**
 
 ## File Structure
 

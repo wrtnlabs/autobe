@@ -175,8 +175,195 @@ You will receive:
 - **DTO Type Name**: The target API response type (e.g., "IShoppingSaleUnitStock")
 - **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
 - **Planning Reasoning**: The thinking behind why this DTO needs a transformer
+- **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Table showing transformer name, DTO type, and Prisma schema for all related transformers
 - **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
+
+### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
+
+**Neighbor Transformers Input Material**:
+- You will receive a **table of neighbor transformers** like this:
+  ```
+  Transformer Name              | DTO Type Name           | Prisma Schema Name
+  ------------------------------|-------------------------|---------------------------
+  ShoppingSaleTagTransformer    | IShoppingSaleTag        | shopping_sale_tags
+  ShoppingSaleCategoryTransformer | IShoppingSaleCategory | shopping_sale_categories
+  ```
+- This data is **AUTOMATICALLY PROVIDED** - you don't request it
+- It shows **ALL transformers being generated** alongside yours
+- For detailed implementation, request the full transformer code if needed
+
+**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+
+**The Rule**:
+```
+Does a neighbor transformer exist for the nested DTO type you need to transform?
+│
+├─ YES → YOU MUST USE IT
+│         1. Call {TransformerName}.transform() for nested transformations
+│         2. Use {TransformerName}.select() in your select() function
+│         3. NO inline transformation allowed
+│         4. NO "I can transform it better" attitude
+│         5. NO "I only need a few fields" excuse
+│         6. ZERO EXCEPTIONS
+│
+└─ NO → Then and ONLY then:
+          - You may write inline transformation logic
+          - But check neighbor list carefully first!
+```
+
+**Examples**:
+
+```typescript
+// Neighbor transformers provided:
+// - ShoppingSaleTagTransformer.transform(payload) → IShoppingSaleTag
+// - ShoppingSaleCategoryTransformer.transform(payload) → IShoppingSaleCategory
+
+// ✅ CORRECT - Reusing neighbor transformers (MANDATORY)
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        // ✅ CORRECT - ShoppingSaleTagTransformer exists, use its select()
+        tags: ShoppingSaleTagTransformer.select(),
+        // ✅ CORRECT - ShoppingSaleCategoryTransformer exists, use its select()
+        category: ShoppingSaleCategoryTransformer.select(),
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      // ✅ CORRECT - ShoppingSaleTagTransformer exists, use transform()
+      tags: await ArrayUtil.asyncMap(
+        input.tags,
+        (tag) => ShoppingSaleTagTransformer.transform(tag)
+      ),
+      // ✅ CORRECT - ShoppingSaleCategoryTransformer exists, use transform()
+      category: await ShoppingSaleCategoryTransformer.transform(input.category),
+    };
+  }
+}
+
+// ❌ ABSOLUTELY FORBIDDEN - Ignoring existing transformers
+export namespace ShoppingSaleTransformer {
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        // ❌ FORBIDDEN! ShoppingSaleTagTransformer exists but ignored!
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+          },
+        },
+        // ❌ FORBIDDEN! ShoppingSaleCategoryTransformer exists but ignored!
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    } satisfies Prisma.shopping_salesFindManyArgs;
+  }
+
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    return {
+      id: input.id,
+      name: input.name,
+      // ❌ FORBIDDEN! Inline transformation when transformer exists!
+      tags: input.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+        createdAt: tag.created_at.toISOString(),
+      })),
+      // ❌ FORBIDDEN! Inline transformation when transformer exists!
+      category: {
+        id: input.category.id,
+        name: input.category.name,
+      },
+    };
+  }
+}
+```
+
+**Why This Rule is NON-NEGOTIABLE**:
+
+1. **Single Source of Truth**: Only {TransformerName}.transform() knows how to transform that DB payload to DTO
+2. **Consistency**: All code uses the same transformation logic - no divergence
+3. **Maintainability**: When DTO/DB schema changes, only one Transformer updates
+4. **Bug Prevention**: Your inline code WILL diverge and cause bugs
+5. **Architecture Respect**: Transformers exist for reuse - ignoring them breaks the system
+6. **select() Consistency**: Using {TransformerName}.select() ensures nested queries fetch exactly what's needed
+
+**FORBIDDEN ATTITUDES**:
+- ❌ "I can write inline code faster" - Speed doesn't matter, correctness does
+- ❌ "I only need a few fields" - Use the full Transformer anyway
+- ❌ "The Transformer does too much" - That's not your decision
+- ❌ "My transformation is simpler" - Irrelevant, use existing code
+- ❌ "I don't need all that logic" - Use it anyway, consistency matters
+
+**How to Check if a Transformer Exists**:
+
+1. **Check the neighbor transformers table**:
+   - Look at the provided table
+   - Find transformers with matching `dtoTypeName` and `prismaSchemaName`
+   - Example: Need to transform to `IShoppingSaleTag` from `shopping_sale_tags`?
+   - Search neighbor transformers for: `ShoppingSaleTagTransformer`
+
+2. **If you find a match**:
+   - Use `{TransformerName}.select()` in your select() function
+   - Call `{TransformerName}.transform()` in your transform() function
+   - DO NOT implement inline
+
+3. **If you don't find a match**:
+   - Triple-check the neighbor transformers list
+   - Only if absolutely no match exists, implement inline
+   - But this should be rare - most nested transformers are provided
+
+**When Inline is Acceptable** (ONLY these cases):
+
+1. **Non-transformable DTOs**: When nested data is NOT from DB (e.g., pagination metadata, computed aggregates)
+2. **No neighbor exists**: After carefully checking neighbor transformers, truly no match exists
+3. **Simple scalar mapping**: When you're just renaming fields without complex logic
+
+**Critical Pattern - Using Neighbor Transformer select()**:
+
+```typescript
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      // ✅ CRITICAL: Spread neighbor transformer's select()
+      // This ensures nested query fetches exactly what ShoppingSaleTagTransformer.transform() needs
+      tags: ShoppingSaleTagTransformer.select(),
+
+      // ❌ WRONG: Manually specifying fields duplicates ShoppingSaleTagTransformer's logic
+      // tags: { select: { id: true, name: true, created_at: true } },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**Remember**:
+- Neighbor transformers are **INPUT MATERIAL** - provided automatically
+- If a transformer exists for a DTO + Prisma schema → **MUST USE IT**
+- Use BOTH `{TransformerName}.select()` AND `{TransformerName}.transform()`
+- AI judgment to ignore existing transformers → **ABSOLUTELY FORBIDDEN**
+- Inline transformation when transformer exists → **ARCHITECTURAL VIOLATION**
 
 ## Implementation Focus: Using the Provided Prisma Table
 

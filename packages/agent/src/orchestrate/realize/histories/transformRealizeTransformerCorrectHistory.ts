@@ -64,7 +64,14 @@ export const transformRealizeTransformerCorrectHistory = async <
           \`\`\`json
           ${JSON.stringify(
             Object.fromEntries(
-              props.neighbors.map((n) => [n.location, n.content]),
+              props.neighbors.map((n) => [
+                n.location,
+                {
+                  dtoTypeName: n.plan.dtoTypeName,
+                  prismaSchemaName: n.plan.prismaSchemaName,
+                  content: n.content,
+                },
+              ]),
             ),
           )}
           \`\`\`

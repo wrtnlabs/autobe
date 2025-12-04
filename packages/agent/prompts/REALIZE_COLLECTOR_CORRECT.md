@@ -92,6 +92,124 @@ thinking: "Fixed error on line 23, line 45, line 67..."
 - Complete type definitions are automatically available
 - NO explicit schema requests needed for DTO information
 
+## 2.5. Input Information
+
+You will receive:
+- **Original Collector Implementation**: The code that failed compilation
+- **TypeScript Compilation Errors**: Detailed diagnostics with line numbers and error codes
+- **Plan Information**: The collector's DTO type name and Prisma schema name
+- **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related collectors
+- **DTO Type Information**: Complete type definitions (automatically available)
+- **Prisma Schemas**: Available via `getPrismaSchemas` if needed for fixing errors
+
+### 🔥 CRITICAL: Neighbor Collectors ARE PROVIDED - YOU MUST REUSE THEM
+
+**Neighbor Collectors Input Material**:
+- You receive a **complete list of neighbor collectors** as JSON:
+  ```json
+  {
+    "file/path": {
+      "dtoTypeName": "IShoppingSaleTag.ICreate",
+      "prismaSchemaName": "shopping_sale_tags",
+      "content": "export namespace ShoppingSaleTagCollector { ... }"
+    }
+  }
+  ```
+- This shows **ALL collectors being generated** alongside the one you're correcting
+- It provides **FULL SOURCE CODE** of each neighbor collector
+
+**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+
+When fixing compilation errors, if you find inline collection logic that should use a neighbor collector:
+
+```typescript
+// ❌ WRONG - Inline logic when ShoppingSaleTagCollector exists
+tags: {
+  create: props.body.tags.map((tag, i) => ({
+    id: v4(),
+    name: tag.name,
+    sequence: i,
+    created_at: new Date(),
+  })),
+}
+
+// ✅ CORRECT - Replace with neighbor collector call
+tags: {
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag, i) => ShoppingSaleTagCollector.collect({
+      body: tag,
+      sequence: i,
+    })
+  ),
+}
+```
+
+**Critical Rules When Correcting**:
+
+1. **Check neighbor collectors FIRST** before implementing inline logic
+2. **If a collector exists** for the nested DTO type → **REPLACE inline code with collector call**
+3. **NEVER keep inline logic** when a neighbor collector exists
+4. **This is NOT optional** - using existing collectors is MANDATORY
+
+**Why This Matters During Correction**:
+
+- Original code might have inline logic due to AI error
+- Your job is to fix it by using the appropriate neighbor collector
+- Inline code when collector exists = **ARCHITECTURAL VIOLATION**
+- Must correct BOTH compilation errors AND architectural violations
+
+**Example Correction Scenario**:
+
+```typescript
+// Original code (fails compilation + architectural violation)
+export namespace ShoppingSaleCollector {
+  export async function collect(props: { body: IShoppingSale.ICreate }) {
+    return {
+      id: v4(),
+      name: props.body.name,
+      // ❌ Inline logic + type errors
+      tags: {
+        create: props.body.tags.map((tag, i) => ({
+          id: v4(),
+          name: tag.name,
+          wrong_field: i,  // ❌ Compilation error
+        })),
+      },
+    } satisfies Prisma.shopping_salesCreateInput;
+  }
+}
+
+// Neighbor collectors provided:
+// ShoppingSaleTagCollector.collect({ body: IShoppingSaleTag.ICreate, sequence: number })
+
+// ✅ CORRECTED - Fixed compilation + used neighbor collector
+export namespace ShoppingSaleCollector {
+  export async function collect(props: { body: IShoppingSale.ICreate }) {
+    return {
+      id: v4(),
+      name: props.body.name,
+      // ✅ Using neighbor collector (fixes both issues)
+      tags: {
+        create: await ArrayUtil.asyncMap(
+          props.body.tags,
+          (tag, i) => ShoppingSaleTagCollector.collect({
+            body: tag,
+            sequence: i,
+          })
+        ),
+      },
+    } satisfies Prisma.shopping_salesCreateInput;
+  }
+}
+```
+
+**Correction Checklist**:
+- [ ] Fixed all TypeScript compilation errors
+- [ ] Checked neighbor collectors for nested creates
+- [ ] Replaced inline logic with neighbor collector calls where applicable
+- [ ] Verified no architectural violations remain
+
 ## 3. Primary Mission
 
 Fix TypeScript compilation errors in collector functions while maintaining type safety.
