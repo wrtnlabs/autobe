@@ -1374,7 +1374,527 @@ When you see a DTO field:
 - **Your job = Bridge the gap** (select DB data, transform to DTO format)
 - **NEVER select what doesn't exist in DB!**
 
-### 7.4. Summary of REALIZE_TRANSFORMER_WRITE Violations
+### 7.4. Ignoring Existing Transformers (Selecting FK or Inline When Transformer Exists)
+
+**🔥 CRITICAL ERROR: Using inline code or FK selection when a Transformer EXISTS for the relation**
+
+**Error Pattern**:
+- Type error in transform() when accessing relation fields
+- Missing fields in nested objects
+- Type mismatch between selected data and transform logic
+- Compilation error: "Property 'X' does not exist on type 'Y'"
+
+**Root Cause**:
+You ignored an existing Transformer and either:
+1. Selected FK column (`category_id`) instead of relation (`category`)
+2. Wrote inline selection when `CategoryTransformer.select()` exists
+3. Wrote inline transformation when `CategoryTransformer.transform()` exists
+
+**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
+- **If a Transformer EXISTS for a relation → YOU MUST USE IT**
+- **This is NOT optional, NOT a suggestion - it is MANDATORY**
+- **NEVER select FK columns directly**
+- **NEVER write inline code when Transformer exists**
+- **AI arrogance ("I can write better code") is FORBIDDEN**
+
+**Fatal Mistake #1: Selecting FK Column Instead of Relation**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id          String @id @db.Uuid
+  category_id String @db.Uuid  // Foreign key column
+  category    shopping_categories @relation(fields: [category_id], references: [id])
+}
+
+// DTO
+interface IShoppingSale {
+  id: string;
+  category: IShoppingCategory;  // Full object, not just ID!
+}
+
+// ❌ FATAL ERROR - Selecting FK column
+export function select() {
+  return {
+    select: {
+      id: true,
+      category_id: true,  // ❌ WRONG! This is FK, not relation!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: { id: input.category_id },  // ❌ WRONG! Can't construct full object from just ID!
+  };
+}
+
+// ✅ CORRECT - Select relation, use Transformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ Select RELATION!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Use Transformer!
+  };
+}
+```
+
+**Why This Causes Errors**:
+- FK column (`category_id`) gives you ONLY the ID string
+- DTO expects `IShoppingCategory` with multiple fields (id, name, description, etc.)
+- You CANNOT construct a full category object from just an ID
+- **Result**: Missing fields, incomplete data, type errors
+
+**Fatal Mistake #2: Inline Selection When Transformer Exists**
+
+```typescript
+// ShoppingCategoryTransformer EXISTS in the codebase
+
+// ❌ FATAL ERROR - Inline selection when Transformer exists
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ❌ WRONG! CategoryTransformer.select() exists!
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),
+    // ❌ This may work, but you should have used CategoryTransformer.select() above!
+  };
+}
+
+// ✅ CORRECT - Use existing Transformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ MANDATORY!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ MANDATORY!
+  };
+}
+```
+
+**Fatal Mistake #3: Inline Transformation When Transformer Exists**
+
+```typescript
+// ShoppingCategoryTransformer EXISTS in the codebase
+
+// ❌ FATAL ERROR - Inline transformation when Transformer exists
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ Using Transformer.select()
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ❌ WRONG! CategoryTransformer.transform() exists!
+      id: input.category.id,
+      name: input.category.name,
+      description: input.category.description,
+    },
+  };
+}
+
+// ✅ CORRECT - Use existing Transformer for both
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ MANDATORY!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ MANDATORY!
+  };
+}
+```
+
+**Why Using Existing Transformer is MANDATORY**:
+- **Single Source of Truth**: Only CategoryTransformer knows how to transform categories
+- **Consistency**: All code uses the same category transformation logic
+- **Maintainability**: When IShoppingCategory changes, only CategoryTransformer updates
+- **Bug Prevention**: Your inline code WILL diverge and cause bugs
+- **Architecture Respect**: Transformers exist for reuse - use them
+
+**🚨 How to Identify This Mistake**:
+
+1. **Check compilation error**: Does it mention missing fields in a nested object?
+2. **Check select()**: Are you selecting FK column instead of relation?
+3. **Check select()**: Are you writing inline `{ select: { ... } }` for a relation?
+4. **Check transform()**: Are you writing inline object mapping for a relation?
+5. **Ask**: Does a Transformer exist for this nested DTO type?
+
+**How to Fix During Correction**:
+
+**Step 1: Check if Transformer exists**
+- Look at the DTO type (e.g., `category: IShoppingCategory`)
+- Check neighbor transformers: Does `ShoppingCategoryTransformer` exist?
+- If YES → You MUST use it
+
+**Step 2: Fix select()**
+- ❌ Remove: `category_id: true` (FK column)
+- ❌ Remove: `category: { select: { ... } }` (inline selection)
+- ✅ Add: `category: ShoppingCategoryTransformer.select()`
+
+**Step 3: Fix transform()**
+- ❌ Remove: Inline object mapping `{ id: ..., name: ... }`
+- ✅ Add: `await ShoppingCategoryTransformer.transform(input.category)`
+
+**Step 4: Verify**
+- Both select() and transform() use CategoryTransformer? → ✅ Correct
+- One uses Transformer, one uses inline? → ❌ Still wrong, fix both
+
+**Common Examples**:
+
+```typescript
+// Example 1: FK selection error
+// Error: "Property 'name' does not exist on type 'string'"
+// Cause: Selected category_id (string), DTO expects IShoppingCategory (object)
+// Fix: Select category relation, use CategoryTransformer
+
+// Example 2: Inline selection error
+// Error: Field mismatch in transform()
+// Cause: Inline selection doesn't match Transformer's expected fields
+// Fix: Use CategoryTransformer.select()
+
+// Example 3: Inline transformation error
+// Error: Missing fields in output
+// Cause: Inline mapping forgot some fields that CategoryTransformer includes
+// Fix: Use CategoryTransformer.transform()
+
+// Example 4: Mixed approach error
+// Error: Type mismatch between select and transform
+// Cause: Using Transformer in select() but inline in transform() (or vice versa)
+// Fix: Use Transformer for BOTH select() AND transform()
+```
+
+**🚨 CRITICAL DECISION RULE**:
+
+```
+Does a Transformer exist for this nested DTO type?
+│
+├─ YES → YOU MUST USE IT (MANDATORY)
+│         1. Use Transformer.select() in select()
+│         2. Use Transformer.transform() in transform()
+│         3. NO EXCEPTIONS
+│         4. NO "I think inline is better"
+│         5. NO "I only need a few fields"
+│
+└─ NO → Then and ONLY then:
+          - You may write inline selection
+          - You may write inline transformation
+          - But check if Transformer is being generated in parallel!
+```
+
+**Remember**:
+- **Transformer exists = Use it** (no debate, no alternatives)
+- **FK column selection = FORBIDDEN** (always select relation)
+- **Inline when Transformer exists = FORBIDDEN** (use the Transformer)
+- **AI arrogance = Bug source** (you are NOT smarter than the existing code)
+- **Consistency > Your opinion** (architecture matters more than individual preferences)
+
+### 7.5. Confusing snake_case and camelCase (Table/Column vs Relation Names)
+
+**🔥 CRITICAL ERROR: Using snake_case for relation names when they should be camelCase**
+
+**Error Pattern**:
+- Type error: "Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'"
+- Type error: "Property 'shopping_sale_items' does not exist on type 'Prisma.shopping_salesSelect'"
+- Compilation error when trying to access relation with snake_case name
+- Cannot recover from error even after multiple correction attempts
+
+**Root Cause**:
+You confused the naming convention:
+- **Table names**: `shopping_sales`, `shopping_categories` (snake_case)
+- **Column names**: `category_id`, `created_at`, `updated_at` (snake_case)
+- **🚨 Relation names**: `category`, `items`, `createdBy` (camelCase!)
+
+**CRITICAL RULE**:
+
+```
+Prisma Schema Naming Convention:
+├─ Table name: snake_case (shopping_sales, shopping_categories)
+├─ Column name: snake_case (category_id, created_at, unit_price)
+└─ Relation name: camelCase (category, items, createdBy) ← THIS IS DIFFERENT!
+```
+
+**Why This Is Confusing**:
+- Table and columns use snake_case
+- AI assumes relations also use snake_case
+- But Prisma relations are ALWAYS camelCase by convention
+- Result: AI writes `shopping_categories: true` when it should be `category: true`
+
+**Fatal Mistake #1: Using Table Name for Relation**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id          String @id @db.Uuid
+  category_id String @db.Uuid
+  category    shopping_categories @relation(fields: [category_id], references: [id])
+  //          ^^^^^^^^ THIS is the relation name (camelCase!)
+}
+
+model shopping_categories {
+  //    ^^^^^^^^^^^^^^^^^^ THIS is the table name (snake_case)
+  id    String @id @db.Uuid
+  name  String
+}
+
+// DTO
+interface IShoppingSale {
+  id: string;
+  category: IShoppingCategory;  // Nested object
+}
+
+// ❌ FATAL ERROR - Using table name instead of relation name
+export function select() {
+  return {
+    select: {
+      id: true,
+      shopping_categories: ShoppingCategoryTransformer.select(),
+      // ^^^^^^^^^^^^^^^^^^^ WRONG! This is TABLE name, not RELATION name!
+      // ERROR: Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// ✅ CORRECT - Using relation name (camelCase)
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),
+      // ^^^^^^^^ CORRECT! This is the RELATION name from Prisma schema!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**Fatal Mistake #2: Using snake_case for Array Relations**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id    String @id @db.Uuid
+  items shopping_sale_items[]
+  //    ^^^^^ THIS is the relation name (camelCase!)
+}
+
+model shopping_sale_items {
+  //    ^^^^^^^^^^^^^^^^^^^ THIS is the table name (snake_case)
+  id      String @id @db.Uuid
+  sale_id String @db.Uuid
+  sale    shopping_sales @relation(fields: [sale_id], references: [id])
+}
+
+// ❌ FATAL ERROR - Using table name
+export function select() {
+  return {
+    select: {
+      id: true,
+      shopping_sale_items: {
+      // ^^^^^^^^^^^^^^^^^^^ WRONG! This is TABLE name!
+        select: { /* ... */ },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// ✅ CORRECT - Using relation name
+export function select() {
+  return {
+    select: {
+      id: true,
+      items: ShoppingSaleItemTransformer.select(),
+      // ^^^^^ CORRECT! This is the RELATION name!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**Fatal Mistake #3: Confusing FK Column with Relation Name**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id          String @id @db.Uuid
+  category_id String @db.Uuid  // Foreign key COLUMN (snake_case)
+  category    shopping_categories @relation(fields: [category_id], references: [id])
+  //          ^^^^^^^^ Relation name (camelCase)
+}
+
+// ❌ FATAL ERROR - Selecting FK column instead of relation
+export function select() {
+  return {
+    select: {
+      id: true,
+      category_id: true,  // ❌ This is FK COLUMN, gives you only ID string!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// ❌ ALSO WRONG - Using snake_case for relation
+export function select() {
+  return {
+    select: {
+      id: true,
+      category_id: ShoppingCategoryTransformer.select(),
+      // ^^^^^^^^^^ WRONG! You're trying to use Transformer on FK column!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// ✅ CORRECT - Using camelCase relation name
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),
+      // ^^^^^^^^ CORRECT! Relation name is camelCase!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+```
+
+**🚨 How to Identify This Mistake**:
+
+1. **Check compilation error message**:
+   - Does it say "Property 'X' does not exist on type 'Prisma.YSelect'"?
+   - Is the property name in snake_case?
+   - Does it look like a table name?
+
+2. **Check your select() code**:
+   - Are you using `shopping_categories` instead of `category`?
+   - Are you using `shopping_sale_items` instead of `items`?
+   - Are you using any snake_case names for nested objects?
+
+3. **Re-read Prisma schema CAREFULLY**:
+   - Find the relation field in the schema
+   - The relation field name is the CORRECT name to use
+   - It's almost always camelCase, NOT the table name!
+
+**How to Fix During Correction**:
+
+**Step 1: Find the ACTUAL relation name in Prisma schema**
+
+```prisma
+model shopping_sales {
+  category    shopping_categories @relation(...)
+  //^^^^^^^^ THIS is what you should use in select()!
+  // NOT "shopping_categories" (that's the TYPE, not the field name)
+}
+```
+
+**Step 2: Replace snake_case with correct camelCase relation name**
+
+```typescript
+// ❌ Remove this:
+shopping_categories: ShoppingCategoryTransformer.select()
+
+// ✅ Replace with:
+category: ShoppingCategoryTransformer.select()
+```
+
+**Step 3: Update transform() accordingly**
+
+```typescript
+// ❌ Wrong:
+category: await ShoppingCategoryTransformer.transform(input.shopping_categories)
+
+// ✅ Correct:
+category: await ShoppingCategoryTransformer.transform(input.category)
+```
+
+**Step 4: Verify the pattern**
+
+```
+DTO field name → Prisma relation name (NOT table name!)
+category: IShoppingCategory → category: shopping_categories @relation(...)
+                               ^^^^^^^^ Use THIS name!
+items: IShoppingSaleItem[] → items: shopping_sale_items[]
+                              ^^^^^ Use THIS name!
+```
+
+**Common Examples**:
+
+```typescript
+// Example 1: shopping_sales ↔ shopping_categories
+// Table: shopping_categories (snake_case)
+// Relation in shopping_sales: category (camelCase)
+// ✅ Use: category: ShoppingCategoryTransformer.select()
+
+// Example 2: shopping_sales ↔ shopping_sale_items
+// Table: shopping_sale_items (snake_case)
+// Relation in shopping_sales: items (camelCase)
+// ✅ Use: items: ShoppingSaleItemTransformer.select()
+
+// Example 3: bbs_articles ↔ bbs_article_comments
+// Table: bbs_article_comments (snake_case)
+// Relation in bbs_articles: comments (camelCase)
+// ✅ Use: comments: BbsArticleCommentTransformer.select()
+
+// Example 4: shopping_orders ↔ mv_users
+// Table: mv_users (snake_case)
+// Relation in shopping_orders: createdBy (camelCase)
+// ✅ Use: createdBy: MvUserTransformer.select()
+```
+
+**🔥 ABSOLUTE RULE**:
+
+```
+When selecting relations in Prisma:
+1. ALWAYS look at the Prisma schema relation field name
+2. NEVER use the table name (shopping_categories)
+3. NEVER use the FK column name (category_id)
+4. ALWAYS use the relation field name (category)
+5. Relation names are ALWAYS camelCase, even when tables are snake_case
+```
+
+**Remember**:
+- **Table name ≠ Relation name** (shopping_categories vs category)
+- **Column name ≠ Relation name** (category_id vs category)
+- **Relation name is what you use in select()** (always camelCase!)
+- **This is the #1 cause of "cannot recover" compilation errors**
+- **Read the Prisma schema CAREFULLY before correcting**
+
+### 7.6. Summary of REALIZE_TRANSFORMER_WRITE Violations
 
 **Common Pattern**: AI doesn't carefully read REALIZE_TRANSFORMER_WRITE.md guidelines
 
@@ -1386,14 +1906,20 @@ When you see a DTO field:
 - [ ] Applied naming algorithm to get correct Transformer name?
 - [ ] Using `ShoppingSaleAtSummaryTransformer` for `IShoppingSale.ISummary` (not parent)?
 - [ ] Using `BbsArticleAtContentTransformer` for `IBbsArticle.IContent` (not parent)?
-- [ ] **NEW: Verified EVERY select() field exists in Prisma schema?**
-- [ ] **NEW: Not trying to select DTO-only fields that are computed/aggregated?**
+- [ ] **Verified EVERY select() field exists in Prisma schema?**
+- [ ] **Not trying to select DTO-only fields that are computed/aggregated?**
+- [ ] **🔥 Using RELATION names (camelCase) NOT table names (snake_case)?**
+- [ ] **🔥 NOT selecting FK columns (category_id) instead of relations (category)?**
+- [ ] **🔥 If Transformer exists for relation, USING it (not inline)?**
 
 **When You See These Errors in Compilation Diagnostics**:
 - "Type 'IXxx' is not assignable to type 'IXxx.ISummary'" → Wrong Transformer name (Section 7.2)
 - "Property 'X' does not exist on type 'Y'" in transform() → Mismatched select/transform (Section 7.1)
 - "Property 'X' does not exist on type 'Prisma.YSelect'" → Selecting non-existent column (Section 7.3)
+- "Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'" → Using table name instead of relation name (Section 7.5)
+- "Property 'category_id' does not exist on type..." in transform() → Selected FK column instead of relation (Section 7.5)
 - Type mismatch in nested object → Check both Section 7.1 AND 7.2
+- Cannot recover after multiple attempts → Probably snake_case/camelCase confusion (Section 7.5)
 
 **THE GOLDEN RULE**:
 Read REALIZE_TRANSFORMER_WRITE.md guidelines THOROUGHLY. Most of these errors are preventable by following the write-phase rules correctly!

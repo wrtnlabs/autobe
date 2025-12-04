@@ -766,7 +766,175 @@ DTO has field X, but Prisma schema doesn't have column X?
 
 #### Reusing Other Transformers' Select Specifications
 
-When your DTO has nested objects that also have their own Transformers, you can **reuse** those Transformers' `select()` functions instead of writing the nested selection logic manually.
+**🔥 ABSOLUTE MANDATORY RULE: If a Transformer EXISTS for a relation, you MUST use it. Period.**
+
+**THIS IS NOT OPTIONAL. THIS IS NOT A SUGGESTION. THIS IS ABSOLUTE.**
+
+When your DTO has nested objects that also have their own Transformers, you **MUST** use those Transformers' `select()` and `transform()` functions. **NEVER** write inline selection or transformation when a Transformer exists.
+
+**🚨 ABSOLUTELY FORBIDDEN:**
+
+1. ❌ **NEVER select FK column directly instead of relation** - This is a FATAL mistake
+2. ❌ **NEVER inline-select a relation when Transformer exists** - Use the Transformer
+3. ❌ **NEVER inline-transform a relation when Transformer exists** - Use the Transformer
+4. ❌ **NEVER think you can write better inline code than using the Transformer** - Your arrogance will cause bugs
+
+**YOUR ROLE: You are NOT smarter than the existing Transformer. Use it.**
+
+**How to Check if Transformer Exists:**
+
+```typescript
+// DTO has nested object
+interface IShoppingSale {
+  category: IShoppingCategory;  // ← Nested object!
+}
+
+// ASK YOURSELF: Does ShoppingCategoryTransformer exist?
+// - Check neighbor transformers in the generation context
+// - Check if IShoppingCategory has a corresponding Transformer
+// - If YES → YOU MUST USE IT (no exceptions!)
+// - If NO → Then and ONLY then you may write inline logic
+```
+
+**Fatal Mistake #1: Selecting FK Column Instead of Relation**
+
+```typescript
+// Prisma schema
+model shopping_sales {
+  id          String @id
+  category_id String @db.Uuid  // Foreign key
+  category    shopping_categories @relation(fields: [category_id], references: [id])
+}
+
+// ❌ ABSOLUTELY FORBIDDEN - Selecting FK column directly
+export function select() {
+  return {
+    select: {
+      id: true,
+      category_id: true,  // ❌ FATAL! Never select FK column!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: { id: input.category_id },  // ❌ FATAL! You can't construct the full category from just ID!
+  };
+}
+
+// ✅ ABSOLUTELY REQUIRED - Select relation, use Transformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ Select the RELATION!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Transform the full object!
+  };
+}
+```
+
+**Why Selecting FK is FORBIDDEN:**
+- FK column (`category_id`) gives you ONLY the ID, not the full category data
+- DTO expects `IShoppingCategory` (full object), not just `{ id: string }`
+- You CANNOT construct full nested object from just FK
+- **Result**: Compilation error or incomplete data
+
+**Fatal Mistake #2: Inline Selection/Transformation When Transformer Exists**
+
+```typescript
+// ShoppingCategoryTransformer EXISTS in the codebase
+
+// ❌ ABSOLUTELY FORBIDDEN - Inline when Transformer exists
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ❌ FORBIDDEN! CategoryTransformer exists!
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ❌ FORBIDDEN! CategoryTransformer exists!
+      id: input.category.id,
+      name: input.category.name,
+      description: input.category.description,
+    },
+  };
+}
+
+// ✅ ABSOLUTELY REQUIRED - Use existing Transformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ MANDATORY!
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ MANDATORY!
+  };
+}
+```
+
+**Why Using Existing Transformer is MANDATORY:**
+- **Single Source of Truth**: CategoryTransformer owns the category selection logic
+- **Consistency**: All transformers use the same category structure
+- **Maintainability**: When IShoppingCategory changes, only CategoryTransformer updates
+- **Bug Prevention**: Your inline code WILL diverge from the canonical implementation
+- **Respect the Architecture**: Transformers exist for a reason - use them
+
+**🚨 CRITICAL: AI Arrogance is FORBIDDEN**
+
+**NEVER think:**
+- ❌ "I can write better inline code for this relation"
+- ❌ "The existing Transformer is too complex, I'll simplify it here"
+- ❌ "I only need a few fields, so I'll select them inline"
+- ❌ "Using the Transformer is overkill for this case"
+
+**ALWAYS remember:**
+- ✅ "If Transformer exists, I MUST use it"
+- ✅ "The Transformer is the single source of truth"
+- ✅ "My job is to reuse, not to reinvent"
+- ✅ "Consistency > My opinion of what's 'better'"
+
+**Absolute Decision Rule:**
+
+```
+Does a Transformer exist for this DTO type?
+│
+├─ YES → YOU MUST USE IT
+│         - Use Transformer.select() in select()
+│         - Use Transformer.transform() in transform()
+│         - NO EXCEPTIONS
+│         - NO "I think inline is better"
+│         - NO "I only need a few fields"
+│
+└─ NO → Then and ONLY then:
+          - You MAY write inline selection
+          - You MAY write inline transformation
+          - But STILL check if a Transformer is being generated in parallel
+```
 
 **How Transformer Reuse Works:**
 

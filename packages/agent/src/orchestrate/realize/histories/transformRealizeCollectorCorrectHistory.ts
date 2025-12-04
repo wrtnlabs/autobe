@@ -1,7 +1,4 @@
-import {
-  AutoBeRealizeCollectorFunction,
-  AutoBeRealizeCollectorPlan,
-} from "@autobe/interface";
+import { AutoBeRealizeCollectorFunction } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -19,8 +16,8 @@ export const transformRealizeCollectorCorrectHistory = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    plan: AutoBeRealizeCollectorPlan;
     function: AutoBeRealizeCollectorFunction;
+    neighbors: AutoBeRealizeCollectorFunction[];
     failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeCollectorFunction>[];
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
@@ -28,7 +25,7 @@ export const transformRealizeCollectorCorrectHistory = async <
   const dto: Record<string, string> =
     await AutoBeRealizeCollectorProgrammer.writeStructures(
       ctx,
-      props.plan.dtoTypeName,
+      props.function.plan.dtoTypeName,
     );
   return {
     histories: [
@@ -50,10 +47,26 @@ export const transformRealizeCollectorCorrectHistory = async <
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the DTO types relevant with ${props.plan.dtoTypeName}:
+          Here are the DTO types relevant with ${props.function.plan.dtoTypeName}:
 
           \`\`\`json
           ${JSON.stringify(dto)}
+          \`\`\`
+        `,
+      },
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          Here are the neighbor transformers relevant with ${props.function.plan.dtoTypeName}:
+
+          \`\`\`json
+          ${JSON.stringify(
+            Object.fromEntries(
+              props.neighbors.map((n) => [n.location, n.content]),
+            ),
+          )}
           \`\`\`
         `,
       },
@@ -72,7 +85,7 @@ export const transformRealizeCollectorCorrectHistory = async <
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeCollectorProgrammer.writeTemplate(props.plan)}
+      ${AutoBeRealizeCollectorProgrammer.writeTemplate(props.function.plan)}
 
       Current code is as follows:
 
@@ -81,7 +94,7 @@ export const transformRealizeCollectorCorrectHistory = async <
       \`\`\`
 
       Remember: Collectors transform DTO → Prisma CreateInput. Focus on:
-      - Field mapping between ${props.plan.dtoTypeName} and Prisma.${props.plan.prismaSchemaName}CreateInput
+      - Field mapping between ${props.function.plan.dtoTypeName} and Prisma.${props.function.plan.prismaSchemaName}CreateInput
       - UUID generation for primary keys
       - Foreign key connections using { connect: { id: ... } }
       - Timestamp fields (created_at, updated_at)

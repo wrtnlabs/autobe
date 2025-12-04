@@ -321,16 +321,17 @@ namespace Transformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table | References
-        --------------|--------------|------------
+        DTO Type Name | Prisma Table | References | Neighbor Collectors
+        --------------|--------------|------------|--------------------
         ${newbie
           .map((c) =>
             [
               c.plan.dtoTypeName,
               c.plan.prismaSchemaName,
               c.plan.references.length > 0
-                ? c.plan.references.map((r) => r.source).join(", ")
+                ? `(${c.plan.references.map((r) => r.source).join(", ")})`
                 : "-",
+              `(${c.neighbors.join(", ")})`,
             ].join(" | "),
           )
           .join("\n")}
@@ -385,10 +386,16 @@ namespace Transformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table
-        --------------|-------------
+        DTO Type Name | Prisma Table | Neighbor Transformers 
+        --------------|--------------|----------------------
         ${newbie
-          .map((t) => [t.plan.dtoTypeName, t.plan.prismaSchemaName].join(" | "))
+          .map((t) =>
+            [
+              t.plan.dtoTypeName,
+              t.plan.prismaSchemaName,
+              `(${t.neighbors.join(", ")})`,
+            ].join(" | "),
+          )
           .join("\n")}
       `,
       loaded: props.local.realizeTransformers

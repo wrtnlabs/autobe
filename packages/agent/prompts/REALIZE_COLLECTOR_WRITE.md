@@ -1138,6 +1138,169 @@ nominal_price: props.body.price.nominal,
 description: null,
 ```
 
+**Computed/Read-only fields (IGNORE - Do NOT store)**:
+
+**🚨 CRITICAL RULE: If DTO field doesn't exist in Prisma schema, IGNORE it (don't store it)**
+
+This is the **OPPOSITE** of Transformers:
+- **Transformer (DB→API)**: DTO field not in DB? → Calculate and return it
+- **Collector (API→DB)**: DTO field not in DB? → **IGNORE it** (don't store)
+
+Many DTO fields are **read-only computed values** that should NEVER be stored in the database. These are calculated at read time by Transformers.
+
+```typescript
+// DTO (API Request)
+interface IShoppingSale.ICreate {
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;        // ← Computed! NOT in DB schema
+  reviewCount: number;       // ← Aggregated! NOT in DB schema
+  averageRating: number;     // ← Aggregated! NOT in DB schema
+  discountRate: number;      // ← Computed! NOT in DB schema
+  remainingStock: number;    // ← Computed! NOT in DB schema
+}
+
+// Prisma schema (ONLY these columns exist)
+model shopping_sales {
+  id         String  @id @db.Uuid
+  name       String  @db.VarChar
+  unit_price Decimal @db.Decimal
+  quantity   Int
+  // NO totalPrice, reviewCount, averageRating, discountRate, remainingStock!
+}
+
+// ❌ WRONG - Trying to store computed fields
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    unit_price: props.body.unitPrice,
+    quantity: props.body.quantity,
+    total_price: props.body.totalPrice,          // ❌ DOES NOT EXIST!
+    review_count: props.body.reviewCount,        // ❌ DOES NOT EXIST!
+    average_rating: props.body.averageRating,    // ❌ DOES NOT EXIST!
+  } satisfies Prisma.shopping_salesCreateInput;  // Compilation error!
+}
+
+// ✅ CORRECT - IGNORE computed/read-only fields
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    unit_price: props.body.unitPrice,
+    quantity: props.body.quantity,
+    // ✅ totalPrice, reviewCount, averageRating, discountRate - IGNORED!
+    // These are computed at read time, NOT stored in DB
+  } satisfies Prisma.shopping_salesCreateInput;
+}
+```
+
+**How to Identify Computed/Read-only Fields**:
+
+If DTO field doesn't exist in Prisma schema, it's likely one of these types:
+
+```typescript
+// 1. Aggregation fields (from relations)
+reviewCount: number;       // _count.reviews at read time
+orderCount: number;        // _count.orders at read time
+totalOrders: number;       // _count aggregation
+commentCount: number;      // _count.comments at read time
+→ IGNORE in Collector (aggregated by Transformer)
+
+// 2. Arithmetic calculations (from other fields)
+totalPrice: number;        // unit_price * quantity
+discountAmount: number;    // original_price - sale_price
+discountRate: number;      // (original - sale) / original * 100
+remainingStock: number;    // total_stock - sold_count
+netProfit: number;         // revenue - cost
+→ IGNORE in Collector (calculated by Transformer)
+
+// 3. Statistical fields (from relations)
+averageRating: number;     // avg(reviews.rating)
+highestScore: number;      // max(scores.value)
+lowestPrice: number;       // min(products.price)
+→ IGNORE in Collector (calculated by Transformer)
+
+// 4. Boolean derived fields
+isExpired: boolean;        // expiry_date < now
+isActive: boolean;         // status === "active"
+hasDiscount: boolean;      // sale_price < original_price
+isOutOfStock: boolean;     // stock_quantity <= 0
+→ IGNORE in Collector (derived by Transformer)
+
+// 5. Formatted/Display fields
+displayPrice: string;      // "$" + price.toFixed(2)
+formattedDate: string;     // date.toISOString()
+fullAddress: string;       // street + city + state + zip
+→ IGNORE in Collector (formatted by Transformer)
+```
+
+**Decision Tree: DTO Field Not in Prisma Schema**:
+
+```
+DTO has field X, but Prisma schema doesn't have column X?
+│
+├─ Is it an aggregation? (count, sum, avg, min, max from relations)
+│  └─ YES → IGNORE (Transformer will calculate it at read time)
+│
+├─ Is it a calculation? (from other DTO fields that ARE in DB)
+│  └─ YES → IGNORE (Transformer will calculate it at read time)
+│
+├─ Is it a boolean check? (isActive, isExpired, hasDiscount, etc.)
+│  └─ YES → IGNORE (Transformer will derive it at read time)
+│
+├─ Is it formatting? (display*, formatted*, full*, etc.)
+│  └─ YES → IGNORE (Transformer will format it at read time)
+│
+└─ Still unsure?
+   └─ Check if field name suggests computation:
+      - Ends with "Count", "Total", "Sum", "Average" → IGNORE
+      - Starts with "is", "has", "display", "formatted" → IGNORE
+      - Mathematical relationship with other fields → IGNORE
+```
+
+**Rare Exception - Reverse Mapping (DTO field → multiple DB columns)**:
+
+Very rarely, you might need to **split** one DTO field into multiple DB columns:
+
+```typescript
+// DTO: Single nested object
+interface IShoppingSale.ICreate {
+  price: {
+    real: number;
+    nominal: number;
+  };
+}
+
+// DB: Flattened to separate columns
+model shopping_sales {
+  real_price    Decimal
+  nominal_price Decimal
+}
+
+// ✅ CORRECT - Map nested object to flat columns
+return {
+  id: v4(),
+  real_price: props.body.price.real,
+  nominal_price: props.body.price.nominal,
+} satisfies Prisma.shopping_salesCreateInput;
+```
+
+This is **ALREADY COVERED** by "Nested object flattening" pattern above. This is NOT about ignoring fields - this is about mapping nested DTO structure to flat DB structure.
+
+**Summary - Critical Rules**:
+
+1. **ONLY map DTO fields that have corresponding DB columns** (verify in Prisma schema)
+2. **IGNORE all computed/aggregated/derived/formatted fields** (they're read-only)
+3. **Computed fields are calculated by Transformers**, NOT stored by Collectors
+4. **When in doubt**: Check Prisma schema. Not there? Don't store it.
+
+**Remember**:
+- ❌ DTO field not in schema → DO NOT try to store it
+- ✅ DTO field not in schema → IGNORE it (Transformer handles it at read time)
+- ✅ Only collect fields that ACTUALLY EXIST in Prisma schema
+
 ### 6. Relationship Types and Handling
 
 **BelongsTo (Many-to-One)**: Use `connect`

@@ -1,7 +1,4 @@
-import {
-  AutoBeRealizeTransformerFunction,
-  AutoBeRealizeTransformerPlan,
-} from "@autobe/interface";
+import { AutoBeRealizeTransformerFunction } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -19,8 +16,8 @@ export const transformRealizeTransformerCorrectHistory = async <
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    plan: AutoBeRealizeTransformerPlan;
     function: AutoBeRealizeTransformerFunction;
+    neighbors: AutoBeRealizeTransformerFunction[];
     failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeTransformerFunction>[];
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
@@ -28,7 +25,7 @@ export const transformRealizeTransformerCorrectHistory = async <
   const dto: Record<string, string> =
     await AutoBeRealizeTransformerProgrammer.writeStructures(
       ctx,
-      props.plan.dtoTypeName,
+      props.function.plan.dtoTypeName,
     );
   return {
     histories: [
@@ -50,10 +47,26 @@ export const transformRealizeTransformerCorrectHistory = async <
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the DTO types relevant with ${props.plan.dtoTypeName}:
+          Here are the DTO types relevant with ${props.function.plan.dtoTypeName}:
 
           \`\`\`json
           ${JSON.stringify(dto)}
+          \`\`\`
+        `,
+      },
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          Here are the neighbor transformers relevant with ${props.function.plan.dtoTypeName}:
+
+          \`\`\`json
+          ${JSON.stringify(
+            Object.fromEntries(
+              props.neighbors.map((n) => [n.location, n.content]),
+            ),
+          )}
           \`\`\`
         `,
       },
@@ -72,7 +85,7 @@ export const transformRealizeTransformerCorrectHistory = async <
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.plan)}
+      ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.function.plan)}
 
       Current code is as follows:
 
@@ -81,7 +94,7 @@ export const transformRealizeTransformerCorrectHistory = async <
       \`\`\`
 
       Remember: Transformers transform Prisma Payload → DTO. Focus on:
-      - Field mapping between Prisma.${props.plan.prismaSchemaName}GetPayload and ${props.plan.dtoTypeName}
+      - Field mapping between Prisma.${props.function.plan.prismaSchemaName}GetPayload and ${props.function.plan.dtoTypeName}
       - Date to ISO string conversion (.toISOString())
       - Nested object transformation using neighbor transformers
       - select() query completeness (all fields used in transform must be selected)

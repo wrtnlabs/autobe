@@ -262,6 +262,9 @@ The draft phase is where you make your first attempt. The review phase is where 
 - [ ] **Wrong foreign key syntax** - Direct ID assignment instead of connect
 - [ ] **Nullable handling wrong** - Null assignment to non-nullable field
 - [ ] **Array creation errors** - Missing ArrayUtil.asyncMap or wrong syntax
+- [ ] **🚨 CRITICAL: Storing computed/read-only fields** - Trying to store DTO fields that don't exist in Prisma schema?
+- [ ] **DTO ≠ DB verification** - All collect() fields VERIFIED to exist in Prisma schema (not just DTO)?
+- [ ] **Computed field handling** - DTO-only fields (counts, calculations, etc.) IGNORED (not stored)?
 
 **4. Compilation Guarantee:**
 - [ ] **Would this draft actually compile?** - Be honest with yourself
@@ -676,4 +679,202 @@ return {
     ),
   },
 }
+```
+
+### 6.6. Trying to Store Computed/Aggregated/Read-only Fields
+
+**🚨 CRITICAL ERROR: Attempting to store DTO fields that are read-only computed values**
+
+**Error Pattern**:
+- `Property 'totalPrice' does not exist on type 'shopping_salesCreateInput'`
+- `Property 'reviewCount' does not exist on type 'shopping_salesCreateInput'`
+- `Property 'averageRating' does not exist on type 'shopping_salesCreateInput'`
+- `Property 'discountRate' does not exist on type 'shopping_salesCreateInput'`
+- `Property 'remainingStock' does not exist on type 'shopping_salesCreateInput'`
+- `Property 'isExpired' does not exist on type 'Prisma.{table}CreateInput'`
+
+**Root Cause**:
+You're trying to store DTO fields that do NOT exist in the Prisma database schema. These fields are **read-only computed values** calculated by Transformers at read time, NOT stored in the database.
+
+**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
+- **Collector (API→DB)**: DTO field not in Prisma schema? → **IGNORE it** (don't store)
+- **Transformer (DB→API)**: DTO field not in Prisma schema? → Calculate and return it
+
+**This is the OPPOSITE of Transformers!**
+
+**Understanding the Mismatch**:
+
+```typescript
+// DTO (API Request) - Client sends these
+interface IShoppingSale.ICreate {
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;        // ← Computed! NOT in DB!
+  reviewCount: number;       // ← Aggregated! NOT in DB!
+  averageRating: number;     // ← Aggregated! NOT in DB!
+  discountRate: number;      // ← Computed! NOT in DB!
+}
+
+// Prisma Schema (Database Structure) - What actually exists
+model shopping_sales {
+  id         String  @id @db.Uuid
+  name       String  @db.VarChar
+  unit_price Decimal @db.Decimal
+  quantity   Int
+  // NO totalPrice, reviewCount, averageRating, discountRate columns!
+}
+```
+
+**The Fatal Error**:
+
+```typescript
+// ❌ WRONG - Trying to store computed/read-only fields
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    unit_price: props.body.unitPrice,
+    quantity: props.body.quantity,
+    total_price: props.body.totalPrice,          // ❌ DOES NOT EXIST! Compilation error!
+    review_count: props.body.reviewCount,        // ❌ DOES NOT EXIST! Compilation error!
+    average_rating: props.body.averageRating,    // ❌ DOES NOT EXIST! Compilation error!
+    discount_rate: props.body.discountRate,      // ❌ DOES NOT EXIST! Compilation error!
+  } satisfies Prisma.shopping_salesCreateInput;  // ❌ Type error!
+}
+```
+
+**The Correct Solution - IGNORE Computed Fields**:
+
+```typescript
+// ✅ CORRECT - IGNORE all computed/read-only fields
+export async function collect(props: { body: IShoppingSale.ICreate }) {
+  return {
+    id: v4(),
+    name: props.body.name,
+    unit_price: props.body.unitPrice,
+    quantity: props.body.quantity,
+    // ✅ IGNORED: totalPrice, reviewCount, averageRating, discountRate
+    // These are computed at READ time by Transformers, NOT stored in DB
+  } satisfies Prisma.shopping_salesCreateInput;
+}
+```
+
+**How to Identify Read-only Computed Fields**:
+
+If DTO field doesn't exist in Prisma schema, it's one of these types:
+
+**Type 1: Aggregation Fields (from relations)**
+```typescript
+// These are counted/aggregated by Transformers at read time
+reviewCount: number;       // _count.reviews
+orderCount: number;        // _count.orders
+totalComments: number;     // _count.comments
+averageRating: number;     // avg(reviews.rating)
+highestScore: number;      // max(scores.value)
+→ IGNORE in Collector (Transformer calculates these)
+```
+
+**Type 2: Arithmetic Calculations (from other fields)**
+```typescript
+// These are calculated from stored fields by Transformers
+totalPrice: number;        // unit_price * quantity
+discountAmount: number;    // original_price - sale_price
+discountRate: number;      // (original - sale) / original * 100
+remainingStock: number;    // total_stock - sold_count
+netProfit: number;         // revenue - cost
+→ IGNORE in Collector (Transformer calculates these)
+```
+
+**Type 3: Boolean Derived Fields**
+```typescript
+// These are derived from other fields by Transformers
+isExpired: boolean;        // expiry_date < now
+isActive: boolean;         // status === "active"
+hasDiscount: boolean;      // sale_price < original_price
+isOutOfStock: boolean;     // stock_quantity <= 0
+→ IGNORE in Collector (Transformer derives these)
+```
+
+**Type 4: Formatted/Display Fields**
+```typescript
+// These are formatted by Transformers for display
+displayPrice: string;      // "$" + price.toFixed(2)
+formattedDate: string;     // date.toISOString()
+fullAddress: string;       // street + city + state + zip
+→ IGNORE in Collector (Transformer formats these)
+```
+
+**Why This Causes Compilation Errors**:
+- Prisma's CreateInput types are **strict** - they only accept fields that exist in the schema
+- Trying to include non-existent field = TypeScript compilation error
+- The compiler is telling you: "This field doesn't exist in the database!"
+- **Solution**: Stop trying to store it, IGNORE it completely
+
+**How to Fix During Correction**:
+
+1. **Read the compilation error** - it tells you which field doesn't exist in CreateInput
+2. **Check Prisma schema** - confirm the field is NOT there
+3. **Ask: "Is this a computed/read-only field?"**
+   - Ends with "Count", "Total", "Sum", "Average"? → YES, IGNORE
+   - Starts with "is", "has", "display", "formatted"? → YES, IGNORE
+   - Mathematical relationship with other fields? → YES, IGNORE
+   - Aggregation from relations? → YES, IGNORE
+4. **Remove the field mapping** from collect() return value
+5. **Add a comment** explaining it's computed at read time
+
+**Common Examples**:
+
+```typescript
+// Example 1: Review count
+// DTO: reviewCount: number
+// Prisma: reviews shopping_sale_reviews[] (relation)
+// Fix: IGNORE (Transformer uses _count.reviews)
+
+// Example 2: Total price
+// DTO: totalPrice: number
+// Prisma: unit_price Decimal, quantity Int
+// Fix: IGNORE (Transformer calculates unit_price * quantity)
+
+// Example 3: Discount rate
+// DTO: discountRate: number
+// Prisma: original_price Decimal, sale_price Decimal
+// Fix: IGNORE (Transformer calculates (original - sale) / original * 100)
+
+// Example 4: Is expired
+// DTO: isExpired: boolean
+// Prisma: expiry_date DateTime?
+// Fix: IGNORE (Transformer checks expiry_date < new Date())
+
+// Example 5: Average rating
+// DTO: averageRating: number
+// Prisma: reviews shopping_sale_reviews[] (reviews.rating Int)
+// Fix: IGNORE (Transformer calculates avg from reviews.rating array)
+```
+
+**🚨 CRITICAL VERIFICATION STEPS**:
+
+When you see a DTO field:
+1. ✅ **Check Prisma schema FIRST** - does this EXACT field name exist as a column?
+2. ✅ **Field NOT in schema?** → DO NOT try to store it!
+3. ✅ **Is it computed/aggregated/derived?** → IGNORE it completely
+4. ✅ **Add comment** in code explaining why it's ignored
+5. ✅ **Only map fields that ACTUALLY EXIST** in Prisma schema as columns
+
+**Remember**:
+- **Collector's job**: Store ONLY what exists in DB schema
+- **Transformer's job**: Calculate computed fields at read time
+- **Computed fields are NEVER stored**, only calculated on-demand
+- **When in doubt**: Check Prisma schema. Not there as a column? Don't store it.
+
+**Decision Rule**:
+```
+DTO field not in Prisma schema?
+│
+├─ Is it a column that should be added to DB?
+│  └─ NO (computed/aggregated/derived fields are intentionally not stored)
+│
+└─ What to do?
+   └─ IGNORE the field in Collector
+   └─ Transformer will calculate it at read time
 ```

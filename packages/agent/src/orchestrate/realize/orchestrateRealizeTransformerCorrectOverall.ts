@@ -3,6 +3,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
@@ -24,7 +25,26 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
   },
 ): Promise<AutoBeRealizeTransformerFunction[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
-
+  const getNeighbors = (
+    func: AutoBeRealizeTransformerFunction,
+  ): AutoBeRealizeTransformerFunction[] => {
+    const visited: Set<string> = new Set();
+    AutoBeOpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${func.plan.dtoTypeName}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next)) {
+          const key: string = next.$ref.split("/").pop()!;
+          visited.add(key);
+        }
+      },
+    });
+    return props.functions.filter(
+      (y) =>
+        y.plan.dtoTypeName !== func.plan.dtoTypeName &&
+        visited.has(y.plan.dtoTypeName),
+    );
+  };
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/transformers",
@@ -64,8 +84,8 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
       // Transform history using Transformer-specific transformer
       histories: (next) =>
         transformRealizeTransformerCorrectHistory(ctx, {
-          plan: next.function.plan,
           function: next.function,
+          neighbors: getNeighbors(next.function),
           failures: next.failures,
           preliminary: next.preliminary,
         }),
@@ -93,7 +113,6 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
               draft: result.data.request.draft,
               revise: result.data.request.revise,
             });
-
           return errors.length
             ? {
                 success: false,
