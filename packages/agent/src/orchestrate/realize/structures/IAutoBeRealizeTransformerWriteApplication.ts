@@ -86,8 +86,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    *
    * Executes three-phase generation to create complete transformer with:
    *
-   * - Transform() function: Converts Prisma payload to DTO
-   * - Select() function: Returns Prisma include/select specification
+   * - `select()` function: Returns Prisma include/select specification
+   * - `transform()` function: Converts Prisma payload to DTO
    *
    * Follows plan → draft → revise pattern to ensure type safety and correct
    * field mappings.
