@@ -931,7 +931,6 @@ You intended to use a valid field, but used the wrong name.
 **Common Mistakes:**
 - Used camelCase instead of snake_case: `userName` → should be `user_name`
 - Used DTO property name instead of DB column name: `totalPrice` → should be `total_price`
-- Simple typo: `udpated_at` → should be `updated_at`
 - Used FK column name instead of relation name: `customer_id` → should be `customer`
 
 **How to Fix:**
@@ -1969,7 +1968,6 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 - If you can't find it → DELETE IT from your code (you fabricated it)
 
 **Common mistakes to catch**:
-- ❌ Field name typo: `udpated_at` instead of `updated_at`
 - ❌ Wrong case: `userName` instead of `user_name`
 - ❌ Fabricated field: `totalPrice` when schema doesn't have `total_price` column
 - ❌ Direct FK: `customer_id: props.customer.id` instead of `customer: { connect: { id: props.customer.id } }`

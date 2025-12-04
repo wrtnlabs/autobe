@@ -2841,7 +2841,6 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 4. If you can't find it → DELETE IT from your code (you fabricated it)
 
 **Common mistakes to catch**:
-- ❌ Field name typo: `udpated_at` instead of `updated_at`
 - ❌ Wrong case: `userName` instead of `user_name`
 - ❌ Fabricated field: `totalPrice` when schema doesn't have `total_price` column
 - ❌ Forgot `created_at` or `updated_at`
