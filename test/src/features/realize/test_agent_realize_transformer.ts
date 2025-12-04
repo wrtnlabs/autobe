@@ -9,6 +9,7 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import cp from "child_process";
+import path from "path";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -96,7 +97,7 @@ const validate_agent_realize_transformer = async (props: {
       "pnpm-workspace.yaml": "",
     },
   });
-  console.log(`code ${cwd}`);
+  console.log(`code ${path.resolve(cwd).replaceAll("\\", "/")}`);
   cp.execSync("pnpm install", { cwd, stdio: "ignore" });
   cp.execSync("pnpm tsc", { cwd, stdio: "inherit" });
 };

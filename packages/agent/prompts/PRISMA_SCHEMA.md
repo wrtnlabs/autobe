@@ -674,7 +674,7 @@ When an actor requires login/authentication (e.g., users, administrators, custom
   - `referrer: string` — Referrer URL
 - Temporal:
   - `created_at: datetime` — Session creation time
-  - `expired_at: datetime?` — Session end time (nullable)
+  - `expired_at: datetime` — Session end time
 
 **NO OTHER FIELDS ARE ALLOWED** for session tables. Do not add token hashes, device info, user agent, updated_at, or deleted_at.
 

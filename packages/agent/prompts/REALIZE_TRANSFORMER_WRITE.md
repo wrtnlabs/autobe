@@ -516,6 +516,254 @@ select: {
 
 **READ AGAIN: Prisma Schema is the ONLY source of truth. If you didn't see it in the schema, DO NOT USE IT.**
 
+#### What If DTO Has Fields NOT in Prisma Schema?
+
+**Critical Understanding**: Sometimes you'll encounter DTO fields that do NOT exist in the Prisma database schema. This is NORMAL and EXPECTED.
+
+**🚨 ABSOLUTE RULE: NEVER select a field that doesn't exist in Prisma schema!**
+
+```typescript
+// DTO has this field:
+interface IShoppingSale {
+  id: string;
+  name: string;
+  reviewCount: number;      // ← NOT in Prisma schema!
+  averageRating: number;    // ← NOT in Prisma schema!
+  totalRevenue: number;     // ← NOT in Prisma schema!
+}
+
+// But Prisma schema ONLY has:
+model shopping_sales {
+  id      String @id @db.Uuid
+  name    String @db.VarChar
+  reviews shopping_sale_reviews[]  // Relation only
+}
+
+// ❌ FATAL ERROR - Trying to select non-existent columns
+select: {
+  id: true,
+  name: true,
+  reviewCount: true,     // ❌ DOES NOT EXIST IN SCHEMA!
+  averageRating: true,   // ❌ DOES NOT EXIST IN SCHEMA!
+  totalRevenue: true,    // ❌ DOES NOT EXIST IN SCHEMA!
+}
+
+// ✅ CORRECT - Select what EXISTS, compute what DOESN'T
+select: {
+  id: true,
+  name: true,
+  _count: {
+    select: {
+      reviews: true,  // For reviewCount
+    },
+  },
+  reviews: {
+    select: {
+      rating: true,   // For averageRating
+    },
+  },
+  orders: {
+    select: {
+      total_amount: true,  // For totalRevenue
+    },
+  },
+}
+```
+
+**Two Common Patterns for DTO-Only Fields:**
+
+**Pattern 1: Aggregated/Computed Fields from Relations**
+
+When DTO field doesn't exist in DB schema, it's usually computed from related tables:
+
+```typescript
+// DTO fields NOT in schema:
+reviewCount: number;     // → Computed from _count.reviews
+averageRating: number;   // → Computed from reviews.rating array
+totalOrders: number;     // → Computed from _count.orders
+activeOrderCount: number; // → Computed from filtered orders.length
+
+// In select() - Select the SOURCE data
+_count: {
+  select: {
+    reviews: true,
+    orders: true,
+  },
+},
+reviews: {
+  select: {
+    rating: true,
+  },
+},
+
+// In transform() - COMPUTE the DTO field
+reviewCount: input._count.reviews,
+averageRating: input.reviews.length > 0
+  ? input.reviews.reduce((sum, r) => sum + r.rating, 0) / input.reviews.length
+  : 0,
+totalOrders: input._count.orders,
+```
+
+**Pattern 2: Derived/Calculated Fields from Other Columns**
+
+When DTO field is calculated from existing DB columns through arithmetic operations, string concatenation, comparisons, or transformations:
+
+```typescript
+// DTO fields NOT in schema (various calculation types):
+fullName: string;           // → String concatenation: first_name + last_name
+totalPrice: number;         // → Multiplication: unit_price * quantity
+discountAmount: number;     // → Subtraction: original_price - sale_price
+discountRate: number;       // → Division + percentage: (original - sale) / original * 100
+remainingStock: number;     // → Subtraction: total_stock - sold_count
+isOnSale: boolean;          // → Comparison: sale_price < original_price
+isExpired: boolean;         // → Date comparison: expiry_date vs current date
+displayPrice: string;       // → Formatting: price with currency symbol
+ageInDays: number;          // → Date arithmetic: created_at to days
+
+// Prisma schema HAS (source columns):
+model shopping_sales {
+  id             String  @id @db.Uuid
+  first_name     String  @db.VarChar
+  last_name      String  @db.VarChar
+  unit_price     Decimal @db.Decimal
+  quantity       Int
+  original_price Decimal @db.Decimal
+  sale_price     Decimal @db.Decimal
+  total_stock    Int
+  sold_count     Int
+  expiry_date    DateTime? @db.Timestamptz
+  created_at     DateTime @db.Timestamptz
+}
+
+// In select() - Select the SOURCE columns
+select: {
+  first_name: true,
+  last_name: true,
+  unit_price: true,
+  quantity: true,
+  original_price: true,
+  sale_price: true,
+  total_stock: true,
+  sold_count: true,
+  expiry_date: true,
+  created_at: true,
+}
+
+// In transform() - COMPUTE the DTO fields
+fullName: `${input.first_name} ${input.last_name}`,  // String concatenation
+totalPrice: Number(input.unit_price) * input.quantity,  // Multiplication
+discountAmount: Number(input.original_price) - Number(input.sale_price),  // Subtraction
+discountRate: input.original_price > 0  // Division + percentage
+  ? ((Number(input.original_price) - Number(input.sale_price)) / Number(input.original_price)) * 100
+  : 0,
+remainingStock: input.total_stock - input.sold_count,  // Subtraction
+isOnSale: Number(input.sale_price) < Number(input.original_price),  // Comparison
+isExpired: input.expiry_date ? input.expiry_date < new Date() : false,  // Date comparison
+displayPrice: `$${Number(input.sale_price).toFixed(2)}`,  // Formatting
+ageInDays: Math.floor((Date.now() - input.created_at.getTime()) / (1000 * 60 * 60 * 24)),  // Date arithmetic
+```
+
+**Common Calculation Types**:
+
+```typescript
+// 1. Arithmetic Operations
+totalAmount: Number(input.unit_price) * input.quantity + Number(input.shipping_fee)
+netProfit: Number(input.revenue) - Number(input.cost)
+averageScore: (input.score1 + input.score2 + input.score3) / 3
+
+// 2. String Operations
+fullAddress: `${input.street}, ${input.city}, ${input.state} ${input.zip_code}`
+displayName: input.nickname ?? `${input.first_name} ${input.last_name}`
+
+// 3. Boolean Logic
+isEligible: input.age >= 18 && input.verified
+hasDiscount: Number(input.original_price) > Number(input.sale_price)
+isOutOfStock: input.stock_quantity <= 0
+
+// 4. Percentage Calculations
+completionRate: input.total_tasks > 0
+  ? (input.completed_tasks / input.total_tasks) * 100
+  : 0
+successRate: input.attempts > 0
+  ? (input.successes / input.attempts) * 100
+  : 0
+
+// 5. Date/Time Calculations
+daysUntilExpiry: input.expiry_date
+  ? Math.ceil((input.expiry_date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  : null
+hoursActive: Math.floor((Date.now() - input.last_login.getTime()) / (1000 * 60 * 60))
+```
+
+**Decision Tree: DTO Field Not in Schema**
+
+```
+DTO has field X, but Prisma schema doesn't have column X?
+│
+├─ Is it an aggregation? (count, sum, average, min, max)
+│  └─ YES → Use _count, or select relations and compute in transform()
+│
+├─ Is it computed from other columns in SAME table?
+│  └─ YES → Select those source columns, compute in transform()
+│
+├─ Is it computed from RELATED tables?
+│  └─ YES → Select the relations with needed fields, compute in transform()
+│
+└─ Still unsure?
+   └─ ASK: "Where does this DTO field's data come from?"
+      - If from aggregation → Use aggregation pattern
+      - If from calculation → Use calculation pattern
+      - NEVER try to select it from DB!
+```
+
+**Common Examples:**
+
+```typescript
+// Example 1: Count-based field
+// DTO: commentCount: number
+// Schema: comments bbs_article_comments[]
+// Solution: _count.select.comments
+
+// Example 2: Status check
+// DTO: isActive: boolean
+// Schema: status String
+// Solution: Select status, transform to boolean
+
+// Example 3: Full name
+// DTO: fullName: string
+// Schema: first_name String, last_name String
+// Solution: Select both, concatenate in transform
+
+// Example 4: Average rating
+// DTO: averageRating: number
+// Schema: reviews shopping_sale_reviews[] (reviews.rating)
+// Solution: Select reviews.rating, calculate average in transform
+
+// Example 5: Price formatting
+// DTO: formattedPrice: string
+// Schema: price Decimal
+// Solution: Select price, format as string in transform
+```
+
+**🚨 CRITICAL VERIFICATION STEPS:**
+
+1. **See DTO field that looks suspicious?** → Check Prisma schema first
+2. **Field NOT in Prisma schema?** → DO NOT select it!
+3. **Find the SOURCE data** → What columns/relations provide the raw data?
+4. **Select the SOURCE** → Select actual DB fields/relations
+5. **Compute in transform()** → Calculate the DTO field from source data
+
+**DO NOT CONFUSE DTO FIELDS WITH DB COLUMNS!**
+
+- **DTO fields**: What the API returns (business logic level)
+- **DB columns**: What actually exists in the database (storage level)
+- **Your job**: Bridge the gap by selecting DB data and transforming it to DTO format
+
+**Remember**:
+- ❌ If field doesn't exist in Prisma schema → NEVER select it
+- ✅ If DTO needs it → Select source data and compute in transform()
+- ✅ Most non-existent fields are either aggregations or calculations
+
 #### Reusing Other Transformers' Select Specifications
 
 When your DTO has nested objects that also have their own Transformers, you can **reuse** those Transformers' `select()` functions instead of writing the nested selection logic manually.
@@ -575,6 +823,108 @@ When a DTO has nested objects, **prefer reusing** existing Transformers' `select
 - Eliminates code duplication
 - Maintains single responsibility (each Transformer owns its own selection logic)
 - Automatically stays in sync when nested DTO requirements change
+
+**🚨 CRITICAL RULE: Transform and Select Must Be Used Together!**
+
+When reusing another Transformer, you MUST use **BOTH** its `transform()` AND `select()` functions together. **NEVER** use only one!
+
+```typescript
+// ❌ FATAL ERROR - Using select() without corresponding transform()
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // Using CategoryTransformer.select()
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ❌ WRONG! Inline mapping instead of CategoryTransformer.transform()
+      id: input.category.id,
+      name: input.category.name,
+    },
+  };
+}
+
+// ❌ FATAL ERROR - Using transform() without corresponding select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ❌ WRONG! Inline selection instead of CategoryTransformer.select()
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // Using CategoryTransformer.transform()
+  };
+}
+
+// ✅ CORRECT - Both select() and transform() use CategoryTransformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ Using CategoryTransformer.select()
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Using CategoryTransformer.transform()
+  };
+}
+
+// ✅ ALSO CORRECT - Neither uses CategoryTransformer (inline for both)
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ✅ Inline selection
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ✅ Inline transformation (matching inline selection)
+      id: input.category.id,
+      name: input.category.name,
+    },
+  };
+}
+```
+
+**Why This Rule is Absolute:**
+- **Type Safety**: `select()` determines the `Payload` type that `transform()` receives
+- **Using `CategoryTransformer.select()`** defines what fields are available in `input.category`
+- **Using `CategoryTransformer.transform()`** expects those exact fields to be selected
+- **Mismatch = Compilation Error**: If you select with Transformer but transform inline, field access will fail
+- **Consistency = Maintainability**: When category structure changes, both update automatically
+
+**DECISION RULE:**
+- **Option A**: Use BOTH `NestedTransformer.select()` AND `NestedTransformer.transform()`
+- **Option B**: Use NEITHER (inline selection AND inline transformation)
+- **NEVER**: Mix inline with Transformer usage!
 
 **🚨 CRITICAL - Use the CORRECT Transformer Name!**
 
@@ -812,6 +1162,108 @@ When your DTO contains nested objects (category, tags, etc.), **prefer reusing**
 - Eliminates code duplication across multiple endpoints
 - Maintains single responsibility (each Transformer handles one DTO type)
 - Automatically stays in sync when nested DTO structure changes
+
+**🚨 CRITICAL RULE: Transform and Select Must Be Used Together!**
+
+When reusing another Transformer, you MUST use **BOTH** its `transform()` AND `select()` functions together. **NEVER** use only one!
+
+```typescript
+// ❌ FATAL ERROR - Using transform() without corresponding select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ❌ WRONG! Inline selection instead of CategoryTransformer.select()
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // Using CategoryTransformer.transform()
+  };
+}
+
+// ❌ FATAL ERROR - Using select() without corresponding transform()
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // Using CategoryTransformer.select()
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ❌ WRONG! Inline mapping instead of CategoryTransformer.transform()
+      id: input.category.id,
+      name: input.category.name,
+    },
+  };
+}
+
+// ✅ CORRECT - Both select() and transform() use CategoryTransformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: ShoppingCategoryTransformer.select(),  // ✅ Using CategoryTransformer.select()
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Using CategoryTransformer.transform()
+  };
+}
+
+// ✅ ALSO CORRECT - Neither uses CategoryTransformer (inline for both)
+export function select() {
+  return {
+    select: {
+      id: true,
+      category: {  // ✅ Inline selection
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    category: {  // ✅ Inline transformation (matching inline selection)
+      id: input.category.id,
+      name: input.category.name,
+    },
+  };
+}
+```
+
+**Why This Rule is Absolute:**
+- **Type Safety**: `select()` determines the `Payload` type that `transform()` receives
+- **Using `CategoryTransformer.select()`** defines what fields are available in `input.category`
+- **Using `CategoryTransformer.transform()`** expects those exact fields to be selected
+- **Mismatch = Compilation Error**: If you select with Transformer but transform inline, field access will fail
+- **Consistency = Maintainability**: When category structure changes, both update automatically
+
+**DECISION RULE:**
+- **Option A**: Use BOTH `NestedTransformer.select()` AND `NestedTransformer.transform()`
+- **Option B**: Use NEITHER (inline selection AND inline transformation)
+- **NEVER**: Mix inline with Transformer usage!
 
 **🚨 CRITICAL - Use the CORRECT Transformer Name!**
 
@@ -1073,7 +1525,627 @@ sales: ShoppingSaleTransformer.select(),
 sales: await ArrayUtil.asyncMap(input.sales, ShoppingSaleTransformer.transform),
 ```
 
-### 6. Common Field Transformations
+### 6. Aggregations and Computed Fields from Relations
+
+**Purpose**: When building DTOs, you often need computed fields derived from related tables - counts, sums, averages, etc. Prisma provides powerful aggregation features through `_count`, `_sum`, `_avg`, `_min`, and `_max`.
+
+#### Understanding Prisma Aggregations
+
+Prisma supports five aggregation operations that can be included in your select specification:
+
+1. **`_count`**: Count the number of related records
+2. **`_sum`**: Sum numeric fields across related records
+3. **_avg`**: Calculate average of numeric fields
+4. **`_min`**: Find minimum value of numeric/date fields
+5. **`_max`**: Find maximum value of numeric/date fields
+
+**Key Characteristics**:
+- Aggregations are selected alongside regular fields in your `select()` specification
+- Results are available at the top level of the payload under `_count`, `_sum`, etc.
+- Aggregations execute as part of the main query (no N+1 problem)
+- Type-safe with full TypeScript support
+
+#### 6.1. Using `_count` - Counting Related Records
+
+**Most Common Use Case**: Display counts of related entities (review count, order count, comment count, etc.)
+
+**Example - Counting Reviews and Orders:**
+
+```typescript
+// DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  reviewCount: number;     // Count of reviews
+  orderCount: number;      // Count of orders
+}
+
+// Prisma schema context
+model shopping_sales {
+  id      String @id @db.Uuid
+  name    String @db.VarChar
+  reviews shopping_sale_reviews[]  // One-to-many relation
+  orders  shopping_sale_orders[]   // One-to-many relation
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          reviews: true,  // Count reviews
+          orders: true,   // Count orders
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    name: input.name,
+    reviewCount: input._count.reviews,  // Access aggregation result
+    orderCount: input._count.orders,
+  };
+}
+```
+
+**Multiple Counts in One Query:**
+
+```typescript
+// DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  commentCount: number;
+  likeCount: number;
+  fileCount: number;
+}
+
+// In select()
+_count: {
+  select: {
+    comments: true,
+    likes: true,
+    files: true,
+  },
+},
+
+// In transform()
+commentCount: input._count.comments,
+likeCount: input._count.likes,
+fileCount: input._count.files,
+```
+
+#### 6.2. Using `_sum` - Summing Numeric Fields
+
+**Use Case**: Calculate totals across related records (total quantity, total revenue, total points, etc.)
+
+**Example - Summing Order Quantities:**
+
+```typescript
+// DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  totalQuantitySold: number;    // Sum of all order quantities
+  totalRevenue: number;         // Sum of all order amounts
+}
+
+// Prisma schema context
+model shopping_sales {
+  id     String @id @db.Uuid
+  name   String @db.VarChar
+  orders shopping_sale_orders[]
+}
+
+model shopping_sale_orders {
+  id           String  @id @db.Uuid
+  sale_id      String  @db.Uuid
+  quantity     Int
+  total_amount Decimal @db.Decimal
+  sale         shopping_sales @relation(fields: [sale_id], references: [id])
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _sum: {
+        // ❌ WRONG - Cannot sum on parent table's relation field directly
+        // orders: { quantity: true }  // This syntax doesn't work!
+      },
+      // ✅ CORRECT - Need to manually calculate via nested query or raw query
+      // OR use a different approach with explicit relation selection
+      orders: {
+        select: {
+          quantity: true,
+          total_amount: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    name: input.name,
+    // Manual aggregation from loaded relations
+    totalQuantitySold: input.orders.reduce((sum, order) => sum + order.quantity, 0),
+    totalRevenue: input.orders.reduce((sum, order) => sum + Number(order.total_amount), 0),
+  };
+}
+```
+
+**IMPORTANT NOTE - `_sum` Limitation**:
+- `_sum`, `_avg`, `_min`, `_max` work on fields of the **current table**, NOT on nested relation fields
+- To sum across related records, you must either:
+  - **Option A**: Select the related records and aggregate manually in `transform()`
+  - **Option B**: Use Prisma's `aggregate()` or `groupBy()` API (not covered here)
+  - **Option C**: Use raw SQL queries for complex aggregations
+
+**When `_sum` IS Useful** (Direct Table Aggregation):
+
+```typescript
+// If you're aggregating a field on the CURRENT table (rare in transformers)
+// Example: shopping_sale_snapshots table with multiple snapshot entries
+model shopping_sale_snapshots {
+  id                String @id @db.Uuid
+  sale_id           String @db.Uuid
+  daily_views       Int
+  daily_purchases   Int
+  snapshot_date     Date
+}
+
+// Aggregating multiple snapshots for one sale (using groupBy - advanced)
+// This pattern is RARE in transformers - usually done at query level
+```
+
+#### 6.3. Using `_avg`, `_min`, `_max` - Statistical Aggregations
+
+**Use Case**: Calculate statistics (average rating, minimum price, maximum score, etc.)
+
+**Similar Limitation to `_sum`**: These work on the current table's fields, not nested relations.
+
+**Practical Pattern - Manual Calculation from Relations:**
+
+```typescript
+// DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  averageRating: number;     // Average of all review ratings
+  highestRating: number;     // Max rating
+  lowestRating: number;      // Min rating
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      reviews: {
+        select: {
+          rating: true,  // Load all ratings for manual calculation
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  const ratings = input.reviews.map(r => r.rating);
+
+  return {
+    id: input.id,
+    name: input.name,
+    averageRating: ratings.length > 0
+      ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
+      : 0,
+    highestRating: ratings.length > 0 ? Math.max(...ratings) : 0,
+    lowestRating: ratings.length > 0 ? Math.min(...ratings) : 0,
+  };
+}
+```
+
+#### 6.4. Conditional Counting with Filtered Relations
+
+**Use Case**: Count only records that match certain conditions (active orders, published comments, etc.)
+
+**Example - Counting Active vs Total Orders:**
+
+```typescript
+// DTO
+interface IShoppingSale {
+  id: string;
+  name: string;
+  totalOrderCount: number;
+  activeOrderCount: number;
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          orders: true,  // Total count
+        },
+      },
+      orders: {
+        where: {
+          status: "active",  // Filter for active orders
+        },
+        select: {
+          id: true,  // Minimal selection for counting
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  return {
+    id: input.id,
+    name: input.name,
+    totalOrderCount: input._count.orders,        // Total from _count
+    activeOrderCount: input.orders.length,       // Filtered count from loaded array
+  };
+}
+```
+
+#### 6.5. Nested Aggregations (Aggregating Through Join Tables)
+
+**Use Case**: Count or aggregate through M:N relationships or nested relations
+
+**Example - Counting Files Through Article-File Join Table:**
+
+```typescript
+// DTO
+interface IBbsArticle {
+  id: string;
+  title: string;
+  fileCount: number;  // Count files through bbs_article_files join table
+}
+
+// Prisma schema context
+model bbs_articles {
+  id    String @id @db.Uuid
+  title String @db.VarChar
+  files bbs_article_files[]  // Join table relation
+}
+
+model bbs_article_files {
+  id         String @id @db.Uuid
+  article_id String @db.Uuid
+  file_id    String @db.Uuid
+  article    bbs_articles @relation(fields: [article_id], references: [id])
+  file       bbs_files    @relation(fields: [file_id], references: [id])
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      title: true,
+      _count: {
+        select: {
+          files: true,  // Counts join table records (= file count)
+        },
+      },
+    },
+  } satisfies Prisma.bbs_articlesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IBbsArticle> {
+  return {
+    id: input.id,
+    title: input.title,
+    fileCount: input._count.files,
+  };
+}
+```
+
+#### 6.6. Common Aggregation Patterns and Best Practices
+
+**Pattern 1: Statistics Object**
+
+```typescript
+// DTO with grouped statistics
+interface IShoppingSale {
+  id: string;
+  name: string;
+  statistics: {
+    totalReviews: number;
+    totalOrders: number;
+    totalWishlistAdds: number;
+  };
+}
+
+// In select()
+_count: {
+  select: {
+    reviews: true,
+    orders: true,
+    wishlist_items: true,
+  },
+},
+
+// In transform()
+statistics: {
+  totalReviews: input._count.reviews,
+  totalOrders: input._count.orders,
+  totalWishlistAdds: input._count.wishlist_items,
+},
+```
+
+**Pattern 2: Existence Checking (Has Any)**
+
+```typescript
+// DTO with boolean flags
+interface IBbsArticle {
+  id: string;
+  title: string;
+  hasComments: boolean;
+  hasFiles: boolean;
+}
+
+// In select()
+_count: {
+  select: {
+    comments: true,
+    files: true,
+  },
+},
+
+// In transform()
+hasComments: input._count.comments > 0,
+hasFiles: input._count.files > 0,
+```
+
+**Pattern 3: Combining Count with Sample Data**
+
+```typescript
+// DTO with both count and sample items
+interface IShoppingSale {
+  id: string;
+  name: string;
+  reviewCount: number;
+  recentReviews: IReview[];  // First 3 reviews
+}
+
+// In select()
+_count: {
+  select: {
+    reviews: true,  // Total count
+  },
+},
+reviews: {
+  take: 3,  // Limit to 3
+  orderBy: { created_at: 'desc' },
+  select: {
+    id: true,
+    rating: true,
+    comment: true,
+  },
+},
+
+// In transform()
+reviewCount: input._count.reviews,  // Total count
+recentReviews: input.reviews.map(r => ({
+  id: r.id,
+  rating: r.rating,
+  comment: r.comment,
+})),
+```
+
+**Pattern 4: Performance - Count Without Loading Data**
+
+```typescript
+// When you ONLY need counts, don't load the actual records
+// ✅ EFFICIENT - Only counts, no data loaded
+_count: {
+  select: {
+    reviews: true,
+    orders: true,
+  },
+},
+
+// ❌ INEFFICIENT - Loads all records just to count them
+reviews: {
+  select: {
+    id: true,  // Loading IDs just to count = waste!
+  },
+},
+// Then: reviewCount: input.reviews.length  // Bad!
+```
+
+#### 6.7. Type Safety with Aggregations
+
+**Aggregation Result Types:**
+
+```typescript
+// The Payload type automatically includes aggregation types
+export type Payload = Prisma.shopping_salesGetPayload<
+  ReturnType<typeof select>
+>;
+
+// TypeScript knows:
+// input._count.reviews is number
+// input._sum.quantity is number | null (null if no records)
+// input._avg.rating is number | null
+// input._min.price is Decimal | null
+// input._max.created_at is Date | null
+```
+
+**Handling Null Aggregation Results:**
+
+```typescript
+// When aggregating an empty set, Prisma returns null
+// Always handle null cases!
+
+// ❌ WRONG - May crash if no orders
+totalRevenue: Number(input._sum.total_amount),
+
+// ✅ CORRECT - Handle null case
+totalRevenue: input._sum.total_amount ? Number(input._sum.total_amount) : 0,
+
+// ✅ CORRECT - Use nullish coalescing
+averageRating: input._avg.rating ?? 0,
+```
+
+#### 6.8. Advanced: Aggregations in Nested Relations
+
+**Use Case**: Display aggregated data from deeply nested relations
+
+**Example - Category with Sale Statistics:**
+
+```typescript
+// DTO
+interface IShoppingCategory {
+  id: string;
+  name: string;
+  totalSales: number;        // Count of sales in this category
+  totalProducts: number;     // Count of products in this category
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          sales: true,
+          products: true,
+        },
+      },
+    },
+  } satisfies Prisma.shopping_categoriesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingCategory> {
+  return {
+    id: input.id,
+    name: input.name,
+    totalSales: input._count.sales,
+    totalProducts: input._count.products,
+  };
+}
+```
+
+#### 6.9. Critical Rules for Aggregations
+
+**✅ DO:**
+- Use `_count` liberally for counting related records (no performance penalty)
+- Handle null results from `_sum`, `_avg`, `_min`, `_max` with nullish coalescing
+- Prefer `_count` over loading records just to count them
+- Group related counts into statistics objects for cleaner DTOs
+- Use filtered relations when you need conditional counts
+
+**❌ DON'T:**
+- Don't expect `_sum`, `_avg`, `_min`, `_max` to work on nested relation fields (they don't)
+- Don't load all relation records if you only need a count (use `_count` instead)
+- Don't forget null checks when using `_sum`, `_avg`, `_min`, `_max`
+- Don't use aggregations for complex business logic (do that in the service layer)
+
+**When Aggregations Aren't Enough:**
+- For complex aggregations (e.g., `SUM(quantity * price)`), use raw SQL or service-layer calculations
+- For conditional aggregations with complex filters, load the data and aggregate in `transform()`
+- For aggregations requiring joins across multiple tables, consider dedicated query methods
+
+#### 6.10. Complete Example with Multiple Aggregations
+
+```typescript
+// DTO - Sale with Rich Statistics
+interface IShoppingSale {
+  id: string;
+  name: string;
+  price: number;
+  statistics: {
+    totalOrders: number;
+    totalReviews: number;
+    averageRating: number;
+    wishlistCount: number;
+  };
+  engagement: {
+    hasOrders: boolean;
+    hasReviews: boolean;
+    isPopular: boolean;  // Has > 10 orders
+  };
+}
+
+// In select()
+export function select() {
+  return {
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      _count: {
+        select: {
+          orders: true,
+          reviews: true,
+          wishlist_items: true,
+        },
+      },
+      reviews: {
+        select: {
+          rating: true,  // For manual average calculation
+        },
+      },
+    },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+
+// In transform()
+export async function transform(input: Payload): Promise<IShoppingSale> {
+  const avgRating = input.reviews.length > 0
+    ? input.reviews.reduce((sum, r) => sum + r.rating, 0) / input.reviews.length
+    : 0;
+
+  return {
+    id: input.id,
+    name: input.name,
+    price: Number(input.price),
+    statistics: {
+      totalOrders: input._count.orders,
+      totalReviews: input._count.reviews,
+      averageRating: Math.round(avgRating * 10) / 10,  // Round to 1 decimal
+      wishlistCount: input._count.wishlist_items,
+    },
+    engagement: {
+      hasOrders: input._count.orders > 0,
+      hasReviews: input._count.reviews > 0,
+      isPopular: input._count.orders > 10,
+    },
+  };
+}
+
+export type Payload = Prisma.shopping_salesGetPayload<
+  ReturnType<typeof select>
+>;
+```
+
+### 7. Common Field Transformations
 
 **Date handling**:
 ```typescript
@@ -1107,7 +2179,7 @@ reviewCount: input._count.reviews,
 totalOrders: input._count.orders,
 ```
 
-### 7. Code Style and Conventions
+### 8. Code Style and Conventions
 
 - **NO** imports needed - all are auto-generated
 - Use explicit return type on transform()
