@@ -81,7 +81,11 @@ export const validate_agent_realize_collector_correct = async (props: {
       orchestrateRealizeCorrectCasting(agent.getContext(), {
         programmer: {
           template: (func) =>
-            AutoBeRealizeCollectorProgrammer.writeTemplate(func.plan),
+            AutoBeRealizeCollectorProgrammer.writeTemplate({
+              plan: func.plan,
+              body: agent.getContext().state().interface!.document.components
+                .schemas[func.plan.dtoTypeName],
+            }),
           replaceImportStatements: (next) =>
             AutoBeRealizeCollectorProgrammer.replaceImportStatements(
               agent.getContext(),

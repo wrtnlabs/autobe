@@ -1,4 +1,4 @@
-import { AutoBeRealizeCollectorPlan } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeRealizeCollectorPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -50,7 +50,12 @@ export const transformRealizeCollectorWriteHistory = async <
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          ${getDeclaration(props.plan)}
+          ${getDeclaration({
+            plan: props.plan,
+            body: ctx.state().interface!.document.components.schemas[
+              props.plan.dtoTypeName
+            ],
+          })}
 
           Here are the neighbor collectors you can utilize.
 
@@ -95,25 +100,28 @@ export const transformRealizeCollectorWriteHistory = async <
   };
 };
 
-function getDeclaration(plan: AutoBeRealizeCollectorPlan): string {
+function getDeclaration(props: {
+  plan: AutoBeRealizeCollectorPlan;
+  body: AutoBeOpenApi.IJsonSchema;
+}): string {
   return StringUtil.trim`
     Here is the declaration of the collector function for 
-    the DTO type ${plan.dtoTypeName} and its corresponding
-    Prisma schema ${plan.prismaSchemaName}.
+    the DTO type ${props.plan.dtoTypeName} and its corresponding
+    Prisma schema ${props.plan.prismaSchemaName}.
 
     ${
-      plan.references.length === 0
+      props.plan.references.length === 0
         ? ""
         : StringUtil.trim`
-          Also, as create DTO ${plan.dtoTypeName} does not include
-          every references required for the creation of the ${plan.prismaSchemaName}
+          Also, as create DTO ${props.plan.dtoTypeName} does not include
+          every references required for the creation of the ${props.plan.prismaSchemaName}
           record, you have to accept some references as function
           parameters like below:
         `
     }
 
     \`\`\`typescript
-    ${AutoBeRealizeCollectorProgrammer.writeTemplate(plan)}
+    ${AutoBeRealizeCollectorProgrammer.writeTemplate(props)}
     \`\`\`
   `;
 }

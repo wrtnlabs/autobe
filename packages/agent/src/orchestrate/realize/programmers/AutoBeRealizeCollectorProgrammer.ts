@@ -3,7 +3,7 @@ import {
   AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
@@ -33,21 +33,30 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function writeTemplate(plan: AutoBeRealizeCollectorPlan): string {
+  export function writeTemplate(props: {
+    plan: AutoBeRealizeCollectorPlan;
+    body: AutoBeOpenApi.IJsonSchema;
+  }): string {
     return StringUtil.trim`
-      export namespace ${getName(plan.dtoTypeName)} {
+      export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
-          body: ${plan.dtoTypeName};
-          ${plan.references
+          body: ${props.plan.dtoTypeName};
+          ${props.plan.references
             .map(
               (r) =>
                 `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
             )
             .join("\n")}
+          ${
+            AutoBeOpenApiTypeChecker.isObject(props.body) &&
+            props.body.properties.ip !== undefined
+              ? `ip: string;`
+              : ""
+          }
         }) {
           return {
             ...
-          } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
+          } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
         }
       }
     `;

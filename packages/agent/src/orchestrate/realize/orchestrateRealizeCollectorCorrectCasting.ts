@@ -20,7 +20,12 @@ export const orchestrateRealizeCollectorCorrectCasting = <
   orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
       template: (func) =>
-        AutoBeRealizeCollectorProgrammer.writeTemplate(func.plan),
+        AutoBeRealizeCollectorProgrammer.writeTemplate({
+          plan: func.plan,
+          body: ctx.state().interface!.document.components.schemas[
+            func.plan.dtoTypeName
+          ],
+        }),
       replaceImportStatements: (next) =>
         AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {
           dtoTypeName: next.function.plan.dtoTypeName,

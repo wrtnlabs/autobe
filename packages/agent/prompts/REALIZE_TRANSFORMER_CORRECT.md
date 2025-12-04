@@ -125,6 +125,8 @@ When fixing compilation errors, if you find inline transformation logic that sho
 ```typescript
 // ❌ WRONG - Inline logic when ShoppingSaleTagTransformer exists
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -158,6 +160,8 @@ export namespace ShoppingSaleTransformer {
 
 // ✅ CORRECT - Replace with neighbor transformer calls
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -168,8 +172,6 @@ export namespace ShoppingSaleTransformer {
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
-
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export async function transform(input: Payload): Promise<IShoppingSale> {
     return {
@@ -211,6 +213,8 @@ export namespace ShoppingSaleTransformer {
 ```typescript
 // Original code (fails compilation + architectural violation)
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -226,8 +230,6 @@ export namespace ShoppingSaleTransformer {
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
-
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export async function transform(input: Payload): Promise<IShoppingSale> {
     return {
@@ -247,6 +249,8 @@ export namespace ShoppingSaleTransformer {
 
 // ✅ CORRECTED - Fixed compilation + used neighbor transformer
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -257,8 +261,6 @@ export namespace ShoppingSaleTransformer {
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
-
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export async function transform(input: Payload): Promise<IShoppingSale> {
     return {
@@ -630,19 +632,23 @@ REQUIREMENTS:
 **Example**:
 ```typescript
 export namespace UserTransformer {
+  export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        created_at: true,
+      },
+    } satisfies Prisma.usersFindManyArgs;
+  }
+
   export async function transform(input: Payload): Promise<IUser> {
     return {
       id: input.id,
       name: input.name,
-      created_at: input.created_at.toISOString(),
-    };
-  }
-
-  export function select() {
-    return {
-      id: true,
-      name: true,
-      created_at: true,
+      createdAt: input.created_at.toISOString(),
     };
   }
 }
@@ -742,21 +748,25 @@ REQUIREMENTS:
 **Example** (refinement needed):
 ```typescript
 export namespace UserTransformer {
+  export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        email: true, // Added
+        created_at: true,
+      },
+    } satisfies Prisma.usersFindManyArgs;
+  }
+
   export async function transform(input: Payload): Promise<IUser> {
     return {
       id: input.id,
       name: input.name,
       email: input.email, // Added
-      created_at: input.created_at.toISOString(),
-    };
-  }
-
-  export function select() {
-    return {
-      id: true,
-      name: true,
-      email: true, // Added
-      created_at: true,
+      createdAt: input.created_at.toISOString(),
     };
   }
 }
@@ -801,19 +811,23 @@ CORRECTION STRATEGY:
     `,
     draft: `
 export namespace UserTransformer {
+  export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        created_at: true,
+      },
+    } satisfies Prisma.usersFindManyArgs;
+  }
+
   export async function transform(input: Payload): Promise<IUser> {
     return {
       id: input.id,
       name: input.name,
-      created_at: input.created_at.toISOString(),
-    };
-  }
-
-  export function select() {
-    return {
-      id: true,
-      name: true,
-      created_at: true,
+      createdAt: input.created_at.toISOString(),
     };
   }
 }
@@ -822,21 +836,25 @@ export namespace UserTransformer {
       review: "Draft missing email, needs refinement",
       final: `
 export namespace UserTransformer {
+  export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+  export function select() {
+    return {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        created_at: true,
+      },
+    } satisfies Prisma.usersFindManyArgs;
+  }
+
   export async function transform(input: Payload): Promise<IUser> {
     return {
       id: input.id,
       name: input.name,
       email: input.email,
-      created_at: input.created_at.toISOString(),
-    };
-  }
-
-  export function select() {
-    return {
-      id: true,
-      name: true,
-      email: true,
-      created_at: true,
+      createdAt: input.created_at.toISOString(),
     };
   }
 }
@@ -1038,6 +1056,17 @@ export namespace IAutoBeTypeScriptCompileResult {
 **Solution**:
 ```typescript
 // ❌ WRONG - field used in transform() but not in select()
+export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+export function select() {
+  return {
+    select: {
+      id: true,
+      // email is missing!
+    },
+  } satisfies Prisma.usersFindManyArgs;
+}
+
 export async function transform(input: Payload): Promise<IUser> {
   return {
     id: input.id,
@@ -1045,19 +1074,16 @@ export async function transform(input: Payload): Promise<IUser> {
   };
 }
 
-export function select() {
-  return {
-    id: true,
-    // email is missing!
-  };
-}
-
 // ✅ CORRECT - all fields used in transform() must be in select()
+export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
 export function select() {
   return {
-    id: true,
-    email: true, // Added
-  };
+    select: {
+      id: true,
+      email: true, // Added
+    },
+  } satisfies Prisma.usersFindManyArgs;
 }
 ```
 
@@ -1224,6 +1250,17 @@ If you see compilation error like:
 **Solution**:
 ```typescript
 // ✅ CORRECT - use ArrayUtil.asyncMap for array transformations
+export type Payload = Prisma.usersGetPayload<ReturnType<typeof select>>;
+
+export function select() {
+  return {
+    select: {
+      id: true,
+      posts: PostTransformer.select(),
+    },
+  } satisfies Prisma.usersFindManyArgs;
+}
+
 export async function transform(input: Payload): Promise<IUser> {
   return {
     id: input.id,
@@ -1231,15 +1268,6 @@ export async function transform(input: Payload): Promise<IUser> {
       input.posts,
       (post) => PostTransformer.transform(post)
     ),
-  };
-}
-
-export function select() {
-  return {
-    id: true,
-    posts: {
-      select: PostTransformer.select(),
-    },
   };
 }
 ```

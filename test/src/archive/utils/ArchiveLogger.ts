@@ -68,6 +68,7 @@ export namespace ArchiveLogger {
       content.push(
         `  - kind: ${event.kind}`,
         `  - function: ${event.function.type}`,
+        `  - file: ${event.function.location}`,
       );
     else if (event.type === "realizeValidate")
       content.push(

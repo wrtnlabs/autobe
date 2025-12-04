@@ -87,12 +87,18 @@ export const transformRealizeCollectorCorrectHistory = async <
     userMessage: StringUtil.trim`
       Correct the TypeScript collector code implementation.
 
-      The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
-      When modifying, modify the entire code, but not the import statement.
+      The instruction to write at first was as follows, and the code you received is 
+      the code you wrote according to this instruction. When modifying, modify the 
+      entire code, but not the import statement.
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeCollectorProgrammer.writeTemplate(props.function.plan)}
+      ${AutoBeRealizeCollectorProgrammer.writeTemplate({
+        plan: props.function.plan,
+        body: ctx.state().interface!.document.components.schemas[
+          props.function.plan.dtoTypeName
+        ],
+      })}
 
       Current code is as follows:
 

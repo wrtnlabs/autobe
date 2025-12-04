@@ -227,7 +227,7 @@ EDGE CASES:
 Write complete transformer code following the plan.
 
 **CRITICAL RULES**:
-1. **Order matters**: transform() first, select() second, Payload last
+1. **Order matters**: Payload first, select() second, transform() last
 2. Use plan as specification - every field in Section 3 mapping table must appear
 3. Reuse neighbor transformers as identified in Section 3
 4. Use `satisfies Prisma.{table}FindManyArgs` for select() type safety
@@ -235,9 +235,11 @@ Write complete transformer code following the plan.
 
 **Draft Quality Checklist**:
 - ✓ Namespace structure correct
-- ✓ transform() function first with Payload type
+- ✓ Payload type first - declares what data structure we're working with
+- ✓ select() function second - defines how to fetch that Payload from DB
 - ✓ All mappings from Section 3 implemented
 - ✓ select() returns object with `select` key
+- ✓ transform() function last - converts Payload to DTO
 - ✓ Neighbor transformers called (not inlined)
 - ✓ Payload type uses ReturnType<typeof select>
 
@@ -270,7 +272,7 @@ Your `review` field MUST check these categories systematically:
 #### Checklist 3: System Prompt Rules Compliance
 ```
 ❓ MANDATORY: Are neighbor transformers reused (never inline when transformer exists)?
-❓ Is function order correct (transform → select → Payload)?
+❓ Is function order correct (Payload → select → transform)?
 ❓ Is `satisfies Prisma.{table}FindManyArgs` used in select()?
 ❓ Does select() use `select` key (NOT `include`)?
 ❓ Is Payload defined as `Prisma.{table}GetPayload<ReturnType<typeof select>>`?
@@ -353,20 +355,20 @@ If you plan to **reuse another Transformer** (e.g., `CategoryTransformer.transfo
 ```typescript
 // What you generate
 export namespace ShoppingSaleTransformer {
-  export async function transform(input: Payload): Promise<IShoppingSale> {
-    // DB -> API transformation logic
-  }
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export function select() {
-    // Returns select specification
+    // Returns select specification - defines DB schema mapping
     return {
       select: {
-        // Explicitly specify each field
+        // Explicitly specify each field from DB
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
 
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+  export async function transform(input: Payload): Promise<IShoppingSale> {
+    // DB -> API transformation logic using Payload type
+  }
 }
 
 // How it gets used
@@ -431,6 +433,8 @@ Does a neighbor transformer exist for the nested DTO type you need to transform?
 
 // ✅ CORRECT - Reusing neighbor transformers (MANDATORY)
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -443,8 +447,6 @@ export namespace ShoppingSaleTransformer {
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
-
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export async function transform(input: Payload): Promise<IShoppingSale> {
     return {
@@ -463,6 +465,8 @@ export namespace ShoppingSaleTransformer {
 
 // ❌ ABSOLUTELY FORBIDDEN - Ignoring existing transformers
 export namespace ShoppingSaleTransformer {
+  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
+
   export function select() {
     return {
       select: {
@@ -486,8 +490,6 @@ export namespace ShoppingSaleTransformer {
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
-
-  export type Payload = Prisma.shopping_salesGetPayload<ReturnType<typeof select>>;
 
   export async function transform(input: Payload): Promise<IShoppingSale> {
     return {
@@ -650,37 +652,37 @@ dtoTypeName
 
 ### 1. Namespace Structure
 
-**CRITICAL: Follow this exact order - transform() first, select() second, Payload last**
+**CRITICAL: Follow this exact order - Payload first, select() second, transform() last**
 
 ```typescript
 export namespace {TypeName}Transformer {
-  // 1. Transform function: DB -> DTO (async for safety)
-  export async function transform(input: Payload): Promise<{ITypeName}> {
-    // Transformation logic
-  }
+  // 1. Type alias for Prisma payload: Declares the data structure we work with
+  export type Payload = Prisma.{table_name}GetPayload<
+    ReturnType<typeof select>
+  >;
 
-  // 2. Select specification function
+  // 2. Select specification function: Defines how to fetch Payload from DB
   export function select() {
     // Return Prisma select specification
     return {
       select: {
-        // Explicitly specify each field needed
+        // Explicitly specify each field needed from DB
       },
     } satisfies Prisma.{prisma_schema_name}FindManyArgs;
   }
 
-  // 3. Type alias for Prisma payload
-  export type Payload = Prisma.{table_name}GetPayload<
-    ReturnType<typeof select>
-  >;
+  // 3. Transform function: DB -> DTO (async for safety)
+  export async function transform(input: Payload): Promise<{ITypeName}> {
+    // Transformation logic converting Payload to DTO
+  }
 }
 ```
 
 **Why this order?**
-- **transform() first**: Shows what this transformer does (most important for readability)
-- **select() second**: Shows how it fetches data (implementation detail)
-- **Payload last**: Type definition (least important for understanding)
-- TypeScript namespace hoisting makes order functionally irrelevant, but this order maximizes code readability
+- **Payload first**: Declares upfront what data structure we're working with - makes it clear that select() must produce this exact type
+- **select() second**: When writing select(), you know it must produce the Payload type - forces careful analysis of Prisma DB schema to match Payload requirements
+- **transform() last**: Converts the Payload to DTO - at this point both the data structure (Payload) and how to fetch it (select) are established
+- **CRITICAL**: This order forces you to think about the DB schema (Payload from Prisma) BEFORE writing transformation logic, preventing DTO-name-based assumptions that don't match actual DB column/relation names
 
 ### 2. The select() Function - Database Query Specification
 
@@ -2950,17 +2952,9 @@ Mapping strategy:
     `,
     draft: `
 export namespace ShoppingSaleUnitStockTransformer {
-  export async function transform(input: Payload): Promise<IShoppingSaleUnitStock> {
-    return {
-      id: input.id,
-      stockQuantity: input.stock_quantity,
-      updatedAt: input.updated_at.toISOString(),
-      sale: {
-        id: input.shopping_sale.id,
-        name: input.shopping_sale.name,
-      },
-    };
-  }
+  export type Payload = Prisma.shopping_sale_snapshot_unit_stocksGetPayload<
+    ReturnType<typeof select>
+  >;
 
   export function select() {
     return {
@@ -2978,9 +2972,17 @@ export namespace ShoppingSaleUnitStockTransformer {
     } satisfies Prisma.shopping_sale_snapshot_unit_stocksFindManyArgs;
   }
 
-  export type Payload = Prisma.shopping_sale_snapshot_unit_stocksGetPayload<
-    ReturnType<typeof select>
-  >;
+  export async function transform(input: Payload): Promise<IShoppingSaleUnitStock> {
+    return {
+      id: input.id,
+      stockQuantity: input.stock_quantity,
+      updatedAt: input.updated_at.toISOString(),
+      sale: {
+        id: input.shopping_sale.id,
+        name: input.shopping_sale.name,
+      },
+    };
+  }
 }
     `,
     revise: {
@@ -3048,28 +3050,11 @@ model bbs_categories {
 ```typescript
 export namespace BbsArticleTransformer {
   /**
-   * Transform Prisma bbs_articles payload to IBbsArticle DTO.
-   *
-   * Converts database representation to API response format with:
-   * - Scalar fields: snake_case (DB) -> camelCase (API)
-   * - Date -> ISO string conversion
-   * - Nested author object (reuses BbsMemberTransformer)
-   * - Nested category object (reuses BbsCategoryTransformer)
-   * - Comment count aggregation
+   * Prisma payload type derived from select specification.
    */
-  export async function transform(input: Payload): Promise<IBbsArticle> {
-    return {
-      id: input.id,
-      title: input.title,
-      content: input.content,
-      createdAt: input.created_at.toISOString(),
-      // Reuse BbsMemberTransformer for author
-      author: await BbsMemberTransformer.transform(input.author),
-      // Reuse BbsCategoryTransformer for category
-      category: await BbsCategoryTransformer.transform(input.category),
-      commentCount: input._count.comments,
-    };
-  }
+  export type Payload = Prisma.bbs_articlesGetPayload<
+    ReturnType<typeof select>
+  >;
 
   /**
    * Prisma select specification for bbs_articles query.
@@ -3101,11 +3086,28 @@ export namespace BbsArticleTransformer {
   }
 
   /**
-   * Prisma payload type derived from select specification.
+   * Transform Prisma bbs_articles payload to IBbsArticle DTO.
+   *
+   * Converts database representation to API response format with:
+   * - Scalar fields: snake_case (DB) -> camelCase (API)
+   * - Date -> ISO string conversion
+   * - Nested author object (reuses BbsMemberTransformer)
+   * - Nested category object (reuses BbsCategoryTransformer)
+   * - Comment count aggregation
    */
-  export type Payload = Prisma.bbs_articlesGetPayload<
-    ReturnType<typeof select>
-  >;
+  export async function transform(input: Payload): Promise<IBbsArticle> {
+    return {
+      id: input.id,
+      title: input.title,
+      content: input.content,
+      createdAt: input.created_at.toISOString(),
+      // Reuse BbsMemberTransformer for author
+      author: await BbsMemberTransformer.transform(input.author),
+      // Reuse BbsCategoryTransformer for category
+      category: await BbsCategoryTransformer.transform(input.category),
+      commentCount: input._count.comments,
+    };
+  }
 }
 ```
 

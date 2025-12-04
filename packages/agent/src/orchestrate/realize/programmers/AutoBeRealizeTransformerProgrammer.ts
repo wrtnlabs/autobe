@@ -48,6 +48,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
   export function writeTemplate(plan: AutoBeRealizeTransformerPlan): string {
     return StringUtil.trim`
       export namespace ${getName(plan.dtoTypeName)} {
+        export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
+
         export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {
           ...
         }
@@ -57,8 +59,6 @@ export namespace AutoBeRealizeTransformerProgrammer {
             ...
           } satisfies Prisma.${plan.prismaSchemaName}FindManyArgs;
         }
-
-        export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
       }
     `;
   }
