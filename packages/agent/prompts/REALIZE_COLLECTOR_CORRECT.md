@@ -372,9 +372,10 @@ Your `review` field MUST check these categories systematically:
 ❓ Are relationship fields using proper syntax ({ connect: { id: ... } })?
 ❓ Is `satisfies Prisma.{table}CreateInput` still present?
 ❓ Are no fabricated fields introduced (all from Prisma schema)?
+❓ If this is a Session collector, does it use the dual-reference IP pattern (props.body.ip ?? props.ip)?
 ```
 
-**How to check**: Cross-reference neighbor collector list, verify each nested create uses collector.
+**How to check**: Cross-reference neighbor collector list, verify each nested create uses collector. For Session collectors, verify IP field uses dual-reference pattern.
 
 #### Checklist 4: No Regression
 ```
@@ -601,6 +602,7 @@ The draft phase is where you make your first attempt. The review phase is where 
 - [ ] **🚨 CRITICAL: Storing computed/read-only fields** - Trying to store DTO fields that don't exist in Prisma schema?
 - [ ] **DTO ≠ DB verification** - All collect() fields VERIFIED to exist in Prisma schema (not just DTO)?
 - [ ] **Computed field handling** - DTO-only fields (counts, calculations, etc.) IGNORED (not stored)?
+- [ ] **🚨 CRITICAL: Session IP handling** - Session collectors using dual-reference pattern (props.body.ip ?? props.ip)?
 
 **4. Compilation Guarantee:**
 - [ ] **Would this draft actually compile?** - Be honest with yourself
@@ -1616,3 +1618,250 @@ DTO field not in Prisma schema?
    └─ IGNORE the field in Collector
    └─ Transformer will calculate it at read time
 ```
+
+### 6.7. IP Field Special Handling in Session Collectors
+
+**🚨 CRITICAL ERROR: Forgetting the dual-reference IP pattern in Session collectors**
+
+**Error Pattern**:
+- Type error: Type 'string | undefined' is not assignable to type 'string'
+- Compilation error: Property 'ip' is required in 'Prisma.{session_table}CreateInput'
+- Missing required field 'ip' in CreateInput
+- Nullable IP assigned when schema requires non-null
+
+**Root Cause**:
+You forgot that Session collectors have a **special dual-reference pattern** for the `ip` field. The AI generated code that uses ONLY `props.body.ip` (which is optional) for a required non-null database column, causing a compilation error.
+
+**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md Section 1.1**:
+- Session collectors must accept **TWO sources for IP**: `props.body.ip` (optional from DTO) AND `props.ip` (required parameter from server)
+- Database column `ip` is **NOT NULL** (required field)
+- DTO field `ip` is **OPTIONAL** (`string?` or `string | undefined`)
+- Must use the pattern: `ip: props.body.ip ?? props.ip`
+
+**Why This Dual Pattern Exists**:
+
+```typescript
+// SSR (Server-Side Rendering) Scenario:
+// - Backend server makes API call on behalf of client
+// - Real client IP passed in body.ip (NOT the SSR server's IP)
+// - props.body.ip = "203.0.113.42" (actual user)
+// - props.ip = "10.0.0.5" (SSR server, wrong!)
+// - Result: Use props.body.ip (203.0.113.42) ✓
+
+// CSR (Client-Side Rendering) Scenario:
+// - Client directly calls API
+// - body.ip not provided (undefined)
+// - props.ip extracted from HTTP request
+// - props.body.ip = undefined
+// - props.ip = "203.0.113.42" (actual user)
+// - Result: Use props.ip (203.0.113.42) ✓
+```
+
+**The Critical Mistake**:
+
+```typescript
+// Prisma Schema - IP is NOT NULL!
+model shopping_seller_sessions {
+  id                   String   @id @db.Uuid
+  shopping_seller_id   String   @db.Uuid
+  ip                   String   @db.VarChar  // ← NOT NULL (required!)
+  created_at           DateTime @default(now())
+  // ...
+}
+
+// DTO - IP is OPTIONAL!
+interface IShoppingSellerSession.ICreate {
+  ip?: string;              // ← OPTIONAL! Might be undefined!
+  href: string;
+  referrer: string | null;
+  user_agent: string | null;
+}
+
+// ❌ WRONG - Using only body.ip (which is optional!)
+export async function collect(props: {
+  body: IShoppingSellerSession.ICreate;
+  shoppingSeller: IEntity;
+  ip: string;  // ← AI forgot to use this parameter!
+}) {
+  return {
+    id: v4(),
+    shopping_seller_id: props.shoppingSeller.id,
+    ip: props.body.ip,  // ❌ COMPILATION ERROR! Type 'string | undefined' not assignable to 'string'
+    href: props.body.href,
+    referrer: props.body.referrer,
+    user_agent: props.body.user_agent,
+    created_at: new Date(),
+  } satisfies Prisma.shopping_seller_sessionsCreateInput;  // ❌ Type error!
+}
+```
+
+**The Correct Solution - Dual Reference Pattern**:
+
+```typescript
+// ✅ CORRECT - Using the dual-reference IP pattern
+export async function collect(props: {
+  body: IShoppingSellerSession.ICreate;
+  shoppingSeller: IEntity;
+  ip: string;  // ✅ Server-extracted IP (fallback)
+}) {
+  return {
+    id: v4(),
+    shopping_seller_id: props.shoppingSeller.id,
+    // ✅ CORRECT! Prioritize client-provided IP (SSR), fallback to server IP (CSR)
+    ip: props.body.ip ?? props.ip,
+    href: props.body.href,
+    referrer: props.body.referrer,
+    user_agent: props.body.user_agent,
+    created_at: new Date(),
+  } satisfies Prisma.shopping_seller_sessionsCreateInput;  // ✅ Type-safe!
+}
+```
+
+**Why This Pattern Is Critical**:
+
+1. **SSR Accuracy**: In SSR environments (Next.js, SvelteKit, etc.), backend server calls API on behalf of user
+   - Without `body.ip`, you'd log the SSR server's IP (10.0.0.x), not the real user's IP
+   - Security logs would be useless - all users appear to come from same SSR server
+
+2. **CSR Fallback**: In traditional CSR, client calls API directly
+   - `body.ip` is typically undefined (client doesn't know its own public IP)
+   - Must fallback to `props.ip` extracted from HTTP headers (X-Forwarded-For, etc.)
+
+3. **Security & Compliance**: Accurate IP tracking is critical for:
+   - Session hijacking detection
+   - Geographic access restrictions
+   - Audit trails for compliance (GDPR, PCI-DSS)
+   - Rate limiting and abuse prevention
+   - Legal forensics in security incidents
+
+**Session Collector Identification**:
+
+Session collectors are identified by these characteristics:
+- Table name contains "session" (e.g., `shopping_seller_sessions`, `bbs_member_sessions`)
+- DTO name contains "Session" (e.g., `IShoppingSellerSession.ICreate`)
+- Has `ip` field that's required in DB but optional in DTO
+- Used in login/join/refresh operations
+
+**Common Session Tables**:
+```typescript
+// E-commerce sessions
+shopping_seller_sessions
+shopping_customer_sessions
+shopping_admin_sessions
+
+// Forum/BBS sessions
+bbs_member_sessions
+bbs_admin_sessions
+
+// Generic auth sessions
+user_sessions
+admin_sessions
+api_sessions
+```
+
+**How to Fix During Correction**:
+
+1. **Identify if this is a Session collector**:
+   - Does table name contain "session"?
+   - Does it have an `ip` field?
+
+2. **Check the props signature**:
+   - Does it accept `ip: string` parameter?
+   - If NOT, this is a critical error - props MUST include `ip: string`
+
+3. **Check the IP assignment**:
+   - Is it using `props.body.ip` directly? → **WRONG!**
+   - Is it using `props.ip` directly? → **WRONG!**
+   - Is it using `props.body.ip ?? props.ip`? → **CORRECT!**
+
+4. **Verify compilation**:
+   - Does IP field satisfy the non-null CreateInput requirement?
+   - `props.body.ip ?? props.ip` has type `string` (correct!)
+   - `props.body.ip` has type `string | undefined` (compilation error!)
+
+**Examples of Session Collectors**:
+
+```typescript
+// ✅ CORRECT - Shopping seller session
+export namespace ShoppingSellerSessionCollector {
+  export async function collect(props: {
+    body: IShoppingSellerSession.ICreate;
+    shoppingSeller: IEntity;
+    ip: string;  // ✅ Server-extracted IP parameter
+  }) {
+    return {
+      id: v4(),
+      shopping_seller_id: props.shoppingSeller.id,
+      ip: props.body.ip ?? props.ip,  // ✅ Dual reference!
+      href: props.body.href,
+      referrer: props.body.referrer,
+      user_agent: props.body.user_agent,
+      created_at: new Date(),
+    } satisfies Prisma.shopping_seller_sessionsCreateInput;
+  }
+}
+
+// ✅ CORRECT - BBS member session
+export namespace BbsMemberSessionCollector {
+  export async function collect(props: {
+    body: IBbsMemberSession.ICreate;
+    member: IEntity;
+    ip: string;  // ✅ Server-extracted IP parameter
+  }) {
+    return {
+      id: v4(),
+      bbs_member_id: props.member.id,
+      ip: props.body.ip ?? props.ip,  // ✅ Dual reference!
+      href: props.body.href,
+      referrer: props.body.referrer ?? null,
+      user_agent: props.body.user_agent ?? null,
+      created_at: new Date(),
+    } satisfies Prisma.bbs_member_sessionsCreateInput;
+  }
+}
+```
+
+**The Pattern to Remember**:
+
+```typescript
+// For ALL Session collectors:
+export async function collect(props: {
+  body: I{Entity}Session.ICreate;
+  {entity}: IEntity;
+  ip: string;  // ← MUST have this parameter
+}) {
+  return {
+    id: v4(),
+    {entity}_id: props.{entity}.id,
+    ip: props.body.ip ?? props.ip,  // ← MUST use this pattern
+    // ... other fields
+  } satisfies Prisma.{entity}_sessionsCreateInput;
+}
+```
+
+**Decision Rule**:
+
+```
+Is this a Session collector?
+│
+├─ Table name contains "session"? → YES
+├─ Has ip field in schema? → YES
+├─ ip is NOT NULL in schema? → YES
+└─ ip is optional in DTO? → YES
+   │
+   ✓ This requires the dual-reference IP pattern!
+
+Required Corrections:
+1. props must include: ip: string
+2. IP assignment must be: ip: props.body.ip ?? props.ip
+3. NEVER use only props.body.ip (compilation error!)
+4. NEVER use only props.ip (loses SSR accuracy!)
+```
+
+**Remember**:
+- **Session collectors are special** - they need dual IP sources
+- **props.body.ip**: Optional, for SSR environments (prioritize this)
+- **props.ip**: Required parameter, for CSR fallback (server-extracted)
+- **Pattern**: `ip: props.body.ip ?? props.ip` (ALWAYS!)
+- **Why**: Accurate IP tracking across SSR and CSR architectures
+- **Compilation**: Dual reference ensures type safety (string, not string | undefined)
