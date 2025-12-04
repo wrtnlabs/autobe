@@ -62,15 +62,13 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
         }),
 
       // Transform history using Transformer-specific transformer
-      histories: async (next) => {
-        return transformRealizeTransformerCorrectHistory({
+      histories: (next) =>
+        transformRealizeTransformerCorrectHistory(ctx, {
           plan: next.function.plan,
           function: next.function,
-          document,
           failures: next.failures,
           preliminary: next.preliminary,
-        });
-      },
+        }),
 
       // Create controller with Transformer-specific validation
       controller: (next) => {

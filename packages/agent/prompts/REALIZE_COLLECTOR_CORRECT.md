@@ -87,7 +87,7 @@ thinking: "Fixed error on line 23, line 45, line 67..."
 - Required vs optional field mismatches
 - NOT needed for: Simple type conversions, null/undefined handling, imports, syntax errors
 
-**DTO Schema Information**:
+**DTO Type Information**:
 - DTO type information is already provided from the DTO type names
 - Complete type definitions are automatically available
 - NO explicit schema requests needed for DTO information

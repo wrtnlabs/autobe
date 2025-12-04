@@ -38,7 +38,7 @@ export const transformRealizeTransformerWriteHistory = async <
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here are the relevant schemas for the DTO type ${props.plan.dtoTypeName}:
+          Here are the DTO types relevant with ${props.plan.dtoTypeName}:
 
           \`\`\`json
           ${JSON.stringify(dto)}

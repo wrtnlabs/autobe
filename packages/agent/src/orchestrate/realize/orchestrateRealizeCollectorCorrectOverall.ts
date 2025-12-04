@@ -62,15 +62,13 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
         }),
 
       // Transform history using Collector-specific transformer
-      histories: async (next) => {
-        return transformRealizeCollectorCorrectHistory({
+      histories: (next) =>
+        transformRealizeCollectorCorrectHistory(ctx, {
           plan: next.function.plan,
           function: next.function,
-          document,
           failures: next.failures,
           preliminary: next.preliminary,
-        });
-      },
+        }),
 
       // Create controller with Collector-specific validation
       controller: (next) => {
