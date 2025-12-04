@@ -54,7 +54,7 @@ export const orchestrateRealizeOperationCorrectCasting = async <
             operation: scenario.operation,
             schemas: document.components.schemas,
             code: next.code,
-            decoratorType: scenario.decoratorEvent?.decorator.name,
+            payload: scenario.decoratorEvent?.payload.name,
           },
         );
       },

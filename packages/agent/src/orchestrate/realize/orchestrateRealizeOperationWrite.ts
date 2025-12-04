@@ -159,7 +159,7 @@ async function process<Model extends ILlmSchema.Model>(
             operation: props.scenario.operation,
             schemas: props.document.components.schemas,
             code: pointer.value.revise.final ?? pointer.value.draft,
-            decoratorType: props.authorization?.payload.name,
+            payload: props.authorization?.payload.name,
           },
         ),
       };

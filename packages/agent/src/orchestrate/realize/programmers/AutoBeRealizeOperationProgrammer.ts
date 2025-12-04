@@ -64,10 +64,10 @@ export namespace AutoBeRealizeOperationProgrammer {
       operation: AutoBeOpenApi.IOperation;
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
       code: string;
-      decoratorType?: string;
+      payload?: string;
     },
   ): Promise<string> {
-    let { code, decoratorType } = props;
+    let { code, payload } = props;
 
     // Beautify code first for consistent formatting
     const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -85,9 +85,9 @@ export namespace AutoBeRealizeOperationProgrammer {
     const imports = writeImportStatements(props);
 
     // Only add decoratorType import if it exists
-    if (decoratorType) {
+    if (payload) {
       imports.push(
-        `import { ${decoratorType} } from "../decorators/payload/${decoratorType}"`,
+        `import { ${payload} } from "../decorators/payload/${payload}"`,
       );
     }
     imports.push(
