@@ -113,7 +113,7 @@ async function process<Model extends ILlmSchema.Model>(
       };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "realizeWrite",
-      controller: createController({
+      controller: createController(ctx, {
         model: ctx.model,
         plan: props.plan,
         neighbors: props.neighbors,
@@ -160,13 +160,16 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  plan: AutoBeRealizeCollectorPlan;
-  neighbors: AutoBeRealizeCollectorPlan[];
-  build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
-}): ILlmController<Model> {
+function createController<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    model: Model;
+    plan: AutoBeRealizeCollectorPlan;
+    neighbors: AutoBeRealizeCollectorPlan[];
+    build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
+    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  },
+): ILlmController<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
@@ -181,6 +184,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     const errors: IValidation.IError[] =
       AutoBeRealizeCollectorProgrammer.validate({
+        application: ctx.state().prisma!.result.data,
+        mappings: result.data.request.mappings,
         plan: props.plan,
         neighbors: props.neighbors,
         draft: result.data.request.draft,

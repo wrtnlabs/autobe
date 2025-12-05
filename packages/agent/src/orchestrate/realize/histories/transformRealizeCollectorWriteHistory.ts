@@ -23,6 +23,12 @@ export const transformRealizeCollectorWriteHistory = async <
     neighbors: AutoBeRealizeCollectorPlan[];
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
+  const application: AutoBePrisma.IApplication =
+    ctx.state().prisma!.result.data;
+  const model: AutoBePrisma.IModel = application.files
+    .map((f) => f.models)
+    .flat()
+    .find((m) => m.name === props.plan.prismaSchemaName)!;
   const dto: Record<string, string> =
     await AutoBeRealizeCollectorProgrammer.writeStructures(
       ctx,
@@ -59,11 +65,8 @@ export const transformRealizeCollectorWriteHistory = async <
             body: ctx.state().interface!.document.components.schemas[
               props.plan.dtoTypeName
             ],
-            model: ctx
-              .state()
-              .prisma!.result.data.files.map((f) => f.models)
-              .flat()
-              .find((m) => m.name === props.plan.prismaSchemaName)!,
+            model,
+            application,
           })}
 
           Here are the neighbor collectors you can utilize.
@@ -80,6 +83,15 @@ export const transformRealizeCollectorWriteHistory = async <
             })),
           )}
           \`\`\`
+
+          At last, here is the list of Prisma schema members you have to consider:
+
+          ${AutoBeRealizeCollectorProgrammer.getRequired({
+            application,
+            model,
+          })
+            .map((r) => `- \`${r}\``)
+            .join("\n")}
         `,
       },
     ],
@@ -113,6 +125,7 @@ function getDeclaration(props: {
   plan: AutoBeRealizeCollectorPlan;
   body: AutoBeOpenApi.IJsonSchema;
   model: AutoBePrisma.IModel;
+  application: AutoBePrisma.IApplication;
 }): string {
   return StringUtil.trim`
     Here is the declaration of the collector function for 

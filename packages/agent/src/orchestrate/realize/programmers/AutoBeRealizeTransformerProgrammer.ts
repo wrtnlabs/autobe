@@ -3,25 +3,32 @@ import {
   AutoBeRealizeTransformerPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 
 export namespace AutoBeRealizeTransformerProgrammer {
-  export function filter(key: string): boolean {
+  export function filter(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    key: string;
+  }): boolean {
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+      props.schemas[props.key];
+    if (schema === undefined) return false;
     return (
-      key !== "IAuthorizationToken" &&
-      key !== "IEntity" &&
-      key.startsWith("IPage") === false &&
-      key.endsWith(".IRequest") === false &&
-      key.endsWith(".ICreate") === false &&
-      key.endsWith(".IUpdate") === false &&
-      key.endsWith(".IAuthorized") === false &&
-      key.endsWith(".IJoin") === false &&
-      key.endsWith(".ILogin") === false &&
-      key.endsWith(".IRefresh") === false
+      AutoBeOpenApiTypeChecker.isObject(schema) &&
+      props.key !== "IAuthorizationToken" &&
+      props.key !== "IEntity" &&
+      props.key.startsWith("IPage") === false &&
+      props.key.endsWith(".IRequest") === false &&
+      props.key.endsWith(".ICreate") === false &&
+      props.key.endsWith(".IUpdate") === false &&
+      props.key.endsWith(".IAuthorized") === false &&
+      props.key.endsWith(".IJoin") === false &&
+      props.key.endsWith(".ILogin") === false &&
+      props.key.endsWith(".IRefresh") === false
     );
   }
 

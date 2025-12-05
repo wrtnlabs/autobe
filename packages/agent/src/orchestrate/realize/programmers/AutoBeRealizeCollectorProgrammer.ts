@@ -9,6 +9,7 @@ import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeRealizeCollectorWriteApplication } from "../structures/IAutoBeRealizeCollectorWriteApplication";
 
 export namespace AutoBeRealizeCollectorProgrammer {
   export function filter(key: string): boolean {
@@ -34,11 +35,33 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
+  export function getRequired(props: {
+    application: AutoBePrisma.IApplication;
+    model: AutoBePrisma.IModel;
+  }): string[] {
+    return [
+      props.model.primaryField.name,
+      ...props.model.plainFields.map((f) => f.name),
+      ...props.model.foreignFields.map((f) => f.relation.name),
+      ...props.application.files
+        .map((f) => f.models)
+        .flat()
+        .map((om) =>
+          om.foreignFields
+            .filter((fk) => fk.relation.targetModel === props.model.name)
+            .map((fk) => fk.relation.mappingName ?? om.name),
+        )
+        .flat(),
+    ];
+  }
+
   export function writeTemplate(props: {
     plan: AutoBeRealizeCollectorPlan;
     body: AutoBeOpenApi.IJsonSchema;
     model: AutoBePrisma.IModel;
+    application: AutoBePrisma.IApplication;
   }): string {
+    const required: string[] = getRequired(props);
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
@@ -73,7 +96,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           }
         }) {
           return {
-            ...
+${required.map((r) => `      ${r}: ...,`).join("\n")}
           } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
         }
       }
@@ -180,7 +203,9 @@ export namespace AutoBeRealizeCollectorProgrammer {
   }
 
   export function validate(props: {
+    application: AutoBePrisma.IApplication;
     plan: AutoBeRealizeCollectorPlan;
+    mappings: IAutoBeRealizeCollectorWriteApplication.IMapping[];
     neighbors: AutoBeRealizeCollectorPlan[];
     draft: string;
     revise: {
@@ -189,6 +214,12 @@ export namespace AutoBeRealizeCollectorProgrammer {
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
+    validateMapppings({
+      application: props.application,
+      errors,
+      plan: props.plan,
+      mappings: props.mappings,
+    });
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,
@@ -216,6 +247,53 @@ export namespace AutoBeRealizeCollectorProgrammer {
       });
     }
     return errors;
+  }
+
+  function validateMapppings(props: {
+    application: AutoBePrisma.IApplication;
+    errors: IValidation.IError[];
+    plan: AutoBeRealizeCollectorPlan;
+    mappings: IAutoBeRealizeCollectorWriteApplication.IMapping[];
+  }): void {
+    const model: AutoBePrisma.IModel = props.application.files
+      .map((f) => f.models)
+      .flat()
+      .find((m) => m.name === props.plan.prismaSchemaName)!;
+    const required: string[] = getRequired({
+      application: props.application,
+      model,
+    });
+    props.mappings.forEach((m, i) => {
+      if (required.includes(m.prismaMember) === true) return;
+      props.errors.push({
+        path: `$input.request.mappings[${i}].prismaMember`,
+        value: m.prismaMember,
+        expected: required.map((r) => JSON.stringify(r)).join(" | "),
+        description: StringUtil.trim`
+          '${m.prismaMember}' is not a valid Prisma member.
+
+          Please provide mapping only for existing Prisma members:
+
+          ${required.map((r) => `- ${r}`).join("\n")}
+        `,
+      });
+    });
+    for (const r of required) {
+      if (props.mappings.some((m) => m.prismaMember === r) === false)
+        props.errors.push({
+          path: "$input.request.mappings[]",
+          value: undefined,
+          expected: StringUtil.trim`{
+            prismaMember: "${r}";
+            how: string;
+          }`,
+          description: StringUtil.trim`
+            You missed mapping for required Prisma member '${r}'.
+
+            Make sure to provide mapping for all required members.
+          `,
+        });
+    }
   }
 
   function validateEmptyCode(props: {

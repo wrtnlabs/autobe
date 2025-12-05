@@ -109,11 +109,12 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
           const errors: IValidation.IError[] =
             AutoBeRealizeCollectorProgrammer.validate({
               plan: next.function.plan,
+              mappings: result.data.request.mappings,
               neighbors: props.functions.map((f) => f.plan),
               draft: result.data.request.draft,
               revise: result.data.request.revise,
+              application: ctx.state().prisma!.result.data,
             });
-
           return errors.length
             ? {
                 success: false,

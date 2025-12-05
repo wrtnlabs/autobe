@@ -86,6 +86,33 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
     think: string;
 
     /**
+     * Field-by-field mapping verification for complete coverage.
+     *
+     * Review EVERY field and relation from the Prisma schema to ensure correct
+     * handling. This systematic approach catches errors beyond what the compiler
+     * reports and prevents new issues.
+     *
+     * For each Prisma member, document:
+     *
+     * - Current state: "Correct", "Missing", "Wrong name", "Wrong type", etc.
+     * - Correction needed: How to fix it, or "No change needed"
+     *
+     * Even fields without errors should be included with "No change needed" to
+     * ensure complete review. Missing even a single field could hide bugs.
+     *
+     * This structured verification:
+     *
+     * - Catches silent errors compiler didn't report
+     * - Ensures no fields accidentally omitted
+     * - Documents correction decisions explicitly
+     * - Prevents regression in working fields
+     *
+     * The validator will cross-check this against the Prisma schema to ensure
+     * nothing was overlooked.
+     */
+    mappings: IMapping[];
+
+    /**
      * Initial correction implementation.
      *
      * Complete corrected code that applies ALL fixes from the think phase
@@ -109,6 +136,58 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * that maintains all business requirements.
      */
     revise: IReviseProps;
+  }
+
+  /**
+   * Single field/relation verification entry.
+   *
+   * Documents the current state and correction plan for one specific field or
+   * relation. Must be provided for EVERY field in the schema - even those
+   * without errors - to ensure complete coverage.
+   */
+  export interface IMapping {
+    /**
+     * Exact field or relation name from Prisma schema.
+     *
+     * MUST match the schema exactly (case-sensitive). Examples:
+     *
+     * - Scalar fields: "id", "email", "created_at"
+     * - BelongsTo relations: "customer", "article"
+     * - HasMany relations: "comments", "shopping_sale_tags"
+     *
+     * DO NOT use database column names (e.g., "customer_id" is WRONG - use
+     * "customer").
+     *
+     * Include ALL fields from the schema, even if they are currently correct
+     * and need no changes.
+     */
+    prismaMember: string;
+
+    /**
+     * Brief explanation of current state and correction plan.
+     *
+     * Keep it concise and clear. Examples:
+     *
+     * **For correct fields:**
+     * - "No change needed - correct"
+     * - "Already correct"
+     *
+     * **For fields needing fixes:**
+     * - "Fix: Wrong name 'user_name' → 'username'"
+     * - "Fix: Missing field - add with props.body.email"
+     * - "Fix: Wrong type - change to connect syntax"
+     * - "Fix: Should use CustomerCollector instead of inline"
+     * - "Fix: Using null instead of undefined"
+     * - "Fix: Fabricated field - remove it"
+     *
+     * Even if a field is correct, you MUST include it in the mapping with "No
+     * change needed". This ensures complete schema review and catches silent
+     * issues.
+     *
+     * This is NOT code - just a simple description of what's wrong and how to
+     * fix it.
+     */
+    how: string;
   }
 
   export interface IReviseProps {

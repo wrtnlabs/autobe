@@ -42,7 +42,12 @@ export async function orchestrateRealizeTransformerPlan<
   const document: AutoBeOpenApi.IDocument = history.document;
   const dtoTypeNames: string[] = Object.keys(
     document.components.schemas,
-  ).filter(AutoBeRealizeTransformerProgrammer.filter);
+  ).filter((key) =>
+    AutoBeRealizeTransformerProgrammer.filter({
+      schemas: document.components.schemas,
+      key,
+    }),
+  );
   const prismaSchemaNames: Set<string> = new Set(
     ctx
       .state()
