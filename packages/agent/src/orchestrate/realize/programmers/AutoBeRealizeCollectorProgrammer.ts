@@ -43,17 +43,32 @@ export namespace AutoBeRealizeCollectorProgrammer {
       export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
           body: ${props.plan.dtoTypeName};
-          ${props.plan.references
-            .map(
-              (r) =>
-                `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
-            )
-            .join("\n")}
           ${
+            //references
+            props.plan.references
+              .map(
+                (r) =>
+                  `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+              )
+              .join("\n")
+          }
+          ${
+            // ip
             AutoBeOpenApiTypeChecker.isObject(props.body) &&
             props.body.properties.ip !== undefined &&
             props.model.plainFields.some((f) => f.name === "ip")
               ? `ip: string;`
+              : ""
+          }
+          ${
+            // sequence
+            AutoBeOpenApiTypeChecker.isObject(props.body) &&
+            props.body.properties.sequence !== undefined &&
+            AutoBeOpenApiTypeChecker.isString(props.body.properties.sequence) &&
+            props.model.plainFields.some(
+              (f) => f.name === "sequence" && f.type === "int",
+            )
+              ? `sequence: number;`
               : ""
           }
         }) {
