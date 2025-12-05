@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
@@ -128,7 +130,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * The validator will cross-check this list against the actual Prisma schema
      * and reject incomplete mappings.
      */
-    mappings: IMapping[];
+    mappings: AutoBeRealizeCollectorMapping[];
 
     /**
      * Initial collector implementation draft.
@@ -151,54 +153,6 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * improvements and corrections applied.
      */
     revise: IReviseProps;
-  }
-
-  /**
-   * Single field/relation mapping strategy.
-   *
-   * Describes how to handle one specific field or relation in the Prisma
-   * CreateInput. Must be provided for EVERY field in the schema - even if not
-   * applicable or not needed.
-   */
-  export interface IMapping {
-    /**
-     * Exact field or relation name from Prisma schema.
-     *
-     * MUST match the schema exactly (case-sensitive). Examples:
-     *
-     * - Scalar fields: "id", "email", "created_at"
-     * - BelongsTo relations: "customer", "article"
-     * - HasMany relations: "comments", "shopping_sale_tags"
-     *
-     * DO NOT use database column names (e.g., "customer_id" is WRONG - use
-     * "customer").
-     *
-     * Include ALL fields from the schema, even if they are optional or not
-     * used in this particular collector.
-     */
-    prismaMember: string;
-
-    /**
-     * Brief one-line explanation of how to obtain this field's value.
-     *
-     * Keep it concise and clear. Examples:
-     *
-     * - "Generate with v4()"
-     * - "From props.body.email"
-     * - "Connect using props.references.customer_id"
-     * - "Nested create with ShoppingSaleTagCollector"
-     * - "Query comment to get article_id"
-     * - "Default to new Date()"
-     * - "Undefined (nullable FK)"
-     * - "Not applicable for this collector"
-     * - "Not needed (optional has-many)"
-     *
-     * Even if a field is not used, you MUST include it in the mapping and
-     * explain why it's not applicable. This ensures complete schema coverage.
-     *
-     * This is NOT code - just a simple description of the strategy.
-     */
-    how: string;
   }
 
   export interface IReviseProps {

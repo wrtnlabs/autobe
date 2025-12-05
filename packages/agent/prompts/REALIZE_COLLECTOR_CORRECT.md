@@ -191,7 +191,7 @@ The `mappings` array is a systematic review where you document the current state
 
 **Structure**:
 ```typescript
-interface IMapping {
+interface AutoBeRealizeCollectorMapping {
   prismaMember: string;  // Exact field/relation name from Prisma schema
   how: string;           // Current state + correction plan
 }

@@ -417,7 +417,7 @@ The `mappings` array is a comprehensive checklist where you document your strate
 
 **Structure**:
 ```typescript
-interface IMapping {
+interface AutoBeRealizeCollectorMapping {
   prismaMember: string;  // Exact field/relation name from Prisma schema
   how: string;           // Brief explanation of how to obtain this value
 }

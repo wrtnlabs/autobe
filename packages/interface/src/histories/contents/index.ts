@@ -17,9 +17,11 @@ export * from "./AutoBeTestScenarioDependency";
 
 export * from "./AutoBeRealizeFunction";
 export * from "./AutoBeRealizeCollectorFunction";
+export * from "./AutoBeRealizeCollectorMapping";
 export * from "./AutoBeRealizeCollectorPlan";
 export * from "./AutoBeRealizeCollectorReference";
 export * from "./AutoBeRealizeTransformerFunction";
+export * from "./AutoBeRealizeTransformerMapping";
 export * from "./AutoBeRealizeTransformerPlan";
 export * from "./AutoBeRealizeOperationFunction";
 
