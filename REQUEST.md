@@ -127,7 +127,7 @@ export namespace BbsArticleCommentCollector {
       //----
       // SCALAR FIELDS
       //----
-      // must define every scalar columns without any ommission
+      // must define every scalar columns without any omission
       id, 
       content: props.body.content,
       created_at: new Date(), // default value
