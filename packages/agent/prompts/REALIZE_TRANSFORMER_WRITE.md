@@ -15,9 +15,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 🚨 THE ROOT CAUSE OF ALL ERRORS
 
-**Every compilation error, every runtime failure, every bug in transformers comes from ONE problem**:
+**Every compilation error, every runtime failure, every bug in transformers comes from TWO problems**:
 
-**MISSING PROPERTIES** - Forgetting to select a column from Prisma schema or map a field to DTO.
+**1. MISSING PROPERTIES** - Forgetting to select a column from Prisma schema or map a field to DTO.
+**2. WRONG PROPERTY NAMES** - Using incorrect property names when mapping between Prisma schema and DTO.
 
 This is not an exaggeration. When you analyze failed transformers:
 - ❌ Forgot to select `created_at` in select() → Compilation error in transform()
@@ -25,16 +26,23 @@ This is not an exaggeration. When you analyze failed transformers:
 - ❌ Forgot to handle `deleted_at` nullable field → Type error
 - ❌ Selected field but forgot to transform it → Unused data, wasted query
 - ❌ Transformed field but forgot to select it → Runtime crash
+- ❌ **Prisma has `user` relation but transformed to DTO's `writer` incorrectly** → Property name mismatch
+- ❌ **DTO expects `writer` but you selected/transformed `user` without proper mapping** → Missing property error
+- ❌ **Selected `bbs_article_comment_tags` but accessed `tags` in transform** → Property access error
+
+**Property name mismatches are the #2 error cause after omissions**. The Prisma schema might have a `user` relation while the DTO expects `writer`. You must correctly map between these different names in both select() and transform().
 
 **The critical insight**:
 - **select() and transform() must be perfectly aligned** - every field selected must be transformed, every field transformed must be selected
-- **Both must match the DTO** - every DTO property must come from somewhere
+- **Both must match the DTO with CORRECT property names** - every DTO property must come from the right Prisma field
+- **Property name mapping must be explicit and correct** - when Prisma uses `user` and DTO uses `writer`, you must map correctly
 
 **The solution is simple but requires discipline**:
-1. **READ the Prisma schema word by word** - make a mental checklist of EVERY column and relation
-2. **READ the DTO type word by word** - make a mental checklist of EVERY property
-3. **Cross-check systematically** - ensure EVERY DTO property has a mapping in transform() AND selection in select()
-4. **Use the Revise phase** - verify select() and transform() are consistent
+1. **READ the Prisma schema word by word** - make a mental checklist of EVERY column and relation NAME
+2. **READ the DTO type word by word** - make a mental checklist of EVERY property NAME
+3. **Map names explicitly** - when names differ (Prisma `user` → DTO `writer`), be conscious of the mapping
+4. **Cross-check systematically** - ensure EVERY DTO property has correct mapping in transform() AND selection in select()
+5. **Use the Revise phase** - deeply verify property names match correctly between Prisma, select(), transform(), and DTO
 
 If you follow this discipline, you will have **ZERO errors**. If you skip it, you will have errors. It's that simple.
 
@@ -625,15 +633,51 @@ Write complete transformer code following your plan.
 2. **MANDATORY: Reuse neighbor transformers** for nested data (NEVER inline when transformer exists)
    - Use transformer's select() in your select() function
    - Use transformer's transform() in your transform() function
-3. **ALWAYS use `select`, NEVER use `include`** for database queries
-4. Use `satisfies Prisma.{table}FindManyArgs` for select() type safety
-5. Payload type must be: `Prisma.{table}GetPayload<ReturnType<typeof select>>`
-6. Apply proper type conversions:
+3. **MANDATORY: Use section comments** - organize code with comment sections exactly as shown in the example:
+   ```typescript
+   // In select():
+   select: {
+     //----
+     // SCALAR COLUMNS
+     //----
+     // ... scalar field selections ...
+
+     //----
+     // BELONGED RELATIONS
+     //----
+     // ... belonged relation selections ...
+
+     //----
+     // HAS RELATIONS
+     //----
+     // ... has relation selections ...
+   }
+
+   // In transform():
+   return {
+     // Scalars
+     // ... scalar field mappings ...
+
+     // Belonged relations
+     // ... belonged relation transformations ...
+
+     // Has relations
+     // ... has relation transformations ...
+
+     // Aggregations
+     // ... aggregation mappings ...
+   }
+   ```
+   This structure is **required**, not optional. It ensures systematic coverage and makes code review easier.
+4. **ALWAYS use `select`, NEVER use `include`** for database queries
+5. Use `satisfies Prisma.{table}FindManyArgs` for select() type safety
+6. Payload type must be: `Prisma.{table}GetPayload<ReturnType<typeof select>>`
+7. Apply proper type conversions:
    - Decimal fields: `Number(input.field)`
    - DateTime fields: `input.field.toISOString()`
    - Nullable DateTime: `input.field?.toISOString() ?? null`
-7. Transform arrays with `ArrayUtil.asyncMap`
-8. Sort arrays by sequence when sequence column exists
+8. Transform arrays with `ArrayUtil.asyncMap`
+9. Sort arrays by sequence when sequence column exists
 
 ---
 
@@ -651,23 +695,37 @@ This is **not a formality** - this is where you catch omissions and mismatches b
 
 **Essential Verification Criteria** (check each deeply):
 
-**1. DTO Property Completeness (Most Critical)**:
+**1. DTO Property Completeness AND Name Accuracy (Most Critical)**:
    - Go back to the DTO type
    - Count the properties: ___ total
    - For EACH property, verify:
      - Is it selected in select()? ✅ / ❌
      - Is it transformed in transform()? ✅ / ❌
-   - **Did you miss ANY?** Even one missing property = error
+     - **Are you using the EXACT property name from DTO in transform()?** (Critical!)
+       - DTO has `writer` → Your transform() must assign to `writer`, NOT `user` ❌
+       - DTO has `tags` → Your transform() must assign to `tags`, NOT `tag` ❌
+       - DTO has `content` → Your transform() must assign to `content`, NOT `contents` ❌
+   - **Property name mapping verification**:
+     - When Prisma relation is `user` but DTO property is `writer`:
+       - select() must select: `user: TransformerX.select()` ✅
+       - transform() must assign: `writer: await TransformerX.transform(input.user)` ✅
+       - transform() assigning `user: ...` when DTO expects `writer` = ERROR ❌
+   - **Did you miss ANY property?** Even one missing property = error
+   - **Did you use wrong property names?** Even one name mismatch = error
    - Common omissions: `created_at`, `updated_at`, `deleted_at`, aggregations
+   - Common name mismatches: Prisma field name used instead of DTO property name
 
-**2. select() and transform() Alignment**:
+**2. select() and transform() Alignment AND Name Consistency**:
    - Go through your select() function
    - For EACH field you selected, check:
      - Is it used in transform()? (✅ good / ❌ wasted query)
+     - Are you accessing it with the CORRECT Prisma field name in transform()? (✅ `input.user` / ❌ `input.writer`)
    - Go through your transform() function
    - For EACH field you use, check:
      - Was it selected? (✅ good / ❌ runtime crash)
+     - Are you assigning it to the CORRECT DTO property name? (✅ `writer: ...` / ❌ `user: ...`)
    - **Perfect alignment is MANDATORY** - every selection must be used, every usage must be selected
+   - **Perfect name mapping is MANDATORY** - select with Prisma names, access with Prisma names, assign to DTO names
 
 **3. Neighbor Transformer Usage**:
    - Check the neighbor list again

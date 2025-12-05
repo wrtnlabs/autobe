@@ -15,21 +15,27 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 🚨 THE ROOT CAUSE OF ALL ERRORS
 
-**Every compilation error, every runtime failure, every bug in collectors comes from ONE problem**:
+**Every compilation error, every runtime failure, every bug in collectors comes from TWO problems**:
 
-**MISSING PROPERTIES** - Forgetting to map a column from Prisma schema or a field from DTO.
+**1. MISSING PROPERTIES** - Forgetting to map a column from Prisma schema or a field from DTO.
+**2. WRONG PROPERTY NAMES** - Using incorrect property names when mapping between DTO and Prisma schema.
 
 This is not an exaggeration. When you analyze failed collectors:
 - ❌ Forgot to include `created_at` column → Compilation error
 - ❌ Forgot to connect `user` relation → Compilation error
 - ❌ Forgot to map `tags` array from DTO → Runtime error
 - ❌ Forgot to handle `deleted_at` nullable column → Type error
+- ❌ **DTO has `writer` but used `user` instead** → Compilation/runtime error
+- ❌ **Prisma relation is `article` but used `bbs_article` instead** → Compilation error
+- ❌ **DTO field is `tags` but used `tag` instead** → Missing property error
+
+**Property name mismatches are the #2 error cause after omissions**. The DTO might use `writer` while the Prisma schema uses `user`. The DTO might use `content` while you accidentally type `contents`. These subtle naming differences cause hard-to-debug errors.
 
 **The solution is simple but requires discipline**:
-1. **READ the Prisma schema word by word** - make a mental checklist of EVERY column and relation
-2. **READ the DTO type word by word** - make a mental checklist of EVERY field
-3. **Cross-check systematically** - ensure EVERY item from both lists is handled
-4. **Use the Revise phase** - verify you didn't miss anything
+1. **READ the Prisma schema word by word** - make a mental checklist of EVERY column and relation name
+2. **READ the DTO type word by word** - make a mental checklist of EVERY field name
+3. **Cross-check systematically** - ensure EVERY item from both lists is handled WITH CORRECT NAMES
+4. **Use the Revise phase** - deeply verify property names match between DTO and Prisma schema
 
 If you follow this discipline, you will have **ZERO errors**. If you skip it, you will have errors. It's that simple.
 
@@ -42,6 +48,9 @@ Before we explain anything, let's see a perfect collector from start to finish.
 **Prisma Schema** (read every word):
 ```prisma
 model bbs_article_comments {
+  //----
+  // SCALAR COLUMNS
+  //----
   id String @id @db.Uuid
   bbs_article_id String @db.Uuid
   parent_id String? @db.Uuid
@@ -52,11 +61,17 @@ model bbs_article_comments {
   updated_at DateTime @db.Timestamptz
   deleted_at DateTime? @db.Timestamptz
 
+  //----
+  // BELONGED RELATIONS
+  //----
   article bbs_articles @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
   parent bbs_article_comments? @relation("bbs_article_comments_reply", fields: [parent_id], references: [id], onDelete: Cascade)
   user bbs_users @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
   userSession bbs_user_sessions @relation(fields: [bbs_user_session_id], references: [id], onDelete: Cascade)
 
+  //----
+  // HAS RELATIONS
+  //----
   children bbs_article_comments[] @relation("bbs_article_comments_reply")
   bbs_article_comment_files bbs_article_comment_files[]
   bbs_article_comment_tags bbs_article_comment_tags[]
@@ -103,8 +118,7 @@ export namespace BbsArticleCommentCollector {
     bbsUser: IEntity;
     bbsUserSession: IEntity;
   }) {
-    const id: string = v4();
-
+    const id: string = v4(); // Generate ID once, reuse for nested creates below
     return {
       //----
       // EVERY SCALAR COLUMN (9 total from schema)
@@ -143,11 +157,11 @@ export namespace BbsArticleCommentCollector {
         ? {
             create: await ArrayUtil.asyncMap(
               props.body.files,
-              async (elem, i) =>
+              async (elem, i) =>  // i = array index from asyncMap
                 await BbsArticleCommentFileCollector.collect({
                   body: elem,
-                  bbsArticleComment: { id },
-                  sequence: i,
+                  bbsArticleComment: { id },  // Reuse parent's id for FK connection
+                  sequence: i,  // Pass array index as sequence value
                 }),
             ),
           }
@@ -160,7 +174,7 @@ export namespace BbsArticleCommentCollector {
               async (elem) =>
                 await BbsArticleCommentTagCollector.collect({
                   body: elem,
-                  bbsArticleComment: { id },
+                  bbsArticleComment: { id },  // Reuse parent's id for FK connection
                 }),
             ),
           }
@@ -170,16 +184,16 @@ export namespace BbsArticleCommentCollector {
         ? {
             create: await ArrayUtil.asyncMap(
               props.body.links,
-              async (elem, i) => {
+              async (elem, i) => {  // i = array index from asyncMap
                 const linkId: string = v4();
                 return {
                   id: linkId,
                   url: elem.url,
-                  sequence: i,
+                  sequence: i,  // Pass array index as sequence value
                   created_at: new Date(),
                   updated_at: new Date(),
                   deleted_at: null,
-                  comment: { connect: { id } },
+                  comment: { connect: { id } },  // Reuse parent's id for FK connection
                 } satisfies Prisma.bbs_article_comment_linksCreateInput;
               },
             ),
@@ -565,10 +579,28 @@ Write complete collector code following your plan.
 **CRITICAL RULES**:
 1. **Work from your checklist** - check off each item as you implement it
 2. **MANDATORY: Reuse neighbor collectors** for nested creates (NEVER inline when collector exists)
-3. Follow props structure (body + IEntity references + sequence context when needed)
-4. Use `satisfies Prisma.{table}CreateInput` for type safety
-5. Generate UUIDs with `v4()`, dates with `new Date()`
-6. Use proper Prisma syntax: `{ connect: { id: ... } }` for relations
+3. **MANDATORY: Use section comments** - organize code with comment sections exactly as shown in the example:
+   ```typescript
+   //----
+   // SCALAR COLUMNS
+   //----
+   // ... scalar column mappings ...
+
+   //----
+   // BELONGED RELATIONS
+   //----
+   // ... belonged relation connections ...
+
+   //----
+   // HAS RELATIONS
+   //----
+   // ... has relation creates ...
+   ```
+   This structure is **required**, not optional. It ensures systematic coverage and makes code review easier.
+4. Follow props structure (body + IEntity references + sequence context when needed)
+5. Use `satisfies Prisma.{table}CreateInput` for type safety
+6. Generate UUIDs with `v4()`, dates with `new Date()`
+7. Use proper Prisma syntax: `{ connect: { id: ... } }` for relations
 
 ---
 
@@ -598,13 +630,20 @@ This is **not a formality** - this is where you catch omissions before they caus
    - Count the belonged relations: ___ total
    - Go through your draft and check off each connection
    - **Did you miss ANY?** Even one missing relation = compilation error
+   - **Are you using the EXACT relation names from Prisma schema?** (✅ `article` / ❌ `bbs_article`)
    - Are you using relation names (✅ `article`) or FK columns (❌ `bbs_article_id`)?
 
-**3. DTO Field Completeness**:
+**3. DTO Field Completeness AND Name Accuracy** (Critical - #2 Error Cause):
    - Go back to the DTO type
    - Count the fields: ___ total
-   - Go through your draft and check off each mapping
-   - **Did you miss ANY?** Missing field = runtime error
+   - **For EACH DTO field, verify**:
+     - Did you map it? (If not = missing property error)
+     - Did you use the **EXACT field name from DTO**? (Not a similar name!)
+     - Common name mismatches:
+       - DTO has `writer` but you used `user` ❌
+       - DTO has `tags` but you used `tag` ❌
+       - DTO has `content` but you used `contents` ❌
+   - **Cross-check DTO field names against your code word by word**
    - Did you handle arrays correctly with neighbor collectors?
 
 **4. Neighbor Collector Usage**:
