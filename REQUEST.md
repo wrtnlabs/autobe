@@ -6,7 +6,7 @@ model bbs_article_comments {
   parent_id String? @db.Uuid
   bbs_user_id String @db.Uuid
   bbs_user_session_id String @db.Uuid
-  body String
+  content String
   created_at DateTime @db.Timestamptz
   updated_at DateTime @db.Timestamptz
   deleted_at DateTime? @db.Timestamptz
@@ -29,12 +29,12 @@ model bbs_article_comments {
 ```typescript
 export interface IBbsArticleComment {
   id: string & tags.Format<"uuid">;
-  parent: IBbsArticleComment.ISummary;
+  parent: IBbsArticleComment.ISummary | null;
   writer: IBbsUser.ISummary;
   tags: IBbsArticleCommentTag[];
   files: IBbsArticleCommentFile[];
-  links: IBbsArticleLink[];
-  body: string;
+  links: IBbsArticleCommentLink[];
+  content: string;
   hit: number;
   like: number;
   created_at: string & tags.Format<"date-time">;
@@ -44,7 +44,7 @@ export interface IBbsArticleComment {
 export namespace IBbsArticleComment {
   export interface ICreate {
     parent_id: (string & tags.Format<"uuid">) | null;
-    body: string;
+    content: string;
     tags: IBbsArticleCommentTag.ICreate[];
     files: IBbsArticleCommentFile.ICreate[];
     links: IBbsArticleCommentLink.ICreate[];
@@ -68,7 +68,7 @@ export namespace BbsArticleCommentCollector {
       // SCALAR FIELDS
       //----
       id, 
-      body: props.body,
+      content: props.body.content,
       created_at: new Date(), // default value
       updated_at: new Date(), // default value
       deleted_at: null, // default value
@@ -111,9 +111,7 @@ export namespace BbsArticleCommentCollector {
               async (elem, i) =>
                 await BbsArticleCommentFileCollector.collect({ 
                   body: elem,
-                  bbsArticleComment: {
-                    connect: { id }, // re-use id variable
-                  },
+                  bbsArticleComment: { id }, // re-use id variable
                   sequence: i, // if sequence property required, do it like that
                 }),
             )
@@ -127,9 +125,7 @@ export namespace BbsArticleCommentCollector {
               async (elem) =>
                 await BbsArticleCommentTagCollector.collect({
                   body: elem,
-                  bbsArticleComment: {
-                    connect: { id },
-                  },
+                  bbsArticleComment: { id },
                 }),
             )
           }
@@ -174,13 +170,14 @@ export namespace BbsArticleCommentTransformer {
       select: {
         // SCALAR COLUMNS
         id: true,
-        body: true,
+        content: true,
         created_at: true,
         updated_at: true,
         deleted_at: true,
 
         // BELONGED RELATIONS
         user: BbsUserAtSummaryTransformer.select(),
+        parent: BbsArticleCommentAtSummaryTransformer.select(),
 
         // HAS RELATIONS
         bbs_article_comment_files: BbsArticleCommentFileTransformer.select(),
@@ -190,17 +187,17 @@ export namespace BbsArticleCommentTransformer {
             id: true,
             url: true,
             sequence: true,
-          }
-        }
+          },
+        },
 
         // AGGREGATIONS
         _count: {
           select: {
             bbs_article_comment_hits: true,
             bbs_article_comment_likes: true,
-          }
-        }
-      }
+          },
+        },
+      },
     } satisfies Prisma.bbs_article_commentsFindManyArgs;
   }
   
@@ -208,13 +205,18 @@ export namespace BbsArticleCommentTransformer {
     return {
       // SCALAR COLUMNS
       id: input.id,
-      body: input.body,
+      content: input.content,
       created_at: input.created_at.toISOString(),
       updated_at: input.updated_at.toISOString(),
       deleted_at: input.deleted_at?.toISOString() ?? null,
 
       // BELONGED RELATIONS
       writer: await BbsUserAtSummaryTransformer.transform(input.user),
+      parent: input.parent
+        ? await BbsArticleCommentAtSummaryTransformer.transform(
+            input.parent,
+          )
+        : null,
 
       // HAS RELATIONS
       files: await ArrayUtil.asyncMap(
