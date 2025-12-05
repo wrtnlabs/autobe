@@ -29,7 +29,7 @@ export const orchestrateRealizeOperationCorrectCasting = async <
   return await orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
       template: (func) =>
-        AutoBeRealizeOperationProgrammer.getTemplate({
+        AutoBeRealizeOperationProgrammer.writeTemplate({
           authorizations: props.authorizations,
           schemas: document.components.schemas,
           operation: document.operations.find(
@@ -54,7 +54,7 @@ export const orchestrateRealizeOperationCorrectCasting = async <
             operation: scenario.operation,
             schemas: document.components.schemas,
             code: next.code,
-            decoratorType: scenario.decoratorEvent?.decorator.name,
+            payload: scenario.decoratorEvent?.payload.name,
           },
         );
       },

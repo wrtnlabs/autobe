@@ -8,6 +8,7 @@ import {
   AutoBeRealizeCollectorPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -39,6 +40,26 @@ export async function orchestrateRealizeCollectorWrite<
   if (history === null)
     throw new Error("Cannot realize collector write without interface.");
 
+  const document: AutoBeOpenApi.IDocument = history.document;
+  const getNeighbors = (
+    plan: AutoBeRealizeCollectorPlan,
+  ): AutoBeRealizeCollectorPlan[] => {
+    const visited: Set<string> = new Set();
+    AutoBeOpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${plan.dtoTypeName}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next)) {
+          const key: string = next.$ref.split("/").pop()!;
+          visited.add(key);
+        }
+      },
+    });
+    return props.plans.filter(
+      (p) => p.dtoTypeName !== plan.dtoTypeName && visited.has(p.dtoTypeName),
+    );
+  };
+
   props.progress.total += props.plans.length;
   const result: AutoBeRealizeCollectorFunction[] = await executeCachedBatch(
     ctx,
@@ -47,7 +68,7 @@ export async function orchestrateRealizeCollectorWrite<
         process(ctx, {
           document: history.document,
           progress: props.progress,
-          neighbors: props.plans.filter((y) => x !== y),
+          neighbors: getNeighbors(x),
           plan: x,
           promptCacheKey,
         }),
@@ -70,7 +91,6 @@ async function process<Model extends ILlmSchema.Model>(
     .state()
     .prisma!.result.data.files.map((f) => f.models)
     .flat();
-  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
@@ -104,12 +124,11 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeCollectorWriteHistory({
+      ...(await transformRealizeCollectorWriteHistory(ctx, {
         plan: props.plan,
         neighbors: props.neighbors,
-        document,
         preliminary,
-      }),
+      })),
     });
     if (pointer.value === null) return out(result)(null);
 

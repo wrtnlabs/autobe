@@ -3,6 +3,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
@@ -24,7 +25,26 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
   },
 ): Promise<AutoBeRealizeCollectorFunction[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
-
+  const getNeighbors = (
+    func: AutoBeRealizeCollectorFunction,
+  ): AutoBeRealizeCollectorFunction[] => {
+    const visited: Set<string> = new Set();
+    AutoBeOpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${func.plan.dtoTypeName}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next)) {
+          const key: string = next.$ref.split("/").pop()!;
+          visited.add(key);
+        }
+      },
+    });
+    return props.functions.filter(
+      (y) =>
+        y.plan.dtoTypeName !== func.plan.dtoTypeName &&
+        visited.has(y.plan.dtoTypeName),
+    );
+  };
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/collectors",
@@ -52,18 +72,23 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
             typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
           kinds: ["prismaSchemas"],
           state: ctx.state(),
+          local: {
+            prismaSchemas: ctx
+              .state()
+              .prisma!.result.data.files.map((f) => f.models)
+              .flat()
+              .filter((m) => m.name === next.function.plan.prismaSchemaName),
+          },
         }),
 
       // Transform history using Collector-specific transformer
-      histories: async (next) => {
-        return transformRealizeCollectorCorrectHistory({
-          plan: next.function.plan,
+      histories: (next) =>
+        transformRealizeCollectorCorrectHistory(ctx, {
           function: next.function,
-          document,
+          neighbors: getNeighbors(next.function),
           failures: next.failures,
           preliminary: next.preliminary,
-        });
-      },
+        }),
 
       // Create controller with Collector-specific validation
       controller: (next) => {

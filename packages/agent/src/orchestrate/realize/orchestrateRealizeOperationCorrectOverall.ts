@@ -13,12 +13,13 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { complementPreliminaryCollection } from "../common/internal/complementPreliminaryCollection";
+import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
 import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 
 export const orchestrateRealizeOperationCorrectOverall = async <
   Model extends ILlmSchema.Model,
@@ -52,7 +53,7 @@ export const orchestrateRealizeOperationCorrectOverall = async <
             operation: scenario.operation,
             schemas: document.components.schemas,
             code: next.code,
-            decoratorType: scenario.decoratorEvent?.decorator.name,
+            payload: scenario.decoratorEvent?.payload.name,
           },
         );
       },
@@ -63,26 +64,63 @@ export const orchestrateRealizeOperationCorrectOverall = async <
           transformers: props.transformers,
           functions,
         }),
-      preliminary: (next) =>
-        new AutoBePreliminaryController<
+      preliminary: (next) => {
+        const preliminary: AutoBePreliminaryController<
           "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
-        >({
+        > = new AutoBePreliminaryController({
           source: next.source,
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
           state: ctx.state(),
-        }),
+          all: {
+            prismaSchemas: ctx
+              .state()
+              .prisma!.result.data.files.map((f) => f.models)
+              .flat(),
+            realizeCollectors: props.collectors,
+            realizeTransformers: props.transformers,
+          },
+        });
+        const document: AutoBeOpenApi.IDocument =
+          ctx.state().interface!.document;
+        const operation: AutoBeOpenApi.IOperation = document.operations.find(
+          (o) =>
+            o.method === next.function.endpoint.method &&
+            o.path === next.function.endpoint.path,
+        )!;
+        complementPreliminaryCollection({
+          kinds: [
+            "prismaSchemas",
+            "interfaceOperations",
+            "interfaceSchemas",
+            "realizeCollectors",
+            "realizeTransformers",
+          ],
+          all: {
+            ...preliminary.getAll(),
+            interfaceOperations: document.operations,
+            interfaceSchemas: document.components.schemas,
+          } as IAutoBePreliminaryCollection,
+          local: {
+            ...(preliminary.getLocal() as IAutoBePreliminaryCollection),
+            interfaceOperations: [operation],
+            interfaceSchemas: {},
+          },
+        });
+        return preliminary;
+      },
       histories: async (next) => {
         const operation: AutoBeOpenApi.IOperation = document.operations.find(
           (o) =>
             o.method === next.function.endpoint.method &&
             o.path === next.function.endpoint.path,
         )!;
-        const dto: Record<string, string> = await getRealizeWriteDto(
-          ctx,
-          operation,
-        );
+        const dto: Record<string, string> =
+          await AutoBeRealizeOperationProgrammer.writeStructures(
+            ctx,
+            operation,
+          );
         return transformRealizeOperationCorrectHistory({
           state: ctx.state(),
           authorizations: props.authorizations,

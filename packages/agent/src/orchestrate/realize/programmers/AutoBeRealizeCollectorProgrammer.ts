@@ -1,9 +1,10 @@
 import {
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
@@ -33,24 +34,70 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function getTemplate(plan: AutoBeRealizeCollectorPlan): string {
+  export function writeTemplate(props: {
+    plan: AutoBeRealizeCollectorPlan;
+    body: AutoBeOpenApi.IJsonSchema;
+    model: AutoBePrisma.IModel;
+  }): string {
     return StringUtil.trim`
-      export namespace ${getName(plan.dtoTypeName)} {
+      export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
-          body: ${plan.dtoTypeName};
-          ${plan.references
+          body: ${props.plan.dtoTypeName};
+          ${props.plan.references
             .map(
               (r) =>
                 `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
             )
             .join("\n")}
+          ${
+            AutoBeOpenApiTypeChecker.isObject(props.body) &&
+            props.body.properties.ip !== undefined &&
+            props.model.plainFields.some((f) => f.name === "ip")
+              ? `ip: string;`
+              : ""
+          }
         }) {
           return {
             ...
-          } satisfies Prisma.${plan.prismaSchemaName}CreateInput;
+          } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
         }
       }
     `;
+  }
+
+  export async function writeStructures<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    dtoTypeName: string,
+  ): Promise<Record<string, string>> {
+    const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+    const components: AutoBeOpenApi.IComponents = {
+      authorizations: [],
+      schemas: {},
+    };
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${dtoTypeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = document.components.schemas[key];
+        }
+      },
+    });
+
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const entries: [string, string][] = Object.entries(
+      await compiler.interface.write(
+        {
+          components,
+          operations: [],
+        },
+        [],
+      ),
+    );
+    return Object.fromEntries(
+      entries.filter(([key]) => key.startsWith("src/api/structures")),
+    );
   }
 
   export async function replaceImportStatements<Model extends ILlmSchema.Model>(
@@ -111,6 +158,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      `import { MyGlobal } from "../MyGlobal";`,
       `import { PasswordUtil } from "../utils/PasswordUtil";`,
     ];
     return imports;

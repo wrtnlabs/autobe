@@ -161,8 +161,10 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * Referenced entities from path parameters or auth context.
      *
      * Each reference contains:
+     *
      * - `prismaSchemaName`: Prisma table name (e.g., "shopping_sales")
      * - `source`: Origin of reference
+     *
      *   - "from path parameter {paramName}"
      *   - "from authorized actor"
      *   - "from authorized session"

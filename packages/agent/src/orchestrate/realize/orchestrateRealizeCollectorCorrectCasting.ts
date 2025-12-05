@@ -20,7 +20,17 @@ export const orchestrateRealizeCollectorCorrectCasting = <
   orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
       template: (func) =>
-        AutoBeRealizeCollectorProgrammer.getTemplate(func.plan),
+        AutoBeRealizeCollectorProgrammer.writeTemplate({
+          plan: func.plan,
+          body: ctx.state().interface!.document.components.schemas[
+            func.plan.dtoTypeName
+          ],
+          model: ctx
+            .state()
+            .prisma!.result.data.files.map((f) => f.models)
+            .flat()
+            .find((m) => m.name === func.plan.prismaSchemaName)!,
+        }),
       replaceImportStatements: (next) =>
         AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {
           dtoTypeName: next.function.plan.dtoTypeName,

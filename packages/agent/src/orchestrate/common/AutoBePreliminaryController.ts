@@ -26,11 +26,16 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   // PRELIMINARY DATA
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
+  private readonly config: AutoBePreliminaryController.IConfig<Kind>;
 
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
+    this.config = {
+      prisma: props.config?.prisma ?? "text",
+    } as any;
+
     this.argumentTypeNames = (() => {
       const func = props.application.functions.find(
         (f) => f.name === "process",
@@ -103,6 +108,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.kinds;
   }
 
+  public getConfig(): AutoBePreliminaryController.IConfig<Kind> {
+    return this.config;
+  }
+
   public getArgumentTypeNames(): string[] {
     return this.argumentTypeNames;
   }
@@ -153,9 +162,14 @@ export namespace AutoBePreliminaryController {
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
     local?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
+    config?: Partial<IConfig<Kind>>;
   }
   export interface IProcessResult<T> {
     value: T | undefined;
     histories: IMicroAgenticaHistoryJson[];
+  }
+
+  export interface IConfig<Kind extends AutoBePreliminaryKind> {
+    prisma: Kind extends "prismaSchemas" ? "ast" | "text" : never;
   }
 }

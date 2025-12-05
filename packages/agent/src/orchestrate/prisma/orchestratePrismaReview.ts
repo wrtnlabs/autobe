@@ -78,6 +78,9 @@ async function step<Model extends ILlmSchema.Model>(
           .filter((m) => m !== undefined);
       })(),
     },
+    config: {
+      prisma: "ast",
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaReviewApplication.IComplete | null> = {

@@ -3,6 +3,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
@@ -24,7 +25,26 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
   },
 ): Promise<AutoBeRealizeTransformerFunction[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
-
+  const getNeighbors = (
+    func: AutoBeRealizeTransformerFunction,
+  ): AutoBeRealizeTransformerFunction[] => {
+    const visited: Set<string> = new Set();
+    AutoBeOpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${func.plan.dtoTypeName}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next)) {
+          const key: string = next.$ref.split("/").pop()!;
+          visited.add(key);
+        }
+      },
+    });
+    return props.functions.filter(
+      (y) =>
+        y.plan.dtoTypeName !== func.plan.dtoTypeName &&
+        visited.has(y.plan.dtoTypeName),
+    );
+  };
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/transformers",
@@ -52,18 +72,23 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
             typia.json.application<IAutoBeRealizeTransformerCorrectApplication>(),
           kinds: ["prismaSchemas"],
           state: ctx.state(),
+          local: {
+            prismaSchemas: ctx
+              .state()
+              .prisma!.result.data.files.map((f) => f.models)
+              .flat()
+              .filter((m) => m.name === next.function.plan.prismaSchemaName),
+          },
         }),
 
       // Transform history using Transformer-specific transformer
-      histories: async (next) => {
-        return transformRealizeTransformerCorrectHistory({
-          plan: next.function.plan,
+      histories: (next) =>
+        transformRealizeTransformerCorrectHistory(ctx, {
           function: next.function,
-          document,
+          neighbors: getNeighbors(next.function),
           failures: next.failures,
           preliminary: next.preliminary,
-        });
-      },
+        }),
 
       // Create controller with Transformer-specific validation
       controller: (next) => {
@@ -88,7 +113,6 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
               draft: result.data.request.draft,
               revise: result.data.request.revise,
             });
-
           return errors.length
             ? {
                 success: false,

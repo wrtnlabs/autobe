@@ -97,25 +97,30 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     /**
      * Collector implementation plan and strategy.
      *
-     * Analyzes the DTO type and Prisma schema to plan the collection logic:
+     * MUST contain thorough analysis with these four mandatory sections:
      *
-     * - Identifies field mappings (DTO property → Prisma input field)
-     * - Plans nested relationship handling (create vs connect)
-     * - Determines UUID generation points
-     * - Outlines validation and transformation needs
+     * 1. Prisma Schema Field Inventory - List ALL fields with exact names from
+     *    schema
+     * 2. DTO Property Inventory - List ALL properties with types
+     * 3. Field-by-Field Mapping Strategy - Explicit mapping table for every field
+     * 4. Edge Cases and Special Handling - Nullable, arrays, conditionals
+     *
+     * This forces you to READ the actual schema (not imagine it) and creates an
+     * explicit specification that the draft must implement.
      */
     plan: string;
 
     /**
      * Initial collector implementation draft.
      *
-     * The first complete implementation including:
+     * Complete implementation that strictly follows the plan's mapping table.
+     * EVERY field in the plan's Section 3 mapping strategy MUST appear in this
+     * draft. Implement:
      *
-     * - Namespace declaration
-     * - Collect() function with proper types
-     * - Nested collector calls if needed
-     * - UUID generation using v4()
-     * - Proper Prisma CreateInput types
+     * - Namespace with collect() function
+     * - All field mappings from plan (direct, connect, nested create)
+     * - Neighbor collector reuse (NEVER inline when collector exists)
+     * - UUID generation with v4(), proper Prisma CreateInput types
      */
     draft: string;
 
@@ -130,26 +135,30 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
 
   export interface IReviseProps {
     /**
-     * Review and improvement suggestions.
+     * Critical review and improvement analysis.
      *
-     * Identifies areas for improvement in the draft code:
+     * MUST systematically verify using four checklists:
      *
-     * - Type safety (proper Prisma input types)
-     * - Field mapping accuracy
-     * - Relationship handling (create/connect/disconnect)
-     * - UUID generation correctness
-     * - Null/undefined handling
-     * - Nested collection correctness
+     * 1. Schema Fidelity - Cross-check EVERY field name against plan Section 1
+     *    inventory
+     * 2. Plan Adherence - Verify EVERY mapping from plan Section 3 is implemented
+     * 3. System Rules - Mandatory neighbor reuse, props structure, satisfies type
+     * 4. Type Safety - Compilation check, nullable handling, async/await
+     *
+     * Identify specific issues with line numbers and provide clear reasoning.
+     * This catches hallucinated fields, missing mappings, and rule violations.
      */
     review: string;
 
     /**
-     * Final collector code.
+     * Final collector code with all review improvements applied.
      *
-     * The complete, production-ready collector module with all review
-     * suggestions applied.
+     * Apply ALL fixes identified in the review to produce production-ready
+     * code. If review found issues, this MUST contain the corrected
+     * implementation.
      *
-     * Returns `null` if the draft is already perfect and needs no changes.
+     * Return `null` ONLY if the draft is already perfect and review found zero
+     * issues.
      */
     final: string | null;
   }

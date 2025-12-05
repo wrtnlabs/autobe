@@ -10,8 +10,9 @@ export const transformPreviousAndLatestCorrectHistory = (
     script: string;
     diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
   }>,
-): IAgenticaHistoryJson.IAssistantMessage[] =>
-  array.map((failure, i) => ({
+): IAgenticaHistoryJson.IAssistantMessage[] => {
+  // console.log(printErrorHints(array.at(-1)!.script, array.at(-1)!.diagnostics));
+  return array.map((failure, i) => ({
     id: v7(),
     type: "assistantMessage",
     text: StringUtil.trim`
@@ -63,3 +64,4 @@ export const transformPreviousAndLatestCorrectHistory = (
     `,
     created_at: new Date().toISOString(),
   }));
+};

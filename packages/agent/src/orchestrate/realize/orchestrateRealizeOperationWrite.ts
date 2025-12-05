@@ -29,7 +29,6 @@ import { transformRealizeOperationWriteHistory } from "./histories/transformReal
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 
 export async function orchestrateRealizeOperationWrite<
   Model extends ILlmSchema.Model,
@@ -119,10 +118,11 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const dto: Record<string, string> = await getRealizeWriteDto(
-      ctx,
-      props.scenario.operation,
-    );
+    const dto: Record<string, string> =
+      await AutoBeRealizeOperationProgrammer.writeStructures(
+        ctx,
+        props.scenario.operation,
+      );
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: "realizeWrite",
       controller: createController({
@@ -159,7 +159,7 @@ async function process<Model extends ILlmSchema.Model>(
             operation: props.scenario.operation,
             schemas: props.document.components.schemas,
             code: pointer.value.revise.final ?? pointer.value.draft,
-            decoratorType: props.authorization?.payload.name,
+            payload: props.authorization?.payload.name,
           },
         ),
       };

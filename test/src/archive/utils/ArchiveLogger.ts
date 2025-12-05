@@ -65,7 +65,11 @@ export namespace ArchiveLogger {
     else if (event.type === "analyzeScenario")
       content.push(`  - prefix: ${event.prefix}`);
     else if (event.type === "realizeCorrect")
-      content.push(`  - kind: ${event.kind}`);
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - function: ${event.function.type}`,
+        `  - file: ${event.function.location}`,
+      );
     else if (event.type === "realizeValidate")
       content.push(
         ...printCompiled(event.result, Object.keys(event.files).length),
@@ -104,6 +108,10 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - schemas: ${Object.keys(event.schemas).join(", ")}`);
+    else if (event.type === "realizePlan")
+      content.push(`  - plan: ${event.plans[0]?.type}`);
+    else if (event.type === "realizeWrite")
+      content.push(`  - function: ${event.function.type}`);
     // PRINT
     console.log(content.join("\n"));
   };

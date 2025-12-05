@@ -238,15 +238,15 @@ function getEventDetails(
 
             <div style={infoItemStyle}>
               <span style={labelStyle}>File Location:</span>
-              <span style={valueStyle}>{realizeEvent.location}</span>
+              <span style={valueStyle}>{realizeEvent.function.location}</span>
             </div>
 
-            {realizeEvent.content && (
+            {realizeEvent.function.content && (
               <div>
                 <div style={labelStyle}>📄 Corrected Implementation:</div>
                 <div style={codeBlockStyle}>
-                  {realizeEvent.content.slice(0, 500)}
-                  {realizeEvent.content.length > 500 && "..."}
+                  {realizeEvent.function.content.slice(0, 500)}
+                  {realizeEvent.function.content.length > 500 && "..."}
                 </div>
               </div>
             )}

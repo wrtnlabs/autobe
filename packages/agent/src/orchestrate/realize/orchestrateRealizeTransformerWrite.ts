@@ -8,6 +8,7 @@ import {
   AutoBeRealizeTransformerPlan,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
@@ -39,6 +40,26 @@ export async function orchestrateRealizeTransformerWrite<
   if (history === null)
     throw new Error("Cannot realize transformer write without interface.");
 
+  const document: AutoBeOpenApi.IDocument = history.document;
+  const getNeighbors = (
+    plan: AutoBeRealizeTransformerPlan,
+  ): AutoBeRealizeTransformerPlan[] => {
+    const visited: Set<string> = new Set();
+    AutoBeOpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${plan.dtoTypeName}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next)) {
+          const key: string = next.$ref.split("/").pop()!;
+          visited.add(key);
+        }
+      },
+    });
+    return props.plans.filter(
+      (p) => p.dtoTypeName !== plan.dtoTypeName && visited.has(p.dtoTypeName),
+    );
+  };
+
   props.progress.total += props.plans.length;
   return await executeCachedBatch(
     ctx,
@@ -46,7 +67,7 @@ export async function orchestrateRealizeTransformerWrite<
       (x) => (promptCacheKey) =>
         process(ctx, {
           progress: props.progress,
-          neighbors: props.plans.filter((y) => x !== y),
+          neighbors: getNeighbors(x),
           plan: x,
           promptCacheKey,
         }),
@@ -100,12 +121,11 @@ async function process<Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerWriteHistory({
+      ...(await transformRealizeTransformerWriteHistory(ctx, {
         plan: props.plan,
         neighbors: props.neighbors,
-        document,
         preliminary,
-      }),
+      })),
     });
     if (pointer.value !== null) {
       const content: string =

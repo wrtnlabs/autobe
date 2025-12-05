@@ -1,4 +1,5 @@
 import { orchestrateRealizeCorrectCasting } from "@autobe/agent/src/orchestrate/realize/internal/orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeCollectorCorrectOverall } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorCorrectOverall";
 import { orchestrateRealizeCollectorPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorWrite";
 import { AutoBeRealizeCollectorProgrammer } from "@autobe/agent/src/orchestrate/realize/programmers/AutoBeRealizeCollectorProgrammer";
@@ -70,25 +71,50 @@ export const validate_agent_realize_collector_correct = async (props: {
         },
       }),
   );
+  const castings: AutoBeRealizeCollectorFunction[] = await TestStorage.emplace(
+    {
+      vendor: props.vendor,
+      project: props.project,
+      file: "realize.collector.casting",
+    },
+    () =>
+      orchestrateRealizeCorrectCasting(agent.getContext(), {
+        programmer: {
+          template: (func) =>
+            AutoBeRealizeCollectorProgrammer.writeTemplate({
+              plan: func.plan,
+              body: agent.getContext().state().interface!.document.components
+                .schemas[func.plan.dtoTypeName],
+              model: agent
+                .getContext()
+                .state()
+                .prisma!.result.data.files.map((f) => f.models)
+                .flat()
+                .find((m) => m.name === func.plan.prismaSchemaName)!,
+            }),
+          replaceImportStatements: (next) =>
+            AutoBeRealizeCollectorProgrammer.replaceImportStatements(
+              agent.getContext(),
+              {
+                dtoTypeName: next.function.plan.dtoTypeName,
+                schemas: agent.getContext().state().interface!.document
+                  .components.schemas,
+                code: next.code,
+              },
+            ),
+          additional: () => ({}),
+          location: "src/collectors",
+        },
+        functions: writes,
+        progress: {
+          total: 0,
+          completed: 0,
+        },
+      }),
+  );
   const corrects: AutoBeRealizeCollectorFunction[] =
-    await orchestrateRealizeCorrectCasting(agent.getContext(), {
-      programmer: {
-        template: (func) =>
-          AutoBeRealizeCollectorProgrammer.getTemplate(func.plan),
-        replaceImportStatements: (next) =>
-          AutoBeRealizeCollectorProgrammer.replaceImportStatements(
-            agent.getContext(),
-            {
-              dtoTypeName: next.function.plan.dtoTypeName,
-              schemas: agent.getContext().state().interface!.document.components
-                .schemas,
-              code: next.code,
-            },
-          ),
-        additional: () => ({}),
-        location: "src/collectors",
-      },
-      functions: writes,
+    await orchestrateRealizeCollectorCorrectOverall(agent.getContext(), {
+      functions: castings,
       progress: {
         total: 0,
         completed: 0,

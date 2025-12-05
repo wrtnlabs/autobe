@@ -690,6 +690,96 @@ export namespace ShoppingSaleTransformer {
 - Handles all type conversions internally
 - Async because nested transformations may be async
 
+### 🚨 CRITICAL: Using the CORRECT Transformer Name
+
+**MOST COMMON MISTAKE**: Using the wrong Transformer for nested interface types (types with `.` like `IShoppingSale.ISummary`)
+
+When your operation returns or uses a DTO type, you MUST use the **EXACT** Transformer that corresponds to that **EXACT** type.
+
+**FATAL ERROR Pattern - Using Parent Transformer for Nested Types:**
+
+```typescript
+// ❌ WRONG - Operation returns IShoppingSale.ISummary
+export async function getSalesSummary(): Promise<IShoppingSale.ISummary> {
+  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+    where: { id: "some-id" },
+    ...ShoppingSaleTransformer.select(),  // ❌ FATAL! This is for IShoppingSale, NOT IShoppingSale.ISummary!
+  });
+  return await ShoppingSaleTransformer.transform(sale);  // ❌ FATAL! Returns IShoppingSale, NOT IShoppingSale.ISummary!
+}
+
+// ✅ CORRECT - Use ShoppingSaleAtSummaryTransformer
+export async function getSalesSummary(): Promise<IShoppingSale.ISummary> {
+  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+    where: { id: "some-id" },
+    ...ShoppingSaleAtSummaryTransformer.select(),  // ✅ Correct! For IShoppingSale.ISummary
+  });
+  return await ShoppingSaleAtSummaryTransformer.transform(sale);  // ✅ Correct! Returns IShoppingSale.ISummary
+}
+
+// ❌ WRONG - Operation returns IBbsArticleComment.IInvert
+export async function getInvertedComment(): Promise<IBbsArticleComment.IInvert> {
+  const comment = await MyGlobal.prisma.bbs_article_comments.findUnique({
+    where: { id: "some-id" },
+    ...BbsArticleCommentTransformer.select(),  // ❌ FATAL! This is for IBbsArticleComment!
+  });
+  return await BbsArticleCommentTransformer.transform(comment);  // ❌ FATAL! Type mismatch!
+}
+
+// ✅ CORRECT - Use BbsArticleCommentAtInvertTransformer
+export async function getInvertedComment(): Promise<IBbsArticleComment.IInvert> {
+  const comment = await MyGlobal.prisma.bbs_article_comments.findUnique({
+    where: { id: "some-id" },
+    ...BbsArticleCommentAtInvertTransformer.select(),  // ✅ Correct!
+  });
+  return await BbsArticleCommentAtInvertTransformer.transform(comment);  // ✅ Correct!
+}
+```
+
+**Transformer Naming Algorithm:**
+
+When you see a DTO type name, apply this algorithm to get the correct Transformer name:
+
+1. Split by `.` → `["IShoppingSale", "ISummary"]`
+2. Remove `I` prefix from each part → `["ShoppingSale", "Summary"]`
+3. Join with `At` → `"ShoppingSaleAtSummary"`
+4. Append `Transformer` → `"ShoppingSaleAtSummaryTransformer"`
+
+**Quick Reference:**
+- `IShoppingSale` → `ShoppingSaleTransformer`
+- `IShoppingSale.ISummary` → `ShoppingSaleAtSummaryTransformer` ⚠️ (NOT `ShoppingSaleTransformer`!)
+- `IBbsArticle.IContent` → `BbsArticleAtContentTransformer` ⚠️ (NOT `BbsArticleTransformer`!)
+- `IBbsArticleComment.IInvert` → `BbsArticleCommentAtInvertTransformer` ⚠️ (NOT `BbsArticleCommentTransformer`!)
+
+**Why This Matters:**
+- `IShoppingSale` and `IShoppingSale.ISummary` are **DIFFERENT TYPES** with **DIFFERENT FIELDS**
+- Summary types typically have **fewer fields** (preview/listing data)
+- Invert types have **different structure** (reverse relationship views)
+- Using the wrong Transformer causes **TYPE MISMATCH ERRORS** at compile time
+- **ALWAYS check the return type** and use the matching Transformer
+
+**When Requesting Transformers:**
+
+```typescript
+// ❌ WRONG - Requesting wrong transformer
+process({
+  thinking: "Need transformer for IShoppingSale.ISummary response.",
+  request: {
+    type: "getRealizeTransformers",
+    dtoTypeNames: ["IShoppingSale"]  // ❌ WRONG! Need "IShoppingSale.ISummary"!
+  }
+});
+
+// ✅ CORRECT - Request exact DTO type
+process({
+  thinking: "Need transformer for IShoppingSale.ISummary response.",
+  request: {
+    type: "getRealizeTransformers",
+    dtoTypeNames: ["IShoppingSale.ISummary"]  // ✅ Correct!
+  }
+});
+```
+
 ## The Complete Transformation Flow (How It All Works Together)
 
 Understanding how collectors and transformers work together is crucial for implementing Pattern A correctly.
@@ -3145,6 +3235,13 @@ Before finalizing implementation, verify:
 - [ ] ✅ Used `...Transformer.select()` when querying database
 - [ ] ✅ Used `await Transformer.transform()` for response formatting
 - [ ] ✅ Used `await Collector.collect()` for CREATE/UPDATE operations
+
+#### 🚨 Correct Transformer Name Usage (CRITICAL!)
+- [ ] ✅ **Used EXACT Transformer name matching EXACT return type**
+- [ ] ✅ For `IShoppingSale.ISummary` return type → Used `ShoppingSaleAtSummaryTransformer` (NOT `ShoppingSaleTransformer`!)
+- [ ] ✅ For `IBbsArticleComment.IInvert` return type → Used `BbsArticleCommentAtInvertTransformer` (NOT `BbsArticleCommentTransformer`!)
+- [ ] ✅ Applied naming algorithm correctly: Split by `.`, remove `I`, join with `At`, append `Transformer`
+- [ ] ✅ Requested correct DTO type name in `getRealizeTransformers` (exact type with `.`, not parent type)
 
 ### Pattern B: WITHOUT Collector/Transformer (Manual Construction)
 

@@ -185,9 +185,11 @@ const correct = async <
             id: v7(),
             type: "realizeCorrect",
             kind: "casting",
-            content,
+            function: {
+              ...func,
+              content,
+            },
             created_at: new Date().toISOString(),
-            location: func.location,
             step: ctx.state().analyze?.step ?? 0,
             metric,
             tokenUsage,

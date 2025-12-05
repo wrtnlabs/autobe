@@ -34,6 +34,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         source: preliminary.getSource(),
         all: preliminary.getAll() as IAutoBePreliminaryCollection,
         local: preliminary.getLocal() as IAutoBePreliminaryCollection,
+        config: preliminary.getConfig() as any,
       }),
     )
     .flat(),
@@ -44,6 +45,7 @@ namespace Transformer {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     all: Pick<IAutoBePreliminaryCollection, Kind>;
     local: Pick<IAutoBePreliminaryCollection, Kind>;
+    config: AutoBePreliminaryController.IConfig<Kind>;
   }
 
   export const analysisFiles = (
@@ -116,28 +118,31 @@ namespace Transformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
-        content: StringUtil.trim`
-          ## Prisma AST Data
-          
-          ${toJsonBlock(oldbie)}
+        content:
+          props.config.prisma === "ast"
+            ? StringUtil.trim`
+                ## Prisma AST Data
 
-          ## Prisma Schema Files
+                ${toJsonBlock(oldbie)}
+              `
+            : StringUtil.trim`
+                ## Prisma Schema Files
 
-          \`\`\`prisma
-          ${writePrismaApplication({
-            dbms: "postgres",
-            application: {
-              files: [
-                {
-                  filename: "all.prisma",
-                  namespace: "All",
-                  models: Object.values(oldbie),
-                },
-              ],
-            },
-          })}
-          \`\`\
-        `,
+                \`\`\`prisma
+                ${writePrismaApplication({
+                  dbms: "postgres",
+                  application: {
+                    files: [
+                      {
+                        filename: "all.prisma",
+                        namespace: "All",
+                        models: Object.values(oldbie),
+                      },
+                    ],
+                  },
+                })}
+                \`\`\
+              `,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
@@ -321,16 +326,17 @@ namespace Transformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table | References
-        --------------|--------------|------------
+        DTO Type Name | Prisma Table | References | Neighbor Collectors
+        --------------|--------------|------------|--------------------
         ${newbie
           .map((c) =>
             [
               c.plan.dtoTypeName,
               c.plan.prismaSchemaName,
               c.plan.references.length > 0
-                ? c.plan.references.map((r) => r.source).join(", ")
+                ? `(${c.plan.references.map((r) => r.source).join(", ")})`
                 : "-",
+              `(${c.neighbors.join(", ")})`,
             ].join(" | "),
           )
           .join("\n")}
@@ -385,10 +391,16 @@ namespace Transformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table
-        --------------|-------------
+        DTO Type Name | Prisma Table | Neighbor Transformers 
+        --------------|--------------|----------------------
         ${newbie
-          .map((t) => [t.plan.dtoTypeName, t.plan.prismaSchemaName].join(" | "))
+          .map((t) =>
+            [
+              t.plan.dtoTypeName,
+              t.plan.prismaSchemaName,
+              `(${t.neighbors.join(", ")})`,
+            ].join(" | "),
+          )
           .join("\n")}
       `,
       loaded: props.local.realizeTransformers

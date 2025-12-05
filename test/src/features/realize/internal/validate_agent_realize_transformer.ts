@@ -1,5 +1,4 @@
-import { orchestrateRealizeCollectorPlan } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorPlan";
-import { orchestrateRealizeCollectorWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCollectorWrite";
+import { orchestrateRealizeTransformer } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeTransformer";
 import { AutoBeCompilerRealizeTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerRealizeTemplateOfSQLite } from "@autobe/compiler/src/raw/AutoBeCompilerRealizeTemplateOfSQLite";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -7,9 +6,9 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
-  AutoBeRealizeCollectorFunction,
-  AutoBeRealizeCollectorPlan,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
+import cp from "child_process";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -17,7 +16,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { ArchiveLogger } from "../../../archive/utils/ArchiveLogger";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_collector_write = async (props: {
+export const validate_agent_realize_transformer = async (props: {
   factory: TestFactory;
   vendor: string;
   project: AutoBeExampleProject;
@@ -38,33 +37,37 @@ export const validate_agent_realize_collector_write = async (props: {
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
-  const plans: AutoBeRealizeCollectorPlan[] =
-    await orchestrateRealizeCollectorPlan(agent.getContext(), {
-      progress: {
+  const transformers: AutoBeRealizeTransformerFunction[] =
+    await orchestrateRealizeTransformer(agent.getContext(), {
+      planProgress: {
+        total: 0,
+        completed: 0,
+      },
+      writeProgress: {
+        total: 0,
+        completed: 0,
+      },
+      correctProgress: {
         total: 0,
         completed: 0,
       },
     });
-  const collectors: AutoBeRealizeCollectorFunction[] =
-    await orchestrateRealizeCollectorWrite(agent.getContext(), {
-      plans,
-      progress: {
-        total: 0,
-        completed: 0,
-      },
-    });
+
+  const cwd: string = `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-transformer-write`;
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector-write`,
+    root: cwd,
     files: {
       ...(await agent.getFiles()),
       ...AutoBeCompilerRealizeTemplate,
       ...AutoBeCompilerRealizeTemplateOfSQLite,
       ...Object.fromEntries(
-        collectors
+        transformers
           .filter((w) => w !== null)
           .map((c) => [c.location, c.content]),
       ),
       "pnpm-workspace.yaml": "",
     },
   });
+  cp.execSync("pnpm install", { cwd, stdio: "ignore" });
+  cp.execSync("pnpm tsc", { cwd, stdio: "inherit" });
 };

@@ -5,8 +5,9 @@ export interface IAutoBeRealizeTransformerCorrectApplication {
    * Process transformer correction task or preliminary data requests.
    *
    * Systematically analyzes and corrects TypeScript compilation errors in
-   * transformer functions through three-phase workflow (think → draft → revise).
-   * Maintains business logic integrity while resolving all compilation issues.
+   * transformer functions through three-phase workflow (think → draft →
+   * revise). Maintains business logic integrity while resolving all compilation
+   * issues.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -44,9 +45,9 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final error correction (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getPrismaSchemas) or final error correction (complete). When preliminary
+     * returns empty array, that type is removed from the union, physically
+     * preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
@@ -69,24 +70,37 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
     type: "complete";
 
     /**
-     * Initial error analysis and correction strategy.
+     * Systematic error analysis and correction strategy.
      *
-     * Analyzes TypeScript compilation errors to understand:
+     * MUST contain thorough analysis with these four mandatory sections:
      *
-     * - Error patterns and root causes
-     * - Required fixes and their impact
-     * - Whether quick fixes or deep refactoring is needed
-     * - Prisma schema and DTO schema constraints
-     * - Transformer-specific issues (Payload transformation, select query)
+     * 1. Error Inventory - Categorize ALL compilation errors by root cause type
+     * 2. Root Cause Analysis - Identify WHY each error occurs (wrong field, wrong
+     *    transform, etc.)
+     * 3. Schema Verification - Cross-check error-related fields against actual
+     *    Prisma schema
+     * 4. Correction Strategy - Specific fix for each error in BOTH select() and
+     *    transform()
+     *
+     * This forces you to understand the REAL problem (not guess) and plan
+     * surgical fixes that address root causes, not symptoms.
      */
     think: string;
 
     /**
-     * First correction attempt.
+     * Initial correction implementation.
      *
-     * Implements the initial fixes identified in the think phase. For simple
-     * errors (typos, missing imports), this may be the final solution. Complex
-     * errors may require further refinement.
+     * Complete corrected code that applies ALL fixes from the think phase
+     * strategy. EVERY error in think Section 1 inventory MUST be addressed.
+     * Implement:
+     *
+     * - Field name corrections in select() (exact Prisma field names)
+     * - Type casts in transform() (Decimal→Number, DateTime→ISO)
+     * - Neighbor transformer reuse (replace inline logic if transformer exists)
+     * - Function order fix (transform → select → Payload)
+     *
+     * Apply fixes surgically - change ONLY what's broken, preserve working
+     * logic.
      */
     draft: string;
 
@@ -101,28 +115,31 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
 
   export interface IReviseProps {
     /**
-     * Correction review and validation.
+     * Critical correction review and validation.
      *
-     * Analyzes the draft corrections to ensure:
+     * MUST systematically verify using four checklists:
      *
-     * - All TypeScript errors are resolved
-     * - Business logic remains intact
-     * - AutoBE coding standards are maintained
-     * - No new errors are introduced
-     * - Performance and security are preserved
-     * - Prisma Payload type constraints are satisfied
-     * - DTO transformation maintains data integrity
+     * 1. Error Resolution - Confirm EVERY error from think Section 1 is fixed
+     * 2. Root Cause Fix - Verify fixes address root causes (not workarounds/hacks)
+     * 3. System Rules - Mandatory neighbor reuse, select (not include), proper
+     *    types
+     * 4. No Regression - Confirm no NEW errors, Payload type matches select()
+     *
+     * Identify any remaining issues with line numbers and root cause analysis.
+     * Catch Band-Aid fixes (any casts, type assertions) that hide real
+     * problems.
      */
     review: string;
 
     /**
-     * Final error-free implementation.
+     * Final error-free transformer code with all corrections applied.
      *
-     * The complete, corrected code that passes all TypeScript compilation
-     * checks.
+     * Apply ALL remaining fixes identified in the review to produce
+     * compilation-ready code. If review found issues (workarounds, new errors),
+     * this MUST contain proper fixes.
      *
-     * Returns `null` if the draft corrections are sufficient and need no
-     * further changes.
+     * Return `null` ONLY if draft is already perfect and review found zero
+     * issues.
      */
     final: string | null;
   }

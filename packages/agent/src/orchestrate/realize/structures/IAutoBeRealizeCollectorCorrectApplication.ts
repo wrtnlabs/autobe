@@ -44,9 +44,9 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final error correction (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getPrismaSchemas) or final error correction (complete). When preliminary
+     * returns empty array, that type is removed from the union, physically
+     * preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
@@ -69,24 +69,36 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
     type: "complete";
 
     /**
-     * Initial error analysis and correction strategy.
+     * Systematic error analysis and correction strategy.
      *
-     * Analyzes TypeScript compilation errors to understand:
+     * MUST contain thorough analysis with these four mandatory sections:
      *
-     * - Error patterns and root causes
-     * - Required fixes and their impact
-     * - Whether quick fixes or deep refactoring is needed
-     * - Prisma schema and DTO schema constraints
-     * - Collector-specific issues (CreateInput generation, type mapping)
+     * 1. Error Inventory - Categorize ALL compilation errors by root cause type
+     * 2. Root Cause Analysis - Identify WHY each error occurs (wrong field, type
+     *    mismatch, etc.)
+     * 3. Schema Verification - Cross-check error-related fields against actual
+     *    Prisma schema
+     * 4. Correction Strategy - Specific fix for each error (not workarounds)
+     *
+     * This forces you to understand the REAL problem (not guess) and plan
+     * surgical fixes that address root causes, not symptoms.
      */
     think: string;
 
     /**
-     * First correction attempt.
+     * Initial correction implementation.
      *
-     * Implements the initial fixes identified in the think phase. For simple
-     * errors (typos, missing imports), this may be the final solution. Complex
-     * errors may require further refinement.
+     * Complete corrected code that applies ALL fixes from the think phase
+     * strategy. EVERY error in think Section 1 inventory MUST be addressed.
+     * Implement:
+     *
+     * - Field name corrections (exact names from Prisma schema)
+     * - Type fixes (proper CreateInput types, nullable handling)
+     * - Neighbor collector reuse (replace inline logic if collector exists)
+     * - Relationship fixes (connect/create syntax)
+     *
+     * Apply fixes surgically - change ONLY what's broken, preserve working
+     * logic.
      */
     draft: string;
 
@@ -101,27 +113,31 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
 
   export interface IReviseProps {
     /**
-     * Correction review and validation.
+     * Critical correction review and validation.
      *
-     * Analyzes the draft corrections to ensure:
+     * MUST systematically verify using four checklists:
      *
-     * - All TypeScript errors are resolved
-     * - Business logic remains intact
-     * - AutoBE coding standards are maintained
-     * - No new errors are introduced
-     * - Performance and security are preserved
-     * - Prisma CreateInput type constraints are satisfied
+     * 1. Error Resolution - Confirm EVERY error from think Section 1 is fixed
+     * 2. Root Cause Fix - Verify fixes address root causes (not workarounds/hacks)
+     * 3. System Rules - Mandatory neighbor reuse, proper types, no fabricated
+     *    fields
+     * 4. No Regression - Confirm no NEW errors introduced, business logic intact
+     *
+     * Identify any remaining issues with line numbers and root cause analysis.
+     * Catch Band-Aid fixes (type assertions, any casts) that hide real
+     * problems.
      */
     review: string;
 
     /**
-     * Final error-free implementation.
+     * Final error-free collector code with all corrections applied.
      *
-     * The complete, corrected code that passes all TypeScript compilation
-     * checks.
+     * Apply ALL remaining fixes identified in the review to produce
+     * compilation-ready code. If review found issues (workarounds, new errors),
+     * this MUST contain proper fixes.
      *
-     * Returns `null` if the draft corrections are sufficient and need no
-     * further changes.
+     * Return `null` ONLY if draft is already perfect and review found zero
+     * issues.
      */
     final: string | null;
   }
