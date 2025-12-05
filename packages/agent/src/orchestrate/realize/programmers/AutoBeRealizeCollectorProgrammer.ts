@@ -214,7 +214,7 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
-    validateMapppings({
+    validateMappings({
       application: props.application,
       errors,
       plan: props.plan,
@@ -249,7 +249,7 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
     return errors;
   }
 
-  function validateMapppings(props: {
+  function validateMappings(props: {
     application: AutoBePrisma.IApplication;
     errors: IValidation.IError[];
     plan: AutoBeRealizeCollectorPlan;
