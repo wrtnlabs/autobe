@@ -1,4 +1,7 @@
-import { AutoBeRealizeTransformerFunction } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeRealizeTransformerFunction,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -92,7 +95,12 @@ export const transformRealizeTransformerCorrectHistory = async <
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.function.plan)}
+      ${AutoBeRealizeTransformerProgrammer.writeTemplate({
+        plan: props.function.plan,
+        schema: ctx.state().interface!.document.components.schemas[
+          props.function.plan.dtoTypeName
+        ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+      })}
 
       Current code is as follows:
 

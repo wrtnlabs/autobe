@@ -1,4 +1,4 @@
-import { AutoBeRealizeTransformerPlan } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeRealizeTransformerPlan } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -55,7 +55,12 @@ export const transformRealizeTransformerWriteHistory = async <
           Prisma schema ${props.plan.prismaSchemaName}:
 
           \`\`\`typescript
-          ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.plan)}
+          ${AutoBeRealizeTransformerProgrammer.writeTemplate({
+            plan: props.plan,
+            schema: ctx.state().interface!.document.components.schemas[
+              props.plan.dtoTypeName
+            ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+          })}
           \`\`\`
 
           Here is the neighbor transformers you can utilize:

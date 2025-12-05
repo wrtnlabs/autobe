@@ -19,6 +19,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
     if (schema === undefined) return false;
     return (
       AutoBeOpenApiTypeChecker.isObject(schema) &&
+      Object.keys(schema.properties).length !== 0 &&
+      (schema.additionalProperties ?? false) === false &&
       props.key !== "IAuthorizationToken" &&
       props.key !== "IEntity" &&
       props.key.startsWith("IPage") === false &&
@@ -52,19 +54,26 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
-  export function writeTemplate(plan: AutoBeRealizeTransformerPlan): string {
+  export function writeTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  }): string {
     return StringUtil.trim`
-      export namespace ${getName(plan.dtoTypeName)} {
-        export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
-
-        export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {
-          ...
-        }
+      export namespace ${getName(props.plan.dtoTypeName)} {
+        export type Payload = Prisma.${props.plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
           return {
             ...
-          } satisfies Prisma.${plan.prismaSchemaName}FindManyArgs;
+          } satisfies Prisma.${props.plan.prismaSchemaName}FindManyArgs;
+        }
+
+        export async function transform(input: Payload): Promise<${props.plan.dtoTypeName}> {
+          return {
+${Object.keys(props.schema.properties)
+  .map((k) => `  ${k}: ...,`)
+  .join("\n")}
+          };
         }
       }
     `;
