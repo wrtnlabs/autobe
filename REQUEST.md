@@ -25,6 +25,20 @@ model bbs_article_comments {
 }
 ```
 
+> ```prisma
+> model bbs_article_comment_links {
+>   id                     String    @id @db.Uuid
+>   bbs_article_comment_id String    @db.Uuid
+>   url                    String    @db.Text
+>   sequence               Int
+>   created_at             DateTime  @db.Timestamptz
+>   updated_at             DateTime  @db.Timestamptz
+>   deleted_at             DateTime? @db.Timestamptz
+>
+>   comment bbs_article_comments @relation(fields: [bbs_article_comment_id], references: [id], onDelete: Cascade)
+> }
+> ```
+
 ## DTO Type
 ```typescript
 export interface IBbsArticleComment {
@@ -52,7 +66,46 @@ export namespace IBbsArticleComment {
 }
 ```
 
+> ```typescript
+> export interface IBbsArticleCommentLink {
+>   id: string & tags.Format<"uuid">;
+>   url: string & tags.Format<"url">;
+>   created_at: string & tags.Format<"date-time">;
+>   updated_at: string & tags.Format<"date-time">;
+>   deleted_at: (string & tags.Format<"date-time">) | null;
+> }
+>
+> export namespace IBbsArticleCommentLink {
+>   export interface ICreate {
+>     url: string & tags.Format<"url">;
+>   }
+> }
+> ```
+
 ## Collector
+
+> ```typescript
+> // Forward declarations of reused collectors
+> export namespace BbsArticleCommentFileCollector {
+>   export async function collect(props: {
+>     body: IBbsArticleCommentFile.ICreate;
+>     bbsArticleComment: IEntity;
+>     sequence: number;
+>   }) {
+>     return { ... } satisfies Prisma.bbs_article_comment_filesCreateInput;
+>   }
+> }
+>
+> export namespace BbsArticleCommentTagCollector {
+>   export async function collect(props: {
+>     body: IBbsArticleCommentTag.ICreate;
+>     bbsArticleComment: IEntity;
+>   }) {
+>     return { ... } satisfies Prisma.bbs_article_comment_tagsCreateInput;
+>   }
+> }
+> ```
+
 ```typescript
 export namespace BbsArticleCommentCollector {
   export async function collect(props: {
@@ -144,6 +197,9 @@ export namespace BbsArticleCommentCollector {
                   },
                   url: elem.url,
                   sequence: i,
+                  created_at: new Date(),
+                  updated_at: new Date(),
+                  deleted_at: null,
                 } satisfies Prisma.bbs_article_comment_linksCreateInput;
               },
             )
@@ -158,6 +214,41 @@ export namespace BbsArticleCommentCollector {
 ```
 
 ## Transformer
+
+> ```typescript
+> // Forward declarations of reused transformers
+> export namespace BbsUserAtSummaryTransformer {
+>   export type Payload = Prisma.bbs_usersGetPayload<ReturnType<typeof select>>;
+>   export function select() {
+>     return { ... } satisfies Prisma.bbs_usersFindManyArgs;
+>   }
+>   export async function transform(input: Payload): Promise<IBbsUser.ISummary>;
+> }
+>
+> export namespace BbsArticleCommentAtSummaryTransformer {
+>   export type Payload = Prisma.bbs_article_commentsGetPayload<ReturnType<typeof select>>;
+>   export function select() {
+>     return { ... } satisfies Prisma.bbs_article_commentsFindManyArgs;
+>   }
+>   export async function transform(input: Payload): Promise<IBbsArticleComment.ISummary>;
+> }
+>
+> export namespace BbsArticleCommentFileTransformer {
+>   export type Payload = Prisma.bbs_article_comment_filesGetPayload<ReturnType<typeof select>>;
+>   export function select() {
+>     return { ... } satisfies Prisma.bbs_article_comment_filesFindManyArgs;
+>   }
+>   export async function transform(input: Payload): Promise<IBbsArticleCommentFile>;
+> }
+>
+> export namespace BbsArticleCommentTagTransformer {
+>   export type Payload = Prisma.bbs_article_comment_tagsGetPayload<ReturnType<typeof select>>;
+>   export function select() {
+>     return { ... } satisfies Prisma.bbs_article_comment_tagsFindManyArgs;
+>   }
+>   export async function transform(input: Payload): Promise<IBbsArticleCommentTag>;
+> }
+> ```
 
 ```typescript
 export namespace BbsArticleCommentTransformer {
@@ -187,6 +278,9 @@ export namespace BbsArticleCommentTransformer {
             id: true,
             url: true,
             sequence: true,
+            created_at: true,
+            updated_at: true,
+            deleted_at: true,
           },
         },
 
@@ -239,6 +333,9 @@ export namespace BbsArticleCommentTransformer {
           return {
             id: elem.id,
             url: elem.url,
+            created_at: elem.created_at.toISOString(),
+            updated_at: elem.updated_at.toISOString(),
+            deleted_at: elem.deleted_at?.toISOString() ?? null,
           }
         }
       ),
