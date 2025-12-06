@@ -96,8 +96,16 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      *
      * For each Prisma member, document:
      *
-     * - Current state: "Correct", "Missing", "Wrong name", "Wrong type", etc.
-     * - Correction needed: How to fix it, or "No change needed"
+     * - `member`: Exact field/relation name from Prisma schema
+     * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
+     *   relation
+     * - `how`: Current state + correction plan ("No change needed", "Fix:
+     *   [problem] → [solution]", etc.)
+     *
+     * The `kind` property forces you to consciously identify whether each
+     * member is a scalar or relation BEFORE deciding how to fix it. This
+     * prevents common correction errors like treating belongsTo relations as
+     * scalar fields.
      *
      * Even fields without errors should be included with "No change needed" to
      * ensure complete review. Missing even a single field could hide bugs.
@@ -106,6 +114,8 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      *
      * - Catches silent errors compiler didn't report
      * - Ensures no fields accidentally omitted
+     * - Forces explicit classification (kind) before correction (how)
+     * - Prevents confusion between scalar fields and relations
      * - Documents correction decisions explicitly
      * - Prevents regression in working fields
      *

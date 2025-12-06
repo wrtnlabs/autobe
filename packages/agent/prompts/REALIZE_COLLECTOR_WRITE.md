@@ -418,7 +418,8 @@ The `mappings` array is a comprehensive checklist where you document your strate
 **Structure**:
 ```typescript
 interface AutoBeRealizeCollectorMapping {
-  prismaMember: string;  // Exact field/relation name from Prisma schema
+  member: string;  // Exact field/relation name from Prisma schema
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";  // Type of schema member
   how: string;           // Brief explanation of how to obtain this value
 }
 ```
@@ -427,14 +428,14 @@ interface AutoBeRealizeCollectorMapping {
 ```json
 {
   "mappings": [
-    { "prismaMember": "id", "how": "Generate with v4()" },
-    { "prismaMember": "email", "how": "From props.body.email" },
-    { "prismaMember": "password_hash", "how": "Generate with PasswordUtil.hash(props.body.password)" },
-    { "prismaMember": "customer", "how": "Connect using props.references.customer_id" },
-    { "prismaMember": "shopping_sale_tags", "how": "Nested create with ShoppingSaleTagCollector" },
-    { "prismaMember": "created_at", "how": "Default to new Date()" },
-    { "prismaMember": "deleted_at", "how": "Default to null" },
-    { "prismaMember": "shopping_cart_items", "how": "Not applicable for this collector" }
+    { "member": "id", "kind": "scalar", "how": "Generate with v4()" },
+    { "member": "email", "kind": "scalar", "how": "From props.body.email" },
+    { "member": "password_hash", "kind": "scalar", "how": "Generate with PasswordUtil.hash(props.body.password)" },
+    { "member": "customer", "kind": "belongsTo", "how": "Connect using props.references.customer_id" },
+    { "member": "shopping_sale_tags", "kind": "hasMany", "how": "Nested create with ShoppingSaleTagCollector" },
+    { "member": "created_at", "kind": "scalar", "how": "Default to new Date()" },
+    { "member": "deleted_at", "kind": "scalar", "how": "Default to null" },
+    { "member": "shopping_cart_items", "kind": "hasMany", "how": "Not applicable for this collector" }
   ]
 }
 ```
@@ -451,9 +452,9 @@ interface AutoBeRealizeCollectorMapping {
 
 **Examples of "not applicable" cases**:
 ```json
-{ "prismaMember": "shopping_cart_items", "how": "Not applicable for this collector" }
-{ "prismaMember": "children", "how": "Not needed (optional has-many)" }
-{ "prismaMember": "customer_feedback", "how": "Not used in ICreate DTO" }
+{ "member": "shopping_cart_items", "kind": "hasMany", "how": "Not applicable for this collector" }
+{ "member": "children", "kind": "hasMany", "how": "Not needed (optional has-many)" }
+{ "member": "customer_feedback", "kind": "hasMany", "how": "Not used in ICreate DTO" }
 ```
 
 ### How to Fill the Mappings Array
@@ -465,22 +466,67 @@ You receive a complete array of all field and relation names as input material:
 ["id", "email", "password_hash", "customer_id", "customer", "shopping_sale_tags", "created_at", ...]
 ```
 
-**Step 2: Map Each Member**
+**Step 2: Identify Each Member's Kind**
 
-For EACH member in the list, decide how to handle it:
+**🔥 CRITICAL: Always determine the `kind` BEFORE deciding `how` to handle it!**
 
-**Common Strategies**:
+For EACH member, first classify what KIND of Prisma schema member it is:
 
+- **`"scalar"`**: Regular database column (id, email, created_at, total_price, is_active, etc.)
+  - Includes: UUIDs, strings, numbers, booleans, dates, enums
+  - Requires: Direct value assignment
+  - Example: `id`, `email`, `created_at`, `total_price`
+
+- **`"belongsTo"`**: Foreign key relation pointing to parent entity
+  - The "many" side of a one-to-many relationship
+  - Has corresponding `_id` column in DB but you use the RELATION name
+  - Requires: `{ connect: { id: ... } }` syntax
+  - Example: `customer` (not `customer_id`), `article`, `category`, `parent`
+
+- **`"hasOne"`**: One-to-one relation where this side owns the relationship
+  - Rare, typically used for profile/settings patterns
+  - Requires: `{ create: {...} }` or `{ connect: { id: ... } }` syntax
+  - Example: `profile`, `settings`
+
+- **`"hasMany"`**: One-to-many or many-to-many relation (reverse side)
+  - The "one" side of a one-to-many relationship, or many-to-many
+  - Has NO corresponding column in this table's DB schema
+  - Requires: `{ create: [...] }` syntax with nested collector or not needed
+  - Example: `comments`, `shopping_sale_tags`, `reviews`, `children`
+
+**Why `kind` matters**:
+- Prevents treating `customer` (belongsTo relation) as a scalar field
+- Forces you to use correct Prisma syntax based on member type
+- Catches common error: trying to assign `customer_id` instead of using `customer: { connect: ... }`
+- Enables Chain-of-Thought: you MUST think about what it IS before deciding HOW to handle it
+
+**Step 3: Decide How to Handle Each Member**
+
+After identifying the `kind`, decide the handling strategy (`how`):
+
+**Common Strategies by Kind**:
+
+**For scalar fields**:
 1. **From DTO**: `"From props.body.email"`
-2. **From Reference**: `"Connect using props.references.customer_id"`
-3. **Generated Value**: `"Generate with v4()"`, `"Default to new Date()"`
-4. **Nested Collector**: `"Nested create with ShoppingSaleTagCollector"`
-5. **Indirect Reference**: `"Query comment to get article_id"`
-6. **Semantic Fallback**: `"Default to null"`, `"Default to false"`
-7. **Optional**: `"Undefined (nullable FK)"`
-8. **Not Applicable**: `"Not applicable for this collector"`, `"Not needed (optional has-many)"`
+2. **Generated Value**: `"Generate with v4()"`, `"Default to new Date()"`
+3. **Semantic Fallback**: `"Default to null"`, `"Default to false"`
+4. **Computed**: `"Generate with PasswordUtil.hash(props.body.password)"`
 
-**Step 3: Validator Checks Completeness**
+**For belongsTo relations**:
+1. **From Reference**: `"Connect using props.references.customer_id"`
+2. **From DTO**: `"Connect using props.body.categoryId"`
+3. **Optional**: `"Undefined (nullable FK)"`
+4. **Indirect Query**: `"Query comment to get article_id"`
+
+**For hasMany relations**:
+1. **Nested Collector**: `"Nested create with ShoppingSaleTagCollector"`
+2. **Not Applicable**: `"Not applicable for this collector"`, `"Not needed (optional has-many)"`
+
+**For hasOne relations**:
+1. **Nested Create**: `"Create with ProfileCollector"`
+2. **Not Applicable**: `"Not needed in this operation"`
+
+**Step 4: Validator Checks Completeness**
 
 After you provide mappings, the validator verifies:
 - ✅ Every Prisma schema member appears in mappings?

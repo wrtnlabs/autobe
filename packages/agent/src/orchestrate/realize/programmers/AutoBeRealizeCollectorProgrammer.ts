@@ -1,6 +1,7 @@
 import {
   AutoBeOpenApi,
   AutoBePrisma,
+  AutoBeRealizeCollectorMapping,
   AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -9,7 +10,6 @@ import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeRealizeCollectorWriteApplication } from "../structures/IAutoBeRealizeCollectorWriteApplication";
 
 export namespace AutoBeRealizeCollectorProgrammer {
   export function filter(key: string): boolean {
@@ -38,18 +38,39 @@ export namespace AutoBeRealizeCollectorProgrammer {
   export function getRequired(props: {
     application: AutoBePrisma.IApplication;
     model: AutoBePrisma.IModel;
-  }): string[] {
+  }): AutoBeRealizeCollectorMapping.Metadata[] {
     return [
-      props.model.primaryField.name,
-      ...props.model.plainFields.map((f) => f.name),
-      ...props.model.foreignFields.map((f) => f.relation.name),
+      {
+        member: props.model.primaryField.name,
+        kind: "scalar",
+      },
+      ...props.model.plainFields.map(
+        (pf) =>
+          ({
+            member: pf.name,
+            kind: "scalar",
+          }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+      ),
+      ...props.model.foreignFields.map(
+        (f) =>
+          ({
+            member: f.relation.name,
+            kind: "belongsTo",
+          }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+      ),
       ...props.application.files
         .map((f) => f.models)
         .flat()
         .map((om) =>
           om.foreignFields
             .filter((fk) => fk.relation.targetModel === props.model.name)
-            .map((fk) => fk.relation.mappingName ?? om.name),
+            .map(
+              (fk) =>
+                ({
+                  member: fk.relation.mappingName ?? om.name,
+                  kind: fk.unique ? "hasOne" : "hasMany",
+                }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+            ),
         )
         .flat(),
     ];
@@ -61,7 +82,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     model: AutoBePrisma.IModel;
     application: AutoBePrisma.IApplication;
   }): string {
-    const required: string[] = getRequired(props);
+    const required: string[] = getRequired(props).map((r) => r.member);
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
@@ -205,7 +226,7 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
   export function validate(props: {
     application: AutoBePrisma.IApplication;
     plan: AutoBeRealizeCollectorPlan;
-    mappings: IAutoBeRealizeCollectorWriteApplication.IMapping[];
+    mappings: AutoBeRealizeCollectorMapping[];
     neighbors: AutoBeRealizeCollectorPlan[];
     draft: string;
     revise: {
@@ -253,38 +274,54 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
     application: AutoBePrisma.IApplication;
     errors: IValidation.IError[];
     plan: AutoBeRealizeCollectorPlan;
-    mappings: IAutoBeRealizeCollectorWriteApplication.IMapping[];
+    mappings: AutoBeRealizeCollectorMapping[];
   }): void {
     const model: AutoBePrisma.IModel = props.application.files
       .map((f) => f.models)
       .flat()
       .find((m) => m.name === props.plan.prismaSchemaName)!;
-    const required: string[] = getRequired({
+    const required: AutoBeRealizeCollectorMapping.Metadata[] = getRequired({
       application: props.application,
       model,
     });
     props.mappings.forEach((m, i) => {
-      if (required.includes(m.prismaMember) === true) return;
-      props.errors.push({
-        path: `$input.request.mappings[${i}].prismaMember`,
-        value: m.prismaMember,
-        expected: required.map((r) => JSON.stringify(r)).join(" | "),
-        description: StringUtil.trim`
-          '${m.prismaMember}' is not a valid Prisma member.
+      const metadata: AutoBeRealizeCollectorMapping.Metadata | undefined =
+        required.find((r) => r.member === m.member);
+      if (metadata === undefined)
+        props.errors.push({
+          path: `$input.request.mappings[${i}].member`,
+          value: m.member,
+          expected: required
+            .map((r) => `AutoBeRealizeMapping<"${r}">`)
+            .join(" | "),
+          description: StringUtil.trim`
+          '${m.member}' is not a valid Prisma member.
 
           Please provide mapping only for existing Prisma members:
 
           ${required.map((r) => `- ${r}`).join("\n")}
         `,
-      });
+        });
+      else if (metadata.kind !== m.kind)
+        props.errors.push({
+          path: `$input.request.mappings[${i}].kind`,
+          value: m.kind,
+          expected: `"${metadata.kind}"`,
+          description: StringUtil.trim`
+            The mapping kind for Prisma member '${m.member}' is invalid.
+
+            Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
+          `,
+        });
     });
     for (const r of required) {
-      if (props.mappings.some((m) => m.prismaMember === r) === false)
+      if (props.mappings.some((m) => m.member === r.member) === false)
         props.errors.push({
           path: "$input.request.mappings[]",
           value: undefined,
           expected: StringUtil.trim`{
-            prismaMember: "${r}";
+            member: "${r}";
+            kind: "${r.kind}";
             how: string;
           }`,
           description: StringUtil.trim`

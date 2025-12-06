@@ -39,8 +39,61 @@ export interface AutoBeRealizeCollectorMapping {
    * Include ALL fields from the schema, even if they are optional or not used
    * in this particular collector.
    */
-  prismaMember: string;
+  member: string;
 
+  /**
+   * The kind of Prisma schema member.
+   *
+   * Explicitly identifies whether this member is a scalar field or a relation,
+   * and if it's a relation, what type of relation it is. This classification
+   * forces the AI to think through the nature of each member before planning
+   * how to handle it, preventing common mistakes like treating belongsTo
+   * relations as scalar fields.
+   *
+   * **Possible values**:
+   *
+   * - `"scalar"`: Regular database column (id, email, created_at, total_price,
+   *   etc.)
+   * - `"belongsTo"`: Foreign key relation pointing to parent entity (customer,
+   *   article, category, etc.)
+   * - `"hasOne"`: One-to-one relation where this side owns the relationship
+   * - `"hasMany"`: One-to-many or many-to-many relation (comments, tags, reviews,
+   *   etc.)
+   *
+   * **Why this matters**:
+   *
+   * - **Prevents confusion**: AI must consciously identify if "customer" is a
+   *   relation (needs `{ connect: { id: ... } }`) or a scalar field
+   * - **Forces correct syntax**: belongsTo requires `connect`, hasMany requires
+   *   `create`, scalar requires direct value assignment
+   * - **Enables Chain-of-Thought**: AI explicitly thinks about the kind before
+   *   deciding the handling strategy in the `how` field
+   * - **Catches common errors**: Prevents treating FK relations as scalar IDs
+   *
+   * **Examples by kind**:
+   *
+   * ```typescript
+   * // Scalar fields
+   * { member: "id", kind: "scalar", how: "Generate with v4()" }
+   * { member: "email", kind: "scalar", how: "From props.body.email" }
+   * { member: "created_at", kind: "scalar", how: "Default to new Date()" }
+   * { member: "total_price", kind: "scalar", how: "From props.body.totalPrice" }
+   *
+   * // BelongsTo relations (FK pointing to parent)
+   * { member: "customer", kind: "belongsTo", how: "Connect using props.customer.id" }
+   * { member: "article", kind: "belongsTo", how: "Connect using props.article.id" }
+   * { member: "category", kind: "belongsTo", how: "Connect using props.body.categoryId" }
+   * { member: "parent", kind: "belongsTo", how: "Undefined (nullable FK)" }
+   *
+   * // HasMany relations (reverse side of FK)
+   * { member: "comments", kind: "hasMany", how: "Not needed (optional has-many)" }
+   * { member: "tags", kind: "hasMany", how: "Nested create with TagCollector" }
+   * { member: "reviews", kind: "hasMany", how: "Not applicable for this collector" }
+   * ```
+   *
+   * The `kind` field works together with `how`: kind identifies WHAT it is, how
+   * explains HOW to handle it.
+   */
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
 
   /**
@@ -77,4 +130,7 @@ export interface AutoBeRealizeCollectorMapping {
    * This is NOT code - just a simple description of the strategy.
    */
   how: string;
+}
+export namespace AutoBeRealizeCollectorMapping {
+  export type Metadata = Omit<AutoBeRealizeCollectorMapping, "how">;
 }

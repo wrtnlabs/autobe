@@ -192,7 +192,8 @@ The `mappings` array is a systematic review where you document the current state
 **Structure**:
 ```typescript
 interface AutoBeRealizeCollectorMapping {
-  prismaMember: string;  // Exact field/relation name from Prisma schema
+  member: string;  // Exact field/relation name from Prisma schema
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";  // Type of schema member
   how: string;           // Current state + correction plan
 }
 ```
@@ -201,12 +202,12 @@ interface AutoBeRealizeCollectorMapping {
 ```json
 {
   "mappings": [
-    { "prismaMember": "id", "how": "No change needed - correct" },
-    { "prismaMember": "email", "how": "Fix: Wrong name 'user_email' → 'email'" },
-    { "prismaMember": "customer", "how": "Fix: Using FK column instead of relation - change to connect syntax" },
-    { "prismaMember": "shopping_sale_tags", "how": "Fix: Inline logic - replace with ShoppingSaleTagCollector" },
-    { "prismaMember": "created_at", "how": "Fix: Missing field - add with new Date()" },
-    { "prismaMember": "deleted_at", "how": "No change needed - correct" }
+    { "member": "id", "kind": "scalar", "how": "No change needed - correct" },
+    { "member": "email", "kind": "scalar", "how": "Fix: Wrong name 'user_email' → 'email'" },
+    { "member": "customer", "kind": "belongsTo", "how": "Fix: Using FK column instead of relation - change to connect syntax" },
+    { "member": "shopping_sale_tags", "kind": "hasMany", "how": "Fix: Inline logic - replace with ShoppingSaleTagCollector" },
+    { "member": "created_at", "kind": "scalar", "how": "Fix: Missing field - add with new Date()" },
+    { "member": "deleted_at", "kind": "scalar", "how": "No change needed - correct" }
   ]
 }
 ```
@@ -221,7 +222,19 @@ interface AutoBeRealizeCollectorMapping {
 - Documents that you verified everything
 - Prevents regression during corrections
 
-**For each field, document**:
+**For each field, first identify its `kind`**:
+- **`"scalar"`**: Regular database column (id, email, created_at, etc.)
+- **`"belongsTo"`**: FK relation to parent (customer, article, category, etc.)
+- **`"hasOne"`**: One-to-one relation (rare - profile, settings)
+- **`"hasMany"`**: One-to-many or many-to-many (comments, tags, reviews, etc.)
+
+**Why `kind` matters during correction**:
+- **Prevents confusion**: Is "customer" a scalar or belongsTo relation? AI must consciously determine this
+- **Catches common errors**: Treating belongsTo as scalar (using `customer_id` instead of `customer: { connect: ... }`)
+- **Forces correct syntax**: Each kind requires different Prisma syntax
+- **Enables Chain-of-Thought**: You must think about WHAT it is before deciding HOW to fix it
+
+**Then document the correction strategy in `how`**:
 - **"No change needed"** - Field is correct
 - **"Fix: [problem] → [solution]"** - Field needs correction
 - **"Fix: Missing - add with [value]"** - Field is missing entirely
