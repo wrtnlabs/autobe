@@ -21,7 +21,8 @@ export * from "./AutoBeRealizeCollectorMapping";
 export * from "./AutoBeRealizeCollectorPlan";
 export * from "./AutoBeRealizeCollectorReference";
 export * from "./AutoBeRealizeTransformerFunction";
-export * from "./AutoBeRealizeTransformerMapping";
+export * from "./AutoBeRealizeTransformerTransformMapping";
+export * from "./AutoBeRealizeTransformerSelectMapping";
 export * from "./AutoBeRealizeTransformerPlan";
 export * from "./AutoBeRealizeOperationFunction";
 

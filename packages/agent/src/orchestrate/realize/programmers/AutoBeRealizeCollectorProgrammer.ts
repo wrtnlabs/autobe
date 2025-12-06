@@ -35,7 +35,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
-  export function getRequired(props: {
+  export function getMappingMetadata(props: {
     application: AutoBePrisma.IApplication;
     model: AutoBePrisma.IModel;
   }): AutoBeRealizeCollectorMapping.Metadata[] {
@@ -86,7 +86,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
     model: AutoBePrisma.IModel;
     application: AutoBePrisma.IApplication;
   }): string {
-    const required: string[] = getRequired(props).map((r) => r.member);
+    const mappings: string[] = getMappingMetadata(props).map((r) => r.member);
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
@@ -121,7 +121,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           }
         }) {
           return {
-${required.map((r) => `      ${r}: ...,`).join("\n")}
+${mappings.map((r) => `      ${r}: ...,`).join("\n")}
           } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
         }
       }
@@ -284,10 +284,11 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
       .map((f) => f.models)
       .flat()
       .find((m) => m.name === props.plan.prismaSchemaName)!;
-    const required: AutoBeRealizeCollectorMapping.Metadata[] = getRequired({
-      application: props.application,
-      model,
-    });
+    const required: AutoBeRealizeCollectorMapping.Metadata[] =
+      getMappingMetadata({
+        application: props.application,
+        model,
+      });
     props.mappings.forEach((m, i) => {
       const metadata: AutoBeRealizeCollectorMapping.Metadata | undefined =
         required.find((r) => r.member === m.member);
@@ -332,21 +333,21 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
       }
     });
     for (const r of required) {
-      if (props.mappings.some((m) => m.member === r.member) === false)
-        props.errors.push({
-          path: "$input.request.mappings[]",
-          value: undefined,
-          expected: StringUtil.trim`{
+      if (props.mappings.some((m) => m.member === r.member)) continue;
+      props.errors.push({
+        path: "$input.request.mappings[]",
+        value: undefined,
+        expected: StringUtil.trim`{
             member: "${r.member}";
             kind: "${r.kind}";
             how: string;
           }`,
-          description: StringUtil.trim`
+        description: StringUtil.trim`
             You missed mapping for required Prisma member '${r}'.
 
             Make sure to provide mapping for all required members.
           `,
-        });
+      });
     }
   }
 

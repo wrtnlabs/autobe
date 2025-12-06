@@ -89,7 +89,7 @@ export const transformRealizeCollectorCorrectHistory = async <
 
           Member | Kind | Nullable
           -------|------|----------
-          ${AutoBeRealizeCollectorProgrammer.getRequired({
+          ${AutoBeRealizeCollectorProgrammer.getMappingMetadata({
             application,
             model,
           })

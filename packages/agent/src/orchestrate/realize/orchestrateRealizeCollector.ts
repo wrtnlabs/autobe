@@ -25,18 +25,18 @@ export async function orchestrateRealizeCollector<
     await orchestrateRealizeCollectorPlan(ctx, {
       progress: props.planProgress,
     });
-  const writes: AutoBeRealizeCollectorFunction[] =
+  let functions: AutoBeRealizeCollectorFunction[] =
     await orchestrateRealizeCollectorWrite(ctx, {
       plans,
       progress: props.writeProgress,
     });
-  const castings: AutoBeRealizeCollectorFunction[] =
-    await orchestrateRealizeCollectorCorrectCasting(ctx, {
-      functions: writes,
-      progress: props.correctProgress,
-    });
-  return await orchestrateRealizeCollectorCorrectOverall(ctx, {
-    functions: castings,
+  functions = await orchestrateRealizeCollectorCorrectOverall(ctx, {
+    functions,
     progress: props.correctProgress,
   });
+  functions = await orchestrateRealizeCollectorCorrectCasting(ctx, {
+    functions,
+    progress: props.correctProgress,
+  });
+  return functions;
 }

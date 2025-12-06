@@ -1,3 +1,8 @@
+import {
+  AutoBeRealizeTransformerSelectMapping,
+  AutoBeRealizeTransformerTransformMapping,
+} from "@autobe/interface";
+
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 export interface IAutoBeRealizeTransformerCorrectApplication {
@@ -86,6 +91,103 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * surgical fixes that address root causes, not symptoms.
      */
     think: string;
+
+    /**
+     * Prisma field-by-field selection mapping verification for the select()
+     * function.
+     *
+     * Review which Prisma fields/relations are being selected to identify
+     * missing selections or incorrect field names that cause compilation errors.
+     *
+     * For each Prisma field needed by transform(), document:
+     *
+     * - `member`: Exact Prisma field/relation name (snake_case) - verify
+     *   against schema
+     * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
+     *   relation
+     * - `nullable`: Whether the field/relation is nullable (true/false for
+     *   scalar/belongsTo, null for hasMany/hasOne)
+     * - `how`: Current state + correction plan ("No change needed", "Fix:
+     *   wrong field name", etc.)
+     *
+     * The `kind` property helps identify selection syntax errors (e.g., using
+     * `field: true` for a relation instead of nested select).
+     *
+     * The `nullable` property helps catch nullability mismatch errors in
+     * transform().
+     *
+     * **Common selection errors to identify**:
+     *
+     * - Wrong field name (typo or doesn't exist in schema)
+     * - Missing required field (transform() uses it but select() doesn't fetch
+     *   it)
+     * - Wrong selection syntax (true for relation, or nested select for
+     *   scalar)
+     * - Selecting field that doesn't exist in Prisma model
+     * - Missing aggregation (_count, _sum) when transform() needs it
+     *
+     * This structured verification:
+     *
+     * - Catches missing field selections before runtime
+     * - Identifies field name typos by comparing with schema
+     * - Ensures select() provides all data transform() needs
+     * - Documents what corrections are needed for selection logic
+     * - Prevents "field not found" errors
+     *
+     * The validator will cross-check this against the Prisma schema to ensure
+     * all field names are valid and complete coverage.
+     *
+     * **Note**: If compilation succeeds, select() is typically correct. This
+     * mapping is mainly for cases where select() has errors (wrong field
+     * names, missing selections).
+     */
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
+
+    /**
+     * DTO property-by-property mapping verification for the transform()
+     * function.
+     *
+     * Review EVERY property from the DTO type definition to ensure correct
+     * transformation in the transform() function. This systematic approach
+     * catches errors beyond what the compiler reports and prevents new issues.
+     *
+     * For each DTO property in transform(), document:
+     *
+     * - `property`: Exact DTO property name (camelCase)
+     * - `how`: Current state + correction plan ("No change needed", "Fix:
+     *   [problem] → [solution]", etc.)
+     *
+     * Even properties without errors should be included with "No change needed"
+     * to ensure complete review. Missing even a single property could hide
+     * bugs.
+     *
+     * This structured verification:
+     *
+     * - Catches silent errors compiler didn't report
+     * - Ensures no properties accidentally omitted in transform()
+     * - Documents transformation corrections explicitly
+     * - Verifies transform() logic correctness
+     * - Prevents regression in working transformations
+     *
+     * **Common correction scenarios in transform()**:
+     *
+     * - Missing type conversion (Decimal → Number, DateTime → ISO)
+     * - Wrong property name (DTO vs Prisma mismatch)
+     * - Inline transformation when neighbor transformer exists
+     * - Missing computed property
+     * - Wrong nullable handling (DateTime? → string | null)
+     * - Fabricated property not in DTO
+     * - Missing property from DTO
+     * - Missing await for async transformers
+     *
+     * The validator will cross-check this against the DTO type definition to
+     * ensure nothing was overlooked.
+     *
+     * **Note**: This mapping is ONLY for the transform() function. The select()
+     * function is typically correct if compilation succeeds, as it's
+     * structurally simpler.
+     */
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
 
     /**
      * Initial correction implementation.

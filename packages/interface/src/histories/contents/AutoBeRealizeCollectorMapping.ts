@@ -107,39 +107,51 @@ export interface AutoBeRealizeCollectorMapping {
    * **Value semantics by kind**:
    *
    * - **For scalar fields** (`kind: "scalar"`):
+   *
    *   - `false`: Non-nullable column (e.g., `email String`, `id String`)
-   *     - Must always have a value
-   *     - Cannot use `null` or `undefined`
-   *     - Example: `email: props.body.email` (required)
-   *   - `true`: Nullable column (e.g., `description String?`, `deleted_at DateTime?`)
-   *     - Can be null
-   *     - Use `?? null` pattern for optional DTO values
-   *     - Example: `description: props.body.description ?? null`
    *
+   *       - Must always have a value
+   *       - Cannot use `null` or `undefined`
+   *       - Example: `email: props.body.email` (required)
+   *   - `true`: Nullable column (e.g., `description String?`, `deleted_at
+   *       DateTime?`)
+   *
+   *       - Can be null
+   *       - Use `?? null` pattern for optional DTO values
+   *       - Example: `description: props.body.description ?? null`
    * - **For belongsTo relations** (`kind: "belongsTo"`):
-   *   - `false`: Required foreign key (e.g., `customer_id String`)
-   *     - Must always connect to parent entity
-   *     - Cannot use `undefined`
-   *     - Example: `customer: { connect: { id: props.customer.id } }`
-   *   - `true`: Optional foreign key (e.g., `parent_id String?`, `category_id String?`)
-   *     - Can be omitted
-   *     - Use `undefined` (NOT `null`) when not provided
-   *     - Example: `parent: props.body.parentId ? { connect: { id: props.body.parentId } } : undefined`
    *
+   *   - `false`: Required foreign key (e.g., `customer_id String`)
+   *
+   *       - Must always connect to parent entity
+   *       - Cannot use `undefined`
+   *       - Example: `customer: { connect: { id: props.customer.id } }`
+   *   - `true`: Optional foreign key (e.g., `parent_id String?`, `category_id
+   *       String?`)
+   *
+   *       - Can be omitted
+   *       - Use `undefined` (NOT `null`) when not provided
+   *       - Example: `parent: props.body.parentId ? { connect: { id:
+   *               props.body.parentId } } : undefined`
    * - **For hasMany/hasOne relations** (`kind: "hasMany"` or `kind: "hasOne"`):
+   *
    *   - Always `null`: Nullability concept doesn't apply to relation arrays/objects
-   *     - hasMany: Always optional (empty array or nested creates)
-   *     - hasOne: Handled differently (create or omit)
-   *     - The `nullable` property has no semantic meaning for these kinds
+   *
+   *       - HasMany: Always optional (empty array or nested creates)
+   *       - HasOne: Handled differently (create or omit)
+   *       - The `nullable` property has no semantic meaning for these kinds
    *
    * **Why this matters**:
    *
-   * - **Prevents null assignment errors**: Can't assign null to non-nullable fields
-   * - **Forces correct optional handling**: nullable: true → use `?? null` or `undefined`
+   * - **Prevents null assignment errors**: Can't assign null to non-nullable
+   *   fields
+   * - **Forces correct optional handling**: nullable: true → use `?? null` or
+   *   `undefined`
    * - **Catches required field omissions**: nullable: false → must provide value
-   * - **Enables proper FK handling**: nullable belongsTo → use `undefined` not `null`
-   * - **Supports Chain-of-Thought**: AI must think about nullability BEFORE deciding
-   *   handling strategy
+   * - **Enables proper FK handling**: nullable belongsTo → use `undefined` not
+   *   `null`
+   * - **Supports Chain-of-Thought**: AI must think about nullability BEFORE
+   *   deciding handling strategy
    *
    * **Examples**:
    *
@@ -169,8 +181,8 @@ export interface AutoBeRealizeCollectorMapping {
    * ```
    *
    * The `nullable` property works with `kind` to determine the correct Prisma
-   * syntax: kind identifies WHAT it is, nullable identifies IF it's optional, how
-   * explains HOW to handle it.
+   * syntax: kind identifies WHAT it is, nullable identifies IF it's optional,
+   * how explains HOW to handle it.
    */
   nullable: boolean | null;
 

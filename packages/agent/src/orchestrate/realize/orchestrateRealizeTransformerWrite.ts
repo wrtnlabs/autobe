@@ -112,6 +112,8 @@ async function process<Model extends ILlmSchema.Model>(
       source: "realizeWrite",
       controller: createController({
         model: ctx.model,
+        application: ctx.state().prisma!.result.data,
+        document,
         plan: props.plan,
         neighbors: props.neighbors,
         build: (next) => {
@@ -162,6 +164,8 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  application: AutoBePrisma.IApplication;
+  document: AutoBeOpenApi.IDocument;
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];
   build: (next: IAutoBeRealizeTransformerWriteApplication.IComplete) => void;
@@ -181,8 +185,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     const errors: IValidation.IError[] =
       AutoBeRealizeTransformerProgrammer.validate({
+        application: props.application,
+        document: props.document,
         plan: props.plan,
         neighbors: props.neighbors,
+        transformMappings: result.data.request.transformMappings,
+        selectMappings: result.data.request.selectMappings,
         draft: result.data.request.draft,
         revise: result.data.request.revise,
       });

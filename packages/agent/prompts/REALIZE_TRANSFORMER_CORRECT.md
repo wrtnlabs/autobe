@@ -65,9 +65,70 @@ You will receive:
 - **Original Transformer Implementation**: The code that failed compilation
 - **TypeScript Compilation Errors**: Detailed diagnostics with line numbers and error codes
 - **Plan Information**: The transformer's DTO type name and Prisma schema name
+- **Mapping Metadata Tables**: **PROVIDED AS INPUT MATERIAL** - Complete checklist of all Prisma members and DTO properties
 - **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related transformers
 - **DTO Type Information**: Complete type definitions (automatically available)
 - **Prisma Schemas**: Available via `getPrismaSchemas` if needed for fixing errors
+
+### 🔥 CRITICAL: Mapping Metadata Tables ARE PROVIDED - USE THEM AS YOUR CHECKLIST
+
+**Prisma Schema Members Metadata Table** (for selectMappings):
+
+```
+Member             | Kind       | Nullable
+-------------------|------------|----------
+id                 | scalar     | false
+bbs_article_id     | scalar     | false
+parent_id          | scalar     | true
+content            | scalar     | false
+created_at         | scalar     | false
+deleted_at         | scalar     | true
+article            | belongsTo  | false
+parent             | belongsTo  | true
+user               | belongsTo  | false
+children           | hasMany    | null
+bbs_article_comment_files | hasMany | null
+bbs_article_comment_tags  | hasMany | null
+```
+
+**What this table provides**:
+- **Member**: EXACT Prisma field/relation names - these are the ONLY valid names
+- **Kind**: Type classification - tells you selection syntax (scalar vs relation)
+- **Nullable**: Optional status - helps catch nullability mismatches
+
+**How to use when correcting**:
+1. **Verify field names**: Check compilation errors against this table - if error says "field doesn't exist", compare with Member column
+2. **Fix wrong names**: Replace incorrect names with EXACT names from this table
+3. **Check kind**: Ensure selection syntax matches kind (scalar → `field: true`, relation → nested select)
+4. **Check nullable**: Ensure transform() handles nullability correctly
+
+**DTO Property Keys Metadata List** (for transformMappings):
+
+```
+- id
+- parent
+- writer
+- tags
+- files
+- links
+- content
+- hit
+- like
+- created_at
+- updated_at
+- deleted_at
+```
+
+**What this list provides**:
+- **Every property name** that transform() must return - these are the EXACT DTO property names
+
+**How to use when correcting**:
+1. **Verify completeness**: Ensure transform() returns ALL properties in this list
+2. **Fix missing properties**: Add any properties from this list that are missing in transform()
+3. **Fix wrong names**: Ensure DTO property names match this list exactly
+4. **Remove fabricated properties**: Delete any properties not in this list
+
+**🚨 ABSOLUTE RULE**: These metadata tables are your REFERENCE for fixing field name errors and ensuring complete coverage. When the compiler says "field doesn't exist", check the Member column. When you're missing a DTO property, check the property keys list.
 
 ### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
 
@@ -250,7 +311,140 @@ export namespace ShoppingSaleTransformer {
 - [ ] Replaced inline transform() logic with neighbor transformer transform() where applicable
 - [ ] Verified no architectural violations remain
 
-## 2.6. Three-Phase Correction: Think → Draft → Revise
+## 2.6. Mappings Phase: Complete Coverage Guarantee for Both Functions
+
+Before correcting any code, you must create systematic review tables for both select() and transform() functions. This dual-mapping approach **catches errors beyond what the compiler reports** through comprehensive verification.
+
+### What is the selectMappings Array?
+
+The `selectMappings` array is a systematic review where you document the current state and correction plan for EVERY Prisma field being selected in the select() function - especially when there are selection-related errors.
+
+**Structure**:
+```typescript
+interface AutoBeRealizeTransformerSelectMapping {
+  member: string;      // Exact Prisma field/relation name (snake_case)
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
+  how: string;         // Current state + correction plan
+}
+```
+
+**Note**: The select() function is structurally simpler and **typically correct if compilation succeeds**. However, when there ARE selection errors (wrong field names, missing fields), selectMappings helps identify and fix them systematically.
+
+**Example**:
+```json
+{
+  "selectMappings": [
+    { "member": "id", "kind": "scalar", "nullable": false, "how": "No change needed" },
+    { "member": "created_at", "kind": "scalar", "nullable": false, "how": "Fix: Wrong name 'createdAt' → 'created_at'" },
+    { "member": "deleted_at", "kind": "scalar", "nullable": true, "how": "Fix: Missing field - add for DTO.deletedAt" },
+    { "member": "customer", "kind": "belongsTo", "nullable": false, "how": "No change needed" },
+    { "member": "tags", "kind": "hasMany", "nullable": null, "how": "No change needed" }
+  ]
+}
+```
+
+**For each Prisma field in select(), document**:
+- **"No change needed"** - Field selection is correct
+- **"Fix: Wrong field name [wrong] → [correct]"** - Field name doesn't match Prisma schema
+- **"Fix: Missing field - add for DTO.[property]"** - Field missing but needed by transform()
+- **"Fix: Wrong syntax - use nested select for relation"** - Using `field: true` for a relation
+- **"Fix: Remove - not in Prisma schema"** - Selecting field that doesn't exist
+
+**Why kind and nullable matter**:
+- **kind**: Identifies selection syntax errors (scalar uses `field: true`, relations use nested select)
+- **nullable**: Helps catch nullability mismatches that cause transform() errors
+
+**When to use selectMappings**:
+- Selection-related compilation errors (field not found, wrong type)
+- Missing field selections (transform() uses data that select() doesn't fetch)
+- Wrong selection syntax (relation vs scalar confusion)
+
+If select() compiles without errors and all required fields are selected, most entries will say "No change needed".
+
+### What is the transformMappings Array?
+
+The `transformMappings` array is a systematic review where you document the current state and correction plan for EVERY DTO property in the transform() function - not just the ones causing errors.
+
+**Structure**:
+```typescript
+interface AutoBeRealizeTransformerTransformMapping {
+  property: string;  // Exact DTO property name (camelCase)
+  how: string;       // Current state + correction plan
+}
+```
+
+**Note**: Most transformer errors occur in transform() rather than select(), as transformation logic is more complex. However, both functions need systematic review when errors occur.
+
+**Example**:
+```json
+{
+  "transformMappings": [
+    { "property": "id", "how": "No change needed - correct" },
+    { "property": "email", "how": "Fix: Wrong property 'userEmail' → 'email'" },
+    { "property": "createdAt", "how": "Fix: Missing .toISOString() conversion" },
+    { "property": "deletedAt", "how": "Fix: Missing nullable handling → use ?? null" },
+    { "property": "price", "how": "Fix: Missing Decimal conversion" },
+    { "property": "totalPrice", "how": "Fix: Missing computed property - add calculation" },
+    { "property": "customer", "how": "Fix: Inline transformation - use CustomerTransformer" },
+    { "property": "tags", "how": "No change needed - correct" }
+  ]
+}
+```
+
+### Critical Rule: Review Every Property in transform()
+
+**EVERY property from the DTO MUST appear in transformMappings** - even if currently correct in the transform() function.
+
+**Why include correct properties?**
+- Catches silent errors compiler didn't report in transform()
+- Ensures no accidental omissions in the DTO return object
+- Documents that you verified all properties in transform()
+- Prevents regression during corrections
+
+**For each property in transform(), document**:
+- **"No change needed"** - Property transformation is correct
+- **"Fix: [problem] → [solution]"** - Property transformation needs correction
+- **"Fix: Missing - add with [transformation]"** - Property is missing from return object
+- **"Fix: Fabricated - remove it"** - Property doesn't exist in DTO type
+- **"Fix: Missing await"** - Async transformer not awaited
+
+### How transformMappings Eliminate Errors
+
+**Beyond Compilation Errors in transform()**:
+Compiler only catches type errors. transformMappings catch:
+- Missing properties in return object (compiler won't warn until runtime)
+- Fabricated properties (might compile but wrong DTO type)
+- Incorrect transformations (compiles but wrong output)
+- Missing type conversions (Decimal → Number, DateTime → ISO)
+- Forgotten nested transformers (only causes errors at runtime)
+- Missing await for async transformers
+
+**Systematic Coverage**:
+Use the DTO property list as a checklist. For each property in transform():
+1. Find it in the return object
+2. Verify the transformation is correct or identify the problem
+3. Document current state and correction plan
+
+**Validator Ensures Completeness**:
+After you provide transformMappings, validator verifies every DTO property is covered. Missing properties trigger regeneration.
+
+### Benefits for Error Correction in transform()
+
+**Before transformMappings** (old way):
+- Fix only reported compilation errors
+- Other issues in transform() stay hidden
+- Multiple correction rounds needed
+
+**With transformMappings** (new way):
+- Review every property in transform() systematically
+- Catch all transformation issues in one pass
+- Higher fix quality on first attempt
+- Ensure complete DTO return object
+
+The structured approach transforms reactive debugging into proactive verification of the transform() function.
+
+## 2.7. Three-Phase Correction: Think → Draft → Revise
 
 This structured workflow ensures systematic error fixing through root cause analysis and verification.
 
@@ -278,22 +472,27 @@ Your comprehensive analysis should accomplish these objectives:
    - Identify if inline logic exists when neighbor transformers should be used
    - **Look beyond the errors** - examine the entire logic flow in both functions
 
-3. **Perform Comprehensive Schema Verification**:
+3. **Perform Comprehensive Schema Verification (via selectMappings)**:
+   - **Create selectMappings array** to systematically review select() function
    - **Compare EVERY field in select() against actual Prisma schema**
-   - **Compare EVERY field in transform() against DTO type**
+   - For each Prisma field: specify `member`, `kind`, `nullable`, and correction plan
    - Verify field names are exactly correct (character-by-character, case-sensitive)
    - Check that NO fields are missing from select() (not just error-reported ones)
    - Verify ALL fields needed by transform() are included in select()
    - Check ALL relationships use correct relation names
    - **This is NOT just for fixing errors - this is complete compliance verification**
+   - **selectMappings forces you to verify EVERY field systematically**
 
-4. **Perform Complete DTO Transformation Verification**:
+4. **Perform Complete DTO Transformation Verification (via transformMappings)**:
+   - **Create transformMappings array** to systematically review transform() function
    - **Verify EVERY DTO field is correctly transformed** (not just the ones causing errors)
+   - For each DTO property: specify `property` and current state + correction plan
    - Check that ALL Prisma fields are appropriately mapped to DTO
    - Verify snake_case → camelCase conversions are correct everywhere
    - Check for any DTO fields that should be calculated but aren't
    - Verify type conversions are applied correctly (Date→string, Decimal→number, etc.)
    - **Ensure no data is lost or incorrectly transformed**
+   - **transformMappings forces you to review EVERY property systematically**
 
 5. **Plan Comprehensive Corrections and Improvements**:
    - Fix all compilation errors (root causes, not symptoms)
@@ -2716,6 +2915,40 @@ Is this a 1:N relation (array)?
   - Can explain in 1-2 sentences what needs to change
   - Understand WHY each change fixes the error
   - Verified strategy against Common Mistakes section
+
+### Phase 4.5: Mappings Review (selectMappings and transformMappings)
+
+**Systematically review both select() and transform() functions to catch ALL issues, not just compilation errors.**
+
+- [ ] ✅ **Create selectMappings Array**:
+  - Document EVERY Prisma field being selected in select()
+  - For each field, specify: `member`, `kind`, `nullable`, `how`
+  - Identify selection errors:
+    - Wrong field names (typos, doesn't exist in schema)
+    - Missing fields (transform() needs but select() doesn't fetch)
+    - Wrong selection syntax (scalar vs relation)
+  - Most entries will say "No change needed" if select() compiles correctly
+  - Focus on fields with errors or missing from select()
+
+- [ ] ✅ **Create transformMappings Array**:
+  - Document EVERY DTO property in transform() function
+  - For each property, specify: `property`, `how`
+  - Identify transformation issues:
+    - Missing properties in return object
+    - Wrong transformations (missing type conversions)
+    - Fabricated properties (not in DTO type)
+    - Inline transformations when neighbor transformer exists
+    - Missing await for async transformers
+  - Include correct properties too ("No change needed")
+  - This catches silent errors compiler didn't report
+
+- [ ] ✅ **Cross-Verification**:
+  - Every field used in transform() appears in selectMappings
+  - Every DTO property appears in transformMappings
+  - No missing coverage in either mapping
+  - Validator will verify completeness
+
+**Why mappings matter**: Beyond fixing compilation errors, mappings force complete review of both functions, catching logic errors, omissions, and architectural violations that compiler won't detect.
 
 ### Phase 5: select() Function Correction Verification
 

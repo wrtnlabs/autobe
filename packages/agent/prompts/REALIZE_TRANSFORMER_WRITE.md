@@ -462,6 +462,113 @@ transform: {
 
 **Why?** Mismatch causes either runtime crashes (transformed but not selected) or wasted queries (selected but not transformed).
 
+## Input Information
+
+You will receive the following **INPUT MATERIALS** to help you create the transformer:
+
+### 1. Mapping Metadata Tables
+
+**🔥 CRITICAL: Use these tables as your checklist to ensure complete coverage**
+
+#### Prisma Schema Members Metadata (for selectMappings)
+
+You receive a **complete table** of all Prisma schema members with their metadata:
+
+```
+Member             | Kind       | Nullable
+-------------------|------------|----------
+id                 | scalar     | false
+bbs_article_id     | scalar     | false
+parent_id          | scalar     | true
+content            | scalar     | false
+created_at         | scalar     | false
+deleted_at         | scalar     | true
+article            | belongsTo  | false
+parent             | belongsTo  | true
+user               | belongsTo  | false
+children           | hasMany    | null
+bbs_article_comment_files | hasMany | null
+bbs_article_comment_tags  | hasMany | null
+```
+
+**What this table provides**:
+- **Member**: Exact Prisma field/relation name (snake_case) - these are the ONLY valid names
+- **Kind**: Type classification (scalar, belongsTo, hasOne, hasMany) - tells you selection syntax
+- **Nullable**: Whether the field is optional (true/false for scalar/belongsTo, null for hasMany/hasOne)
+
+**How to use this table**:
+1. **For selectMappings**: Review this table to ensure you select ALL needed fields
+2. **Verify field names**: Use EXACT names from the Member column - never fabricate
+3. **Check kind**: Determines selection syntax (scalar → `field: true`, relation → nested select)
+4. **Check nullable**: Informs transform() null handling strategy
+
+#### DTO Property Keys Metadata (for transformMappings)
+
+You receive a **complete list** of all DTO property keys:
+
+```
+- id
+- parent
+- writer
+- tags
+- files
+- links
+- content
+- hit
+- like
+- created_at
+- updated_at
+- deleted_at
+```
+
+**What this list provides**:
+- **Every property name** in the target DTO that transform() must return
+
+**How to use this list**:
+1. **For transformMappings**: Ensure EVERY property in this list appears in transformMappings
+2. **Completeness check**: If you miss even one property, validation will fail
+3. **Property name verification**: These are the exact names for the DTO (camelCase)
+
+### 2. Neighbor Transformers Table
+
+You receive a table of all available neighbor transformers:
+
+```
+Transformer Name                        | DTO Type Name                    | Prisma Schema Name
+----------------------------------------|----------------------------------|---------------------------
+BbsUserAtSummaryTransformer             | IBbsUser.ISummary                | bbs_users
+BbsArticleCommentAtSummaryTransformer   | IBbsArticleComment.ISummary      | bbs_article_comments
+BbsArticleCommentFileTransformer        | IBbsArticleCommentFile           | bbs_article_comment_files
+BbsArticleCommentTagTransformer         | IBbsArticleCommentTag            | bbs_article_comment_tags
+```
+
+**What this table provides**:
+- Transformers you can reuse for nested DTO properties
+- Prevents inline implementation when reusable transformer exists
+
+### 3. Plan Information
+
+From the REALIZE_TRANSFORMER_PLAN phase:
+- **DTO type name**: Target DTO to transform (e.g., "IBbsArticleComment")
+- **Prisma schema name**: Database table name (e.g., "bbs_article_comments")
+- **Planning reasoning**: Why this transformer is needed
+
+### 4. DTO Type Information
+
+Complete type definitions are provided transitively from the DTO type name. This includes:
+- Full DTO interface structure
+- All property types and constraints
+- Nested interface references
+
+### 5. Prisma Schemas (via getPrismaSchemas)
+
+Available when you request them:
+- Complete Prisma model definitions
+- Field types, relations, constraints
+- The absolute source of truth for database structure
+
+**🚨 ABSOLUTE RULE**: The mapping metadata tables are PROVIDED to prevent omissions and name errors. Use them as your systematic checklist when creating selectMappings and transformMappings.
+
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
@@ -526,6 +633,220 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 - Example: `thinking: "Implemented select and transform functions with nested transformers"`
 
 **Freedom of Expression**: You're free to express your thinking naturally without following a rigid format. But the **depth and thoroughness** of reflection is mandatory - superficial thinking defeats the purpose.
+
+## Mappings Phase: Complete Coverage Guarantee for BOTH Functions
+
+Before writing any code, you must create TWO complete mapping tables - one for select() and one for transform(). This dual-mapping approach **eliminates omissions in BOTH functions** through systematic coverage verification.
+
+### What are the Two Mappings Arrays?
+
+You must provide **TWO separate mappings** - one for each function:
+
+1. **selectMappings**: Documents which Prisma fields to select from database (for select() function)
+2. **transformMappings**: Documents how to transform Prisma data to DTO (for transform() function)
+
+These two mappings work together to ensure perfect alignment between what you select and what you transform.
+
+**Structures**:
+```typescript
+// For select() function - Prisma field selection
+interface AutoBeRealizeTransformerSelectMapping {
+  member: string;  // Exact Prisma field name (snake_case)
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";  // Type of member
+  nullable: boolean | null;  // Nullability: true/false for scalar/belongsTo, null for hasMany/hasOne
+  how: string;           // Why selecting (which DTO property needs it)
+}
+
+// For transform() function - DTO property transformation
+interface AutoBeRealizeTransformerTransformMapping {
+  property: string;  // Exact DTO property name (camelCase)
+  how: string;       // How to obtain from Prisma payload
+}
+```
+
+**Example**:
+```json
+{
+  "selectMappings": [
+    { "member": "id", "kind": "scalar", "nullable": false, "how": "For DTO.id" },
+    { "member": "email", "kind": "scalar", "nullable": false, "how": "For DTO.email" },
+    { "member": "created_at", "kind": "scalar", "nullable": false, "how": "For DTO.createdAt (needs .toISOString())" },
+    { "member": "deleted_at", "kind": "scalar", "nullable": true, "how": "For DTO.deletedAt (nullable)" },
+    { "member": "unit_price", "kind": "scalar", "nullable": false, "how": "For DTO.price and DTO.totalPrice" },
+    { "member": "quantity", "kind": "scalar", "nullable": false, "how": "For DTO.totalPrice computation" },
+    { "member": "_count", "kind": "scalar", "nullable": false, "how": "For DTO.reviewCount" },
+    { "member": "customer", "kind": "belongsTo", "nullable": false, "how": "For DTO.customer (nested transformer)" },
+    { "member": "tags", "kind": "hasMany", "nullable": null, "how": "For DTO.tags (array transformer)" }
+  ],
+  "transformMappings": [
+    { "property": "id", "how": "From prisma.id" },
+    { "property": "email", "how": "From prisma.email" },
+    { "property": "createdAt", "how": "From prisma.created_at.toISOString()" },
+    { "property": "deletedAt", "how": "From prisma.deleted_at?.toISOString() ?? null" },
+    { "property": "price", "how": "From prisma.unit_price (Decimal → Number)" },
+    { "property": "totalPrice", "how": "Compute: prisma.unit_price * prisma.quantity" },
+    { "property": "reviewCount", "how": "From prisma._count.reviews" },
+    { "property": "customer", "how": "Transform with CustomerTransformer" },
+    { "property": "tags", "how": "Array map with TagTransformer" }
+  ]
+}
+```
+
+### Critical Rule: Complete Coverage Required for BOTH
+
+**For selectMappings**:
+- EVERY Prisma field needed by transform() MUST be selected with `kind` and `nullable`
+- If transform() uses `prisma.created_at`, selectMappings MUST include:
+  ```json
+  { "member": "created_at", "kind": "scalar", "nullable": false, "how": "For DTO.createdAt" }
+  ```
+- Missing even one field causes runtime errors
+- Missing `kind` or `nullable` prevents proper validation
+
+**For transformMappings**:
+- EVERY DTO property MUST appear in transformMappings
+- Even computed properties need explicit documentation
+- Missing even one property causes incomplete DTOs
+
+**Why kind and nullable matter in selectMappings**:
+- **kind**: Identifies WHAT type of Prisma member (scalar vs relation)
+  - Prevents confusion between scalar fields and relations
+  - Ensures correct select syntax (true vs nested select)
+  - Forces CoT about member nature before selection
+- **nullable**: Identifies IF the member is optional
+  - Informs transform() null handling strategy
+  - Documents schema constraints explicitly
+  - Enables proper validation
+
+**Why both mappings are required**:
+- Ensures perfect alignment between select() and transform()
+- Forces you to think about BOTH what to load AND how to transform it
+- Validator can verify complete coverage in both directions
+- Prevents "selected but not transformed" and "transformed but not selected" errors
+- Documents schema structure (kind + nullable) for transform() planning
+
+### How to Fill the Two Mappings Arrays
+
+**Step 1: Start with the DTO (for transformMappings)**
+
+Read the DTO type definition and list EVERY property:
+```typescript
+interface IShoppingSale {
+  id: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;     // Computed
+  reviewCount: number;    // Aggregated
+  createdAt: string;
+  deletedAt: string | null;
+  customer: ICustomer;    // Nested
+  tags: ITag[];           // Array
+}
+```
+
+**Step 2: Map Each DTO Property (for transformMappings)**
+
+For EACH DTO property, decide the transformation strategy:
+
+**Common transformation strategies**:
+
+1. **Direct Mapping**: `"From prisma.id"`, `"From prisma.email"`
+2. **DateTime Conversion**: `"From prisma.created_at.toISOString()"`
+3. **Nullable DateTime**: `"From prisma.deleted_at?.toISOString() ?? null"`
+4. **Decimal Conversion**: `"From prisma.unit_price (Decimal → Number)"`
+5. **Computation**: `"Compute: prisma.unit_price * prisma.quantity"`
+6. **Aggregation**: `"From prisma._count.reviews"`
+7. **Boolean Derivation**: `"Compute: prisma.expiry_date < new Date()"`
+8. **Nested Object**: `"Transform with CustomerTransformer"`
+9. **Array Mapping**: `"Array map with TagTransformer"`
+
+**Step 3: Derive Required Selections (for selectMappings)**
+
+For EACH DTO property in transformMappings, determine which Prisma fields are needed, along with their `kind` and `nullable`:
+
+**🔥 CRITICAL: Identify `kind` and `nullable` for each Prisma field!**
+
+For each Prisma field, first classify its `kind` from the Prisma schema:
+
+- **`"scalar"`**: Regular database column (id, email, created_at, unit_price, etc.)
+  - Includes: UUIDs, strings, numbers, booleans, dates, enums, Decimals
+  - Requires: `field: true` in select()
+  - Example: `id`, `email`, `created_at`, `deleted_at`, `unit_price`
+
+- **`"belongsTo"`**: Foreign key relation pointing to parent entity
+  - Has corresponding `_id` column in DB but you use the RELATION name
+  - Requires: nested select object with transformer's select()
+  - Example: `customer`, `article`, `category`, `parent`
+
+- **`"hasMany"`**: One-to-many or many-to-many relation
+  - Has NO corresponding column in this table's DB schema
+  - Requires: nested select object with transformer's select()
+  - Example: `comments`, `tags`, `reviews`
+
+- **`"hasOne"`**: One-to-one relation
+  - Rare, typically used for profile/settings patterns
+  - Requires: nested select object with transformer's select()
+  - Example: `profile`, `settings`
+
+Then determine `nullable` from the Prisma schema:
+
+- **For scalar/belongsTo**: Check if the field has `?` after the type
+  - `email String` → `nullable: false`
+  - `deleted_at DateTime?` → `nullable: true`
+  - `customer_id String` → relation `customer` has `nullable: false`
+  - `parent_id String?` → relation `parent` has `nullable: true`
+
+- **For hasMany/hasOne**: Always `null` (not applicable)
+
+**Selection logic with kind and nullable**:
+- If `transformMappings` says `"From prisma.created_at.toISOString()"`, then `selectMappings` needs:
+  ```json
+  { "member": "created_at", "kind": "scalar", "nullable": false, "how": "For DTO.createdAt" }
+  ```
+- If `transformMappings` says `"Compute: prisma.unit_price * prisma.quantity"`, then `selectMappings` needs BOTH:
+  ```json
+  { "member": "unit_price", "kind": "scalar", "nullable": false, "how": "For DTO.price and DTO.totalPrice" }
+  { "member": "quantity", "kind": "scalar", "nullable": false, "how": "For DTO.totalPrice computation" }
+  ```
+- If `transformMappings` says `"Transform with CustomerTransformer"`, then `selectMappings` needs:
+  ```json
+  { "member": "customer", "kind": "belongsTo", "nullable": false, "how": "For DTO.customer (nested)" }
+  ```
+- If `transformMappings` says `"From prisma.deleted_at?.toISOString() ?? null"`, then `selectMappings` needs:
+  ```json
+  { "member": "deleted_at", "kind": "scalar", "nullable": true, "how": "For DTO.deletedAt (nullable)" }
+  ```
+
+**Step 4: Validator Checks Completeness**
+
+After you provide both mappings, the validator verifies:
+- ✅ Every DTO property appears in transformMappings?
+- ✅ Every Prisma field needed by transform() appears in selectMappings?
+- ✅ No unknown properties in transformMappings?
+- ✅ No unknown fields in selectMappings?
+- ✅ Perfect alignment between select() and transform()?
+
+If validation fails, you'll be asked to complete the missing items.
+
+### Benefits of This Dual-Mapping Approach
+
+**Before Dual Mappings** (old way):
+- LLM generates both functions at once
+- Easy to forget properties or fields
+- Easy to select without transforming, or transform without selecting
+- TypeScript compiler catches errors later
+- Multiple correction rounds needed
+
+**With Dual Mappings** (new way):
+- LLM plans both functions systematically and separately
+- Structural impossibility to forget properties or misalign functions
+- Validation catches omissions and misalignments before code generation
+- Higher quality on first attempt
+- Perfect select() ↔ transform() alignment guaranteed
+
+**The Key Insight**:
+Structured dual planning eliminates the root cause of transformer errors. You can't forget a property or misalign functions when the system requires you to explicitly document BOTH what to select AND how to transform for every single DTO property.
 
 ## Three-Phase Generation: Plan → Draft → Revise
 

@@ -50,6 +50,11 @@ pnpm start --include realize_transformer_bbs --archive > realize_transformer.ope
 pnpm start --include realize_transformer_reddit --archive > realize_transformer.openai-gpt-4.1.reddit.log
 pnpm start --include realize_transformer_shopping --archive > realize_transformer.openai-gpt-4.1.shopping.log
 
+pnpm start --vendor openai/gpt-4.1-mini --include realize_transformer_todo --archive > realize_transformer.openai-gpt-4.1-mini.todo.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_transformer_bbs --archive > realize_transformer.openai-gpt-4.1-mini.bbs.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_transformer_reddit --archive > realize_transformer.openai-gpt-4.1-mini.reddit.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_transformer_shopping --archive > realize_transformer.openai-gpt-4.1-mini.shopping.log
+
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_todo --archive > realize_transformer.qwen-qwen3-next-80b-a3b-instruct.todo.log
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_bbs --archive > realize_transformer.qwen-qwen3-next-80b-a3b-instruct.bbs.log
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_transformer_reddit --archive > realize_transformer.qwen-qwen3-next-80b-a3b-instruct.reddit.log

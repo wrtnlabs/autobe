@@ -25,18 +25,18 @@ export async function orchestrateRealizeTransformer<
     await orchestrateRealizeTransformerPlan(ctx, {
       progress: props.planProgress,
     });
-  const writes: AutoBeRealizeTransformerFunction[] =
+  let functions: AutoBeRealizeTransformerFunction[] =
     await orchestrateRealizeTransformerWrite(ctx, {
       plans,
       progress: props.writeProgress,
     });
-  const castings: AutoBeRealizeTransformerFunction[] =
-    await orchestrateRealizeTransformerCorrectCasting(ctx, {
-      functions: writes,
-      progress: props.correctProgress,
-    });
-  return await orchestrateRealizeTransformerCorrectOverall(ctx, {
-    functions: castings,
+  functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
+    functions,
     progress: props.correctProgress,
   });
+  functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
+    functions,
+    progress: props.correctProgress,
+  });
+  return functions;
 }
