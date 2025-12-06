@@ -84,6 +84,17 @@ export const transformRealizeCollectorCorrectHistory = async <
             ),
           )}
           \`\`\`
+
+          Also, this is the list of Prisma schema members you have to consider:
+
+          Member | Kind
+          -------|------
+          ${AutoBeRealizeCollectorProgrammer.getRequired({
+            application,
+            model,
+          })
+            .map((r) => `${r.member} | ${r.kind}`)
+            .join("\n")}
         `,
       },
       ...transformPreviousAndLatestCorrectHistory(
@@ -123,15 +134,6 @@ export const transformRealizeCollectorCorrectHistory = async <
       - Foreign key connections using { connect: { id: ... } }
       - Timestamp fields (created_at, updated_at)
       - Type safety with satisfies clause
-
-      At last, this is the list of Prisma schema members you have to consider:
-
-      ${AutoBeRealizeCollectorProgrammer.getRequired({
-        application,
-        model,
-      })
-        .map((r) => `- \`${r}\``)
-        .join("\n")}
     `,
   };
 };

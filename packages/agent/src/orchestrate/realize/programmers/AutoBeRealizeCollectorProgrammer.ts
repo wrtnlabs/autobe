@@ -320,7 +320,7 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
           path: "$input.request.mappings[]",
           value: undefined,
           expected: StringUtil.trim`{
-            member: "${r}";
+            member: "${r.member}";
             kind: "${r.kind}";
             how: string;
           }`,
