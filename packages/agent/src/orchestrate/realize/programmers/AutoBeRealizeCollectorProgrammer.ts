@@ -43,12 +43,14 @@ export namespace AutoBeRealizeCollectorProgrammer {
       {
         member: props.model.primaryField.name,
         kind: "scalar",
+        nullable: false,
       },
       ...props.model.plainFields.map(
         (pf) =>
           ({
             member: pf.name,
             kind: "scalar",
+            nullable: pf.nullable,
           }) satisfies AutoBeRealizeCollectorMapping.Metadata,
       ),
       ...props.model.foreignFields.map(
@@ -56,6 +58,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
           ({
             member: f.relation.name,
             kind: "belongsTo",
+            nullable: f.nullable,
           }) satisfies AutoBeRealizeCollectorMapping.Metadata,
       ),
       ...props.application.files
@@ -69,6 +72,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
                 ({
                   member: fk.relation.mappingName ?? om.name,
                   kind: fk.unique ? "hasOne" : "hasMany",
+                  nullable: null,
                 }) satisfies AutoBeRealizeCollectorMapping.Metadata,
             ),
         )
@@ -302,17 +306,30 @@ ${required.map((r) => `      ${r}: ...,`).join("\n")}
           ${required.map((r) => `- ${r}`).join("\n")}
         `,
         });
-      else if (metadata.kind !== m.kind)
-        props.errors.push({
-          path: `$input.request.mappings[${i}].kind`,
-          value: m.kind,
-          expected: `"${metadata.kind}"`,
-          description: StringUtil.trim`
+      else {
+        if (metadata.kind !== m.kind)
+          props.errors.push({
+            path: `$input.request.mappings[${i}].kind`,
+            value: m.kind,
+            expected: `"${metadata.kind}"`,
+            description: StringUtil.trim`
             The mapping kind for Prisma member '${m.member}' is invalid.
 
             Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
           `,
-        });
+          });
+        if (metadata.nullable !== m.nullable)
+          props.errors.push({
+            path: `$input.request.mappings[${i}].nullable`,
+            value: m.nullable,
+            expected: `${metadata.nullable}`,
+            description: StringUtil.trim`
+            The mapping nullable for Prisma member '${m.member}' is invalid.
+
+            Expected nullable is '${metadata.nullable}', but received nullable is '${m.nullable}'.
+          `,
+          });
+      }
     });
     for (const r of required) {
       if (props.mappings.some((m) => m.member === r.member) === false)

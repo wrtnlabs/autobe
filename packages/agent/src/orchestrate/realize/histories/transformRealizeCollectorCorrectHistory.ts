@@ -87,13 +87,13 @@ export const transformRealizeCollectorCorrectHistory = async <
 
           Also, this is the list of Prisma schema members you have to consider:
 
-          Member | Kind
-          -------|------
+          Member | Kind | Nullable
+          -------|------|----------
           ${AutoBeRealizeCollectorProgrammer.getRequired({
             application,
             model,
           })
-            .map((r) => `${r.member} | ${r.kind}`)
+            .map((r) => `${r.member} | ${r.kind} | ${r.nullable}`)
             .join("\n")}
         `,
       },

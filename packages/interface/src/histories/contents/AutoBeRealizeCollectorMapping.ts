@@ -74,27 +74,105 @@ export interface AutoBeRealizeCollectorMapping {
    *
    * ```typescript
    * // Scalar fields
-   * { member: "id", kind: "scalar", how: "Generate with v4()" }
-   * { member: "email", kind: "scalar", how: "From props.body.email" }
-   * { member: "created_at", kind: "scalar", how: "Default to new Date()" }
-   * { member: "total_price", kind: "scalar", how: "From props.body.totalPrice" }
+   * { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" }
+   * { member: "email", kind: "scalar", nullable: false, how: "From props.body.email" }
+   * { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" }
+   * { member: "description", kind: "scalar", nullable: true, how: "From props.body.description ?? null" }
    *
    * // BelongsTo relations (FK pointing to parent)
-   * { member: "customer", kind: "belongsTo", how: "Connect using props.customer.id" }
-   * { member: "article", kind: "belongsTo", how: "Connect using props.article.id" }
-   * { member: "category", kind: "belongsTo", how: "Connect using props.body.categoryId" }
-   * { member: "parent", kind: "belongsTo", how: "Undefined (nullable FK)" }
+   * { member: "customer", kind: "belongsTo", nullable: false, how: "Connect using props.customer.id" }
+   * { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.article.id" }
+   * { member: "parent", kind: "belongsTo", nullable: true, how: "Undefined (nullable FK)" }
    *
    * // HasMany relations (reverse side of FK)
-   * { member: "comments", kind: "hasMany", how: "Not needed (optional has-many)" }
-   * { member: "tags", kind: "hasMany", how: "Nested create with TagCollector" }
-   * { member: "reviews", kind: "hasMany", how: "Not applicable for this collector" }
+   * { member: "comments", kind: "hasMany", nullable: null, how: "Not needed (optional has-many)" }
+   * { member: "tags", kind: "hasMany", nullable: null, how: "Nested create with TagCollector" }
+   * { member: "reviews", kind: "hasMany", nullable: null, how: "Not applicable for this collector" }
    * ```
    *
-   * The `kind` field works together with `how`: kind identifies WHAT it is, how
-   * explains HOW to handle it.
+   * The `kind` field works together with `nullable` and `how`: kind identifies
+   * WHAT it is, nullable identifies IF it's optional, how explains HOW to
+   * handle it.
    */
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+
+  /**
+   * Whether this member is nullable in the Prisma schema.
+   *
+   * This property explicitly documents whether a field/relation can be null,
+   * forcing the AI to understand nullability constraints before deciding how to
+   * handle the member. This prevents errors like assigning null to non-nullable
+   * fields or forgetting to handle optional relations properly.
+   *
+   * **Value semantics by kind**:
+   *
+   * - **For scalar fields** (`kind: "scalar"`):
+   *   - `false`: Non-nullable column (e.g., `email String`, `id String`)
+   *     - Must always have a value
+   *     - Cannot use `null` or `undefined`
+   *     - Example: `email: props.body.email` (required)
+   *   - `true`: Nullable column (e.g., `description String?`, `deleted_at DateTime?`)
+   *     - Can be null
+   *     - Use `?? null` pattern for optional DTO values
+   *     - Example: `description: props.body.description ?? null`
+   *
+   * - **For belongsTo relations** (`kind: "belongsTo"`):
+   *   - `false`: Required foreign key (e.g., `customer_id String`)
+   *     - Must always connect to parent entity
+   *     - Cannot use `undefined`
+   *     - Example: `customer: { connect: { id: props.customer.id } }`
+   *   - `true`: Optional foreign key (e.g., `parent_id String?`, `category_id String?`)
+   *     - Can be omitted
+   *     - Use `undefined` (NOT `null`) when not provided
+   *     - Example: `parent: props.body.parentId ? { connect: { id: props.body.parentId } } : undefined`
+   *
+   * - **For hasMany/hasOne relations** (`kind: "hasMany"` or `kind: "hasOne"`):
+   *   - Always `null`: Nullability concept doesn't apply to relation arrays/objects
+   *     - hasMany: Always optional (empty array or nested creates)
+   *     - hasOne: Handled differently (create or omit)
+   *     - The `nullable` property has no semantic meaning for these kinds
+   *
+   * **Why this matters**:
+   *
+   * - **Prevents null assignment errors**: Can't assign null to non-nullable fields
+   * - **Forces correct optional handling**: nullable: true → use `?? null` or `undefined`
+   * - **Catches required field omissions**: nullable: false → must provide value
+   * - **Enables proper FK handling**: nullable belongsTo → use `undefined` not `null`
+   * - **Supports Chain-of-Thought**: AI must think about nullability BEFORE deciding
+   *   handling strategy
+   *
+   * **Examples**:
+   *
+   * ```typescript
+   * // Non-nullable scalar (nullable: false)
+   * { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" }
+   * { member: "email", kind: "scalar", nullable: false, how: "From props.body.email" }
+   * { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" }
+   *
+   * // Nullable scalar (nullable: true)
+   * { member: "description", kind: "scalar", nullable: true, how: "From props.body.description ?? null" }
+   * { member: "deleted_at", kind: "scalar", nullable: true, how: "Default to null" }
+   * { member: "completed_at", kind: "scalar", nullable: true, how: "From props.body.completedAt ?? null" }
+   *
+   * // Required belongsTo (nullable: false)
+   * { member: "customer", kind: "belongsTo", nullable: false, how: "Connect using props.customer.id" }
+   * { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.article.id" }
+   *
+   * // Optional belongsTo (nullable: true)
+   * { member: "parent", kind: "belongsTo", nullable: true, how: "Undefined (nullable FK)" }
+   * { member: "category", kind: "belongsTo", nullable: true, how: "Connect using props.body.categoryId or undefined" }
+   *
+   * // HasMany relations (nullable: null - not applicable)
+   * { member: "comments", kind: "hasMany", nullable: null, how: "Not needed (optional has-many)" }
+   * { member: "tags", kind: "hasMany", nullable: null, how: "Nested create with TagCollector" }
+   * { member: "reviews", kind: "hasMany", nullable: null, how: "Not applicable for this collector" }
+   * ```
+   *
+   * The `nullable` property works with `kind` to determine the correct Prisma
+   * syntax: kind identifies WHAT it is, nullable identifies IF it's optional, how
+   * explains HOW to handle it.
+   */
+  nullable: boolean | null;
 
   /**
    * Brief one-line explanation of how to obtain this field's value.

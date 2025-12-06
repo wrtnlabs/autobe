@@ -420,6 +420,7 @@ The `mappings` array is a comprehensive checklist where you document your strate
 interface AutoBeRealizeCollectorMapping {
   member: string;  // Exact field/relation name from Prisma schema
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";  // Type of schema member
+  nullable: boolean | null;  // Nullability: true/false for scalar/belongsTo, null for hasMany/hasOne
   how: string;           // Brief explanation of how to obtain this value
 }
 ```
@@ -428,14 +429,16 @@ interface AutoBeRealizeCollectorMapping {
 ```json
 {
   "mappings": [
-    { "member": "id", "kind": "scalar", "how": "Generate with v4()" },
-    { "member": "email", "kind": "scalar", "how": "From props.body.email" },
-    { "member": "password_hash", "kind": "scalar", "how": "Generate with PasswordUtil.hash(props.body.password)" },
-    { "member": "customer", "kind": "belongsTo", "how": "Connect using props.references.customer_id" },
-    { "member": "shopping_sale_tags", "kind": "hasMany", "how": "Nested create with ShoppingSaleTagCollector" },
-    { "member": "created_at", "kind": "scalar", "how": "Default to new Date()" },
-    { "member": "deleted_at", "kind": "scalar", "how": "Default to null" },
-    { "member": "shopping_cart_items", "kind": "hasMany", "how": "Not applicable for this collector" }
+    { "member": "id", "kind": "scalar", "nullable": false, "how": "Generate with v4()" },
+    { "member": "email", "kind": "scalar", "nullable": false, "how": "From props.body.email" },
+    { "member": "password_hash", "kind": "scalar", "nullable": false, "how": "Generate with PasswordUtil.hash(props.body.password)" },
+    { "member": "description", "kind": "scalar", "nullable": true, "how": "From props.body.description ?? null" },
+    { "member": "customer", "kind": "belongsTo", "nullable": false, "how": "Connect using props.references.customer_id" },
+    { "member": "parent", "kind": "belongsTo", "nullable": true, "how": "Undefined (nullable FK)" },
+    { "member": "shopping_sale_tags", "kind": "hasMany", "nullable": null, "how": "Nested create with ShoppingSaleTagCollector" },
+    { "member": "created_at", "kind": "scalar", "nullable": false, "how": "Default to new Date()" },
+    { "member": "deleted_at", "kind": "scalar", "nullable": true, "how": "Default to null" },
+    { "member": "shopping_cart_items", "kind": "hasMany", "nullable": null, "how": "Not applicable for this collector" }
   ]
 }
 ```
@@ -452,9 +455,9 @@ interface AutoBeRealizeCollectorMapping {
 
 **Examples of "not applicable" cases**:
 ```json
-{ "member": "shopping_cart_items", "kind": "hasMany", "how": "Not applicable for this collector" }
-{ "member": "children", "kind": "hasMany", "how": "Not needed (optional has-many)" }
-{ "member": "customer_feedback", "kind": "hasMany", "how": "Not used in ICreate DTO" }
+{ "member": "shopping_cart_items", "kind": "hasMany", "nullable": null, "how": "Not applicable for this collector" }
+{ "member": "children", "kind": "hasMany", "nullable": null, "how": "Not needed (optional has-many)" }
+{ "member": "customer_feedback", "kind": "hasMany", "nullable": null, "how": "Not used in ICreate DTO" }
 ```
 
 ### How to Fill the Mappings Array
@@ -500,33 +503,73 @@ For EACH member, first classify what KIND of Prisma schema member it is:
 - Catches common error: trying to assign `customer_id` instead of using `customer: { connect: ... }`
 - Enables Chain-of-Thought: you MUST think about what it IS before deciding HOW to handle it
 
-**Step 3: Decide How to Handle Each Member**
+**Step 3: Identify Nullability**
 
-After identifying the `kind`, decide the handling strategy (`how`):
+**🔥 CRITICAL: Determine `nullable` AFTER `kind` and BEFORE `how`!**
 
-**Common Strategies by Kind**:
+After identifying the kind, determine whether the member is nullable in the Prisma schema:
 
-**For scalar fields**:
-1. **From DTO**: `"From props.body.email"`
+**For scalar fields** (`kind: "scalar"`):
+- Check Prisma schema: Does the field have `?` after the type?
+  - `email String` → `nullable: false` (required, cannot be null)
+  - `description String?` → `nullable: true` (optional, can be null)
+  - `deleted_at DateTime?` → `nullable: true` (event timestamp, can be null)
+  - `created_at DateTime` → `nullable: false` (required timestamp)
+
+**For belongsTo relations** (`kind: "belongsTo"`):
+- Check Prisma schema: Does the FK column have `?` after the type?
+  - `customer_id String` → `nullable: false` (required FK, must connect)
+  - `parent_id String?` → `nullable: true` (optional FK, can use undefined)
+  - `category_id String?` → `nullable: true` (optional relation)
+
+**For hasMany/hasOne relations** (`kind: "hasMany"` or `kind: "hasOne"`):
+- Always set to `null`: Nullability concept doesn't apply
+  - Relations are arrays (hasMany) or objects (hasOne)
+  - They're always optional or handled differently
+  - The `nullable` property has no semantic meaning
+
+**Why `nullable` matters**:
+- **Prevents null errors**: Can't assign null to non-nullable fields (nullable: false)
+- **Forces correct optionals**: nullable: true → use `?? null` for scalar, `undefined` for belongsTo
+- **Enables proper validation**: Know which fields are required vs optional
+- **Supports CoT**: You must think about nullability BEFORE deciding handling strategy
+
+**Step 4: Decide How to Handle Each Member**
+
+After identifying the `kind` AND `nullable`, decide the handling strategy (`how`):
+
+**Common Strategies by Kind and Nullability**:
+
+**For scalar fields (nullable: false)**:
+1. **From DTO**: `"From props.body.email"` (required DTO field)
 2. **Generated Value**: `"Generate with v4()"`, `"Default to new Date()"`
-3. **Semantic Fallback**: `"Default to null"`, `"Default to false"`
-4. **Computed**: `"Generate with PasswordUtil.hash(props.body.password)"`
+3. **Computed**: `"Generate with PasswordUtil.hash(props.body.password)"`
 
-**For belongsTo relations**:
-1. **From Reference**: `"Connect using props.references.customer_id"`
-2. **From DTO**: `"Connect using props.body.categoryId"`
-3. **Optional**: `"Undefined (nullable FK)"`
-4. **Indirect Query**: `"Query comment to get article_id"`
+**For scalar fields (nullable: true)**:
+1. **From DTO with fallback**: `"From props.body.description ?? null"`
+2. **Event timestamps**: `"From props.body.completedAt ?? null"` (nullable until event occurs)
+3. **Semantic fallback**: `"Default to null"` (deleted_at, expired_at, etc.)
+4. **Status fields**: `"From props.body.isActive ?? false"` (nullable boolean)
 
-**For hasMany relations**:
+**For belongsTo relations (nullable: false)**:
+1. **From Reference**: `"Connect using props.customer.id"` (required)
+2. **From DTO**: `"Connect using props.body.categoryId"` (required)
+3. **Indirect Query**: `"Query comment to get article_id"` (required FK)
+
+**For belongsTo relations (nullable: true)**:
+1. **Optional from DTO**: `"Connect using props.body.parentId or undefined"` (optional)
+2. **Conditional**: `"Undefined (nullable FK)"` (not provided in this operation)
+3. **Optional reference**: `"Connect using props.category?.id or undefined"` (optional param)
+
+**For hasMany relations (nullable: null)**:
 1. **Nested Collector**: `"Nested create with ShoppingSaleTagCollector"`
 2. **Not Applicable**: `"Not applicable for this collector"`, `"Not needed (optional has-many)"`
 
-**For hasOne relations**:
+**For hasOne relations (nullable: null)**:
 1. **Nested Create**: `"Create with ProfileCollector"`
 2. **Not Applicable**: `"Not needed in this operation"`
 
-**Step 4: Validator Checks Completeness**
+**Step 5: Validator Checks Completeness**
 
 After you provide mappings, the validator verifies:
 - ✅ Every Prisma schema member appears in mappings?

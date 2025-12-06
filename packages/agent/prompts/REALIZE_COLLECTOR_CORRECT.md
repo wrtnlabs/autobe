@@ -194,6 +194,7 @@ The `mappings` array is a systematic review where you document the current state
 interface AutoBeRealizeCollectorMapping {
   member: string;  // Exact field/relation name from Prisma schema
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";  // Type of schema member
+  nullable: boolean | null;  // Nullability: true/false for scalar/belongsTo, null for hasMany/hasOne
   how: string;           // Current state + correction plan
 }
 ```
@@ -202,12 +203,14 @@ interface AutoBeRealizeCollectorMapping {
 ```json
 {
   "mappings": [
-    { "member": "id", "kind": "scalar", "how": "No change needed - correct" },
-    { "member": "email", "kind": "scalar", "how": "Fix: Wrong name 'user_email' → 'email'" },
-    { "member": "customer", "kind": "belongsTo", "how": "Fix: Using FK column instead of relation - change to connect syntax" },
-    { "member": "shopping_sale_tags", "kind": "hasMany", "how": "Fix: Inline logic - replace with ShoppingSaleTagCollector" },
-    { "member": "created_at", "kind": "scalar", "how": "Fix: Missing field - add with new Date()" },
-    { "member": "deleted_at", "kind": "scalar", "how": "No change needed - correct" }
+    { "member": "id", "kind": "scalar", "nullable": false, "how": "No change needed - correct" },
+    { "member": "email", "kind": "scalar", "nullable": false, "how": "Fix: Wrong name 'user_email' → 'email'" },
+    { "member": "description", "kind": "scalar", "nullable": true, "how": "Fix: Missing field - add with props.body.description ?? null" },
+    { "member": "customer", "kind": "belongsTo", "nullable": false, "how": "Fix: Using FK column instead of relation - change to connect syntax" },
+    { "member": "parent", "kind": "belongsTo", "nullable": true, "how": "Fix: Using null instead of undefined" },
+    { "member": "shopping_sale_tags", "kind": "hasMany", "nullable": null, "how": "Fix: Inline logic - replace with ShoppingSaleTagCollector" },
+    { "member": "created_at", "kind": "scalar", "nullable": false, "how": "Fix: Missing field - add with new Date()" },
+    { "member": "deleted_at", "kind": "scalar", "nullable": true, "how": "No change needed - correct" }
   ]
 }
 ```
@@ -233,6 +236,19 @@ interface AutoBeRealizeCollectorMapping {
 - **Catches common errors**: Treating belongsTo as scalar (using `customer_id` instead of `customer: { connect: ... }`)
 - **Forces correct syntax**: Each kind requires different Prisma syntax
 - **Enables Chain-of-Thought**: You must think about WHAT it is before deciding HOW to fix it
+
+**Then identify its `nullable` status**:
+- **For scalar/belongsTo**: Check Prisma schema for `?` after type
+  - `email String` → `nullable: false` (required, cannot be null)
+  - `description String?` → `nullable: true` (optional, can be null)
+  - `parent_id String?` → `nullable: true` (optional FK)
+- **For hasMany/hasOne**: Always `null` (nullability doesn't apply)
+
+**Why `nullable` matters during correction**:
+- **Prevents null errors**: Can't use null on non-nullable fields (nullable: false)
+- **Forces correct optionals**: nullable: true scalar → use `?? null`, nullable: true belongsTo → use `undefined`
+- **Catches required field omissions**: nullable: false → must provide value
+- **Enables proper validation**: Know which fields are required vs optional
 
 **Then document the correction strategy in `how`**:
 - **"No change needed"** - Field is correct

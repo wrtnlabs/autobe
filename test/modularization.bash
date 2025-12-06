@@ -32,6 +32,11 @@ pnpm start --include realize_collector_bbs --archive > realize_collector.openai-
 pnpm start --include realize_collector_reddit --archive > realize_collector.openai-gpt-4.1.reddit.log
 pnpm start --include realize_collector_shopping --archive > realize_collector.openai-gpt-4.1.shopping.log
 
+pnpm start --vendor openai/gpt-4.1-mini --include realize_collector_todo --archive > realize_collector.openai-gpt-4.1-mini.todo.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_collector_bbs --archive > realize_collector.openai-gpt-4.1-mini.bbs.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_collector_reddit --archive > realize_collector.openai-gpt-4.1-mini.reddit.log
+pnpm start --vendor openai/gpt-4.1-mini --include realize_collector_shopping --archive > realize_collector.openai-gpt-4.1-mini.shopping.log
+
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_todo --archive > realize_collector.qwen-qwen3-next-80b-a3b-instruct.todo.log
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_bbs --archive > realize_collector.qwen-qwen3-next-80b-a3b-instruct.bbs.log
 pnpm start --vendor qwen/qwen3-next-80b-a3b-instruct --include realize_collector_reddit --archive > realize_collector.qwen-qwen3-next-80b-a3b-instruct.reddit.log
