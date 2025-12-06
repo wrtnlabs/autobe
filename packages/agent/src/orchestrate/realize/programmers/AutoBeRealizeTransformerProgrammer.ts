@@ -263,7 +263,7 @@ ${Object.keys(props.schema.properties)
           how: string;
         }`,
         description: StringUtil.trim`
-          You missed mapping for required Prisma member '${r}'.
+          You missed mapping for required Prisma member '${r.member}'.
 
           Make sure to provide mapping for all required members.
         `,
