@@ -24,29 +24,29 @@ export function transformTestPrepareWriteHistories(props: {
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
           ## Domain Context
-          
+
           ${props.instruction}
-          
+
           ## Target Operation
-          
+
           - **Method**: ${props.operation.method.toUpperCase()}
           - **Path**: ${props.operation.path}
           - **DTO Type**: ${props.operation.requestBody?.typeName ?? "Unknown"}
-          
+
           ## Schema Analysis
-          
+
           You must analyze the following schema to generate a prepare function for the DTO type: **${props.operation.requestBody?.typeName}**
-          
+
           The schema structure is:
           \`\`\`json
           ${JSON.stringify(props.schema, null, 2)}
           \`\`\`
-          
+
           ## Required Actions
-          
-          1. **Classify Properties**: Separate test-customizable fields from auto-generated fields  
+
+          1. **Classify Properties**: Separate test-customizable fields from auto-generated fields
           2. **Create DeepPartial Type**: Use DeepPartial<${props.operation.requestBody?.typeName}> for input parameter
-          3. **Generate Data**: Use RandomGenerator utilities to create realistic test data
+          3. **Generate Data**: Use RandomGenerator utilities to create realistic test data (ALL INLINE)
           4. **Respect Constraints**: Follow all validation rules from the schema
           `,
       },
