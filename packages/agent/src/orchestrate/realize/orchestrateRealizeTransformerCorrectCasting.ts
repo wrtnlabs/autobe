@@ -1,4 +1,5 @@
 import {
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -20,7 +21,12 @@ export const orchestrateRealizeTransformerCorrectCasting = <
   orchestrateRealizeCorrectCasting(ctx, {
     programmer: {
       template: (func) =>
-        AutoBeRealizeTransformerProgrammer.writeTemplate(func.plan),
+        AutoBeRealizeTransformerProgrammer.writeTemplate({
+          plan: func.plan,
+          schema: ctx.state().interface!.document.components.schemas[
+            func.plan.dtoTypeName
+          ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+        }),
       replaceImportStatements: (next) =>
         AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
           dtoTypeName: next.function.plan.dtoTypeName,

@@ -6,10 +6,10 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
+  AutoBeProgressEventBase,
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
 import cp from "child_process";
-import path from "path";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -66,23 +66,17 @@ const validate_agent_realize_collector = async (props: {
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
+  const progress = (): AutoBeProgressEventBase => ({
+    total: 0,
+    completed: 0,
+  });
   const collectors: AutoBeRealizeCollectorFunction[] =
     await orchestrateRealizeCollector(agent.getContext(), {
-      planProgress: {
-        total: 0,
-        completed: 0,
-      },
-      writeProgress: {
-        total: 0,
-        completed: 0,
-      },
-      correctProgress: {
-        total: 0,
-        completed: 0,
-      },
+      planProgress: progress(),
+      writeProgress: progress(),
+      correctProgress: progress(),
     });
-
-  const cwd: string = `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector-all`;
+  const cwd: string = `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/realize-collector`;
   await FileSystemIterator.save({
     root: cwd,
     files: {
@@ -97,7 +91,7 @@ const validate_agent_realize_collector = async (props: {
       "pnpm-workspace.yaml": "",
     },
   });
-  console.log(`code ${path.resolve(cwd).replaceAll("\\", "/")}`);
+  console.log(`code ${cwd.replaceAll("\\", "/")}`);
   cp.execSync("pnpm install", { cwd, stdio: "ignore" });
   cp.execSync("pnpm tsc", { cwd, stdio: "inherit" });
 };

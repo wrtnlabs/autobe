@@ -61,8 +61,11 @@ export const orchestrateRealize =
         Object.keys(document.components.schemas).filter(
           AutoBeRealizeCollectorProgrammer.filter,
         ).length +
-        Object.keys(document.components.schemas).filter(
-          AutoBeRealizeTransformerProgrammer.filter,
+        Object.keys(document.components.schemas).filter((key) =>
+          AutoBeRealizeTransformerProgrammer.filter({
+            schemas: document.components.schemas,
+            key,
+          }),
         ).length,
     };
     const writeProgress: AutoBeProgressEventBase = {

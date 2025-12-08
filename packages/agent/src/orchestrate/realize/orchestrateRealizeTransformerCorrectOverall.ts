@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -24,6 +25,8 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerFunction[]> => {
+  const prismaApplication: AutoBePrisma.IApplication =
+    ctx.state().prisma!.result.data;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const getNeighbors = (
     func: AutoBeRealizeTransformerFunction,
@@ -108,8 +111,12 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
           // Validate transformer-specific constraints
           const errors: IValidation.IError[] =
             AutoBeRealizeTransformerProgrammer.validate({
+              application: prismaApplication,
+              document,
               plan: next.function.plan,
               neighbors: props.functions.map((f) => f.plan),
+              transformMappings: result.data.request.transformMappings,
+              selectMappings: result.data.request.selectMappings,
               draft: result.data.request.draft,
               revise: result.data.request.revise,
             });

@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
@@ -109,6 +111,45 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * explicit specification that the draft must implement.
      */
     plan: string;
+
+    /**
+     * Field-by-field mapping table for complete Prisma coverage.
+     *
+     * MUST include EVERY field and relation from the Prisma schema - no
+     * exceptions. Each mapping specifies:
+     *
+     * - `member`: Exact field/relation name from Prisma schema
+     * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
+     *   relation
+     * - `nullable`: Whether the field/relation is nullable (true/false for
+     *   scalar/belongsTo, null for hasMany/hasOne)
+     * - `how`: How to obtain/generate the value for that field
+     *
+     * The `kind` property forces explicit classification of each member BEFORE
+     * deciding how to handle it, preventing common errors like treating
+     * belongsTo relations as scalar fields.
+     *
+     * The `nullable` property forces explicit identification of nullability
+     * constraints BEFORE deciding handling strategy, preventing errors like
+     * assigning null to non-nullable fields or using null instead of undefined
+     * for optional relations.
+     *
+     * Missing even a single field will cause validation failure and trigger
+     * regeneration.
+     *
+     * This structured approach:
+     *
+     * - Prevents field omissions through systematic coverage
+     * - Forces explicit decision-making for each field (kind + nullable + how)
+     * - Prevents confusion between scalar fields and relations
+     * - Prevents null assignment errors through explicit nullability tracking
+     * - Enables validation before code generation
+     * - Creates clear documentation of field handling strategy
+     *
+     * The validator will cross-check this list against the actual Prisma schema
+     * and reject incomplete mappings.
+     */
+    mappings: AutoBeRealizeCollectorMapping[];
 
     /**
      * Initial collector implementation draft.

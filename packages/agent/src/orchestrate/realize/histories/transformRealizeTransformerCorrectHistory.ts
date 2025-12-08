@@ -1,4 +1,8 @@
-import { AutoBeRealizeTransformerFunction } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBePrisma,
+  AutoBeRealizeTransformerFunction,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -22,6 +26,13 @@ export const transformRealizeTransformerCorrectHistory = async <
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
+  const application: AutoBePrisma.IApplication =
+    ctx.state().prisma!.result.data;
+  const model: AutoBePrisma.IModel = application.files
+    .map((f) => f.models)
+    .flat()
+    .find((m) => m.name === props.function.plan.prismaSchemaName)!;
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dto: Record<string, string> =
     await AutoBeRealizeTransformerProgrammer.writeStructures(
       ctx,
@@ -75,6 +86,28 @@ export const transformRealizeTransformerCorrectHistory = async <
             ),
           )}
           \`\`\`
+
+          Here is the list of Prisma schema members you have to consider
+          when writing select() function:
+
+          Member | Kind | Nullable
+          -------|------|----------
+          ${AutoBeRealizeTransformerProgrammer.getSelectMappingMetadata({
+            application,
+            model,
+          })
+            .map((r) => `${r.member} | ${r.kind} | ${r.nullable}`)
+            .join("\n")}
+
+          Here is the list of property keys in the DTO type you have to
+          consider when writing transform() function:
+
+          ${AutoBeRealizeTransformerProgrammer.getTransformMappingMetadata({
+            document,
+            plan: props.function.plan,
+          })
+            .map((r) => `- ${r.property}`)
+            .join("\n")}
         `,
       },
       ...transformPreviousAndLatestCorrectHistory(
@@ -92,7 +125,12 @@ export const transformRealizeTransformerCorrectHistory = async <
 
       Below is template code you wrote:
 
-      ${AutoBeRealizeTransformerProgrammer.writeTemplate(props.function.plan)}
+      ${AutoBeRealizeTransformerProgrammer.writeTemplate({
+        plan: props.function.plan,
+        schema: ctx.state().interface!.document.components.schemas[
+          props.function.plan.dtoTypeName
+        ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+      })}
 
       Current code is as follows:
 

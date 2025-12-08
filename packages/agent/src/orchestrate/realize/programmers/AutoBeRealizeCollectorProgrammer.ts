@@ -1,6 +1,7 @@
 import {
   AutoBeOpenApi,
   AutoBePrisma,
+  AutoBeRealizeCollectorMapping,
   AutoBeRealizeCollectorPlan,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -34,31 +35,93 @@ export namespace AutoBeRealizeCollectorProgrammer {
     return Array.from(unique);
   }
 
+  export function getMappingMetadata(props: {
+    application: AutoBePrisma.IApplication;
+    model: AutoBePrisma.IModel;
+  }): AutoBeRealizeCollectorMapping.Metadata[] {
+    return [
+      {
+        member: props.model.primaryField.name,
+        kind: "scalar",
+        nullable: false,
+      },
+      ...props.model.plainFields.map(
+        (pf) =>
+          ({
+            member: pf.name,
+            kind: "scalar",
+            nullable: pf.nullable,
+          }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+      ),
+      ...props.model.foreignFields.map(
+        (f) =>
+          ({
+            member: f.relation.name,
+            kind: "belongsTo",
+            nullable: f.nullable,
+          }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+      ),
+      ...props.application.files
+        .map((f) => f.models)
+        .flat()
+        .map((om) =>
+          om.foreignFields
+            .filter((fk) => fk.relation.targetModel === props.model.name)
+            .map(
+              (fk) =>
+                ({
+                  member: fk.relation.mappingName ?? om.name,
+                  kind: fk.unique ? "hasOne" : "hasMany",
+                  nullable: null,
+                }) satisfies AutoBeRealizeCollectorMapping.Metadata,
+            ),
+        )
+        .flat(),
+    ];
+  }
+
   export function writeTemplate(props: {
     plan: AutoBeRealizeCollectorPlan;
     body: AutoBeOpenApi.IJsonSchema;
     model: AutoBePrisma.IModel;
+    application: AutoBePrisma.IApplication;
   }): string {
+    const mappings: string[] = getMappingMetadata(props).map((r) => r.member);
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
         export async function collect(props: {
           body: ${props.plan.dtoTypeName};
-          ${props.plan.references
-            .map(
-              (r) =>
-                `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
-            )
-            .join("\n")}
           ${
+            //references
+            props.plan.references
+              .map(
+                (r) =>
+                  `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+              )
+              .join("\n")
+          }
+          ${
+            // ip
             AutoBeOpenApiTypeChecker.isObject(props.body) &&
             props.body.properties.ip !== undefined &&
             props.model.plainFields.some((f) => f.name === "ip")
               ? `ip: string;`
               : ""
           }
+          ${
+            // sequence
+            AutoBeOpenApiTypeChecker.isObject(props.body) &&
+            props.body.properties.sequence !== undefined &&
+            AutoBeOpenApiTypeChecker.isString(props.body.properties.sequence) &&
+            props.model.plainFields.some(
+              (f) => f.name === "sequence" && f.type === "int",
+            )
+              ? `sequence: number;`
+              : ""
+          }
         }) {
           return {
-            ...
+${mappings.map((r) => `      ${r}: ...,`).join("\n")}
           } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
         }
       }
@@ -165,7 +228,9 @@ export namespace AutoBeRealizeCollectorProgrammer {
   }
 
   export function validate(props: {
+    application: AutoBePrisma.IApplication;
     plan: AutoBeRealizeCollectorPlan;
+    mappings: AutoBeRealizeCollectorMapping[];
     neighbors: AutoBeRealizeCollectorPlan[];
     draft: string;
     revise: {
@@ -174,6 +239,12 @@ export namespace AutoBeRealizeCollectorProgrammer {
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
+    validateMappings({
+      application: props.application,
+      errors,
+      plan: props.plan,
+      mappings: props.mappings,
+    });
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,
@@ -201,6 +272,83 @@ export namespace AutoBeRealizeCollectorProgrammer {
       });
     }
     return errors;
+  }
+
+  function validateMappings(props: {
+    application: AutoBePrisma.IApplication;
+    errors: IValidation.IError[];
+    plan: AutoBeRealizeCollectorPlan;
+    mappings: AutoBeRealizeCollectorMapping[];
+  }): void {
+    const model: AutoBePrisma.IModel = props.application.files
+      .map((f) => f.models)
+      .flat()
+      .find((m) => m.name === props.plan.prismaSchemaName)!;
+    const required: AutoBeRealizeCollectorMapping.Metadata[] =
+      getMappingMetadata({
+        application: props.application,
+        model,
+      });
+    props.mappings.forEach((m, i) => {
+      const metadata: AutoBeRealizeCollectorMapping.Metadata | undefined =
+        required.find((r) => r.member === m.member);
+      if (metadata === undefined)
+        props.errors.push({
+          path: `$input.request.mappings[${i}].member`,
+          value: m.member,
+          expected: required
+            .map((r) => `AutoBeRealizeMapping<"${r}">`)
+            .join(" | "),
+          description: StringUtil.trim`
+          '${m.member}' is not a valid Prisma member.
+
+          Please provide mapping only for existing Prisma members:
+
+          ${required.map((r) => `- ${r}`).join("\n")}
+        `,
+        });
+      else {
+        if (metadata.kind !== m.kind)
+          props.errors.push({
+            path: `$input.request.mappings[${i}].kind`,
+            value: m.kind,
+            expected: `"${metadata.kind}"`,
+            description: StringUtil.trim`
+            The mapping kind for Prisma member '${m.member}' is invalid.
+
+            Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
+          `,
+          });
+        if (metadata.nullable !== m.nullable)
+          props.errors.push({
+            path: `$input.request.mappings[${i}].nullable`,
+            value: m.nullable,
+            expected: `${metadata.nullable}`,
+            description: StringUtil.trim`
+            The mapping nullable for Prisma member '${m.member}' is invalid.
+
+            Expected nullable is '${metadata.nullable}', but received nullable is '${m.nullable}'.
+          `,
+          });
+      }
+    });
+    for (const r of required) {
+      if (props.mappings.some((m) => m.member === r.member)) continue;
+      props.errors.push({
+        path: "$input.request.mappings[]",
+        value: undefined,
+        expected: StringUtil.trim`{
+            member: "${r.member}";
+            kind: "${r.kind}";
+            how: string;
+          }`,
+        description: StringUtil.trim`
+            You missed mapping for required Prisma member '${r.member}'.
+
+            Make sure to provide mapping for all required members.
+          `,
+      });
+    }
   }
 
   function validateEmptyCode(props: {

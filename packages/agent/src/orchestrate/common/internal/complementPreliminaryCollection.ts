@@ -97,7 +97,12 @@ const complementInterfaceSchemas = (props: IProps) => {
         unique.add(key.replace("IPage", ""));
       else if (key.endsWith(".IAuthorized"))
         unique.add(key.replace(".IAuthorized", ""));
-      else if (AutoBeRealizeTransformerProgrammer.filter(key) === true)
+      else if (
+        AutoBeRealizeTransformerProgrammer.filter({
+          schemas: props.all.interfaceSchemas,
+          key,
+        }) === true
+      )
         unique.add(key);
     }
     for (const key of unique) {

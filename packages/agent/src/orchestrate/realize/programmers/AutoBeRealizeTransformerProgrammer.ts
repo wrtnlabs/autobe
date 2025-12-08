@@ -1,27 +1,39 @@
 import {
   AutoBeOpenApi,
+  AutoBePrisma,
   AutoBeRealizeTransformerPlan,
+  AutoBeRealizeTransformerSelectMapping,
+  AutoBeRealizeTransformerTransformMapping,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 
 export namespace AutoBeRealizeTransformerProgrammer {
-  export function filter(key: string): boolean {
+  export function filter(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    key: string;
+  }): boolean {
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+      props.schemas[props.key];
+    if (schema === undefined) return false;
     return (
-      key !== "IAuthorizationToken" &&
-      key !== "IEntity" &&
-      key.startsWith("IPage") === false &&
-      key.endsWith(".IRequest") === false &&
-      key.endsWith(".ICreate") === false &&
-      key.endsWith(".IUpdate") === false &&
-      key.endsWith(".IAuthorized") === false &&
-      key.endsWith(".IJoin") === false &&
-      key.endsWith(".ILogin") === false &&
-      key.endsWith(".IRefresh") === false
+      AutoBeOpenApiTypeChecker.isObject(schema) &&
+      Object.keys(schema.properties).length !== 0 &&
+      (schema.additionalProperties ?? false) === false &&
+      props.key !== "IAuthorizationToken" &&
+      props.key !== "IEntity" &&
+      props.key.startsWith("IPage") === false &&
+      props.key.endsWith(".IRequest") === false &&
+      props.key.endsWith(".ICreate") === false &&
+      props.key.endsWith(".IUpdate") === false &&
+      props.key.endsWith(".IAuthorized") === false &&
+      props.key.endsWith(".IJoin") === false &&
+      props.key.endsWith(".ILogin") === false &&
+      props.key.endsWith(".IRefresh") === false
     );
   }
 
@@ -45,19 +57,46 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
-  export function writeTemplate(plan: AutoBeRealizeTransformerPlan): string {
-    return StringUtil.trim`
-      export namespace ${getName(plan.dtoTypeName)} {
-        export type Payload = Prisma.${plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
+  export function getSelectMappingMetadata(props: {
+    application: AutoBePrisma.IApplication;
+    model: AutoBePrisma.IModel;
+  }): AutoBeRealizeTransformerSelectMapping.Metadata[] {
+    return AutoBeRealizeCollectorProgrammer.getMappingMetadata(props);
+  }
 
-        export async function transform(input: Payload): Promise<${plan.dtoTypeName}> {
-          ...
-        }
+  export function getTransformMappingMetadata(props: {
+    document: AutoBeOpenApi.IDocument;
+    plan: AutoBeRealizeTransformerPlan;
+  }): AutoBeRealizeTransformerTransformMapping.Metadata[] {
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.document
+      .components.schemas[
+      props.plan.dtoTypeName
+    ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    return Object.keys(schema.properties).map((key) => ({
+      property: key,
+    }));
+  }
+
+  export function writeTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  }): string {
+    return StringUtil.trim`
+      export namespace ${getName(props.plan.dtoTypeName)} {
+        export type Payload = Prisma.${props.plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
           return {
             ...
-          } satisfies Prisma.${plan.prismaSchemaName}FindManyArgs;
+          } satisfies Prisma.${props.plan.prismaSchemaName}FindManyArgs;
+        }
+
+        export async function transform(input: Payload): Promise<${props.plan.dtoTypeName}> {
+          return {
+${Object.keys(props.schema.properties)
+  .map((k) => `  ${k}: ...,`)
+  .join("\n")}
+          };
         }
       }
     `;
@@ -100,8 +139,12 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   export function validate(props: {
+    application: AutoBePrisma.IApplication;
+    document: AutoBeOpenApi.IDocument;
     plan: AutoBeRealizeTransformerPlan;
     neighbors: AutoBeRealizeTransformerPlan[];
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
     draft: string;
     revise: {
       review: string;
@@ -109,6 +152,18 @@ export namespace AutoBeRealizeTransformerProgrammer {
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
+    validateTransformMappings({
+      document: props.document,
+      errors,
+      plan: props.plan,
+      transformMappings: props.transformMappings,
+    });
+    validateSelectMappings({
+      application: props.application,
+      errors,
+      plan: props.plan,
+      selectMappings: props.selectMappings,
+    });
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,
@@ -136,6 +191,134 @@ export namespace AutoBeRealizeTransformerProgrammer {
       });
     }
     return errors;
+  }
+
+  function validateSelectMappings(props: {
+    application: AutoBePrisma.IApplication;
+    errors: IValidation.IError[];
+    plan: AutoBeRealizeTransformerPlan;
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
+  }): void {
+    const model: AutoBePrisma.IModel = props.application.files
+      .map((f) => f.models)
+      .flat()
+      .find((m) => m.name === props.plan.prismaSchemaName)!;
+    const required: AutoBeRealizeTransformerSelectMapping.Metadata[] =
+      getSelectMappingMetadata({
+        application: props.application,
+        model,
+      });
+    props.selectMappings.forEach((m, i) => {
+      const metadata:
+        | AutoBeRealizeTransformerSelectMapping.Metadata
+        | undefined = required.find((r) => r.member === m.member);
+      if (metadata === undefined)
+        props.errors.push({
+          path: `$input.request.selectmappings[${i}].member`,
+          value: m.member,
+          expected: required
+            .map((r) => `AutoBeRealizeMapping<"${r}">`)
+            .join(" | "),
+          description: StringUtil.trim`
+            '${m.member}' is not a valid Prisma member.
+  
+            Please provide mapping only for existing Prisma members:
+  
+            ${required.map((r) => `- ${r}`).join("\n")}
+          `,
+        });
+      else {
+        if (metadata.kind !== m.kind)
+          props.errors.push({
+            path: `$input.request.selectmappings[${i}].kind`,
+            value: m.kind,
+            expected: `"${metadata.kind}"`,
+            description: StringUtil.trim`
+              The mapping kind for Prisma member '${m.member}' is invalid.
+  
+              Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
+            `,
+          });
+        if (metadata.nullable !== m.nullable)
+          props.errors.push({
+            path: `$input.request.selectmappings[${i}].nullable`,
+            value: m.nullable,
+            expected: `${metadata.nullable}`,
+            description: StringUtil.trim`
+              The mapping nullable for Prisma member '${m.member}' is invalid.
+  
+              Expected nullable is '${metadata.nullable}', but received nullable is '${m.nullable}'.
+            `,
+          });
+      }
+    });
+    for (const r of required) {
+      if (props.selectMappings.some((m) => m.member === r.member)) continue;
+      props.errors.push({
+        path: "$input.request.selectmappings[]",
+        value: undefined,
+        expected: StringUtil.trim`{
+          member: "${r.member}";
+          kind: "${r.kind}";
+          how: string;
+        }`,
+        description: StringUtil.trim`
+          You missed mapping for required Prisma member '${r.member}'.
+
+          Make sure to provide mapping for all required members.
+        `,
+      });
+    }
+  }
+
+  function validateTransformMappings(props: {
+    document: AutoBeOpenApi.IDocument;
+    errors: IValidation.IError[];
+    plan: AutoBeRealizeTransformerPlan;
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
+  }): void {
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.document
+      .components.schemas[
+      props.plan.dtoTypeName
+    ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    props.transformMappings.forEach((m, i) => {
+      if (schema.properties[m.property] !== undefined) return;
+      props.errors.push({
+        path: `$input.request.transformMappings[${i}]`,
+        value: m,
+        expected: StringUtil.trim`{
+            property: ${Object.keys(schema.properties)
+              .map((key) => `${JSON.stringify(key)}`)
+              .join(" | ")};
+            how: string;
+          }`,
+        description: StringUtil.trim`
+          The mapping for the property '${m.property}' does not exist in DTO '${props.plan.dtoTypeName}'.
+
+          Please provide mapping only for existing properties:
+
+          ${Object.keys(schema.properties)
+            .map((key) => `- ${key}`)
+            .join("\n")}
+        `,
+      });
+    });
+    for (const key of Object.keys(schema.properties)) {
+      if (props.transformMappings.some((m) => m.property === key)) continue;
+      props.errors.push({
+        path: `$input.request.transformMappings[]`,
+        value: undefined,
+        expected: StringUtil.trim`{
+            property: "${key}";
+            how: string;
+          }`,
+        description: StringUtil.trim`
+          You missed the mapping for the property '${key}' of DTO '${props.plan.dtoTypeName}'.
+
+          Make sure to provide mappking for all properties.
+        `,
+      });
+    }
   }
 
   function writeImportStatements(props: {

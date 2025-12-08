@@ -1,3 +1,5 @@
+import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 export interface IAutoBeRealizeCollectorCorrectApplication {
@@ -84,6 +86,51 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * surgical fixes that address root causes, not symptoms.
      */
     think: string;
+
+    /**
+     * Field-by-field mapping verification for complete coverage.
+     *
+     * Review EVERY field and relation from the Prisma schema to ensure correct
+     * handling. This systematic approach catches errors beyond what the
+     * compiler reports and prevents new issues.
+     *
+     * For each Prisma member, document:
+     *
+     * - `member`: Exact field/relation name from Prisma schema
+     * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
+     *   relation
+     * - `nullable`: Whether the field/relation is nullable (true/false for
+     *   scalar/belongsTo, null for hasMany/hasOne)
+     * - `how`: Current state + correction plan ("No change needed", "Fix:
+     *   [problem] → [solution]", etc.)
+     *
+     * The `kind` property forces you to consciously identify whether each
+     * member is a scalar or relation BEFORE deciding how to fix it. This
+     * prevents common correction errors like treating belongsTo relations as
+     * scalar fields.
+     *
+     * The `nullable` property forces you to explicitly identify nullability
+     * constraints BEFORE deciding correction strategy. This prevents errors like
+     * assigning null to non-nullable fields or using null instead of undefined
+     * for optional belongsTo relations.
+     *
+     * Even fields without errors should be included with "No change needed" to
+     * ensure complete review. Missing even a single field could hide bugs.
+     *
+     * This structured verification:
+     *
+     * - Catches silent errors compiler didn't report
+     * - Ensures no fields accidentally omitted
+     * - Forces explicit classification (kind + nullable) before correction (how)
+     * - Prevents confusion between scalar fields and relations
+     * - Prevents null assignment errors through explicit nullability tracking
+     * - Documents correction decisions explicitly
+     * - Prevents regression in working fields
+     *
+     * The validator will cross-check this against the Prisma schema to ensure
+     * nothing was overlooked.
+     */
+    mappings: AutoBeRealizeCollectorMapping[];
 
     /**
      * Initial correction implementation.

@@ -1,4 +1,7 @@
-import { AutoBeRealizeCollectorFunction } from "@autobe/interface";
+import {
+  AutoBePrisma,
+  AutoBeRealizeCollectorFunction,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -22,6 +25,12 @@ export const transformRealizeCollectorCorrectHistory = async <
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
+  const application: AutoBePrisma.IApplication =
+    ctx.state().prisma!.result.data;
+  const model: AutoBePrisma.IModel = application.files
+    .map((f) => f.models)
+    .flat()
+    .find((m) => m.name === props.function.plan.prismaSchemaName)!;
   const dto: Record<string, string> =
     await AutoBeRealizeCollectorProgrammer.writeStructures(
       ctx,
@@ -75,6 +84,17 @@ export const transformRealizeCollectorCorrectHistory = async <
             ),
           )}
           \`\`\`
+
+          Also, this is the list of Prisma schema members you have to consider:
+
+          Member | Kind | Nullable
+          -------|------|----------
+          ${AutoBeRealizeCollectorProgrammer.getMappingMetadata({
+            application,
+            model,
+          })
+            .map((r) => `${r.member} | ${r.kind} | ${r.nullable}`)
+            .join("\n")}
         `,
       },
       ...transformPreviousAndLatestCorrectHistory(
@@ -98,11 +118,8 @@ export const transformRealizeCollectorCorrectHistory = async <
         body: ctx.state().interface!.document.components.schemas[
           props.function.plan.dtoTypeName
         ],
-        model: ctx
-          .state()
-          .prisma!.result.data.files.map((f) => f.models)
-          .flat()
-          .find((m) => m.name === props.function.plan.prismaSchemaName)!,
+        model,
+        application,
       })}
 
       Current code is as follows:

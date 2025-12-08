@@ -15,17 +15,13 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
-import { IAutoBeRealizeCollectorCorrectApplication } from "../structures/IAutoBeRealizeCollectorCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
-interface ICorrectionResult<RealizeFunction extends AutoBeRealizeFunction> {
-  type: "success" | "ignore" | "exception";
-  function: RealizeFunction;
-}
 interface IProgrammer<
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
+  Complete,
 > {
   replaceImportStatements(props: {
     function: RealizeFunction;
@@ -42,7 +38,7 @@ interface IProgrammer<
     function: RealizeFunction;
     preliminary: AutoBePreliminaryController<PreliminaryKind>;
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    build(next: IAutoBeRealizeCollectorCorrectApplication.IComplete): void;
+    build(next: Complete): void;
   }): ILlmController<Model>;
   preliminary(props: {
     function: RealizeFunction;
@@ -51,14 +47,28 @@ interface IProgrammer<
   location: string;
 }
 
+interface IComplete {
+  draft: string;
+  revise: {
+    review: string;
+    final: string | null;
+  };
+}
+
+interface ICorrectionResult<RealizeFunction extends AutoBeRealizeFunction> {
+  type: "success" | "ignore" | "exception";
+  function: RealizeFunction;
+}
+
 export const orchestrateRealizeCorrectOverall = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
+  Complete extends IComplete,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     progress: AutoBeProgressEventBase;
   },
@@ -88,10 +98,11 @@ const predicate = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
+  Complete extends IComplete,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -110,10 +121,11 @@ const correct = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
+  Complete extends IComplete,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -258,10 +270,11 @@ const process = async <
   Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
+  Complete extends IComplete,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind>;
+    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
     function: RealizeFunction;
     failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
     progress: AutoBeProgressEventBase;
@@ -273,14 +286,13 @@ const process = async <
       source: SOURCE,
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeCollectorCorrectApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<Complete | null> = {
+      value: null,
+    };
     const controller: ILlmController<Model> = props.programmer.controller({
       model: ctx.model,
       preliminary,
-      build(next: IAutoBeRealizeCollectorCorrectApplication.IComplete) {
+      build(next: Complete) {
         pointer.value = next;
       },
       function: props.function,

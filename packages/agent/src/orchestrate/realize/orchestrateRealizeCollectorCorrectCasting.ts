@@ -30,6 +30,7 @@ export const orchestrateRealizeCollectorCorrectCasting = <
             .prisma!.result.data.files.map((f) => f.models)
             .flat()
             .find((m) => m.name === func.plan.prismaSchemaName)!,
+          application: ctx.state().prisma!.result.data,
         }),
       replaceImportStatements: (next) =>
         AutoBeRealizeCollectorProgrammer.replaceImportStatements(ctx, {

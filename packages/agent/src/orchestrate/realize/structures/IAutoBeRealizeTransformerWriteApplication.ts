@@ -1,3 +1,8 @@
+import {
+  AutoBeRealizeTransformerSelectMapping,
+  AutoBeRealizeTransformerTransformMapping,
+} from "@autobe/interface";
+
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
@@ -116,6 +121,101 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * explicit specification for both select() and transform() functions.
      */
     plan: string;
+
+    /**
+     * Prisma field-by-field selection mapping for the select() function.
+     *
+     * Documents which Prisma fields/relations must be selected from the database
+     * to enable the transform() function. This ensures no required data is
+     * missing from the query.
+     *
+     * MUST include EVERY Prisma field needed by transform() - no exceptions.
+     * Each mapping specifies:
+     *
+     * - `member`: Exact Prisma field/relation name (snake_case)
+     * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
+     *   relation
+     * - `nullable`: Whether the field/relation is nullable (true/false for
+     *   scalar/belongsTo, null for hasMany/hasOne)
+     * - `how`: Why this field is being selected (which DTO property needs it)
+     *
+     * The `kind` property forces explicit classification of each member BEFORE
+     * deciding what to select, preventing confusion between scalars and
+     * relations, and ensuring correct select syntax.
+     *
+     * The `nullable` property documents schema constraints that affect how
+     * transform() will handle the data, enabling proper null handling in
+     * transformations.
+     *
+     * Missing even a single required field will cause validation failure and
+     * trigger regeneration.
+     *
+     * This structured approach:
+     *
+     * - Prevents missing field selections through systematic coverage
+     * - Forces explicit decision-making for each Prisma field (kind + nullable + how)
+     * - Ensures select() and transform() are perfectly aligned
+     * - Documents what data to load from database
+     * - Prevents confusion between scalar fields and relations
+     * - Documents nullability constraints for transform() planning
+     * - Enables validation before code generation
+     *
+     * **Common selection patterns by kind**:
+     *
+     * - **Scalar fields (nullable: true/false)**: For direct mapping or type
+     *   conversion
+     * - **Computation sources (nullable: true/false)**: Fields needed for
+     *   computed DTO properties
+     * - **Aggregations (nullable: false)**: _count, _sum, _avg for DTO
+     *   statistics
+     * - **BelongsTo relations (nullable: true/false)**: For nested object
+     *   transformers
+     * - **HasMany relations (nullable: null)**: For array transformers
+     *
+     * The validator will cross-check this list against the Prisma schema and
+     * DTO requirements to ensure complete coverage.
+     */
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
+
+    /**
+     * DTO property-by-property transformation mapping for the transform()
+     * function.
+     *
+     * Documents how to transform Prisma payload data into each DTO property.
+     * This ensures complete DTO coverage and correct transformation logic.
+     *
+     * MUST include EVERY property from the DTO type definition - no exceptions.
+     * Each mapping specifies:
+     *
+     * - `property`: Exact DTO property name (camelCase)
+     * - `how`: How to obtain this property value from Prisma payload
+     *
+     * Missing even a single property will cause validation failure and trigger
+     * regeneration.
+     *
+     * This structured approach:
+     *
+     * - Prevents property omissions through systematic coverage
+     * - Forces explicit decision-making for each property transformation
+     * - Documents transformation logic (direct mapping, type conversion,
+     *   computation, nested transformation)
+     * - Ensures select() and transform() are aligned
+     * - Enables validation before code generation
+     *
+     * **Common transformation patterns**:
+     *
+     * - **Direct mapping**: Simple field renaming (snake_case → camelCase)
+     * - **Type conversion**: Decimal → Number, DateTime → ISO string
+     * - **Nullable handling**: DateTime? → string | null
+     * - **Computed properties**: Calculate from multiple Prisma fields
+     * - **Aggregation**: Use _count, _sum, _avg from Prisma
+     * - **Nested objects**: Reuse neighbor transformers
+     * - **Arrays**: Map with ArrayUtil.asyncMap + neighbor transformer
+     *
+     * The validator will cross-check this list against the actual DTO type
+     * definition and reject incomplete mappings.
+     */
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
 
     /**
      * Initial transformer implementation draft.
