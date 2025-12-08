@@ -256,7 +256,16 @@ This structured workflow ensures systematic error fixing through root cause anal
 
 ### Phase 1: Think - Comprehensive Code Analysis and Review
 
-**🚨 CRITICAL GOAL: Compilation errors are just indicators - perform COMPLETE code review to find ALL issues.**
+**🚨 CRITICAL: This phase has THREE outputs - narrative analysis AND two structured mappings**
+
+Your correction phase must produce:
+1. **Narrative Analysis (`think` field)**: Your written error analysis and correction strategy
+2. **Select Mappings (`selectMappings` field)**: Field-by-field verification table for select()
+3. **Transform Mappings (`transformMappings` field)**: Property-by-property verification table for transform()
+
+**The mappings fields are your systematic verification mechanism** - they force you to review EVERY field and property, catching errors beyond what the compiler reports.
+
+#### Part A: Narrative Analysis
 
 **FUNDAMENTAL PRINCIPLE:**
 Compilation errors signal that something is wrong with the code. Your mission is NOT just to fix the visible errors, but to perform a **100% thorough review** of the entire code, examining every aspect to produce **perfect, production-ready code**.
@@ -278,32 +287,114 @@ Your comprehensive analysis should accomplish these objectives:
    - Identify if inline logic exists when neighbor transformers should be used
    - **Look beyond the errors** - examine the entire logic flow in both functions
 
-3. **Perform Comprehensive Schema Verification**:
-   - **Compare EVERY field in select() against actual Prisma schema**
-   - **Compare EVERY field in transform() against DTO type**
-   - Verify field names are exactly correct (character-by-character, case-sensitive)
-   - Check that NO fields are missing from select() (not just error-reported ones)
-   - Verify ALL fields needed by transform() are included in select()
-   - Check ALL relationships use correct relation names
-   - **This is NOT just for fixing errors - this is complete compliance verification**
-
-4. **Perform Complete DTO Transformation Verification**:
-   - **Verify EVERY DTO field is correctly transformed** (not just the ones causing errors)
-   - Check that ALL Prisma fields are appropriately mapped to DTO
-   - Verify snake_case → camelCase conversions are correct everywhere
-   - Check for any DTO fields that should be calculated but aren't
-   - Verify type conversions are applied correctly (Date→string, Decimal→number, etc.)
-   - **Ensure no data is lost or incorrectly transformed**
-
-5. **Plan Comprehensive Corrections and Improvements**:
+3. **Plan Comprehensive Corrections and Improvements**:
    - Fix all compilation errors (root causes, not symptoms)
    - Fix all architectural violations (inline logic → neighbor transformers)
-   - Fix all schema compliance issues (missing fields in select(), wrong names, etc.)
-   - Fix all DTO transformation issues (missing conversions, wrong types, etc.)
+   - Fix all select() issues (missing fields, wrong names, etc.)
+   - Fix all transform() issues (missing conversions, wrong types, etc.)
    - Fix all potential runtime bugs (null handling, edge cases, etc.)
    - **Transform the code into perfect, production-ready implementation**
 
-**How you structure your analysis is up to you** - but the **completeness and thoroughness** are mandatory. Don't just analyze errors - analyze the ENTIRE code.
+**How you structure your narrative is up to you** - but the **completeness and thoroughness** are mandatory.
+
+#### Part B: Select Mappings (Verification for select() function)
+
+**CRITICAL: The `selectMappings` field is MANDATORY for systematic verification**
+
+After your narrative analysis, you MUST create a complete field-by-field verification table documenting the current state and needed corrections for select(). This ensures you don't miss any issues beyond visible compilation errors.
+
+**For each Prisma field needed by the DTO, document current state:**
+
+```typescript
+{
+  member: "created_at",     // Exact Prisma field/relation name
+  kind: "scalar",           // "scalar" | "belongsTo" | "hasOne" | "hasMany"
+  nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
+  how: "No change needed" or "Fix: Missing - add to select()"
+}
+```
+
+**Example selectMappings for corrections:**
+
+```typescript
+selectMappings: [
+  // Scalar fields
+  { member: "id", kind: "scalar", nullable: false, how: "Already selected correctly" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already selected correctly" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing from select()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing from select()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already selected correctly" },
+
+  // BelongsTo relations
+  { member: "user", kind: "belongsTo", nullable: false, how: "Fix: Inline select → use BbsUserAtSummaryTransformer.select()" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Already selected correctly" },
+
+  // HasMany relations
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Already selected correctly" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Fix: Not selected - add for DTO.tags" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Already selected correctly" },
+
+  // Aggregations
+  { member: "_count", kind: "scalar", nullable: false, how: "Fix: Missing - add for hit/like counts" },
+]
+```
+
+#### Part C: Transform Mappings (Verification for transform() function)
+
+**CRITICAL: The `transformMappings` field is MANDATORY for systematic verification**
+
+After selectMappings, you MUST create a complete property-by-property verification table for transform(). This ensures all DTO properties are correctly handled.
+
+**For each DTO property, document current state:**
+
+```typescript
+{
+  property: "createdAt",    // Exact DTO property name (camelCase)
+  how: "No change needed" or "Fix: Missing .toISOString() conversion"
+}
+```
+
+**Example transformMappings for corrections:**
+
+```typescript
+transformMappings: [
+  // Direct mappings
+  { property: "id", how: "Already correct" },
+  { property: "content", how: "Already correct" },
+
+  // Type conversions
+  { property: "createdAt", how: "Fix: Missing .toISOString() - input.created_at.toISOString()" },
+  { property: "updatedAt", how: "Fix: Missing .toISOString() - input.updated_at.toISOString()" },
+  { property: "deletedAt", how: "Already correct (has .toISOString())" },
+
+  // Nested transformations
+  { property: "writer", how: "Fix: Inline transformation → use BbsUserAtSummaryTransformer.transform()" },
+  { property: "parent", how: "Already correct" },
+
+  // Arrays
+  { property: "files", how: "Already correct" },
+  { property: "tags", how: "Fix: Missing transformation - add array map with BbsArticleCommentTagTransformer" },
+  { property: "links", how: "Already correct" },
+
+  // Aggregations
+  { property: "hit", how: "Fix: Missing - add from input._count.bbs_article_comment_hits" },
+  { property: "like", how: "Fix: Missing - add from input._count.bbs_article_comment_likes" },
+]
+```
+
+**Why mappings are critical for corrections:**
+
+1. **Beyond Compiler Errors**: Catches issues compiler didn't report
+2. **Systematic Coverage**: Ensures you reviewed every field in select() and every property in transform()
+3. **Alignment Check**: Ensures select() and transform() work together
+4. **Clear Correction Plan**: Documents exactly what to fix
+
+**The validator will check:**
+- selectMappings: All Prisma fields needed are reviewed
+- transformMappings: All DTO properties are reviewed
+- Corrections are valid and complete
+
+Focus on creating complete mappings - they ensure perfect select() ↔ transform() alignment.
 
 ---
 
@@ -513,57 +604,166 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.2. think
 
-**Comprehensive code analysis and correction strategy**
+**Comprehensive error analysis and correction strategy (narrative)**
 
-Performs comprehensive code analysis including compilation errors and beyond:
-- All compilation error patterns and root causes
-- Complete schema compliance verification (select() function)
-- Complete DTO transformation verification (transform() function)
-- Architectural violation detection
-- Potential runtime bug identification
-- Overall code quality assessment
+This is your narrative analysis where you diagnose the errors and plan the fixes for both select() and transform(). Document your thinking about:
 
-Document your comprehensive analysis including:
-- All error patterns and root causes
-- Complete select() verification findings (all fields against schema)
-- Complete transform() verification findings (all DTO mappings)
-- All architectural issues found
-- All potential bugs identified
-- Overall correction strategy
+- **Compilation Error Analysis**: Categorize and understand all errors (in both functions)
+- **Root Cause Identification**: Why errors occurred in select() and/or transform()
+- **Select() Verification Findings**: Results of checking fields against Prisma schema
+- **Transform() Verification Findings**: Results of checking transformations against DTO
+- **Architectural Issues**: Inline code vs transformers, wrong syntax, misalignment
+- **Overall Correction Strategy**: High-level plan to fix everything
+
+**Keep this at a strategic level** - you'll provide detailed field-by-field corrections in the mappings fields.
 
 **Example**:
 ```
 COMPILATION ERROR ANALYSIS:
-- 2 fields missing from select() query
-- 3 Date fields need toISOString()
-- 1 nested object needs transformer
+- 2 fields missing from select() query (created_at, updated_at)
+- 3 Date fields need toISOString() in transform()
+- 1 nested object needs transformer (both select & transform)
 - 1 null to undefined conversion
 
-COMPREHENSIVE select() VERIFICATION:
-- Verified all 12 fields against Prisma schema
-- Found 1 additional missing field (email) not causing error yet
-- Confirmed all field names match exactly
-- Found 1 inline nested select that should use neighbor transformer
+ROOT CAUSE ANALYSIS:
+- Missing fields: Original code didn't include all needed fields
+- Date conversions: Forgot .toISOString() calls
+- Inline transformer: Should use BbsUserAtSummaryTransformer
 
-COMPREHENSIVE transform() VERIFICATION:
-- Checked all 10 DTO fields
-- Found 1 DTO field (totalPrice) not being calculated
-- Verified all type conversions (4 Date fields, 2 Decimal fields)
-- Confirmed snake_case → camelCase conversions correct
-- Found 1 computed field (_count.reviews) needed for reviewCount
+select() VERIFICATION:
+- Reviewed all 12 Prisma fields
+- Found 1 additional missing field (email) not causing error
+- Confirmed relation names correct
 
-ARCHITECTURAL REVIEW:
-- Found inline nested transform that should use TagTransformer
-- Verified proper select() ↔ Payload ↔ transform() alignment
+transform() VERIFICATION:
+- Checked all 10 DTO properties
+- Found 1 computed property (hit) not calculated
+- Verified type conversion needs
+
+ARCHITECTURAL ISSUES:
+- Inline nested select/transform should use TagTransformer
 
 CORRECTION STRATEGY:
 - Fix all 4 compilation errors
-- Add missing email field to select()
-- Add totalPrice calculation (unit_price * quantity)
-- Add reviewCount from _count.reviews
-- Replace inline logic with TagTransformer (both select & transform)
-- Result: Perfect, complete implementation
+- Add email to select()
+- Add hit calculation in transform()
+- Replace inline with TagTransformer in both functions
+- Result: Perfect implementation
 ```
+
+#### selectMappings
+
+**CRITICAL: Field-by-field verification and correction plan for select()**
+
+This is your structured verification for select() - a complete review of which Prisma fields to select with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
+
+Each mapping documents current state and needed fixes:
+```typescript
+{
+  member: string;     // Exact Prisma field/relation name
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;
+  how: string;        // "Already correct" or "Fix: [problem] → [solution]"
+}
+```
+
+**Why this field is critical:**
+
+1. **Systematic Coverage**: Forces review of EVERY Prisma field needed
+2. **Catches Silent Errors**: Issues compiler didn't report in select()
+3. **Documents Corrections**: Clear record of select() fixes
+4. **Enables Validation**: System validates corrections against Prisma schema
+5. **Ensures Alignment**: Ensures select() provides all data for transform()
+
+**Example selectMappings:**
+
+```typescript
+selectMappings: [
+  { member: "id", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing - add to select()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing - add to select()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already correct" },
+
+  { member: "user", kind: "belongsTo", nullable: false, how: "Fix: Inline → BbsUserAtSummaryTransformer.select()" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Already correct" },
+
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Fix: Not selected - add" },
+
+  { member: "_count", kind: "scalar", nullable: false, how: "Fix: Missing - add for hit/like" },
+]
+```
+
+**Common patterns for `how` field:**
+- "Already correct"
+- "Fix: Missing - add to select()"
+- "Fix: Wrong name '{wrong}' → '{correct}'"
+- "Fix: Inline select → use {TransformerName}.select()"
+- "Fix: Fabricated field - remove"
+
+#### transformMappings
+
+**CRITICAL: Property-by-property verification and correction plan for transform()**
+
+This is your structured verification for transform() - a complete review of how each DTO property is transformed with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY DTO property.**
+
+Each mapping documents current state and needed fixes:
+```typescript
+{
+  property: string;   // Exact DTO property name (camelCase)
+  how: string;        // "Already correct" or "Fix: [problem] → [solution]"
+}
+```
+
+**Why this field is critical:**
+
+1. **Complete DTO Coverage**: Ensures all DTO properties are handled
+2. **Catches Silent Errors**: Issues compiler didn't report in transform()
+3. **Documents Transformations**: Clear record of how each property is obtained
+4. **Enables Validation**: System validates against DTO type definition
+5. **Ensures Alignment**: Every property must have corresponding data in selectMappings
+
+**Example transformMappings:**
+
+```typescript
+transformMappings: [
+  { property: "id", how: "Already correct" },
+  { property: "content", how: "Already correct" },
+  { property: "createdAt", how: "Fix: Missing .toISOString()" },
+  { property: "updatedAt", how: "Fix: Missing .toISOString()" },
+  { property: "deletedAt", how: "Already correct" },
+
+  { property: "writer", how: "Fix: Inline → BbsUserAtSummaryTransformer.transform()" },
+  { property: "parent", how: "Already correct" },
+
+  { property: "files", how: "Already correct" },
+  { property: "tags", how: "Fix: Missing - add with BbsArticleCommentTagTransformer" },
+
+  { property: "hit", how: "Fix: Missing - from input._count.bbs_article_comment_hits" },
+  { property: "like", how: "Fix: Missing - from input._count.bbs_article_comment_likes" },
+]
+```
+
+**Common patterns for `how` field:**
+- "Already correct"
+- "Fix: Missing .toISOString()"
+- "Fix: Missing Number() conversion"
+- "Fix: Inline → use {TransformerName}.transform()"
+- "Fix: Missing - from input.{field}"
+- "Fix: Missing calculation"
+- "Fix: Wrong null handling"
+
+**What the validators check:**
+- selectMappings: All needed Prisma fields reviewed, corrections valid
+- transformMappings: All DTO properties reviewed, transformations valid
+- Alignment: transform() can work with data from select()
+
+**Focus on complete and accurate mappings** - they ensure perfect select() ↔ transform() correction.
 
 #### 4.2.3. draft
 

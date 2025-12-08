@@ -183,7 +183,15 @@ This structured workflow ensures systematic error fixing through root cause anal
 
 ### Phase 1: Think - Comprehensive Code Analysis and Review
 
-**🚨 CRITICAL GOAL: Compilation errors are just indicators - perform COMPLETE code review to find ALL issues.**
+**🚨 CRITICAL: This phase has TWO outputs - narrative analysis AND structured mappings**
+
+Your correction phase must produce:
+1. **Narrative Analysis (`think` field)**: Your written error analysis and correction strategy
+2. **Structured Mappings (`mappings` field)**: Field-by-field verification table
+
+**The `mappings` field is your systematic verification mechanism** - it forces you to review EVERY Prisma field, catching errors beyond what the compiler reports.
+
+#### Part A: Narrative Analysis
 
 **FUNDAMENTAL PRINCIPLE:**
 Compilation errors signal that something is wrong with the code. Your mission is NOT just to fix the visible errors, but to perform a **100% thorough review** of the entire code, examining every aspect to produce **perfect, production-ready code**.
@@ -203,23 +211,7 @@ Your comprehensive analysis should accomplish these objectives:
    - Identify if inline logic exists when neighbor collectors should be used
    - **Look beyond the errors** - examine the entire logic flow
 
-3. **Perform Comprehensive Schema Verification**:
-   - **Compare EVERY field in collect() return value against actual Prisma schema**
-   - Verify field names are exactly correct (character-by-character, case-sensitive)
-   - Check that NO fields are missing from Prisma schema (not just error-reported ones)
-   - Verify ALL required fields exist (id, created_at, updated_at, etc.)
-   - Check ALL relationships use correct relation names and syntax
-   - **This is NOT just for fixing errors - this is complete schema compliance verification**
-
-4. **Perform Complete DTO Mapping Verification**:
-   - **Verify EVERY DTO field is correctly mapped** (not just the ones causing errors)
-   - Check that ALL DTO values are used appropriately
-   - Verify camelCase → snake_case conversions are correct everywhere
-   - Check for any DTO fields that should be used but aren't
-   - Verify type conversions are applied correctly (dates, numbers, etc.)
-   - **Ensure no DTO data is lost or incorrectly ignored**
-
-5. **Plan Comprehensive Corrections and Improvements**:
+3. **Plan Comprehensive Corrections and Improvements**:
    - Fix all compilation errors (root causes, not symptoms)
    - Fix all architectural violations (inline logic → neighbor collectors)
    - Fix all schema compliance issues (missing fields, wrong names, etc.)
@@ -227,7 +219,86 @@ Your comprehensive analysis should accomplish these objectives:
    - Fix all potential runtime bugs (null handling, edge cases, etc.)
    - **Transform the code into perfect, production-ready implementation**
 
-**How you structure your analysis is up to you** - but the **completeness and thoroughness** are mandatory. Don't just analyze errors - analyze the ENTIRE code.
+**How you structure your narrative is up to you** - but the **completeness and thoroughness** are mandatory.
+
+#### Part B: Structured Mappings (Verification Mechanism)
+
+**CRITICAL: The `mappings` field is MANDATORY for systematic verification**
+
+After your narrative analysis, you MUST create a complete field-by-field verification table covering EVERY member from the Prisma schema. This ensures you don't miss any issues beyond the visible compilation errors.
+
+**For each Prisma member, document current state and correction plan:**
+
+```typescript
+{
+  member: "article",        // Exact field/relation name from Prisma
+  kind: "belongsTo",        // "scalar" | "belongsTo" | "hasOne" | "hasMany"
+  nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
+  how: "No change needed" or "Fix: [problem] → [solution]"
+}
+```
+
+**The `mappings` serve as your systematic checklist**:
+- **Catches silent errors**: Issues the compiler didn't report
+- **Prevents omissions**: Ensures you reviewed every field
+- **Documents corrections**: Clear record of what you're fixing
+- **Enables validation**: System validates your corrections against schema
+
+**Example mappings for error correction:**
+
+```typescript
+mappings: [
+  // Scalar fields
+  { member: "id", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing field - add with new Date()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing field - add with new Date()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already correct" },
+
+  // BelongsTo relations
+  { member: "article", kind: "belongsTo", nullable: false, how: "Fix: Using direct FK 'bbs_article_id' → Use connect syntax" },
+  { member: "user", kind: "belongsTo", nullable: false, how: "Already correct" },
+  { member: "userSession", kind: "belongsTo", nullable: false, how: "Already correct" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Fix: Using null → Change to undefined" },
+
+  // HasMany relations
+  { member: "children", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Fix: Inline code → Use BbsArticleCommentFileCollector" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_hits", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+  { member: "bbs_article_comment_likes", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+]
+```
+
+**Common patterns for `how` field in corrections:**
+
+When field is correct:
+- "Already correct"
+- "No change needed"
+
+When field needs fixing:
+- "Fix: Missing field - add with {strategy}"
+- "Fix: Wrong name '{wrong}' → '{correct}'"
+- "Fix: Using direct FK → Use connect syntax"
+- "Fix: Using null → Change to undefined"
+- "Fix: Inline code → Use {CollectorName}"
+- "Fix: Wrong type conversion → {correct approach}"
+- "Fix: Fabricated field - remove it"
+
+**Why mappings are critical for corrections:**
+
+1. **Beyond Compiler Errors**: Catches issues compiler didn't report
+2. **Systematic Coverage**: Ensures you reviewed every field, not just error-prone ones
+3. **Clear Correction Plan**: Documents exactly what you're fixing
+4. **Early Validation**: System validates your correction plan before you write code
+
+**The validator will check your mappings to ensure:**
+- Every Prisma field is reviewed (no omissions)
+- All corrections are valid (fields exist, kinds match)
+- Your correction strategy is sound
+
+Focus on creating complete mappings - they're your roadmap to perfect code.
 
 ---
 
@@ -425,23 +496,18 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.2. think
 
-**Initial error analysis and correction strategy**
+**Comprehensive error analysis and correction strategy (narrative)**
 
-Performs comprehensive code analysis including compilation errors and beyond:
-- All compilation error patterns and root causes
-- Complete schema compliance verification
-- Complete DTO mapping verification
-- Architectural violation detection
-- Potential runtime bug identification
-- Overall code quality assessment
+This is your narrative analysis where you diagnose the errors and plan the fixes. Document your thinking about:
 
-Document your comprehensive analysis including:
-- All error patterns and root causes
-- Complete schema verification findings
-- Complete DTO mapping verification findings
-- All architectural issues found
-- All potential bugs identified
-- Overall correction strategy
+- **Compilation Error Analysis**: Categorize and understand all errors
+- **Root Cause Identification**: Why errors occurred (not just what they say)
+- **Schema Verification Findings**: Results of checking fields against Prisma schema
+- **DTO Mapping Verification**: Results of checking DTO usage
+- **Architectural Issues**: Inline code vs collectors, wrong syntax, etc.
+- **Overall Correction Strategy**: High-level plan to fix everything
+
+**Keep this at a strategic level** - you'll provide detailed field-by-field corrections in the `mappings` field.
 
 **Example**:
 ```
@@ -450,29 +516,116 @@ COMPILATION ERROR ANALYSIS:
 - 2 wrong field names (camelCase → snake_case)
 - 1 foreign key error (direct ID instead of connect)
 
-COMPREHENSIVE SCHEMA VERIFICATION:
-- Verified all 15 fields against Prisma schema
-- Found 2 additional missing fields not causing errors yet
-- Confirmed all field names match exactly
-- Verified all relation names are correct
+ROOT CAUSE ANALYSIS:
+- Missing fields: Original code didn't include default values
+- Wrong names: Forgot snake_case convention
+- FK error: Misunderstood Prisma relation syntax
 
-COMPREHENSIVE DTO MAPPING VERIFICATION:
+SCHEMA VERIFICATION:
+- Reviewed all 15 Prisma fields
+- Found 2 additional missing fields not causing errors
+- Confirmed relation names
+
+DTO VERIFICATION:
 - Checked all 8 DTO fields
-- Found 1 DTO field (description) being ignored incorrectly
-- Verified all type conversions (3 Date fields, 2 Number fields)
-- Confirmed camelCase → snake_case conversions correct
+- Found 1 field (description) being ignored
 
-ARCHITECTURAL REVIEW:
-- Found 1 inline nested create that should use neighbor collector
-- Verified proper connect syntax will be used
+ARCHITECTURAL ISSUES:
+- 1 inline create should use TagCollector
 
 CORRECTION STRATEGY:
-- Fix all 3 compilation errors
-- Add 2 missing fields found in schema review
-- Add ignored DTO field (description)
-- Replace inline logic with TagCollector
-- Result: Perfect, complete implementation
+- Add all missing fields with defaults
+- Fix field name casing
+- Change FK to connect syntax
+- Add description mapping
+- Replace inline with TagCollector
+- Result: Complete, perfect implementation
 ```
+
+#### mappings
+
+**CRITICAL: Field-by-field verification and correction plan**
+
+This is your structured verification output - a complete review of EVERY Prisma field with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY member in the Prisma schema - even fields that are already correct.**
+
+Each mapping documents current state and needed fixes:
+```typescript
+{
+  member: string;     // Exact Prisma field/relation name
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
+  how: string;        // "Already correct" or "Fix: [problem] → [solution]"
+}
+```
+
+**Why this field is critical for corrections:**
+
+1. **Systematic Coverage**: Forces you to review EVERY field, not just error-causing ones
+2. **Catches Silent Errors**: Issues compiler didn't report but will fail at runtime
+3. **Documents Corrections**: Clear record of what you're fixing for each field
+4. **Enables Validation**: System validates your corrections against Prisma schema
+5. **Prevents Regressions**: Ensures you don't break working fields while fixing errors
+
+**The validation process:**
+- System reads the actual Prisma schema
+- Checks EVERY member in your mappings exists and is reviewed
+- Validates your correction strategies are valid
+- Ensures no fields are overlooked
+
+**Example mappings for corrections:**
+
+```typescript
+mappings: [
+  // Scalar fields - mix of correct and needing fixes
+  { member: "id", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing - add with new Date()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing - add with new Date()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already correct" },
+
+  // BelongsTo relations - some need syntax fixes
+  { member: "article", kind: "belongsTo", nullable: false, how: "Fix: Direct FK 'bbs_article_id' → connect syntax" },
+  { member: "user", kind: "belongsTo", nullable: false, how: "Already correct" },
+  { member: "userSession", kind: "belongsTo", nullable: false, how: "Already correct" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Fix: Using null → undefined" },
+
+  // HasMany relations - check collector usage
+  { member: "children", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Fix: Inline → BbsArticleCommentFileCollector" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_hits", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+  { member: "bbs_article_comment_likes", kind: "hasMany", nullable: null, how: "Already correct (not created)" },
+]
+```
+
+**Common patterns for `how` field:**
+
+For correct fields:
+- "Already correct"
+- "No change needed"
+
+For fields needing fixes:
+- "Fix: Missing - add with {strategy}"
+- "Fix: Wrong name '{wrong}' → '{correct}'"
+- "Fix: Typo '{typo}' → '{correct}'"
+- "Fix: Direct FK '{fk}' → connect syntax"
+- "Fix: Using null → undefined"
+- "Fix: Inline creation → use {CollectorName}"
+- "Fix: Wrong type → {correct type}"
+- "Fix: Fabricated field - remove"
+
+**What the validator checks:**
+- All Prisma fields are in your mappings (complete coverage)
+- No fabricated fields (all members exist in schema)
+- Correct kind/nullable values (match Prisma schema)
+- Your correction strategies are valid
+
+**If validation fails**, you'll receive feedback on missing fields, fabricated fields, or invalid corrections.
+
+**Focus on complete and accurate mappings** - they ensure you catch ALL issues, not just visible errors.
 
 #### 4.2.3. draft
 
