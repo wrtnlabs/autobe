@@ -20,7 +20,7 @@ import { transformTestGenerationWriteHistory } from "./histories/transformTestGe
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
 import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
-import { getPrepareImport } from "./utils/getPrepareImport";
+import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
 export const orchestrateTestGenerationWrite = async <
   Model extends ILlmSchema.Model,
@@ -128,8 +128,20 @@ async function process<Model extends ILlmSchema.Model>(
   }
 
   // Generate prepare function import statement
-  const prepareFunctionImport: string = getPrepareImport({
-    prepareFunction,
+  const importStatement: string = getTestImportFromFunction({
+    target: {
+      type: "generation",
+      prepareFunction,
+      artifacts,
+      function: {
+        kind: "generation",
+        endpoint: prepareFunction.endpoint,
+        actor: operation.authorizationActor,
+        location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
+        functionName: pointer.value.functionName,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+      },
+    },
   });
 
   if (pointer.value.revise.final)
@@ -137,13 +149,13 @@ async function process<Model extends ILlmSchema.Model>(
       ctx,
       artifacts,
       pointer.value.revise.final,
-      prepareFunctionImport,
+      importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
     artifacts,
     pointer.value.draft,
-    prepareFunctionImport,
+    importStatement,
   );
 
   return {
