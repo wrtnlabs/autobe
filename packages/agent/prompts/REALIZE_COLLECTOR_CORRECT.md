@@ -1047,582 +1047,83 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 6. Common Compilation Errors in Collectors
 
-This section covers compilation error patterns specific to Collector functions. These errors occur during TypeScript compilation when AI fails to follow REALIZE_COLLECTOR_WRITE.md guidelines or makes common type system mistakes.
+This section provides quick guidance for fixing compilation errors in Collector functions. For detailed explanations of Prisma/DTO concepts, see REALIZE_COLLECTOR_WRITE.md.
 
-### 6.1. Handling Fields Missing from DTO
+### 6.1. Foreign Key Errors
 
-**Error Pattern**:
-```
-Property 'updated_at' is missing in type '{ id: string; ... created_at: Date; }' but required in type 'yyyCreateInput'
-```
+#### 6.1.1. Direct FK Assignment Instead of Relation Connect
 
-**Root Cause**: The CreateInput is missing required Prisma fields. Common causes: (1) Field exists in Prisma but not DTO, (2) AI ignored DTO value, (3) Critical DTO omission.
+**Error Pattern**: Property 'customer_id' does not exist on type 'CreateInput'
 
-**🚨 #1 MOST COMMON MISTAKE: Forgetting `created_at` and `updated_at`**
-
-The single most frequent compilation error is **forgetting timestamp fields** (`created_at`, `updated_at`) when the table has them. Almost every table with `created_at` also has `updated_at`, but AI consistently forgets to include one or both.
-
-**Most Common Pattern**: AI forgets `updated_at` even though `created_at` is present.
-**Also Common**: AI forgets both `created_at` and `updated_at` entirely.
-
-```typescript
-// ❌ WRONG - Forgot updated_at (EXTREMELY COMMON!)
-return {
-  id: v4(),
-  name: props.body.name,
-  created_at: new Date(),
-  // ← WHERE IS updated_at?! COMPILATION ERROR!
-} satisfies Prisma.usersCreateInput;
-
-// ❌ WRONG - Forgot both timestamps (ALSO COMMON!)
-return {
-  id: v4(),
-  name: props.body.name,
-  // ← WHERE ARE created_at AND updated_at?! COMPILATION ERROR!
-} satisfies Prisma.usersCreateInput;
-
-// ✅ CORRECT - Always include both timestamps when table has them
-return {
-  id: v4(),
-  name: props.body.name,
-  created_at: new Date(),
-  updated_at: new Date(),  // ← NEVER FORGET THESE!
-} satisfies Prisma.usersCreateInput;
-```
-
-**Self-Check Before Submitting**:
-- Does the Prisma schema have `created_at`? If yes, did you include it? **CHECK NOW.**
-- Does the Prisma schema have `updated_at`? If yes, did you include it? **CHECK NOW.**
-
----
-
-**CRITICAL**: Missing field ≠ "use hardcoded default". Follow **value priority**: DTO value → Props parameter → Indirect reference → Semantic fallback → Critical omission.
-
-See **REALIZE_COLLECTOR_WRITE.md Section 3.5** for detailed field handling strategies.
-
-**Value Priority Hierarchy (Quick Reference)**:
-```
-1. Check DTO: Does props.body.X exist? → Use it (even for completedAt, isCompleted)
-2. Check props params: Passed as parameter? → Use it
-3. Try indirect reference: Required FK? → Query with findFirstOrThrow
-4. Semantic fallback by field type:
-   - created_at/updated_at → new Date()
-   - Event timestamps (completed_at, closed_at, deleted_at, etc.) → null
-   - Status booleans (completed, is_published, etc.) → false
-   - Non-nullable numbers → 0, strings → ""
-5. Critical omission: Non-nullable FK with no source → DTO design flaw
-```
-
-**Common Mistake - Ignoring DTO Values:**
-
-```typescript
-// DTO interface
-interface IShoppingOrder.ICreate {
-  totalPrice: number;
-  completedAt?: string;   // ← DTO might provide this!
-  isCompleted?: boolean;  // ← DTO might provide this!
-}
-
-// ❌ WRONG - Hardcoded fallbacks ignoring DTO
-return {
-  id: v4(),
-  total_price: props.body.totalPrice,
-  completed_at: null,        // ❌ What if props.body.completedAt exists?
-  is_completed: false,       // ❌ What if props.body.isCompleted exists?
-} satisfies Prisma.shopping_ordersCreateInput;
-
-// ✅ CORRECT - Check DTO first, then fallback
-return {
-  id: v4(),
-  total_price: props.body.totalPrice,
-  completed_at: props.body.completedAt ? new Date(props.body.completedAt) : null,
-  is_completed: props.body.isCompleted ?? false,
-} satisfies Prisma.shopping_ordersCreateInput;
-```
-
-**Field-Specific Correction Patterns:**
-
-**Creation Timestamps** (`created_at`, `updated_at`):
-- **Pattern**: `props.body.createdAt ? new Date(props.body.createdAt) : new Date()`
-- **Fallback**: `new Date()` when DTO doesn't provide (rare, but check for data import)
-
-**Event Timestamps** (`completed_at`, `closed_at`, `deleted_at`, `expired_at`, `published_at`, `cancelled_at`, `shipped_at`, etc.):
-- **Pattern**: `props.body.completedAt ? new Date(props.body.completedAt) : null`
-- **Fallback**: `null` when DTO doesn't provide (important: check DTO for importing completed records)
-- **Never** hardcode `new Date()` - this claims event already happened
-
-**Status Booleans** (`completed`, `done`, `is_published`, `is_deleted`, `is_active`, `is_expired`, `is_cancelled`, `is_approved`, `is_paid`, `is_shipped`):
-- **Pattern**: `props.body.isCompleted ?? false`
-- **Fallback**: `false` when DTO doesn't provide (check DTO for importing records in specific states)
-- **Never** hardcode `true` - this claims status already achieved
-
-**Non-nullable Primitives**:
-- **Numbers**: `props.body.retryCount ?? 0`
-- **Strings**: `props.body.description ?? ""` (use sparingly)
-
-**Critical Omission (Non-nullable FK without source)**:
-```typescript
-// ❌ CRITICAL DESIGN FLAW - Cannot fix in collector
-model shopping_order_items {
-  product_id String @db.Uuid  // ← Required FK
-  product shopping_products @relation(fields: [product_id], references: [id])
-}
-
-// Tried all 3 options:
-// 1. DTO doesn't have productId
-// 2. Not in props parameters (no path parameter, no actor reference)
-// 3. Cannot obtain via even indirect reference query
-//
-// This is an API operation + DTO design flaw - report it
-```
-
-**Quick Fix Decision Tree:**
-```
-Missing field 'X'?
-│
-├─ props.body.X exists? → Use props.body.X (or props.body.X ?? fallback)
-├─ props parameter? → Use parameter
-├─ Required FK? → Query with findFirstOrThrow
-├─ created_at/updated_at? → new Date()
-├─ Event timestamp? → null
-├─ Status boolean? → false
-├─ Nullable field? → null
-├─ Non-nullable number? → 0
-├─ Non-nullable string? → ""
-└─ Non-nullable FK with no source? → Critical DTO omission
-```
-
-
-### 6.2. Non-Existent Field Errors (Field Does Not Exist in CreateInput)
-
-**🚨 CRITICAL ERROR: Using fields that don't exist in the Prisma schema**
-
-**Error Pattern**:
-```
-Object literal may only specify known properties, and 'xxx' does not exist in type 'yyyCreateInput'.
-```
-
-This error means you're trying to assign a value to a field that **DOES NOT EXIST** in the Prisma CreateInput type. This is one of the most common and critical errors.
-
-**TWO POSSIBLE CAUSES - You MUST determine which one:**
-
----
-
-#### Cause 1: Wrong Field Name (Typo or Naming Convention Mismatch)
-
-You intended to use a valid field, but used the wrong name.
-
-**Common Mistakes:**
-- Used camelCase instead of snake_case: `userName` → should be `user_name`
-- Used DTO property name instead of DB column name: `totalPrice` → should be `total_price`
-- Used FK column name instead of relation name: `customer_id` → should be `customer`
-
-**How to Fix:**
-1. **Check the Prisma schema** for the EXACT field name
-2. **Find the correct spelling** and replace it
-3. **Verify case convention**: Prisma uses snake_case, DTO uses camelCase
-
-```typescript
-// ❌ WRONG - Wrong field names
-return {
-  userName: props.body.userName,      // ❌ camelCase, not in CreateInput
-  totalPrice: props.body.totalPrice,  // ❌ camelCase, not in CreateInput
-  customer_id: props.customer.id,     // ❌ FK column, not relation name
-}
-
-// ✅ CORRECT - Exact Prisma schema field names
-return {
-  user_name: props.body.userName,     // ✅ snake_case matches DB
-  total_price: props.body.totalPrice, // ✅ snake_case matches DB
-  customer: { connect: { id: props.customer.id } }, // ✅ relation name
-}
-```
-
----
-
-#### Cause 2: Fabricated/Imagined Field (Field Does Not Exist in DB)
-
-**🚫 ABSOLUTE PROHIBITION: You invented a field that doesn't exist in the database schema.**
-
-This is a **CRITICAL AI HALLUCINATION ERROR**. You imagined a column that was never defined in the Prisma schema.
-
-**Why This Happens:**
-- AI "assumed" a field should exist based on DTO structure
-- AI copied a DTO property without checking if DB column exists
-- AI invented a "logical" field that makes sense but doesn't exist
-
-**How to Diagnose:**
-1. Look at the field name in the error message
-2. **Search the Prisma schema** for that exact field
-3. If the field **DOES NOT EXIST** in Prisma schema → You fabricated it
-4. If the field **EXISTS but with different name** → It's Cause 1 (wrong name)
-
-**How to Fix:**
-1. **VERIFY** the field exists in Prisma schema (not just in DTO!)
-2. If field doesn't exist → **DELETE IT COMPLETELY** from your code
-3. **NEVER** try to store DTO-only fields in the database
-
-```typescript
-// Prisma Schema (ACTUAL database structure)
-model shopping_sales {
-  id          String   @id @db.Uuid
-  name        String   @db.VarChar
-  unit_price  Decimal  @db.Decimal
-  quantity    Int
-  created_at  DateTime
-  updated_at  DateTime
-  // ⚠️ NO totalPrice, NO discountRate, NO reviewCount columns!
-}
-
-// DTO (what client sends)
-interface IShoppingSale.ICreate {
-  name: string;
-  unitPrice: number;
-  quantity: number;
-  totalPrice: number;     // ← Computed field, NOT in DB!
-  discountRate: number;   // ← Computed field, NOT in DB!
-  reviewCount: number;    // ← Aggregated field, NOT in DB!
-}
-
-// ❌ FATAL ERROR - Trying to store non-existent fields
-return {
-  id: v4(),
-  name: props.body.name,
-  unit_price: props.body.unitPrice,
-  quantity: props.body.quantity,
-  total_price: props.body.totalPrice,      // ❌ FABRICATED! Not in schema!
-  discount_rate: props.body.discountRate,  // ❌ FABRICATED! Not in schema!
-  review_count: props.body.reviewCount,    // ❌ FABRICATED! Not in schema!
-  created_at: new Date(),
-  updated_at: new Date(),
-} satisfies Prisma.shopping_salesCreateInput;  // ❌ Compilation error!
-
-// ✅ CORRECT - Only use fields that ACTUALLY EXIST in Prisma schema
-return {
-  id: v4(),
-  name: props.body.name,
-  unit_price: props.body.unitPrice,
-  quantity: props.body.quantity,
-  // ✅ DELETED: total_price, discount_rate, review_count
-  // These are computed by Transformer at READ time, not stored!
-  created_at: new Date(),
-  updated_at: new Date(),
-} satisfies Prisma.shopping_salesCreateInput;  // ✅ Compiles!
-```
-
----
-
-#### Decision Tree for "does not exist in type" Error
-
-```
-Error: 'xxx' does not exist in type 'yyyCreateInput'
-│
-├─ Step 1: Search Prisma schema for field 'xxx'
-│   │
-│   ├─ Found with EXACT name? → Impossible (error wouldn't occur)
-│   │
-│   ├─ Found with SIMILAR name (typo/case difference)?
-│   │   └─ → Cause 1: FIX the field name to match exactly
-│   │
-│   └─ NOT FOUND at all?
-│       └─ → Cause 2: DELETE the field (you fabricated it)
-│
-└─ Step 2: After fix, verify CreateInput compiles
-```
-
----
-
-#### Common Fabricated Fields to Watch For
-
-**These fields are often in DTOs but NEVER in database:**
-
-| Field Pattern | Why It's Not in DB | What to Do |
-|---------------|-------------------|------------|
-| `totalPrice`, `totalAmount` | Computed: `unit_price × quantity` | DELETE - Transformer calculates |
-| `discountRate`, `discountAmount` | Computed from prices | DELETE - Transformer calculates |
-| `reviewCount`, `orderCount`, `*Count` | Aggregated from relations | DELETE - Transformer uses `_count` |
-| `averageRating`, `average*` | Aggregated calculation | DELETE - Transformer calculates |
-| `isExpired`, `isActive` | Derived from dates/status | DELETE - Transformer derives |
-| `displayName`, `fullName` | Formatted string | DELETE - Transformer formats |
-| `remainingStock` | Computed from inventory | DELETE - Transformer calculates |
-
-**GOLDEN RULE**: If a field exists in DTO but NOT in Prisma schema as a column, it's a computed/derived field. **DELETE IT** from your Collector code.
-
----
-
-#### Self-Verification Checklist
-
-Before submitting corrected code, verify EVERY field:
-
-```
-For each field in your CreateInput return object:
-□ Does this EXACT field name exist in Prisma schema? (not just similar!)
-□ If it's from DTO, did I convert camelCase → snake_case?
-□ If it's a relation, did I use relation name (not FK column name)?
-□ Am I NOT trying to store computed/aggregated/derived values?
-```
-
-**If ANY answer is "no" or "unsure"**: Check the Prisma schema again. **When in doubt, DELETE the field.**
-
-### 6.3. Foreign Key Errors
-
-Foreign key handling is one of the most common sources of compilation errors in Collectors. This section covers two critical FK-related mistakes.
-
-#### 6.3.1. Direct FK Assignment Instead of Relation Connect
-
-**🚨 CRITICAL ERROR: Assigning FK column values directly instead of using Prisma relation syntax**
-
-**Error Pattern**:
-- Type error: Property 'shopping_sale_id' does not exist on type 'shopping_salesCreateInput'
-- Type error: Property 'customer_id' does not exist on type 'CreateInput'
-- Compilation error with `satisfies` operator
-- Wrong field names in CreateInput
-
-**Root Cause**:
-You directly assigned foreign key column values (`shopping_sale_id`, `customer_id`) instead of using Prisma relation syntax (`sale: { connect: ... }`). Prisma's CreateInput types expect **relation objects**, not raw FK values.
-
-**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
-- **NEVER** assign `_id` suffixed columns directly
-- **ALWAYS** use relation field names with `{ connect: { id: ... } }` syntax
-- **Relation names** are defined in Prisma schema (e.g., `sale`, `customer`)
-- **FK column names** (`shopping_sale_id`, `customer_id`) are FORBIDDEN in CreateInput
-
-**Fatal Mistake:**
+**🚨 CRITICAL MISTAKE**: Using `_id` column names instead of relation names.
 
 ```typescript
 // Prisma schema
 model shopping_sale_reviews {
-  id                   String  @id @db.Uuid
   shopping_sale_id     String  @db.Uuid   // FK COLUMN
-  customer_id          String  @db.Uuid   // FK COLUMN
-
-  sale      shopping_sales     @relation(fields: [shopping_sale_id], references: [id])
-  customer  shopping_customers @relation(fields: [customer_id], references: [id])
-  // ^^^^ RELATION NAMES (use these!)
+  sale      shopping_sales @relation(fields: [shopping_sale_id], ...)
+  //        ^^^^^^^^^^^^^ RELATION NAME (use this!)
 }
 
-// ❌ FATAL ERROR - Direct FK assignment
-export async function collect(props: {
-  body: IShoppingSaleReview.ICreate;
-  sale: IEntity;
-  customer: IEntity;
-}) {
-  return {
-    id: v4(),
-    content: props.body.content,
-    // ❌ WRONG! Direct FK column assignment!
-    shopping_sale_id: props.sale.id,  // ❌ Compilation error!
-    customer_id: props.customer.id,   // ❌ Compilation error!
-    created_at: new Date(),
-  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ❌ Type error!
+// ❌ WRONG - Direct FK column assignment
+return {
+  shopping_sale_id: props.sale.id,  // ❌ Compilation error!
+  customer_id: props.customer.id,   // ❌ Compilation error!
 }
 
-// ✅ CORRECT - Prisma relation syntax
-export async function collect(props: {
-  body: IShoppingSaleReview.ICreate;
-  sale: IEntity;
-  customer: IEntity;
-}) {
-  return {
-    id: v4(),
-    content: props.body.content,
-    // ✅ CORRECT! Use relation names with connect!
-    sale: { connect: { id: props.sale.id } },        // ✅ Correct!
-    customer: { connect: { id: props.customer.id } }, // ✅ Correct!
-    created_at: new Date(),
-  } satisfies Prisma.shopping_sale_reviewsCreateInput;  // ✅ Type-safe!
+// ✅ CORRECT - Use relation name with connect
+return {
+  sale: { connect: { id: props.sale.id } },        // ✅
+  customer: { connect: { id: props.customer.id } }, // ✅
 }
 ```
 
-**Why This Causes Compilation Errors**:
-- Prisma's CreateInput types only include **relation field names**
-- FK column names (`_id` suffixed) don't exist in CreateInput types
-- Direct assignment violates Prisma's type system contract
-- `satisfies` operator catches this error immediately
-
-**More Examples:**
-
+**Quick Fix Pattern**:
 ```typescript
-// ❌ ALL WRONG - Direct FK assignment
-{
-  bbs_article_id: props.article.id,              // ❌ Wrong!
-  shopping_customer_session_id: props.session.id, // ❌ Wrong!
-  parent_id: props.body.parentId,                 // ❌ Wrong!
-  category_id: props.body.categoryId,             // ❌ Wrong!
-}
-
-// ✅ ALL CORRECT - Relation connect syntax
-{
-  article: { connect: { id: props.article.id } },          // ✅ Correct!
-  session: { connect: { id: props.session.id } },          // ✅ Correct!
-  parent: { connect: { id: props.body.parentId } },        // ✅ Correct!
-  category: { connect: { id: props.body.categoryId } },    // ✅ Correct!
-}
+// ❌ NEVER: foreign_key_column_id: someId
+// ✅ ALWAYS: relationName: { connect: { id: someId } }
 ```
 
-**How to Fix During Correction**:
+See **REALIZE_COLLECTOR_WRITE.md Section 3.4** for detailed FK handling rules.
 
-1. **Read the compilation error** - it tells you the FK column doesn't exist
-2. **Check Prisma schema** - find the RELATION NAME (not column name)
-3. **Replace direct assignment** with relation connect syntax
-4. **Pattern**: `relationName: { connect: { id: fkValue } }`
+#### 6.1.2. Using `null` for Nullable FK Instead of `undefined`
 
-**The Pattern:**
+**Error Pattern**: "Cannot set relation to null using connect syntax"
 
-```typescript
-// ❌ NEVER do this:
-{
-  foreign_key_column_id: someId,  // ❌ Direct FK assignment
-}
+**🚨 CRITICAL MISTAKE**: Using `null` instead of `undefined` for optional FK.
 
-// ✅ ALWAYS do this:
-{
-  relationName: { connect: { id: someId } },  // ✅ Relation syntax
-}
-```
-
-#### 6.3.2. Using `null` for Nullable FK Instead of `undefined`
-
-**🚨 CRITICAL ERROR: Using `null` for optional foreign key relations when you should use `undefined`**
-
-**Error Pattern**:
-- Prisma runtime error: "Cannot set relation to null using connect syntax"
-- Type error: Type 'null' is not assignable to type 'undefined'
-- Unexpected Prisma behavior when creating records with optional relations
-- Tests fail with FK constraint errors
-
-**Root Cause**:
-You used `null` for an optional foreign key relationship instead of `undefined`. Prisma ORM's type system treats these differently:
-- `undefined` = "don't set this field" (skip the field)
-- `null` = "explicitly set this field to null" (causes errors for relations)
-
-**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
-- **Optional FK exists** → Use `{ connect: { id: value } }`
-- **Optional FK is null/undefined** → Use `undefined` (NOT `null`!)
-- **This is fundamental Prisma ORM behavior, not a TypeScript quirk**
-
-**Fatal Mistake:**
+**Why**: Prisma treats `undefined` = "skip field" vs `null` = "set to null" (error for relations)
 
 ```typescript
-// Prisma schema
+// Prisma schema with optional FK
 model bbs_article_comments {
-  id                     String  @id @db.Uuid
-  parent_comment_id      String? @db.Uuid  // Optional FK
-  mentioned_member_id    String? @db.Uuid  // Optional FK
-
-  parentComment    bbs_article_comments?  @relation("CommentReplies", fields: [parent_comment_id], references: [id])
-  mentionedMember  bbs_members?           @relation(fields: [mentioned_member_id], references: [id])
+  parent_comment_id  String? @db.Uuid  // Optional FK
+  parentComment      bbs_article_comments?  @relation(...)
 }
 
-// DTO
-interface IBbsArticleComment.ICreate {
-  parent_comment_id?: string;     // Optional
-  mentioned_member_id?: string;   // Optional
+// ❌ WRONG - Using null
+return {
+  parentComment: props.body.parent_comment_id
+    ? { connect: { id: props.body.parent_comment_id } }
+    : null,  // ❌ FATAL!
 }
 
-// ❌ FATAL ERROR - Using null for optional FK
-export async function collect(props: {
-  body: IBbsArticleComment.ICreate;
-  article: IEntity;
-  author: IEntity;
-}) {
-  return {
-    id: v4(),
-    content: props.body.content,
-    article: { connect: { id: props.article.id } },
-    author: { connect: { id: props.author.id } },
-    // ❌ WRONG! Using null causes Prisma errors!
-    parentComment: props.body.parent_comment_id
-      ? { connect: { id: props.body.parent_comment_id } }
-      : null,  // ❌ FATAL!
-    mentionedMember: props.body.mentioned_member_id
-      ? { connect: { id: props.body.mentioned_member_id } }
-      : null,  // ❌ FATAL!
-    created_at: new Date(),
-  } satisfies Prisma.bbs_article_commentsCreateInput;
-}
-
-// ✅ CORRECT - Using undefined for optional FK
-export async function collect(props: {
-  body: IBbsArticleComment.ICreate;
-  article: IEntity;
-  author: IEntity;
-}) {
-  return {
-    id: v4(),
-    content: props.body.content,
-    article: { connect: { id: props.article.id } },
-    author: { connect: { id: props.author.id } },
-    // ✅ CORRECT! Use undefined when FK doesn't exist
-    parentComment: props.body.parent_comment_id
-      ? { connect: { id: props.body.parent_comment_id } }
-      : undefined,  // ✅ Correct!
-    mentionedMember: props.body.mentioned_member_id
-      ? { connect: { id: props.body.mentioned_member_id } }
-      : undefined,  // ✅ Correct!
-    created_at: new Date(),
-  } satisfies Prisma.bbs_article_commentsCreateInput;
+// ✅ CORRECT - Use undefined
+return {
+  parentComment: props.body.parent_comment_id
+    ? { connect: { id: props.body.parent_comment_id } }
+    : undefined,  // ✅ Correct!
 }
 ```
 
-**Why This Causes Errors**:
-- Prisma ORM treats `null` as "set this field to null in DB"
-- Relations cannot be set to null using connect syntax
-- `undefined` means "skip this field in the operation"
-- For optional FK, you want to SKIP, not NULL
+**Quick Fix**: Replace ALL `null` with `undefined` for optional FK relations.
 
-**The Pattern:**
+**Decision Rule**:
+- Required FK → Always `{ connect: { id: value } }`
+- Optional FK exists → `{ connect: { id: value } }`
+- Optional FK missing → `undefined` (NOT `null`!)
 
-```typescript
-// For optional FK relations (nullable in Prisma schema):
-relationField: dtoValue
-  ? { connect: { id: dtoValue } }
-  : undefined  // ← MUST be undefined, NOT null!
-
-// For required FK relations (non-nullable in Prisma schema):
-relationField: { connect: { id: dtoValue } }  // Always connect
-```
-
-**Common Scenarios:**
-
-```typescript
-// Scenario 1: Optional parent
-parent: props.body.parent_id
-  ? { connect: { id: props.body.parent_id } }
-  : undefined,  // ✅ Not null!
-
-// Scenario 2: Optional category
-category: props.body.category_id
-  ? { connect: { id: props.body.category_id } }
-  : undefined,  // ✅ Not null!
-
-// Scenario 3: Optional user from IEntity | undefined
-user: props.user
-  ? { connect: { id: props.user.id } }
-  : undefined,  // ✅ Not null!
-```
-
-**How to Fix During Correction**:
-
-1. **Check Prisma schema**: Is the FK nullable (`String?`)?
-2. **Check the error**: Does it mention null assignment or relation errors?
-3. **Find all ternary operators** with `connect` syntax
-4. **Replace ALL `null` with `undefined`** in the false branch
-5. **Verify**: Every optional relation uses `undefined`, not `null`
-
-**Decision Rule:**
-
-```
-Is FK nullable in Prisma schema?
-│
-├─ NO (required FK) → Always: { connect: { id: value } }
-│
-└─ YES (optional FK) → Conditional:
-   ├─ Value exists? → { connect: { id: value } }
-   └─ Value null/undefined? → undefined (NOT null!)
-```
-
-### 6.4. Nullable vs Non-nullable Mismatch
+### 6.2. Nullable vs Non-nullable Mismatch
 
 **Error Pattern**: Type 'X | null' is not assignable to type 'X'
 
@@ -1639,549 +1140,166 @@ return {
 }
 ```
 
-### 6.5. Nested Array Creation Errors
+### 6.3. Nested Array Creation Errors
 
-Nested array creation requires using `ArrayUtil.asyncMap` and potentially calling existing neighbor Collectors. This section covers two common mistakes.
+#### 6.3.1. Basic Pattern - Use ArrayUtil.asyncMap
 
-#### 6.5.1. Basic Pattern
+**Error Pattern**: Type error when creating nested arrays
 
-**Error Pattern**: Type error when calling another collector
-
-**Solution**:
 ```typescript
-// ✅ CORRECT - use ArrayUtil.asyncMap for nested creates
+// ✅ CORRECT - use ArrayUtil.asyncMap
 return {
   blog_posts: {
     create: await ArrayUtil.asyncMap(
       props.body.posts,
-      async (post) =>
-        PostCollector.collect({
-          body: post,
-          author: props.user,
-        })
+      async (post) => PostCollector.collect({ body: post, author: props.user })
     ),
   },
 }
 ```
 
-#### 6.5.2. Ignoring Existing Neighbor Collectors
+#### 6.3.2. Ignoring Existing Neighbor Collectors
 
-**🚨 CRITICAL ERROR: Writing inline collection logic when a neighbor Collector already exists**
+**🚨 CRITICAL ERROR**: Writing inline logic when a neighbor Collector already exists.
 
-**Error Pattern**:
-- Duplicated code across collectors
-- Inconsistent field mappings
-- Missing fields that neighbor collector includes
-- Architecture violation - not reusing existing code
-
-**Root Cause**:
-You wrote inline collection logic for nested creates instead of calling the existing neighbor Collector. This violates the **Single Source of Truth** principle.
-
-**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
-- **If a Collector exists for a DTO + Prisma schema → YOU MUST USE IT**
-- **This is NOT optional, NOT a suggestion - it is MANDATORY**
-- **NEVER write inline code when Collector exists**
-- **Check neighbor collectors BEFORE implementing nested creates**
-
-**Fatal Mistake:**
+**ABSOLUTE RULE**: If a Collector exists for a DTO → YOU MUST USE IT.
 
 ```typescript
-// Neighbor collectors provided:
-// ShoppingSaleTagCollector.collect({ body: IShoppingSaleTag.ICreate, sequence: number })
-
-// ❌ FATAL ERROR - Inline logic when Collector exists
-export async function collect(props: { body: IShoppingSale.ICreate }) {
-  return {
+// ❌ WRONG - Inline logic when ShoppingSaleTagCollector exists
+shopping_sale_tags: {
+  create: props.body.tags.map((tag, i) => ({
     id: v4(),
-    name: props.body.name,
-    // ❌ WRONG! ShoppingSaleTagCollector exists but ignored!
-    shopping_sale_tags: {
-      create: props.body.tags.map((tag, i) => ({
-        id: v4(),
-        name: tag.name,
-        sequence: i,
-        created_at: new Date(),
-      })),
-    },
-  } satisfies Prisma.shopping_salesCreateInput;
+    name: tag.name,
+    sequence: i,
+    created_at: new Date(),
+  })),
 }
 
-// ✅ CORRECT - Using neighbor Collector
-export async function collect(props: { body: IShoppingSale.ICreate }) {
-  return {
-    id: v4(),
-    name: props.body.name,
-    // ✅ CORRECT! Reusing ShoppingSaleTagCollector!
-    shopping_sale_tags: {
-      create: await ArrayUtil.asyncMap(
-        props.body.tags,
-        (tag, i) => ShoppingSaleTagCollector.collect({
-          body: tag,
-          sequence: i,
-        })
-      ),
-    },
-  } satisfies Prisma.shopping_salesCreateInput;
+// ✅ CORRECT - Reusing neighbor Collector
+shopping_sale_tags: {
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag, i) => ShoppingSaleTagCollector.collect({ body: tag, sequence: i })
+  ),
 }
 ```
 
-**Why This Is Critical**:
-- **Single Source of Truth**: Only TagCollector knows how to collect tags
-- **Consistency**: All code uses same collection logic
-- **Maintainability**: DTO changes only affect one Collector
-- **Bug Prevention**: Inline code WILL diverge and cause bugs
+**Why**: Single Source of Truth - only one Collector per DTO ensures consistency and maintainability.
 
-**How to Fix During Correction**:
+See **REALIZE_COLLECTOR_WRITE.md Section 4** for nested creation patterns.
 
-1. **Check neighbor collectors** - does one exist for this DTO type?
-2. **Find the inline logic** - nested `create` with inline object mapping
-3. **Replace with Collector call** - use `ArrayUtil.asyncMap` + `Collector.collect()`
-4. **Verify parameters** - pass correct props (body, sequence, etc.)
+### 6.4. Trying to Store Computed/Aggregated/Read-only Fields
 
-### 6.6. Trying to Store Computed/Aggregated/Read-only Fields
+**Error Pattern**: `Property 'totalPrice' does not exist on type 'CreateInput'`
 
-**🚨 CRITICAL ERROR: Attempting to store DTO fields that are read-only computed values**
+**🚨 AI HALLUCINATION ERROR**: Trying to store DTO fields that don't exist in Prisma schema.
 
-**Error Pattern**:
-- `Property 'totalPrice' does not exist on type 'shopping_salesCreateInput'`
-- `Property 'reviewCount' does not exist on type 'shopping_salesCreateInput'`
-- `Property 'averageRating' does not exist on type 'shopping_salesCreateInput'`
-- `Property 'discountRate' does not exist on type 'shopping_salesCreateInput'`
-- `Property 'remainingStock' does not exist on type 'shopping_salesCreateInput'`
-- `Property 'isExpired' does not exist on type 'Prisma.{table}CreateInput'`
-
-**Root Cause**:
-You're trying to store DTO fields that do NOT exist in the Prisma database schema. These fields are **read-only computed values** calculated by Transformers at read time, NOT stored in the database.
-
-**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md**:
-- **Collector (API→DB)**: DTO field not in Prisma schema? → **IGNORE it** (don't store)
-- **Transformer (DB→API)**: DTO field not in Prisma schema? → Calculate and return it
-
-**This is the OPPOSITE of Transformers!**
-
-**Understanding the Mismatch**:
+**ABSOLUTE RULE**:
+- **Collector (API→DB)**: DTO field not in Prisma schema? → **IGNORE it**
+- **Transformer (DB→API)**: DTO field not in Prisma schema? → Calculate it
 
 ```typescript
-// DTO (API Request) - Client sends these
+// DTO has computed fields
 interface IShoppingSale.ICreate {
-  name: string;
   unitPrice: number;
   quantity: number;
-  totalPrice: number;        // ← Computed! NOT in DB!
-  reviewCount: number;       // ← Aggregated! NOT in DB!
-  averageRating: number;     // ← Aggregated! NOT in DB!
-  discountRate: number;      // ← Computed! NOT in DB!
+  totalPrice: number;    // ← Computed! NOT in DB!
+  reviewCount: number;   // ← Aggregated! NOT in DB!
 }
 
-// Prisma Schema (Database Structure) - What actually exists
+// Prisma schema - NO computed columns
 model shopping_sales {
-  id         String  @id @db.Uuid
-  name       String  @db.VarChar
-  unit_price Decimal @db.Decimal
+  unit_price Decimal
   quantity   Int
-  // NO totalPrice, reviewCount, averageRating, discountRate columns!
+  // NO totalPrice, reviewCount!
+}
+
+// ❌ WRONG - Trying to store computed fields
+return {
+  unit_price: props.body.unitPrice,
+  quantity: props.body.quantity,
+  total_price: props.body.totalPrice,   // ❌ DOES NOT EXIST!
+  review_count: props.body.reviewCount, // ❌ DOES NOT EXIST!
+}
+
+// ✅ CORRECT - IGNORE computed fields
+return {
+  unit_price: props.body.unitPrice,
+  quantity: props.body.quantity,
+  // ✅ IGNORED: totalPrice, reviewCount
+  // Transformer calculates these at READ time
 }
 ```
 
-**The Fatal Error**:
+**Common Computed Field Patterns** (IGNORE these in Collectors):
+- `*Count`, `*Total`, `*Sum`, `*Average` - Aggregations
+- `is*`, `has*` - Derived booleans
+- `total*`, `discount*`, `remaining*` - Calculations
+- `display*`, `formatted*`, `full*` - Formatted strings
+
+**Quick Fix**:
+1. Check Prisma schema - field exists as column? No?
+2. DELETE it from Collector
+3. Add comment: "Transformer calculates this at read time"
+
+See **REALIZE_COLLECTOR_WRITE.md Section 3.6** for detailed computed field rules.
+
+### 6.5. IP Field Special Handling in Session Collectors
+
+**Error Pattern**: Type 'string | undefined' is not assignable to type 'string'
+
+**🚨 CRITICAL ERROR**: Forgetting the dual-reference IP pattern in Session collectors.
+
+**ABSOLUTE RULE** (for *_sessions tables):
+- Session collectors need **TWO IP sources**:
+  - `props.body.ip` (optional) - for SSR (client IP passed through)
+  - `props.ip` (required) - for CSR (server-extracted IP)
+- **ALWAYS** use: `ip: props.body.ip ?? props.ip`
+
+**Why This Matters**:
+- **SSR**: Backend server calls API on behalf of user → need `body.ip` (real user IP, not server IP)
+- **CSR**: Client calls API directly → `body.ip` undefined → need `props.ip` (from headers)
 
 ```typescript
-// ❌ WRONG - Trying to store computed/read-only fields
-export async function collect(props: { body: IShoppingSale.ICreate }) {
-  return {
-    id: v4(),
-    name: props.body.name,
-    unit_price: props.body.unitPrice,
-    quantity: props.body.quantity,
-    total_price: props.body.totalPrice,          // ❌ DOES NOT EXIST! Compilation error!
-    review_count: props.body.reviewCount,        // ❌ DOES NOT EXIST! Compilation error!
-    average_rating: props.body.averageRating,    // ❌ DOES NOT EXIST! Compilation error!
-    discount_rate: props.body.discountRate,      // ❌ DOES NOT EXIST! Compilation error!
-  } satisfies Prisma.shopping_salesCreateInput;  // ❌ Type error!
-}
-```
-
-**The Correct Solution - IGNORE Computed Fields**:
-
-```typescript
-// ✅ CORRECT - IGNORE all computed/read-only fields
-export async function collect(props: { body: IShoppingSale.ICreate }) {
-  return {
-    id: v4(),
-    name: props.body.name,
-    unit_price: props.body.unitPrice,
-    quantity: props.body.quantity,
-    // ✅ IGNORED: totalPrice, reviewCount, averageRating, discountRate
-    // These are computed at READ time by Transformers, NOT stored in DB
-  } satisfies Prisma.shopping_salesCreateInput;
-}
-```
-
-**How to Identify Read-only Computed Fields**:
-
-If DTO field doesn't exist in Prisma schema, it's one of these types:
-
-**Type 1: Aggregation Fields (from relations)**
-```typescript
-// These are counted/aggregated by Transformers at read time
-reviewCount: number;       // _count.reviews
-orderCount: number;        // _count.orders
-totalComments: number;     // _count.comments
-averageRating: number;     // avg(reviews.rating)
-highestScore: number;      // max(scores.value)
-→ IGNORE in Collector (Transformer calculates these)
-```
-
-**Type 2: Arithmetic Calculations (from other fields)**
-```typescript
-// These are calculated from stored fields by Transformers
-totalPrice: number;        // unit_price * quantity
-discountAmount: number;    // original_price - sale_price
-discountRate: number;      // (original - sale) / original * 100
-remainingStock: number;    // total_stock - sold_count
-netProfit: number;         // revenue - cost
-→ IGNORE in Collector (Transformer calculates these)
-```
-
-**Type 3: Boolean Derived Fields**
-```typescript
-// These are derived from other fields by Transformers
-isExpired: boolean;        // expiry_date < now
-isActive: boolean;         // status === "active"
-hasDiscount: boolean;      // sale_price < original_price
-isOutOfStock: boolean;     // stock_quantity <= 0
-→ IGNORE in Collector (Transformer derives these)
-```
-
-**Type 4: Formatted/Display Fields**
-```typescript
-// These are formatted by Transformers for display
-displayPrice: string;      // "$" + price.toFixed(2)
-formattedDate: string;     // date.toISOString()
-fullAddress: string;       // street + city + state + zip
-→ IGNORE in Collector (Transformer formats these)
-```
-
-**Why This Causes Compilation Errors**:
-- Prisma's CreateInput types are **strict** - they only accept fields that exist in the schema
-- Trying to include non-existent field = TypeScript compilation error
-- The compiler is telling you: "This field doesn't exist in the database!"
-- **Solution**: Stop trying to store it, IGNORE it completely
-
-**How to Fix During Correction**:
-
-1. **Read the compilation error** - it tells you which field doesn't exist in CreateInput
-2. **Check Prisma schema** - confirm the field is NOT there
-3. **Ask: "Is this a computed/read-only field?"**
-   - Ends with "Count", "Total", "Sum", "Average"? → YES, IGNORE
-   - Starts with "is", "has", "display", "formatted"? → YES, IGNORE
-   - Mathematical relationship with other fields? → YES, IGNORE
-   - Aggregation from relations? → YES, IGNORE
-4. **Remove the field mapping** from collect() return value
-5. **Add a comment** explaining it's computed at read time
-
-**Common Examples**:
-
-```typescript
-// Example 1: Review count
-// DTO: reviewCount: number
-// Prisma: reviews shopping_sale_reviews[] (relation)
-// Fix: IGNORE (Transformer uses _count.reviews)
-
-// Example 2: Total price
-// DTO: totalPrice: number
-// Prisma: unit_price Decimal, quantity Int
-// Fix: IGNORE (Transformer calculates unit_price * quantity)
-
-// Example 3: Discount rate
-// DTO: discountRate: number
-// Prisma: original_price Decimal, sale_price Decimal
-// Fix: IGNORE (Transformer calculates (original - sale) / original * 100)
-
-// Example 4: Is expired
-// DTO: isExpired: boolean
-// Prisma: expiry_date DateTime?
-// Fix: IGNORE (Transformer checks expiry_date < new Date())
-
-// Example 5: Average rating
-// DTO: averageRating: number
-// Prisma: reviews shopping_sale_reviews[] (reviews.rating Int)
-// Fix: IGNORE (Transformer calculates avg from reviews.rating array)
-```
-
-**🚨 CRITICAL VERIFICATION STEPS**:
-
-When you see a DTO field:
-1. ✅ **Check Prisma schema FIRST** - does this EXACT field name exist as a column?
-2. ✅ **Field NOT in schema?** → DO NOT try to store it!
-3. ✅ **Is it computed/aggregated/derived?** → IGNORE it completely
-4. ✅ **Add comment** in code explaining why it's ignored
-5. ✅ **Only map fields that ACTUALLY EXIST** in Prisma schema as columns
-
-**Remember**:
-- **Collector's job**: Store ONLY what exists in DB schema
-- **Transformer's job**: Calculate computed fields at read time
-- **Computed fields are NEVER stored**, only calculated on-demand
-- **When in doubt**: Check Prisma schema. Not there as a column? Don't store it.
-
-**Decision Rule**:
-```
-DTO field not in Prisma schema?
-│
-├─ Is it a column that should be added to DB?
-│  └─ NO (computed/aggregated/derived fields are intentionally not stored)
-│
-└─ What to do?
-   └─ IGNORE the field in Collector
-   └─ Transformer will calculate it at read time
-```
-
-### 6.7. IP Field Special Handling in Session Collectors
-
-**🚨 CRITICAL ERROR: Forgetting the dual-reference IP pattern in Session collectors**
-
-**Error Pattern**:
-- Type error: Type 'string | undefined' is not assignable to type 'string'
-- Compilation error: Property 'ip' is required in 'Prisma.{session_table}CreateInput'
-- Missing required field 'ip' in CreateInput
-- Nullable IP assigned when schema requires non-null
-
-**Root Cause**:
-You forgot that Session collectors have a **special dual-reference pattern** for the `ip` field. The AI generated code that uses ONLY `props.body.ip` (which is optional) for a required non-null database column, causing a compilation error.
-
-**ABSOLUTE RULE from REALIZE_COLLECTOR_WRITE.md Section 1.1**:
-- Session collectors must accept **TWO sources for IP**: `props.body.ip` (optional from DTO) AND `props.ip` (required parameter from server)
-- Database column `ip` is **NOT NULL** (required field)
-- DTO field `ip` is **OPTIONAL** (`string?` or `string | undefined`)
-- Must use the pattern: `ip: props.body.ip ?? props.ip`
-
-**Why This Dual Pattern Exists**:
-
-```typescript
-// SSR (Server-Side Rendering) Scenario:
-// - Backend server makes API call on behalf of client
-// - Real client IP passed in body.ip (NOT the SSR server's IP)
-// - props.body.ip = "203.0.113.42" (actual user)
-// - props.ip = "10.0.0.5" (SSR server, wrong!)
-// - Result: Use props.body.ip (203.0.113.42) ✓
-
-// CSR (Client-Side Rendering) Scenario:
-// - Client directly calls API
-// - body.ip not provided (undefined)
-// - props.ip extracted from HTTP request
-// - props.body.ip = undefined
-// - props.ip = "203.0.113.42" (actual user)
-// - Result: Use props.ip (203.0.113.42) ✓
-```
-
-**The Critical Mistake**:
-
-```typescript
-// Prisma Schema - IP is NOT NULL!
+// Prisma Schema - ip is required
 model shopping_seller_sessions {
-  id                   String   @id @db.Uuid
-  shopping_seller_id   String   @db.Uuid
-  ip                   String   @db.VarChar  // ← NOT NULL (required!)
-  created_at           DateTime @default(now())
-  // ...
+  ip  String  @db.VarChar  // NOT NULL!
 }
 
-// DTO - IP is OPTIONAL!
+// DTO - ip is optional
 interface IShoppingSellerSession.ICreate {
-  ip?: string;              // ← OPTIONAL! Might be undefined!
-  href: string;
-  referrer: string | null;
-  user_agent: string | null;
+  ip?: string;  // Optional!
 }
 
-// ❌ WRONG - Using only body.ip (which is optional!)
+// ❌ WRONG - Using only body.ip
+return {
+  ip: props.body.ip,  // ❌ Type error! string | undefined → string
+}
+
+// ✅ CORRECT - Dual reference pattern
 export async function collect(props: {
   body: IShoppingSellerSession.ICreate;
   shoppingSeller: IEntity;
-  ip: string;  // ← AI forgot to use this parameter!
+  ip: string;  // ✅ Must have this parameter
 }) {
   return {
     id: v4(),
     shopping_seller_id: props.shoppingSeller.id,
-    ip: props.body.ip,  // ❌ COMPILATION ERROR! Type 'string | undefined' not assignable to 'string'
+    ip: props.body.ip ?? props.ip,  // ✅ Prioritize SSR, fallback to CSR
     href: props.body.href,
-    referrer: props.body.referrer,
-    user_agent: props.body.user_agent,
     created_at: new Date(),
-  } satisfies Prisma.shopping_seller_sessionsCreateInput;  // ❌ Type error!
+  } satisfies Prisma.shopping_seller_sessionsCreateInput;
 }
 ```
 
-**The Correct Solution - Dual Reference Pattern**:
+**Quick Fix**:
+1. Check if table name contains "session" → Yes?
+2. Verify props has `ip: string` parameter
+3. Use `ip: props.body.ip ?? props.ip` (NOT just `props.body.ip`)
 
-```typescript
-// ✅ CORRECT - Using the dual-reference IP pattern
-export async function collect(props: {
-  body: IShoppingSellerSession.ICreate;
-  shoppingSeller: IEntity;
-  ip: string;  // ✅ Server-extracted IP (fallback)
-}) {
-  return {
-    id: v4(),
-    shopping_seller_id: props.shoppingSeller.id,
-    // ✅ CORRECT! Prioritize client-provided IP (SSR), fallback to server IP (CSR)
-    ip: props.body.ip ?? props.ip,
-    href: props.body.href,
-    referrer: props.body.referrer,
-    user_agent: props.body.user_agent,
-    created_at: new Date(),
-  } satisfies Prisma.shopping_seller_sessionsCreateInput;  // ✅ Type-safe!
-}
-```
+**Common Session Tables**: `*_seller_sessions`, `*_customer_sessions`, `*_member_sessions`, `*_admin_sessions`
 
-**Why This Pattern Is Critical**:
-
-1. **SSR Accuracy**: In SSR environments (Next.js, SvelteKit, etc.), backend server calls API on behalf of user
-   - Without `body.ip`, you'd log the SSR server's IP (10.0.0.x), not the real user's IP
-   - Security logs would be useless - all users appear to come from same SSR server
-
-2. **CSR Fallback**: In traditional CSR, client calls API directly
-   - `body.ip` is typically undefined (client doesn't know its own public IP)
-   - Must fallback to `props.ip` extracted from HTTP headers (X-Forwarded-For, etc.)
-
-3. **Security & Compliance**: Accurate IP tracking is critical for:
-   - Session hijacking detection
-   - Geographic access restrictions
-   - Audit trails for compliance (GDPR, PCI-DSS)
-   - Rate limiting and abuse prevention
-   - Legal forensics in security incidents
-
-**Session Collector Identification**:
-
-Session collectors are identified by these characteristics:
-- Table name contains "session" (e.g., `shopping_seller_sessions`, `bbs_member_sessions`)
-- DTO name contains "Session" (e.g., `IShoppingSellerSession.ICreate`)
-- Has `ip` field that's required in DB but optional in DTO
-- Used in login/join/refresh operations
-
-**Common Session Tables**:
-```typescript
-// E-commerce sessions
-shopping_seller_sessions
-shopping_customer_sessions
-shopping_admin_sessions
-
-// Forum/BBS sessions
-bbs_member_sessions
-bbs_admin_sessions
-
-// Generic auth sessions
-user_sessions
-admin_sessions
-api_sessions
-```
-
-**How to Fix During Correction**:
-
-1. **Identify if this is a Session collector**:
-   - Does table name contain "session"?
-   - Does it have an `ip` field?
-
-2. **Check the props signature**:
-   - Does it accept `ip: string` parameter?
-   - If NOT, this is a critical error - props MUST include `ip: string`
-
-3. **Check the IP assignment**:
-   - Is it using `props.body.ip` directly? → **WRONG!**
-   - Is it using `props.ip` directly? → **WRONG!**
-   - Is it using `props.body.ip ?? props.ip`? → **CORRECT!**
-
-4. **Verify compilation**:
-   - Does IP field satisfy the non-null CreateInput requirement?
-   - `props.body.ip ?? props.ip` has type `string` (correct!)
-   - `props.body.ip` has type `string | undefined` (compilation error!)
-
-**Examples of Session Collectors**:
-
-```typescript
-// ✅ CORRECT - Shopping seller session
-export namespace ShoppingSellerSessionCollector {
-  export async function collect(props: {
-    body: IShoppingSellerSession.ICreate;
-    shoppingSeller: IEntity;
-    ip: string;  // ✅ Server-extracted IP parameter
-  }) {
-    return {
-      id: v4(),
-      shopping_seller_id: props.shoppingSeller.id,
-      ip: props.body.ip ?? props.ip,  // ✅ Dual reference!
-      href: props.body.href,
-      referrer: props.body.referrer,
-      user_agent: props.body.user_agent,
-      created_at: new Date(),
-    } satisfies Prisma.shopping_seller_sessionsCreateInput;
-  }
-}
-
-// ✅ CORRECT - BBS member session
-export namespace BbsMemberSessionCollector {
-  export async function collect(props: {
-    body: IBbsMemberSession.ICreate;
-    member: IEntity;
-    ip: string;  // ✅ Server-extracted IP parameter
-  }) {
-    return {
-      id: v4(),
-      bbs_member_id: props.member.id,
-      ip: props.body.ip ?? props.ip,  // ✅ Dual reference!
-      href: props.body.href,
-      referrer: props.body.referrer ?? null,
-      user_agent: props.body.user_agent ?? null,
-      created_at: new Date(),
-    } satisfies Prisma.bbs_member_sessionsCreateInput;
-  }
-}
-```
-
-**The Pattern to Remember**:
-
-```typescript
-// For ALL Session collectors:
-export async function collect(props: {
-  body: I{Entity}Session.ICreate;
-  {entity}: IEntity;
-  ip: string;  // ← MUST have this parameter
-}) {
-  return {
-    id: v4(),
-    {entity}_id: props.{entity}.id,
-    ip: props.body.ip ?? props.ip,  // ← MUST use this pattern
-    // ... other fields
-  } satisfies Prisma.{entity}_sessionsCreateInput;
-}
-```
-
-**Decision Rule**:
-
-```
-Is this a Session collector?
-│
-├─ Table name contains "session"? → YES
-├─ Has ip field in schema? → YES
-├─ ip is NOT NULL in schema? → YES
-└─ ip is optional in DTO? → YES
-   │
-   ✓ This requires the dual-reference IP pattern!
-
-Required Corrections:
-1. props must include: ip: string
-2. IP assignment must be: ip: props.body.ip ?? props.ip
-3. NEVER use only props.body.ip (compilation error!)
-4. NEVER use only props.ip (loses SSR accuracy!)
-```
-
-**Remember**:
-- **Session collectors are special** - they need dual IP sources
-- **props.body.ip**: Optional, for SSR environments (prioritize this)
-- **props.ip**: Required parameter, for CSR fallback (server-extracted)
-- **Pattern**: `ip: props.body.ip ?? props.ip` (ALWAYS!)
-- **Why**: Accurate IP tracking across SSR and CSR architectures
-- **Compilation**: Dual reference ensures type safety (string, not string | undefined)
+See **REALIZE_COLLECTOR_WRITE.md Section 1.1** for detailed dual-reference IP pattern.
 
 ## 7. Final Checklist: Before Submitting Perfect Code
 
