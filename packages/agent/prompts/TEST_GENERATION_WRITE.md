@@ -13,8 +13,8 @@ You will receive the following materials as input:
    - Your generation function MUST use this prepare function
    
 3. **API Operation**: The specific API endpoint this generation function targets
-   - Includes method, path, request/response types, and authentication requirements
-   - Analyze this to understand what resource is being created
+   - Includes method, path, request/response types, authentication requirements, and URL parameters
+   - Analyze this to understand what resource is being created and what parameters are needed
    
 4. **DTO Types**: Complete data transfer object type definitions
    - Use these to understand the structure of request and response types
@@ -53,12 +53,14 @@ You MUST execute the following 3-step workflow through a single function call:
   - What resource is being created (from path and responseBody.typeName)
   - The exact response type from operation.responseBody.typeName
   - What SDK function to use (from the SDK functions table)
+  - What URL parameters are required (from operation.parameters)
 - Analyze the prepare function's input parameter:
   - What fields it accepts as optional input
   - The type definition (e.g., DeepPartial<IResource.ICreate>)
 - Plan the implementation approach:
   - Function naming (must be generate_random_{resource})
   - Data flow from prepare → API → response
+  - How to handle URL parameters if any
 
 ### Step 2: **draft** - Initial Generation Function Implementation
 - Generate the complete TypeScript function
@@ -67,7 +69,8 @@ You MUST execute the following 3-step workflow through a single function call:
   export const generate_random_resource = async (
       props: {
           connection: api.IConnection,
-          input?: DeepPartial<CreateType>
+          input?: DeepPartial<CreateType>,
+          params?: { commentId: string }  // For URL parameters if needed
       }
   ): Promise<[ResponseTypeName]> => {
       // Implementation
@@ -77,6 +80,7 @@ You MUST execute the following 3-step workflow through a single function call:
 - MUST use the same input type as the prepare function (DeepPartial type)
 - MUST include proper typing with response types
 - MUST pass input parameters to prepare function
+- MUST handle URL parameters if the operation requires them
 - MUST use async/await patterns correctly
 
 ### Step 3: **revise** - Code Review and Final Refinement
@@ -94,6 +98,7 @@ Perform a thorough review checking for:
 - Input type matches prepare function's input type exactly
 - Correct SDK function is selected based on operation
 - Input parameters are properly passed to prepare function
+- URL parameters are handled correctly if required by the operation
 - Response type EXACTLY matches operation.responseBody.typeName
 
 **Code Quality:**
@@ -115,14 +120,15 @@ Perform a thorough review checking for:
 export const generate_random_{resource} = async (
     props: {
         connection: api.IConnection,
-        input?: DeepPartial<{ResourceType}.ICreate>
+        input?: DeepPartial<{ResourceType}.ICreate>,
+        params?: { commentId: string }  // For URL parameters if needed
     }
 ): Promise<{ResponseType}> => {
     // Implementation
 };
 ```
 
-**IMPORTANT**: The input type MUST match the prepare function's input type exactly. Use DeepPartial with the same type that the prepare function accepts.
+**IMPORTANT**: The input type MUST match the prepare function's input type exactly. Use DeepPartial with the same type that the prepare function accepts. Include params property with specific parameter types when the API operation requires URL parameters.
 
 ### 2.2. Implementation Pattern
 
@@ -136,8 +142,16 @@ export const generate_random_{resource} = async (
 
 2. **API Call**:
    ```typescript
+   // For operations without URL parameters
    const result: ResponseType = await api.functional.{accessor}(
        props.connection,
+       prepared
+   );
+   
+   // For operations with URL parameters
+   const result: ResponseType = await api.functional.{accessor}(
+       props.connection,
+       props.params?.commentId,  // URL parameters
        prepared
    );
    ```
@@ -155,7 +169,7 @@ export const generate_random_{resource} = async (
 
 ## 3. Common Patterns
 
-### 3.1. Standard Generation Function
+### 3.1. Standard Generation Function (without URL parameters)
 ```typescript
 export const generate_random_bbs_article = async (
     props: {
@@ -177,7 +191,31 @@ export const generate_random_bbs_article = async (
 };
 ```
 
-### 3.2. Another Example
+### 3.2. Generation Function with URL parameters
+```typescript
+export const generate_random_comment = async (
+    props: {
+        connection: api.IConnection,
+        input?: DeepPartial<IComment.ICreate>,
+        params?: { articleId: string }
+    }
+): Promise<IComment> => {
+    const prepared = prepare_random_comment({
+        connection: props.connection,
+        input: props.input,
+    });
+    
+    const result: IComment = await api.functional.articles.comments.create(
+        props.connection,
+        props.params?.articleId,
+        prepared
+    );
+    
+    return result;
+};
+```
+
+### 3.3. Simple Example
 ```typescript
 export const generate_random_user = async (
     props: {

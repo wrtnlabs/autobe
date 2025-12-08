@@ -70,6 +70,7 @@ export function transformTestGenerationWriteHistory<
           - responseBody.typeName: This is the EXACT type name you must import and return
           - endpoint (method and path): To find the matching SDK function
           - requestBody.typeName: To understand the input type structure
+          - parameters: URL path parameters that may be needed for the API call
 
           \`\`\`json
           ${JSON.stringify(operation, null, 2)}
