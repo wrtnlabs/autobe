@@ -51,7 +51,7 @@ export function transformTestAuthorizationWriteHistories(props: {
     ],
     userMessage: StringUtil.trim`
       Generate an authorization utility function for ${props.operation.authorizationActor} ${props.operation.authorizationType}.
-      The function should handle the authentication flow and update the connection appropriately.
+      The function should handle the authentication flow.
     `,
   };
 }

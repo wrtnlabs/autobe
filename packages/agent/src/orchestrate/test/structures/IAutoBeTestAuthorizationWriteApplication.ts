@@ -19,8 +19,8 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      * Step 1: Strategic authorization analysis.
      *
      * AI analyzes the operation to understand authorization requirements,
-     * including the type of authentication flow, actor permissions, required
-     * SDK functions, and connection update strategies. This analysis forms the
+     * including the type of authentication flow, actor permissions, and required
+     * SDK functions. This analysis forms the
      * foundation for generating appropriate authorization utilities.
      *
      * Workflow: Operation analysis → Authorization strategy → Implementation
@@ -56,7 +56,7 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      *
      * AI generates the authorization utility function that properly handles the
      * authentication flow. The implementation must use correct SDK functions,
-     * handle connection updates appropriately, return required authentication
+     * return required authentication
      * data, and include comprehensive error handling with fallback logic where
      * needed.
      *
@@ -86,7 +86,6 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      * **Technical Correctness:**
      *
      * - Proper SDK function usage and parameter types
-     * - Correct connection header updates
      * - Appropriate return types and data structures
      * - TypeScript compilation compatibility
      *
