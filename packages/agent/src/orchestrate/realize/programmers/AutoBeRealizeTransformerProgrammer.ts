@@ -315,7 +315,7 @@ ${Object.keys(props.schema.properties)
         description: StringUtil.trim`
           You missed the mapping for the property '${key}' of DTO '${props.plan.dtoTypeName}'.
 
-          Make sure to provide mappking for all properties.
+          Make sure to provide mapping for all properties.
         `,
       });
     }

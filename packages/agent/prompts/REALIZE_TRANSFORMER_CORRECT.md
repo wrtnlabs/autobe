@@ -256,7 +256,16 @@ This structured workflow ensures systematic error fixing through root cause anal
 
 ### Phase 1: Think - Comprehensive Code Analysis and Review
 
-**🚨 CRITICAL GOAL: Compilation errors are just indicators - perform COMPLETE code review to find ALL issues.**
+**🚨 CRITICAL: This phase has THREE outputs - narrative analysis AND two structured mappings**
+
+Your correction phase must produce:
+1. **Narrative Analysis (`think` field)**: Your written error analysis and correction strategy
+2. **Select Mappings (`selectMappings` field)**: Field-by-field verification table for select()
+3. **Transform Mappings (`transformMappings` field)**: Property-by-property verification table for transform()
+
+**The mappings fields are your systematic verification mechanism** - they force you to review EVERY field and property, catching errors beyond what the compiler reports.
+
+#### Part A: Narrative Analysis
 
 **FUNDAMENTAL PRINCIPLE:**
 Compilation errors signal that something is wrong with the code. Your mission is NOT just to fix the visible errors, but to perform a **100% thorough review** of the entire code, examining every aspect to produce **perfect, production-ready code**.
@@ -278,32 +287,114 @@ Your comprehensive analysis should accomplish these objectives:
    - Identify if inline logic exists when neighbor transformers should be used
    - **Look beyond the errors** - examine the entire logic flow in both functions
 
-3. **Perform Comprehensive Schema Verification**:
-   - **Compare EVERY field in select() against actual Prisma schema**
-   - **Compare EVERY field in transform() against DTO type**
-   - Verify field names are exactly correct (character-by-character, case-sensitive)
-   - Check that NO fields are missing from select() (not just error-reported ones)
-   - Verify ALL fields needed by transform() are included in select()
-   - Check ALL relationships use correct relation names
-   - **This is NOT just for fixing errors - this is complete compliance verification**
-
-4. **Perform Complete DTO Transformation Verification**:
-   - **Verify EVERY DTO field is correctly transformed** (not just the ones causing errors)
-   - Check that ALL Prisma fields are appropriately mapped to DTO
-   - Verify snake_case → camelCase conversions are correct everywhere
-   - Check for any DTO fields that should be calculated but aren't
-   - Verify type conversions are applied correctly (Date→string, Decimal→number, etc.)
-   - **Ensure no data is lost or incorrectly transformed**
-
-5. **Plan Comprehensive Corrections and Improvements**:
+3. **Plan Comprehensive Corrections and Improvements**:
    - Fix all compilation errors (root causes, not symptoms)
    - Fix all architectural violations (inline logic → neighbor transformers)
-   - Fix all schema compliance issues (missing fields in select(), wrong names, etc.)
-   - Fix all DTO transformation issues (missing conversions, wrong types, etc.)
+   - Fix all select() issues (missing fields, wrong names, etc.)
+   - Fix all transform() issues (missing conversions, wrong types, etc.)
    - Fix all potential runtime bugs (null handling, edge cases, etc.)
    - **Transform the code into perfect, production-ready implementation**
 
-**How you structure your analysis is up to you** - but the **completeness and thoroughness** are mandatory. Don't just analyze errors - analyze the ENTIRE code.
+**How you structure your narrative is up to you** - but the **completeness and thoroughness** are mandatory.
+
+#### Part B: Select Mappings (Verification for select() function)
+
+**CRITICAL: The `selectMappings` field is MANDATORY for systematic verification**
+
+After your narrative analysis, you MUST create a complete field-by-field verification table documenting the current state and needed corrections for select(). This ensures you don't miss any issues beyond visible compilation errors.
+
+**For each Prisma field needed by the DTO, document current state:**
+
+```typescript
+{
+  member: "created_at",     // Exact Prisma field/relation name
+  kind: "scalar",           // "scalar" | "belongsTo" | "hasOne" | "hasMany"
+  nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
+  how: "No change needed" or "Fix: Missing - add to select()"
+}
+```
+
+**Example selectMappings for corrections:**
+
+```typescript
+selectMappings: [
+  // Scalar fields
+  { member: "id", kind: "scalar", nullable: false, how: "Already selected correctly" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already selected correctly" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing from select()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing from select()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already selected correctly" },
+
+  // BelongsTo relations
+  { member: "user", kind: "belongsTo", nullable: false, how: "Fix: Inline select → use BbsUserAtSummaryTransformer.select()" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Already selected correctly" },
+
+  // HasMany relations
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Already selected correctly" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Fix: Not selected - add for DTO.tags" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Already selected correctly" },
+
+  // Aggregations
+  { member: "_count", kind: "scalar", nullable: false, how: "Fix: Missing - add for hit/like counts" },
+]
+```
+
+#### Part C: Transform Mappings (Verification for transform() function)
+
+**CRITICAL: The `transformMappings` field is MANDATORY for systematic verification**
+
+After selectMappings, you MUST create a complete property-by-property verification table for transform(). This ensures all DTO properties are correctly handled.
+
+**For each DTO property, document current state:**
+
+```typescript
+{
+  property: "createdAt",    // Exact DTO property name (camelCase)
+  how: "No change needed" or "Fix: Missing .toISOString() conversion"
+}
+```
+
+**Example transformMappings for corrections:**
+
+```typescript
+transformMappings: [
+  // Direct mappings
+  { property: "id", how: "Already correct" },
+  { property: "content", how: "Already correct" },
+
+  // Type conversions
+  { property: "createdAt", how: "Fix: Missing .toISOString() - input.created_at.toISOString()" },
+  { property: "updatedAt", how: "Fix: Missing .toISOString() - input.updated_at.toISOString()" },
+  { property: "deletedAt", how: "Already correct (has .toISOString())" },
+
+  // Nested transformations
+  { property: "writer", how: "Fix: Inline transformation → use BbsUserAtSummaryTransformer.transform()" },
+  { property: "parent", how: "Already correct" },
+
+  // Arrays
+  { property: "files", how: "Already correct" },
+  { property: "tags", how: "Fix: Missing transformation - add array map with BbsArticleCommentTagTransformer" },
+  { property: "links", how: "Already correct" },
+
+  // Aggregations
+  { property: "hit", how: "Fix: Missing - add from input._count.bbs_article_comment_hits" },
+  { property: "like", how: "Fix: Missing - add from input._count.bbs_article_comment_likes" },
+]
+```
+
+**Why mappings are critical for corrections:**
+
+1. **Beyond Compiler Errors**: Catches issues compiler didn't report
+2. **Systematic Coverage**: Ensures you reviewed every field in select() and every property in transform()
+3. **Alignment Check**: Ensures select() and transform() work together
+4. **Clear Correction Plan**: Documents exactly what to fix
+
+**The validator will check:**
+- selectMappings: All Prisma fields needed are reviewed
+- transformMappings: All DTO properties are reviewed
+- Corrections are valid and complete
+
+Focus on creating complete mappings - they ensure perfect select() ↔ transform() alignment.
 
 ---
 
@@ -513,57 +604,166 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.2. think
 
-**Comprehensive code analysis and correction strategy**
+**Comprehensive error analysis and correction strategy (narrative)**
 
-Performs comprehensive code analysis including compilation errors and beyond:
-- All compilation error patterns and root causes
-- Complete schema compliance verification (select() function)
-- Complete DTO transformation verification (transform() function)
-- Architectural violation detection
-- Potential runtime bug identification
-- Overall code quality assessment
+This is your narrative analysis where you diagnose the errors and plan the fixes for both select() and transform(). Document your thinking about:
 
-Document your comprehensive analysis including:
-- All error patterns and root causes
-- Complete select() verification findings (all fields against schema)
-- Complete transform() verification findings (all DTO mappings)
-- All architectural issues found
-- All potential bugs identified
-- Overall correction strategy
+- **Compilation Error Analysis**: Categorize and understand all errors (in both functions)
+- **Root Cause Identification**: Why errors occurred in select() and/or transform()
+- **Select() Verification Findings**: Results of checking fields against Prisma schema
+- **Transform() Verification Findings**: Results of checking transformations against DTO
+- **Architectural Issues**: Inline code vs transformers, wrong syntax, misalignment
+- **Overall Correction Strategy**: High-level plan to fix everything
+
+**Keep this at a strategic level** - you'll provide detailed field-by-field corrections in the mappings fields.
 
 **Example**:
 ```
 COMPILATION ERROR ANALYSIS:
-- 2 fields missing from select() query
-- 3 Date fields need toISOString()
-- 1 nested object needs transformer
+- 2 fields missing from select() query (created_at, updated_at)
+- 3 Date fields need toISOString() in transform()
+- 1 nested object needs transformer (both select & transform)
 - 1 null to undefined conversion
 
-COMPREHENSIVE select() VERIFICATION:
-- Verified all 12 fields against Prisma schema
-- Found 1 additional missing field (email) not causing error yet
-- Confirmed all field names match exactly
-- Found 1 inline nested select that should use neighbor transformer
+ROOT CAUSE ANALYSIS:
+- Missing fields: Original code didn't include all needed fields
+- Date conversions: Forgot .toISOString() calls
+- Inline transformer: Should use BbsUserAtSummaryTransformer
 
-COMPREHENSIVE transform() VERIFICATION:
-- Checked all 10 DTO fields
-- Found 1 DTO field (totalPrice) not being calculated
-- Verified all type conversions (4 Date fields, 2 Decimal fields)
-- Confirmed snake_case → camelCase conversions correct
-- Found 1 computed field (_count.reviews) needed for reviewCount
+select() VERIFICATION:
+- Reviewed all 12 Prisma fields
+- Found 1 additional missing field (email) not causing error
+- Confirmed relation names correct
 
-ARCHITECTURAL REVIEW:
-- Found inline nested transform that should use TagTransformer
-- Verified proper select() ↔ Payload ↔ transform() alignment
+transform() VERIFICATION:
+- Checked all 10 DTO properties
+- Found 1 computed property (hit) not calculated
+- Verified type conversion needs
+
+ARCHITECTURAL ISSUES:
+- Inline nested select/transform should use TagTransformer
 
 CORRECTION STRATEGY:
 - Fix all 4 compilation errors
-- Add missing email field to select()
-- Add totalPrice calculation (unit_price * quantity)
-- Add reviewCount from _count.reviews
-- Replace inline logic with TagTransformer (both select & transform)
-- Result: Perfect, complete implementation
+- Add email to select()
+- Add hit calculation in transform()
+- Replace inline with TagTransformer in both functions
+- Result: Perfect implementation
 ```
+
+#### selectMappings
+
+**CRITICAL: Field-by-field verification and correction plan for select()**
+
+This is your structured verification for select() - a complete review of which Prisma fields to select with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
+
+Each mapping documents current state and needed fixes:
+```typescript
+{
+  member: string;     // Exact Prisma field/relation name
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;
+  how: string;        // "Already correct" or "Fix: [problem] → [solution]"
+}
+```
+
+**Why this field is critical:**
+
+1. **Systematic Coverage**: Forces review of EVERY Prisma field needed
+2. **Catches Silent Errors**: Issues compiler didn't report in select()
+3. **Documents Corrections**: Clear record of select() fixes
+4. **Enables Validation**: System validates corrections against Prisma schema
+5. **Ensures Alignment**: Ensures select() provides all data for transform()
+
+**Example selectMappings:**
+
+```typescript
+selectMappings: [
+  { member: "id", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "content", kind: "scalar", nullable: false, how: "Already correct" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing - add to select()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Fix: Missing - add to select()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Already correct" },
+
+  { member: "user", kind: "belongsTo", nullable: false, how: "Fix: Inline → BbsUserAtSummaryTransformer.select()" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Already correct" },
+
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Fix: Not selected - add" },
+
+  { member: "_count", kind: "scalar", nullable: false, how: "Fix: Missing - add for hit/like" },
+]
+```
+
+**Common patterns for `how` field:**
+- "Already correct"
+- "Fix: Missing - add to select()"
+- "Fix: Wrong name '{wrong}' → '{correct}'"
+- "Fix: Inline select → use {TransformerName}.select()"
+- "Fix: Fabricated field - remove"
+
+#### transformMappings
+
+**CRITICAL: Property-by-property verification and correction plan for transform()**
+
+This is your structured verification for transform() - a complete review of how each DTO property is transformed with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY DTO property.**
+
+Each mapping documents current state and needed fixes:
+```typescript
+{
+  property: string;   // Exact DTO property name (camelCase)
+  how: string;        // "Already correct" or "Fix: [problem] → [solution]"
+}
+```
+
+**Why this field is critical:**
+
+1. **Complete DTO Coverage**: Ensures all DTO properties are handled
+2. **Catches Silent Errors**: Issues compiler didn't report in transform()
+3. **Documents Transformations**: Clear record of how each property is obtained
+4. **Enables Validation**: System validates against DTO type definition
+5. **Ensures Alignment**: Every property must have corresponding data in selectMappings
+
+**Example transformMappings:**
+
+```typescript
+transformMappings: [
+  { property: "id", how: "Already correct" },
+  { property: "content", how: "Already correct" },
+  { property: "createdAt", how: "Fix: Missing .toISOString()" },
+  { property: "updatedAt", how: "Fix: Missing .toISOString()" },
+  { property: "deletedAt", how: "Already correct" },
+
+  { property: "writer", how: "Fix: Inline → BbsUserAtSummaryTransformer.transform()" },
+  { property: "parent", how: "Already correct" },
+
+  { property: "files", how: "Already correct" },
+  { property: "tags", how: "Fix: Missing - add with BbsArticleCommentTagTransformer" },
+
+  { property: "hit", how: "Fix: Missing - from input._count.bbs_article_comment_hits" },
+  { property: "like", how: "Fix: Missing - from input._count.bbs_article_comment_likes" },
+]
+```
+
+**Common patterns for `how` field:**
+- "Already correct"
+- "Fix: Missing .toISOString()"
+- "Fix: Missing Number() conversion"
+- "Fix: Inline → use {TransformerName}.transform()"
+- "Fix: Missing - from input.{field}"
+- "Fix: Missing calculation"
+- "Fix: Wrong null handling"
+
+**What the validators check:**
+- selectMappings: All needed Prisma fields reviewed, corrections valid
+- transformMappings: All DTO properties reviewed, transformations valid
+- Alignment: transform() can work with data from select()
+
+**Focus on complete and accurate mappings** - they ensure perfect select() ↔ transform() correction.
 
 #### 4.2.3. draft
 
@@ -1103,99 +1303,39 @@ return {
 
 ### 6.5. Nullable Timestamp with Required DTO (Missing Sentinel Date)
 
-**Error Pattern**:
-- Type 'string | null' is not assignable to type 'string & tags.Format<"date-time">'
-- Type 'null' is not assignable to type 'string'
-- Nullable timestamp field but DTO requires non-null value
+**Error Pattern**: Type 'string | null' is not assignable to type 'string & tags.Format<"date-time">'
 
-**Root Cause**:
-Database has nullable timestamp field (e.g., `expired_at DateTime?`), but DTO declares it as **required non-null** field (e.g., `expiredAt: string & tags.Format<"date-time">` - no `| null`, no `?`). Simply converting with `.toISOString()` will produce `null` which violates the DTO type contract.
-
-**Solution - Use Far-Future Sentinel Date**:
+**🚨 CRITICAL PATTERN**: Nullable DB timestamp (`DateTime?`) but DTO requires non-null.
 
 ```typescript
-// DB schema
-model shopping_sales {
-  id         String    @id @db.Uuid
-  name       String    @db.VarChar
-  expired_at DateTime? @db.Timestamptz  // Nullable!
-  closed_at  DateTime? @db.Timestamptz  // Nullable!
+// Prisma: expired_at DateTime? (nullable)
+// DTO: expiredAt: string & tags.Format<"date-time"> (required!)
+
+// ❌ WRONG - null.toISOString() runtime error
+return {
+  expiredAt: input.expired_at.toISOString(),  // ❌ FATAL if null!
+  closedAt: input.closed_at?.toISOString() ?? null,  // ❌ null → string error
 }
 
-// DTO type
-interface IShoppingSale {
-  id: string;
-  name: string;
-  expiredAt: string & tags.Format<"date-time">;  // Required! No null!
-  closedAt: string & tags.Format<"date-time">;   // Required! No null!
-}
-
-// ❌ WRONG - Will fail when field is null
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    name: input.name,
-    expiredAt: input.expired_at.toISOString(),  // ❌ null.toISOString() = runtime error!
-    closedAt: input.closed_at?.toISOString() ?? null,  // ❌ null not assignable to string!
-  };
-}
-
-// ✅ CORRECT - Use far-future sentinel date for null
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    name: input.name,
-    expiredAt: input.expired_at
-      ? input.expired_at.toISOString()
-      : new Date("2300-01-01").toISOString(),  // Far future = "never expires"
-    closedAt: input.closed_at
-      ? input.closed_at.toISOString()
-      : new Date("2300-01-01").toISOString(),  // Far future = "not closed"
-  };
+// ✅ CORRECT - Use far-future sentinel date
+return {
+  expiredAt: input.expired_at
+    ? input.expired_at.toISOString()
+    : new Date("2300-01-01").toISOString(),  // "never expires"
+  closedAt: input.closed_at
+    ? input.closed_at.toISOString()
+    : new Date("2300-01-01").toISOString(),  // "not closed"
 }
 ```
 
-**Why Use `new Date("2300-01-01")`?**
+**Why `new Date("2300-01-01")`?**
+- Semantic meaning: "never expires" / "not closed" / "ongoing"
+- Human readable sentinel value
+- Business logic friendly
 
-- **Far enough in future**: Obviously a sentinel value, not a real expiration date
-- **Semantic meaning**: "2300-01-01" = "never expires" / "not closed yet" / "ongoing"
-- **Business logic friendly**: Easy to check `if (date < new Date("2299-12-31"))` for "is expired"
-- **Human readable**: When debugging, "2300-01-01" is immediately recognizable
-- **Avoids overflow**: Safer than `Date.MAX_VALUE` or `new Date(9999, 11, 31)`
-- **Consistent**: Single standard value across all similar fields
+**Common Fields**: `expired_at`, `closed_at`, `ended_at`, `terminated_at`, `deleted_at`
 
-**Common Fields Using This Pattern**:
-
-```typescript
-// Expiration timestamps
-expired_at → expiredAt: new Date("2300-01-01").toISOString()  // "never expires"
-expires_at → expiresAt: new Date("2300-01-01").toISOString()  // "never expires"
-
-// Closure/termination timestamps
-closed_at → closedAt: new Date("2300-01-01").toISOString()    // "not closed"
-ended_at → endedAt: new Date("2300-01-01").toISOString()      // "ongoing"
-terminated_at → terminatedAt: new Date("2300-01-01").toISOString()  // "active"
-
-// Deletion timestamps (soft delete)
-deleted_at → deletedAt: new Date("2300-01-01").toISOString()  // "not deleted"
-```
-
-**How to Identify This Pattern**:
-
-1. **Check Prisma schema**: Field is `DateTime?` (nullable)
-2. **Check DTO type**: Field is `string & tags.Format<"date-time">` (required, no `| null`)
-3. **Field name indicates "end" or "expiration"**: `expired_at`, `closed_at`, `ended_at`, etc.
-4. **Compilation error**: "Type 'null' is not assignable to type 'string'"
-
-**When to Fix**:
-
-If you see compilation error like:
-- `Type 'string | null' is not assignable to type 'string & tags.Format<"date-time">'`
-- Field name is `expired_at`, `closed_at`, `ended_at`, `deleted_at`, etc.
-- DB schema shows `DateTime?` (nullable)
-- DTO shows required field (no `?`, no `| null`)
-
-→ Use the far-future sentinel date pattern: `input.field ? input.field.toISOString() : new Date("2300-01-01").toISOString()`
+See **REALIZE_TRANSFORMER_WRITE.md Section 3.3** for detailed sentinel date patterns.
 
 ### 6.6. Array Transformation
 
@@ -1245,621 +1385,192 @@ return {
 
 ### 6.8. Mismatched Transformer Usage: select() vs transform()
 
-**🚨 CRITICAL ERROR: Using select() without corresponding transform() OR vice versa**
+**Error Pattern**: Type error / Property 'X' does not exist
 
-**Error Pattern**:
-- Type error: Property 'X' does not exist on type 'Y'
-- Field access error in transform()
-- Type mismatch between Payload and transform logic
+**🚨 CRITICAL ERROR**: Using `Transformer.select()` without `Transformer.transform()` or vice versa.
 
-**Root Cause**:
-You used `NestedTransformer.select()` in select() but inline mapping in transform(), OR you used `NestedTransformer.transform()` in transform() but inline selection in select(). This creates a **TYPE MISMATCH** because the selected fields don't match what the transformer expects.
-
-**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
-- **Option A**: Use BOTH `NestedTransformer.select()` AND `NestedTransformer.transform()`
-- **Option B**: Use NEITHER (inline selection AND inline transformation)
-- **NEVER**: Mix inline with Transformer usage!
-
-**Solution**:
+**ABSOLUTE RULE**:
+- **Option A**: Use BOTH `Transformer.select()` AND `Transformer.transform()`
+- **Option B**: Use NEITHER (inline for both)
+- **NEVER**: Mix inline with Transformer!
 
 ```typescript
-// ❌ WRONG - Using select() without corresponding transform()
+// ❌ WRONG - select() uses Transformer, transform() uses inline
 export function select() {
   return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),  // Using Transformer.select()
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
+    category: CategoryTransformer.select(),  // Transformer!
+  };
 }
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
+export async function transform(input: Payload) {
   return {
-    id: input.id,
-    category: {  // ❌ FATAL! Inline mapping instead of Transformer.transform()
-      id: input.category.id,
-      name: input.category.name,
-    },
+    category: { id: input.category.id },  // ❌ Inline! TYPE MISMATCH!
   };
 }
 
-// ❌ WRONG - Using transform() without corresponding select()
+// ✅ CORRECT - Both use Transformer
 export function select() {
   return {
-    select: {
-      id: true,
-      category: {  // ❌ FATAL! Inline selection instead of Transformer.select()
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
+    category: CategoryTransformer.select(),  // ✅
+  };
 }
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
+export async function transform(input: Payload) {
   return {
-    id: input.id,
-    category: await ShoppingCategoryTransformer.transform(input.category),  // Using Transformer.transform()
+    category: await CategoryTransformer.transform(input.category),  // ✅
   };
 }
 
-// ✅ CORRECT - Both use CategoryTransformer (Option A)
+// ✅ ALSO CORRECT - Both use inline
 export function select() {
   return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),  // ✅ Using Transformer.select()
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Using Transformer.transform()
+    category: { select: { id: true, name: true } },  // ✅ Inline
   };
 }
-
-// ✅ ALSO CORRECT - Neither uses CategoryTransformer (Option B: inline for both)
-export function select() {
+export async function transform(input: Payload) {
   return {
-    select: {
-      id: true,
-      category: {  // ✅ Inline selection
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: {  // ✅ Inline transformation (matches inline selection)
-      id: input.category.id,
-      name: input.category.name,
-    },
+    category: { id: input.category.id, name: input.category.name },  // ✅ Inline
   };
 }
 ```
 
-**Why This Causes Compilation Errors**:
-- `select()` determines the `Payload` type structure
-- If you use `CategoryTransformer.select()`, the Payload will have specific field types
-- If you then use inline mapping in `transform()`, you're accessing fields that may not match the expected structure
-- **Result**: Compilation error due to type mismatch
+**Quick Fix**: Match select() and transform() - both must use Transformer OR both must use inline.
 
-**How to Fix During Correction**:
-1. **Check if select() uses a Transformer** → If YES, transform() MUST use the same Transformer
-2. **Check if transform() uses a Transformer** → If YES, select() MUST use the same Transformer
-3. **If they don't match** → Make them match (both use Transformer OR both inline)
+See **REALIZE_TRANSFORMER_WRITE.md Section 4.2** for Transformer consistency rules.
 
 ### 6.9. Wrong Transformer Name for Nested Interface Types
 
-**🚨 CRITICAL ERROR: Using parent Transformer for nested interface types (ISummary, IInvert, IContent, etc.)**
+**Error Pattern**: Type 'IShoppingSale' is not assignable to type 'IShoppingSale.ISummary'
 
-**Error Pattern**:
-- Type error: Type 'IShoppingSale' is not assignable to type 'IShoppingSale.ISummary'
-- Missing or extra fields in transformed object
-- DTO structure mismatch
+**🚨 CRITICAL ERROR**: Using parent Transformer for nested interface types (.ISummary, .IInvert, .IContent).
 
-**Root Cause**:
-Using `ShoppingSaleTransformer` for `IShoppingSale.ISummary` field type instead of `ShoppingSaleAtSummaryTransformer`. The parent and nested interface types are **DIFFERENT TYPES** with different fields!
-
-**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
+**ABSOLUTE RULE**:
 - `IShoppingSale` → Use `ShoppingSaleTransformer`
-- `IShoppingSale.ISummary` → Use `ShoppingSaleAtSummaryTransformer` (NOT `ShoppingSaleTransformer`!)
-- `IBbsArticle.IContent` → Use `BbsArticleAtContentTransformer` (NOT `BbsArticleTransformer`!)
-- `IBbsArticleComment.IInvert` → Use `BbsArticleCommentAtInvertTransformer` (NOT `BbsArticleCommentTransformer`!)
+- `IShoppingSale.ISummary` → Use `ShoppingSaleAtSummaryTransformer` (**NOT** `ShoppingSaleTransformer`!)
+- `IBbsArticle.IContent` → Use `BbsArticleAtContentTransformer`
+- `IBbsArticleComment.IInvert` → Use `BbsArticleCommentAtInvertTransformer`
 
 **Transformer Naming Algorithm**:
-1. Split DTO type name by `.` → `["IShoppingSale", "ISummary"]`
-2. Remove `I` prefix from each part → `["ShoppingSale", "Summary"]`
+1. `IShoppingSale.ISummary` → Split by `.` → `["IShoppingSale", "ISummary"]`
+2. Remove `I` prefix → `["ShoppingSale", "Summary"]`
 3. Join with `At` → `"ShoppingSaleAtSummary"`
 4. Append `Transformer` → `"ShoppingSaleAtSummaryTransformer"`
 
-**Solution**:
-
 ```typescript
-// DTO field type: IShoppingSale.ISummary
+// DTO field type
 interface IShoppingOrder {
-  id: string;
-  sale: IShoppingSale.ISummary;  // ← Note the EXACT type!
+  sale: IShoppingSale.ISummary;  // ← Note .ISummary!
 }
 
-// ❌ WRONG - Using parent Transformer for nested interface type
+// ❌ WRONG - Using parent Transformer
 export function select() {
   return {
-    select: {
-      id: true,
-      sale: ShoppingSaleTransformer.select(),  // ❌ FATAL! Creates IShoppingSale, NOT ISummary!
-    },
-  } satisfies Prisma.shopping_ordersFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingOrder> {
-  return {
-    id: input.id,
-    sale: await ShoppingSaleTransformer.transform(input.sale),  // ❌ Returns IShoppingSale, expects ISummary!
+    sale: ShoppingSaleTransformer.select(),  // ❌ Returns IShoppingSale!
   };
 }
 
-// ✅ CORRECT - Using correct Transformer for nested interface type
+// ✅ CORRECT - Use nested interface Transformer
 export function select() {
   return {
-    select: {
-      id: true,
-      sale: ShoppingSaleAtSummaryTransformer.select(),  // ✅ Creates IShoppingSale.ISummary!
-    },
-  } satisfies Prisma.shopping_ordersFindManyArgs;
+    sale: ShoppingSaleAtSummaryTransformer.select(),  // ✅ Returns ISummary!
+  };
 }
-
-export async function transform(input: Payload): Promise<IShoppingOrder> {
+export async function transform(input: Payload) {
   return {
-    id: input.id,
-    sale: await ShoppingSaleAtSummaryTransformer.transform(input.sale),  // ✅ Returns ISummary!
+    sale: await ShoppingSaleAtSummaryTransformer.transform(input.sale),  // ✅
   };
 }
 ```
 
-**More Examples**:
+**Quick Fix**: Check DTO field type → Apply naming algorithm → Use EXACT matching Transformer.
 
-```typescript
-// DTO field type: IBbsArticleComment.IInvert
-interface IBbsArticle {
-  comments: IBbsArticleComment.IInvert[];
-}
-
-// ❌ WRONG
-comments: await ArrayUtil.asyncMap(input.comments, BbsArticleCommentTransformer.transform)
-
-// ✅ CORRECT
-comments: await ArrayUtil.asyncMap(input.comments, BbsArticleCommentAtInvertTransformer.transform)
-```
-
-**Why This Causes Compilation Errors**:
-- Parent type (`IShoppingSale`) has **DIFFERENT fields** than nested type (`IShoppingSale.ISummary`)
-- Summary types typically have FEWER fields (id, name, basic info)
-- Invert types have DIFFERENT structure (reverse relationship perspective)
-- Using wrong Transformer creates **TYPE MISMATCH** with DTO expectations
-- **Result**: Compilation error because field counts or types don't match
-
-**How to Fix During Correction**:
-1. **Look at the DTO field type declaration** (e.g., `sale: IShoppingSale.ISummary`)
-2. **Apply naming algorithm** to get correct Transformer name
-3. **Use EXACT Transformer** that matches EXACT DTO type
-4. **Never guess** - always derive from the actual DTO field type
+See **REALIZE_TRANSFORMER_WRITE.md Section 2.3** for nested interface Transformer naming.
 
 ### 6.10. Selecting Non-Existent Columns (DTO Fields Not in Prisma Schema)
 
-**🚨 CRITICAL ERROR: Trying to select a field from database that doesn't exist in Prisma schema**
+**Error Pattern**: "Property 'reviewCount' does not exist on type 'shopping_sales'"
 
-**Error Pattern**:
-- "Property 'reviewCount' does not exist on type 'shopping_sales'"
-- "Property 'averageRating' does not exist on type 'Prisma.shopping_salesSelect'"
-- "Type '{ reviewCount: boolean }' has no properties in common with type 'shopping_salesSelect'"
-- Compilation error when trying to select a DTO field directly
+**🚨 CRITICAL**: DTO fields ≠ DB columns! Never select fields that don't exist in Prisma schema.
 
-**Root Cause**:
-You're trying to select a field that exists in the **DTO** but does NOT exist in the **Prisma database schema**. This is the #1 confusion: **DTO fields ≠ DB columns!**
+**Quick Fix Algorithm**:
 
-**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
-- ❌ **NEVER select a field that doesn't exist in Prisma schema** - no matter what the DTO says!
-- ✅ **If DTO field doesn't exist in DB** → It's either aggregated or computed
-- ✅ **Select the SOURCE data** (actual DB columns/relations) and compute the DTO field in `transform()`
-
-**Understanding the Mismatch**:
+1. **Identify source**: What DB data creates this DTO field?
+2. **Select source**: Actual columns, relations, or `_count`
+3. **Compute in transform()**: Bridge DB → DTO gap
 
 ```typescript
-// DTO (API Response Structure) - Business Logic Level
-interface IShoppingSale {
-  id: string;
-  name: string;
-  reviewCount: number;      // ← NOT in database!
-  averageRating: number;    // ← NOT in database!
-  totalRevenue: number;     // ← NOT in database!
-  isPopular: boolean;       // ← NOT in database!
-}
-
-// Prisma Schema (Database Structure) - Storage Level
-model shopping_sales {
-  id      String @id @db.Uuid
-  name    String @db.VarChar
-  reviews shopping_sale_reviews[]   // Relation only
-  orders  shopping_sale_orders[]    // Relation only
-}
-// Note: reviewCount, averageRating, totalRevenue, isPopular DO NOT EXIST as columns!
-```
-
-**The Fatal Error**:
-
-```typescript
-// ❌ WRONG - Trying to select non-existent columns
+// ❌ WRONG - Trying to select non-existent DTO fields
 export function select() {
   return {
     select: {
       id: true,
-      name: true,
-      reviewCount: true,     // ❌ DOES NOT EXIST! Compilation error!
-      averageRating: true,   // ❌ DOES NOT EXIST! Compilation error!
-      totalRevenue: true,    // ❌ DOES NOT EXIST! Compilation error!
-      isPopular: true,       // ❌ DOES NOT EXIST! Compilation error!
+      reviewCount: true,      // ❌ NOT in schema! Compilation error!
+      averageRating: true,    // ❌ NOT in schema! Compilation error!
     },
   } satisfies Prisma.shopping_salesFindManyArgs;
 }
-```
 
-**The Correct Solution**:
-
-**Step 1: Identify what the DTO field is derived from**
-
-```typescript
-// DTO field NOT in schema → What's the source?
-reviewCount: number;      → Comes from counting reviews relation
-averageRating: number;    → Comes from averaging reviews.rating
-totalRevenue: number;     → Comes from summing orders.total_amount
-isPopular: boolean;       → Comes from reviewCount > 10 calculation
-```
-
-**Step 2: Select the SOURCE data (not the computed result)**
-
-```typescript
-// ✅ CORRECT - Select what EXISTS in schema, compute what DOESN'T
+// ✅ CORRECT - Select SOURCE data, compute in transform()
 export function select() {
   return {
     select: {
       id: true,
-      name: true,
-      _count: {
-        select: {
-          reviews: true,  // Source for reviewCount
-        },
-      },
-      reviews: {
-        select: {
-          rating: true,   // Source for averageRating
-        },
-      },
-      orders: {
-        select: {
-          total_amount: true,  // Source for totalRevenue
-        },
-      },
+      _count: { select: { reviews: true } },  // Source for reviewCount
+      reviews: { select: { rating: true } },  // Source for averageRating
     },
   } satisfies Prisma.shopping_salesFindManyArgs;
 }
-```
 
-**Step 3: Compute the DTO fields in transform()**
-
-```typescript
-// ✅ CORRECT - Transform source data into DTO fields
 export async function transform(input: Payload): Promise<IShoppingSale> {
   return {
     id: input.id,
-    name: input.name,
-    // Compute reviewCount from _count
-    reviewCount: input._count.reviews,
-    // Compute averageRating from reviews array
+    reviewCount: input._count.reviews,  // Compute from _count
     averageRating: input.reviews.length > 0
       ? input.reviews.reduce((sum, r) => sum + r.rating, 0) / input.reviews.length
-      : 0,
-    // Compute totalRevenue from orders array
-    totalRevenue: input.orders.reduce((sum, o) => sum + Number(o.total_amount), 0),
-    // Compute isPopular from reviewCount
-    isPopular: input._count.reviews > 10,
+      : 0,  // Compute from reviews array
   };
 }
 ```
 
-**Two Common Patterns for Non-Existent Fields**:
+**Common Patterns**:
 
-**Pattern 1: Aggregated Fields (from relations)**
+| DTO Field Type | Source Data | Solution |
+|---|---|---|
+| **Aggregations** | | |
+| `commentCount: number` | `comments` relation | `_count: { select: { comments: true } }` |
+| `averageRating: number` | `reviews.rating` | Select `reviews.rating`, calculate average |
+| **Computations** | | |
+| `fullName: string` | `first_name + last_name` | Select both, concatenate |
+| `totalPrice: number` | `unit_price * quantity` | Select both, multiply |
+| `discountAmount: number` | `original_price - sale_price` | Select both, subtract |
+| `isExpired: boolean` | `expiry_date < new Date()` | Select `expiry_date`, compare |
+| `isActive: boolean` | `status === "active"` | Select `status`, compare |
+| `displayPrice: string` | `price.toFixed(2)` | Select `price`, format |
 
-```typescript
-// DTO: commentCount: number
-// Schema: comments bbs_article_comments[] (relation)
-// Solution: Use _count.select.comments
-
-// DTO: totalOrders: number
-// Schema: orders shopping_sale_orders[] (relation)
-// Solution: Use _count.select.orders
-
-// DTO: averageRating: number
-// Schema: reviews.rating (relation + field)
-// Solution: Select reviews.rating, calculate average in transform()
-```
-
-**Pattern 2: Computed/Derived Fields (from other columns)**
-
-When DTO field is calculated from DB columns through arithmetic, string operations, comparisons, etc.
-
-```typescript
-// String concatenation
-// DTO: fullName: string
-// Schema: first_name String, last_name String
-// Solution: Select both, concatenate in transform()
-//   fullName: `${input.first_name} ${input.last_name}`
-
-// Arithmetic - Multiplication
-// DTO: totalPrice: number
-// Schema: unit_price Decimal, quantity Int
-// Solution: Select both, multiply in transform()
-//   totalPrice: Number(input.unit_price) * input.quantity
-
-// Arithmetic - Subtraction
-// DTO: discountAmount: number
-// Schema: original_price Decimal, sale_price Decimal
-// Solution: Select both, subtract in transform()
-//   discountAmount: Number(input.original_price) - Number(input.sale_price)
-
-// Arithmetic - Division + Percentage
-// DTO: discountRate: number
-// Schema: original_price Decimal, sale_price Decimal
-// Solution: Select both, calculate percentage in transform()
-//   discountRate: ((Number(input.original_price) - Number(input.sale_price)) / Number(input.original_price)) * 100
-
-// Arithmetic - Addition + Subtraction
-// DTO: remainingStock: number
-// Schema: total_stock Int, sold_count Int
-// Solution: Select both, subtract in transform()
-//   remainingStock: input.total_stock - input.sold_count
-
-// Boolean comparison
-// DTO: isOnSale: boolean
-// Schema: sale_price Decimal, original_price Decimal
-// Solution: Select both, compare in transform()
-//   isOnSale: Number(input.sale_price) < Number(input.original_price)
-
-// Date comparison
-// DTO: isExpired: boolean
-// Schema: expiry_date DateTime?
-// Solution: Select expiry_date, compare with Date.now() in transform()
-//   isExpired: input.expiry_date ? input.expiry_date < new Date() : false
-
-// Formatting
-// DTO: displayPrice: string
-// Schema: price Decimal
-// Solution: Select price, format as string in transform()
-//   displayPrice: `$${Number(input.price).toFixed(2)}`
-
-// Date arithmetic
-// DTO: ageInDays: number
-// Schema: created_at DateTime
-// Solution: Select created_at, calculate difference in transform()
-//   ageInDays: Math.floor((Date.now() - input.created_at.getTime()) / (1000 * 60 * 60 * 24))
-```
-
-**Decision Tree for DTO Fields**:
-
-```
-See a DTO field? Check if it exists in Prisma schema!
-│
-├─ EXISTS in Prisma schema?
-│  └─ YES → Select it directly: { field_name: true }
-│
-├─ DOES NOT EXIST in Prisma schema?
-│  ├─ Is it a count/aggregation?
-│  │  └─ YES → Use _count or select relations and aggregate
-│  │
-│  ├─ Is it computed from other DB columns?
-│  │  └─ YES → Select source columns, compute in transform()
-│  │
-│  └─ Is it computed from related tables?
-│     └─ YES → Select relations, compute in transform()
-```
-
-**Common Examples**:
-
-```typescript
-// Example 1: Comment count
-// DTO: commentCount: number
-// Prisma: comments bbs_article_comments[]
-// Fix: _count: { select: { comments: true } }
-//      commentCount: input._count.comments
-
-// Example 2: Full name
-// DTO: fullName: string
-// Prisma: first_name String, last_name String
-// Fix: first_name: true, last_name: true
-//      fullName: `${input.first_name} ${input.last_name}`
-
-// Example 3: Average rating
-// DTO: averageRating: number
-// Prisma: reviews shopping_sale_reviews[] (reviews.rating Int)
-// Fix: reviews: { select: { rating: true } }
-//      averageRating: input.reviews.reduce(...) / input.reviews.length
-
-// Example 4: Status check
-// DTO: isActive: boolean
-// Prisma: status String ("active" | "inactive")
-// Fix: status: true
-//      isActive: input.status === "active"
-
-// Example 5: Total revenue
-// DTO: totalRevenue: number
-// Prisma: orders shopping_sale_orders[] (orders.total_amount Decimal)
-// Fix: orders: { select: { total_amount: true } }
-//      totalRevenue: input.orders.reduce((sum, o) => sum + Number(o.total_amount), 0)
-
-// Example 6: Total price (multiplication)
-// DTO: totalPrice: number
-// Prisma: unit_price Decimal, quantity Int
-// Fix: unit_price: true, quantity: true
-//      totalPrice: Number(input.unit_price) * input.quantity
-
-// Example 7: Discount amount (subtraction)
-// DTO: discountAmount: number
-// Prisma: original_price Decimal, sale_price Decimal
-// Fix: original_price: true, sale_price: true
-//      discountAmount: Number(input.original_price) - Number(input.sale_price)
-
-// Example 8: Discount rate (division + percentage)
-// DTO: discountRate: number
-// Prisma: original_price Decimal, sale_price Decimal
-// Fix: original_price: true, sale_price: true
-//      discountRate: ((Number(input.original_price) - Number(input.sale_price)) / Number(input.original_price)) * 100
-
-// Example 9: Remaining stock (subtraction)
-// DTO: remainingStock: number
-// Prisma: total_stock Int, sold_count Int
-// Fix: total_stock: true, sold_count: true
-//      remainingStock: input.total_stock - input.sold_count
-```
-
-**Why This Causes Compilation Errors**:
-- Prisma's type system is **strict** - it only knows about actual DB columns
-- Trying to select non-existent field = TypeScript compilation error
-- The compiler is telling you: "This field doesn't exist in the database schema!"
-- **Solution**: Stop trying to select it, select the source data instead
-
-**How to Fix During Correction**:
-
-1. **Read the compilation error** - it tells you which field doesn't exist
-2. **Check Prisma schema** - confirm the field is NOT there
-3. **Ask: "Where does this DTO field come from?"**
-   - Aggregation? → Use `_count`, `_sum`, etc.
-   - Calculation? → Select source fields
-   - Relation data? → Select the relation
-4. **Select the SOURCE data** (not the computed result)
-5. **Compute in transform()** using the source data
-
-**🚨 CRITICAL VERIFICATION STEPS**:
-
-When you see a DTO field:
-1. ✅ **Check Prisma schema FIRST** - does this EXACT field name exist?
-2. ✅ **Field NOT in schema?** → DO NOT select it!
-3. ✅ **Identify the source** → What DB data creates this DTO field?
-4. ✅ **Select the source** → Actual columns, relations, or aggregations
-5. ✅ **Compute in transform()** → Bridge the gap from DB to DTO
-
-**Remember**:
-- **DTO = Business logic level** (what API returns)
-- **Prisma schema = Storage level** (what DB has)
-- **Your job = Bridge the gap** (select DB data, transform to DTO format)
-- **NEVER select what doesn't exist in DB!**
+See **REALIZE_TRANSFORMER_WRITE.md Section 3.6** for detailed aggregation and computation patterns.
 
 ### 6.11. Ignoring Existing Transformers (Selecting FK or Inline When Transformer Exists)
 
-**🔥 CRITICAL ERROR: Using inline code or FK selection when a Transformer EXISTS for the relation**
+**Error Pattern**: Type error accessing relation fields, missing nested object fields
 
-**Error Pattern**:
-- Type error in transform() when accessing relation fields
-- Missing fields in nested objects
-- Type mismatch between selected data and transform logic
-- Compilation error: "Property 'X' does not exist on type 'Y'"
+**🚨 ABSOLUTE RULE**: If Transformer EXISTS for a relation → MUST USE IT (MANDATORY)
 
-**Root Cause**:
-You ignored an existing Transformer and either:
-1. Selected FK column (`category_id`) instead of relation (`category`)
-2. Wrote inline selection when `CategoryTransformer.select()` exists
-3. Wrote inline transformation when `CategoryTransformer.transform()` exists
+**Quick Fix - Three Fatal Mistakes**:
 
-**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
-- **If a Transformer EXISTS for a relation → YOU MUST USE IT**
-- **This is NOT optional, NOT a suggestion - it is MANDATORY**
-- **NEVER select FK columns directly**
-- **NEVER write inline code when Transformer exists**
-- **AI arrogance ("I can write better code") is FORBIDDEN**
-
-**Fatal Mistake #1: Selecting FK Column Instead of Relation**
+| Mistake | Wrong | Correct |
+|---|---|---|
+| **#1: FK Column** | `category_id: true` (gives only ID string) | `category: CategoryTransformer.select()` |
+| **#2: Inline select()** | `category: { select: { id: true, name: true } }` | `category: CategoryTransformer.select()` |
+| **#3: Inline transform()** | `category: { id: input.category.id, ... }` | `category: await CategoryTransformer.transform(input.category)` |
 
 ```typescript
-// Prisma schema
-model shopping_sales {
-  id          String @id @db.Uuid
-  category_id String @db.Uuid  // Foreign key column
-  category    shopping_categories @relation(fields: [category_id], references: [id])
-}
-
-// DTO
-interface IShoppingSale {
-  id: string;
-  category: IShoppingCategory;  // Full object, not just ID!
-}
-
-// ❌ FATAL ERROR - Selecting FK column
+// ❌ WRONG - Three fatal mistakes
 export function select() {
   return {
     select: {
       id: true,
-      category_id: true,  // ❌ WRONG! This is FK, not relation!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: { id: input.category_id },  // ❌ WRONG! Can't construct full object from just ID!
-  };
-}
-
-// ✅ CORRECT - Select relation, use Transformer
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),  // ✅ Select RELATION!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ Use Transformer!
-  };
-}
-```
-
-**Why This Causes Errors**:
-- FK column (`category_id`) gives you ONLY the ID string
-- DTO expects `IShoppingCategory` with multiple fields (id, name, description, etc.)
-- You CANNOT construct a full category object from just an ID
-- **Result**: Missing fields, incomplete data, type errors
-
-**Fatal Mistake #2: Inline Selection When Transformer Exists**
-
-```typescript
-// ShoppingCategoryTransformer EXISTS in the codebase
-
-// ❌ FATAL ERROR - Inline selection when Transformer exists
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: {  // ❌ WRONG! CategoryTransformer.select() exists!
-        select: {
-          id: true,
-          name: true,
-          description: true,
-        },
+      category_id: true,  // ❌ Mistake #1: FK column, not relation!
+      // OR
+      category: {         // ❌ Mistake #2: Inline when Transformer exists!
+        select: { id: true, name: true },
       },
     },
   } satisfies Prisma.shopping_salesFindManyArgs;
@@ -1868,56 +1579,14 @@ export function select() {
 export async function transform(input: Payload): Promise<IShoppingSale> {
   return {
     id: input.id,
-    category: await ShoppingCategoryTransformer.transform(input.category),
-    // ❌ This may work, but you should have used CategoryTransformer.select() above!
-  };
-}
-
-// ✅ CORRECT - Use existing Transformer
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),  // ✅ MANDATORY!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: await ShoppingCategoryTransformer.transform(input.category),  // ✅ MANDATORY!
-  };
-}
-```
-
-**Fatal Mistake #3: Inline Transformation When Transformer Exists**
-
-```typescript
-// ShoppingCategoryTransformer EXISTS in the codebase
-
-// ❌ FATAL ERROR - Inline transformation when Transformer exists
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),  // ✅ Using Transformer.select()
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-export async function transform(input: Payload): Promise<IShoppingSale> {
-  return {
-    id: input.id,
-    category: {  // ❌ WRONG! CategoryTransformer.transform() exists!
+    category: {  // ❌ Mistake #3: Inline transformation!
       id: input.category.id,
       name: input.category.name,
-      description: input.category.description,
     },
   };
 }
 
-// ✅ CORRECT - Use existing Transformer for both
+// ✅ CORRECT - Use Transformer for BOTH select() and transform()
 export function select() {
   return {
     select: {
@@ -1935,666 +1604,12 @@ export async function transform(input: Payload): Promise<IShoppingSale> {
 }
 ```
 
-**Why Using Existing Transformer is MANDATORY**:
-- **Single Source of Truth**: Only CategoryTransformer knows how to transform categories
-- **Consistency**: All code uses the same category transformation logic
-- **Maintainability**: When IShoppingCategory changes, only CategoryTransformer updates
-- **Bug Prevention**: Your inline code WILL diverge and cause bugs
-- **Architecture Respect**: Transformers exist for reuse - use them
-
-**🚨 How to Identify This Mistake**:
-
-1. **Check compilation error**: Does it mention missing fields in a nested object?
-2. **Check select()**: Are you selecting FK column instead of relation?
-3. **Check select()**: Are you writing inline `{ select: { ... } }` for a relation?
-4. **Check transform()**: Are you writing inline object mapping for a relation?
-5. **Ask**: Does a Transformer exist for this nested DTO type?
-
-**How to Fix During Correction**:
-
-**Step 1: Check if Transformer exists**
-- Look at the DTO type (e.g., `category: IShoppingCategory`)
-- Check neighbor transformers: Does `ShoppingCategoryTransformer` exist?
-- If YES → You MUST use it
-
-**Step 2: Fix select()**
-- ❌ Remove: `category_id: true` (FK column)
-- ❌ Remove: `category: { select: { ... } }` (inline selection)
-- ✅ Add: `category: ShoppingCategoryTransformer.select()`
-
-**Step 3: Fix transform()**
-- ❌ Remove: Inline object mapping `{ id: ..., name: ... }`
-- ✅ Add: `await ShoppingCategoryTransformer.transform(input.category)`
-
-**Step 4: Verify**
-- Both select() and transform() use CategoryTransformer? → ✅ Correct
-- One uses Transformer, one uses inline? → ❌ Still wrong, fix both
-
-**Common Examples**:
-
-```typescript
-// Example 1: FK selection error
-// Error: "Property 'name' does not exist on type 'string'"
-// Cause: Selected category_id (string), DTO expects IShoppingCategory (object)
-// Fix: Select category relation, use CategoryTransformer
-
-// Example 2: Inline selection error
-// Error: Field mismatch in transform()
-// Cause: Inline selection doesn't match Transformer's expected fields
-// Fix: Use CategoryTransformer.select()
-
-// Example 3: Inline transformation error
-// Error: Missing fields in output
-// Cause: Inline mapping forgot some fields that CategoryTransformer includes
-// Fix: Use CategoryTransformer.transform()
-
-// Example 4: Mixed approach error
-// Error: Type mismatch between select and transform
-// Cause: Using Transformer in select() but inline in transform() (or vice versa)
-// Fix: Use Transformer for BOTH select() AND transform()
-```
-
-**🚨 CRITICAL DECISION RULE**:
-
-```
-Does a Transformer exist for this nested DTO type?
-│
-├─ YES → YOU MUST USE IT (MANDATORY)
-│         1. Use Transformer.select() in select()
-│         2. Use Transformer.transform() in transform()
-│         3. NO EXCEPTIONS
-│         4. NO "I think inline is better"
-│         5. NO "I only need a few fields"
-│
-└─ NO → Then and ONLY then:
-          - You may write inline selection
-          - You may write inline transformation
-          - But check if Transformer is being generated in parallel!
-```
-
-**Remember**:
-- **Transformer exists = Use it** (no debate, no alternatives)
-- **FK column selection = FORBIDDEN** (always select relation)
-- **Inline when Transformer exists = FORBIDDEN** (use the Transformer)
-- **AI arrogance = Bug source** (you are NOT smarter than the existing code)
-- **Consistency > Your opinion** (architecture matters more than individual preferences)
-
-### 6.12. Confusing snake_case and camelCase (Table/Column vs Relation Names)
-
-**🔥 CRITICAL ERROR: Using snake_case for relation names when they should be camelCase**
-
-**Error Pattern**:
-- Type error: "Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'"
-- Type error: "Property 'shopping_sale_items' does not exist on type 'Prisma.shopping_salesSelect'"
-- Compilation error when trying to access relation with snake_case name
-- Cannot recover from error even after multiple correction attempts
-
-**Root Cause**:
-You confused the naming convention:
-- **Table names**: `shopping_sales`, `shopping_categories` (snake_case)
-- **Column names**: `category_id`, `created_at`, `updated_at` (snake_case)
-- **🚨 Relation names**: `category`, `items`, `createdBy` (camelCase!)
-
-**CRITICAL RULE**:
-
-```
-Prisma Schema Naming Convention:
-├─ Table name: snake_case (shopping_sales, shopping_categories)
-├─ Column name: snake_case (category_id, created_at, unit_price)
-└─ Relation name: camelCase (category, items, createdBy) ← THIS IS DIFFERENT!
-```
-
-**Why This Is Confusing**:
-- Table and columns use snake_case
-- AI assumes relations also use snake_case
-- But Prisma relations are ALWAYS camelCase by convention
-- Result: AI writes `shopping_categories: true` when it should be `category: true`
-
-**Fatal Mistake #1: Using Table Name for Relation**
-
-```typescript
-// Prisma schema
-model shopping_sales {
-  id          String @id @db.Uuid
-  category_id String @db.Uuid
-  category    shopping_categories @relation(fields: [category_id], references: [id])
-  //          ^^^^^^^^ THIS is the relation name (camelCase!)
-}
-
-model shopping_categories {
-  //    ^^^^^^^^^^^^^^^^^^ THIS is the table name (snake_case)
-  id    String @id @db.Uuid
-  name  String
-}
-
-// DTO
-interface IShoppingSale {
-  id: string;
-  category: IShoppingCategory;  // Nested object
-}
-
-// ❌ FATAL ERROR - Using table name instead of relation name
-export function select() {
-  return {
-    select: {
-      id: true,
-      shopping_categories: ShoppingCategoryTransformer.select(),
-      // ^^^^^^^^^^^^^^^^^^^ WRONG! This is TABLE name, not RELATION name!
-      // ERROR: Property 'shopping_categories' does not exist on type 'Prisma.shopping_salesSelect'
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-// ✅ CORRECT - Using relation name (camelCase)
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),
-      // ^^^^^^^^ CORRECT! This is the RELATION name from Prisma schema!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-```
-
-**Fatal Mistake #2: Using snake_case for Array Relations**
-
-```typescript
-// Prisma schema
-model shopping_sales {
-  id    String @id @db.Uuid
-  items shopping_sale_items[]
-  //    ^^^^^ THIS is the relation name (camelCase!)
-}
-
-model shopping_sale_items {
-  //    ^^^^^^^^^^^^^^^^^^^ THIS is the table name (snake_case)
-  id      String @id @db.Uuid
-  sale_id String @db.Uuid
-  sale    shopping_sales @relation(fields: [sale_id], references: [id])
-}
-
-// ❌ FATAL ERROR - Using table name
-export function select() {
-  return {
-    select: {
-      id: true,
-      shopping_sale_items: {
-      // ^^^^^^^^^^^^^^^^^^^ WRONG! This is TABLE name!
-        select: { /* ... */ },
-      },
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-// ✅ CORRECT - Using relation name
-export function select() {
-  return {
-    select: {
-      id: true,
-      items: ShoppingSaleItemTransformer.select(),
-      // ^^^^^ CORRECT! This is the RELATION name!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-```
-
-**Fatal Mistake #3: Confusing FK Column with Relation Name**
-
-```typescript
-// Prisma schema
-model shopping_sales {
-  id          String @id @db.Uuid
-  category_id String @db.Uuid  // Foreign key COLUMN (snake_case)
-  category    shopping_categories @relation(fields: [category_id], references: [id])
-  //          ^^^^^^^^ Relation name (camelCase)
-}
-
-// ❌ FATAL ERROR - Selecting FK column instead of relation
-export function select() {
-  return {
-    select: {
-      id: true,
-      category_id: true,  // ❌ This is FK COLUMN, gives you only ID string!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-// ❌ ALSO WRONG - Using snake_case for relation
-export function select() {
-  return {
-    select: {
-      id: true,
-      category_id: ShoppingCategoryTransformer.select(),
-      // ^^^^^^^^^^ WRONG! You're trying to use Transformer on FK column!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-
-// ✅ CORRECT - Using camelCase relation name
-export function select() {
-  return {
-    select: {
-      id: true,
-      category: ShoppingCategoryTransformer.select(),
-      // ^^^^^^^^ CORRECT! Relation name is camelCase!
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-```
-
-**🚨 How to Identify This Mistake**:
-
-1. **Check compilation error message**:
-   - Does it say "Property 'X' does not exist on type 'Prisma.YSelect'"?
-   - Is the property name in snake_case?
-   - Does it look like a table name?
-
-2. **Check your select() code**:
-   - Are you using `shopping_categories` instead of `category`?
-   - Are you using `shopping_sale_items` instead of `items`?
-   - Are you using any snake_case names for nested objects?
-
-3. **Re-read Prisma schema CAREFULLY**:
-   - Find the relation field in the schema
-   - The relation field name is the CORRECT name to use
-   - It's almost always camelCase, NOT the table name!
-
-**How to Fix During Correction**:
-
-**Step 1: Find the ACTUAL relation name in Prisma schema**
-
-```prisma
-model shopping_sales {
-  category    shopping_categories @relation(...)
-  //^^^^^^^^ THIS is what you should use in select()!
-  // NOT "shopping_categories" (that's the TYPE, not the field name)
-}
-```
-
-**Step 2: Replace snake_case with correct camelCase relation name**
-
-```typescript
-// ❌ Remove this:
-shopping_categories: ShoppingCategoryTransformer.select()
-
-// ✅ Replace with:
-category: ShoppingCategoryTransformer.select()
-```
-
-**Step 3: Update transform() accordingly**
-
-```typescript
-// ❌ Wrong:
-category: await ShoppingCategoryTransformer.transform(input.shopping_categories)
-
-// ✅ Correct:
-category: await ShoppingCategoryTransformer.transform(input.category)
-```
-
-**Step 4: Verify the pattern**
-
-```
-DTO field name → Prisma relation name (NOT table name!)
-category: IShoppingCategory → category: shopping_categories @relation(...)
-                               ^^^^^^^^ Use THIS name!
-items: IShoppingSaleItem[] → items: shopping_sale_items[]
-                              ^^^^^ Use THIS name!
-```
-
-**Common Examples**:
-
-```typescript
-// Example 1: shopping_sales ↔ shopping_categories
-// Table: shopping_categories (snake_case)
-// Relation in shopping_sales: category (camelCase)
-// ✅ Use: category: ShoppingCategoryTransformer.select()
-
-// Example 2: shopping_sales ↔ shopping_sale_items
-// Table: shopping_sale_items (snake_case)
-// Relation in shopping_sales: items (camelCase)
-// ✅ Use: items: ShoppingSaleItemTransformer.select()
-
-// Example 3: bbs_articles ↔ bbs_article_comments
-// Table: bbs_article_comments (snake_case)
-// Relation in bbs_articles: comments (camelCase)
-// ✅ Use: comments: BbsArticleCommentTransformer.select()
-
-// Example 4: shopping_orders ↔ mv_users
-// Table: mv_users (snake_case)
-// Relation in shopping_orders: createdBy (camelCase)
-// ✅ Use: createdBy: MvUserTransformer.select()
-```
-
-**🔥 ABSOLUTE RULE**:
-
-```
-When selecting relations in Prisma:
-1. ALWAYS look at the Prisma schema relation field name
-2. NEVER use the table name (shopping_categories)
-3. NEVER use the FK column name (category_id)
-4. ALWAYS use the relation field name (category)
-5. Relation names are ALWAYS camelCase, even when tables are snake_case
-```
-
-**Remember**:
-- **Table name ≠ Relation name** (shopping_categories vs category)
-- **Column name ≠ Relation name** (category_id vs category)
-- **Relation name is what you use in select()** (always camelCase!)
-- **This is the #1 cause of "cannot recover" compilation errors**
-- **Read the Prisma schema CAREFULLY before correcting**
-
-### 6.13. Using Shortened Names for 1:N Relations Instead of Table Full Names
-
-**🔥 CRITICAL ERROR: Using shortened relation names (reviews, orders) when Prisma schema defines table full names (shopping_sale_reviews, shopping_orders)**
-
-**Error Pattern**:
-- Type error: "Property 'reviews' does not exist on type 'Prisma.shopping_salesSelect'"
-- Type error: "Property 'orders' does not exist on type 'Prisma.YSelect'"
-- Type error: "Property 'comments' does not exist on type 'Prisma.bbs_articlesSelect'"
-- Compilation error with _count aggregation
-- Cannot access relation array even though it exists in schema
-
-**Root Cause**:
-You used a shortened relation name (e.g., `reviews`, `orders`, `comments`) instead of verifying the EXACT relation field name in the Prisma schema. The schema typically defines 1:N relation fields as **table full names** (e.g., `shopping_sale_reviews`, `shopping_orders`, `bbs_article_comments`), but you MUST always verify.
-
-**ABSOLUTE RULE from REALIZE_TRANSFORMER_WRITE.md**:
-- **1:N relations typically use TABLE FULL NAMES as relation field names**
-- **NOT shortened versions** - you must use the EXACT name from the schema
-- **Do NOT assume or guess** - the Prisma schema is the ONLY source of truth
-- **Always READ the Prisma schema carefully** to verify the exact relation field name
-
-**Understanding 1:N Relation Naming**:
-
-```prisma
-model shopping_sales {
-  id                     String  @id @db.Uuid
-  name                   String
-  shopping_sale_reviews  shopping_sale_reviews[]
-  ^^^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^
-  RELATION FIELD NAME    TABLE TYPE
-
-  // ✅ The relation field name IS "shopping_sale_reviews"
-  // ❌ NOT "reviews", NOT "saleReviews"
-}
-
-model bbs_articles {
-  id                    String  @id @db.Uuid
-  title                 String
-  bbs_article_comments  bbs_article_comments[]
-  ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^
-  RELATION FIELD NAME   TABLE TYPE
-
-  // ✅ The relation field name IS "bbs_article_comments"
-  // ❌ NOT "comments", NOT "articleComments"
-}
-```
-
-**Why This Matters**:
-- Prisma generates TypeScript types based on EXACT schema definitions
-- 1:N relations are typically defined with table full names, not shortened names
-- Using `reviews` when schema says `shopping_sale_reviews` = compilation error
-- `_count` also requires the EXACT relation field name from the schema
-- **Always verify the schema** - do not assume the naming pattern
-
-**Fatal Mistake #1: Using Shortened Name in select()**
-
-```typescript
-// Prisma schema
-model shopping_sales {
-  id                     String  @id @db.Uuid
-  name                   String
-  shopping_sale_reviews  shopping_sale_reviews[]  // ← EXACT field name
-}
-
-// DTO
-interface IShoppingSale {
-  id: string;
-  name: string;
-  reviewCount: number;  // Computed from _count.shopping_sale_reviews
-}
-
-// ❌ FATAL ERROR - Using shortened name
-export function select() {
-  return {
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          reviews: true,  // ❌ WRONG! Schema says "shopping_sale_reviews"!
-        },
-      },
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-  // ERROR: Property 'reviews' does not exist on type '_shopping_salesCountOutputTypeSelect'
-}
-
-// ✅ CORRECT - Using table full name from schema
-export function select() {
-  return {
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          shopping_sale_reviews: true,  // ✅ EXACT name from Prisma schema!
-        },
-      },
-    },
-  } satisfies Prisma.shopping_salesFindManyArgs;
-}
-```
-
-**Fatal Mistake #2: Using Shortened Name in Relation Selection**
-
-```typescript
-// Prisma schema
-model bbs_articles {
-  id                    String  @id @db.Uuid
-  title                 String
-  bbs_article_comments  bbs_article_comments[]  // ← EXACT field name
-}
-
-// DTO
-interface IBbsArticle {
-  id: string;
-  title: string;
-  comments: IBbsArticleComment[];  // DTO field name can be anything
-}
-
-// ❌ FATAL ERROR - Using shortened name matching DTO
-export function select() {
-  return {
-    select: {
-      id: true,
-      title: true,
-      comments: BbsArticleCommentTransformer.select(),
-      // ^^^^^^^ WRONG! Schema field is "bbs_article_comments"!
-    },
-  } satisfies Prisma.bbs_articlesFindManyArgs;
-  // ERROR: Property 'comments' does not exist on type 'Prisma.bbs_articlesSelect'
-}
-
-// ✅ CORRECT - Using table full name from schema
-export function select() {
-  return {
-    select: {
-      id: true,
-      title: true,
-      bbs_article_comments: BbsArticleCommentTransformer.select(),
-      // ^^^^^^^^^^^^^^^^^^^^ ✅ EXACT name from Prisma schema!
-    },
-  } satisfies Prisma.bbs_articlesFindManyArgs;
-}
-
-// In transform() - map schema field to DTO field
-export function transform(input: any): IBbsArticle {
-  return {
-    id: input.id,
-    title: input.title,
-    // Map Prisma field to DTO field
-    comments: input.bbs_article_comments.map(BbsArticleCommentTransformer.transform),
-    // ^^^^^^^ DTO field name
-    //        ^^^^^^^^^^^^^^^^^^^^^ Prisma schema field name
-  };
-}
-```
-
-**Fatal Mistake #3: Using Shortened Name in Aggregation**
-
-```typescript
-// Prisma schema
-model shopping_customers {
-  id               String  @id @db.Uuid
-  name             String
-  shopping_orders  shopping_orders[]  // ← EXACT field name
-}
-
-// DTO
-interface IShoppingCustomer {
-  id: string;
-  name: string;
-  totalOrders: number;      // Computed from _count
-  averageOrderAmount: number; // Computed from shopping_orders
-}
-
-// ❌ FATAL ERROR - Using shortened names
-export function select() {
-  return {
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          orders: true,  // ❌ WRONG!
-        },
-      },
-      orders: {  // ❌ WRONG!
-        select: {
-          total_amount: true,
-        },
-      },
-    },
-  } satisfies Prisma.shopping_customersFindManyArgs;
-  // ERROR: Property 'orders' does not exist
-}
-
-// ✅ CORRECT - Using table full names from schema
-export function select() {
-  return {
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          shopping_orders: true,  // ✅ Table full name!
-        },
-      },
-      shopping_orders: {  // ✅ Table full name!
-        select: {
-          total_amount: true,
-        },
-      },
-    },
-  } satisfies Prisma.shopping_customersFindManyArgs;
-}
-
-export function transform(input: any): IShoppingCustomer {
-  return {
-    id: input.id,
-    name: input.name,
-    // Use Prisma schema field names in input
-    totalOrders: input._count.shopping_orders,
-    averageOrderAmount: input.shopping_orders.length > 0
-      ? input.shopping_orders.reduce((sum, o) => sum + Number(o.total_amount), 0) / input.shopping_orders.length
-      : 0,
-  };
-}
-```
-
-**How to Identify This Mistake**:
-
-1. **Check compilation error message**:
-   - Does it say "Property 'X' does not exist on type 'Prisma.YSelect'"?
-   - Is X a shortened name like `reviews`, `orders`, `comments`, `items`?
-   - Does it look like a plural noun without a table prefix?
-
-2. **Check if it's a 1:N relation**:
-   - Open the Prisma schema
-   - Find the relation field
-   - Is it defined as `{table_name} {table_name}[]`?
-   - If YES, use the EXACT table name, NOT a shortened version
-
-3. **Compare with schema**:
-   ```
-   Your code:     reviews: true
-   Schema says:   shopping_sale_reviews shopping_sale_reviews[]
-                  ^^^^^^^^^^^^^^^^^^^^^ ← Use THIS!
-   ```
-
-**How to Fix During Correction**:
-
-**Step 1: Find EXACT relation field name in Prisma schema**
-
-```prisma
-model shopping_sales {
-  shopping_sale_reviews shopping_sale_reviews[]
-  ^^^^^^^^^^^^^^^^^^^^^ ← THIS is the field name!
-}
-```
-
-**Step 2: Replace ALL shortened names with table full names**
-
-```typescript
-// ❌ Remove all shortened names:
-reviews: true
-orders: true
-comments: true
-items: true
-
-// ✅ Replace with table full names from Prisma schema:
-shopping_sale_reviews: true
-shopping_orders: true
-bbs_article_comments: true
-shopping_sale_items: true
-```
-
-**Step 3: Update _count, select, and transform() consistently**
-
-```typescript
-// In select()
-_count: {
-  select: {
-    shopping_sale_reviews: true,  // ✅ Table full name
-  },
-}
-
-// In transform()
-reviewCount: input._count.shopping_sale_reviews,  // ✅ Same name
-```
-
-**Decision Rule**:
-
-```
-Is this a 1:N relation (array)?
-│
-├─ YES → Check Prisma schema for EXACT relation field name
-│  │
-│  ├─ Schema says: shopping_sale_reviews shopping_sale_reviews[]
-│  │   → Use: shopping_sale_reviews (table full name)
-│  │
-│  └─ Schema says: bbs_article_comments bbs_article_comments[]
-│      → Use: bbs_article_comments (table full name)
-│
-└─ NO (1:1 or M:1) → Usually camelCase (category, author, createdBy)
-```
-
-**Remember**:
-- **1:N relations = Table full names** (shopping_sale_reviews, bbs_article_comments)
-- **1:1 or M:1 relations = camelCase** (category, author, createdBy)
-- **ALWAYS check Prisma schema** - never guess relation names
-- **Prisma schema is NON-NEGOTIABLE** - use EXACT names only
+**Why MANDATORY**:
+- **Single Source of Truth**: Only CategoryTransformer knows correct category transformation
+- **Bug Prevention**: Inline code WILL diverge and break
+- **Consistency**: Both select() and transform() MUST use Transformer OR BOTH use inline (never mix)
+
+See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 
 ## Final Checklist
 
@@ -2624,26 +1639,23 @@ Is this a 1:N relation (array)?
 **Match errors to known mistake patterns. This is CRITICAL for efficient correction.**
 
 - [ ] ✅ **Error Pattern Recognition**:
-  - "Property 'X' does not exist on type 'Prisma.YSelect'" → Check Section 6.10 (Non-existent columns) or 6.12/6.13 (Naming issues)
-  - "Property 'X' does not exist on type '{ ... }'" in transform() → Check Section 6.1 (Missing in select) or 6.8 (Mismatched usage)
+  - "Property 'X' does not exist on type 'Prisma.YSelect'" → Check Section 6.10 (Non-existent columns)
+  - "Property 'X' does not exist on type '{ ... }'" in transform() → Check Section 6.8 (Mismatched usage)
   - "Type 'IXxx' is not assignable to type 'IXxx.ISummary'" → Check Section 6.9 (Wrong Transformer name)
   - "Type 'Date' is not assignable to type 'string'" → Check Section 6.2 (Missing toISOString())
-  - "Property 'shopping_categories' does not exist" → Check Section 6.12 (Table name vs relation name)
-  - "Property 'reviews'/'orders'/'comments' does not exist" → Check Section 6.13 (Shortened names)
-  - "Property 'category_id' does not exist" in transform() → Check Section 6.11 or 6.12 (FK vs relation)
+  - "Property 'category_id' does not exist" in transform() → Check Section 6.11 (FK vs relation)
 
 - [ ] ✅ **Identify Root Cause Category**:
-  - [ ] Missing fields in select() (6.1)
   - [ ] Missing type conversions (6.2, 6.4, 6.5)
   - [ ] Nested transformation issues (6.3, 6.6)
-  - [ ] Field naming issues (6.7, 6.12, 6.13)
+  - [ ] Field naming issues (6.7)
   - [ ] Mismatched Transformer usage (6.8)
   - [ ] Wrong Transformer name (6.9)
   - [ ] Selecting non-existent columns (6.10)
   - [ ] Ignoring existing Transformers (6.11)
 
 - [ ] ✅ **Common Mistake Cross-Check**:
-  - Review relevant sections (6.1-6.13) for detailed patterns
+  - Review relevant sections (6.1-6.11) for detailed patterns
   - Identify if multiple mistakes are contributing
   - Plan correction strategy based on root cause
 
@@ -2684,15 +1696,6 @@ Is this a 1:N relation (array)?
     - ✅ Is it spelled EXACTLY as in schema (case-sensitive)?
     - ✅ Is it a scalar field (column) or relation field?
     - ✅ If relation, what is the EXACT relation name and target table?
-
-- [ ] ✅ **Critical Naming Verification**:
-  - **M:1 and 1:1 relations**: Usually camelCase (category, author, createdBy)
-  - **1:N relations**: Usually TABLE FULL NAMES (shopping_sale_reviews, bbs_article_comments)
-  - **Scalar fields**: Always snake_case (category_id, created_at, unit_price)
-  - ✅ Verify each relation name character-by-character against schema
-  - ❌ Do NOT use table names for relations (shopping_categories ≠ category)
-  - ❌ Do NOT use shortened names for 1:N (reviews ≠ shopping_sale_reviews)
-  - ❌ Do NOT use FK columns instead of relations (category_id ≠ category)
 
 ### Phase 4: Correction Strategy Planning
 
@@ -2740,18 +1743,13 @@ Is this a 1:N relation (array)?
   - snake_case for columns (id, created_at, category_id)
 
 - [ ] ✅ **Relation Fields Correct**:
-  - For M:1/1:1 relations: camelCase names (category, author)
-  - For 1:N relations: TABLE FULL NAMES (shopping_sale_reviews, bbs_article_comments)
-  - ✅ NOT table names (shopping_categories)
-  - ✅ NOT shortened names (reviews, orders, comments)
-  - ✅ NOT FK columns (category_id)
+  - Use EXACT relation names from Prisma schema
   - If Transformer exists: `relation: TransformerName.select()`
   - If no Transformer: `relation: { select: { ... } }`
 
 - [ ] ✅ **Aggregations Correct**:
   - For `_count`, `_sum`, `_avg`: Use EXACT relation names from schema
   - Example: `_count: { select: { shopping_sale_reviews: true } }`
-  - ✅ NOT shortened (NOT `reviews: true`)
 
 - [ ] ✅ **No Non-Existent Columns Selected**:
   - DTO-only fields (computed/aggregated) NOT in select()
@@ -2799,17 +1797,13 @@ Is this a 1:N relation (array)?
   - ✅ NOT parent Transformers for nested interface types
 
 - [ ] ✅ **Relation Field Names Match Prisma Schema**:
-  - Accessing `input.category` (NOT `input.shopping_categories`)
-  - Accessing `input.shopping_sale_reviews` (NOT `input.reviews`)
-  - Accessing `input.bbs_article_comments` (NOT `input.comments`)
-  - Using EXACT relation names from Prisma schema
+  - Using EXACT relation names from Prisma schema in transform()
 
 - [ ] ✅ **Computed/Aggregated Fields Handled**:
   - Fields not in Prisma schema computed from source data
   - Example: `reviewCount: input._count.shopping_sale_reviews`
   - Example: `averageRating: input.reviews.reduce(...) / input.reviews.length`
   - Example: `fullName: ${input.first_name} ${input.last_name}`
-  - Used EXACT relation names (no shortened names)
 
 ### Phase 7: Type Safety & Consistency Verification
 
@@ -2886,9 +1880,6 @@ Is this a 1:N relation (array)?
   - ✅ NOT using `include` anywhere
   - ✅ NOT selecting non-existent fields
   - ✅ NOT fabricating relations
-  - ✅ NOT using table names for M:1/1:1 relations (shopping_categories)
-  - ✅ NOT using shortened names for 1:N relations (reviews, orders, comments)
-  - ✅ NOT using FK columns instead of relations (category_id)
   - ✅ NOT ignoring existing Transformers
   - ✅ NOT using wrong Transformer names for nested interfaces
   - ✅ NOT mixing Transformer and inline approaches
@@ -2898,7 +1889,6 @@ Is this a 1:N relation (array)?
 - [ ] ✅ **Code Compiles**:
   - All type errors resolved
   - All field access errors resolved
-  - All relation name errors resolved
   - select() and transform() are consistent
   - Payload type is correct
 

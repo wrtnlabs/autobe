@@ -863,9 +863,234 @@ if (result && 'optionalField' in result) {
 }
 ```
 
-## 12. Unrecoverable Errors - When to Give Up
+## 12. Common Manual Implementation Errors
 
-### 12.1. Identifying Unrecoverable Contradictions
+**⚠️ CRITICAL**: When manually constructing Prisma queries and transformations, these error patterns occur frequently and must be carefully checked.
+
+### 12.1. Field Omission Errors
+
+**Pattern**: Compilation succeeds but runtime errors OR type mismatch errors
+
+**Root Cause**: Forgetting required fields when manually constructing Prisma CreateInput or transforming query results
+
+**Common Omissions**:
+```typescript
+// ❌ WRONG - Missing timestamp fields
+await MyGlobal.prisma.articles.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    // ❌ MISSING: created_at, updated_at
+    author: { connect: { id: props.member.id } }
+  }
+});
+
+// ✅ CORRECT - All required fields present
+await MyGlobal.prisma.articles.create({
+  data: {
+    id: v4(),
+    title: props.body.title,
+    content: props.body.content,
+    created_at: toISOStringSafe(new Date()),  // ✅ Added
+    updated_at: toISOStringSafe(new Date()),  // ✅ Added
+    author: { connect: { id: props.member.id } }
+  }
+});
+```
+
+**FIX STRATEGY**:
+1. Read the complete Prisma schema model
+2. List ALL non-nullable fields
+3. Ensure EVERY field is present in CreateInput
+4. Add missing timestamp fields (`created_at`, `updated_at`)
+5. Add missing nullable fields with appropriate defaults
+
+### 12.2. Wrong Relation Name Errors
+
+**Pattern**: `Property 'X' does not exist on type`, especially for relation fields
+
+**Root Cause**: Using foreign key column name instead of relation name, or using incorrect relation names
+
+**Common Mistakes**:
+```typescript
+// ❌ WRONG - Using foreign key column as relation
+await MyGlobal.prisma.reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    sale_id: props.saleId,  // ❌ WRONG: This is the FK column, not relation name
+  }
+});
+
+// ✅ CORRECT - Using relation name with connect
+await MyGlobal.prisma.reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,
+    sale: { connect: { id: props.saleId } },  // ✅ CORRECT: "sale" is the relation name
+  }
+});
+
+// ❌ WRONG - Fabricated relation name
+const sale = await MyGlobal.prisma.sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    buyer: { select: { id: true, name: true } }  // ❌ Relation is "customer", not "buyer"
+  }
+});
+
+// ✅ CORRECT - Actual relation name from schema
+const sale = await MyGlobal.prisma.sales.findUnique({
+  where: { id: props.saleId },
+  select: {
+    id: true,
+    customer: { select: { id: true, name: true } }  // ✅ "customer" is the actual relation
+  }
+});
+```
+
+**FIX STRATEGY**:
+1. Read the Prisma schema model carefully
+2. Identify the EXACT relation field name (NOT the foreign key column)
+3. For M:1 and 1:1 relations: Use singular relation name (e.g., `customer`, `author`)
+4. For 1:N relations: Use plural or full table name as defined in schema
+5. NEVER guess - always verify against schema
+
+### 12.3. Type Conversion Errors
+
+**Pattern**: `Type 'Date' is not assignable to type 'string'`, `Type 'Decimal' is not assignable to type 'number'`
+
+**Root Cause**: Forgetting to convert Prisma types to API-compatible types
+
+**Common Conversions Needed**:
+```typescript
+// ❌ WRONG - No type conversions
+return {
+  id: article.id,
+  title: article.title,
+  created_at: article.created_at,    // ❌ Date object, API expects string
+  price: product.price,              // ❌ Decimal object, API expects number
+};
+
+// ✅ CORRECT - All conversions applied
+return {
+  id: article.id,
+  title: article.title,
+  created_at: toISOStringSafe(article.created_at),  // ✅ Date → ISO string
+  price: Number(product.price),                      // ✅ Decimal → number
+};
+```
+
+**FIX STRATEGY**:
+1. Identify Prisma field types from schema
+2. Apply conversions:
+   - `DateTime` → `toISOStringSafe(value)`
+   - `Decimal` → `Number(value)`
+   - `BigInt` → `value.toString()`
+3. Check ALL fields in transformation to ensure no conversions are missed
+
+### 12.4. Select/Transform Mismatch Errors
+
+**Pattern**: `Property 'X' does not exist on type`, usually in transformation code
+
+**Root Cause**: Transforming fields that weren't selected from database
+
+**Example**:
+```typescript
+// ❌ WRONG - Transform uses fields not in select
+const article = await MyGlobal.prisma.articles.findUnique({
+  where: { id: props.articleId },
+  select: {
+    id: true,
+    title: true,
+    // ❌ MISSING: created_at, author
+  }
+});
+
+return {
+  id: article.id,
+  title: article.title,
+  created_at: toISOStringSafe(article.created_at),  // ❌ ERROR: not selected
+  author: {                                          // ❌ ERROR: not selected
+    id: article.author.id,
+    name: article.author.name,
+  }
+};
+
+// ✅ CORRECT - Select matches transform
+const article = await MyGlobal.prisma.articles.findUnique({
+  where: { id: props.articleId },
+  select: {
+    id: true,
+    title: true,
+    created_at: true,                                // ✅ Added
+    author: { select: { id: true, name: true } }     // ✅ Added
+  }
+});
+
+return {
+  id: article.id,
+  title: article.title,
+  created_at: toISOStringSafe(article.created_at),  // ✅ Works now
+  author: {
+    id: article.author.id,
+    name: article.author.name,
+  }
+};
+```
+
+**FIX STRATEGY**:
+1. Review the return transformation code
+2. List ALL fields accessed in transformation
+3. Ensure ALL those fields are in the select statement
+4. Add missing fields to select
+
+### 12.5. Null vs Undefined Confusion
+
+**Pattern**: Type assignment errors with null/undefined mismatch
+
+**Root Cause**: Not checking the EXACT interface definition to determine optional (`?:`) vs nullable (`| null`)
+
+**Critical Rule**: Read the ACTUAL DTO interface, don't guess!
+
+```typescript
+// Suppose the interface is:
+interface IArticle {
+  id: string;
+  title: string;
+  summary?: string;          // Optional - use undefined, NOT null
+  description: string | null; // Nullable - use null, NOT undefined
+}
+
+// ❌ WRONG - Returning wrong null/undefined
+return {
+  id: article.id,
+  title: article.title,
+  summary: article.summary ?? null,          // ❌ Should be undefined
+  description: article.description ?? undefined, // ❌ Should be null
+};
+
+// ✅ CORRECT - Matches interface definition
+return {
+  id: article.id,
+  title: article.title,
+  summary: article.summary ?? undefined,     // ✅ Optional field
+  description: article.description ?? null,  // ✅ Nullable field
+};
+```
+
+**FIX STRATEGY**:
+1. Read the EXACT interface definition in the error message
+2. Check field signature: `field?: Type` vs `field: Type | null`
+3. For `field?: Type` → use `undefined` as default
+4. For `field: Type | null` → use `null` as default
+5. See Section 9.1 for comprehensive patterns
+
+## 13. Unrecoverable Errors - When to Give Up
+
+### 13.1. Identifying Unrecoverable Contradictions
 
 An error is **unrecoverable** when:
 
@@ -884,7 +1109,7 @@ An error is **unrecoverable** when:
    - Schema has no supporting relations
    - Cannot construct required shape from available data
 
-### 12.2. Correct Implementation for Unrecoverable Errors
+### 13.2. Correct Implementation for Unrecoverable Errors
 
 ```typescript
 /**
@@ -906,7 +1131,7 @@ export async function method__path_to_endpoint(props: {
 }
 ```
 
-## 13. Critical: Error Handling with HttpException
+## 14. Critical: Error Handling with HttpException
 
 **MANDATORY**: Always use HttpException for error handling:
 ```typescript
@@ -933,11 +1158,11 @@ throw new HttpException("Forbidden", 403);
 - 409: Conflict (duplicate resource, state conflict)
 - 500: Internal Server Error (unexpected error)
 
-## 14. Batch Error Resolution - Fix Multiple Similar Errors
+## 15. Batch Error Resolution - Fix Multiple Similar Errors
 
 When you encounter **multiple similar errors** across different files, apply the same fix pattern to ALL occurrences:
 
-### 14.1. Deleted_at Field Errors (Most Common)
+### 15.1. Deleted_at Field Errors (Most Common)
 
 **ERROR**: `'deleted_at' does not exist in type`
 
@@ -961,13 +1186,13 @@ await MyGlobal.prisma.table.update({
 });
 ```
 
-### 14.2. Type Assignment Patterns
+### 15.2. Type Assignment Patterns
 
 If you see the same type assignment error pattern:
 1. Identify the conversion needed (e.g., `string` → enum)
 2. Apply the SAME conversion pattern to ALL similar cases
 
-## 15. NEVER DO
+## 16. NEVER DO
 
 1. **NEVER** use `as any` to bypass errors
 2. **NEVER** change API return types to fix errors
@@ -981,14 +1206,14 @@ If you see the same type assignment error pattern:
 10. **NEVER** use enum or imported constants for HttpException status codes - use numeric literals only
 11. **NEVER** perform runtime type validation on API parameters - they are already validated at controller level
 
-## 16. BUT DO (When Necessary for Compilation)
+## 17. BUT DO (When Necessary for Compilation)
 
 1. **DO** completely rewrite implementation approach if current code won't compile
 2. **DO** change implementation strategy entirely (e.g., batch operations → individual operations)
 3. **DO** restructure complex queries into simpler, compilable parts
 4. **DO** find alternative ways to implement the SAME functionality with different code
 
-## 17. ALWAYS DO
+## 18. ALWAYS DO
 
 1. **ALWAYS** check if error is due to schema-API mismatch
 2. **ALWAYS** achieve compilation success - even if it requires major refactoring
@@ -1010,7 +1235,7 @@ If you see the same type assignment error pattern:
    ```
 8. **ALWAYS** maintain API functionality - change implementation, not the contract
 
-## 18. Quick Reference Table
+## 19. Quick Reference Table
 
 | Error Code | Common Cause | First Try | If Fails |
 |------------|-------------|-----------|----------|
@@ -1028,11 +1253,11 @@ If you see the same type assignment error pattern:
 | 2741 | Property missing in type | Add missing required property | Check type definition |
 | 2769 | Wrong function args | Fix parameters | Check overload signatures |
 
-## 19. Final Checklist
+## 20. Final Checklist
 
 Before submitting your corrected code, verify ALL of the following:
 
-### 19.1. Compiler Authority Verification
+### 20.1. Compiler Authority Verification
 
 - [ ] NO compiler errors remain after my fix
 - [ ] I have NOT dismissed or ignored any compiler warnings
@@ -1042,9 +1267,9 @@ Before submitting your corrected code, verify ALL of the following:
 
 **CRITICAL REMINDER**: The TypeScript compiler is the ABSOLUTE AUTHORITY. If it reports errors, your code is BROKEN - no exceptions, no excuses, no arguments.
 
-### 19.2. Critical Checks
+### 20.2. Critical Checks
 
-#### 19.2.1. Absolutely NO Runtime Type Validation
+#### 20.2.1. Absolutely NO Runtime Type Validation
 
 - [ ] **DELETED all `typeof` checks on parameters**
 - [ ] **DELETED all `instanceof` checks on parameters**
@@ -1056,14 +1281,14 @@ Before submitting your corrected code, verify ALL of the following:
 - [ ] Remember: Parameters are ALREADY validated at controller level
 - [ ] Remember: JSON Schema validation is PERFECT and COMPLETE
 
-#### 19.2.2. Error Handling
+#### 20.2.2. Error Handling
 
 - [ ] Using `HttpException` with numeric status codes only
 - [ ] No `throw new Error()` statements
 - [ ] No enum imports for HTTP status codes
 - [ ] All errors have appropriate messages and status codes
 
-#### 19.2.3. Prisma Operations
+#### 20.2.3. Prisma Operations
 
 - [ ] Verified all fields exist in schema.prisma
 - [ ] Checked nullable vs required field types
@@ -1071,37 +1296,37 @@ Before submitting your corrected code, verify ALL of the following:
 - [ ] Handled relations correctly (no non-existent includes)
 - [ ] Converted null to undefined where needed
 
-#### 19.2.4. Date Handling
+#### 20.2.4. Date Handling
 
 - [ ] All Date objects converted to ISO strings with `toISOStringSafe()`
 - [ ] No `: Date` type declarations anywhere
 - [ ] No `new Date()` return values without conversion
 - [ ] Handled nullable dates properly
 
-#### 19.2.5. Type Safety
+#### 20.2.5. Type Safety
 
 - [ ] All TypeScript compilation errors resolved
 - [ ] No type assertions unless absolutely necessary
 - [ ] **MANDATORY**: Replaced ALL type annotations (`:`) with `satisfies` for Prisma/DTO variables
 - [ ] Proper handling of union types and optionals
 
-### 19.3. Code Quality Checks
+### 20.3. Code Quality Checks
 
-#### 19.3.1. Business Logic
+#### 20.3.1. Business Logic
 
 - [ ] Preserved all business validation rules (NOT type checks)
 - [ ] Maintained functional requirements
 - [ ] No functionality removed or broken
 - [ ] Error messages are meaningful
 
-#### 19.3.2. Code Structure
+#### 20.3.2. Code Structure
 
 - [ ] Following existing project patterns
 - [ ] No unnecessary refactoring beyond error fixes
 - [ ] Clean, readable code
 - [ ] No commented-out code left behind
 
-#### 19.3.3. Final Verification
+#### 20.3.3. Final Verification
 
 - [ ] Code compiles without ANY errors
 - [ ] All imports are auto-provided (no manual imports)
@@ -1109,7 +1334,7 @@ Before submitting your corrected code, verify ALL of the following:
 - [ ] No console.log statements
 - [ ] Ready for production deployment
 
-### 19.4. Remember the Golden Rule
+### 20.4. Remember the Golden Rule
 
 **If you see runtime type checking → DELETE IT IMMEDIATELY → No exceptions**
 

@@ -1096,7 +1096,14 @@ Use Pattern B when:
 - ❌ Custom transformation logic is required beyond what collectors/transformers provide
 - ❌ Simple operations where creating a collector/transformer would be excessive overhead
 
-**CRITICAL**: Pattern B requires you to manually implement ALL the transformations that collectors/transformers normally handle automatically.
+**CRITICAL**: Pattern B requires you to manually implement ALL the data transformation logic.
+
+**⚠️ CRITICAL RESPONSIBILITY**: When manually constructing Prisma queries and transformations:
+- You MUST ensure EVERY required field from the Prisma schema is handled
+- You MUST verify relation names match the schema EXACTLY
+- Field omissions WILL cause compilation errors or runtime failures
+- Wrong relation names WILL cause TypeScript compilation errors
+- Fabricated field names WILL cause compilation errors
 
 ## Why Manual Construction is Sometimes Necessary (Concept)
 
@@ -1422,6 +1429,8 @@ const article = await MyGlobal.prisma.bbs_articles.findUnique({
 - ❌ Guessing field names: `customer_name` when schema has `customerName`
 - ❌ Typos: `create_at` instead of `created_at`
 - ❌ Wrong case: `CustomerId` when schema has `customer_id`
+- ❌ Forgetting timestamp fields: Omitting `created_at` or `updated_at` from select
+- ❌ Fabricating fields: Using fields that don't exist in the schema at all
 
 ### Section 2.2: Understanding Data Transformation from Prisma to API
 
@@ -1533,6 +1542,35 @@ return {
 - Handle nullable nested objects
 - Apply all transformation rules to nested data (dates, nulls, branded types)
 - For arrays: use `.map()` to transform each item
+
+#### 5. Additional Type Conversions
+
+**Decimal to Number** (for Prisma Decimal types):
+```typescript
+// Prisma schema: price Decimal
+// API expects: number
+
+return {
+  price: Number(product.price),  // Convert Decimal to number
+  discount: Number(product.discount)
+}
+```
+
+**BigInt to String** (for large integers):
+```typescript
+// Prisma schema: count BigInt
+// API expects: string (to preserve precision)
+
+return {
+  count: product.count.toString()
+}
+```
+
+**⚠️ CRITICAL**: You MUST manually apply these type conversions:
+- `DateTime` → `toISOStringSafe()` (most common)
+- `Decimal` → `Number()` for price/currency fields
+- `BigInt` → `.toString()` for large counters
+- `null` → `undefined` for optional fields vs `null` for nullable fields
 
 ### Section 2.3: Prisma Schema Verification for READ Operations
 
@@ -2107,6 +2145,8 @@ await MyGlobal.prisma.shopping_sale_reviews.create({
 - ❌ Guessing relation names instead of verifying in schema
 - ❌ Typos in field names: `create_at` instead of `created_at`
 - ❌ Wrong case: `CustomerId` when schema has `customer_id`
+- ❌ **Forgetting timestamp fields**: Omitting `created_at` or `updated_at` will cause errors
+- ❌ **Forgetting nullable fields**: Omitting optional fields that should be set to `null` or `undefined`
 
 ---
 
