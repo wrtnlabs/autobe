@@ -22,7 +22,7 @@ const iterate = async (props: {
         props.project,
         key,
         (value as any)?.type ??
-          (value as any)?.oneOf.map((v: any) => v.type ?? v.const),
+          (value as any)?.oneOf?.map((v: any) => v.type ?? v.const),
       );
 };
 
