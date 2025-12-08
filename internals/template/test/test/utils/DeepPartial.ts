@@ -1,3 +1,11 @@
-export type DeepPartial<T extends object> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
+type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+
+export type DeepPartial<T> = T extends Primitive
+  ? T
+  : T extends (...args: unknown[]) => unknown
+    ? T
+    : T extends Array<infer U>
+      ? Array<DeepPartial<U>>
+      : T extends object
+        ? { [P in keyof T]?: DeepPartial<T[P]> }
+        : T;
