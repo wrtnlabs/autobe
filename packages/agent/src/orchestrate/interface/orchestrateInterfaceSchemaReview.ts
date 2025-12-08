@@ -234,6 +234,7 @@ function createController<Model extends ILlmSchema.Model>(
           .prisma!.result.data.files.map((f) => f.models.map((m) => m.name))
           .flat(),
       ),
+      operations: props.preliminary.getAll().interfaceOperations,
       schemas: result.data.request.content,
       path: "$input.request.content",
     });
