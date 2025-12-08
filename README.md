@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
 ## Getting Started
 
 ```bash
-git clone https://github.com/wrtnlabs/autobe
+git clone https://github.com/wrtnlabs/autobe --depth=1
 cd autobe
 pnpm install
 pnpm run playground
