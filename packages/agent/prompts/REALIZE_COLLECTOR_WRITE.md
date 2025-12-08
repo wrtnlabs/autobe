@@ -85,29 +85,110 @@ This structured workflow prevents hallucination and ensures quality through expl
 
 ### Phase 1: Plan - Deep Analysis Before Coding
 
-**🚨 CRITICAL GOAL: Read the actual Prisma schema thoroughly to prevent fabricating non-existent fields.**
+**🚨 CRITICAL: This phase has TWO outputs - a narrative plan AND structured mappings**
 
-Your planning should accomplish these objectives:
+Your planning phase must produce:
+1. **Narrative Plan (`plan` field)**: Your written analysis and strategy
+2. **Structured Mappings (`mappings` field)**: Field-by-field mapping table
+
+**The `mappings` field is your Chain-of-Thought (CoT) mechanism** - it forces you to explicitly think through EVERY Prisma field before coding, preventing omissions and hallucinations.
+
+#### Part A: Narrative Plan
+
+Your narrative planning should accomplish these objectives:
 
 1. **Understand the Prisma Schema**:
    - Read through the actual schema carefully - every field, every relation
    - Note the exact field names (especially relation names, NOT foreign key column names)
    - Understand nullability, types, and relationship structures
-   - **This is the single most important step - NEVER fabricate or imagine fields**
 
 2. **Understand the DTO Structure**:
    - Identify all properties from the DTO type
    - Note nested objects that might need other collectors
    - Understand optional vs required fields
 
-3. **Plan the Mapping**:
+3. **Plan the Overall Strategy**:
    - Think through how each DTO property maps to Prisma fields
    - Identify which fields need generation (UUIDs, timestamps)
    - Identify which fields need connection (relations)
    - Determine which neighbor collectors to reuse for nested creates
    - Consider edge cases (optional fields, arrays, type conversions)
 
-**How you structure your analysis is up to you** - use whatever format helps you think clearly and thoroughly.
+**How you structure your narrative is up to you** - use whatever format helps you think clearly and thoroughly.
+
+#### Part B: Structured Mappings (CoT Mechanism)
+
+**CRITICAL: The `mappings` field is MANDATORY and will be validated**
+
+After your narrative plan, you MUST create a complete field-by-field mapping table covering EVERY member from the Prisma schema. This structured approach:
+
+- **Prevents omissions**: You can't skip fields - validator checks completeness
+- **Forces explicit decisions**: For each field, you must decide `kind`, `nullable`, and `how`
+- **Enables early validation**: System validates mappings before you write code
+- **Documents your thinking**: Clear record of your field handling strategy
+
+**For each Prisma member, specify:**
+
+```typescript
+{
+  member: "article",        // Exact field/relation name from Prisma
+  kind: "belongsTo",        // "scalar" | "belongsTo" | "hasOne" | "hasMany"
+  nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
+  how: "Connect using props.bbsArticle.id"  // Brief strategy
+}
+```
+
+**The `kind` property forces you to classify BEFORE deciding handling**:
+- `"scalar"` → Direct value assignment
+- `"belongsTo"` → Use `{ connect: { id: ... } }` syntax
+- `"hasOne"` → Use `{ create: {...} }` syntax
+- `"hasMany"` → Use `{ create: [...] }` syntax
+
+**The `nullable` property forces you to identify nullability constraints**:
+- For scalar/belongsTo: `true` or `false` (affects null vs undefined handling)
+- For hasMany/hasOne: Always `null` (not applicable to these kinds)
+
+**Example mappings for BbsArticleCommentCollector:**
+
+```typescript
+mappings: [
+  // Scalar fields
+  { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" },
+  { member: "content", kind: "scalar", nullable: false, how: "From props.body.content" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Default to null" },
+
+  // BelongsTo relations
+  { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.bbsArticle.id" },
+  { member: "user", kind: "belongsTo", nullable: false, how: "Connect using props.bbsUser.id" },
+  { member: "userSession", kind: "belongsTo", nullable: false, how: "Connect using props.bbsUserSession.id" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Connect if props.body.parent_id exists, else undefined" },
+
+  // HasMany relations
+  { member: "children", kind: "hasMany", nullable: null, how: "Cannot create (reverse relation)" },
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentFileCollector" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentTagCollector" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Inline creation (no collector exists)" },
+  { member: "bbs_article_comment_hits", kind: "hasMany", nullable: null, how: "Cannot create at this point" },
+  { member: "bbs_article_comment_likes", kind: "hasMany", nullable: null, how: "Cannot create at this point" },
+]
+```
+
+**Why mappings are critical:**
+
+1. **Early Error Detection**: System validates your mappings against actual Prisma schema
+2. **Complete Coverage**: Ensures you don't miss any fields
+3. **Correct Classification**: Forces you to identify scalar vs relation, nullable vs required
+4. **Clear Documentation**: Your handling strategy for each field is explicit
+
+**The validator will check:**
+- Every Prisma field is in your mappings (no omissions)
+- No fabricated fields (all members exist in schema)
+- Correct kind classification (scalar vs belongsTo vs hasMany)
+- Correct nullability (matches Prisma schema)
+
+Focus on creating complete and accurate mappings - this is your most important planning deliverable.
 
 ---
 
@@ -733,7 +814,211 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 
 ### 1.2. Understanding Prisma CreateInput Syntax
 
-Before writing collectors, you must understand how Prisma's CreateInput system works. This knowledge is fundamental to generating correct collectors.
+Before writing collectors, you must understand how Prisma's CreateInput system works through a comprehensive real-world example.
+
+#### Complete Example: BBS Article Comment Collector
+
+Let's start with a real collector implementation to understand the patterns, then explain the concepts.
+
+**Given Prisma Schema:**
+
+```prisma
+model bbs_article_comments {
+  id String @id @db.Uuid
+  bbs_article_id String @db.Uuid
+  parent_id String? @db.Uuid
+  bbs_user_id String @db.Uuid
+  bbs_user_session_id String @db.Uuid
+  content String
+  created_at DateTime @db.Timestamptz
+  updated_at DateTime @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  article bbs_articles @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
+  parent bbs_article_comments? @relation("bbs_article_comments_reply", fields: [parent_id], references: [id], onDelete: Cascade)
+  user bbs_users @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
+  userSession bbs_user_sessions @relation(fields: [bbs_user_session_id], references: [id], onDelete: Cascade)
+
+  children bbs_article_comments[] @relation("bbs_article_comments_reply")
+  bbs_article_comment_files bbs_article_comment_files[]
+  bbs_article_comment_tags bbs_article_comment_tags[]
+  bbs_article_comment_links bbs_article_comment_links[]
+  bbs_article_comment_hits bbs_article_comment_hits[]
+  bbs_article_comment_likes bbs_article_comment_likes[]
+}
+
+model bbs_article_comment_links {
+  id                     String    @id @db.Uuid
+  bbs_article_comment_id String    @db.Uuid
+  url                    String    @db.Text
+  sequence               Int
+  created_at             DateTime  @db.Timestamptz
+  updated_at             DateTime  @db.Timestamptz
+  deleted_at             DateTime? @db.Timestamptz
+
+  comment bbs_article_comments @relation(fields: [bbs_article_comment_id], references: [id], onDelete: Cascade)
+}
+```
+
+**Given DTO:**
+
+```typescript
+export interface IBbsArticleComment {
+  id: string & tags.Format<"uuid">;
+  parent: IBbsArticleComment.ISummary | null;
+  writer: IBbsUser.ISummary;
+  tags: IBbsArticleCommentTag[];
+  files: IBbsArticleCommentFile[];
+  links: IBbsArticleCommentLink[];
+  content: string;
+  hit: number;
+  like: number;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  deleted_at: (string & tags.Format<"date-time">) | null;
+}
+
+export namespace IBbsArticleComment {
+  export interface ICreate {
+    parent_id: (string & tags.Format<"uuid">) | null;
+    content: string;
+    tags: IBbsArticleCommentTag.ICreate[];
+    files: IBbsArticleCommentFile.ICreate[];
+    links: IBbsArticleCommentLink.ICreate[];
+  }
+}
+
+export interface IBbsArticleCommentLink {
+  id: string & tags.Format<"uuid">;
+  url: string & tags.Format<"url">;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  deleted_at: (string & tags.Format<"date-time">) | null;
+}
+
+export namespace IBbsArticleCommentLink {
+  export interface ICreate {
+    url: string & tags.Format<"url">;
+  }
+}
+```
+
+**Generated Collector:**
+
+```typescript
+export namespace BbsArticleCommentCollector {
+  export async function collect(props: {
+    body: IBbsArticleComment.ICreate;
+    bbsArticle: IEntity;
+    bbsUser: IEntity;
+    bbsUserSession: IEntity;
+  }) {
+    // Declare id variable for re-using in nested creates
+    const id: string = v4();
+
+    return {
+      //----
+      // SCALAR FIELDS
+      //----
+      // All scalar columns from Prisma schema
+      id,
+      content: props.body.content,
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
+
+      // Never directly write FK columns:
+      // - bbs_article_id ❌
+      // - parent_id ❌
+      // - bbs_user_id ❌
+      // - bbs_user_session_id ❌
+
+      //----
+      // BELONGED RELATIONS (BelongsTo)
+      //----
+      // Use relation field names with connect syntax
+      article: {
+        connect: { id: props.bbsArticle.id },
+      },
+      user: {
+        connect: { id: props.bbsUser.id },
+      },
+      userSession: {
+        connect: { id: props.bbsUserSession.id },
+      },
+      // Nullable FK: use undefined (NOT null!)
+      parent: props.body.parent_id
+        ? {
+            connect: { id: props.body.parent_id },
+          }
+        : undefined,
+
+      //----
+      // HAS RELATIONS (HasMany)
+      //----
+      // Reuse neighbor collectors when they exist
+      bbs_article_comment_files: props.body.files.length
+        ? {
+            create: await ArrayUtil.asyncMap(
+              props.body.files,
+              async (elem, i) =>
+                await BbsArticleCommentFileCollector.collect({
+                  body: elem,
+                  bbsArticleComment: { id },
+                  sequence: i,
+                }),
+            )
+          }
+        : undefined,
+
+      bbs_article_comment_tags: props.body.tags.length
+        ? {
+            create: await ArrayUtil.asyncMap(
+              props.body.tags,
+              async (elem) =>
+                await BbsArticleCommentTagCollector.collect({
+                  body: elem,
+                  bbsArticleComment: { id },
+                }),
+            )
+          }
+        : undefined,
+
+      // Inline creation when no neighbor collector exists
+      bbs_article_comment_links: props.body.links.length
+        ? {
+            create: await ArrayUtil.asyncMap(
+              props.body.links,
+              async (elem, i) => {
+                const linkId: string = v4();
+                return {
+                  id: linkId,
+                  comment: {
+                    connect: { id },
+                  },
+                  url: elem.url,
+                  sequence: i,
+                  created_at: new Date(),
+                  updated_at: new Date(),
+                  deleted_at: null,
+                } satisfies Prisma.bbs_article_comment_linksCreateInput;
+              },
+            )
+          }
+        : undefined,
+
+      // Don't create relations that cannot be created at this point:
+      // - children (reverse side of parent relation)
+      // - bbs_article_comment_hits
+      // - bbs_article_comment_likes
+    } satisfies Prisma.bbs_article_commentsCreateInput;
+  }
+}
+```
+
+This example demonstrates all the key patterns you'll use in collector generation. Now let's break down the concepts.
+
+#### Core Concepts from the Example
 
 **What is Prisma CreateInput?**
 
@@ -744,23 +1029,23 @@ Prisma CreateInput is a TypeScript type that defines the exact structure of data
 1. **Scalar Fields**: Regular database columns (String, Int, DateTime, Boolean, etc.)
 2. **Relation Fields**: Foreign key relationships to other tables
 
-**How to Set Scalar Fields:**
+**Pattern 1: Scalar Fields - Direct Assignment**
+
+Looking at the example above, scalar fields are assigned values directly:
 
 ```typescript
-// Prisma CreateInput for shopping_sales table
 {
-  // Scalar fields: Assign values directly
   id: v4(),                  // UUID primary key
-  name: "Product Name",      // String field
-  price: 29.99,              // Decimal field
-  created_at: new Date(),    // DateTime field
-  is_active: true,           // Boolean field
+  content: props.body.content,  // String field from DTO
+  created_at: new Date(),    // DateTime with default value
+  updated_at: new Date(),    // DateTime with default value
+  deleted_at: null,          // Nullable DateTime with null default
 }
 ```
 
 Each scalar field is assigned a value directly. Simple and straightforward.
 
-**How to Handle Relation Fields:**
+**Pattern 2: Relation Fields - NEVER Direct FK Assignment**
 
 Relation fields are MORE COMPLEX and require special Prisma syntax. You **NEVER** assign foreign key values directly.
 
@@ -1106,46 +1391,44 @@ return {
 
 #### Prisma Schema Verification
 
-**🚨 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
+**Prisma Schema is Your Reference - The mappings Field Ensures Accuracy**
 
-The #1 reason collectors fail is fabricating non-existent fields/relations or using wrong relation names.
+The structured `mappings` field you create during planning serves as your primary safeguard against field errors. When you create complete and accurate mappings, the system validates them against the Prisma schema BEFORE you write any code.
 
-**Before writing ANY field or relation in collect():**
-1. **READ the Prisma schema thoroughly** - every line, every field, every relation
-2. **VERIFY each field EXISTS** in the exact table with EXACT spelling (case-sensitive)
-3. **VERIFY field type** - scalar (direct assignment) vs relation (connect/create)
-4. **For relations, VERIFY the RELATION NAME** - NOT the foreign key column name
-   - Use `customer` (relation name), NOT `customer_id` (column name)
-   - Use `sale` (relation name), NOT `shopping_sale_id` (column name)
+**Your workflow:**
+1. **Read the Prisma schema** to understand structure
+2. **Create complete mappings** covering every field/relation with correct `kind` and `nullable`
+3. **System validates mappings** - catches missing fields, fabricated fields, wrong classification
+4. **Write draft based on validated mappings** - if mappings are correct, draft will be correct
 
-**ABSOLUTE PROHIBITIONS:**
-- ❌ NEVER assume, fabricate, or guess field/relation names
-- ❌ NEVER use foreign key column names (`_id` suffixed) directly in CreateInput
-- ❌ NEVER copy DTO field names without verifying in Prisma schema
-- ❌ If it's not in the Prisma schema, it DOES NOT EXIST
+**The mappings validation catches:**
+- Missing fields (you didn't include all Prisma members)
+- Fabricated fields (member doesn't exist in Prisma schema)
+- Wrong kind classification (marked as scalar when it's a relation)
+- Wrong nullability (doesn't match Prisma schema)
 
-**Examples:**
+**Key reminders when reading the schema:**
+- **Relation field names** vs FK column names: Use `customer` (relation), NOT `customer_id` (column)
+- **Exact spelling**: Field names are case-sensitive
+- **Nullability**: Check if fields have `?` suffix
+
+**Common patterns to remember:**
 
 ```typescript
-// ❌ WRONG - Fabricated or unverified fields/relations
-{
-  id: v4(),
-  nonExistentField: "value",           // FATAL! Not in schema
-  shopping_sale_id: props.sale.id,     // FATAL! Use sale: { connect: ... }
-  customer_id: props.customer.id,      // FATAL! Use customer: { connect: ... }
-  products: { connect: {...} },        // FATAL! Fabricated relation name
-}
+// ✅ Correct mapping: relation field name
+{ member: "customer", kind: "belongsTo", nullable: false, how: "Connect using props.customer.id" }
 
-// ✅ CORRECT - Verified in Prisma schema
-{
-  id: v4(),
-  name: props.body.name,               // ✅ Confirmed "name String" exists
-  sale: { connect: { id: props.sale.id } },      // ✅ Confirmed "sale" relation exists
-  customer: { connect: { id: props.customer.id } }, // ✅ Confirmed "customer" relation exists
-}
+// ❌ Wrong: using FK column name instead
+{ member: "customer_id", kind: "scalar", nullable: false, how: "From props.customer.id" }
+
+// ✅ Correct: optional relation uses undefined
+{ member: "parent", kind: "belongsTo", nullable: true, how: "Connect if exists, else undefined" }
+
+// ❌ Wrong: using null instead of undefined
+{ member: "parent", kind: "belongsTo", nullable: true, how: "Connect if exists, else null" }
 ```
 
-**If unsure, RE-READ the schema. Never guess relation names.**
+**If your mappings pass validation, your draft will likely be correct.** Focus on creating accurate mappings during the planning phase.
 
 #### Indirect Reference Pattern - When FK Information Requires Database Lookup
 
@@ -2233,31 +2516,123 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
 
 #### plan
 
-**Collector implementation strategy**
+**Collector implementation strategy (narrative)**
 
-Document your approach:
-- **Props structure**: What parameters will the collector accept? (body, auth, params, etc.)
+This is your narrative planning where you think through the overall approach and strategy. Document your thinking about:
+
+- **Props structure**: What parameters will the collector accept? (body, IEntity references, nested context)
 - **DTO to Prisma mapping**: Which DTO type maps to which Prisma table
-- **Field mappings**: DTO property -> DB column transformations
-- **Nested relationships**: How to handle them (create vs connect)
+- **Overall strategy**: High-level approach to field mappings and relationships
+- **Nested relationships**: Which neighbor collectors to reuse, which to inline
 - **UUID generation points**: Which fields need v4() generation
 - **Special transformations**: Flattening, concatenation, etc.
+
+**Keep this at a strategic level** - you'll provide detailed field-by-field mappings in the `mappings` field.
 
 Example:
 ```
 Props structure:
-- body: IShoppingSaleUnitStock.ICreate
-- options: Shared context from parent
-- sequence: Array position
+- body: IBbsArticleComment.ICreate
+- bbsArticle: IEntity (from path parameter)
+- bbsUser: IEntity (from auth actor)
+- bbsUserSession: IEntity (from auth session)
 
-Collecting IShoppingSaleUnitStock.ICreate to shopping_sale_snapshot_unit_stocks:
-- Generate UUID for id
-- name, sequence: direct mapping from props
-- choices: nested create with array mapping, pass options to child collectors
-- price.real to real_price, price.nominal to nominal_price
-- quantity to both quantity field and mv_inventory.income
-- Create nested mv_inventory with income/outcome
+Strategy:
+- Collecting IBbsArticleComment.ICreate to bbs_article_comments table
+- Generate UUID for id, use for nested creates
+- Scalar fields: content from DTO, timestamps with defaults, deleted_at as null
+- BelongsTo relations: Connect article/user/userSession using IEntity refs
+- Optional parent relation: Connect if parent_id exists, else undefined
+- HasMany: Reuse BbsArticleCommentFileCollector and BbsArticleCommentTagCollector
+- Inline creation for bbs_article_comment_links (no collector exists)
+- Skip children/hits/likes (cannot create at this point)
 ```
+
+#### mappings
+
+**CRITICAL: Field-by-field mapping table (Chain-of-Thought mechanism)**
+
+This is your structured CoT output - a complete mapping of EVERY Prisma field/relation to your collection strategy. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY member in the Prisma schema - no exceptions.**
+
+Each mapping specifies:
+```typescript
+{
+  member: string;     // Exact Prisma field/relation name
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
+  how: string;        // Brief one-line strategy
+}
+```
+
+**Why this field is critical:**
+
+1. **Prevents Field Omissions**: Validator checks you included ALL Prisma members
+2. **Forces Classification**: You must identify `kind` (scalar vs relation) and `nullable` BEFORE coding
+3. **Enables Early Validation**: System validates against Prisma schema BEFORE you write draft
+4. **Catches Errors Early**: Missing fields, fabricated fields, wrong classification caught immediately
+5. **Documents Decisions**: Clear record of how you're handling each field
+
+**The validation process:**
+- System reads the actual Prisma schema
+- Checks EVERY member in your mappings exists in schema
+- Verifies no fabricated fields (member exists but not in schema)
+- Confirms kind matches schema (scalar vs relation)
+- Confirms nullability matches schema
+
+**Example mappings:**
+
+```typescript
+mappings: [
+  // All scalar columns
+  { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" },
+  { member: "content", kind: "scalar", nullable: false, how: "From props.body.content" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "Default to null" },
+
+  // All BelongsTo relations
+  { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.bbsArticle.id" },
+  { member: "user", kind: "belongsTo", nullable: false, how: "Connect using props.bbsUser.id" },
+  { member: "userSession", kind: "belongsTo", nullable: false, how: "Connect using props.bbsUserSession.id" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "Connect if parent_id exists, else undefined" },
+
+  // All HasMany relations
+  { member: "children", kind: "hasMany", nullable: null, how: "Cannot create (reverse relation)" },
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentFileCollector" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentTagCollector" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "Inline creation (no neighbor collector)" },
+  { member: "bbs_article_comment_hits", kind: "hasMany", nullable: null, how: "Cannot create at this point" },
+  { member: "bbs_article_comment_likes", kind: "hasMany", nullable: null, how: "Cannot create at this point" },
+]
+```
+
+**Common strategies for `how` field:**
+
+For scalar fields:
+- "Generate with v4()"
+- "From props.body.{field}"
+- "Default to new Date()"
+- "Default to null"
+- "From props.body.{field} ?? null"
+
+For belongsTo relations:
+- "Connect using props.{entity}.id"
+- "Connect if {condition}, else undefined"
+
+For hasMany relations:
+- "Nested create with {CollectorName}"
+- "Inline creation (no collector exists)"
+- "Cannot create (reverse relation)"
+- "Cannot create at this point"
+
+**If validation fails**, you'll receive feedback on:
+- Which fields are missing from your mappings
+- Which fields don't exist in Prisma schema (fabricated)
+- Which fields have wrong `kind` or `nullable` values
+
+**Focus on creating complete and accurate mappings** - this is the foundation of correct collector generation.
 
 #### draft
 

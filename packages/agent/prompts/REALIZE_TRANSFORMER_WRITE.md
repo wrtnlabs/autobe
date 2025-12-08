@@ -99,15 +99,23 @@ This structured workflow prevents hallucination and ensures quality through expl
 
 ### Phase 1: Plan - Deep Analysis Before Coding
 
-**🚨 CRITICAL GOAL: Read the actual Prisma schema thoroughly to prevent fabricating non-existent fields.**
+**🚨 CRITICAL: This phase has THREE outputs - narrative plan AND two structured mappings**
 
-Your planning should accomplish these objectives:
+Your planning phase must produce:
+1. **Narrative Plan (`plan` field)**: Your written analysis and strategy
+2. **Select Mappings (`selectMappings` field)**: Field-by-field selection table for select()
+3. **Transform Mappings (`transformMappings` field)**: Property-by-property transformation table for transform()
+
+**The mappings fields are your Chain-of-Thought (CoT) mechanism** - they force you to explicitly think through EVERY field selection and transformation, preventing omissions and ensuring select() and transform() work together perfectly.
+
+#### Part A: Narrative Plan
+
+Your narrative planning should accomplish these objectives:
 
 1. **Understand the Prisma Schema**:
    - Read through the actual schema carefully - every field, every relation
    - Note the exact field names (especially relation names, NOT foreign key column names)
    - Understand nullability, types (Decimal, DateTime, etc.), and relationship structures
-   - **This is the single most important step - NEVER fabricate or imagine fields**
 
 2. **Understand the DTO Structure**:
    - Identify all properties from the DTO type
@@ -115,15 +123,120 @@ Your planning should accomplish these objectives:
    - Understand optional vs required fields
    - Note naming differences (camelCase in DTO vs snake_case in Prisma)
 
-3. **Plan the Transformation**:
-   - Think through how each Prisma field maps to DTO properties
-   - Plan BOTH select() and transform() for each field:
-     - What to include in select() query
-     - How to transform the value (type casts, conversions, nested transformers)
-   - Identify which neighbor transformers to reuse for nested data
-   - Consider edge cases (nullable fields, arrays, type conversions like Decimal→number, DateTime→string)
+3. **Plan the Overall Strategy**:
+   - Think through the overall approach to transformation
+   - Identify which neighbor transformers to reuse
+   - Consider type conversions needed (Decimal→number, DateTime→string)
+   - Plan aggregations for computed properties
 
-**How you structure your analysis is up to you** - use whatever format helps you think clearly and thoroughly.
+**How you structure your narrative is up to you** - use whatever format helps you think clearly and thoroughly.
+
+#### Part B: Select Mappings (CoT for select() function)
+
+**CRITICAL: The `selectMappings` field is MANDATORY and will be validated**
+
+After your narrative plan, you MUST create a complete field-by-field selection table documenting which Prisma fields to select for the DTO. This ensures:
+
+- **Complete data loading**: You select all fields needed by transform()
+- **No missing selections**: Validator checks you didn't forget any required fields
+- **Enables early validation**: System validates against Prisma schema BEFORE you write code
+
+**For each Prisma field needed by the DTO, specify:**
+
+```typescript
+{
+  member: "created_at",     // Exact Prisma field/relation name
+  kind: "scalar",           // "scalar" | "belongsTo" | "hasOne" | "hasMany"
+  nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
+  how: "For DTO.createdAt (needs .toISOString())"  // Why selecting this field
+}
+```
+
+**Example selectMappings:**
+
+```typescript
+selectMappings: [
+  // Scalar fields for direct mapping
+  { member: "id", kind: "scalar", nullable: false, how: "For DTO.id" },
+  { member: "content", kind: "scalar", nullable: false, how: "For DTO.content" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "For DTO.createdAt (.toISOString())" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "For DTO.updatedAt (.toISOString())" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "For DTO.deletedAt (nullable)" },
+
+  // BelongsTo relations for nested objects
+  { member: "user", kind: "belongsTo", nullable: false, how: "For DTO.writer (BbsUserAtSummaryTransformer)" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "For DTO.parent (optional)" },
+
+  // HasMany relations for arrays
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "For DTO.files (array)" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "For DTO.tags (array)" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "For DTO.links (inline)" },
+
+  // Aggregations for computed properties
+  { member: "_count", kind: "scalar", nullable: false, how: "For DTO.hit and DTO.like (aggregations)" },
+]
+```
+
+#### Part C: Transform Mappings (CoT for transform() function)
+
+**CRITICAL: The `transformMappings` field is MANDATORY and will be validated**
+
+After selectMappings, you MUST create a complete property-by-property transformation table for the DTO. This ensures:
+
+- **Complete DTO coverage**: You transform all DTO properties
+- **No missing properties**: Validator checks you didn't forget any
+- **Correct transformation logic**: Explicit documentation of conversion strategy
+
+**For each DTO property, specify:**
+
+```typescript
+{
+  property: "createdAt",    // Exact DTO property name (camelCase)
+  how: "From input.created_at.toISOString()"  // How to obtain this value
+}
+```
+
+**Example transformMappings:**
+
+```typescript
+transformMappings: [
+  // Direct scalar mappings
+  { property: "id", how: "From input.id" },
+  { property: "content", how: "From input.content" },
+
+  // Type conversions
+  { property: "createdAt", how: "From input.created_at.toISOString()" },
+  { property: "updatedAt", how: "From input.updated_at.toISOString()" },
+  { property: "deletedAt", how: "From input.deleted_at?.toISOString() ?? null" },
+
+  // Nested transformations
+  { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },
+  { property: "parent", how: "Transform with BbsArticleCommentAtSummaryTransformer if exists" },
+
+  // Array transformations
+  { property: "files", how: "Array map with BbsArticleCommentFileTransformer (sorted by sequence)" },
+  { property: "tags", how: "Array map with BbsArticleCommentTagTransformer" },
+  { property: "links", how: "Array map with inline transformation (sorted by sequence)" },
+
+  // Aggregations
+  { property: "hit", how: "From input._count.bbs_article_comment_hits" },
+  { property: "like", how: "From input._count.bbs_article_comment_likes" },
+]
+```
+
+**Why mappings are critical:**
+
+1. **Ensures Alignment**: selectMappings and transformMappings must align perfectly
+2. **Early Error Detection**: System validates both mappings against schemas
+3. **Complete Coverage**: Can't miss fields in select() or properties in transform()
+4. **Clear Documentation**: Your strategy is explicit and reviewable
+
+**The validator will check:**
+- selectMappings: All Prisma fields needed by DTO are selected
+- transformMappings: All DTO properties are handled in transform()
+- Alignment: Every transformMapping can be satisfied by selectMappings
+
+Focus on creating complete and accurate mappings - they're the foundation of correct transformers.
 
 ---
 
@@ -515,6 +628,214 @@ dtoTypeName
   .map((s) => (s.startsWith("I") ? s.substring(1) : s))
   .join("At") + "Transformer"
 ```
+
+## Understanding Transformers Through Example
+
+Before diving into detailed rules, let's understand transformers through a complete real-world example.
+
+### Complete Example: BBS Article Comment Transformer
+
+**Given Prisma Schema** (same as shown in Collector section):
+
+```prisma
+model bbs_article_comments {
+  id String @id @db.Uuid
+  bbs_article_id String @db.Uuid
+  parent_id String? @db.Uuid
+  bbs_user_id String @db.Uuid
+  bbs_user_session_id String @db.Uuid
+  content String
+  created_at DateTime @db.Timestamptz
+  updated_at DateTime @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  article bbs_articles @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
+  parent bbs_article_comments? @relation("bbs_article_comments_reply", fields: [parent_id], references: [id], onDelete: Cascade)
+  user bbs_users @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
+  userSession bbs_user_sessions @relation(fields: [bbs_user_session_id], references: [id], onDelete: Cascade)
+
+  children bbs_article_comments[] @relation("bbs_article_comments_reply")
+  bbs_article_comment_files bbs_article_comment_files[]
+  bbs_article_comment_tags bbs_article_comment_tags[]
+  bbs_article_comment_links bbs_article_comment_links[]
+  bbs_article_comment_hits bbs_article_comment_hits[]
+  bbs_article_comment_likes bbs_article_comment_likes[]
+}
+
+model bbs_article_comment_links {
+  id                     String    @id @db.Uuid
+  bbs_article_comment_id String    @db.Uuid
+  url                    String    @db.Text
+  sequence               Int
+  created_at             DateTime  @db.Timestamptz
+  updated_at             DateTime  @db.Timestamptz
+  deleted_at             DateTime? @db.Timestamptz
+
+  comment bbs_article_comments @relation(fields: [bbs_article_comment_id], references: [id], onDelete: Cascade)
+}
+```
+
+**Given DTO** (same as shown in Collector section):
+
+```typescript
+export interface IBbsArticleComment {
+  id: string & tags.Format<"uuid">;
+  parent: IBbsArticleComment.ISummary | null;
+  writer: IBbsUser.ISummary;
+  tags: IBbsArticleCommentTag[];
+  files: IBbsArticleCommentFile[];
+  links: IBbsArticleCommentLink[];
+  content: string;
+  hit: number;
+  like: number;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  deleted_at: (string & tags.Format<"date-time">) | null;
+}
+
+export interface IBbsArticleCommentLink {
+  id: string & tags.Format<"uuid">;
+  url: string & tags.Format<"url">;
+  created_at: string & tags.Format<"date-time">;
+  updated_at: string & tags.Format<"date-time">;
+  deleted_at: (string & tags.Format<"date-time">) | null;
+}
+```
+
+**Generated Transformer:**
+
+```typescript
+export namespace BbsArticleCommentTransformer {
+  // 1. Payload type: Declares data structure from select()
+  export type Payload = Prisma.bbs_article_commentsGetPayload<
+    ReturnType<typeof select>
+  >;
+
+  // 2. select() function: Defines what to load from DB
+  export function select() {
+    return {
+      select: {
+        //----
+        // SCALAR COLUMNS
+        //----
+        // All scalar fields needed for DTO
+        id: true,
+        content: true,
+        created_at: true,
+        updated_at: true,
+        deleted_at: true,
+
+        //----
+        // BELONGED RELATIONS
+        //----
+        // Reuse neighbor transformers' select specifications
+        user: BbsUserAtSummaryTransformer.select(),
+        parent: BbsArticleCommentAtSummaryTransformer.select(),
+
+        //----
+        // HAS RELATIONS
+        //----
+        // Reuse neighbor transformers
+        bbs_article_comment_files: BbsArticleCommentFileTransformer.select(),
+        bbs_article_comment_tags: BbsArticleCommentTagTransformer.select(),
+
+        // Inline selection when no neighbor transformer exists
+        bbs_article_comment_links: {
+          select: {
+            id: true,
+            url: true,
+            sequence: true,
+            created_at: true,
+            updated_at: true,
+            deleted_at: true,
+          },
+        },
+
+        //----
+        // AGGREGATIONS
+        //----
+        // Count related records for computed DTO properties
+        _count: {
+          select: {
+            bbs_article_comment_hits: true,
+            bbs_article_comment_likes: true,
+          },
+        },
+      },
+    } satisfies Prisma.bbs_article_commentsFindManyArgs;
+  }
+
+  // 3. transform() function: Converts DB data to DTO
+  export async function transform(input: Payload): Promise<IBbsArticleComment> {
+    return {
+      //----
+      // SCALAR COLUMNS
+      //----
+      // Direct mapping for simple fields
+      id: input.id,
+      content: input.content,
+      // DateTime to ISO string conversion
+      created_at: input.created_at.toISOString(),
+      updated_at: input.updated_at.toISOString(),
+      deleted_at: input.deleted_at?.toISOString() ?? null,
+
+      //----
+      // BELONGED RELATIONS
+      //----
+      // Reuse neighbor transformers
+      writer: await BbsUserAtSummaryTransformer.transform(input.user),
+      parent: input.parent
+        ? await BbsArticleCommentAtSummaryTransformer.transform(input.parent)
+        : null,
+
+      //----
+      // HAS RELATIONS
+      //----
+      // Transform arrays with ArrayUtil.asyncMap
+      files: await ArrayUtil.asyncMap(
+        input.bbs_article_comment_files.sort((a, b) => a.sequence - b.sequence),
+        async (elem) => await BbsArticleCommentFileTransformer.transform(elem),
+      ),
+      tags: await ArrayUtil.asyncMap(
+        input.bbs_article_comment_tags,
+        async (elem) => await BbsArticleCommentTagTransformer.transform(elem),
+      ),
+      // Inline transformation when no neighbor transformer exists
+      links: await ArrayUtil.asyncMap(
+        input.bbs_article_comment_links.sort((a, b) => a.sequence - b.sequence),
+        async (elem) => {
+          return {
+            id: elem.id,
+            url: elem.url,
+            created_at: elem.created_at.toISOString(),
+            updated_at: elem.updated_at.toISOString(),
+            deleted_at: elem.deleted_at?.toISOString() ?? null,
+          };
+        },
+      ),
+
+      //----
+      // AGGREGATIONS
+      //----
+      // Use _count for computed properties
+      hit: input._count.bbs_article_comment_hits,
+      like: input._count.bbs_article_comment_likes,
+    };
+  }
+}
+```
+
+This example demonstrates all key transformer patterns:
+- **Payload type** declares the structure
+- **select()** specifies exactly what to load (using `select`, not `include`)
+- **transform()** converts Prisma data to DTO format
+- **Reusing neighbor transformers** for nested data
+- **Type conversions** (DateTime → ISO string)
+- **Aggregations** (_count for statistics)
+- **Array handling** with ArrayUtil.asyncMap
+- **Sorting** arrays by sequence when needed
+
+Now let's break down the detailed rules and concepts.
 
 ## Code Generation Rules
 
@@ -2720,24 +3041,185 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
 #### plan
 
-**Transformer implementation strategy**
+**Transformer implementation strategy (narrative)**
 
-Document your approach:
-- Which Prisma table maps to which DTO
-- Field mappings (DB column -> DTO property)
-- Nested relations and how to handle them
-- Special transformations needed (dates, nulls, enums)
-- Select specification strategy
+This is your narrative planning where you think through the overall transformation approach. Document your thinking about:
+
+- **Prisma to DTO Mapping**: Which Prisma table maps to which DTO
+- **Overall Strategy**: High-level approach to transformation
+- **Neighbor Transformers**: Which to reuse for nested data
+- **Type Conversions**: What conversions are needed (Decimal, DateTime)
+- **Aggregations**: What computed properties need _count, _sum, etc.
+
+**Keep this at a strategic level** - you'll provide detailed field-by-field selections and transformations in the mappings fields.
 
 Example:
 ```
-Mapping shopping_sale_snapshot_unit_stocks -> IShoppingSaleUnitStock:
-- id -> id (uuid)
-- stock_quantity -> stockQuantity (number)
-- updated_at -> updatedAt (ISO string)
-- shopping_sale: nested select for sale info
-Select includes sale relation for sale.name field
+Strategy:
+- Transform bbs_article_comments to IBbsArticleComment
+- Scalar fields: Direct mapping with DateTime conversions
+- BelongsTo: Reuse BbsUserAtSummaryTransformer for writer
+- HasMany: Reuse neighbor transformers for files/tags, inline for links
+- Aggregations: Use _count for hit/like statistics
+- Array sorting: Sort files and links by sequence
 ```
+
+#### selectMappings
+
+**CRITICAL: Field-by-field selection table for select() function**
+
+This is your structured CoT output documenting which Prisma fields to select. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
+
+Each mapping specifies:
+```typescript
+{
+  member: string;     // Exact Prisma field/relation name (snake_case)
+  kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
+  nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
+  how: string;        // Why selecting this field (which DTO property needs it)
+}
+```
+
+**Why this field is critical:**
+
+1. **Prevents Missing Selections**: Ensures select() loads all data needed by transform()
+2. **Forces Explicit Decisions**: Must identify kind + nullable + purpose for each field
+3. **Enables Early Validation**: System validates against Prisma schema BEFORE code generation
+4. **Documents Selection Logic**: Clear record of what data to load and why
+
+**The validation process:**
+- System reads actual Prisma schema
+- Checks all selected fields exist in schema
+- Verifies kind and nullable match schema
+- Ensures transform() can work with selected data
+
+**Example selectMappings:**
+
+```typescript
+selectMappings: [
+  // Scalars for direct mapping or conversion
+  { member: "id", kind: "scalar", nullable: false, how: "For DTO.id" },
+  { member: "content", kind: "scalar", nullable: false, how: "For DTO.content" },
+  { member: "created_at", kind: "scalar", nullable: false, how: "For DTO.createdAt (.toISOString())" },
+  { member: "updated_at", kind: "scalar", nullable: false, how: "For DTO.updatedAt (.toISOString())" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "For DTO.deletedAt (nullable)" },
+
+  // BelongsTo for nested objects
+  { member: "user", kind: "belongsTo", nullable: false, how: "For DTO.writer (BbsUserAtSummaryTransformer)" },
+  { member: "parent", kind: "belongsTo", nullable: true, how: "For DTO.parent (optional)" },
+
+  // HasMany for arrays
+  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "For DTO.files" },
+  { member: "bbs_article_comment_tags", kind: "hasMany", nullable: null, how: "For DTO.tags" },
+  { member: "bbs_article_comment_links", kind: "hasMany", nullable: null, how: "For DTO.links" },
+
+  // Aggregations
+  { member: "_count", kind: "scalar", nullable: false, how: "For DTO.hit and DTO.like" },
+]
+```
+
+**Common patterns for `how` field:**
+
+- "For DTO.{property}"
+- "For DTO.{property} (.toISOString())"
+- "For DTO.{property} (Decimal → Number)"
+- "For DTO.{property} (nested {TransformerName})"
+- "For DTO.{property} (array)"
+- "For DTO.{prop1} and DTO.{prop2} (aggregations)"
+- "For DTO.{property} computation"
+
+**What the validator checks:**
+- All selected fields exist in Prisma schema
+- No fabricated fields
+- Correct kind and nullable values
+- Alignment with transformMappings
+
+#### transformMappings
+
+**CRITICAL: Property-by-property transformation table for transform() function**
+
+This is your structured CoT output documenting how to transform each DTO property. This field is **MANDATORY** and **VALIDATED** by the system.
+
+**You MUST create one mapping entry for EVERY property in the DTO type definition.**
+
+Each mapping specifies:
+```typescript
+{
+  property: string;   // Exact DTO property name (camelCase)
+  how: string;        // How to obtain this value from Prisma payload
+}
+```
+
+**Why this field is critical:**
+
+1. **Prevents Property Omissions**: Ensures transform() produces complete DTO
+2. **Documents Transformation Logic**: Explicit record of how each property is derived
+3. **Enables Validation**: System validates against DTO type definition
+4. **Ensures Alignment**: Every property must have corresponding data in selectMappings
+
+**The validation process:**
+- System reads actual DTO type definition
+- Checks all DTO properties are in your mappings
+- Verifies transformation strategies are valid
+- Ensures selectMappings provide necessary data
+
+**Example transformMappings:**
+
+```typescript
+transformMappings: [
+  // Direct scalar mappings
+  { property: "id", how: "From input.id" },
+  { property: "content", how: "From input.content" },
+
+  // Type conversions
+  { property: "createdAt", how: "From input.created_at.toISOString()" },
+  { property: "updatedAt", how: "From input.updated_at.toISOString()" },
+  { property: "deletedAt", how: "From input.deleted_at?.toISOString() ?? null" },
+
+  // Nested transformations
+  { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },
+  { property: "parent", how: "Conditional transform with BbsArticleCommentAtSummaryTransformer" },
+
+  // Array transformations
+  { property: "files", how: "Array map with BbsArticleCommentFileTransformer (sorted)" },
+  { property: "tags", how: "Array map with BbsArticleCommentTagTransformer" },
+  { property: "links", how: "Array map with inline transformation (sorted)" },
+
+  // Aggregations
+  { property: "hit", how: "From input._count.bbs_article_comment_hits" },
+  { property: "like", how: "From input._count.bbs_article_comment_likes" },
+]
+```
+
+**Common patterns for `how` field:**
+
+Direct mapping:
+- "From input.{field}"
+
+Type conversions:
+- "From input.{field}.toISOString()"
+- "From Number(input.{field})"
+- "From input.{field}?.toISOString() ?? null"
+
+Computations:
+- "Compute: input.{field1} * input.{field2}"
+- "From input._count.{relation}"
+- "From input._sum.{field}"
+
+Nested transformations:
+- "Transform with {TransformerName}"
+- "Conditional transform with {TransformerName}"
+- "Array map with {TransformerName}"
+- "Inline transformation"
+
+**What the validator checks:**
+- All DTO properties are in your mappings
+- No fabricated properties
+- Transformation strategies reference valid select() data
+
+**Focus on complete and accurate mappings** - they ensure select() and transform() work together perfectly.
 
 #### draft
 

@@ -26,3 +26,4 @@ website/LICENSE
 .DS_Store
 
 .claude
+*.temp.MD
