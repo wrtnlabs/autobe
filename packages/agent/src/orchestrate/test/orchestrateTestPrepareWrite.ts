@@ -235,6 +235,22 @@ function createController<Model extends ILlmSchema.Model>(props: {
       revise: result.data.revise,
     });
 
+    // Incorrect template literal syntax validation
+    const backticRegex: RegExp = /`/g;
+    const count: number = (
+      (result.data.revise.final ?? result.data.draft).match(backticRegex) ?? []
+    ).length;
+
+    if (count % 2 !== 0)
+      errors.push({
+        path: result.data.revise.final
+          ? "$input.request.revise.final"
+          : "$input.request.draft",
+        expected: "even number of backticks",
+        value: count,
+        description: "Unmatched backtick in template literal",
+      });
+
     return errors.length > 0
       ? {
           success: false,
