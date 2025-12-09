@@ -1,5 +1,7 @@
 # Preliminary Material Loading Constraints - API Operations
 
+{{PREVIOUS}}
+
 ## CRITICAL ANTI-DUPLICATION RULES
 
 You are working within a Resource-Constrained Environment with LIMITED function calling budget.

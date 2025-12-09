@@ -69,6 +69,7 @@ namespace PreliminaryTransformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
+        previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
         content: toJsonBlock(oldbie),
         replace: props.previous
           ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
@@ -76,6 +77,7 @@ namespace PreliminaryTransformer {
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
+      previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
       available: StringUtil.trim`
         \`\`\`json
         ${JSON.stringify(
@@ -138,6 +140,7 @@ namespace PreliminaryTransformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
+        previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
         content:
           props.config.prisma === "ast"
             ? StringUtil.trim`
@@ -172,6 +175,7 @@ namespace PreliminaryTransformer {
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
+      previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
         Name | Stance | Summary
         -----|--------|---------
@@ -239,6 +243,8 @@ namespace PreliminaryTransformer {
       createAssistantMessage({
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_LOADED,
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_PREVIOUS,
         content: toJsonBlock(props.local[kind]),
         replace: props.previous
           ? {
@@ -249,6 +255,8 @@ namespace PreliminaryTransformer {
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION,
+      previous:
+        AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_PREVIOUS,
       available: StringUtil.trim`
         Method | Path | Actor? | Authorization? | Summary
         -------|------|--------|----------------|---------
@@ -318,6 +326,8 @@ namespace PreliminaryTransformer {
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_LOADED,
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_PREVIOUS,
         content: toJsonBlock(props.local[kind]),
         replace: props.previous
           ? {
@@ -328,6 +338,8 @@ namespace PreliminaryTransformer {
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA,
+      previous:
+        AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
         Name | Summary
         -----|---------
@@ -389,6 +401,7 @@ namespace PreliminaryTransformer {
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_LOADED,
         content: toJsonBlock(oldbie),
         replace: null,
+        previous: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
@@ -416,6 +429,7 @@ namespace PreliminaryTransformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
           : "",
       replace: null,
+      previous: null,
     });
     return props.local.realizeCollectors.length === 0
       ? [assistant, system]
@@ -456,6 +470,7 @@ namespace PreliminaryTransformer {
           AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_LOADED,
         content: toJsonBlock(oldbie),
         replace: null,
+        previous: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
@@ -480,6 +495,7 @@ namespace PreliminaryTransformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
           : "",
       replace: null,
+      previous: null,
     });
     return props.local.realizeTransformers.length === 0
       ? [assistant, system]
@@ -517,12 +533,17 @@ interface IPromptReplace {
 const createAssistantMessage = (props: {
   prompt: string;
   content: string;
-  replace: null | IPromptReplace;
+  replace: IPromptReplace | null;
+  previous: string | null;
 }): IAgenticaHistoryJson.IAssistantMessage => {
-  let text = props.prompt.replaceAll("{{CONTENT}}", props.content);
-  if (props.replace) {
+  let text = props.prompt
+    .replaceAll("{{CONTENT}}", props.content)
+    .replaceAll(
+      "{{PREVIOUS}}",
+      props.replace !== null && props.previous !== null ? props.previous : "",
+    );
+  if (props.replace !== null)
     text = text.replaceAll(props.replace.from, props.replace.to);
-  }
   return {
     id: v7(),
     type: "assistantMessage",
@@ -536,13 +557,18 @@ const createSystemMessage = (props: {
   available: string;
   loaded: string;
   exhausted: string;
-  replace: null | IPromptReplace;
+  replace: IPromptReplace | null;
+  previous: string | null;
 }): IAgenticaHistoryJson.ISystemMessage => {
   let text = props.prompt
     .replaceAll("{{AVAILABLE}}", props.available)
     .replaceAll("{{LOADED}}", props.loaded)
-    .replaceAll("{{EXHAUSTED}}", props.exhausted);
-  if (props.replace)
+    .replaceAll("{{EXHAUSTED}}", props.exhausted)
+    .replaceAll(
+      "{{PREVIOUS}}",
+      props.replace !== null && props.previous !== null ? props.previous : "",
+    );
+  if (props.replace !== null)
     text = text.replaceAll(props.replace.from, props.replace.to);
   return {
     id: v7(),
