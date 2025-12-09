@@ -25,7 +25,7 @@ import { tags } from "typia";
  * **Example Scenario:**
  *
  * 1. First iteration: Agent requests `["user", "post"]` via `getPrismaSchemas`
- * 2. Second iteration: Agent needs "user" schema again � use
+ * 2. Second iteration: Agent needs "user" schema again → use
  *    `getPreviousPrismaSchemas`
  * 3. This avoids duplicate request errors and maintains context efficiently
  *
