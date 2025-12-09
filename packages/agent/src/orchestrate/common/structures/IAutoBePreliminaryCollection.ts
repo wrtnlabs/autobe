@@ -13,4 +13,12 @@ export interface IAutoBePreliminaryCollection {
   interfaceSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   realizeCollectors: AutoBeRealizeCollectorFunction[];
   realizeTransformers: AutoBeRealizeTransformerFunction[];
+
+  getPreviousAnalysisFiles: AutoBeAnalyzeFile[];
+  getPreviousPrismaSchemas: AutoBePrisma.IModel[];
+  getPreviousInterfaceOperations: AutoBeOpenApi.IOperation[];
+  getPreviousInterfaceSchemas: Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive
+  >;
 }
