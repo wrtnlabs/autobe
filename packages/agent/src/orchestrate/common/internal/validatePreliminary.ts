@@ -9,6 +9,10 @@ import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryReques
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../structures/IAutoBePreliminaryGetPrismaSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBePreliminaryGetRealizeTransformers";
@@ -75,7 +79,12 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED.replace(
+              "getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"],
+              previous
+                ? ("getPreviousAnalysisFiles" satisfies IAutoBePreliminaryGetPreviousAnalysisFiles["type"])
+                : ("getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"]),
+            )
           : ""
       }
     `;
@@ -147,7 +156,12 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED.replace(
+              "getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"],
+              previous
+                ? ("getPreviousPrismaSchemas" satisfies IAutoBePreliminaryGetPreviousPrismaSchemas["type"])
+                : ("getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"]),
+            )
           : ""
       }
     `;
@@ -241,7 +255,12 @@ namespace PreliminaryApplicationValidator {
       
       ${
         newbie.size() === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED.replace(
+              "getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"],
+              previous
+                ? ("getPreviousInterfaceOperations" satisfies IAutoBePreliminaryGetPreviousInterfaceOperations["type"])
+                : ("getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"]),
+            )
           : ""
       }
     `;
@@ -313,7 +332,12 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED.replace(
+              "getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"],
+              previous
+                ? ("getPreviousInterfaceSchemas" satisfies IAutoBePreliminaryGetPreviousInterfaceSchemas["type"])
+                : ("getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"]),
+            )
           : ""
       }
     `;
