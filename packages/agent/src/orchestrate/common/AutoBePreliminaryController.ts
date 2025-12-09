@@ -4,7 +4,12 @@ import {
   AutoBeHistory,
   AutoBePreliminaryKind,
 } from "@autobe/interface";
-import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  IValidation,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
 import { IJsonSchemaApplication } from "typia";
 import { v7 } from "uuid";
 
@@ -14,6 +19,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
+import { fixPreliminaryApplication } from "./internal/fixPrelminaryApplication";
 import { validatePreliminary } from "./internal/validatePreliminary";
 import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
@@ -31,6 +37,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly config: AutoBePreliminaryController.IConfig<Kind>;
+
+  // RESERVED DATA
+  private readonly histories: readonly AutoBeHistory[];
+  private readonly state: AutoBeState;
 
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
@@ -84,6 +94,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       });
     })();
 
+    this.histories = props.histories;
+    this.state = props.state;
     this.all = createPreliminaryCollection(
       {
         histories: props.histories,
@@ -132,6 +144,18 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 
   public getLocal(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.local;
+  }
+
+  public fixApplication<Model extends Exclude<ILlmSchema.Model, "3.0">>(
+    application: ILlmApplication<Model>,
+  ): void {
+    fixPreliminaryApplication({
+      histories: this.histories,
+      state: this.state,
+      preliminary: this,
+      application,
+      model: application.model,
+    });
   }
 
   public async orchestrate<Model extends ILlmSchema.Model, T>(

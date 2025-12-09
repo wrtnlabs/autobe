@@ -30,12 +30,17 @@ export function createPreliminaryCollection(
       ).slice(),
     };
 
-  const histories: AutoBeHistory[] = ctx.histories.slice().reverse();
+  const reversed: AutoBeHistory[] = ctx.histories.slice().reverse();
   const state: AutoBeState = ctx.state;
   const previous = <Type extends "analyze" | "prisma" | "interface">(
     type: Type,
-  ): AutoBeHistory.Mapper[Type] | undefined =>
-    histories.find((h): h is AutoBeHistory.Mapper[Type] => h.type === type);
+  ): AutoBeHistory.Mapper[Type] | undefined => {
+    if (state[type] === null) return undefined;
+    return reversed.find(
+      (h): h is AutoBeHistory.Mapper[Type] =>
+        h.type === type && h !== state[type],
+    );
+  };
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
     prismaSchemas:
