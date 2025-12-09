@@ -30,7 +30,7 @@ import { tags } from "typia";
  * 1. First iteration: Agent requests `[{method: "GET", path: "/users"}]` via
  *    `getInterfaceOperations`
  * 2. Agent also gets prerequisite operations automatically via complement
- * 3. Second iteration: Agent needs GET /users again � use
+ * 3. Second iteration: Agent needs GET /users again → use
  *    `getPreviousInterfaceOperations`
  * 4. This avoids duplicate request errors and maintains operation context
  *    efficiently
