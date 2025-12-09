@@ -19,22 +19,45 @@ interface IProps {
   all: IAutoBePreliminaryCollection;
   local: IAutoBePreliminaryCollection;
 }
+interface INextProps extends IProps {
+  previous: boolean;
+}
 
 export const complementPreliminaryCollection = (props: IProps): void => {
   // Complement interface operations with prerequisites
   if (props.kinds.includes("interfaceOperations") === true)
-    complementInterfaceOperations(props);
+    complementInterfaceOperations({
+      ...props,
+      previous: false,
+    });
+  if (props.kinds.includes("previousInterfaceOperations") === true)
+    complementInterfaceOperations({
+      ...props,
+      previous: true,
+    });
 
   // Complement DTO schemas with iterative references
   if (props.kinds.includes("interfaceSchemas") === true)
-    complementInterfaceSchemas(props);
+    complementInterfaceSchemas({
+      ...props,
+      previous: false,
+    });
+  if (props.kinds.includes("previousInterfaceSchemas") === true)
+    complementInterfaceSchemas({
+      ...props,
+      previous: true,
+    });
 };
 
-const complementInterfaceOperations = (props: IProps) => {
+const complementInterfaceOperations = (props: INextProps) => {
   // collect endpoints and operations
+  const kind: "interfaceOperations" | "previousInterfaceOperations" =
+    props.previous ? "previousInterfaceOperations" : "interfaceOperations";
+  const schemaKind: "interfaceSchemas" | "previousInterfaceSchemas" =
+    props.previous ? "interfaceSchemas" : "previousInterfaceSchemas";
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
-      props.all.interfaceOperations.map(
+      props.all[kind].map(
         (op) => new Pair({ method: op.method, path: op.path }, op),
       ),
       AutoBeOpenApiEndpointComparator.hashCode,
@@ -54,33 +77,31 @@ const complementInterfaceOperations = (props: IProps) => {
       insert(dict.get(pre.endpoint));
     }
   };
-  for (const op of props.local.interfaceOperations) insert(op);
+  for (const op of props.local[kind]) insert(op);
 
   // remake local operations
-  props.local.interfaceOperations.splice(
-    0,
-    props.local.interfaceOperations.length,
-  );
-  props.local.interfaceOperations.push(
-    ...Array.from(endpoints).map((ep) => dict.get(ep)),
-  );
+  props.local[kind].splice(0, props.local[kind].length);
+  props.local[kind].push(...Array.from(endpoints).map((ep) => dict.get(ep)));
 
   // add DTO schemas used in operations
-  if (props.kinds.includes("interfaceSchemas") === true) {
+  if (props.kinds.includes(schemaKind) === true) {
     const typeNames: Set<string> = new Set();
-    for (const op of props.local.interfaceOperations) {
+    for (const op of props.local[kind]) {
       if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
       if (op.responseBody !== null) typeNames.add(op.responseBody.typeName);
     }
     for (const key of typeNames)
-      if (props.local.interfaceSchemas[key] === undefined)
-        props.local.interfaceSchemas[key] = props.all.interfaceSchemas[key];
+      if (props.local[schemaKind][key] === undefined)
+        props.local[schemaKind][key] = props.all[schemaKind][key];
   }
 };
 
-const complementInterfaceSchemas = (props: IProps) => {
+const complementInterfaceSchemas = (props: INextProps) => {
   // link modularizations
-  if (props.kinds.includes("realizeCollectors") === true) {
+  if (
+    props.previous === false &&
+    props.kinds.includes("realizeCollectors") === true
+  ) {
     const creators: string[] = Object.keys(props.local.interfaceSchemas).filter(
       AutoBeRealizeCollectorProgrammer.filter,
     );
@@ -90,7 +111,10 @@ const complementInterfaceSchemas = (props: IProps) => {
       if (found !== undefined) props.local.realizeCollectors.push(found);
     }
   }
-  if (props.kinds.includes("realizeTransformers") === true) {
+  if (
+    props.previous === false &&
+    props.kinds.includes("realizeTransformers") === true
+  ) {
     const unique: Set<string> = new Set();
     for (const key of Object.keys(props.local.interfaceSchemas)) {
       if (key.startsWith("IPage") && key.startsWith("IPage.") === false)
@@ -113,13 +137,17 @@ const complementInterfaceSchemas = (props: IProps) => {
   }
 
   // link dependencies
-  const unique: Set<string> = new Set(
-    Object.keys(props.local.interfaceSchemas),
-  );
-  for (const dto of Object.values(props.local.interfaceSchemas))
+  const kind: "interfaceSchemas" | "previousInterfaceSchemas" = props.previous
+    ? "previousInterfaceSchemas"
+    : "interfaceSchemas";
+  const prismaKind: "prismaSchemas" | "previousPrismaSchemas" = props.previous
+    ? "previousPrismaSchemas"
+    : "prismaSchemas";
+  const unique: Set<string> = new Set(Object.keys(props.local[kind]));
+  for (const dto of Object.values(props.local[kind]))
     OpenApiTypeChecker.visit({
       components: {
-        schemas: props.all.interfaceSchemas,
+        schemas: props.all[kind],
       },
       schema: dto,
       closure: (next) => {
@@ -128,16 +156,16 @@ const complementInterfaceSchemas = (props: IProps) => {
       },
     });
   for (const key of unique)
-    if (props.local.interfaceSchemas[key] === undefined)
-      props.local.interfaceSchemas[key] = props.all.interfaceSchemas[key];
+    if (props.local[kind][key] === undefined)
+      props.local[kind][key] = props.all[kind][key];
 
   // load related prisma schemas
-  if (props.kinds.includes("prismaSchemas") === true) {
+  if (props.kinds.includes(prismaKind) === true) {
     const prisma: Set<string> = new Set();
-    for (const [key, value] of Object.entries(props.local.interfaceSchemas)) {
+    for (const [key, value] of Object.entries(props.local[kind])) {
       OpenApiTypeChecker.visit({
         components: {
-          schemas: props.all.interfaceSchemas,
+          schemas: props.all[kind],
         },
         schema: value,
         closure: (next) => {
@@ -148,21 +176,19 @@ const complementInterfaceSchemas = (props: IProps) => {
           if (
             name !== null &&
             name !== undefined &&
-            props.all.prismaSchemas.find((m) => m.name === name) !== undefined
+            props.all[prismaKind].find((m) => m.name === name) !== undefined
           )
             prisma.add(name);
         },
       });
       const candidate: string = pluralize(NamingConvention.snake(key));
-      if (
-        props.all.prismaSchemas.find((m) => m.name === candidate) !== undefined
-      )
+      if (props.all[prismaKind].find((m) => m.name === candidate) !== undefined)
         prisma.add(candidate);
     }
     for (const name of prisma) {
-      if (props.local.prismaSchemas.find((m) => m.name === name) === undefined)
-        props.local.prismaSchemas.push(
-          props.all.prismaSchemas.find((m) => m.name === name)!,
+      if (props.local[prismaKind].find((m) => m.name === name) === undefined)
+        props.local[prismaKind].push(
+          props.all[prismaKind].find((m) => m.name === name)!,
         );
     }
   }
