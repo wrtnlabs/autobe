@@ -35,9 +35,7 @@ export function createPreliminaryCollection(
   const previous = <Type extends "analyze" | "prisma" | "interface">(
     type: Type,
   ): AutoBeHistory.Mapper[Type] | undefined =>
-    histories
-      .filter((h): h is AutoBeHistory.Mapper[Type] => h.type === type)
-      .find((h) => h.type === type);
+    histories.find((h): h is AutoBeHistory.Mapper[Type] => h.type === type);
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
     prismaSchemas:
