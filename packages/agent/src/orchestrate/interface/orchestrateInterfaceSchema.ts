@@ -142,6 +142,7 @@ async function process<Model extends ILlmSchema.Model>(
       source: SOURCE,
       controller: createController(ctx, {
         model: ctx.model,
+        operations: props.operations,
         build: async (next) => {
           pointer.value ??= {};
           Object.assign(pointer.value, next);
@@ -191,6 +192,7 @@ function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     model: Model;
+    operations: AutoBeOpenApi.IOperation[];
     build: (
       next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
     ) => Promise<void>;
@@ -238,6 +240,7 @@ function createController<Model extends ILlmSchema.Model>(
           .prisma!.result.data.files.map((f) => f.models.map((m) => m.name))
           .flat(),
       ),
+      operations: props.operations,
       schemas: result.data.request.schemas,
       path: "$input.request.schemas",
     });
