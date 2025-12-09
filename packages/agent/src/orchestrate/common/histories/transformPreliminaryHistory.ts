@@ -70,6 +70,9 @@ namespace PreliminaryTransformer {
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
         content: toJsonBlock(oldbie),
+        replace: props.previous
+          ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
@@ -92,8 +95,11 @@ namespace PreliminaryTransformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
           : "",
       replace: props.previous
-        ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
-        : undefined,
+        ? {
+            from: "getAnalysisFiles",
+            to: "getPreviousAnalysisFiles",
+          }
+        : null,
     });
     return props.local[kind].length === 0
       ? [assistant, system]
@@ -157,6 +163,12 @@ namespace PreliminaryTransformer {
                 })}
                 \`\`\
               `,
+        replace: props.previous
+          ? {
+              from: "getPrismaSchemas",
+              to: "getPreviousPrismaSchemas",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
@@ -175,8 +187,11 @@ namespace PreliminaryTransformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
           : "",
       replace: props.previous
-        ? { from: "getPrismaSchemas", to: "getPreviousPrismaSchemas" }
-        : undefined,
+        ? {
+            from: "getPrismaSchemas",
+            to: "getPreviousPrismaSchemas",
+          }
+        : null,
     });
     return props.local[kind].length === 0
       ? [assistant, system]
@@ -225,6 +240,12 @@ namespace PreliminaryTransformer {
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_LOADED,
         content: toJsonBlock(props.local[kind]),
+        replace: props.previous
+          ? {
+              from: "getInterfaceOperations",
+              to: "getPreviousInterfaceOperations",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION,
@@ -260,7 +281,7 @@ namespace PreliminaryTransformer {
             from: "getInterfaceOperations",
             to: "getPreviousInterfaceOperations",
           }
-        : undefined,
+        : null,
     });
     return props.local[kind].length === 0
       ? [assistant, system]
@@ -298,6 +319,12 @@ namespace PreliminaryTransformer {
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_LOADED,
         content: toJsonBlock(props.local[kind]),
+        replace: props.previous
+          ? {
+              from: "getInterfaceSchemas",
+              to: "getPreviousInterfaceSchemas",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA,
@@ -318,8 +345,11 @@ namespace PreliminaryTransformer {
           ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED
           : "",
       replace: props.previous
-        ? { from: "getInterfaceSchemas", to: "getPreviousInterfaceSchemas" }
-        : undefined,
+        ? {
+            from: "getInterfaceSchemas",
+            to: "getPreviousInterfaceSchemas",
+          }
+        : null,
     });
     return Object.keys(props.local[kind]).length === 0
       ? [assistant, system]
@@ -358,6 +388,7 @@ namespace PreliminaryTransformer {
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_LOADED,
         content: toJsonBlock(oldbie),
+        replace: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
@@ -384,6 +415,7 @@ namespace PreliminaryTransformer {
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
           : "",
+      replace: null,
     });
     return props.local.realizeCollectors.length === 0
       ? [assistant, system]
@@ -423,6 +455,7 @@ namespace PreliminaryTransformer {
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_LOADED,
         content: toJsonBlock(oldbie),
+        replace: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
@@ -446,6 +479,7 @@ namespace PreliminaryTransformer {
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
           : "",
+      replace: null,
     });
     return props.local.realizeTransformers.length === 0
       ? [assistant, system]
@@ -468,6 +502,62 @@ namespace PreliminaryTransformer {
         ];
   };
 }
+
+interface IPromptReplace {
+  from: Exclude<
+    IAutoBePreliminaryRequest<any>["request"]["type"],
+    `getPrevious${string}`
+  >;
+  to: Extract<
+    IAutoBePreliminaryRequest<any>["request"]["type"],
+    `getPrevious${string}`
+  >;
+}
+
+const createAssistantMessage = (props: {
+  prompt: string;
+  content: string;
+  replace: null | IPromptReplace;
+}): IAgenticaHistoryJson.IAssistantMessage => {
+  let text = props.prompt.replaceAll("{{CONTENT}}", props.content);
+  if (props.replace) {
+    text = text.replaceAll(props.replace.from, props.replace.to);
+  }
+  return {
+    id: v7(),
+    type: "assistantMessage",
+    text,
+    created_at: new Date().toISOString(),
+  };
+};
+
+const createSystemMessage = (props: {
+  prompt: string;
+  available: string;
+  loaded: string;
+  exhausted: string;
+  replace: null | IPromptReplace;
+}): IAgenticaHistoryJson.ISystemMessage => {
+  let text = props.prompt
+    .replaceAll("{{AVAILABLE}}", props.available)
+    .replaceAll("{{LOADED}}", props.loaded)
+    .replaceAll("{{EXHAUSTED}}", props.exhausted);
+  if (props.replace)
+    text = text.replaceAll(props.replace.from, props.replace.to);
+  return {
+    id: v7(),
+    type: "systemMessage",
+    text,
+    created_at: new Date().toISOString(),
+  };
+};
+
+const toJsonBlock = (obj: any): string =>
+  StringUtil.trim`
+      \`\`\`json
+      ${JSON.stringify(obj)}
+      \`\`\`
+    `;
 
 // experimenting between assistantMessage and execute types
 const createFunctionCallingMessage = <
@@ -508,66 +598,3 @@ const createFunctionCallingMessage = <
   // `,
   // created_at: new Date().toISOString(),
 });
-
-const createAssistantMessage = (props: {
-  prompt: string;
-  content: string;
-  replace?: {
-    from: Exclude<
-      IAutoBePreliminaryRequest<any>["request"]["type"],
-      `getPrevious${string}`
-    >;
-    to: Extract<
-      IAutoBePreliminaryRequest<any>["request"]["type"],
-      `getPrevious${string}`
-    >;
-  };
-}): IAgenticaHistoryJson.IAssistantMessage => {
-  let text = props.prompt.replaceAll("{{CONTENT}}", props.content);
-  if (props.replace) {
-    text = text.replaceAll(props.replace.from, props.replace.to);
-  }
-  return {
-    id: v7(),
-    type: "assistantMessage",
-    text,
-    created_at: new Date().toISOString(),
-  };
-};
-
-const createSystemMessage = (props: {
-  prompt: string;
-  available: string;
-  loaded: string;
-  exhausted: string;
-  replace?: {
-    from: Exclude<
-      IAutoBePreliminaryRequest<any>["request"]["type"],
-      `getPrevious${string}`
-    >;
-    to: Extract<
-      IAutoBePreliminaryRequest<any>["request"]["type"],
-      `getPrevious${string}`
-    >;
-  };
-}): IAgenticaHistoryJson.ISystemMessage => {
-  let text = props.prompt
-    .replaceAll("{{AVAILABLE}}", props.available)
-    .replaceAll("{{LOADED}}", props.loaded)
-    .replaceAll("{{EXHAUSTED}}", props.exhausted);
-  if (props.replace)
-    text = text.replaceAll(props.replace.from, props.replace.to);
-  return {
-    id: v7(),
-    type: "systemMessage",
-    text,
-    created_at: new Date().toISOString(),
-  };
-};
-
-const toJsonBlock = (obj: any): string =>
-  StringUtil.trim`
-      \`\`\`json
-      ${JSON.stringify(obj)}
-      \`\`\`
-    `;
