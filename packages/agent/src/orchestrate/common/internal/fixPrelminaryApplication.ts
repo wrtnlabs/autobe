@@ -35,13 +35,6 @@ export const fixPreliminaryApplication = <
     func.parameters.properties.request;
   if (request === undefined) return;
 
-  const eraseMetadata = getUnionErasure({
-    model: props.model,
-    $defs: func.parameters.$defs,
-    request,
-  });
-  if (eraseMetadata === null) return;
-
   const eraseKind = (kind: AutoBePreliminaryKind) => {
     props.preliminary
       .getKinds()
@@ -49,6 +42,13 @@ export const fixPreliminaryApplication = <
     delete (props.preliminary.getAll() as any)[kind];
     delete (props.preliminary.getLocal() as any)[kind];
   };
+  const eraseMetadata = getUnionErasure({
+    model: props.model,
+    $defs: func.parameters.$defs,
+    request,
+  });
+  if (eraseMetadata === null) return;
+
   const reversed: AutoBeHistory[] = props.histories.slice().reverse();
   const previous = (type: "analyze" | "prisma" | "interface"): boolean =>
     props.state[type] !== null &&
