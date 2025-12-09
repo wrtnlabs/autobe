@@ -29,7 +29,7 @@ import { tags } from "typia";
  * 1. First iteration: Agent requests `["IUser", "IUser.ICreate"]` via
  *    `getInterfaceSchemas`
  * 2. Schemas and their $ref dependencies are automatically loaded
- * 3. Second iteration: Agent needs "IUser" schema again � use
+ * 3. Second iteration: Agent needs "IUser" schema again → use
  *    `getPreviousInterfaceSchemas`
  * 4. This avoids duplicate request errors and maintains schema context efficiently
  *
