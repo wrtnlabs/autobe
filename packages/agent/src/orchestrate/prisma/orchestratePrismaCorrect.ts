@@ -121,6 +121,7 @@ async function execute<Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBePrismaCorrectApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
+    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       prismaSchemas: failure.data.files.map((f) => f.models).flat(),

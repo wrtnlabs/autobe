@@ -23,8 +23,8 @@ type Mapper = {
   interfaceSchemas: IAutoBePreliminaryGetInterfaceSchemas;
   realizeCollectors: IAutoBePreliminaryGetRealizeCollectors;
   realizeTransformers: IAutoBePreliminaryGetRealizeTransformers;
-  getPreviousAnalysisFiles: IAutoBePreliminaryGetPreviousAnalysisFiles;
-  getPreviousPrismaSchemas: IAutoBePreliminaryGetPreviousPrismaSchemas;
-  getPreviousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
-  getPreviousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
+  previousAnalysisFiles: IAutoBePreliminaryGetPreviousAnalysisFiles;
+  previousPrismaSchemas: IAutoBePreliminaryGetPreviousPrismaSchemas;
+  previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  previousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
 };

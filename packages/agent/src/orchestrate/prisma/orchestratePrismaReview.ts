@@ -62,6 +62,7 @@ async function step<Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBePrismaReviewApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
+    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       prismaSchemas: props.application.files.map((f) => f.models).flat(),

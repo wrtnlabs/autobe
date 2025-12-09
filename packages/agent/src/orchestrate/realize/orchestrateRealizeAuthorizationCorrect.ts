@@ -82,6 +82,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
       application:
         typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
       kinds: ["prismaSchemas"],
+      histories: ctx.histories(),
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {

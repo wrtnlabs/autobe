@@ -1,5 +1,9 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeHistory,
+  AutoBePreliminaryKind,
+} from "@autobe/interface";
 import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { IJsonSchemaApplication } from "typia";
 import { v7 } from "uuid";
@@ -80,7 +84,13 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       });
     })();
 
-    this.all = createPreliminaryCollection(props.state, props.all);
+    this.all = createPreliminaryCollection(
+      {
+        histories: props.histories,
+        state: props.state,
+      },
+      props.all,
+    );
     this.local = createPreliminaryCollection(null, props.local);
 
     complementPreliminaryCollection({
@@ -159,6 +169,7 @@ export namespace AutoBePreliminaryController {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     application: IJsonSchemaApplication;
     kinds: Kind[];
+    histories: readonly AutoBeHistory[];
     state: AutoBeState;
     all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
     local?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
