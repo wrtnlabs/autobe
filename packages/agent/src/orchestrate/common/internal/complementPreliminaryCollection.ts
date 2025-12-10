@@ -58,12 +58,12 @@ export const complementPreliminaryCollection = (props: IProps): void => {
 };
 
 const complementRealizeCollectors = (props: IProps): void =>
-  complementRealizeModuarlizations(props, props.local.realizeCollectors);
+  complementRealizeModularizations(props, props.local.realizeCollectors);
 
 const complementRealizeTransformers = (props: IProps): void =>
-  complementRealizeModuarlizations(props, props.local.realizeTransformers);
+  complementRealizeModularizations(props, props.local.realizeTransformers);
 
-const complementRealizeModuarlizations = (
+const complementRealizeModularizations = (
   props: IProps,
   metadata:
     | AutoBeRealizeCollectorFunction[]
@@ -94,7 +94,7 @@ const complementInterfaceOperations = (props: INextProps) => {
   const kind: "interfaceOperations" | "previousInterfaceOperations" =
     props.previous ? "previousInterfaceOperations" : "interfaceOperations";
   const schemaKind: "interfaceSchemas" | "previousInterfaceSchemas" =
-    props.previous ? "interfaceSchemas" : "previousInterfaceSchemas";
+    props.previous ? "previousInterfaceSchemas" : "interfaceSchemas";
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
       props.all[kind].map(
