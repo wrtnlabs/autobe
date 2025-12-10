@@ -1,6 +1,7 @@
 import {
   AutoBeOpenApi,
   AutoBePreliminaryKind,
+  AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -25,6 +26,12 @@ interface INextProps extends IProps {
 }
 
 export const complementPreliminaryCollection = (props: IProps): void => {
+  // Realize modularizations
+  if (props.kinds.includes("realizeCollectors") === true)
+    complementReaizeCollectors(props);
+  if (props.kinds.includes("realizeTransformers") === true)
+    complementRealizeTransformers(props);
+
   // Complement interface operations with prerequisites
   if (props.kinds.includes("interfaceOperations") === true)
     complementInterfaceOperations({
@@ -48,6 +55,40 @@ export const complementPreliminaryCollection = (props: IProps): void => {
       ...props,
       previous: true,
     });
+};
+
+const complementReaizeCollectors = (props: IProps): void => {
+  complementRealizeModuarlizations(props, props.all.realizeCollectors);
+};
+
+const complementRealizeTransformers = (props: IProps): void => {
+  complementRealizeModuarlizations(props, props.all.realizeTransformers);
+};
+
+const complementRealizeModuarlizations = (
+  props: IProps,
+  metadata:
+    | AutoBeRealizeCollectorFunction[]
+    | AutoBeRealizeTransformerFunction[],
+): void => {
+  for (const { plan } of metadata) {
+    if (props.kinds.includes("prismaSchemas")) {
+      const model: AutoBePrisma.IModel | undefined =
+        props.all.prismaSchemas.find((m) => m.name === plan.prismaSchemaName);
+      if (
+        model !== undefined &&
+        props.local.prismaSchemas.find((m) => m.name === model.name) ===
+          undefined
+      )
+        props.local.prismaSchemas.push(model);
+    }
+    if (props.kinds.includes("interfaceSchemas")) {
+      const type: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+        props.all.interfaceSchemas[plan.dtoTypeName];
+      if (type !== undefined)
+        props.local.interfaceSchemas[plan.dtoTypeName] ??= type;
+    }
+  }
 };
 
 const complementInterfaceOperations = (props: INextProps) => {
