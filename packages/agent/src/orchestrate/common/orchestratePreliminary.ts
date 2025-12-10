@@ -4,6 +4,8 @@ import {
   AutoBeOpenApi,
   AutoBePreliminaryKind,
   AutoBePrisma,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
@@ -44,6 +46,19 @@ export const orchestratePreliminary = async <
         all: pa.getAll().analysisFiles,
         local: pa.getLocal().analysisFiles,
         arguments: exec.arguments,
+        previous: false,
+      });
+    } else if (isPreviousAnalysisFiles(props.preliminary, exec.arguments)) {
+      const pa: AutoBePreliminaryController<"previousAnalysisFiles"> =
+        props.preliminary;
+      orchestrateAnalyzeFiles(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: pa.getAll().previousAnalysisFiles,
+        local: pa.getLocal().previousAnalysisFiles,
+        arguments: exec.arguments,
+        previous: true,
       });
     }
     // PRISMA SCHEMAS
@@ -57,6 +72,19 @@ export const orchestratePreliminary = async <
         all: pp.getAll().prismaSchemas,
         local: pp.getLocal().prismaSchemas,
         arguments: exec.arguments,
+        previous: false,
+      });
+    } else if (isPreviousPrismaSchemas(props.preliminary, exec.arguments)) {
+      const pp: AutoBePreliminaryController<"previousPrismaSchemas"> =
+        props.preliminary;
+      orchestratePrismaSchemas(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: pp.getAll().previousPrismaSchemas,
+        local: pp.getLocal().previousPrismaSchemas,
+        arguments: exec.arguments,
+        previous: true,
       });
     }
     // INTERFACE OPERATIONS
@@ -77,6 +105,28 @@ export const orchestratePreliminary = async <
           schemas: pi.getLocal().interfaceSchemas,
         },
         arguments: exec.arguments,
+        previous: false,
+      });
+    } else if (
+      isPreviousInterfaceOperations(props.preliminary, exec.arguments)
+    ) {
+      const pi: AutoBePreliminaryController<
+        "previousInterfaceOperations" | "previousInterfaceSchemas"
+      > = props.preliminary;
+      orchestrateInterfaceOperations(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: {
+          operations: pi.getAll().previousInterfaceOperations,
+          schemas: pi.getAll().previousInterfaceSchemas,
+        },
+        local: {
+          operations: pi.getLocal().previousInterfaceOperations,
+          schemas: pi.getLocal().previousInterfaceSchemas,
+        },
+        arguments: exec.arguments,
+        previous: true,
       });
     }
     // INTERFACE SCHEMAS
@@ -89,6 +139,45 @@ export const orchestratePreliminary = async <
         trial: props.trial,
         all: ps.getAll().interfaceSchemas,
         local: ps.getLocal().interfaceSchemas,
+        arguments: exec.arguments,
+        previous: false,
+      });
+    } else if (isPreviousInterfaceSchemas(props.preliminary, exec.arguments)) {
+      const ps: AutoBePreliminaryController<"previousInterfaceSchemas"> =
+        props.preliminary;
+      orchestrateInterfaceSchemas(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: ps.getAll().previousInterfaceSchemas,
+        local: ps.getLocal().previousInterfaceSchemas,
+        arguments: exec.arguments,
+        previous: true,
+      });
+    }
+    // REALIZE COLLECTORS
+    else if (isRealizeCollectors(props.preliminary, exec.arguments)) {
+      const rc: AutoBePreliminaryController<"realizeCollectors"> =
+        props.preliminary;
+      orchestrateRealizeCollectors(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: rc.getAll().realizeCollectors,
+        local: rc.getLocal().realizeCollectors,
+        arguments: exec.arguments,
+      });
+    }
+    // REALIZE TRANSFORMERS
+    else if (isRealizeTransformers(props.preliminary, exec.arguments)) {
+      const rt: AutoBePreliminaryController<"realizeTransformers"> =
+        props.preliminary;
+      orchestrateRealizeTransformers(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: rt.getAll().realizeTransformers,
+        local: rt.getLocal().realizeTransformers,
         arguments: exec.arguments,
       });
     }
@@ -109,11 +198,33 @@ const isAnalysisFiles = (
     >()[0]
   ] !== undefined;
 
+const isPreviousAnalysisFiles = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"previousAnalysisFiles"> =>
+  typia.is<IAutoBePreliminaryRequest<"previousAnalysisFiles">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "analysisFiles">
+    >()[0]
+  ] !== undefined;
+
 const isPrismaSchemas = (
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"prismaSchemas"> =>
   typia.is<IAutoBePreliminaryRequest<"prismaSchemas">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "prismaSchemas">
+    >()[0]
+  ] !== undefined;
+
+const isPreviousPrismaSchemas = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"previousPrismaSchemas"> =>
+  typia.is<IAutoBePreliminaryRequest<"previousPrismaSchemas">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
       Extract<keyof IAutoBePreliminaryCollection, "prismaSchemas">
@@ -133,6 +244,19 @@ const isInterfaceOperations = (
     >()[0]
   ] !== undefined;
 
+const isPreviousInterfaceOperations = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<
+  "previousInterfaceOperations" | "previousInterfaceSchemas"
+> =>
+  typia.is<IAutoBePreliminaryRequest<"previousInterfaceOperations">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "interfaceOperations">
+    >()[0]
+  ] !== undefined;
+
 const isInterfaceSchemas = (
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
@@ -141,6 +265,39 @@ const isInterfaceSchemas = (
   preliminary.getAll()[
     typia.misc.literals<
       Extract<keyof IAutoBePreliminaryCollection, "interfaceSchemas">
+    >()[0]
+  ] !== undefined;
+
+const isPreviousInterfaceSchemas = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"previousInterfaceSchemas"> =>
+  typia.is<IAutoBePreliminaryRequest<"previousInterfaceSchemas">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "interfaceSchemas">
+    >()[0]
+  ] !== undefined;
+
+const isRealizeCollectors = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"realizeCollectors"> =>
+  typia.is<IAutoBePreliminaryRequest<"realizeCollectors">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "realizeCollectors">
+    >()[0]
+  ] !== undefined;
+
+const isRealizeTransformers = (
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"realizeTransformers"> =>
+  typia.is<IAutoBePreliminaryRequest<"realizeTransformers">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "realizeTransformers">
     >()[0]
   ] !== undefined;
 
@@ -156,13 +313,22 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
     all: AutoBeAnalyzeFile[];
     local: AutoBeAnalyzeFile[];
     arguments: unknown;
+    previous: boolean;
   },
 ): void => {
-  if (
-    typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(props.arguments) ===
-    false
+  if (props.previous) {
+    if (
+      false ===
+      typia.is<IAutoBePreliminaryRequest<"previousAnalysisFiles">>(
+        props.arguments,
+      )
+    )
+      return;
+  } else if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(props.arguments)
   )
-    return; // unreachable
+    return;
 
   const existing: string[] = props.local.map((f) => f.filename);
   for (const filename of props.arguments.request.fileNames) {
@@ -176,7 +342,7 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
-    function: "analysisFiles",
+    function: props.previous ? "previousAnalysisFiles" : "analysisFiles",
     source: props.source,
     source_id: props.source_id,
     existing,
@@ -195,13 +361,22 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
     all: AutoBePrisma.IModel[];
     local: AutoBePrisma.IModel[];
     arguments: unknown;
+    previous: boolean;
   },
 ): void => {
-  if (
-    typia.is<IAutoBePreliminaryRequest<"prismaSchemas">>(props.arguments) ===
-    false
+  if (props.previous) {
+    if (
+      false ===
+      typia.is<IAutoBePreliminaryRequest<"previousPrismaSchemas">>(
+        props.arguments,
+      )
+    )
+      return;
+  } else if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"prismaSchemas">>(props.arguments)
   )
-    return; // unreachable
+    return;
 
   const existing: string[] = props.local.map((m) => m.name);
   for (const name of props.arguments.request.schemaNames) {
@@ -215,7 +390,7 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
-    function: "prismaSchemas",
+    function: props.previous ? "previousPrismaSchemas" : "prismaSchemas",
     source: props.source,
     source_id: props.source_id,
     existing,
@@ -240,14 +415,22 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     };
     arguments: unknown;
+    previous: boolean;
   },
 ): void => {
-  if (
-    typia.is<IAutoBePreliminaryRequest<"interfaceOperations">>(
-      props.arguments,
-    ) === false
+  if (props.previous) {
+    if (
+      false ===
+      typia.is<IAutoBePreliminaryRequest<"previousInterfaceOperations">>(
+        props.arguments,
+      )
+    )
+      return;
+  } else if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"interfaceOperations">>(props.arguments)
   )
-    return; // unreachable
+    return;
 
   const existing: AutoBeOpenApi.IEndpoint[] = props.local.operations.map(
     (o) => ({
@@ -280,7 +463,9 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
-    function: "interfaceOperations",
+    function: props.previous
+      ? "previousInterfaceOperations"
+      : "interfaceOperations",
     source: props.source,
     source_id: props.source_id,
     existing,
@@ -300,10 +485,13 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
       arguments: {
         thinking: "interface schemas for detailed schema information",
         request: {
-          type: "getInterfaceSchemas",
+          type: props.previous
+            ? "getPreviousInterfaceSchemas"
+            : "getInterfaceSchemas",
           typeNames: Array.from(typeNames),
         },
-      } satisfies IAutoBePreliminaryRequest<"interfaceSchemas">,
+      },
+      previous: props.previous,
     },
     false,
   );
@@ -318,17 +506,25 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
     all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     arguments: unknown;
+    previous: boolean;
   },
   dispatch: boolean = true,
 ): void => {
-  if (
-    typia.is<IAutoBePreliminaryRequest<"interfaceSchemas">>(props.arguments) ==
-    false
+  if (props.previous) {
+    if (
+      false ===
+      typia.is<IAutoBePreliminaryRequest<"previousInterfaceSchemas">>(
+        props.arguments,
+      )
+    )
+      return;
+  } else if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"interfaceSchemas">>(props.arguments)
   )
-    return; // unreachable
+    return;
 
   const existing: string[] = Object.keys(props.local);
-
   const collected: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const key of props.arguments.request.typeNames) {
     OpenApiTypeChecker.visit({
@@ -350,7 +546,9 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
     ctx.dispatch({
       type: "preliminary",
       id: v7(),
-      function: "interfaceSchemas",
+      function: props.previous
+        ? "previousInterfaceSchemas"
+        : "interfaceSchemas",
       source: props.source,
       source_id: props.source_id,
       existing,
@@ -358,4 +556,84 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
       trial: props.trial,
       created_at: new Date().toISOString(),
     });
+};
+
+const orchestrateRealizeCollectors = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: AutoBeRealizeCollectorFunction[];
+    local: AutoBeRealizeCollectorFunction[];
+    arguments: unknown;
+  },
+): void => {
+  if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"realizeCollectors">>(props.arguments)
+  )
+    return;
+
+  const existing: string[] = props.local.map((c) => c.plan.dtoTypeName);
+  for (const dtoTypeName of props.arguments.request.dtoTypeNames) {
+    const collector: AutoBeRealizeCollectorFunction | undefined =
+      props.all.find((c) => c.plan.dtoTypeName === dtoTypeName);
+    if (collector === undefined) continue;
+    else if (
+      props.local.find((c) => c.plan.dtoTypeName === dtoTypeName) === undefined
+    )
+      props.local.push(collector);
+  }
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: "realizeCollectors",
+    source: props.source,
+    source_id: props.source_id,
+    existing,
+    requested: props.arguments.request.dtoTypeNames,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
+  });
+};
+
+const orchestrateRealizeTransformers = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: AutoBeRealizeTransformerFunction[];
+    local: AutoBeRealizeTransformerFunction[];
+    arguments: unknown;
+  },
+): void => {
+  if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"realizeTransformers">>(props.arguments)
+  )
+    return;
+
+  const existing: string[] = props.local.map((t) => t.plan.dtoTypeName);
+  for (const dtoTypeName of props.arguments.request.dtoTypeNames) {
+    const transformer: AutoBeRealizeTransformerFunction | undefined =
+      props.all.find((t) => t.plan.dtoTypeName === dtoTypeName);
+    if (transformer === undefined) continue;
+    else if (
+      props.local.find((t) => t.plan.dtoTypeName === dtoTypeName) === undefined
+    )
+      props.local.push(transformer);
+  }
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: "realizeTransformers",
+    source: props.source,
+    source_id: props.source_id,
+    existing,
+    requested: props.arguments.request.dtoTypeNames,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
+  });
 };
