@@ -221,7 +221,7 @@ const isPreviousPrismaSchemas = (
   typia.is<IAutoBePreliminaryRequest<"previousPrismaSchemas">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "prismaSchemas">
+      Extract<keyof IAutoBePreliminaryCollection, "previousPrismaSchemas">
     >()[0]
   ] !== undefined;
 
@@ -247,7 +247,7 @@ const isPreviousInterfaceOperations = (
   typia.is<IAutoBePreliminaryRequest<"previousInterfaceOperations">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "interfaceOperations">
+      Extract<keyof IAutoBePreliminaryCollection, "previousInterfaceOperations">
     >()[0]
   ] !== undefined;
 
@@ -269,7 +269,7 @@ const isPreviousInterfaceSchemas = (
   typia.is<IAutoBePreliminaryRequest<"previousInterfaceSchemas">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "interfaceSchemas">
+      Extract<keyof IAutoBePreliminaryCollection, "previousInterfaceSchemas">
     >()[0]
   ] !== undefined;
 
