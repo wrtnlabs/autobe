@@ -275,7 +275,7 @@ const isPreviousInterfaceSchemas = (
   typia.is<IAutoBePreliminaryRequest<"previousInterfaceSchemas">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "interfaceSchemas">
+      Extract<keyof IAutoBePreliminaryCollection, "previousInterfaceSchemas">
     >()[0]
   ] !== undefined;
 
