@@ -128,6 +128,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
       local: this.local as IAutoBePreliminaryCollection,
+      prerequisite: false,
     });
   }
 
