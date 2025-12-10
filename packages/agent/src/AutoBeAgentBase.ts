@@ -1,11 +1,9 @@
 import {
   AutoBeEvent,
   AutoBeHistory,
-  IAutoBeCompiler,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 
-import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { emplaceMap } from "./utils/emplaceMap";
 
@@ -59,11 +57,5 @@ export abstract class AutoBeAgentBase {
         } catch {}
       }),
     );
-  }
-}
-export namespace AutoBeAgentBase {
-  export interface IAsset {
-    compiler: () => Promise<IAutoBeCompiler>;
-    state: () => AutoBeState;
   }
 }

@@ -124,7 +124,6 @@ async function process<Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
-    histories: ctx.histories(),
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {

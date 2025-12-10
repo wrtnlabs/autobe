@@ -1,4 +1,4 @@
-import { AutoBeHistory, AutoBePreliminaryKind } from "@autobe/interface";
+import { AutoBePreliminaryKind } from "@autobe/interface";
 import {
   ChatGptTypeChecker,
   ClaudeTypeChecker,
@@ -16,7 +16,6 @@ export const fixPreliminaryApplication = <
   Kind extends AutoBePreliminaryKind,
   Model extends Exclude<ILlmSchema.Model, "3.0">,
 >(props: {
-  histories: readonly AutoBeHistory[];
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
   application: ILlmApplication<Model>;
@@ -49,29 +48,25 @@ export const fixPreliminaryApplication = <
   });
   if (eraseMetadata === null) return;
 
-  const reversed: AutoBeHistory[] = props.histories.slice().reverse();
-  const previous = (type: "analyze" | "prisma" | "interface"): boolean =>
-    props.state[type] !== null &&
-    reversed.some((h) => h.type === type && h !== props.state[type]);
   for (const kind of props.preliminary.getKinds()) {
     if (kind.startsWith("previous") === false) continue;
     else if (kind === "previousAnalysisFiles") {
-      if (previous("analyze")) {
+      if (props.state.previousAnalyze === null) {
         eraseMetadata("getPreviousAnalysisFiles");
         eraseKind(kind);
       }
     } else if (kind === "previousPrismaSchemas") {
-      if (previous("prisma")) {
+      if (props.state.previousPrisma === null) {
         eraseMetadata("getPreviousPrismaSchemas");
         eraseKind(kind);
       }
     } else if (kind === "previousInterfaceOperations") {
-      if (previous("interface")) {
+      if (props.state.previousInterface === null) {
         eraseMetadata("getPreviousInterfaceOperations");
         eraseKind(kind);
       }
     } else if (kind === "previousInterfaceSchemas") {
-      if (previous("interface")) {
+      if (props.state.previousInterface === null) {
         eraseMetadata("getPreviousInterfaceSchemas");
         eraseKind(kind);
       }
