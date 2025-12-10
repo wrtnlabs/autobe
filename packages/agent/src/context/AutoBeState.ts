@@ -12,4 +12,9 @@ export interface AutoBeState {
   interface: AutoBeInterfaceHistory | null;
   test: AutoBeTestHistory | null;
   realize: AutoBeRealizeHistory | null;
+  previousAnalyze: AutoBeAnalyzeHistory | null;
+  previousPrisma: AutoBePrismaHistory | null;
+  previousInterface: AutoBeInterfaceHistory | null;
+  previousTest: AutoBeTestHistory | null;
+  previousRealize: AutoBeRealizeHistory | null;
 }

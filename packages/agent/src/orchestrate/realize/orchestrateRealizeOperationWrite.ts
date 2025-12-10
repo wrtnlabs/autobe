@@ -85,7 +85,6 @@ async function process<Model extends ILlmSchema.Model>(
     application:
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
     kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       realizeCollectors: props.collectors,

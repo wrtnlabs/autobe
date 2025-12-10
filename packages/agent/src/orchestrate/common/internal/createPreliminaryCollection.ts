@@ -1,16 +1,11 @@
-import { AutoBeHistory } from "@autobe/interface";
-
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
 export function createPreliminaryCollection(
-  ctx: null | {
-    histories: readonly AutoBeHistory[];
-    state: AutoBeState;
-  },
+  state: AutoBeState | null,
   defined?: Partial<IAutoBePreliminaryCollection>,
 ): IAutoBePreliminaryCollection {
-  if (ctx === null)
+  if (state === null)
     return {
       analysisFiles: (defined?.analysisFiles ?? []).slice(),
       prismaSchemas: (defined?.prismaSchemas ?? []).slice(),
@@ -29,18 +24,6 @@ export function createPreliminaryCollection(
         defined?.previousInterfaceOperations ?? []
       ).slice(),
     };
-
-  const reversed: AutoBeHistory[] = ctx.histories.slice().reverse();
-  const state: AutoBeState = ctx.state;
-  const previous = <Type extends "analyze" | "prisma" | "interface">(
-    type: Type,
-  ): AutoBeHistory.Mapper[Type] | undefined => {
-    if (state[type] === null) return undefined;
-    return reversed.find(
-      (h): h is AutoBeHistory.Mapper[Type] =>
-        h.type === type && h !== state[type],
-    );
-  };
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
     prismaSchemas:
@@ -63,14 +46,12 @@ export function createPreliminaryCollection(
       defined?.realizeTransformers ??
       state.realize?.functions.filter((f) => f.type === "transformer") ??
       [],
-    previousAnalysisFiles: previous("analyze")?.files ?? [],
+    previousAnalysisFiles: state.previousAnalyze?.files ?? [],
     previousPrismaSchemas:
-      previous("prisma")
-        ?.result.data.files.map((f) => f.models)
-        .flat() ?? [],
+      state.previousPrisma?.result.data.files.map((f) => f.models).flat() ?? [],
     previousInterfaceSchemas:
-      previous("interface")?.document.components.schemas ?? {},
+      state.previousInterface?.document.components.schemas ?? {},
     previousInterfaceOperations:
-      previous("interface")?.document.operations ?? [],
+      state.previousInterface?.document.operations ?? [],
   };
 }

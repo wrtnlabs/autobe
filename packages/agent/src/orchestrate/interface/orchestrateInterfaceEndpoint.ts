@@ -83,7 +83,6 @@ async function process<Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBeInterfaceEndpointApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
-    histories: ctx.histories(),
     state: ctx.state(),
     local: {
       prismaSchemas: props.group.prismaSchemas

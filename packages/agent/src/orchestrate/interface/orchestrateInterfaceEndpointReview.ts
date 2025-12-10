@@ -24,7 +24,6 @@ export async function orchestrateInterfaceEndpointReview<
       typia.json.application<IAutoBeInterfaceEndpointReviewApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "prismaSchemas"],
-    histories: ctx.histories(),
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async () => {

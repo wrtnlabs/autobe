@@ -89,7 +89,6 @@ async function process<Model extends ILlmSchema.Model>(
   const preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
-    histories: ctx.histories(),
     state: ctx.state(),
     source: SOURCE,
     application:
