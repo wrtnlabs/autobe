@@ -233,14 +233,14 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   /**
    * Runs RAG loop for incremental context loading.
    *
-   * Repeats until process returns non-null value or exceeds 40 iterations. Each
+   * Repeats until process returns non-null value or exceeds the maximum number of iterations (`AutoBeConfigConstant.RAG_LIMIT`). Each
    * iteration: LLM requests data → `orchestratePreliminary` adds to `local` →
    * next iteration with updated context.
    *
    * @param ctx AutoBe context for `conversate` and state access.
    * @param process Callback that runs LLM `conversate` and returns result.
-   * @returns Final value when process returns non-null or throws after 40
-   *   retries.
+   * @returns Final value when process returns non-null or throws after exceeding
+   *   `AutoBeConfigConstant.RAG_LIMIT` retries.
    */
   public async orchestrate<Model extends ILlmSchema.Model, T>(
     ctx: AutoBeContext<Model>,
