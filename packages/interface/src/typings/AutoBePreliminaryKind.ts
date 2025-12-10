@@ -4,4 +4,8 @@ export type AutoBePreliminaryKind =
   | "interfaceOperations"
   | "interfaceSchemas"
   | "realizeCollectors"
-  | "realizeTransformers";
+  | "realizeTransformers"
+  | "previousAnalysisFiles"
+  | "previousPrismaSchemas"
+  | "previousInterfaceOperations"
+  | "previousInterfaceSchemas";

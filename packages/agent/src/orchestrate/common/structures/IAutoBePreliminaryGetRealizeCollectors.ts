@@ -6,6 +6,8 @@ import { tags } from "typia";
  * This type is used in the preliminary phase to request specific collector
  * functions generated during the REALIZE_COLLECTOR_WRITE phase. Collectors
  * transform API request DTOs into Prisma CreateInput structures.
+ *
+ * @author Samchon
  */
 export interface IAutoBePreliminaryGetRealizeCollectors {
   /**
@@ -20,8 +22,8 @@ export interface IAutoBePreliminaryGetRealizeCollectors {
   /**
    * List of collector DTO type names to retrieve.
    *
-   * DTO type names for Create DTOs that have collector functions
-   * (e.g., "IShoppingSale.ICreate", "IBbsArticle.ICreate").
+   * DTO type names for Create DTOs that have collector functions (e.g.,
+   * "IShoppingSale.ICreate", "IBbsArticle.ICreate").
    *
    * CRITICAL: DO NOT request the same type names that you have already
    * requested in previous calls.

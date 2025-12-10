@@ -71,6 +71,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
           application:
             typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
           kinds: ["prismaSchemas"],
+          histories: ctx.histories(),
           state: ctx.state(),
           local: {
             prismaSchemas: ctx

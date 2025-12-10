@@ -5,6 +5,8 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request specific schema
  * definitions from components.schemas for review or complementary generation.
+ *
+ * @author Samchon
  */
 export interface IAutoBePreliminaryGetInterfaceSchemas {
   /**

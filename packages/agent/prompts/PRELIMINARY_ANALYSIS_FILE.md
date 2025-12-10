@@ -1,5 +1,7 @@
 # Preliminary Material Loading Constraints - Requirement Analysis Documents
 
+{{PREVIOUS}}
+
 ## CRITICAL ANTI-DUPLICATION RULES
 
 You are working within a Resource-Constrained Environment with LIMITED function calling budget.

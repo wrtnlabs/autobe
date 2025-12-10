@@ -136,6 +136,7 @@ async function process<Model extends ILlmSchema.Model>(
       "interfaceOperations",
       "interfaceSchemas",
     ],
+    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,

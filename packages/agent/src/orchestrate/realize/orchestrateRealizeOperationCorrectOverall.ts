@@ -72,6 +72,7 @@ export const orchestrateRealizeOperationCorrectOverall = async <
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
+          histories: ctx.histories(),
           state: ctx.state(),
           all: {
             prismaSchemas: ctx

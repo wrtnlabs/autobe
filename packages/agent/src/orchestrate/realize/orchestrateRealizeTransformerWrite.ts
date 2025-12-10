@@ -92,6 +92,7 @@ async function process<Model extends ILlmSchema.Model>(
   const dtoTypeName: string = props.plan.dtoTypeName;
   const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
     new AutoBePreliminaryController({
+      histories: ctx.histories(),
       state: ctx.state(),
       source: SOURCE,
       application:

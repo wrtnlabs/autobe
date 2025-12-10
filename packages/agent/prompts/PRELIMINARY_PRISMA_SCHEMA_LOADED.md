@@ -2,6 +2,8 @@
 
 The following Prisma database models have been loaded into your context through previous `process()` calls with `type: "getPrismaSchemas"`.
 
+{{PREVIOUS}}
+
 These schema definitions are now available for you to reference. Use them to:
 - Verify actual field names and data types in the database
 - Check relationship definitions (one-to-one, one-to-many, many-to-many)

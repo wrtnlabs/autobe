@@ -5,6 +5,8 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request specific Prisma table
  * schemas needed for generating type-safe API operations.
+ *
+ * @author Samchon
  */
 export interface IAutoBePreliminaryGetPrismaSchemas {
   /**

@@ -88,6 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
       application:
         typia.json.application<IAutoBeRealizeAuthorizationWriteApplication>(),
       kinds: ["prismaSchemas"],
+      histories: ctx.histories(),
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {

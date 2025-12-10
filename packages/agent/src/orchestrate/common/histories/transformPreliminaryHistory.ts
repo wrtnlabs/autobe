@@ -29,42 +29,55 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
 ): IMicroAgenticaHistoryJson[] => [
   ...preliminary
     .getKinds()
-    .map((key): IMicroAgenticaHistoryJson[] =>
-      Transformer[key]({
+    .map((key): IMicroAgenticaHistoryJson[] => {
+      const type: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
+        key.startsWith("previous") ? key.replace("previous", "") : key
+      ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+      return PreliminaryTransformer[type]({
         source: preliminary.getSource(),
         all: preliminary.getAll() as IAutoBePreliminaryCollection,
         local: preliminary.getLocal() as IAutoBePreliminaryCollection,
         config: preliminary.getConfig() as any,
-      }),
-    )
+        previous: key.startsWith("previous"),
+      });
+    })
     .flat(),
 ];
 
-namespace Transformer {
+namespace PreliminaryTransformer {
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     all: Pick<IAutoBePreliminaryCollection, Kind>;
     local: Pick<IAutoBePreliminaryCollection, Kind>;
     config: AutoBePreliminaryController.IConfig<Kind>;
+    previous: boolean;
   }
 
   export const analysisFiles = (
-    props: IProps<"analysisFiles">,
+    props: IProps<"analysisFiles" | "previousAnalysisFiles">,
   ): IMicroAgenticaHistoryJson[] => {
+    const kind: "analysisFiles" | "previousAnalysisFiles" = props.previous
+      ? "previousAnalysisFiles"
+      : "analysisFiles";
     const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
-      props.local.analysisFiles.map((f) => [f.filename, f]),
+      props.local[kind].map((f) => [f.filename, f]),
     );
-    const newbie: AutoBeAnalyzeFile[] = props.all.analysisFiles.filter(
+    const newbie: AutoBeAnalyzeFile[] = props.all[kind].filter(
       (f) => oldbie[f.filename] === undefined,
     );
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
+        previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
         content: toJsonBlock(oldbie),
+        replace: props.previous
+          ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
+      previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
       available: StringUtil.trim`
         \`\`\`json
         ${JSON.stringify(
@@ -78,25 +91,31 @@ namespace Transformer {
         )}
         \`\`\`
       `,
-      loaded: props.local.analysisFiles
-        .map((f) => `- ${f.filename}`)
-        .join("\n"),
+      loaded: props.local[kind].map((f) => `- ${f.filename}`).join("\n"),
       exhausted:
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
           : "",
+      replace: props.previous
+        ? {
+            from: "getAnalysisFiles",
+            to: "getPreviousAnalysisFiles",
+          }
+        : null,
     });
-    return props.local.analysisFiles.length === 0
+    return props.local[kind].length === 0
       ? [assistant, system]
       : [
           createFunctionCallingMessage({
             controller: props.source,
-            kind: "analysisFiles",
+            kind,
             arguments: {
               thinking: "analysis files for detailed requirements' analyses",
               request: {
-                type: "getAnalysisFiles",
-                fileNames: props.local.analysisFiles.map((f) => f.filename),
+                type: props.previous
+                  ? "getPreviousAnalysisFiles"
+                  : "getAnalysisFiles",
+                fileNames: props.local[kind].map((f) => f.filename),
               },
             },
           }),
@@ -106,18 +125,22 @@ namespace Transformer {
   };
 
   export const prismaSchemas = (
-    props: IProps<"prismaSchemas">,
+    props: IProps<"prismaSchemas" | "previousPrismaSchemas">,
   ): IMicroAgenticaHistoryJson[] => {
+    const kind: "prismaSchemas" | "previousPrismaSchemas" = props.previous
+      ? "previousPrismaSchemas"
+      : "prismaSchemas";
     const oldbie: Record<string, AutoBePrisma.IModel> = Object.fromEntries(
-      props.local.prismaSchemas.map((s) => [s.name, s]),
+      props.local[kind].map((s) => [s.name, s]),
     );
-    const newbie: AutoBePrisma.IModel[] = props.all.prismaSchemas.filter(
+    const newbie: AutoBePrisma.IModel[] = props.all[kind].filter(
       (s) => oldbie[s.name] === undefined,
     );
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
+        previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
         content:
           props.config.prisma === "ast"
             ? StringUtil.trim`
@@ -143,9 +166,16 @@ namespace Transformer {
                 })}
                 \`\`\
               `,
+        replace: props.previous
+          ? {
+              from: "getPrismaSchemas",
+              to: "getPreviousPrismaSchemas",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
+      previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
         Name | Stance | Summary
         -----|--------|---------
@@ -155,23 +185,31 @@ namespace Transformer {
           )
           .join("\n")}
       `,
-      loaded: props.local.prismaSchemas.map((s) => `- ${s.name}`).join("\n"),
+      loaded: props.local[kind].map((s) => `- ${s.name}`).join("\n"),
       exhausted:
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
           : "",
+      replace: props.previous
+        ? {
+            from: "getPrismaSchemas",
+            to: "getPreviousPrismaSchemas",
+          }
+        : null,
     });
-    return props.local.prismaSchemas.length === 0
+    return props.local[kind].length === 0
       ? [assistant, system]
       : [
           createFunctionCallingMessage({
             controller: props.source,
-            kind: "prismaSchemas",
+            kind,
             arguments: {
               thinking: "prisma schemas for DB schema information",
               request: {
-                type: "getPrismaSchemas",
-                schemaNames: props.local.prismaSchemas.map((s) => s.name),
+                type: props.previous
+                  ? "getPreviousPrismaSchemas"
+                  : "getPrismaSchemas",
+                schemaNames: props.local[kind].map((s) => s.name),
               },
             },
           }),
@@ -181,33 +219,44 @@ namespace Transformer {
   };
 
   export const interfaceOperations = (
-    props: IProps<"interfaceOperations">,
+    props: IProps<"interfaceOperations" | "previousInterfaceOperations">,
   ): IMicroAgenticaHistoryJson[] => {
+    const kind: "interfaceOperations" | "previousInterfaceOperations" =
+      props.previous ? "previousInterfaceOperations" : "interfaceOperations";
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.local.interfaceOperations.map((o) => ({
+      props.local[kind].map((o) => ({
         method: o.method,
         path: o.path,
       })),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
-    const newbie: AutoBeOpenApi.IOperation[] =
-      props.all.interfaceOperations.filter(
-        (o) =>
-          oldbie.has({
-            method: o.method,
-            path: o.path,
-          }) === false,
-      );
+    const newbie: AutoBeOpenApi.IOperation[] = props.all[kind].filter(
+      (o) =>
+        oldbie.has({
+          method: o.method,
+          path: o.path,
+        }) === false,
+    );
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_LOADED,
-        content: toJsonBlock(props.local.interfaceOperations),
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_PREVIOUS,
+        content: toJsonBlock(props.local[kind]),
+        replace: props.previous
+          ? {
+              from: "getInterfaceOperations",
+              to: "getPreviousInterfaceOperations",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION,
+      previous:
+        AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_PREVIOUS,
       available: StringUtil.trim`
         Method | Path | Actor? | Authorization? | Summary
         -------|------|--------|----------------|---------
@@ -235,18 +284,26 @@ namespace Transformer {
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED
           : "",
+      replace: props.previous
+        ? {
+            from: "getInterfaceOperations",
+            to: "getPreviousInterfaceOperations",
+          }
+        : null,
     });
-    return props.local.interfaceOperations.length === 0
+    return props.local[kind].length === 0
       ? [assistant, system]
       : [
           createFunctionCallingMessage({
             controller: props.source,
-            kind: "interfaceOperations",
+            kind,
             arguments: {
               thinking:
                 "interface operations for detailed endpoint information",
               request: {
-                type: "getInterfaceOperations",
+                type: props.previous
+                  ? "getPreviousInterfaceOperations"
+                  : "getInterfaceOperations",
                 endpoints: oldbie.toJSON(),
               },
             },
@@ -257,19 +314,32 @@ namespace Transformer {
   };
 
   export const interfaceSchemas = (
-    props: IProps<"interfaceSchemas">,
+    props: IProps<"interfaceSchemas" | "previousInterfaceSchemas">,
   ): IMicroAgenticaHistoryJson[] => {
+    const kind: "interfaceSchemas" | "previousInterfaceSchemas" = props.previous
+      ? "previousInterfaceSchemas"
+      : "interfaceSchemas";
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-    for (const [k, v] of Object.entries(props.all.interfaceSchemas))
-      if (props.local.interfaceSchemas[k] === undefined) newbie[k] = v;
+    for (const [k, v] of Object.entries(props.all[kind]))
+      if (props.local[kind][k] === undefined) newbie[k] = v;
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_LOADED,
-        content: toJsonBlock(props.local.interfaceSchemas),
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_PREVIOUS,
+        content: toJsonBlock(props.local[kind]),
+        replace: props.previous
+          ? {
+              from: "getInterfaceSchemas",
+              to: "getPreviousInterfaceSchemas",
+            }
+          : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA,
+      previous:
+        AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
         Name | Summary
         -----|---------
@@ -279,25 +349,33 @@ namespace Transformer {
           )
           .join("\n")}
       `,
-      loaded: Object.keys(props.local.interfaceSchemas)
+      loaded: Object.keys(props.local[kind])
         .map((k) => `- ${k}`)
         .join("\n"),
       exhausted:
         Object.keys(newbie).length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED
           : "",
+      replace: props.previous
+        ? {
+            from: "getInterfaceSchemas",
+            to: "getPreviousInterfaceSchemas",
+          }
+        : null,
     });
-    return Object.keys(props.local.interfaceSchemas).length === 0
+    return Object.keys(props.local[kind]).length === 0
       ? [assistant, system]
       : [
           createFunctionCallingMessage({
             controller: props.source,
-            kind: "interfaceSchemas",
+            kind,
             arguments: {
               thinking: "interface schemas for detailed schema information",
               request: {
-                type: "getInterfaceSchemas",
-                typeNames: Object.keys(props.local.interfaceSchemas),
+                type: props.previous
+                  ? "getPreviousInterfaceSchemas"
+                  : "getInterfaceSchemas",
+                typeNames: Object.keys(props.local[kind]),
               },
             },
           }),
@@ -322,6 +400,8 @@ namespace Transformer {
       createAssistantMessage({
         prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_LOADED,
         content: toJsonBlock(oldbie),
+        replace: null,
+        previous: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
@@ -348,6 +428,8 @@ namespace Transformer {
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
           : "",
+      replace: null,
+      previous: null,
     });
     return props.local.realizeCollectors.length === 0
       ? [assistant, system]
@@ -387,6 +469,8 @@ namespace Transformer {
         prompt:
           AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_LOADED,
         content: toJsonBlock(oldbie),
+        replace: null,
+        previous: null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
@@ -410,6 +494,8 @@ namespace Transformer {
         newbie.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
           : "",
+      replace: null,
+      previous: null,
     });
     return props.local.realizeTransformers.length === 0
       ? [assistant, system]
@@ -432,6 +518,72 @@ namespace Transformer {
         ];
   };
 }
+
+interface IPromptReplace {
+  from: Exclude<
+    IAutoBePreliminaryRequest<any>["request"]["type"],
+    `getPrevious${string}`
+  >;
+  to: Extract<
+    IAutoBePreliminaryRequest<any>["request"]["type"],
+    `getPrevious${string}`
+  >;
+}
+
+const createAssistantMessage = (props: {
+  prompt: string;
+  content: string;
+  replace: IPromptReplace | null;
+  previous: string | null;
+}): IAgenticaHistoryJson.IAssistantMessage => {
+  let text = props.prompt
+    .replaceAll("{{CONTENT}}", props.content)
+    .replaceAll(
+      "{{PREVIOUS}}",
+      props.replace !== null && props.previous !== null ? props.previous : "",
+    );
+  if (props.replace !== null)
+    text = text.replaceAll(props.replace.from, props.replace.to);
+  return {
+    id: v7(),
+    type: "assistantMessage",
+    text,
+    created_at: new Date().toISOString(),
+  };
+};
+
+const createSystemMessage = (props: {
+  prompt: string;
+  available: string;
+  loaded: string;
+  exhausted: string;
+  replace: IPromptReplace | null;
+  previous: string | null;
+}): IAgenticaHistoryJson.ISystemMessage => {
+  let text = props.prompt
+    .replaceAll("{{AVAILABLE}}", props.available)
+    .replaceAll("{{LOADED}}", props.loaded)
+    .replaceAll("{{EXHAUSTED}}", props.exhausted)
+    .replaceAll(
+      "{{PREVIOUS}}",
+      props.replace !== null && props.previous !== null ? props.previous : "",
+    );
+  if (props.replace !== null)
+    text = text.replaceAll(props.replace.from, props.replace.to);
+  return {
+    id: v7(),
+    type: "systemMessage",
+    text,
+    created_at: new Date().toISOString(),
+  };
+};
+
+const toJsonBlock = (obj: any): string =>
+  StringUtil.trim`
+      \`\`\`json
+      ${JSON.stringify(obj)}
+      \`\`\`
+    `;
 
 // experimenting between assistantMessage and execute types
 const createFunctionCallingMessage = <
@@ -472,35 +624,3 @@ const createFunctionCallingMessage = <
   // `,
   // created_at: new Date().toISOString(),
 });
-
-const createAssistantMessage = (props: {
-  prompt: string;
-  content: string;
-}): IAgenticaHistoryJson.IAssistantMessage => ({
-  id: v7(),
-  type: "assistantMessage",
-  text: props.prompt.replaceAll("{{CONTENT}}", props.content),
-  created_at: new Date().toISOString(),
-});
-
-const createSystemMessage = (props: {
-  prompt: string;
-  available: string;
-  loaded: string;
-  exhausted: string;
-}): IAgenticaHistoryJson.ISystemMessage => ({
-  id: v7(),
-  type: "systemMessage",
-  text: props.prompt
-    .replaceAll("{{AVAILABLE}}", props.available)
-    .replaceAll("{{LOADED}}", props.loaded)
-    .replaceAll("{{EXHAUSTED}}", props.exhausted),
-  created_at: new Date().toISOString(),
-});
-
-const toJsonBlock = (obj: any): string =>
-  StringUtil.trim`
-      \`\`\`json
-      ${JSON.stringify(obj)}
-      \`\`\`
-    `;

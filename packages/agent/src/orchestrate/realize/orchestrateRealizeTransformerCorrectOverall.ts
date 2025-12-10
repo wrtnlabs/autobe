@@ -74,6 +74,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async <
           application:
             typia.json.application<IAutoBeRealizeTransformerCorrectApplication>(),
           kinds: ["prismaSchemas"],
+          histories: ctx.histories(),
           state: ctx.state(),
           local: {
             prismaSchemas: ctx

@@ -9,6 +9,10 @@ import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryReques
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../structures/IAutoBePreliminaryGetPrismaSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBePreliminaryGetRealizeTransformers";
@@ -17,25 +21,46 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
   data: IAutoBePreliminaryRequest<Kind>,
 ): IValidation<IAutoBePreliminaryRequest<Kind>> => {
-  const func = PreliminaryApplicationValidator[data.request.type];
-  return func(controller as any, data as any) as any;
+  const type: Exclude<
+    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+    `getPrevious${string}`
+  > = (
+    data.request.type.startsWith("getPrevious")
+      ? data.request.type.replace("getPrevious", "get")
+      : data.request.type
+  ) as Exclude<
+    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+    `getPrevious${string}`
+  >;
+  const func = PreliminaryApplicationValidator[type];
+  return func(
+    controller as any,
+    data as any,
+    data.request.type.startsWith("getPrevious"),
+  ) as any;
 };
 
 namespace PreliminaryApplicationValidator {
   export const getAnalysisFiles = (
-    controller: AutoBePreliminaryController<"analysisFiles">,
-    input: IAutoBePreliminaryRequest<"analysisFiles">,
-  ): IValidation<IAutoBePreliminaryRequest<"analysisFiles">> => {
+    controller: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles"
+    >,
+    input: IAutoBePreliminaryRequest<"analysisFiles" | "previousAnalysisFiles">,
+    previous: boolean,
+  ): IValidation<
+    IAutoBePreliminaryRequest<"analysisFiles" | "previousAnalysisFiles">
+  > => {
+    const accessor = previous ? "previousAnalysisFiles" : "analysisFiles";
     const all: Set<string> = new Set(
-      controller.getAll().analysisFiles.map((f) => f.filename),
+      controller.getAll()[accessor].map((f) => f.filename),
     );
     const oldbie: Set<string> = new Set(
-      controller.getLocal().analysisFiles.map((f) => f.filename),
+      controller.getLocal()[accessor].map((f) => f.filename),
     );
     const newbie: Set<string> = new Set(
       controller
         .getAll()
-        .analysisFiles.filter((f) => oldbie.has(f.filename) === false)
+        [accessor].filter((f) => oldbie.has(f.filename) === false)
         .map((f) => f.filename),
     );
 
@@ -48,13 +73,18 @@ namespace PreliminaryApplicationValidator {
       ---------|---------------
       ${controller
         .getAll()
-        .analysisFiles.filter((f) => newbie.has(f.filename))
+        [accessor].filter((f) => newbie.has(f.filename))
         .map((f) => [f.filename, f.documentType].join(" | "))
         .join("\n")}
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED.replace(
+              "getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"],
+              previous
+                ? ("getPreviousAnalysisFiles" satisfies IAutoBePreliminaryGetPreviousAnalysisFiles["type"])
+                : ("getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"]),
+            )
           : ""
       }
     `;
@@ -94,19 +124,25 @@ namespace PreliminaryApplicationValidator {
   };
 
   export const getPrismaSchemas = (
-    controller: AutoBePreliminaryController<"prismaSchemas">,
-    input: IAutoBePreliminaryRequest<"prismaSchemas">,
-  ): IValidation<IAutoBePreliminaryRequest<"prismaSchemas">> => {
+    controller: AutoBePreliminaryController<
+      "prismaSchemas" | "previousPrismaSchemas"
+    >,
+    input: IAutoBePreliminaryRequest<"prismaSchemas" | "previousPrismaSchemas">,
+    previous: boolean,
+  ): IValidation<
+    IAutoBePreliminaryRequest<"prismaSchemas" | "previousPrismaSchemas">
+  > => {
+    const accessor = previous ? "previousPrismaSchemas" : "prismaSchemas";
     const all: Set<string> = new Set(
-      controller.getAll().prismaSchemas.map((s) => s.name),
+      controller.getAll()[accessor].map((s) => s.name),
     );
     const oldbie: Set<string> = new Set(
-      controller.getLocal().prismaSchemas.map((s) => s.name),
+      controller.getLocal()[accessor].map((s) => s.name),
     );
     const newbie: Set<string> = new Set(
       controller
         .getAll()
-        .prismaSchemas.filter((s) => oldbie.has(s.name) === false)
+        [accessor].filter((s) => oldbie.has(s.name) === false)
         .map((s) => s.name),
     );
 
@@ -120,7 +156,12 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED.replace(
+              "getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"],
+              previous
+                ? ("getPreviousPrismaSchemas" satisfies IAutoBePreliminaryGetPreviousPrismaSchemas["type"])
+                : ("getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"]),
+            )
           : ""
       }
     `;
@@ -158,11 +199,23 @@ namespace PreliminaryApplicationValidator {
   };
 
   export const getInterfaceOperations = (
-    controller: AutoBePreliminaryController<"interfaceOperations">,
-    input: IAutoBePreliminaryRequest<"interfaceOperations">,
-  ): IValidation<IAutoBePreliminaryRequest<"interfaceOperations">> => {
+    controller: AutoBePreliminaryController<
+      "interfaceOperations" | "previousInterfaceOperations"
+    >,
+    input: IAutoBePreliminaryRequest<
+      "interfaceOperations" | "previousInterfaceOperations"
+    >,
+    previous: boolean,
+  ): IValidation<
+    IAutoBePreliminaryRequest<
+      "interfaceOperations" | "previousInterfaceOperations"
+    >
+  > => {
+    const accessor = previous
+      ? "previousInterfaceOperations"
+      : "interfaceOperations";
     const all: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      controller.getAll().interfaceOperations.map((o) => ({
+      controller.getAll()[accessor].map((o) => ({
         method: o.method,
         path: o.path,
       })),
@@ -170,7 +223,7 @@ namespace PreliminaryApplicationValidator {
       AutoBeOpenApiEndpointComparator.equals,
     );
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      controller.getLocal().interfaceOperations.map((o) => ({
+      controller.getLocal()[accessor].map((o) => ({
         method: o.method,
         path: o.path,
       })),
@@ -180,7 +233,7 @@ namespace PreliminaryApplicationValidator {
     const newbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
       controller
         .getAll()
-        .interfaceOperations.map((o) => ({
+        [accessor].map((o) => ({
           method: o.method,
           path: o.path,
         }))
@@ -202,7 +255,12 @@ namespace PreliminaryApplicationValidator {
       
       ${
         newbie.size() === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED.replace(
+              "getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"],
+              previous
+                ? ("getPreviousInterfaceOperations" satisfies IAutoBePreliminaryGetPreviousInterfaceOperations["type"])
+                : ("getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"]),
+            )
           : ""
       }
     `;
@@ -241,17 +299,25 @@ namespace PreliminaryApplicationValidator {
   };
 
   export const getInterfaceSchemas = (
-    controller: AutoBePreliminaryController<"interfaceSchemas">,
-    input: IAutoBePreliminaryRequest<"interfaceSchemas">,
-  ): IValidation<IAutoBePreliminaryRequest<"interfaceSchemas">> => {
+    controller: AutoBePreliminaryController<
+      "interfaceSchemas" | "previousInterfaceSchemas"
+    >,
+    input: IAutoBePreliminaryRequest<
+      "interfaceSchemas" | "previousInterfaceSchemas"
+    >,
+    previous: boolean,
+  ): IValidation<
+    IAutoBePreliminaryRequest<"interfaceSchemas" | "previousInterfaceSchemas">
+  > => {
+    const accessor = previous ? "previousInterfaceSchemas" : "interfaceSchemas";
     const all: Set<string> = new Set(
-      Object.keys(controller.getAll().interfaceSchemas),
+      Object.keys(controller.getAll()[accessor]),
     );
     const oldbie: Set<string> = new Set(
-      Object.keys(controller.getLocal().interfaceSchemas),
+      Object.keys(controller.getLocal()[accessor]),
     );
     const newbie: Set<string> = new Set(
-      Object.keys(controller.getAll().interfaceSchemas).filter(
+      Object.keys(controller.getAll()[accessor]).filter(
         (k) => oldbie.has(k) === false,
       ),
     );
@@ -266,7 +332,12 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED.replace(
+              "getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"],
+              previous
+                ? ("getPreviousInterfaceSchemas" satisfies IAutoBePreliminaryGetPreviousInterfaceSchemas["type"])
+                : ("getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"]),
+            )
           : ""
       }
     `;
@@ -306,6 +377,7 @@ namespace PreliminaryApplicationValidator {
   export const getRealizeCollectors = (
     controller: AutoBePreliminaryController<"realizeCollectors">,
     input: IAutoBePreliminaryRequest<"realizeCollectors">,
+    _previous: boolean,
   ): IValidation<IAutoBePreliminaryRequest<"realizeCollectors">> => {
     const all: Set<string> = new Set(
       controller.getAll().realizeCollectors.map((c) => c.plan.dtoTypeName),
@@ -316,7 +388,9 @@ namespace PreliminaryApplicationValidator {
     const newbie: Set<string> = new Set(
       controller
         .getAll()
-        .realizeCollectors.filter((c) => oldbie.has(c.plan.dtoTypeName) === false)
+        .realizeCollectors.filter(
+          (c) => oldbie.has(c.plan.dtoTypeName) === false,
+        )
         .map((c) => c.plan.dtoTypeName),
     );
 
@@ -353,7 +427,8 @@ namespace PreliminaryApplicationValidator {
           .getArgumentTypeNames()
           .filter(
             (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>(),
+              k !==
+              typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>(),
           )
           .join(" | "),
         description:
@@ -370,6 +445,7 @@ namespace PreliminaryApplicationValidator {
   export const getRealizeTransformers = (
     controller: AutoBePreliminaryController<"realizeTransformers">,
     input: IAutoBePreliminaryRequest<"realizeTransformers">,
+    _previous: boolean,
   ): IValidation<IAutoBePreliminaryRequest<"realizeTransformers">> => {
     const all: Set<string> = new Set(
       controller.getAll().realizeTransformers.map((t) => t.plan.dtoTypeName),
@@ -380,7 +456,9 @@ namespace PreliminaryApplicationValidator {
     const newbie: Set<string> = new Set(
       controller
         .getAll()
-        .realizeTransformers.filter((t) => oldbie.has(t.plan.dtoTypeName) === false)
+        .realizeTransformers.filter(
+          (t) => oldbie.has(t.plan.dtoTypeName) === false,
+        )
         .map((t) => t.plan.dtoTypeName),
     );
 
@@ -417,7 +495,8 @@ namespace PreliminaryApplicationValidator {
           .getArgumentTypeNames()
           .filter(
             (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>(),
+              k !==
+              typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>(),
           )
           .join(" | "),
         description:
