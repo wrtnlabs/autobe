@@ -227,7 +227,7 @@ const isPreviousPrismaSchemas = (
   typia.is<IAutoBePreliminaryRequest<"previousPrismaSchemas">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "prismaSchemas">
+      Extract<keyof IAutoBePreliminaryCollection, "previousPrismaSchemas">
     >()[0]
   ] !== undefined;
 
