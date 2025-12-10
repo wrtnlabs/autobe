@@ -1,7 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 
 export interface IAutoBeInterfaceOperationReviewApplication {
   /**
@@ -51,7 +53,9 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas;
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetPreviousPrismaSchemas;
   }
 
   /**

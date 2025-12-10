@@ -197,11 +197,11 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles) or final document enhancement (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles) or final document
+     * enhancement (complete). When preliminary returns empty array, that
+     * type is removed from the union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles;
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
   /**
@@ -247,22 +247,52 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
    */
   fileNames: string[];
 }
+
+/**
+ * Request to re-retrieve previously requested analysis files for context.
+ *
+ * Use this to re-access files that were already requested in previous RAG
+ * iterations within this orchestration task. Unlike `getAnalysisFiles` which
+ * fetches NEW files from global state, this retrieves files from LOCAL context
+ * that were previously requested.
+ */
+export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
+  /**
+   * Type discriminator for re-requesting previous analysis files.
+   */
+  type: "getPreviousAnalysisFiles";
+
+  /**
+   * List of analysis file names to re-retrieve from previous requests.
+   *
+   * These file names MUST have been requested in a previous iteration.
+   * Use this to maintain context across multiple RAG cycles.
+   */
+  fileNames: string[];
+}
 ```
 
 ### Field Descriptions
 
 #### request (Discriminated Union)
 
-The `request` property is a **discriminated union** that can be one of two types:
+The `request` property is a **discriminated union** that can be one of three types:
 
-**1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve additional analysis files:
+**1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve NEW analysis files:
 - **type**: `"getAnalysisFiles"` - Discriminator indicating preliminary data request
 - **fileNames**: Array of analysis file names to retrieve (e.g., `["Feature_A.md", "Related_Workflow.md"]`)
 - **Purpose**: Request specific related documents needed for comprehensive enhancement
 - **When to use**: When document references other features or needs cross-document context
 - **Strategy**: Request only files you actually need, batch multiple requests efficiently
 
-**2. IComplete** - Generate the enhanced document:
+**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
+- **type**: `"getPreviousAnalysisFiles"` - Discriminator for re-requesting previous files
+- **fileNames**: Array of file names that were already requested in previous RAG iterations
+- **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
+- **When to use**: When you need to reference files from earlier iterations without exceeding request budget
+- **Important**: File names MUST have been requested before; requesting non-existent files will fail
+
+**3. IComplete** - Generate the enhanced document:
 - **type**: `"complete"` - Discriminator indicating final task execution
 - **review**: Enhancement criteria and quality standards
 - **plan**: Original document structure plan

@@ -57,11 +57,19 @@ async function step<Model extends ILlmSchema.Model>(
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
     histories: ctx.histories(),
     state: ctx.state(),
     all: {
@@ -127,7 +135,12 @@ async function step<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "previousAnalysisFiles"
+      | "prismaSchemas"
+      | "previousPrismaSchemas"
+    >;
     build: (next: IAutoBePrismaReviewApplication.IComplete) => void;
   },
 ): IAgenticaController.IClass<Model> {
@@ -155,6 +168,7 @@ function createController<Model extends ILlmSchema.Model>(
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,

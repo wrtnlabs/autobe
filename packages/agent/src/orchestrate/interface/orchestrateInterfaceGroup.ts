@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceGroupHistory } from "./histories/transformInterfaceGroupHistory";
 import { IAutoBeInterfaceGroupApplication } from "./structures/IAutoBeInterfaceGroupApplication";
 
@@ -22,48 +23,82 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeInterfaceGroupEvent> {
   const start: Date = new Date();
-  const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
-    value: null,
-  };
   const prisma: AutoBePrismaHistory | null = ctx.state().prisma;
-  const { metric, tokenUsage } = await ctx.conversate({
+  const preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
-    controller: createController({
-      model: ctx.model,
-      build: (next) => {
-        pointer.value = next;
-      },
-      prismaSchemas: new Set(
-        prisma !== null
-          ? prisma.result.data.files
-              .map((f) => f.models)
-              .flat()
-              .map((m) => m.name)
-          : [],
-      ),
-    }),
-    enforceFunctionCall: true,
-    ...transformInterfaceGroupHistory({
-      state: ctx.state(),
-      instruction: props.instruction,
-    }),
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
+    histories: ctx.histories(),
+    state: ctx.state(),
+    all: {
+      analysisFiles: ctx.state().analyze?.files ?? [],
+      prismaSchemas: prisma?.schemas ?? [],
+    },
+    local: {
+      analysisFiles: [],
+      prismaSchemas: [],
+    },
   });
-  if (pointer.value === null)
-    throw new Error("Failed to generate endpoint groups."); // unreachable
-  return {
-    type: SOURCE,
-    id: v7(),
-    created_at: start.toISOString(),
-    groups: pointer.value.groups,
-    metric,
-    tokenUsage,
-    step: ctx.state().analyze?.step ?? 0,
-  } satisfies AutoBeInterfaceGroupEvent;
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        model: ctx.model,
+        pointer,
+        preliminary,
+        prismaSchemas: new Set(
+          prisma !== null
+            ? prisma.result.data.files
+                .map((f) => f.models)
+                .flat()
+                .map((m) => m.name)
+            : [],
+        ),
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceGroupHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const event: AutoBeInterfaceGroupEvent = {
+      type: SOURCE,
+      id: v7(),
+      created_at: start.toISOString(),
+      groups: pointer.value.groups,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+    };
+    return out(result)(event);
+  });
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeInterfaceGroupApplication.IProps) => void;
+  pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
   prismaSchemas: Set<string>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -72,8 +107,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceGroupApplication.IProps> =
       typia.validate<IAutoBeInterfaceGroupApplication.IProps>(input);
     if (result.success === false) return result;
+
+    // Preliminary request validation
+    if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    // Complete request validation - check prismaSchemas
     const errors: IValidation.IError[] = [];
-    result.data.groups.forEach((group, i) => {
+    result.data.request.groups.forEach((group, i) => {
       group.prismaSchemas.forEach((key, j) => {
         if (props.prismaSchemas.has(key) === false)
           errors.push({
@@ -81,7 +125,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
               .map((s) => JSON.stringify(s))
               .join(" | "),
             value: key,
-            path: `groups[${i}].prismaSchemas[${j}]`,
+            path: `request.groups[${i}].prismaSchemas[${j}]`,
             description: StringUtil.trim`
               The Prisma schema "${key}" does not exist in the current project.
 
@@ -113,13 +157,15 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,
     application,
     execute: {
-      makeGroups: (next) => {
-        props.build(next);
+      process: (input) => {
+        if (input.request.type === "complete")
+          props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceGroupApplication,
   };
@@ -129,19 +175,19 @@ const collection = {
   chatgpt: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceGroupApplication, "chatgpt">({
       validate: {
-        makeGroups: validate,
+        process: validate,
       },
     }),
   claude: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceGroupApplication, "claude">({
       validate: {
-        makeGroups: validate,
+        process: validate,
       },
     }),
   gemini: (validate: Validator) =>
     typia.llm.application<IAutoBeInterfaceGroupApplication, "gemini">({
       validate: {
-        makeGroups: validate,
+        process: validate,
       },
     }),
 };

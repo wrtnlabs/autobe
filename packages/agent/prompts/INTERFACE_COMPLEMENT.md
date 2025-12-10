@@ -180,6 +180,24 @@ process({
 - Need to understand business requirements for missing schemas
 - Schema purpose unclear from existing context
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+Re-retrieves requirement analysis documents from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for schema complement context.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Feature_A.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive schema completion.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -195,6 +213,24 @@ process({
 **When to use**:
 - Need to understand entity relationships for missing schemas
 - Verifying field availability for schema completion
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+Re-retrieves Prisma model definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for relationship validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["orders", "products"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for schema relationship analysis.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
 
 **Type 3: Request Interface Operations**
 
@@ -214,6 +250,27 @@ process({
 **When to use**:
 - Need to understand how missing schemas are used in operations
 - Finding schema patterns from related operations
+
+**Type 3.5: Re-request Previous Interface Operations**
+
+Re-retrieves API operation definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for schema pattern analysis.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/orders", method: "post" },
+      { path: "/products", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for schema usage pattern analysis.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
 
 **Type 4: Request Interface Schemas**
 
@@ -274,6 +331,24 @@ process({
 **KEY PRINCIPLE**:
 - **Missing schemas** = DON'T EXIST YET - you need to CREATE them (cannot be retrieved)
 - **Existing schemas** = Available for pattern reference (already in system)
+
+**Type 4.5: Re-request Previous Interface Schemas**
+
+Re-retrieves already-generated schema definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's interface schemas for DTO pattern reference.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IOrder.ISummary", "IUser.ISummary"]
+  }
+})
+```
+
+**When to use**: Need to reference interface schemas from earlier RAG iterations for DTO pattern learning.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before. Only retrieves EXISTING schemas, not missing ones you need to create.
 
 #### What Happens When You Request Already-Loaded Data
 

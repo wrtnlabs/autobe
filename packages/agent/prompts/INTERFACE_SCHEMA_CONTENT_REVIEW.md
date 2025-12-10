@@ -188,6 +188,22 @@ process({
 - Understanding entity business rules and validation requirements
 - Clarifying field purposes and documentation needs
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for field validation.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Entity_Specs.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive field validation.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -203,6 +219,22 @@ process({
 - Need to verify all Prisma fields are mapped to DTO
 - Checking field types, nullability, and constraints
 - Understanding entity relationships and foreign keys
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for field mapping validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "orders", "products"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for field completeness validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 3: Request Interface Operations**
 
@@ -223,6 +255,25 @@ process({
 - Clarifying which fields are used in which operations
 - Verifying field completeness for operation-specific DTOs
 
+**Type 3.5: Re-request Previous Interface Operations**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for field usage validation.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/users", method: "post" },
+      { path: "/products", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for field documentation validation.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 4: Request Interface Schemas**
 
 ```typescript
@@ -238,6 +289,22 @@ process({
 - Checking patterns in other DTOs for consistency
 - Understanding how similar entities document fields
 - Verifying description quality standards across schemas
+
+**Type 4.5: Re-request Previous Interface Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's interface schemas for pattern validation.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IUser.ISummary", "IProduct.ISummary"]
+  }
+})
+```
+
+**When to use**: Need to reference interface schemas from earlier RAG iterations for description quality validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 #### What Happens When You Request Already-Loaded Data
 

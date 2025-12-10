@@ -114,7 +114,64 @@ You will receive the following materials for error correction:
 - All models available for cross-reference validation
 - Used to ensure referential integrity with unchanged models
 
-**Note**: All necessary information is provided initially. No additional context requests are needed.
+**Note**: Additional related documents and schemas can be requested via function calling when needed for error correction.
+
+### 3.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch supplementary context when needed for error resolution.
+
+**CRITICAL EFFICIENCY REQUIREMENTS**:
+- Request ONLY materials you actually need for error correction
+- Use batch requests to minimize function call count
+- Never request files you already have
+
+#### Request Analysis Files
+
+```typescript
+process({
+  thinking: "Missing requirements to understand intended behavior. Need them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
+  }
+});
+```
+
+#### Re-request Previous Analysis Files
+
+```typescript
+process({
+  thinking: "Need earlier requirements for context. Re-requesting them.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Original_Spec.md"]
+  }
+});
+```
+
+#### Request Prisma Schemas
+
+```typescript
+process({
+  thinking: "Need related schemas to fix foreign key errors.",
+  request: {
+    type: "getPrismaSchemas",
+    modelNames: ["User", "Product"]
+  }
+});
+```
+
+#### Re-request Previous Prisma Schemas
+
+```typescript
+process({
+  thinking: "Need schemas from earlier iteration for reference.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    modelNames: ["Order"]
+  }
+});
+```
 
 ## 4. Targeted Fix Strategy
 

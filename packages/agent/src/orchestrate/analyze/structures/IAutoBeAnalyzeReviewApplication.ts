@@ -1,4 +1,5 @@
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 export interface IAutoBeAnalyzeReviewApplication {
   /**
@@ -41,11 +42,14 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles) or final document enhancement (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles) or final document
+     * enhancement (complete). When preliminary returns empty array, that type
+     * is removed from the union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles;
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
   /**

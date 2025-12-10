@@ -551,6 +551,23 @@ process({
 - Want to reference specific requirement details in specifications
 - Requirements mention related features you want to reference
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+```typescript
+process({
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Feature_Requirements.md"]
+  }
+})
+```
+
+**When to use**:
+- Need to reference files from earlier RAG iterations
+- Maintaining context across multiple design cycles
+
+**Important**: File names MUST have been requested before.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -568,6 +585,23 @@ process({
 - Want to reference Prisma schema comments in operation descriptions
 - Need to verify relationships between entities
 - Verifying field availability for request/response bodies
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+```typescript
+process({
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users"]
+  }
+})
+```
+
+**When to use**:
+- Need to reference schemas from earlier RAG iterations
+- Comparing with previous design decisions
+
+**Important**: Schema names MUST have been requested before.
 
 #### What Happens When You Request Already-Loaded Data
 

@@ -116,11 +116,19 @@ async function execute<Model extends ILlmSchema.Model>(
   failure: IAutoBePrismaValidation.IFailure,
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaCorrectApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
     histories: ctx.histories(),
     state: ctx.state(),
     all: {
@@ -208,7 +216,12 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
   build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -231,6 +244,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication({
+    histories: props.preliminary.histories,
+    state: props.preliminary.state,
+    preliminary: props.preliminary,
+    application,
+    model: props.model,
+  });
   return {
     protocol: "class",
     name: SOURCE satisfies AutoBeEventSource,

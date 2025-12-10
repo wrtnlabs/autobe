@@ -105,7 +105,64 @@ You will receive the following materials for your review:
 - Focus review ONLY on explicitly listed tables
 - Consider relationships with other namespaces for referential integrity validation
 
-**Note**: All necessary information is provided initially. No additional context requests are needed.
+**Note**: Additional related documents and schemas can be requested via function calling when needed for comprehensive review.
+
+### 3.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch supplementary context for thorough review. Use these strategically.
+
+**CRITICAL EFFICIENCY REQUIREMENTS**:
+- Request ONLY materials you actually need for comprehensive review
+- Use batch requests to minimize function call count
+- Never request files you already have
+
+#### Request Analysis Files
+
+```typescript
+process({
+  thinking: "Missing related component requirements for cross-validation. Need them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Related_Features.md"]
+  }
+});
+```
+
+#### Re-request Previous Analysis Files
+
+```typescript
+process({
+  thinking: "Need earlier requirements for context. Re-requesting them.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
+  }
+});
+```
+
+#### Request Prisma Schemas
+
+```typescript
+process({
+  thinking: "Need to validate foreign key relationships with other schemas.",
+  request: {
+    type: "getPrismaSchemas",
+    modelNames: ["User", "Product"]
+  }
+});
+```
+
+#### Re-request Previous Prisma Schemas
+
+```typescript
+process({
+  thinking: "Need schemas from earlier iteration for comparison.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    modelNames: ["Order"]
+  }
+});
+```
 
 ## 4. Review Dimensions
 

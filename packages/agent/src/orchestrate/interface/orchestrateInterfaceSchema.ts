@@ -124,11 +124,23 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(props.oldbie);
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas" | "interfaceOperations"
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+    | "interfaceOperations"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas", "interfaceOperations"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+      "interfaceOperations",
+      "previousInterfaceOperations",
+    ],
     histories: ctx.histories(),
     state: ctx.state(),
   });
@@ -202,7 +214,12 @@ function createController<Model extends ILlmSchema.Model>(
       AutoBeOpenApi.IJsonSchemaDescriptive
     > | null>;
     preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "prismaSchemas" | "interfaceOperations"
+      | "analysisFiles"
+      | "previousAnalysisFiles"
+      | "prismaSchemas"
+      | "previousPrismaSchemas"
+      | "interfaceOperations"
+      | "previousInterfaceOperations"
     >;
   },
 ): IAgenticaController.IClass<Model> {
@@ -263,6 +280,13 @@ function createController<Model extends ILlmSchema.Model>(
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication({
+    histories: props.preliminary.histories,
+    state: props.preliminary.state,
+    preliminary: props.preliminary,
+    application,
+    model: props.model,
+  });
   return {
     protocol: "class",
     name: SOURCE,

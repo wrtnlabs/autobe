@@ -206,6 +206,22 @@ process({
 })
 ```
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for security validation.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Security_Policies.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive security validation.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -216,6 +232,22 @@ process({
   }
 })
 ```
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for security pattern validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "sessions", "tokens"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for security field validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 3: Request Interface Operations**
 
@@ -230,6 +262,25 @@ process({
   }
 })
 ```
+
+**Type 3.5: Re-request Previous Interface Operations**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for security context validation.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/auth/login", method: "post" },
+      { path: "/users", method: "post" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for security pattern validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 4: Request Interface Schemas**
 
@@ -264,6 +315,22 @@ This function CANNOT retrieve:
 
 **When NOT to use**:
 - ❌ To retrieve schemas you are supposed to review (they're ALREADY in your context)
+
+**Type 4.5: Re-request Previous Interface Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's interface schemas for security pattern validation.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IAdminAuth.ILogin", "ICustomerAuth.ILogin", "IUser.ISummary"]
+  }
+})
+```
+
+**When to use**: Need to reference interface schemas from earlier RAG iterations for security pattern analysis.
+
+**Important**: MUST have been requested in a previous iteration. Only retrieves EXISTING schemas from earlier iterations.
 - ❌ To fetch IUserAuth.ILogin if that's your security review target
 - ❌ To "check" schemas you're actively working on
 

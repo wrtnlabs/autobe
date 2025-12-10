@@ -201,6 +201,24 @@ process({
 - Entity relationships or validation rules unclear from operations alone
 - Want to reference specific requirement details in schema descriptions
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+Re-retrieves requirement analysis documents from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for schema design context.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["business_requirements.md", "entity_specs.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive schema generation.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -217,6 +235,24 @@ process({
 - Want to reference Prisma schema comments in DTO descriptions
 - Need to verify relationships between entities for proper $ref usage
 - Generating schemas for entities whose Prisma models aren't yet loaded
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+Re-retrieves Prisma model definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for schema generation context.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for field types and relationship validation.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
 
 **Type 3: Request Interface Operations**
 
@@ -237,6 +273,27 @@ process({
 - Want to verify request/response patterns for related operations
 - Need to check authorizationActor to properly exclude actor identity fields
 - Understanding operation flow to design appropriate schema variants
+
+**Type 3.5: Re-request Previous Interface Operations**
+
+Re-retrieves API operation definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for schema design validation.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/sales", method: "get" },
+      { path: "/orders", method: "post" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for schema usage pattern analysis.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
 
 #### What Happens When You Request Already-Loaded Data
 

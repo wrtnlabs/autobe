@@ -288,6 +288,18 @@ process({
 - Checking if operations align with intended workflows
 - Understanding authorization requirements
 
+**Type 1.5: Re-request Previous Analysis Files**
+```typescript
+process({
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md"]
+  }
+})
+```
+**When to use**: Need files from earlier RAG iterations
+**Important**: File names MUST have been requested before.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -303,6 +315,18 @@ process({
 - Need to verify field existence in Prisma models
 - Checking composite unique constraints
 - Validating relationship definitions
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+```typescript
+process({
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users"]
+  }
+})
+```
+**When to use**: Need schemas from earlier RAG iterations
+**Important**: Schema names MUST have been requested before.
 
 #### What Happens When You Request Already-Loaded Data
 

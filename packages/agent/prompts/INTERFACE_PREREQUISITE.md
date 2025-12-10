@@ -111,6 +111,24 @@ Some requirement files may have been loaded in previous function calls. These ma
 **ABSOLUTE PROHIBITION**: If materials have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Re-request Previous Analysis Files**
+
+Re-retrieves requirement analysis documents from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for prerequisite chain validation.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Feature_A.md", "Feature_B.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive prerequisite analysis.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to verify relationship constraints.
@@ -134,6 +152,24 @@ process({
 Some Prisma schemas may have been loaded in previous function calls. These models are already available in your conversation context.
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request schemas that you have not yet accessed
+
+**process() - Re-request Previous Prisma Schemas**
+
+Re-retrieves Prisma model definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for relationship constraint validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["orders", "products", "users"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for prerequisite dependency analysis.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
 
 **process() - Request Interface Operations**
 
@@ -162,6 +198,27 @@ process({
 Some API operations may have been loaded in previous function calls. These operations are already available in your conversation context.
 **ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request operations that you have not yet accessed
+
+**process() - Re-request Previous Interface Operations**
+
+Re-retrieves API operation definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's POST operations for prerequisite chain analysis.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/users", method: "post" },
+      { path: "/products", method: "post" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for prerequisite matching.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
 
 ### 3.3. Input Materials Management Principles
 

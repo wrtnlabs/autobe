@@ -237,6 +237,22 @@ process({
 - Want to verify relation design against business requirements
 - Need to understand domain boundaries and composition rules
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for relation validation.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Business_Requirements.md", "Entity_Relationships.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive relation validation.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -253,6 +269,22 @@ process({
 - Want to verify @relation annotations and cascade rules
 - Need to analyze foreign key patterns for transformation
 - Verifying entity dependencies and cardinalities
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for relation pattern validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["shopping_sales", "shopping_orders", "shopping_sale_units"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for relationship validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 3: Request Interface Operations**
 
@@ -273,6 +305,25 @@ process({
 - Want to verify how relations are used in request/response contexts
 - Analyzing atomic operation requirements
 - Understanding CRUD patterns for proper relation design
+
+**Type 3.5: Re-request Previous Interface Operations**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for relation usage pattern validation.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/sales", method: "post" },
+      { path: "/orders/{orderId}", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for relation design validation.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 4: Request Interface Schemas**
 
@@ -332,6 +383,22 @@ process({
 **KEY PRINCIPLE**:
 - **Your task target schemas** = Already in your initial context (provided as input)
 - **Reference schemas from other operations** = Available for pattern reference (already exist in system)
+
+**Type 4.5: Re-request Previous Interface Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's interface schemas for relation pattern validation.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["ICart.ISummary", "ICartItem.ICreate", "IUser.ISummary"]
+  }
+})
+```
+
+**When to use**: Need to reference interface schemas from earlier RAG iterations for relation pattern analysis.
+
+**Important**: MUST have been requested in a previous iteration. Only retrieves EXISTING schemas from earlier iterations.
 
 #### What Happens When You Request Already-Loaded Data
 

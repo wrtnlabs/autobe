@@ -9,6 +9,7 @@ import {
 import {
   ILlmApplication,
   ILlmSchema,
+  IValidation,
   OpenApi,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
@@ -21,6 +22,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
@@ -155,37 +157,66 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   },
 ): Promise<AutoBeInterfaceSchemaRefactor[]> => {
   try {
-    const pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IProps | null> =
-      {
-        value: null,
-      };
-    const { metric, tokenUsage } = await ctx.conversate({
+    const preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "previousAnalysisFiles"
+      | "prismaSchemas"
+      | "previousPrismaSchemas"
+    > = new AutoBePreliminaryController({
+      application:
+        typia.json.application<IAutoBeInterfaceSchemaRenameApplication>(),
       source: SOURCE,
-      controller: createController<Model>(
-        ctx.model,
-        (value) => (pointer.value = value),
-      ),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaRenameHistory(props),
+      kinds: [
+        "analysisFiles",
+        "previousAnalysisFiles",
+        "prismaSchemas",
+        "previousPrismaSchemas",
+      ],
+      histories: ctx.histories(),
+      state: ctx.state(),
+      all: {
+        analysisFiles: ctx.state().analyze?.files ?? [],
+        prismaSchemas: ctx.state().prisma?.schemas ?? [],
+      },
+      local: {
+        analysisFiles: [],
+        prismaSchemas: [],
+      },
     });
-    if (pointer.value === null) {
-      props.progress.completed += props.typeNames.length;
-      return [];
-    }
+    return await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IComplete | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+        source: SOURCE,
+        controller: createController<Model>({
+          model: ctx.model,
+          pointer,
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceSchemaRenameHistory(props),
+      });
+      if (pointer.value === null) {
+        props.progress.completed += props.typeNames.length;
+        return out(result)([]);
+      }
 
-    pointer.value.refactors = uniqueRefactors(pointer.value.refactors);
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      refactors: pointer.value.refactors,
-      total: props.progress.total,
-      completed: (props.progress.completed += props.typeNames.length),
-      metric,
-      tokenUsage,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaRenameEvent);
-    return pointer.value.refactors;
+      const refactors = uniqueRefactors(pointer.value.refactors);
+      ctx.dispatch({
+        type: SOURCE,
+        id: v7(),
+        refactors,
+        total: props.progress.total,
+        completed: (props.progress.completed += props.typeNames.length),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaRenameEvent);
+      return out(result)(refactors);
+    });
   } catch {
     props.progress.completed += props.typeNames.length;
     return [];
@@ -239,39 +270,74 @@ const uniqueRefactors = (
   return Array.from(resolved.values());
 };
 
-const createController = <Model extends ILlmSchema.Model>(
-  model: Model,
-  build: (value: IAutoBeInterfaceSchemaRenameApplication.IProps) => void,
-): IAgenticaController.IClass<Model> => {
-  assertSchemaModel(model);
+const createController = <Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IComplete | null>;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
+}): IAgenticaController.IClass<Model> => {
+  assertSchemaModel(props.model);
+
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeInterfaceSchemaRenameApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaRenameApplication.IProps>(input);
+    if (result.success === false || result.data.request.type === "complete")
+      return result;
+    return props.preliminary.validate({
+      thinking: result.data.thinking,
+      request: result.data.request,
+    });
+  };
   const application: ILlmApplication<Model> = collection[
-    model === "chatgpt" ? "chatgpt" : model === "gemini" ? "gemini" : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,
     application,
     execute: {
-      rename: (props) => {
-        build(props);
+      process: (input) => {
+        if (input.request.type === "complete")
+          props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceSchemaRenameApplication,
   };
 };
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "gemini"
-  >(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaRenameApplication, "chatgpt">({
+      validate: {
+        process: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaRenameApplication, "claude">({
+      validate: {
+        process: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaRenameApplication, "gemini">({
+      validate: {
+        process: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceSchemaRenameApplication.IProps>;
 
 const SOURCE = "interfaceSchemaRename" satisfies AutoBeEventSource;

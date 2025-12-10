@@ -2,6 +2,8 @@ import { AutoBePrisma } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 
 export interface IAutoBePrismaSchemaApplication {
   /**
@@ -42,11 +44,15 @@ export namespace IAutoBePrismaSchemaApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles) or final schema generation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousPrismaSchemas) or
+     * final schema generation (complete). When preliminary returns empty array,
+     * that type is removed from the union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles;
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas;
   }
 
   /**

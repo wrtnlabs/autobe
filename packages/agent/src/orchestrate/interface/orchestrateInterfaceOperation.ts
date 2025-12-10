@@ -119,11 +119,19 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
     histories: ctx.histories(),
     state: ctx.state(),
   });
@@ -208,7 +216,12 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actors: string[];
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
   ) => void;
@@ -248,7 +261,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
             description: StringUtil.trim`
               Actor "${actor}" is not defined in the roles list.
 
-              Please select one of them below, or do not define (\`null\`):  
+              Please select one of them below, or do not define (\`null\`):
 
               ${props.actors.map((role) => `- ${role}`).join("\n")}
             `,
@@ -273,6 +286,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication({
+    histories: props.preliminary.histories,
+    state: props.preliminary.state,
+    preliminary: props.preliminary,
+    application,
+    model: props.model,
+  });
 
   return {
     protocol: "class",

@@ -58,14 +58,21 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBePrismaSchemaEvent> {
-  const preliminary: AutoBePreliminaryController<"analysisFiles"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBePrismaSchemaApplication>(),
-      source: SOURCE,
-      kinds: ["analysisFiles"],
-      histories: ctx.histories(),
-      state: ctx.state(),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBePrismaSchemaApplication>(),
+    source: SOURCE,
+    kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
+    histories: ctx.histories(),
+    state: ctx.state(),
+    all: {
+      analysisFiles: ctx.state().analyze?.files ?? [],
+    },
+    local: {
+      analysisFiles: [],
+    },
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaSchemaApplication.IComplete | null> = {
       value: null,
@@ -120,7 +127,9 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"analysisFiles">;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    >;
     targetComponent: AutoBePrisma.IComponent;
     otherTables: string[];
     build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
@@ -196,6 +205,7 @@ function createController<Model extends ILlmSchema.Model>(
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,

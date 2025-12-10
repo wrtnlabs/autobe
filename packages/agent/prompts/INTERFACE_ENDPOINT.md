@@ -394,6 +394,12 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Re-request Previous Analysis Files**
+```typescript
+process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements.md"] }})
+```
+**When to use**: Need files from earlier RAG iterations. **Important**: MUST have been requested before.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to understand database structure and relationships.
@@ -421,6 +427,12 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
 **Rule**: Only request schemas that you have not yet accessed
+
+**process() - Re-request Previous Prisma Schemas**
+```typescript
+process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})
+```
+**When to use**: Need schemas from earlier RAG iterations. **Important**: MUST have been requested before.
 
 ### 3.3. Input Materials Management Principles
 

@@ -174,6 +174,27 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Re-request Previous Analysis Files**
+
+Re-retrieves requirement analysis documents from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need to reference earlier requirements from previous iteration.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Authentication_Requirements.md"]
+  }
+})
+```
+
+**When to use**:
+- Need to reference files from earlier RAG iterations
+- Maintaining context across multiple design cycles
+- Re-accessing known requirements without exceeding request budget
+
+**Important**: File names MUST have been requested before; requesting non-existent files will fail.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to verify actor table structures and authentication fields.
@@ -200,6 +221,27 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
 **Rule**: Only request schemas that you have not yet accessed
+
+**process() - Re-request Previous Prisma Schemas**
+
+Re-retrieves Prisma schemas from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need schemas from earlier iteration for reference.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users"]
+  }
+})
+```
+
+**When to use**:
+- Need to reference schemas from earlier RAG iterations
+- Comparing with previous design decisions
+- Re-accessing known schemas without exceeding request budget
+
+**Important**: Schema names MUST have been requested before; requesting non-existent schemas will fail.
 
 **process() - Request Interface Operations**
 

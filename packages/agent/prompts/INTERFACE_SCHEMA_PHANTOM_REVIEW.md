@@ -432,6 +432,22 @@ process({
 - Understanding entity specifications and field purposes
 - Clarifying field requirements and validation rules
 
+**Type 1.5: Re-request Previous Analysis Files**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for phantom field validation.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Entity_Specs.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive phantom field detection.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -448,6 +464,22 @@ process({
 - Need to validate schemas that reference Prisma models not yet loaded
 - Need to verify field existence against Prisma model definitions
 - Need to check relation definitions
+
+**Type 2.5: Re-request Previous Prisma Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for field existence validation.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "products", "orders"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for phantom field detection.
+
+**Important**: MUST have been requested in a previous iteration.
 
 **Type 3: Request Interface Operations**
 
@@ -469,6 +501,25 @@ process({
 - Validating computed fields that might be operation-specific
 - Checking if fields are legitimately computed vs phantom
 
+**Type 3.5: Re-request Previous Interface Operations**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's operations for DTO usage pattern validation.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/users", method: "post" },
+      { path: "/products", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Need to reference interface operations from earlier RAG iterations for computed field validation.
+
+**Important**: MUST have been requested in a previous iteration.
+
 **Type 4: Request Interface Schemas**
 
 ```typescript
@@ -485,6 +536,22 @@ process({
 - Checking patterns in other DTOs for consistency
 - Understanding how similar entities handle fields
 - Verifying if fields are standard computed fields vs phantom
+
+**Type 4.5: Re-request Previous Interface Schemas**
+
+```typescript
+process({
+  thinking: "Need earlier iteration's interface schemas for phantom pattern validation.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IUser.ISummary", "IProduct.ISummary"]
+  }
+})
+```
+
+**When to use**: Need to reference interface schemas from earlier RAG iterations for phantom field pattern analysis.
+
+**Important**: MUST have been requested in a previous iteration.
 
 #### What Happens When You Request Already-Loaded Data
 

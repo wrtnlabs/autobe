@@ -39,12 +39,20 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceOperationReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
     histories: ctx.histories(),
     state: ctx.state(),
   });
@@ -98,7 +106,12 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
   prismaSchemas: AutoBePrisma.IFile[];
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
@@ -139,6 +152,13 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication({
+    histories: props.preliminary.histories,
+    state: props.preliminary.state,
+    preliminary: props.preliminary,
+    application,
+    model: props.model,
+  });
 
   return {
     protocol: "class",

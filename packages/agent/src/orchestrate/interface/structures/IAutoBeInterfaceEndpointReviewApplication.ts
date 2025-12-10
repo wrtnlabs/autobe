@@ -2,6 +2,8 @@ import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 
 export interface IAutoBeInterfaceEndpointReviewApplication {
   /**
@@ -44,14 +46,17 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas) or final endpoint review (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
+     * getPreviousPrismaSchemas) or final endpoint review (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas;
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetPreviousPrismaSchemas;
   }
 
   /**

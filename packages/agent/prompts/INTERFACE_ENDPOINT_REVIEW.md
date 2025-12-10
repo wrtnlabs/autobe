@@ -428,6 +428,24 @@ Some requirements files may have been loaded in previous function calls. These m
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Re-request Previous Analysis Files**
+
+Re-retrieves requirement analysis documents from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's requirements for endpoint validation context.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["API_Requirements.md"]
+  }
+})
+```
+
+**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive endpoint review.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to verify entity stance and composite unique constraints.
@@ -451,6 +469,24 @@ process({
 Some Prisma schemas may have been loaded in previous function calls. These materials are already available in your conversation context.
 
 **Rule**: Only request materials that you have not yet accessed
+
+**process() - Re-request Previous Prisma Schemas**
+
+Re-retrieves Prisma model definitions from previous RAG iterations.
+
+```typescript
+process({
+  thinking: "Need earlier iteration's Prisma schemas for stance validation context.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "teams"]
+  }
+})
+```
+
+**When to use**: Need to reference Prisma schemas from earlier RAG iterations for composite unique constraint validation.
+
+**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
 
 ### 4.3. Input Materials Management Principles
 
