@@ -71,10 +71,6 @@ export const orchestrateRealizeOperationCorrectOverall = async <
           histories: ctx.histories(),
           state: ctx.state(),
           all: {
-            prismaSchemas: ctx
-              .state()
-              .prisma!.result.data.files.map((f) => f.models)
-              .flat(),
             realizeCollectors: props.collectors,
             realizeTransformers: props.transformers,
           },
