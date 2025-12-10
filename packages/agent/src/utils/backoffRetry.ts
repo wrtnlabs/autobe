@@ -1,23 +1,36 @@
-/*
- * Random exponential backoff retry utility for handling rate limits
- */
+/** Configuration options for exponential backoff retry behavior. */
 export interface RetryOptions {
   /** Maximum number of retry attempts (default: 5) */
   maxRetries: number;
-  /** Base delay in milliseconds (default: 2000) */
+  /** Base delay in milliseconds (default: 4000) */
   baseDelay: number;
-  /** Maximum delay in milliseconds (default: 60_000) */
+  /** Maximum delay in milliseconds (default: 60000) */
   maxDelay: number;
-  /** Jitter factor for randomization (0-1, default: 0.3) */
+  /** Jitter factor for randomization (0-1, default: 0.8) */
   jitter: number;
   /** Function to determine if error should trigger retry (default: isRetryError) */
   handleError: (error: any) => boolean;
 }
 
 /**
- * @param fn Function to Apply the retry logic.
- * @param maxRetries How many time to try. Max Retry is 5.
- * @returns
+ * Retries failed LLM API calls with exponential backoff and jitter.
+ *
+ * Automatically retries transient failures (rate limits, server errors, network
+ * issues) while immediately failing on permanent errors (quota exceeded,
+ * invalid requests). Uses exponential backoff with randomized jitter to avoid
+ * thundering herd problems when multiple concurrent requests fail
+ * simultaneously.
+ *
+ * The retry logic is critical for production reliability: LLM APIs frequently
+ * return temporary 429/5xx errors under heavy load, and network timeouts are
+ * common. Without retry, these transient failures would cascade into
+ * user-visible errors despite being automatically recoverable.
+ *
+ * @author Kakasoo
+ * @param fn Async function to execute with retry logic
+ * @param options Retry configuration (maxRetries, delays, error handler)
+ * @returns Promise resolving to function result if successful
+ * @throws Last encountered error if all retry attempts exhausted
  */
 export async function randomBackoffRetry<T>(
   fn: () => Promise<T>,
@@ -53,6 +66,17 @@ export async function randomBackoffRetry<T>(
   throw lastError;
 }
 
+/**
+ * Calculates retry delay using exponential backoff with jitter.
+ *
+ * Throws immediately for non-retryable errors or when retry count exceeds 5.
+ * Used by orchestrators that need explicit delay calculation without automatic
+ * retry loop execution.
+ *
+ * @param props Retry count and error to evaluate
+ * @returns Calculated delay in milliseconds
+ * @throws Original error if non-retryable or max retries exceeded
+ */
 export function randomBackoffStrategy(props: {
   count: number;
   error: unknown;
@@ -75,6 +99,18 @@ export function randomBackoffStrategy(props: {
   return delay;
 }
 
+/**
+ * Determines if an error represents a transient failure that should trigger
+ * retry.
+ *
+ * Returns `true` for retryable errors (rate limits, server errors, network
+ * issues) and `false` for permanent failures (quota exceeded, invalid
+ * requests). This classification prevents wasting resources retrying
+ * unrecoverable errors.
+ *
+ * @param error Error object from LLM API or network layer
+ * @returns `true` if error is retryable, `false` otherwise
+ */
 function isRetryError(error: any): boolean {
   // 1) Quota exceeded → No retry
   if (

@@ -2,8 +2,28 @@ import { StringUtil } from "@autobe/utils";
 
 import { AutoBeState } from "../context/AutoBeState";
 
+/** Pipeline phase names in waterfall order. */
 type StepName = "analyze" | "prisma" | "interface" | "test" | "realize";
 
+/**
+ * Validates pipeline state before executing a phase, returning user-friendly
+ * error message if prerequisites are missing or outdated.
+ *
+ * Enforces the waterfall dependency structure: each phase requires all previous
+ * phases to be completed with matching step counters. When requirements change
+ * (analyze step increments), downstream phases become invalid through step
+ * mismatch, and this function generates clear messages guiding users to
+ * regenerate affected phases.
+ *
+ * This is the gatekeeper preventing users from executing phases out of order or
+ * with stale dependencies, ensuring generated artifacts always reflect current
+ * requirements. Without this validation, users could generate API
+ * implementations based on outdated database schemas, causing subtle bugs.
+ *
+ * @param state Current pipeline state
+ * @param future Phase attempting to execute
+ * @returns Error message if validation fails, null if valid to proceed
+ */
 export const predicateStateMessage = (
   state: AutoBeState,
   future: StepName,
@@ -21,6 +41,7 @@ export const predicateStateMessage = (
   return null;
 };
 
+/** Generates error message listing steps needed to reach current phase. */
 const buildMissingStepsMessage = (
   current: StepName,
   missing: StepName,
@@ -47,6 +68,10 @@ const buildMissingStepsMessage = (
   `;
 };
 
+/**
+ * Generates error message indicating phase is outdated due to requirements
+ * change.
+ */
 const buildOutdatedMessage = (
   outdatedStep: StepName,
   currentStep: StepName,
@@ -64,6 +89,7 @@ const buildOutdatedMessage = (
   `;
 };
 
+/** Special validation for Prisma phase requiring only analyze completion. */
 const predicatePrisma = (state: AutoBeState): string | null => {
   if (state.analyze !== null) return null;
   return StringUtil.trim`
