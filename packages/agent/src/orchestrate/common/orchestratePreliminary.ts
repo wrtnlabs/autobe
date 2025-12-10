@@ -253,7 +253,7 @@ const isPreviousInterfaceOperations = (
   typia.is<IAutoBePreliminaryRequest<"previousInterfaceOperations">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "interfaceOperations">
+      Extract<keyof IAutoBePreliminaryCollection, "previousInterfaceOperations">
     >()[0]
   ] !== undefined;
 
