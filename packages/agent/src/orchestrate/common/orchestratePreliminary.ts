@@ -175,6 +175,7 @@ export const orchestratePreliminary = async <
     kinds: props.preliminary.getKinds(),
     all: props.preliminary.getAll() as IAutoBePreliminaryCollection,
     local: props.preliminary.getLocal() as IAutoBePreliminaryCollection,
+    prerequisite: false,
   });
 };
 

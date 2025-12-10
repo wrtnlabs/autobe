@@ -18,6 +18,7 @@ interface IProps {
   kinds: AutoBePreliminaryKind[];
   all: IAutoBePreliminaryCollection;
   local: IAutoBePreliminaryCollection;
+  prerequisite: boolean;
 }
 interface INextProps extends IProps {
   previous: boolean;
@@ -73,9 +74,8 @@ const complementInterfaceOperations = (props: INextProps) => {
       method: op.method,
       path: op.path,
     });
-    for (const pre of op.prerequisites ?? []) {
-      insert(dict.get(pre.endpoint));
-    }
+    if (props.prerequisite === true)
+      for (const pre of op.prerequisites ?? []) insert(dict.get(pre.endpoint));
   };
   for (const op of props.local[kind]) insert(op);
 

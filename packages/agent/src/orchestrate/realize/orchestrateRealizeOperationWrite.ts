@@ -112,6 +112,7 @@ async function process<Model extends ILlmSchema.Model>(
       interfaceOperations: [props.scenario.operation],
       interfaceSchemas: {},
     },
+    prerequisite: false,
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {

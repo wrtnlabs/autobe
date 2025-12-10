@@ -108,6 +108,7 @@ export const orchestrateRealizeOperationCorrectOverall = async <
             interfaceOperations: [operation],
             interfaceSchemas: {},
           },
+          prerequisite: false,
         });
         return preliminary;
       },
