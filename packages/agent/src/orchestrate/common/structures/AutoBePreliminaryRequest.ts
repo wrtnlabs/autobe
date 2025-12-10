@@ -11,11 +11,23 @@ import { IAutoBePreliminaryGetPrismaSchemas } from "./IAutoBePreliminaryGetPrism
 import { IAutoBePreliminaryGetRealizeCollectors } from "./IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "./IAutoBePreliminaryGetRealizeTransformers";
 
+/**
+ * Internal function calling schema for preliminary RAG system.
+ *
+ * Not directly used in LLM function calling, but serves as common structure for
+ * preliminary internal orchestration and validation.
+ *
+ * @author Samchon
+ */
 export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
+  /** LLM's reasoning about why this data is needed. */
   thinking: string;
+
+  /** Actual request payload discriminated by `Kind`. */
   request: Mapper[Kind];
 }
 
+/** Maps preliminary `Kind` to corresponding request type. */
 type Mapper = {
   analysisFiles: IAutoBePreliminaryGetAnalysisFiles;
   prismaSchemas: IAutoBePreliminaryGetPrismaSchemas;
