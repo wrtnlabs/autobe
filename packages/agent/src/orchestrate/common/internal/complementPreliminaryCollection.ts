@@ -28,7 +28,7 @@ interface INextProps extends IProps {
 export const complementPreliminaryCollection = (props: IProps): void => {
   // Realize modularizations
   if (props.kinds.includes("realizeCollectors") === true)
-    complementReaizeCollectors(props);
+    complementRealizeCollectors(props);
   if (props.kinds.includes("realizeTransformers") === true)
     complementRealizeTransformers(props);
 
@@ -57,7 +57,7 @@ export const complementPreliminaryCollection = (props: IProps): void => {
     });
 };
 
-const complementReaizeCollectors = (props: IProps): void =>
+const complementRealizeCollectors = (props: IProps): void =>
   complementRealizeModuarlizations(props, props.all.realizeCollectors);
 
 const complementRealizeTransformers = (props: IProps): void =>
