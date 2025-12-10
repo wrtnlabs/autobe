@@ -58,10 +58,10 @@ export const complementPreliminaryCollection = (props: IProps): void => {
 };
 
 const complementRealizeCollectors = (props: IProps): void =>
-  complementRealizeModuarlizations(props, props.all.realizeCollectors);
+  complementRealizeModuarlizations(props, props.local.realizeCollectors);
 
 const complementRealizeTransformers = (props: IProps): void =>
-  complementRealizeModuarlizations(props, props.all.realizeTransformers);
+  complementRealizeModuarlizations(props, props.local.realizeTransformers);
 
 const complementRealizeModuarlizations = (
   props: IProps,
