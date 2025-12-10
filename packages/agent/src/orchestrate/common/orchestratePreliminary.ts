@@ -90,9 +90,8 @@ export const orchestratePreliminary = async <
     }
     // INTERFACE OPERATIONS
     else if (isInterfaceOperations(props.preliminary, exec.arguments)) {
-      const pi: AutoBePreliminaryController<
-        "interfaceOperations" | "interfaceSchemas"
-      > = props.preliminary;
+      const pi: AutoBePreliminaryController<"interfaceOperations"> =
+        props.preliminary;
       orchestrateInterfaceOperations(ctx, {
         source: props.source,
         source_id: props.source_id,
@@ -105,9 +104,8 @@ export const orchestratePreliminary = async <
     } else if (
       isPreviousInterfaceOperations(props.preliminary, exec.arguments)
     ) {
-      const pi: AutoBePreliminaryController<
-        "previousInterfaceOperations" | "previousInterfaceSchemas"
-      > = props.preliminary;
+      const pi: AutoBePreliminaryController<"previousInterfaceOperations"> =
+        props.preliminary;
       orchestrateInterfaceOperations(ctx, {
         source: props.source,
         source_id: props.source_id,
@@ -200,7 +198,7 @@ const isPreviousAnalysisFiles = (
   typia.is<IAutoBePreliminaryRequest<"previousAnalysisFiles">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "analysisFiles">
+      Extract<keyof IAutoBePreliminaryCollection, "previousAnalysisFiles">
     >()[0]
   ] !== undefined;
 
@@ -229,9 +227,7 @@ const isPreviousPrismaSchemas = (
 const isInterfaceOperations = (
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
-): preliminary is AutoBePreliminaryController<
-  "interfaceOperations" | "interfaceSchemas"
-> =>
+): preliminary is AutoBePreliminaryController<"interfaceOperations"> =>
   typia.is<IAutoBePreliminaryRequest<"interfaceOperations">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
@@ -242,9 +238,7 @@ const isInterfaceOperations = (
 const isPreviousInterfaceOperations = (
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
-): preliminary is AutoBePreliminaryController<
-  "previousInterfaceOperations" | "previousInterfaceSchemas"
-> =>
+): preliminary is AutoBePreliminaryController<"previousInterfaceOperations"> =>
   typia.is<IAutoBePreliminaryRequest<"previousInterfaceOperations">>(input) &&
   preliminary.getAll()[
     typia.misc.literals<
