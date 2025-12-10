@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
+import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
@@ -96,14 +97,8 @@ export const orchestratePreliminary = async <
         source: props.source,
         source_id: props.source_id,
         trial: props.trial,
-        all: {
-          operations: pi.getAll().interfaceOperations,
-          schemas: pi.getAll().interfaceSchemas,
-        },
-        local: {
-          operations: pi.getLocal().interfaceOperations,
-          schemas: pi.getLocal().interfaceSchemas,
-        },
+        all: pi.getAll().interfaceOperations,
+        local: pi.getLocal().interfaceOperations,
         arguments: exec.arguments,
         previous: false,
       });
@@ -117,14 +112,8 @@ export const orchestratePreliminary = async <
         source: props.source,
         source_id: props.source_id,
         trial: props.trial,
-        all: {
-          operations: pi.getAll().previousInterfaceOperations,
-          schemas: pi.getAll().previousInterfaceSchemas,
-        },
-        local: {
-          operations: pi.getLocal().previousInterfaceOperations,
-          schemas: pi.getLocal().previousInterfaceSchemas,
-        },
+        all: pi.getAll().previousInterfaceOperations,
+        local: pi.getLocal().previousInterfaceOperations,
         arguments: exec.arguments,
         previous: true,
       });
@@ -182,6 +171,11 @@ export const orchestratePreliminary = async <
       });
     }
   }
+  complementPreliminaryCollection({
+    kinds: props.preliminary.getKinds(),
+    all: props.preliminary.getAll() as IAutoBePreliminaryCollection,
+    local: props.preliminary.getLocal() as IAutoBePreliminaryCollection,
+  });
 };
 
 /* -----------------------------------------------------------
@@ -406,14 +400,8 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
     trial: number;
-    all: {
-      operations: AutoBeOpenApi.IOperation[];
-      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    };
-    local: {
-      operations: AutoBeOpenApi.IOperation[];
-      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    };
+    all: AutoBeOpenApi.IOperation[];
+    local: AutoBeOpenApi.IOperation[];
     arguments: unknown;
     previous: boolean;
   },
@@ -432,33 +420,22 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
   )
     return;
 
-  const existing: AutoBeOpenApi.IEndpoint[] = props.local.operations.map(
-    (o) => ({
-      method: o.method,
-      path: o.path,
-    }),
-  );
-
-  const typeNames: Set<string> = new Set();
+  const existing: AutoBeOpenApi.IEndpoint[] = props.local.map((o) => ({
+    method: o.method,
+    path: o.path,
+  }));
   for (const endpoint of props.arguments.request.endpoints) {
     if (
-      props.local.operations.find(
+      props.local.find(
         (v) => v.method === endpoint.method && v.path === endpoint.path,
       ) !== undefined
     )
       continue; // duplicated
 
-    const operation: AutoBeOpenApi.IOperation | undefined =
-      props.all.operations.find(
-        (v) => v.method === endpoint.method && v.path === endpoint.path,
-      );
-    if (operation === undefined) continue; // not found (???)
-
-    props.local.operations.push(operation);
-    if (operation.requestBody !== null)
-      typeNames.add(operation.requestBody.typeName);
-    if (operation.responseBody !== null)
-      typeNames.add(operation.responseBody.typeName);
+    const operation: AutoBeOpenApi.IOperation | undefined = props.all.find(
+      (v) => v.method === endpoint.method && v.path === endpoint.path,
+    );
+    if (operation !== undefined) props.local.push(operation);
   }
   ctx.dispatch({
     type: "preliminary",
@@ -473,28 +450,6 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
     trial: props.trial,
     created_at: new Date().toISOString(),
   });
-
-  orchestrateInterfaceSchemas(
-    ctx,
-    {
-      source: props.source,
-      source_id: props.source_id,
-      trial: props.trial,
-      all: props.all.schemas,
-      local: props.local.schemas,
-      arguments: {
-        thinking: "interface schemas for detailed schema information",
-        request: {
-          type: props.previous
-            ? "getPreviousInterfaceSchemas"
-            : "getInterfaceSchemas",
-          typeNames: Array.from(typeNames),
-        },
-      },
-      previous: props.previous,
-    },
-    false,
-  );
 };
 
 const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
@@ -619,9 +574,9 @@ const orchestrateRealizeTransformers = <Model extends ILlmSchema.Model>(
   for (const dtoTypeName of props.arguments.request.dtoTypeNames) {
     const transformer: AutoBeRealizeTransformerFunction | undefined =
       props.all.find((t) => t.plan.dtoTypeName === dtoTypeName);
-    if (transformer === undefined) continue;
-    else if (
-      props.local.find((t) => t.plan.dtoTypeName === dtoTypeName) === undefined
+    if (
+      transformer !== undefined &&
+      existing.find((e) => e === dtoTypeName) === undefined
     )
       props.local.push(transformer);
   }
