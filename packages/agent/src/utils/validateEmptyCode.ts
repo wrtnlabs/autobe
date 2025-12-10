@@ -1,6 +1,23 @@
 import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 
+/**
+ * Validates that AI-generated code contains the expected function name.
+ *
+ * Detects two common AI failure modes: (1) returning empty code snippets
+ * instead of actual implementations, and (2) hallucinating different function
+ * names than requested. By checking function name presence early, this prevents
+ * wasting compiler resources on obviously broken code and provides clearer
+ * error messages to the correction orchestrator.
+ *
+ * Used extensively in Test and Realize phases where AI generates test functions
+ * and API operation implementations. Without this validation, empty or misnamed
+ * functions would pass to TypeScript compiler, generating confusing "not found"
+ * errors instead of actionable "you forgot to write the function" feedback.
+ *
+ * @param props Function name to validate and code strings to check
+ * @returns Array of validation errors (empty if valid)
+ */
 export const validateEmptyCode = (props: {
   functionName: string;
   draft: string;
@@ -29,6 +46,7 @@ export const validateEmptyCode = (props: {
   return errors;
 };
 
+/** Generates detailed error description for missing function. */
 const description = (func: string): string => StringUtil.trim`
   The function ${func} does not exist in the provided code snippet.
 

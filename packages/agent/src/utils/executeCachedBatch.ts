@@ -5,6 +5,30 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 
+/**
+ * Executes task list with prompt caching optimization and semaphore-controlled
+ * parallelization.
+ *
+ * This is the core performance optimization pattern in AutoBE: first task runs
+ * sequentially to establish prompt cache, then remaining tasks execute in
+ * parallel with the same cache key, dramatically reducing token costs and
+ * latency. The semaphore limits concurrency to prevent overwhelming LLM APIs.
+ *
+ * For example, generating 100 API operations: first operation takes 30s and
+ * costs full token price, but the remaining 99 operations run in parallel
+ * (respecting semaphore limit) and benefit from 90% cost reduction via cached
+ * system prompts. Total time: ~35s instead of 50 minutes, cost: ~10% of
+ * uncached price.
+ *
+ * Without this pattern, AutoBE would be economically and temporally infeasible
+ * for real-world applications with dozens of database models and API
+ * endpoints.
+ *
+ * @param ctx Execution context providing vendor semaphore configuration
+ * @param taskList List of async tasks to execute, each receiving cache key
+ * @param promptCacheKey Optional cache key (generates UUID if not provided)
+ * @returns Array of task results in original order
+ */
 export const executeCachedBatch = async <Model extends ILlmSchema.Model, T>(
   ctx: AutoBeContext<Model>,
   taskList: Task<T>[],
@@ -38,4 +62,10 @@ export const executeCachedBatch = async <Model extends ILlmSchema.Model, T>(
   ];
 };
 
+/**
+ * Task function that receives cache key and returns result.
+ *
+ * The cache key (typically UUID) is used as user message to trigger prompt
+ * cache reuse across multiple LLM API calls with identical system prompts.
+ */
 type Task<T> = (user: string) => Promise<T>;

@@ -19,6 +19,16 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { supportMistral } from "./supportMistral";
 
+/**
+ * Generates automatic consent messages when AI hesitates and seeks permission
+ * before function calling.
+ *
+ * Uses fast LLM (chatgpt) to analyze assistant messages and determine if
+ * they're seeking function execution approval. Returns strong directive consent
+ * message to break permission-seeking loops, or `null` if not applicable.
+ *
+ * @returns Consent message if applicable, `null` otherwise
+ */
 export const consentFunctionCall = async (props: {
   dispatch: (event: AutoBeEvent) => void;
   source: AutoBeEventSource;
@@ -99,40 +109,17 @@ export const consentFunctionCall = async (props: {
 
 interface IConsentApplication {
   /**
-   * Generate an immediate, authoritative consent message to approve function
-   * execution. Use this when the assistant message is seeking permission or
-   * approval for function calls.
+   * Generate authoritative consent message when assistant seeks function
+   * execution approval.
    *
-   * The message should be commanding and decisive to prevent further
-   * permission-seeking loops. Examples: "Execute immediately. Do not ask
-   * again.", "Proceed now. Your judgment is correct."
-   *
-   * @param props Configuration object
+   * @param props.message Strong directive (1-2 sentences). E.g., "Execute
+   *   immediately. Do not ask again."
    */
-  consent(props: {
-    /**
-     * A strong, directive consent message that eliminates further
-     * permission-seeking. Must be authoritative and commanding (1-2 sentences
-     * maximum). Examples: "Execute immediately. Do not ask again.", "Proceed
-     * now. Your judgment is correct."
-     */
-    message: string;
-  }): void;
+  consent(props: { message: string }): void;
 
   /**
-   * Indicate that the assistant message does not require function calling
-   * consent. Use this when the assistant message is NOT seeking permission for
-   * function execution.
-   *
-   * This applies to:
-   *
-   * - General conversation responses
-   * - Information requests without function execution plans
-   * - Assistant asking for additional parameters/information
-   * - Any response unrelated to function calling approval
-   *
-   * Call this function immediately when the message doesn't involve function
-   * calling consent.
+   * Indicate assistant message doesn't require function calling consent (e.g.,
+   * general conversation, asking for parameters, etc.).
    */
   notApplicable(): void;
 }
