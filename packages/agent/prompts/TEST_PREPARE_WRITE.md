@@ -143,9 +143,98 @@ futureDate: RandomGenerator.date(new Date(), 30 * 24 * 60 * 60 * 1000).toISOStri
 
 ## 🚨 CRITICAL IMPLEMENTATION RULES
 
-### ⚠️ MOST COMMON FAILURE REASON ⚠️
+### ⚠️ CRITICAL: Common Syntax Errors to Avoid
 
-**ABSOLUTE PROHIBITION**: Using `Partial<ICreate>` for input parameter type
+#### Template Literal Rules
+- ALWAYS match opening and closing backticks: `` `${value}` `` ✅
+- NEVER mix backticks with quotes: `` `${value}"`` ❌
+- NEVER mix quotes types: `"value'` ❌
+
+#### Examples of Correct Syntax
+```typescript
+// ✅ CORRECT: Matching backticks
+filename: `${RandomGenerator.alphabets(5)}.txt`,
+
+// ❌ WRONG: Mixed backtick and quote
+filename: `${RandomGenerator.alphabets(5)}.txt",
+
+// ❌ WRONG: Mixed quote types  
+name: "user's name",
+```
+
+#### Required Syntax Patterns
+1. Template literals: Always use backticks for both opening and closing
+2. String literals: Match quote types (either '' or "", not mixed)
+3. Object properties: Ensure all brackets and braces are properly closed
+4. Function calls: Verify parentheses match
+
+### ⚠️ SINGLE FUNCTION ONLY - VIOLATION CAUSES COMPILATION FAILURE ⚠️
+
+**ABSOLUTE PROHIBITION #1**: Creating multiple functions or calling external prepare functions
+
+❌ **WRONG** - Multiple functions:
+```typescript
+// 🚨 COMPILATION ERROR - DO NOT create helper functions
+const prepareAddress = () => ({...});  // WRONG!
+const prepareItems = () => ({...});     // WRONG!
+
+export const prepare_random_order = (...) => ({
+  address: prepareAddress(),  // WRONG!
+  items: prepareItems(),      // WRONG!
+});
+```
+
+❌ **WRONG** - Calling non-existent prepare functions:
+```typescript
+// 🚨 COMPILATION ERROR - These functions DO NOT EXIST
+export const prepare_random_order = (...) => ({
+  customer: prepare_random_customer(),      // WRONG! Function doesn't exist!
+  items: prepare_random_order_items(),      // WRONG! Function doesn't exist!
+  shipping: prepare_random_shipping_info(), // WRONG! Function doesn't exist!
+});
+```
+
+✅ **CORRECT** - All data generation inline:
+```typescript
+export const prepare_random_order = (
+  input?: DeepPartial<IOrder.ICreate>
+): IOrder.ICreate => ({
+  // Generate ALL nested data INLINE - no helper functions!
+  customer: input?.customer ? {
+    name: input.customer.name ?? RandomGenerator.name(),
+    email: input.customer.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
+  } : {
+    name: RandomGenerator.name(),
+    email: `${RandomGenerator.alphabets(8)}@example.com`,
+  },
+  items: input?.items
+    ? input.items.map(item => ({
+        product_id: item.product_id ?? RandomGenerator.alphaNumeric(32),
+        quantity: item.quantity ?? randint(1, 10),
+      }))
+    : ArrayUtil.repeat(randint(1, 5), () => ({
+        product_id: RandomGenerator.alphaNumeric(32),
+        quantity: randint(1, 10),
+      })),
+  shipping: input?.shipping ? {
+    address: input.shipping.address ?? RandomGenerator.paragraph({ sentences: 1 }),
+    city: input.shipping.city ?? RandomGenerator.name(1),
+  } : {
+    address: RandomGenerator.paragraph({ sentences: 1 }),
+    city: RandomGenerator.name(1),
+  },
+});
+```
+
+**REMEMBER**:
+- You are generating a **STANDALONE** prepare function
+- **NO** other prepare functions exist in this context
+- **ALL** data generation must be **INLINE** within this single function
+- **NEVER** assume any `prepare_random_*` functions are available
+
+### ⚠️ MOST COMMON FAILURE REASON #2 ⚠️
+
+**ABSOLUTE PROHIBITION #2**: Using `Partial<ICreate>` for input parameter type
 
 ❌ **WRONG**:
 ```typescript
@@ -187,13 +276,52 @@ export const prepare_random_user = (
    - Group related fields together
 
 2. **Input Usage Pattern**:
+   
+   **For Simple Fields:**
    ```typescript
-   field: input?.field ?? generatedValue
+   title: input?.title ?? RandomGenerator.paragraph({ sentences: randint(2, 5) }),
+   price: input?.price ?? randint(1000, 999999),
+   email: input?.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
    ```
-   NOT:
+   
+   **For Nested Objects:**
    ```typescript
-   ...input  // This would allow system fields!
+   // Map through input object to ensure all required fields exist
+   address: input?.address ? {
+     street: input.address.street ?? RandomGenerator.paragraph({ sentences: 1 }),
+     city: input.address.city ?? RandomGenerator.name(1),
+     state: input.address.state ?? RandomGenerator.alphabets(2).toUpperCase(),
+     zipCode: input.address.zipCode ?? RandomGenerator.alphaNumeric(5),
+   } : {
+     street: RandomGenerator.paragraph({ sentences: 1 }),
+     city: RandomGenerator.name(1),
+     state: RandomGenerator.alphabets(2).toUpperCase(),
+     zipCode: RandomGenerator.alphaNumeric(5),
+   },
    ```
+   
+   **For Arrays (CRITICAL):**
+   ```typescript
+   // Map through input array to ensure all required fields exist
+   attachments: input?.attachments
+     ? input.attachments.map(att => ({
+         filename: att.filename ?? RandomGenerator.alphabets(randint(8, 32)),
+         storage_uri: att.storage_uri ?? `https://files.example.com/${RandomGenerator.alphaNumeric(24)}`,
+         file_type: att.file_type ?? RandomGenerator.pick(["image/jpeg", "image/png", "application/pdf"]),
+         file_size: att.file_size ?? randint(1024, 10485760),
+       }))
+     : ArrayUtil.repeat(randint(1, 5), () => ({
+         filename: RandomGenerator.alphabets(randint(8, 32)),
+         storage_uri: `https://files.example.com/${RandomGenerator.alphaNumeric(24)}`,
+         file_type: RandomGenerator.pick(["image/jpeg", "image/png", "application/pdf"]),
+         file_size: randint(1024, 10485760),
+       })),
+   ```
+   
+   **Why This Pattern?**
+   - DeepPartial makes nested properties optional
+   - Must ensure each nested object/array element has all required fields
+   - Map through input and provide defaults for missing fields
 
 ## Output Format
 
@@ -212,10 +340,10 @@ export const prepare_random_bbs_article = (
   content: input?.content ?? RandomGenerator.content({
     paragraphs: randint(2, 5)
   }),
-  category: input?.category ?? RandomGenerator.pick([...]),
+  category: input?.category ?? RandomGenerator.pick(["tech", "news", "sports"]),
   
   // Auto-generated fields (not in input)
-  id: RandomGenerator.alphaNumeric(32),  // Generate UUID-like string
+  id: RandomGenerator.alphaNumeric(32),
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   status: "active",
@@ -262,13 +390,19 @@ export const prepare_random_shopping_sale = (
 
 ### Nested Object Generation
 ```typescript
-shipping_address: input?.shipping_address ?? {
+shipping_address: input?.shipping_address ? {
+  street: input.shipping_address.street ?? RandomGenerator.paragraph({ sentences: 1 }),
+  city: input.shipping_address.city ?? RandomGenerator.name(1),
+  state: input.shipping_address.state ?? RandomGenerator.alphabets(2).toUpperCase(),
+  zip_code: input.shipping_address.zip_code ?? RandomGenerator.alphaNumeric(5),
+  country: input.shipping_address.country ?? RandomGenerator.pick(["US", "CA", "UK"]),
+} : {
   street: RandomGenerator.paragraph({ sentences: 1 }),
   city: RandomGenerator.name(1),
   state: RandomGenerator.alphabets(2).toUpperCase(),
   zip_code: RandomGenerator.alphaNumeric(5),
   country: RandomGenerator.pick(["US", "CA", "UK"]),
-}
+},
 ```
 
 ### Conditional Fields
@@ -277,19 +411,25 @@ published_at: input?.published_at ?? (
   RandomGenerator.pick([true, false]) 
     ? new Date().toISOString() 
     : null
-)
+),
 ```
 
 ### Related Data Arrays
 ```typescript
-items: input?.items ?? ArrayUtil.repeat(
-  randint(1, 5),
-  () => ({
-    product_id: RandomGenerator.alphaNumeric(32),
-    quantity: randint(1, 10),
-    unit_price: randint(100, 99999),  // cents: $1.00 to $999.99
-  })
-)
+items: input?.items
+  ? input.items.map(item => ({
+      product_id: item.product_id ?? RandomGenerator.alphaNumeric(32),
+      quantity: item.quantity ?? randint(1, 10),
+      unit_price: item.unit_price ?? randint(100, 99999),  // cents: $1.00 to $999.99
+    }))
+  : ArrayUtil.repeat(
+      randint(1, 5),
+      () => ({
+        product_id: RandomGenerator.alphaNumeric(32),
+        quantity: randint(1, 10),
+        unit_price: randint(100, 99999),  // cents: $1.00 to $999.99
+      })
+    ),
 ```
 
 ## RandomGenerator API Reference
