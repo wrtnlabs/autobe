@@ -1,6 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeOpenApi,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestCorrectEvent,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -22,7 +26,7 @@ import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectIn
 import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
-import { getPrepareImport } from "./utils/getPrepareImport";
+import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
@@ -48,7 +52,20 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
               ctx,
               {
                 source: "testCorrect",
-                validate: compile,
+                validate: async (script: string) => {
+                  const importStatement: string = getTestImportFromFunction({
+                    target: w,
+                  });
+
+                  return compile(
+                    await completeTestCode(
+                      ctx,
+                      w.artifacts,
+                      script,
+                      importStatement,
+                    ),
+                  );
+                },
                 correct: (next) =>
                   ({
                     type: "testCorrect",
@@ -93,12 +110,59 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
   item: IAutoBeTestAgentResult,
 ): Promise<AutoBeTestValidateEvent> => {
   const compiler: IAutoBeCompiler = await ctx.compiler();
+  const template: Record<string, string> = Object.fromEntries(
+    Object.entries(
+      await compiler.getTemplate({
+        dbms: "sqlite",
+        phase: "test",
+      }),
+    ).filter(([key]) => key.startsWith("test/utils") && key.endsWith(".ts")),
+  );
+
+  // Use full document to generate complete SDK/DTO files
+  // This prevents type truncation when multiple artifacts reference the same DTO file
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const fullArtifacts: Record<string, string> = await compiler.interface.write(
+    document,
+    [],
+  );
+  const fullSdk: Record<string, string> = Object.fromEntries(
+    Object.entries(fullArtifacts).filter(
+      ([key]) =>
+        key.startsWith("src/api") && !key.startsWith("src/api/structures"),
+    ),
+  );
+  const fullDto: Record<string, string> = Object.fromEntries(
+    Object.entries(fullArtifacts).filter(([key]) =>
+      key.startsWith("src/api/structures"),
+    ),
+  );
+
+  const helperFunctions: (
+    | AutoBeTestAuthorizationWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestPrepareWriteFunction
+  )[] =
+    item.type === "write"
+      ? [
+          ...item.authorizationFunctions,
+          ...item.generationFunctions,
+          ...item.prepareFunctions,
+        ]
+      : item.type === "generation"
+        ? [item.prepareFunction]
+        : [];
+
+  const files: Record<string, string> = {
+    ...template,
+    ...fullDto,
+    ...fullSdk,
+    ...Object.fromEntries(helperFunctions.map((f) => [f.location, f.content])),
+    [item.function.location]: item.function.content,
+  };
+
   const result: IAutoBeTypeScriptCompileResult = await compiler.test.compile({
-    files: {
-      ...item.artifacts.dto,
-      ...item.artifacts.sdk,
-      [item.function.location]: item.function.content,
-    },
+    files,
   });
 
   return {
@@ -171,25 +235,22 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
-  const prepareFunctionImport: string | undefined =
-    props.target.type === "generation"
-      ? getPrepareImport({
-          prepareFunction: props.target.prepareFunction,
-        })
-      : undefined;
+  const importStatement: string = getTestImportFromFunction({
+    target: props.target,
+  });
 
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
       props.target.artifacts,
       pointer.value.revise.final,
-      prepareFunctionImport,
+      importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
     props.target.artifacts,
     pointer.value.draft,
-    prepareFunctionImport,
+    importStatement,
   );
 
   ctx.dispatch({
