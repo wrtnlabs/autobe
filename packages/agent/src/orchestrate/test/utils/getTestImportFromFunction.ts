@@ -16,10 +16,6 @@ export const getTestImportFromFunction = (props: {
           (f) =>
             `import { ${f.functionName} } from "test/features/utils/authorize/${f.functionName}";`,
         ),
-        ...props.target.prepareFunctions.map(
-          (f) =>
-            `import { ${f.functionName} } from "test/features/utils/prepare/${f.functionName}";`,
-        ),
       ].filter(Boolean);
 
       return importStatements.join("\n");
