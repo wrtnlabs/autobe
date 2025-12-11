@@ -159,8 +159,8 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   try {
     const preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "previousAnalysisFiles"
       | "prismaSchemas"
+      | "previousAnalysisFiles"
       | "previousPrismaSchemas"
     > = new AutoBePreliminaryController({
       application:
@@ -168,20 +168,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       source: SOURCE,
       kinds: [
         "analysisFiles",
-        "previousAnalysisFiles",
         "prismaSchemas",
+        "previousAnalysisFiles",
         "previousPrismaSchemas",
       ],
-      histories: ctx.histories(),
       state: ctx.state(),
-      all: {
-        analysisFiles: ctx.state().analyze?.files ?? [],
-        prismaSchemas: ctx.state().prisma?.schemas ?? [],
-      },
-      local: {
-        analysisFiles: [],
-        prismaSchemas: [],
-      },
     });
     return await preliminary.orchestrate(ctx, async (out) => {
       const pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IComplete | null> =

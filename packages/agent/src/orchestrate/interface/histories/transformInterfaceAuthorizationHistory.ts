@@ -10,7 +10,12 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceAuthorizationHistory = (props: {
   state: AutoBeState;
   actor: AutoBeAnalyzeActor;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+  >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   const analyze: AutoBeAnalyzeHistory = props.state.analyze!;

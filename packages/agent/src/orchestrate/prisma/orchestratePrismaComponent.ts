@@ -28,7 +28,6 @@ export async function orchestratePrismaComponents<
     application: typia.json.application<IAutoBePrismaComponentApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "previousAnalysisFiles"],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       analysisFiles: ctx.state().analyze?.files ?? [],
@@ -53,6 +52,7 @@ export async function orchestratePrismaComponents<
       ...transformPrismaComponentsHistory(ctx.state(), {
         instruction,
         prefix,
+        preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
@@ -88,7 +88,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
-      thinking: result.data.thinking_preliminary,
+      thinking: result.data.thinking,
       request: result.data.request,
     });
   };

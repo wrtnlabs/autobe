@@ -30,7 +30,6 @@ export const orchestrateAnalyzeScenario = async <
     application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "previousAnalysisFiles"],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       analysisFiles: [],

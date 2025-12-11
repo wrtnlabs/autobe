@@ -1,4 +1,3 @@
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 export interface IAutoBeAnalyzeWriteApplication {
@@ -49,10 +48,7 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * (complete). When preliminary returns empty array, that type is removed
      * from the union, physically preventing repeated calls.
      */
-    request:
-      | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
   /**

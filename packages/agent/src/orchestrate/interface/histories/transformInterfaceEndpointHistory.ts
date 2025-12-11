@@ -12,7 +12,12 @@ export const transformInterfaceEndpointHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+  >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

@@ -42,7 +42,7 @@ export namespace IAutoBePrismaComponentApplication {
      * This reflection helps you avoid duplicate requests and premature
      * completion.
      */
-    thinking_preliminary: string;
+    thinking: string;
 
     /**
      * Type discriminator for the request.

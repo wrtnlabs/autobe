@@ -26,28 +26,19 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
   const prisma: AutoBePrismaHistory | null = ctx.state().prisma;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
+      "previousAnalysisFiles",
       "previousPrismaSchemas",
     ],
-    histories: ctx.histories(),
     state: ctx.state(),
-    all: {
-      analysisFiles: ctx.state().analyze?.files ?? [],
-      prismaSchemas: prisma?.schemas ?? [],
-    },
-    local: {
-      analysisFiles: [],
-      prismaSchemas: [],
-    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null> =

@@ -127,12 +127,12 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
-    | "previousPrismaSchemas"
     | "interfaceOperations"
-    | "previousInterfaceOperations"
     | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
@@ -140,12 +140,12 @@ async function process<Model extends ILlmSchema.Model>(
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
-      "previousPrismaSchemas",
       "interfaceOperations",
-      "previousInterfaceOperations",
       "interfaceSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+      "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
     state: ctx.state(),
@@ -321,13 +321,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication({
-    histories: props.preliminary.histories,
-    state: props.preliminary.state,
-    preliminary: props.preliminary,
-    application,
-    model: props.model,
-  });
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,

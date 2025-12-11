@@ -114,12 +114,12 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
-    | "previousPrismaSchemas"
     | "interfaceOperations"
-    | "previousInterfaceOperations"
     | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
@@ -268,13 +268,7 @@ function createController<Model extends ILlmSchema.Model>(
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication({
-    histories: props.preliminary.histories,
-    state: props.preliminary.state,
-    preliminary: props.preliminary,
-    application,
-    model: props.model,
-  });
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,

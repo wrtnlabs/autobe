@@ -26,26 +26,17 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteEvent> => {
-  const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
-  > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeAnalyzeWriteApplication>(),
-    source: SOURCE,
-    kinds: ["analysisFiles", "previousAnalysisFiles"],
-    histories: ctx.histories(),
-    state: ctx.state(),
-    all: {
-      analysisFiles: props.scenario.files,
-    },
-    local: {
-      analysisFiles: [props.file],
-    },
-  });
+  const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBeAnalyzeWriteApplication>(),
+      source: SOURCE,
+      kinds: ["previousAnalysisFiles"],
+      state: ctx.state(),
+    });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -81,9 +72,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null>;
-  preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
-  >;
+  preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
