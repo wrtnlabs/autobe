@@ -49,6 +49,7 @@ export const validate_agent_test_write = async (props: {
     {
       instruction: "Generate diverse and comprehensive test scenarios.",
       scenarios,
+      events: [], // TODO: fill up with mock events later.
     },
   );
 
