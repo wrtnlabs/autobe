@@ -55,6 +55,9 @@ export const orchestrateTestPrepareWrite = async <
           op.requestBody.typeName.endsWith("ICreate")),
     );
 
+  // Track existing function names to prevent duplicates
+  const existingFunctionNames: string[] = [];
+
   const progress: AutoBeProgressEventBase = {
     total: 0,
     completed: 0,
@@ -102,14 +105,19 @@ export const orchestrateTestPrepareWrite = async <
             promptCacheKey,
             progress,
             instruction,
+            existingFunctionNames,
           });
           if (event.function.kind !== "prepare") return null;
+
+          // Add successfully generated function name to the tracking array
+          existingFunctionNames.push(event.function.functionName);
 
           ctx.dispatch(event);
           return {
             type: "prepare",
             artifacts,
             function: event.function,
+            operation: op,
           };
         } catch {
           return null;
@@ -132,6 +140,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
     instruction: string;
+    existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
   const {
@@ -141,6 +150,7 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey,
     progress,
     instruction,
+    existingFunctionNames,
   } = props;
 
   // Validate schema is an object schema
@@ -159,6 +169,7 @@ async function process<Model extends ILlmSchema.Model>(
     controller: createController({
       model: ctx.model,
       dtoTypeName: props.operation.requestBody?.typeName ?? "",
+      existingFunctionNames,
       build: (app) => {
         pointer.value = app;
       },
@@ -218,6 +229,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   dtoTypeName: string;
+  existingFunctionNames: string[];
   build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -234,6 +246,26 @@ function createController<Model extends ILlmSchema.Model>(props: {
       draft: result.data.draft,
       revise: result.data.revise,
     });
+
+    if (result.data.functionName.startsWith("prepare_") === false) {
+      errors.push({
+        path: "$input.functionName",
+        expected: "string (starting with 'prepare_')",
+        value: result.data.functionName,
+        description:
+          "The function name must have format of 'prepare_random_{resource}'.",
+      });
+    }
+
+    // Check for duplicate function names
+    if (props.existingFunctionNames.includes(result.data.functionName)) {
+      errors.push({
+        path: "$input.functionName",
+        expected: "unique function name",
+        value: result.data.functionName,
+        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
+      });
+    }
 
     // Incorrect template literal syntax validation
     const backticRegex: RegExp = /`/g;

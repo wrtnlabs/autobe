@@ -32,6 +32,9 @@ export const orchestrateTestGenerationWrite = async <
     preparedFunctions: AutoBeTestPrepareWriteFunction[];
   },
 ): Promise<IAutoBeTestGenerationWriteResult[]> => {
+  // Track existing function names to prevent duplicates
+  const existingFunctionNames: string[] = [];
+
   const progress: AutoBeProgressEventBase = {
     total: props.preparedFunctions.length,
     completed: 0,
@@ -65,8 +68,12 @@ export const orchestrateTestGenerationWrite = async <
               progress,
               promptCacheKey,
               instruction: props.instruction,
+              existingFunctionNames,
             });
             if (event.function.kind !== "generation") return null;
+
+            // Add successfully generated function name to the tracking array
+            existingFunctionNames.push(event.function.functionName);
 
             ctx.dispatch(event);
             return {
@@ -74,6 +81,7 @@ export const orchestrateTestGenerationWrite = async <
               prepareFunction,
               artifacts,
               function: event.function,
+              operation,
             } satisfies IAutoBeTestGenerationWriteResult;
           } catch {
             return null;
@@ -94,10 +102,17 @@ async function process<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
+    existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { prepareFunction, artifacts, operation, progress, promptCacheKey } =
-    props;
+  const { 
+    prepareFunction, 
+    artifacts, 
+    operation, 
+    progress, 
+    promptCacheKey,
+    existingFunctionNames,
+  } = props;
 
   const pointer: IPointer<IAutoBeTestGenerationWriteApplication.IProps | null> =
     {
@@ -108,6 +123,7 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
+      existingFunctionNames,
       build: (next) => {
         pointer.value = next;
       },
@@ -131,6 +147,7 @@ async function process<Model extends ILlmSchema.Model>(
   const importStatement: string = getTestImportFromFunction({
     target: {
       type: "generation",
+      operation,
       prepareFunction,
       artifacts,
       function: {
@@ -180,6 +197,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  existingFunctionNames: string[];
   build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -194,6 +212,26 @@ function createController<Model extends ILlmSchema.Model>(props: {
       draft: result.data.draft,
       revise: result.data.revise,
     });
+
+    if (result.data.functionName.startsWith("generate_") === false) {
+      errors.push({
+        path: "$input.functionName",
+        expected: "string (starting with 'generate_')",
+        value: result.data.functionName,
+        description:
+          "The function name must have format of 'generate_random_{resource}'.",
+      });
+    }
+
+    // Check for duplicate function names
+    if (props.existingFunctionNames.includes(result.data.functionName)) {
+      errors.push({
+        path: "$input.functionName",
+        expected: "unique function name",
+        value: result.data.functionName,
+        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
+      });
+    }
 
     return errors.length
       ? {

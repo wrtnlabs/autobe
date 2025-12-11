@@ -39,6 +39,9 @@ export const orchestrateTestAuthorizationWrite = async <
     (op) => op.authorizationType !== null,
   );
 
+  // Track existing function names to prevent duplicates
+  const existingFunctionNames: string[] = [];
+
   const progress: AutoBeProgressEventBase = {
     completed: 0,
     total: authOperations.length,
@@ -60,14 +63,19 @@ export const orchestrateTestAuthorizationWrite = async <
             artifacts,
             progress,
             promptCacheKey,
+            existingFunctionNames,
           });
           if (event.function.kind !== "authorization") return null;
+
+          // Add successfully generated function name to the tracking array
+          existingFunctionNames.push(event.function.functionName);
 
           ctx.dispatch(event);
           return {
             type: "authorization",
             artifacts,
             function: event.function,
+            operation,
           };
         } catch (error) {
           return null;
@@ -85,9 +93,16 @@ async function process<Model extends ILlmSchema.Model>(
     artifacts: IAutoBeTestArtifacts;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { operation, artifacts, progress, promptCacheKey } = props;
+  const { 
+    operation, 
+    artifacts, 
+    progress, 
+    promptCacheKey,
+    existingFunctionNames,
+  } = props;
 
   const pointer: IPointer<IAutoBeTestAuthorizationWriteApplication.IProps | null> =
     {
@@ -98,6 +113,7 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
+      existingFunctionNames,
       build: (next) => {
         pointer.value = next;
       },
@@ -157,6 +173,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  existingFunctionNames: string[];
   build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -171,6 +188,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
       draft: result.data.draft,
       revise: result.data.revise,
     });
+
+    // Check for duplicate function names
+    if (props.existingFunctionNames.includes(result.data.functionName)) {
+      errors.push({
+        path: "$input.functionName",
+        expected: "unique function name",
+        value: result.data.functionName,
+        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
+      });
+    }
 
     return errors.length
       ? {
