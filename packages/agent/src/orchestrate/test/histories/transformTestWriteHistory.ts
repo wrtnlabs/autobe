@@ -1,4 +1,8 @@
-import { AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestScenario,
+} from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
   HttpMigration,
@@ -22,8 +26,14 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
     instruction: string;
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
+    authorizationFunctions: AutoBeTestAuthorizationWriteFunction[];
+    generationFunctions: AutoBeTestGenerationWriteFunction[];
   },
 ): Promise<IAutoBeOrchestrateHistory> {
+  const functions: (
+    | AutoBeTestAuthorizationWriteFunction
+    | AutoBeTestGenerationWriteFunction
+  )[] = [...props.authorizationFunctions, ...props.generationFunctions];
   return {
     histories: [
       {
@@ -85,7 +95,7 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
 
           Never use the functions that are not listed here.
 
-          ${transformTestWriteHistory.functional(props.artifacts)}
+          ${transformTestWriteHistory.functional(props.artifacts, functions)}
 
           ## E2E Mockup Functions
 
@@ -94,6 +104,82 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
           \`\`\`json
           ${JSON.stringify(props.artifacts.e2e)}
           \`\`\`
+
+          ## Available Utility Functions
+
+          ${
+            functions.length > 0
+              ? StringUtil.trim`
+          🚨 **CRITICAL: UTILITY FUNCTIONS HAVE ABSOLUTE PRIORITY OVER SDK FUNCTIONS** 🚨
+
+          When calling an API endpoint, you MUST:
+          1. **FIRST**: Check if a utility function exists for that endpoint (match by METHOD + PATH)
+          2. **SECOND**: Only if NO utility function exists, use SDK function (\`api.functional.*\`)
+
+          **ABSOLUTE RULE**: If a utility function is provided for an endpoint below, you **MUST** use that utility function.
+          Using \`api.functional.*\` directly for an endpoint that has a utility function is **FORBIDDEN**.
+
+          ### Authorization Functions
+          Use these to authenticate users. After calling, \`connection.headers.Authorization\` is automatically updated.
+
+          | Function Name | Endpoint | Actor |
+          |---------------|----------|-------|
+          ${props.authorizationFunctions
+            .map(
+              (f) =>
+                `| \`${f.functionName}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` | ${f.actor} |`,
+            )
+            .join("\n")}
+
+          ${props.authorizationFunctions
+            .map(
+              (f) => StringUtil.trim`
+          #### ${f.functionName}
+          - **Endpoint**: \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`
+          - **Actor**: ${f.actor}
+          - **Auth Type**: ${f.authType}
+          - **Usage**: \`await ${f.functionName}({ connection, input: { ... } })\`
+          - ⚠️ **Do NOT use \`api.functional.*\` for \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`** - use this function instead
+
+          \`\`\`typescript
+          ${f.content}
+          \`\`\`
+          `,
+            )
+            .join("\n\n")}
+
+          ### Generation Functions
+          Use these to create test resources. They handle data preparation and API calls internally.
+
+          | Function Name | Endpoint |
+          |---------------|----------|
+          ${props.generationFunctions
+            .map(
+              (f) =>
+                `| \`${f.functionName}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` |`,
+            )
+            .join("\n")}
+
+          ${props.generationFunctions
+            .map(
+              (f) => StringUtil.trim`
+          #### ${f.functionName}
+          - **Endpoint**: \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`
+          - **Usage**: \`await ${f.functionName}({ connection, input: { ... } })\`
+          - ⚠️ **Do NOT use \`api.functional.*\` for \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`** - use this function instead
+
+          \`\`\`typescript
+          ${f.content}
+          \`\`\`
+          `,
+            )
+            .join("\n\n")}
+          `
+              : StringUtil.trim`
+          No utility functions are available for this test scenario.
+          You will need to handle authentication and data creation directly using the API SDK functions.
+          `
+          }
 
           ## External Definitions
 
@@ -138,15 +224,32 @@ export namespace transformTestWriteHistory {
     `;
   }
 
-  export function functional(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export function functional(
+    artifacts: IAutoBeTestScenarioArtifacts,
+    excludeFunctions: (
+      | AutoBeTestAuthorizationWriteFunction
+      | AutoBeTestGenerationWriteFunction
+    )[],
+  ): string {
     const document: OpenApi.IDocument = transformOpenApiDocument(
       artifacts.document,
     );
     const app: IHttpMigrateApplication = HttpMigration.application(document);
+
+    const excludeEndpoints = new Set(
+      excludeFunctions.map(
+        (f) => `${f.endpoint.method.toLowerCase()}:${f.endpoint.path}`,
+      ),
+    );
+
+    const filteredRoutes = app.routes.filter(
+      (r) => !excludeEndpoints.has(`${r.method.toLowerCase()}:${r.path}`),
+    );
+
     return StringUtil.trim`
       Method | Path | Function Accessor
       -------|------|-------------------
-      ${app.routes
+      ${filteredRoutes
         .map((r) =>
           [r.method, r.path, `api.functional.${r.accessor.join(".")}`].join(
             " | ",
