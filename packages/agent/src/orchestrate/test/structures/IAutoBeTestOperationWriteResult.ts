@@ -1,16 +1,16 @@
 import {
   AutoBeTestAuthorizationWriteFunction,
   AutoBeTestGenerationWriteFunction,
+  AutoBeTestOperationWriteFunction,
   AutoBeTestPrepareWriteFunction,
-  AutoBeTestWriteFunction,
 } from "@autobe/interface";
 
 import { IAutoBeTestScenarioArtifacts } from "./IAutoBeTestScenarioArtifacts";
 
-export interface IAutoBeTestWriteResult {
-  type: "write";
+export interface IAutoBeTestOperationWriteResult {
+  type: "operation";
   artifacts: IAutoBeTestScenarioArtifacts;
-  function: AutoBeTestWriteFunction;
+  function: AutoBeTestOperationWriteFunction;
   prepareFunctions: AutoBeTestPrepareWriteFunction[];
   generationFunctions: AutoBeTestGenerationWriteFunction[];
   authorizationFunctions: AutoBeTestAuthorizationWriteFunction[];

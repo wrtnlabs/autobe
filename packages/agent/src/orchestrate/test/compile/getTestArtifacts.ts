@@ -141,7 +141,7 @@ export async function getTestArtifactsFromFunction<
 ): Promise<IAutoBeTestArtifacts> {
   const endpoint: AutoBeOpenApi.IEndpoint = (() => {
     switch (func.kind) {
-      case "write":
+      case "operation":
         return func.scenario.endpoint;
       case "authorization":
       case "generation":

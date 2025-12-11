@@ -57,7 +57,7 @@ This step involves:
 
 2. **Root Cause Identification**:
    - Identify precise reasons: missing properties, type mismatches, nullable issues, etc.
-   - Cross-reference error patterns in TEST_CORRECT.md sections 4.1-4.16
+   - Cross-reference error patterns in sections 4.1-4.16 below
    - Check if errors are symptoms of broader issues (e.g., non-existent APIs)
 
 3. **Solution Strategy**:
@@ -107,7 +107,7 @@ This step involves:
 **2. DELETE** - Remove prohibited or forbidden code entirely:
 - **Note**: Type error testing should already be removed by TEST_CORRECT_INVALID_REQUEST
 - **DELETE** tests that contradict compilation requirements
-- **DELETE** any test violating absolute prohibitions from TEST_WRITE.md
+- **DELETE** any test violating absolute prohibitions from the original test writing prompt (marked as [SYSTEM PROMPT: TEST_WRITE])
 - **DELETE** any test implementing forbidden scenarios
 - **DO NOT FIX THESE - DELETE THEM COMPLETELY**
 
@@ -162,7 +162,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
 
-**CRITICAL**: You must follow ALL instructions from the original `TEST_WRITE.md` system prompt when making corrections.
+**CRITICAL**: You must follow ALL instructions from the original test writing system prompt (marked as [SYSTEM PROMPT: TEST_WRITE]) when making corrections.
 
 **🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED - THIS IS WHERE YOU FIX ERRORS! 🚨**
 
@@ -183,7 +183,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 ```
 
 - Even if you think the draft is perfect, you MUST perform the revise step
-- The revise.review MUST thoroughly check ALL prohibitions from `TEST_WRITE.md` AND all patterns from `TEST_CORRECT.md`
+- The revise.review MUST thoroughly check ALL prohibitions from [SYSTEM PROMPT: TEST_WRITE] AND all patterns from [SYSTEM PROMPT: TEST_CORRECT]
 - The revise.final MUST incorporate ALL fixes for issues found in review
 - This is NOT optional - failing to properly execute Step 4 means compilation failure
 
@@ -451,7 +451,7 @@ After analyzing error messages, you MUST:
 - Fix errors using correct types from provided DTO definitions
 - Match exact API SDK function signatures
 - Maintain strict type safety throughout
-- Follow all patterns from TEST_WRITE.md
+- Follow all patterns from [SYSTEM PROMPT: TEST_WRITE]
 
 ### 3.5. **🔥 CRITICAL: ABSOLUTE SCENARIO REWRITING AUTHORITY**
 
@@ -533,7 +533,7 @@ if (error instanceof api.HttpError) {
 **Important Notes:**
 - HttpError is accessible via `api.HttpError`
 - This is typically needed when checking error types in catch blocks
-- However, remember that TEST_WRITE.md discourages direct HttpError manipulation
+- However, remember that the original test writing prompt ([SYSTEM PROMPT: TEST_WRITE]) discourages direct HttpError manipulation
 - Only use this to fix compilation errors, not to add new HttpError handling logic
 
 ### 4.4. API Response and Request Type Mismatches
@@ -1778,8 +1778,8 @@ return await api.functional.users.get(connection, { id });
 - Verify the corrected code maintains test coherence
 - **FINAL CHECK**: Scan entire code for missing `await` keywords
 
-**`TEST_WRITE.md` Guidelines Compliance:**
-Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
+**[SYSTEM PROMPT: TEST_WRITE] Guidelines Compliance:**
+Ensure all corrections follow the guidelines provided in [SYSTEM PROMPT: TEST_WRITE].
 
 ## 6. Final Verification Checklist
 
@@ -1818,12 +1818,12 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 **THE ULTIMATE TEST:**
 
 - [ ] **Code will compile:** ZERO TypeScript compilation errors?
-- [ ] **All patterns from TEST_WRITE.md followed:** No prohibited patterns?
-- [ ] **All fixes from TEST_CORRECT.md applied:** Used correct solutions?
+- [ ] **All patterns from [SYSTEM PROMPT: TEST_WRITE] followed:** No prohibited patterns?
+- [ ] **All fixes from [SYSTEM PROMPT: TEST_CORRECT] applied:** Used correct solutions?
 - [ ] **Business logic preserved:** Original scenario intent maintained?
 
 **REMEMBER:**
-- `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
+- [SYSTEM PROMPT: TEST_WRITE] prohibitions are ABSOLUTE - NO EXCEPTIONS
 - **TEST_CORRECT_INVALID_REQUEST has ALREADY removed type error tests - DO NOT RESTORE THEM**
 - Compilation success through scenario rewriting is MANDATORY
 - The revise step is NOT OPTIONAL - it MUST be performed PROPERLY

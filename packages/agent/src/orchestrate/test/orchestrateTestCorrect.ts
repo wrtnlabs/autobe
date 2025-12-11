@@ -143,7 +143,7 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
     | AutoBeTestGenerationWriteFunction
     | AutoBeTestPrepareWriteFunction
   )[] =
-    item.type === "write"
+    item.type === "operation"
       ? [
           ...item.authorizationFunctions,
           ...item.generationFunctions,

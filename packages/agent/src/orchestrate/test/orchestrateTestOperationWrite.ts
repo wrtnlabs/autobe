@@ -4,6 +4,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestAuthorizationWriteFunction,
   AutoBeTestGenerationWriteFunction,
+  AutoBeTestOperationWriteFunction,
   AutoBeTestPrepareWriteFunction,
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
@@ -21,21 +22,21 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
-import { transformTestWriteHistory } from "./histories/transformTestWriteHistory";
+import { transformTestOperationWriteHistory } from "./histories/transformTestOperationWriteHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
-import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";
-import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
+import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
+import { IAutoBeTestOperationWriteResult } from "./structures/IAutoBeTestOperationWriteResult";
 import { getPrerequisites } from "./utils/getPrerequisites";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
-export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
+export async function orchestrateTestOperationWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     scenarios: AutoBeTestScenario[];
     events: AutoBeTestValidateEvent[];
   },
-): Promise<IAutoBeTestWriteResult[]> {
+): Promise<IAutoBeTestOperationWriteResult[]> {
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
   if (document === undefined) {
@@ -45,7 +46,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
     total: props.scenarios.length,
     completed: 0,
   };
-  const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
+  const result: Array<IAutoBeTestOperationWriteResult | null> = await executeCachedBatch(
     ctx,
     /**
      * Generate test code for each scenario. Maps through plans array to create
@@ -79,7 +80,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
         // Get Necessary Functions (generation, prepare only)
         for (const event of props.events) {
           const { function: func } = event;
-          if (func.kind === "write" || func.kind === "authorization") continue;
+          if (func.kind === "operation" || func.kind === "authorization") continue;
 
           const isScenarioEndpoint =
             func.endpoint.method === scenario.endpoint.method &&
@@ -114,19 +115,19 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
         });
         ctx.dispatch(event);
 
-        if (event.function.kind !== "write")
+        if (event.function.kind !== "operation")
           throw new Error(
-            `Unexpected testWrite function kind: ${event.function.kind}`,
+            `Unexpected testOperationWrite function kind: ${event.function.kind}`,
           );
 
         return {
-          type: "write",
+          type: "operation",
           artifacts,
           function: event.function,
           authorizationFunctions,
           generationFunctions,
           prepareFunctions,
-        } satisfies IAutoBeTestWriteResult;
+        } satisfies IAutoBeTestOperationWriteResult;
       } catch {
         return null;
       }
@@ -159,7 +160,7 @@ async function process<Model extends ILlmSchema.Model>(
     progress,
     promptCacheKey,
   } = props;
-  const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
+  const pointer: IPointer<IAutoBeTestOperationWriteApplication.IProps | null> = {
     value: null,
   };
   const { metric, tokenUsage } = await ctx.conversate({
@@ -174,7 +175,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...(await transformTestWriteHistory(ctx, {
+    ...(await transformTestOperationWriteHistory(ctx, {
       authorizationFunctions,
       generationFunctions,
       scenario,
@@ -187,18 +188,20 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to create test code.");
   }
 
+  const operationFunction: AutoBeTestOperationWriteFunction = {
+    kind: "operation",
+    domain: pointer.value.domain,
+    content: pointer.value.revise.final ?? pointer.value.draft,
+    functionName: props.scenario.functionName,
+    location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
+    scenario,
+  };
+
   const importStatement: string = getTestImportFromFunction({
     target: {
-      type: "write",
+      type: "operation",
       artifacts,
-      function: {
-        kind: "write",
-        domain: pointer.value.domain,
-        content: pointer.value.revise.final ?? pointer.value.draft,
-        functionName: props.scenario.functionName,
-        location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-        scenario,
-      },
+      function: operationFunction,
       authorizationFunctions,
       generationFunctions,
       prepareFunctions,
@@ -223,7 +226,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     created_at: new Date().toISOString(),
     function: {
-      kind: "write",
+      kind: "operation",
       domain: pointer.value.domain,
       content: pointer.value.revise.final ?? pointer.value.draft,
       functionName: props.scenario.functionName,
@@ -241,13 +244,13 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   functionName: string;
-  build: (next: IAutoBeTestWriteApplication.IProps) => void;
+  build: (next: IAutoBeTestOperationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeTestWriteApplication.IProps> =
-      typia.validate<IAutoBeTestWriteApplication.IProps>(input);
+    const result: IValidation<IAutoBeTestOperationWriteApplication.IProps> =
+      typia.validate<IAutoBeTestOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
@@ -280,25 +283,25 @@ function createController<Model extends ILlmSchema.Model>(props: {
       write: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeTestWriteApplication,
+    } satisfies IAutoBeTestOperationWriteApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteApplication, "chatgpt">({
+    typia.llm.application<IAutoBeTestOperationWriteApplication, "chatgpt">({
       validate: {
         write: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteApplication, "claude">({
+    typia.llm.application<IAutoBeTestOperationWriteApplication, "claude">({
       validate: {
         write: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestWriteApplication, "gemini">({
+    typia.llm.application<IAutoBeTestOperationWriteApplication, "gemini">({
       validate: {
         write: validate,
       },
@@ -307,4 +310,4 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeTestWriteApplication.IProps>;
+) => IValidation<IAutoBeTestOperationWriteApplication.IProps>;

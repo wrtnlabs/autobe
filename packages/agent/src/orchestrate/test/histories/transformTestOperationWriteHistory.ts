@@ -20,7 +20,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
+export async function transformTestOperationWriteHistory<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
@@ -87,7 +87,7 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
 
           Never use the DTO definitions that are not listed here.
 
-          ${transformTestWriteHistory.structures(props.artifacts)}
+          ${transformTestOperationWriteHistory.structures(props.artifacts)}
 
           ## API (SDK) Functions
 
@@ -95,7 +95,7 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
 
           Never use the functions that are not listed here.
 
-          ${transformTestWriteHistory.functional(props.artifacts, functions)}
+          ${transformTestOperationWriteHistory.functional(props.artifacts, functions)}
 
           ## E2E Mockup Functions
 
@@ -211,7 +211,7 @@ export async function transformTestWriteHistory<Model extends ILlmSchema.Model>(
     userMessage: `Write e2e test function ${props.scenario.functionName} please`,
   };
 }
-export namespace transformTestWriteHistory {
+export namespace transformTestOperationWriteHistory {
   export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)
@@ -265,7 +265,7 @@ export namespace transformTestWriteHistory {
 }
 
 const systemPrompt = new Singleton(() =>
-  AutoBeSystemPromptConstant.TEST_WRITE.replace(
+  AutoBeSystemPromptConstant.TEST_OPERATION_WRITE.replace(
     "{{AutoBeTestScenario}}",
     JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "claude">()),
   ),

@@ -23,7 +23,7 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeTestWriteApplication.domain**: Use camelCase notation for domain categorization
+- **IAutoBeTestOperationWriteApplication.domain**: Use camelCase notation for domain categorization
 
 ## 1. Role and Responsibility
 

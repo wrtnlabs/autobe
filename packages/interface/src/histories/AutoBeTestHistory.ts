@@ -2,11 +2,6 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
-import {
-  AutoBeTestAuthorizationWriteFunction,
-  AutoBeTestGenerationWriteFunction,
-  AutoBeTestPrepareWriteFunction,
-} from "./contents";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 import { AutoBeTestWriteFunction } from "./contents/AutoBeTestWriteFunction";
 
@@ -47,12 +42,7 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
    * ensuring that the generated APIs work correctly under realistic operational
    * conditions.
    */
-  functions: Array<
-    | AutoBeTestPrepareWriteFunction
-    | AutoBeTestGenerationWriteFunction
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestWriteFunction
-  >;
+  functions: AutoBeTestWriteFunction[];
 
   /**
    * Results of compiling the generated test code using the embedded TypeScript

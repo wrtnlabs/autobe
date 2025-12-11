@@ -150,7 +150,7 @@ const PROGRESS_STEPS = [
     getResults: (state: AutoBeListenerState) => {
       if (!state.test) return null;
       const testCount = state.test.functions.filter(
-        (f) => f.kind === "write",
+        (f) => f.kind === "operation",
       ).length;
       return `${testCount} test files`;
     },

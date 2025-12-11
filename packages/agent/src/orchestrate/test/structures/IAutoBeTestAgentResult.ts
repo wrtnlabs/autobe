@@ -1,10 +1,10 @@
 import { IAutoBeTestAuthorizationWriteResult } from "./IAutoBeTestAuthorizationWriteResult";
 import { IAutoBeTestGenerationWriteResult } from "./IAutoBeTestGenerationWriteResult";
+import { IAutoBeTestOperationWriteResult } from "./IAutoBeTestOperationWriteResult";
 import { IAutoBeTestPrepareWriteResult } from "./IAutoBeTestPrepareWriteResult";
-import { IAutoBeTestWriteResult } from "./IAutoBeTestWriteResult";
 
 export type IAutoBeTestAgentResult =
-  | IAutoBeTestWriteResult
+  | IAutoBeTestOperationWriteResult
   | IAutoBeTestPrepareWriteResult
   | IAutoBeTestGenerationWriteResult
   | IAutoBeTestAuthorizationWriteResult;

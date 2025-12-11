@@ -1,9 +1,4 @@
-import {
-  AutoBeTestAuthorizationWriteFunction,
-  AutoBeTestWriteFunction,
-  AutoBeTestGenerationWriteFunction,
-  AutoBeTestPrepareWriteFunction,
-} from "../histories";
+import { AutoBeTestWriteFunction } from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -41,7 +36,7 @@ export interface AutoBeTestWriteEvent
    *   that produce test data and utilities needed by test scenarios
    * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
    *   authorization functions for different actors (login, signup, token refresh)
-   * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
+   * - `AutoBeTestOperationWriteFunction`: Writes the actual E2E test scenario files with
    *   complete test implementations
    *
    * Each function type serves a specific purpose in building comprehensive test
@@ -49,11 +44,7 @@ export interface AutoBeTestWriteEvent
    * validation. The discriminated union pattern enables type-safe handling of
    * different test writing stages while providing detailed progress tracking.
    */
-  function:
-    | AutoBeTestPrepareWriteFunction
-    | AutoBeTestGenerationWriteFunction
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestWriteFunction;
+  function: AutoBeTestWriteFunction;
 
   /**
    * Iteration number of the requirements analysis this test writing reflects.

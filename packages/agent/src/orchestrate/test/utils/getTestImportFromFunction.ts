@@ -6,7 +6,7 @@ export const getTestImportFromFunction = (props: {
   switch (props.target.type) {
     case "generation":
       return `import { ${props.target.prepareFunction.functionName} } from "test/features/utils/prepare/${props.target.prepareFunction.functionName}";`;
-    case "write":
+    case "operation":
       const importStatements = [
         ...props.target.generationFunctions.map(
           (f) =>

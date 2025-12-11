@@ -1,11 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { 
-  AutoBeTestPrepareWriteFunction,
-  AutoBeTestGenerationWriteFunction,
-  AutoBeTestAuthorizationWriteFunction,
-  AutoBeTestWriteFunction,
-  AutoBeTestFile 
-} from "../histories";
+import { AutoBeTestWriteFunction, AutoBeTestFile } from "../histories";
 import { IAutoBeTokenUsageJson } from "../json";
 import { AutoBeFunctionCallingMetric } from "../histories/contents/AutoBeFunctionCallingMetric";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
@@ -40,11 +34,7 @@ export interface AutoBeTestCorrectEvent
    * function. The function type determines which specialized correction
    * strategy will be applied.
    */
-  function: 
-    | AutoBeTestPrepareWriteFunction
-    | AutoBeTestGenerationWriteFunction
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestWriteFunction;
+  function: AutoBeTestWriteFunction;
 
   /**
    * The compilation failure details that triggered the correction process.
@@ -135,7 +125,7 @@ export interface AutoBeTestCorrectEventLegacy
   extends AutoBeEventBase<"testCorrect">,
     AutoBeAggregateEventBase {
   kind: "casting" | "overall" | "request";
-  functionType: "authorization" | "generation" | "prepare" | "write";
+  functionType: "authorization" | "generation" | "prepare" | "operation";
   file: AutoBeTestFile;
   result: IAutoBeTypeScriptCompileResult.IFailure;
   think: string;

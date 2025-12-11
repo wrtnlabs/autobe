@@ -1,5 +1,5 @@
-import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
-import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
+import { orchestrateTestOperationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestOperationWrite";
+import { IAutoBeTestOperationWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestOperationWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
@@ -44,14 +44,12 @@ export const validate_agent_test_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE TEST FUNCTIONS
-  const writes: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
-    agent.getContext(),
-    {
+  const writes: IAutoBeTestOperationWriteResult[] =
+    await orchestrateTestOperationWrite(agent.getContext(), {
       instruction: "Generate diverse and comprehensive test scenarios.",
       scenarios,
       events: [], // TODO: fill up with mock events later.
-    },
-  );
+    });
 
   // REPORT RESULT
   const compiler: IAutoBeCompiler = await agent.getContext().compiler();

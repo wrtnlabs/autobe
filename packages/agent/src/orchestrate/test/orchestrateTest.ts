@@ -19,11 +19,11 @@ import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestGenerationWrite } from "./orchestrateTestGenerationWrite";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
-import { orchestrateTestWrite } from "./orchestrateTestWrite";
+import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
 import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
 import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
 import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
-import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
+import { IAutoBeTestOperationWriteResult } from "./structures/IAutoBeTestOperationWriteResult";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -120,7 +120,7 @@ export const orchestrateTest =
       throw new Error("No scenarios generated. Please check the logs.");
 
     // TEST CODE
-    const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(ctx, {
+    const written: IAutoBeTestOperationWriteResult[] = await orchestrateTestOperationWrite(ctx, {
       instruction: props.instruction,
       scenarios,
       events: [

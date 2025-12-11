@@ -10,7 +10,7 @@ import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFai
 import { transformTestAuthorizationWriteHistories } from "./transformTestAuthorizationWriteHistories";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
 import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
-import { transformTestWriteHistory } from "./transformTestWriteHistory";
+import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 
 export const transformTestCorrectHistory = async <
   Model extends ILlmSchema.Model,
@@ -24,7 +24,7 @@ export const transformTestCorrectHistory = async <
 ): Promise<IAutoBeOrchestrateHistory> => {
   const systemPrompt: string = (() => {
     switch (props.target.function.kind) {
-      case "write":
+      case "operation":
         return AutoBeSystemPromptConstant.TEST_CORRECT;
       case "prepare":
         return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT;
@@ -43,8 +43,8 @@ export const transformTestCorrectHistory = async <
 
   const previous: IAutoBeOrchestrateHistory | undefined = await (async () => {
     switch (props.target.type) {
-      case "write":
-        return await transformTestWriteHistory(ctx, {
+      case "operation":
+        return await transformTestOperationWriteHistory(ctx, {
           instruction: props.instruction,
           scenario: {
             ...props.target.function.scenario,
@@ -84,14 +84,22 @@ export const transformTestCorrectHistory = async <
     }
   })();
 
+  // previous 히스토리의 첫 번째 시스템 프롬프트에 식별자 추가
+  const previousHistories =
+    previous?.histories.slice(0, -1)?.map((h, i) =>
+      i === 0 && h.type === "systemMessage"
+        ? { ...h, text: `# [SYSTEM PROMPT: TEST_WRITE]\n\n${h.text}` }
+        : h,
+    ) ?? [];
+
   return {
     histories: [
-      ...(previous?.histories.slice(0, -1) ?? []),
+      ...previousHistories,
       {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: systemPrompt,
+        text: `# [SYSTEM PROMPT: TEST_CORRECT]\n\n${systemPrompt}`,
       },
       ...(previous?.histories.slice(-1) ?? []),
       ...transformPreviousAndLatestCorrectHistory(

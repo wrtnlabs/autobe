@@ -12,7 +12,7 @@ export const transformTestCorrectInvalidRequestHistory = (
 ): IAutoBeOrchestrateHistory => {
   const systemPrompt: string = (() => {
     switch (write.function.kind) {
-      case "write":
+      case "operation":
         return AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST;
       case "prepare":
         return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_INVALID_REQUEST;
