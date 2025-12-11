@@ -7,6 +7,9 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
+import { transformTestAuthorizationWriteHistories } from "./transformTestAuthorizationWriteHistories";
+import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
+import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 import { transformTestWriteHistory } from "./transformTestWriteHistory";
 
 export const transformTestCorrectHistory = async <
@@ -38,17 +41,48 @@ export const transformTestCorrectHistory = async <
     }
   })();
 
-  const previous: IAutoBeOrchestrateHistory | undefined =
-    props.target.type === "write"
-      ? await transformTestWriteHistory(ctx, {
+  const previous: IAutoBeOrchestrateHistory | undefined = await (async () => {
+    switch (props.target.type) {
+      case "write":
+        return await transformTestWriteHistory(ctx, {
           instruction: props.instruction,
           scenario: {
             ...props.target.function.scenario,
             functionName: props.target.function.functionName,
           },
           artifacts: props.target.artifacts,
-        })
-      : undefined;
+          authorizationFunctions: props.target.authorizationFunctions,
+          generationFunctions: props.target.generationFunctions,
+        });
+      case "authorization":
+        return transformTestAuthorizationWriteHistories({
+          operation: props.target.operation,
+          artifacts: props.target.artifacts,
+        });
+      case "generation":
+        return transformTestGenerationWriteHistory(
+          props.instruction,
+          props.target.prepareFunction,
+          props.target.operation,
+          props.target.artifacts,
+        );
+      case "prepare":
+        return transformTestPrepareWriteHistories({
+          operation: props.target.operation,
+          schema:
+            ctx.state().interface!.document.components.schemas[
+              props.target.function.dtoTypeName
+            ],
+          instruction: props.instruction,
+        });
+      default:
+        props.target satisfies never;
+
+        throw new Error(
+          `Unreachable: Cannot create correct history of function kind`,
+        );
+    }
+  })();
 
   return {
     histories: [
