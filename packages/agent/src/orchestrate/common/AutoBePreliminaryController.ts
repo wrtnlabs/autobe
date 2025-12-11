@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
@@ -218,14 +219,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @param application LLM application to modify (mutated in-place).
    */
-  public fixApplication<Model extends Exclude<ILlmSchema.Model, "3.0">>(
+  public fixApplication<Model extends ILlmSchema.Model>(
     application: ILlmApplication<Model>,
   ): void {
+    assertSchemaModel<Model>(application.model);
     fixPreliminaryApplication({
       histories: this.histories,
       state: this.state,
       preliminary: this,
-      application,
+      application: application as ILlmApplication<Exclude<Model, "3.0">>,
       model: application.model,
     });
   }

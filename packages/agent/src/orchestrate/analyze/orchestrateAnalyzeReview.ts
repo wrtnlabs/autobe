@@ -33,7 +33,6 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBeAnalyzeReviewApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "previousAnalysisFiles"],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       analysisFiles: props.allFiles,
