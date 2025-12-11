@@ -16,7 +16,7 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistory } from "./histories/transformTestCorrectInvalidRequestHistory";
 import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
-import { getPrepareImport } from "./utils/getPrepareImport";
+import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
 type CompileFunction = (script: string) => Promise<AutoBeTestValidateEvent>;
@@ -82,25 +82,22 @@ const correct = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event; // other's responsibility
 
-  const prepareFunctionImport: string | undefined =
-    write.type === "generation"
-      ? getPrepareImport({
-          prepareFunction: write.prepareFunction,
-        })
-      : undefined;
+  const importStatement: string = getTestImportFromFunction({
+    target: write,
+  });
 
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
       write.artifacts,
       pointer.value.revise.final,
-      prepareFunctionImport,
+      importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
     write.artifacts,
     pointer.value.draft,
-    prepareFunctionImport,
+    importStatement,
   );
   ctx.dispatch({
     type: "testCorrect",
