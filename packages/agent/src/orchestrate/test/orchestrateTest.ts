@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
   AutoBeTestHistory,
+  AutoBeTestPrepareWriteFunction,
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -13,9 +14,15 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
+import { orchestrateTestAuthorizationWrite } from "./orchestrateTestAuthorizationWrite";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
+import { orchestrateTestGenerationWrite } from "./orchestrateTestGenerationWrite";
+import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { orchestrateTestWrite } from "./orchestrateTestWrite";
+import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
+import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
+import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTest =
@@ -60,6 +67,50 @@ export const orchestrateTest =
           "please check if the Interface agent is called.",
       });
 
+    // PREPARE FUNCTIONS
+    const prepared: IAutoBeTestPrepareWriteResult[] =
+      await orchestrateTestPrepareWrite(ctx, {
+        instruction: props.instruction,
+        document,
+      });
+    const prepareCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: prepared,
+      });
+
+    // GENERATION FUNCTIONS
+    const generated: IAutoBeTestGenerationWriteResult[] =
+      await orchestrateTestGenerationWrite(ctx, {
+        instruction: props.instruction,
+        document,
+        preparedFunctions: prepareCorrects
+          .filter(
+            (
+              p,
+            ): p is AutoBeTestValidateEvent & {
+              function: AutoBeTestPrepareWriteFunction;
+            } => p.function.kind === "prepare",
+          )
+          .map((p) => p.function),
+      });
+    const generationCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: generated,
+      });
+
+    // AUTHORIZATION FUNCTIONS
+    const authorized: IAutoBeTestAuthorizationWriteResult[] =
+      await orchestrateTestAuthorizationWrite(ctx, {
+        operations,
+      });
+    const authorizationCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
+        instruction: props.instruction,
+        items: authorized,
+      });
+
     // PLAN
     const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(
       ctx,
@@ -72,17 +123,27 @@ export const orchestrateTest =
     const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(ctx, {
       instruction: props.instruction,
       scenarios,
+      events: [
+        ...prepareCorrects,
+        ...generationCorrects,
+        ...authorizationCorrects,
+      ],
     });
     if (written.length === 0)
       throw new Error("No test code written. Please check the logs.");
 
-    const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
-      ctx,
-      {
+    const operationCorrects: AutoBeTestValidateEvent[] =
+      await orchestrateTestCorrect(ctx, {
         instruction: props.instruction,
         items: written,
-      },
-    );
+      });
+
+    const corrects: AutoBeTestValidateEvent[] = [
+      ...prepareCorrects,
+      ...generationCorrects,
+      ...authorizationCorrects,
+      ...operationCorrects,
+    ];
 
     // DO COMPILE
     const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -94,6 +155,14 @@ export const orchestrateTest =
               dbms: "sqlite",
             }),
           ).filter(([key]) => key.endsWith(".ts")),
+          ...Object.entries(
+            await compiler.getTemplate({
+              dbms: "sqlite",
+              phase: "test",
+            }),
+          ).filter(
+            ([key]) => key.startsWith("test/utils") && key.endsWith(".ts"),
+          ),
           ...corrects.map((s) => [s.function.location, s.function.content]),
         ]),
       });
