@@ -187,6 +187,75 @@ address: {
 }
 ```
 
+### 9. **Non-Existent Function Call Errors** - CRITICAL
+
+**Error**: Calling prepare functions that don't exist
+```typescript
+// ❌ WRONG - "Cannot find name 'prepare_random_customer'"
+export const prepare_random_order = (
+  input?: DeepPartial<IOrder.ICreate>
+): IOrder.ICreate => ({
+  customer: prepare_random_customer(),           // 🚨 Function doesn't exist!
+  items: prepare_random_order_items(),           // 🚨 Function doesn't exist!
+  shipping: prepare_random_shipping_address(),   // 🚨 Function doesn't exist!
+})
+
+// ✅ CORRECT - Generate ALL data INLINE
+export const prepare_random_order = (
+  input?: DeepPartial<IOrder.ICreate>
+): IOrder.ICreate => ({
+  customer: {
+    name: input?.customer?.name ?? RandomGenerator.name(),
+    email: input?.customer?.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
+    phone: input?.customer?.phone ?? RandomGenerator.mobile(),
+  },
+  items: input?.items ?? ArrayUtil.repeat(randint(1, 5), () => ({
+    product_id: RandomGenerator.alphaNumeric(32),
+    quantity: randint(1, 10),
+    unit_price: randint(100, 99999),
+  })),
+  shipping: {
+    address: input?.shipping?.address ?? RandomGenerator.paragraph({ sentences: 1 }),
+    city: input?.shipping?.city ?? RandomGenerator.name(1),
+    zip_code: input?.shipping?.zip_code ?? RandomGenerator.alphaNumeric(5),
+  },
+})
+```
+
+**Why this happens:**
+- LLM incorrectly assumes other prepare functions exist
+- Nested objects trigger "helper function" instinct
+- **FIX**: Inline ALL data generation - no external function calls
+
+**REMEMBER**:
+- This is a **STANDALONE** prepare function
+- **NO** other `prepare_random_*` functions exist
+- **ALL** nested data must be generated **INLINE**
+
+### 10. **Multiple Function/Helper Function Errors**
+
+**Error**: Creating helper functions alongside the main prepare function
+```typescript
+// ❌ WRONG - "Cannot find name 'generateItems'"
+const generateItems = () => ArrayUtil.repeat(3, () => ({...}));  // Helper doesn't work!
+
+export const prepare_random_order = (...) => ({
+  items: generateItems(),  // 🚨 Will cause compilation error!
+})
+
+// ✅ CORRECT - Everything inline
+export const prepare_random_order = (
+  input?: DeepPartial<IOrder.ICreate>
+): IOrder.ICreate => ({
+  items: input?.items ?? ArrayUtil.repeat(randint(1, 5), () => ({
+    product_id: RandomGenerator.alphaNumeric(32),
+    quantity: randint(1, 10),
+  })),
+})
+```
+
+**Rule**: Generate exactly ONE exported function with ALL logic inline.
+
 ## Analysis Process
 
 When you receive a compilation error:
@@ -253,12 +322,13 @@ Compilation Error in Prepare Function?
 │   ├── Number type mismatches
 │   ├── Array generation problems
 │   ├── Missing required fields
-│   └── Nested object structures
+│   ├── Nested object structures
+│   ├── Non-existent function calls (prepare_random_*, helper functions)
+│   └── Multiple function definitions
 │
 └── Is it unrelated to prepare logic? → reject()
-    ├── Import errors
-    ├── Syntax errors
-    ├── Non-prepare function errors
+    ├── Import errors (handled by system)
+    ├── Syntax errors (basic TypeScript)
     └── External dependency issues
 ```
 
