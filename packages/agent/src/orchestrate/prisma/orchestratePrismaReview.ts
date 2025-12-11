@@ -58,19 +58,18 @@ async function step<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
+      "previousAnalysisFiles",
       "previousPrismaSchemas",
     ],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       prismaSchemas: props.application.files.map((f) => f.models).flat(),

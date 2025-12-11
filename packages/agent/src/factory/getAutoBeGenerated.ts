@@ -15,6 +15,23 @@ import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { getAutoBeRealizeGenerated } from "./getAutoBeRealizeGenerated";
 
+/**
+ * Aggregates all generated files from the development pipeline into a complete
+ * project structure.
+ *
+ * Collects artifacts from all completed phases (Analyze, Prisma, Interface,
+ * Test, Realize) and assembles them into a deployable project with proper
+ * directory organization. Includes requirements documentation, database
+ * schemas, API specifications, implementation code, test suites, and benchmark
+ * reports.
+ *
+ * The phase option controls which artifacts are included, enabling incremental
+ * file generation as development progresses through the pipeline stages.
+ *
+ * @param props Configuration including compiler, current state, histories, and
+ *   options specifying target phase and database system
+ * @returns File paths mapped to complete contents for all generated artifacts
+ */
 export async function getAutoBeGenerated(props: {
   compiler: IAutoBeCompiler;
   state: AutoBeState;

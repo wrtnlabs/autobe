@@ -32,7 +32,6 @@ export async function orchestrateInterfaceEndpointReview<
       "prismaSchemas",
       "previousPrismaSchemas",
     ],
-    histories: ctx.histories(),
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async () => {
@@ -111,13 +110,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication({
-    histories: props.preliminary.histories,
-    state: props.preliminary.state,
-    preliminary: props.preliminary,
-    application,
-    model: props.model,
-  });
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,

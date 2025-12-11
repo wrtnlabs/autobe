@@ -117,8 +117,8 @@ async function execute<Model extends ILlmSchema.Model>(
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaCorrectApplication>(),
@@ -129,7 +129,6 @@ async function execute<Model extends ILlmSchema.Model>(
       "prismaSchemas",
       "previousPrismaSchemas",
     ],
-    histories: ctx.histories(),
     state: ctx.state(),
     all: {
       prismaSchemas: failure.data.files.map((f) => f.models).flat(),
@@ -244,13 +243,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication({
-    histories: props.preliminary.histories,
-    state: props.preliminary.state,
-    preliminary: props.preliminary,
-    application,
-    model: props.model,
-  });
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE satisfies AutoBeEventSource,

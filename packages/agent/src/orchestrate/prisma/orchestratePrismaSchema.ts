@@ -64,14 +64,7 @@ async function process<Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBePrismaSchemaApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
-    histories: ctx.histories(),
     state: ctx.state(),
-    all: {
-      analysisFiles: ctx.state().analyze?.files ?? [],
-    },
-    local: {
-      analysisFiles: [],
-    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaSchemaApplication.IComplete | null> = {

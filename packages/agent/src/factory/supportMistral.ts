@@ -4,6 +4,23 @@ import OpenAI from "openai";
 
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 
+/**
+ * Applies Mistral-specific API compatibility patches to MicroAgentica agent.
+ *
+ * Mistral models have strict limitations on tool call IDs and message structure
+ * that differ from OpenAI's format. This function intercepts API requests and:
+ *
+ * 1. Converts UUID tool call IDs to 9-character base62 short IDs (Mistral rejects
+ *    long UUIDs)
+ * 2. Inserts assistant acknowledgment messages after tool responses (Mistral
+ *    requires assistant messages between consecutive tool messages)
+ *
+ * Without these patches, Mistral API returns validation errors and rejects
+ * function calling requests that work fine with OpenAI/Claude.
+ *
+ * @param agent MicroAgentica instance to patch
+ * @param vendor Vendor configuration containing model name
+ */
 export const supportMistral = <Model extends ILlmSchema.Model>(
   agent: MicroAgentica<Model>,
   vendor: IAutoBeVendor,

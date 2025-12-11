@@ -1,9 +1,5 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeEventSource,
-  AutoBeHistory,
-  AutoBePreliminaryKind,
-} from "@autobe/interface";
+import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmSchema,
@@ -50,9 +46,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly config: AutoBePreliminaryController.IConfig<Kind>;
-
-  // RESERVED DATA
-  private readonly histories: readonly AutoBeHistory[];
   private readonly state: AutoBeState;
 
   /**
@@ -114,21 +107,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       });
     })();
 
-    this.histories = props.histories;
     this.state = props.state;
-    this.all = createPreliminaryCollection(
-      {
-        histories: props.histories,
-        state: props.state,
-      },
-      props.all,
-    );
+    this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
     complementPreliminaryCollection({
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
       local: this.local as IAutoBePreliminaryCollection,
+      prerequisite: false,
     });
   }
 
@@ -224,7 +211,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   ): void {
     assertSchemaModel<Model>(application.model);
     fixPreliminaryApplication({
-      histories: this.histories,
       state: this.state,
       preliminary: this,
       application: application as ILlmApplication<Exclude<Model, "3.0">>,
@@ -286,9 +272,6 @@ export namespace AutoBePreliminaryController {
 
     /** Data types to enable (e.g., `["prismaSchemas", "interfaceOperations"]`). */
     kinds: Kind[];
-
-    /** Event history for accessing previous iteration data. */
-    histories: readonly AutoBeHistory[];
 
     /** Current AutoBe state containing generated artifacts. */
     state: AutoBeState;

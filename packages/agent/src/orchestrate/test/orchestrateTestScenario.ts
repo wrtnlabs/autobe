@@ -170,7 +170,6 @@ const process = async <Model extends ILlmSchema.Model>(
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
-    histories: ctx.histories(),
     state: ctx.state(),
     local: {
       interfaceOperations: (() => {

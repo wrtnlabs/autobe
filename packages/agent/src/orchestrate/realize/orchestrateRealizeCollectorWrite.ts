@@ -95,7 +95,6 @@ async function process<Model extends ILlmSchema.Model>(
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
     new AutoBePreliminaryController({
-      histories: ctx.histories(),
       state: ctx.state(),
       source: SOURCE,
       application:
