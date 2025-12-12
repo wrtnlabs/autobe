@@ -1,9 +1,9 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import {
-  AutoBeTestWriteAuthorizationFunction,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestWriteFunction,
-  AutoBeTestWriteGenerationFunction,
-  AutoBeTestWritePrepareFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
 } from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -32,11 +32,11 @@ export interface AutoBeTestValidateEvent
    * This discriminated union represents different stages and types of test code
    * generation that occur during the test writing process:
    *
-   * - `AutoBeTestWritePrepareFunction`: Generates test data preparation functions
+   * - `AutoBeTestPrepareWriteFunction`: Generates test data preparation functions
    *   that create mock DTO objects required by API endpoints
-   * - `AutoBeTestWriteGenerationFunction`: Creates resource generation functions
+   * - `AutoBeTestGenerationWriteFunction`: Creates resource generation functions
    *   that produce test data and utilities needed by test scenarios
-   * - `AutoBeTestWriteAuthorizationFunction`: Implements authentication and
+   * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
    *   authorization functions for different actors (login, signup, token
    *   refresh)
    * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
@@ -48,9 +48,9 @@ export interface AutoBeTestValidateEvent
    * different test writing stages while providing detailed progress tracking.
    */
   function:
-    | AutoBeTestWritePrepareFunction
-    | AutoBeTestWriteGenerationFunction
-    | AutoBeTestWriteAuthorizationFunction
+    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizationWriteFunction
     | AutoBeTestWriteFunction;
 
   /**

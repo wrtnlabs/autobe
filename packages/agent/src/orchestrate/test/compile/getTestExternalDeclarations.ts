@@ -31,6 +31,7 @@ const singleton = new Singleton(async (compiler: IAutoBeTestCompiler) => {
     ...external("node_modules/@nestia/fetcher/lib/IConnection.d.ts"),
     ...external("node_modules/@samchon/openapi/lib/http/HttpError.d.ts"),
     ...external("node_modules/typia/lib/module.d.ts"),
+    ...external("node_modules/tstl/lib/module.d.ts"),
     ...filter(
       (key) =>
         key.startsWith("node_modules/typia/lib/tags") && key.endsWith(".d.ts"),

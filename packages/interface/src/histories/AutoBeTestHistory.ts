@@ -2,8 +2,13 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import {
+  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
+} from "./contents";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
-import { AutoBeTestFile } from "./contents/AutoBeTestFile";
+import { AutoBeTestWriteFunction } from "./contents/AutoBeTestWriteFunction";
 
 /**
  * History record generated when the Test agent writes e2e test code based on
@@ -42,7 +47,12 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
    * ensuring that the generated APIs work correctly under realistic operational
    * conditions.
    */
-  files: AutoBeTestFile[];
+  functions: Array<
+    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizationWriteFunction
+    | AutoBeTestWriteFunction
+  >;
 
   /**
    * Results of compiling the generated test code using the embedded TypeScript

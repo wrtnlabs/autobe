@@ -15,7 +15,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
-import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestWriteHistory } from "./histories/transformTestWriteHistory";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";
@@ -58,9 +58,9 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           );
 
         return {
-          scenario,
+          type: "write",
           artifacts,
-          event: event.function,
+          function: event.function,
         } satisfies IAutoBeTestWriteResult;
       } catch {
         return null;
@@ -125,8 +125,6 @@ async function process<Model extends ILlmSchema.Model>(
     function: {
       kind: "write",
       domain: pointer.value.domain,
-      draft: pointer.value.draft,
-      review: pointer.value.revise?.review,
       content: pointer.value.revise.final ?? pointer.value.draft,
       functionName: props.scenario.functionName,
       location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,

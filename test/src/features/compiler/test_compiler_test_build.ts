@@ -43,7 +43,7 @@ export const test_compiler_test_build = async () => {
   const files: Record<string, string> = {
     ...(await agent.getFiles()),
     ...Object.fromEntries(
-      testHistory.files.map((file) => [file.location, file.content]),
+      testHistory.functions.map((f) => [f.location, f.content]),
     ),
   };
   const result: IAutoBeTypeScriptCompileResult = await (

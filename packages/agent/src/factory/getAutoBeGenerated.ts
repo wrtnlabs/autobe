@@ -111,7 +111,7 @@ export async function getAutoBeGenerated(props: {
     Object.assign<Record<string, string>, Record<string, string>>(
       ret,
       Object.fromEntries(
-        props.state.test.files.map((f) => [f.location, f.content]),
+        props.state.test.functions.map((f) => [f.location, f.content]),
       ),
     );
 
@@ -254,7 +254,7 @@ function label(
     };
   else if (history.type === "test") {
     return {
-      functions: history.files.length,
+      functions: history.functions.length,
       ...(history.compiled.type === "failure"
         ? {
             errors: new Set(

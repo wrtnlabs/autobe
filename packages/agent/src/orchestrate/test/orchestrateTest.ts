@@ -41,6 +41,10 @@ export const orchestrateTest =
       reason: props.instruction,
       step: ctx.state().analyze?.step ?? 0,
     });
+    const document: AutoBeOpenApi.IDocument | undefined =
+      ctx.state().interface?.document;
+    if (document === undefined)
+      throw new Error("No document found. Please check the logs.");
 
     // CHECK OPERATIONS
     const operations: AutoBeOpenApi.IOperation[] =
@@ -76,12 +80,7 @@ export const orchestrateTest =
       ctx,
       {
         instruction: props.instruction,
-        functions: written.map((w) => ({
-          scenario: w.scenario,
-          artifacts: w.artifacts,
-          location: w.event.location,
-          script: w.event.content,
-        })),
+        items: written,
       },
     );
 
@@ -98,27 +97,14 @@ export const orchestrateTest =
           ...corrects.map((s) => [s.function.location, s.function.content]),
         ]),
       });
+
     return ctx.dispatch({
       type: "testComplete",
       id: v7(),
-      files: corrects.map((s) => {
-        return {
-          scenario: {
-            dependencies: [],
-            draft: s.function.kind === "write" ? s.function.draft : "",
-            endpoint:
-              s.function.kind === "write"
-                ? s.function.scenario.endpoint
-                : s.function.endpoint,
-            functionName: s.function.functionName,
-          },
-          location: s.function.location,
-          content: s.function.content,
-        };
-      }),
+      functions: corrects.map((s) => s.function),
       compiled: compileResult,
       aggregates: ctx.getCurrentAggregates("test"),
-      step: ctx.state().interface?.step ?? 0,
+      step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
       created_at: new Date().toISOString(),
     });

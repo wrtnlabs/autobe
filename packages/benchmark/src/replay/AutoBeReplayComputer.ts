@@ -130,7 +130,7 @@ export namespace AutoBeReplayComputer {
         "test",
         (h) => h.compiled.type === "success",
         (h) => ({
-          functions: h.files.length,
+          functions: h.functions.length,
           ...(h.compiled.type === "failure"
             ? {
                 errors: new Set(h.compiled.diagnostics.map((d) => d.file ?? ""))

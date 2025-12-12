@@ -60,10 +60,8 @@ export const validate_agent_test_write = async (props: {
     ),
     ...writes
       .map((w) => [
-        // [w.event.location.replace(".ts", ".scenario"), w.event.scenario],
-        [w.event.location.replace(".ts", ".draft"), w.event.draft],
-        [w.event.location.replace(".ts", ".review"), w.event.review],
-        [w.event.location, w.event.content],
+        [w.function.location.replace(".ts", ".scenario"), w.function.scenario],
+        [w.function.location, w.function.content],
       ])
       .flat(),
   ]);
