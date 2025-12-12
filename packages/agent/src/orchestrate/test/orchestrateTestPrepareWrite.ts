@@ -268,9 +268,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
     }
 
     // Incorrect template literal syntax validation
-    const backticRegex: RegExp = /`/g;
+    const backtickRegex: RegExp = /`/g;
     const count: number = (
-      (result.data.revise.final ?? result.data.draft).match(backticRegex) ?? []
+      (result.data.revise.final ?? result.data.draft).match(backtickRegex) ?? []
     ).length;
 
     if (count % 2 !== 0)
