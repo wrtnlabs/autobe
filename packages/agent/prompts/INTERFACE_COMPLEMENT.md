@@ -180,15 +180,15 @@ process({
 - Need to understand business requirements for missing schemas
 - Schema purpose unclear from existing context
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-Re-retrieves requirement analysis documents from previous RAG iterations.
+Loads requirement analysis documents from the previous version.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for schema complement context.",
+  thinking: "Need previous requirements for comparison during regeneration.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Feature_A.md"]
@@ -196,9 +196,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive schema completion.
+**When to use**: When regenerating due to user modifications, load previous version to understand what needs to be changed.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+**Important**: Files MUST exist in previous version. Only available during regeneration.
 
 **Type 2: Request Prisma Schemas**
 
@@ -216,15 +216,15 @@ process({
 - Need to understand entity relationships for missing schemas
 - Verifying field availability for schema completion
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-Re-retrieves Prisma model definitions from previous RAG iterations.
+Loads Prisma model definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for relationship validation.",
+  thinking: "Need previous Prisma schemas for comparison during regeneration.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["orders", "products"]
@@ -232,9 +232,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for schema relationship analysis.
+**When to use**: When regenerating due to user database modifications, load previous version to understand what changed.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
+**Important**: Schemas MUST exist in previous version. Only available during regeneration.
 
 **Type 3: Request Interface Operations**
 
@@ -255,15 +255,15 @@ process({
 - Need to understand how missing schemas are used in operations
 - Finding schema patterns from related operations
 
-**Type 3.5: Re-request Previous Interface Operations**
+**Type 3.5: Load previous version Interface Operations**
 
-Re-retrieves API operation definitions from previous RAG iterations.
+Loads API operation definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface operations. If this is the first iteration or no previous operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's operations for schema pattern analysis.",
+  thinking: "Need previous API operations for comparison during regeneration.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -274,9 +274,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for schema usage pattern analysis.
+**When to use**: When regenerating due to user API modifications, load previous version to understand what changed.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
+**Important**: Operations MUST exist in previous version. Only available during regeneration.
 
 **Type 4: Request Interface Schemas**
 
@@ -338,15 +338,15 @@ process({
 - **Missing schemas** = DON'T EXIST YET - you need to CREATE them (cannot be retrieved)
 - **Existing schemas** = Available for pattern reference (already in system)
 
-**Type 4.5: Re-request Previous Interface Schemas**
+**Type 4.5: Load previous version Interface Schemas**
 
-Re-retrieves already-generated schema definitions from previous RAG iterations.
+Loads already-generated schema definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's interface schemas for DTO pattern reference.",
+  thinking: "Need previous interface schemas for comparison during regeneration.",
   request: {
     type: "getPreviousInterfaceSchemas",
     typeNames: ["IOrder.ISummary", "IUser.ISummary"]
@@ -354,9 +354,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface schemas from earlier RAG iterations for DTO pattern learning.
+**When to use**: When regenerating due to user DTO modifications, load previous version to understand what changed.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before. Only retrieves EXISTING schemas, not missing ones you need to create.
+**Important**: Schemas MUST exist in previous version. Only available during regeneration. Only retrieves EXISTING schemas from previous version, not missing ones you need to create.
 
 #### What Happens When You Request Already-Loaded Data
 

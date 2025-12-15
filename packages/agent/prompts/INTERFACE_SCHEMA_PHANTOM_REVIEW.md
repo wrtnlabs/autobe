@@ -303,13 +303,13 @@ System types             // Error responses, etc.
 
 For each schema with `x-autobe-prisma-schema`:
 
-**Step 1: Load the Prisma Model**
+**previous version: Load the Prisma Model**
 ```typescript
 // Schema has: "x-autobe-prisma-schema": "User"
 // Must load Prisma model: User
 ```
 
-**Step 2: Extract Prisma Fields**
+**previous version: Extract Prisma Fields**
 ```typescript
 // From Prisma model User:
 {
@@ -322,7 +322,7 @@ For each schema with `x-autobe-prisma-schema`:
 }
 ```
 
-**Step 3: Validate Each Property**
+**previous version: Validate Each Property**
 ```typescript
 // For each property in OpenAPI schema:
 - Is it in Prisma model? → ✅ KEEP
@@ -432,13 +432,13 @@ process({
 - Understanding entity specifications and field purposes
 - Clarifying field requirements and validation rules
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for phantom field validation.",
+  thinking: "Need previous version of requirements to validate phantom field changes.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Requirements.md", "Entity_Specs.md"]
@@ -446,9 +446,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive phantom field detection.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive phantom field detection.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are files from previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -467,13 +467,13 @@ process({
 - Need to verify field existence against Prisma model definitions
 - Need to check relation definitions
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous Prisma schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for field existence validation.",
+  thinking: "Need previous version of Prisma schemas to validate field existence changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["users", "products", "orders"]
@@ -481,9 +481,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for phantom field detection.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for phantom field detection.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -505,13 +505,13 @@ process({
 - Validating computed fields that might be operation-specific
 - Checking if fields are legitimately computed vs phantom
 
-**Type 3.5: Re-request Previous Interface Operations**
+**Type 3.5: Load previous version Interface Operations**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface operations. If this is the first iteration or no previous interface operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's operations for DTO usage pattern validation.",
+  thinking: "Need previous version of operations to validate DTO usage pattern changes.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -522,9 +522,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for computed field validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for computed field validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are operations from previous version. Only available when a previous version exists.
 
 **Type 4: Request Interface Schemas**
 
@@ -543,13 +543,13 @@ process({
 - Understanding how similar entities handle fields
 - Verifying if fields are standard computed fields vs phantom
 
-**Type 4.5: Re-request Previous Interface Schemas**
+**Type 4.5: Load previous version Interface Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface schemas. If this is the first iteration or no previous interface schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's interface schemas for phantom pattern validation.",
+  thinking: "Need previous version of interface schemas to validate phantom pattern changes.",
   request: {
     type: "getPreviousInterfaceSchemas",
     typeNames: ["IUser.ISummary", "IProduct.ISummary"]
@@ -557,9 +557,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface schemas from earlier RAG iterations for phantom field pattern analysis.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for phantom field pattern analysis.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -729,7 +729,7 @@ model Post {
 
 For each schema in the review set:
 
-**Step 1: Check for x-autobe-prisma-schema**
+**previous version: Check for x-autobe-prisma-schema**
 ```typescript
 if (schema["x-autobe-prisma-schema"] === undefined) {
   // No validation needed - not mapped to Prisma
@@ -737,13 +737,13 @@ if (schema["x-autobe-prisma-schema"] === undefined) {
 }
 ```
 
-**Step 2: Load Corresponding Prisma Model**
+**previous version: Load Corresponding Prisma Model**
 ```typescript
 const prismaModelName = schema["x-autobe-prisma-schema"];
 const prismaModel = await getPrismaSchema(prismaModelName);
 ```
 
-**Step 3: Build Allowed Fields Set**
+**previous version: Build Allowed Fields Set**
 ```typescript
 const allowedFields = new Set([
   ...prismaModel.fields.map(f => f.name),           // Direct fields
@@ -752,7 +752,7 @@ const allowedFields = new Set([
 ]);
 ```
 
-**Step 4: Detect Phantom Fields**
+**previous version: Detect Phantom Fields**
 ```typescript
 const phantomFields = [];
 for (const [fieldName, fieldDef] of Object.entries(schema.properties)) {
@@ -762,7 +762,7 @@ for (const [fieldName, fieldDef] of Object.entries(schema.properties)) {
 }
 ```
 
-**Step 5: Report and Delete**
+**previous version: Report and Delete**
 ```typescript
 if (phantomFields.length > 0) {
   // Document in review

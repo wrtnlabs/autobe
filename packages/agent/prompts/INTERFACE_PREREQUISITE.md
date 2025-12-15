@@ -111,15 +111,15 @@ Some requirement files may have been loaded in previous function calls. These ma
 **ABSOLUTE PROHIBITION**: If materials have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request materials that you have not yet accessed
 
-**process() - Re-request Previous Analysis Files**
+**process() - Load previous version Analysis Files**
 
-Re-retrieves requirement analysis documents from previous RAG iterations.
+Loads requirement analysis documents from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for prerequisite chain validation.",
+  thinking: "Need previous version of requirements to validate prerequisite changes.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Feature_A.md", "Feature_B.md"]
@@ -127,9 +127,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive prerequisite analysis.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive prerequisite analysis.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+**Important**: These are files from the previous version. Only available when a previous version exists.
 
 **process() - Request Prisma Schemas**
 
@@ -155,15 +155,15 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Re-request Previous Prisma Schemas**
+**process() - Load previous version Prisma Schemas**
 
-Re-retrieves Prisma model definitions from previous RAG iterations.
+Loads Prisma model definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for relationship constraint validation.",
+  thinking: "Need previous version of Prisma schemas to validate relationship changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["orders", "products", "users"]
@@ -171,9 +171,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for prerequisite dependency analysis.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for prerequisite dependency analysis.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 **process() - Request Interface Operations**
 
@@ -203,15 +203,15 @@ Some API operations may have been loaded in previous function calls. These opera
 **ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request operations that you have not yet accessed
 
-**process() - Re-request Previous Interface Operations**
+**process() - Load previous version Interface Operations**
 
-Re-retrieves API operation definitions from previous RAG iterations.
+Loads API operation definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface operations. If this is the first iteration or no previous operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's POST operations for prerequisite chain analysis.",
+  thinking: "Need previous version of POST operations to validate prerequisite chain changes.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -222,9 +222,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for prerequisite matching.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for prerequisite matching.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
+**Important**: These are operations from the previous version. Only available when a previous version exists.
 
 ### 3.3. Input Materials Management Principles
 
@@ -456,7 +456,7 @@ process({ thinking: "Need Product Management docs for context.", request: { type
 
 For **ALL Target Operations** (regardless of HTTP method), follow this exact three-step process:
 
-#### Step 1: Extract and Filter Required IDs
+#### previous version: Extract and Filter Required IDs
 - Start with the `requiredIds` array from each Target Operation
 - **Carefully read the Target Operation's description** to understand which IDs are actually needed
 - **Analyze the operation name and purpose** to determine essential dependencies
@@ -473,7 +473,7 @@ For **ALL Target Operations** (regardless of HTTP method), follow this exact thr
 // No need to create the product referenced by the item
 ```
 
-#### Step 2: Map IDs to POST Operations
+#### previous version: Map IDs to POST Operations
 Using the Entire Schema Definitions and Entire API Operations list:
 
 1. **Operation Analysis Process**:
@@ -500,7 +500,7 @@ Using the Entire Schema Definitions and Entire API Operations list:
    - Verify the POST operation's response includes the required ID field
    - Confirm the operation name matches the resource creation purpose
 
-#### Step 3: Build Prerequisites List
+#### previous version: Build Prerequisites List
 - Add all identified POST operations to the prerequisites array
 - Order them logically (parent resources before child resources)
 - Provide clear descriptions explaining the dependency
@@ -566,17 +566,17 @@ Using the Entire Schema Definitions and Entire API Operations list:
 // Target Operation: PUT /orders/{orderId}/items/{itemId}
 // requiredIds: ["orderId", "itemId"]
 
-// Step 1: Extract IDs
+// previous version: Extract IDs
 // - Direct: orderId, itemId
 // - From schema: itemId relates to productId
 // - Final list: ["orderId", "itemId", "productId"]
 
-// Step 2: Map to Operations
+// previous version: Map to Operations
 // - orderId → Order entity → POST /orders
 // - itemId → OrderItem entity → POST /orders/{orderId}/items
 // - productId → Product entity → POST /products
 
-// Step 3: Prerequisites Result
+// previous version: Prerequisites Result
 {
   "endpoint": { "path": "/orders/{orderId}/items/{itemId}", "method": "put" },
   "prerequisites": [
@@ -763,14 +763,14 @@ Only include prerequisites that are genuinely necessary:
 // Target Operation: GET /orders/{orderId}
 // requiredIds: ["orderId"]
 
-// Step 1: Extract IDs
+// previous version: Extract IDs
 // - Direct from path: orderId
 // - No additional IDs from schema
 
-// Step 2: Map to Operations
+// previous version: Map to Operations
 // - orderId → Order entity → POST /orders
 
-// Step 3: Build Prerequisites
+// previous version: Build Prerequisites
 {
   "endpoint": { "path": "/orders/{orderId}", "method": "get" },
   "prerequisites": [
@@ -788,15 +788,15 @@ Only include prerequisites that are genuinely necessary:
 // requiredIds: ["orderId", "productId"]
 // Domain Schema: OrderItem requires productId reference
 
-// Step 1: Extract IDs
+// previous version: Extract IDs
 // - From path: orderId
 // - From request body schema: productId
 
-// Step 2: Map to Operations
+// previous version: Map to Operations
 // - orderId → Order entity → POST /orders
 // - productId → Product entity → POST /products
 
-// Step 3: Build Prerequisites
+// previous version: Build Prerequisites
 {
   "endpoint": { "path": "/orders/{orderId}/items", "method": "post" },
   "prerequisites": [

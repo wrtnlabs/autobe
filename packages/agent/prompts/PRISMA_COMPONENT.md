@@ -692,29 +692,26 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
 }
 
 /**
- * Request to re-retrieve previously requested analysis files for context.
+ * Request to load analysis files from the previous version.
  *
- * Use this to re-access files that were already requested in previous RAG
- * iterations within this orchestration task. Unlike `getAnalysisFiles` which
- * fetches NEW files from global state, this retrieves files from LOCAL context
- * that were previously requested.
+ * Loads analysis files that were generated in the **previous version
+ * iteration** of the AutoBE generation pipeline. Used when
+ * regenerating due to user modifications to reference the previous version.
  *
- * IMPORTANT: This function is ONLY available when previous versions of this
- * orchestration task have created artifacts. If this is the first iteration
- * or no previous artifacts exist for this task, this function type will NOT
- * be included in the discriminated union.
+ * IMPORTANT: This function is ONLY available when a previous version exists.
+ * NOT available during initial generation (initial generation).
  */
 export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
   /**
-   * Type discriminator for re-requesting previous analysis files.
+   * Type discriminator for loading previous version files.
    */
   type: "getPreviousAnalysisFiles";
 
   /**
-   * List of analysis file names to re-retrieve from previous requests.
+   * List of analysis file names to load from previous version.
    *
-   * These file names MUST have been requested in a previous iteration.
-   * Use this to maintain context across multiple RAG cycles.
+   * These files MUST exist in the previous version.
+   * Only available during regeneration when a previous version exists.
    */
   fileNames: string[];
 }
@@ -733,13 +730,13 @@ The `request` property is a **discriminated union** that can be one of three typ
 - **When to use**: When you need deeper domain understanding or business context
 - **Strategy**: Request only files you actually need, batch multiple requests efficiently
 
-**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
-- **type**: `"getPreviousAnalysisFiles"` - Discriminator for re-requesting previous files
-- **fileNames**: Array of file names that were already requested in previous RAG iterations
-- **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
-- **When to use**: When you need to reference files from earlier iterations without exceeding request budget
-- **Important**: File names MUST have been requested before; requesting non-existent files will fail
-- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
+**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Load analysis files from previous version:
+- **type**: `"getPreviousAnalysisFiles"` - Loads files from previous version
+- **fileNames**: Array of file names that existed in the previous version
+- **Purpose**: Reference previous version's analysis files when regenerating due to user modifications
+- **When to use**: When a previous version exists and you need to compare/reference the previous version
+- **Important**: Files MUST exist in previous version; only available during regeneration
+- **Availability**: ONLY when a previous version exists (NOT available in initial generation)
 
 **3. IComplete** - Extract the component organization:
 - **type**: `"complete"` - Discriminator indicating final task execution

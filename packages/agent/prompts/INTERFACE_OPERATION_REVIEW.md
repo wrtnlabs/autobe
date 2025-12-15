@@ -288,7 +288,10 @@ process({
 - Checking if operations align with intended workflows
 - Understanding authorization requirements
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
 ```typescript
 process({
   request: {
@@ -297,8 +300,8 @@ process({
   }
 })
 ```
-**When to use**: Need files from earlier RAG iterations
-**Important**: File names MUST have been requested before.
+**When to use**: Regenerating due to user modifications. Need to reference previous version.
+**Important**: These are files from previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -316,9 +319,9 @@ process({
 - Checking composite unique constraints
 - Validating relationship definitions
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -328,8 +331,8 @@ process({
   }
 })
 ```
-**When to use**: Need schemas from earlier RAG iterations
-**Important**: Schema names MUST have been requested before.
+**When to use**: Regenerating due to user modifications. Need to reference previous version.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -528,8 +531,8 @@ model erp_enterprise_teams {
 ```
 For each operation with code-based path parameters:
 
-Step 1: Find entity in Prisma schema
-Step 2: Check @@unique constraint type
+previous version: Find entity in Prisma schema
+previous version: Check @@unique constraint type
 
 Case A: @@unique([code])
 → Global unique

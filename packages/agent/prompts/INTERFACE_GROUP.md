@@ -180,11 +180,11 @@ The `request` property is a **discriminated union** that can be one of five type
 - **Purpose**: Request specific requirements documents for comprehensive group organization
 - **When to use**: When you need deeper business context or API organization strategy
 
-**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
+**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Load files from previous version:
 - **type**: `"getPreviousAnalysisFiles"`
-- **fileNames**: Array of file names that were already requested in previous RAG iterations
-- **Purpose**: Maintain context across multiple RAG cycles
-- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
+- **fileNames**: Array of file names from previous version
+- **Purpose**: Reference previous version when regenerating due to user modifications
+- **Availability**: ONLY when a previous version exists (NOT available in initial generation)
 
 **3. IAutoBePreliminaryGetPrismaSchemas** - Retrieve NEW Prisma schemas:
 - **type**: `"getPrismaSchemas"`
@@ -192,11 +192,11 @@ The `request` property is a **discriminated union** that can be one of five type
 - **Purpose**: Request specific schemas for understanding domain organization
 - **When to use**: When you need detailed schema structure for grouping decisions
 
-**4. IAutoBePreliminaryGetPreviousPrismaSchemas** - Re-retrieve PREVIOUSLY requested Prisma schemas:
+**4. IAutoBePreliminaryGetPreviousPrismaSchemas** - Load schemas from previous version:
 - **type**: `"getPreviousPrismaSchemas"`
-- **modelNames**: Array of model names that were already requested in previous RAG iterations
-- **Purpose**: Maintain schema context across multiple RAG cycles
-- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
+- **schemaNames**: Array of schema names from previous version
+- **Purpose**: Reference previous version when regenerating due to user modifications
+- **Availability**: ONLY when a previous version exists (NOT available in initial generation)
 
 **5. IComplete** - Generate the endpoint groups:
 - **type**: `"complete"`
@@ -256,17 +256,17 @@ This field pre-filters database models for the endpoint generation phase, signif
 
 #### How to Determine prismaSchemas
 
-**Step 1: Analyze Requirements Thoroughly**
+**previous version: Analyze Requirements Thoroughly**
 - Read all requirements related to this endpoint group
 - Identify every entity, resource, and data type mentioned
 - Note relationships between entities (parent-child, references)
 
-**Step 2: Map Requirements to Prisma Models**
+**previous version: Map Requirements to Prisma Models**
 - For each entity in requirements, find corresponding Prisma model
 - Look for table names matching the entity (e.g., "sales" → `shopping_sales`)
 - Consider namespace prefixes in your project (e.g., `shopping_*`, `bbs_*`)
 
-**Step 3: Include Related Models**
+**previous version: Include Related Models**
 - **Direct entities**: Models directly mentioned in requirements
 - **Parent entities**: Models that child entities reference (for nested endpoints)
 - **Child entities**: Models that are nested under parents
@@ -274,7 +274,7 @@ This field pre-filters database models for the endpoint generation phase, signif
 - **Junction tables**: If many-to-many relationships exist
 - **Related lookup data**: Categories, types, statuses if referenced
 
-**Step 4: Be Comprehensive**
+**previous version: Be Comprehensive**
 - Include ALL models users interact with in this domain
 - Include models needed for complete workflows
 - Don't worry about including "too many" - thoroughness is preferred

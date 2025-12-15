@@ -206,13 +206,13 @@ process({
 })
 ```
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for security validation.",
+  thinking: "Need previous version of requirements to validate security changes.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Requirements.md", "Security_Policies.md"]
@@ -220,9 +220,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive security validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive security validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are files from previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -235,13 +235,13 @@ process({
 })
 ```
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous Prisma schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for security pattern validation.",
+  thinking: "Need previous version of Prisma schemas to validate security pattern changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["users", "sessions", "tokens"]
@@ -249,9 +249,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for security field validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security field validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -267,13 +267,13 @@ process({
 })
 ```
 
-**Type 3.5: Re-request Previous Interface Operations**
+**Type 3.5: Load previous version Interface Operations**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface operations. If this is the first iteration or no previous interface operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's operations for security context validation.",
+  thinking: "Need previous version of operations to validate security context changes.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -284,9 +284,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for security pattern validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security pattern validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are operations from previous version. Only available when a previous version exists.
 
 **Type 4: Request Interface Schemas**
 
@@ -322,13 +322,13 @@ This function CANNOT retrieve:
 **When NOT to use**:
 - ❌ To retrieve schemas you are supposed to review (they're ALREADY in your context)
 
-**Type 4.5: Re-request Previous Interface Schemas**
+**Type 4.5: Load previous version Interface Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface schemas. If this is the first iteration or no previous interface schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's interface schemas for security pattern validation.",
+  thinking: "Need previous version of interface schemas to validate security pattern changes.",
   request: {
     type: "getPreviousInterfaceSchemas",
     typeNames: ["IAdminAuth.ILogin", "ICustomerAuth.ILogin", "IUser.ISummary"]
@@ -336,9 +336,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface schemas from earlier RAG iterations for security pattern analysis.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security pattern analysis.
 
-**Important**: MUST have been requested in a previous iteration. Only retrieves EXISTING schemas from earlier iterations.
+**Important**: These are schemas from previous version. Only available when a previous version exists. Only retrieves EXISTING schemas from previous version.
 - ❌ To fetch IUserAuth.ILogin if that's your security review target
 - ❌ To "check" schemas you're actively working on
 
@@ -766,18 +766,18 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 **Concrete Detection Example**:
 
 ```typescript
-// Step 1: You're reviewing schema "IBbsArticle.ICreate"
-// Step 2: Find operation using this schema
+// previous version: You're reviewing schema "IBbsArticle.ICreate"
+// previous version: Find operation using this schema
 {
   path: "POST /articles",
   authorizationActor: "member",  // ← CRITICAL: Member is the actor!
   requestBody: { typeName: "IBbsArticle.ICreate" }
 }
 
-// Step 3: Identify actor pattern
+// previous version: Identify actor pattern
 // authorizationActor: "member" → *_member_id fields represent current actor
 
-// Step 4: Review the schema
+// previous version: Review the schema
 {
   "IBbsArticle.ICreate": {
     "properties": {
@@ -790,7 +790,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
   }
 }
 
-// Step 5: After deletion
+// previous version: After deletion
 {
   "IBbsArticle.ICreate": {
     "properties": {
@@ -1354,7 +1354,7 @@ Session context fields MUST be RETAINED:
 1. **Check operation suffix**:
    - `IEntity.ILogin` → ALWAYS require (self-login)
    - `IEntity.IJoin` → ALWAYS require (self-signup)
-   - `IEntity.ICreate` → Continue to step 2
+   - `IEntity.ICreate` → Continue to previous version
 
 2. **Check `operation.authorizationActor`**:
    - `null` → Self-signup (public registration) → REQUIRE

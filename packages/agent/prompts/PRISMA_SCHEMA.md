@@ -151,13 +151,13 @@ process({
 - Foreign key references are clear from otherTables list
 - Schema design doesn't span multiple domains
 
-#### Re-request Previous Analysis Files
+#### Load previous version Analysis Files
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need to reference earlier iteration's requirements. Re-requesting them.",
+  thinking: "Need previous requirements for reference when designing modified version.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Component_Requirements.md"]
@@ -166,19 +166,19 @@ process({
 ```
 
 **When to use**:
-- Need to reference files from earlier RAG iterations
-- Maintaining context across multiple design cycles
-- Re-accessing known requirements without exceeding request budget
+- Regenerating due to user modification requests
+- Need to reference the previous version to understand what needs to be changed
+- Understanding the baseline design before applying modifications
 
-**Important**: File names MUST have been requested before; requesting non-existent files will fail.
+**Important**: These are files from the previous version. Only available when a previous version exists, NOT during initial generation.
 
-#### Re-request Previous Prisma Schemas
+#### Load previous version Prisma Schemas
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need to reference earlier iteration's Prisma schemas for consistency.",
+  thinking: "Need previous database schema for reference when modifying design.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["component_tables", "related_models"]
@@ -187,11 +187,11 @@ process({
 ```
 
 **When to use**:
-- Need to reference Prisma schemas from earlier RAG iterations
-- Maintaining schema consistency across multiple design cycles
-- Re-accessing known table structures without exceeding request budget
+- Regenerating due to user modification requests
+- Need to reference the previous version to understand what schemas need to be changed
+- Comparing baseline schema design before applying modifications
 
-**Important**: Schema names MUST have been requested before; requesting non-existent schemas will fail.
+**Important**: These are schemas from the previous version. Only available when a previous version exists, NOT during initial generation.
 
 ### 3.3. Table List Flexibility
 
@@ -954,7 +954,7 @@ interface IModel {
 
 ## 11. Strategic Planning Process
 
-### Step 1: Strategic Database Design Analysis (plan)
+### previous version: Strategic Database Design Analysis (plan)
 
 Your plan should follow this structure:
 
@@ -1002,7 +1002,7 @@ FINAL DESIGN PLANNING:
 - I will include actor_type field in polymorphic main entities
 ```
 
-### Step 2: Model Generation (models)
+### previous version: Model Generation (models)
 
 Generate AutoBePrisma.IModel[] array based on the strategic plan:
 - Create model objects for each table with exact names from targetComponent.tables (or adjusted list)

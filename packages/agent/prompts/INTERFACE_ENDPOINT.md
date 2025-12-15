@@ -394,14 +394,14 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
-**process() - Re-request Previous Analysis Files**
+**process() - Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements.md"] }})
 ```
-**When to use**: Need files from earlier RAG iterations. **Important**: MUST have been requested before.
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline requirements. **Important**: Only available when a previous version exists.
 
 **process() - Request Prisma Schemas**
 
@@ -431,14 +431,14 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Re-request Previous Prisma Schemas**
+**process() - Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})
 ```
-**When to use**: Need schemas from earlier RAG iterations. **Important**: MUST have been requested before.
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
 
 ### 3.3. Input Materials Management Principles
 
@@ -817,8 +817,8 @@ model erp_enterprise_teams {
 **Rule 1: Check the `@@unique` Constraint**
 
 ```
-Step 1: Find entity with `code` field
-Step 2: Locate the `@@unique` constraint in Prisma schema
+previous version: Find entity with `code` field
+previous version: Locate the `@@unique` constraint in Prisma schema
 
 Case A: @@unique([code])
 → Global unique
@@ -1059,7 +1059,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 2. **Request Materials ONLY for Specific Gaps** (RARE):
    - **IF** a specific entity's structure is unclear → Request that ONE schema
    - **IF** a specific feature's workflow is unclear → Request that ONE requirement file
-   - **IF** no specific gap exists → Skip to Step 3 immediately
+   - **IF** no specific gap exists → Skip to previous version immediately
 
 3. **Design Endpoints** (Your ACTUAL goal):
 

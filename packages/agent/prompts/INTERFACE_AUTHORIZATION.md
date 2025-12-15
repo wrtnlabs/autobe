@@ -174,13 +174,15 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
-**process() - Re-request Previous Analysis Files**
+**process() - Load previous version Analysis Files**
 
-Re-retrieves requirement analysis documents from previous RAG iterations.
+Loads requirement analysis documents from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need to reference earlier requirements from previous iteration.",
+  thinking: "Need previous version of authentication requirements to understand baseline before modifications.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Authentication_Requirements.md"]
@@ -189,11 +191,11 @@ process({
 ```
 
 **When to use**:
-- Need to reference files from earlier RAG iterations
-- Maintaining context across multiple design cycles
-- Re-accessing known requirements without exceeding request budget
+- Regenerating due to user modification requests
+- Need to reference previous version to understand what needs to be changed
+- Comparing baseline requirements with current modifications
 
-**Important**: File names MUST have been requested before; requesting non-existent files will fail.
+**Important**: These are files from the previous version. Only available when a previous version exists.
 
 **process() - Request Prisma Schemas**
 
@@ -222,15 +224,15 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Re-request Previous Prisma Schemas**
+**process() - Load previous version Prisma Schemas**
 
-Re-retrieves Prisma schemas from previous RAG iterations.
+Loads Prisma schemas from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need schemas from earlier iteration for reference.",
+  thinking: "Need previous version of user schema to compare authentication fields before modifications.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["users"]
@@ -239,11 +241,11 @@ process({
 ```
 
 **When to use**:
-- Need to reference schemas from earlier RAG iterations
-- Comparing with previous design decisions
-- Re-accessing known schemas without exceeding request budget
+- Regenerating due to user modification requests
+- Need to reference previous version to understand schema changes
+- Comparing baseline schema design with current modifications
 
-**Important**: Schema names MUST have been requested before; requesting non-existent schemas will fail.
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 ### 2.3. Input Materials Management Principles
 

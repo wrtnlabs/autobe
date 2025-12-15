@@ -1,24 +1,47 @@
 import { tags } from "typia";
 
 /**
- * Request to re-retrieve previously requested analysis files for context.
+ * Request to retrieve analysis files from a previous version.
  *
- * This type is used in the preliminary phase to re-request analysis files that
- * were already fetched in previous iterations within the same orchestration
- * task. Unlike `IAutoBePreliminaryGetAnalysisFiles` which retrieves NEW files
- * from the global state, this retrieves files from the LOCAL context that were
- * previously requested.
+ * This type is used to load analysis files (requirements documents) that were
+ * generated in a **previous version** of the AutoBE generation pipeline.
+ * This is NOT about re-requesting files within the same execution, but rather
+ * accessing artifacts from an earlier version.
  *
- * **Use Case:** When an agent needs to access analysis files across multiple
- * RAG iterations, it may need to re-request files from earlier iterations to
- * maintain context. This is particularly useful in complement cycles where the
- * agent needs to reference previously loaded requirements without exceeding the
- * request budget.
+ * **Use Case:** When regenerating or modifying the backend application based on
+ * user change requests, agents need to reference the previously generated
+ * analysis files to understand what was created before and what needs to be
+ * modified.
  *
- * **Key Difference from Regular `getAnalysisFiles`:**
+ * **Key Difference from `getAnalysisFiles`:**
  *
- * - Regular: Fetches NEW files from global state (not yet in local context)
- * - GetPrevious: Re-fetches files ALREADY in local context from prior requests
+ * - `getAnalysisFiles`: Fetches analysis files from the **current version**
+ *   (the version being generated right now)
+ * - `getPreviousAnalysisFiles`: Fetches analysis files from the **previous
+ *   version** (the last successfully generated version)
+ *
+ * **Example Scenario:**
+ *
+ * ```
+ * Initial generation:
+ * - ANALYZE phase creates: UserManagement.md, OrderWorkflow.md
+ * - Generation completes successfully
+ *
+ * User: "Add payment integration to orders"
+ *
+ * Regeneration:
+ * - ANALYZE phase starts regeneration
+ * - Calls getPreviousAnalysisFiles(["OrderWorkflow.md"])
+ *   → Loads the previous version of OrderWorkflow.md as reference
+ * - Creates new version of OrderWorkflow.md with payment integration
+ * ```
+ *
+ * **Waterfall + Spiral Pattern:**
+ *
+ * This aligns with AutoBE's regeneration cycles where:
+ * - Compilation failures trigger regeneration
+ * - User modifications trigger new versions
+ * - Previous artifacts serve as reference context for improvements
  *
  * @author Samchon
  */
@@ -28,22 +51,33 @@ export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
    *
    * Determines which action to perform: preliminary data retrieval or actual
    * task execution. Value "getPreviousAnalysisFiles" indicates this is a
-   * preliminary data request for previously requested analysis files.
+   * preliminary data request for analysis files from a previous version.
    */
   type: "getPreviousAnalysisFiles";
 
   /**
-   * List of analysis file names to re-retrieve from previous requests.
+   * List of analysis file names to retrieve from the previous version.
    *
-   * File names that were already requested in previous iterations within this
-   * orchestration task. These files should exist in the local context.
+   * These are file names that were generated in a previous version and are
+   * needed as reference context for the current regeneration.
    *
    * **Important Notes:**
    *
-   * - These file names MUST have been requested in a previous iteration
-   * - Requesting non-existent or never-before-requested files will fail
-   * - Use this to maintain context across multiple RAG cycles
-   * - Prefer this over `getAnalysisFiles` when you need to re-access known files
+   * - These files MUST exist in the previous version
+   * - This function is only available when a previous version exists
+   * - Used for reference/comparison, not for re-requesting within same execution
+   * - File names are the same as in the current version (e.g., "UserManagement.md")
+   *
+   * **When This Function is Available:**
+   *
+   * - When a previous version exists
+   * - When user requests modifications to existing generated application
+   * - During correction/regeneration cycles that need previous context
+   *
+   * **When This Function is NOT Available:**
+   *
+   * - During initial generation (no previous version exists)
+   * - No previous artifacts available for this orchestration task
    */
   fileNames: string[] & tags.MinItems<1>;
 }

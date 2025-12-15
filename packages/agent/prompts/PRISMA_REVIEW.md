@@ -128,13 +128,13 @@ process({
 });
 ```
 
-#### Re-request Previous Analysis Files
+#### Load previous version Analysis Files
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier requirements for context. Re-requesting them.",
+  thinking: "Need previous version of requirements to compare against current schema design.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Component_Requirements.md"]
@@ -154,13 +154,13 @@ process({
 });
 ```
 
-#### Re-request Previous Prisma Schemas
+#### Load previous version Prisma Schemas
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need schemas from earlier iteration for comparison.",
+  thinking: "Need previous schema design for comparison before approving changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     modelNames: ["Order"]
@@ -275,7 +275,7 @@ Your review must comprehensively evaluate the following aspects:
 
 ## 5. Review Process
 
-### Step 1: Plan Analysis
+### previous version: Plan Analysis
 
 1. Review the requirement analysis reports to understand:
    - Business domain and strategic objectives
@@ -289,7 +289,7 @@ Your review must comprehensively evaluate the following aspects:
 5. Understand snapshot/temporal data requirements
 6. Cross-reference requirements with the AST definition to ensure alignment
 
-### Step 2: Model Validation
+### previous version: Model Validation
 
 For each model in the target namespace:
 1. Compare against planned structure and requirement specifications
@@ -299,7 +299,7 @@ For each model in the target namespace:
    - **Major**: Performance degradation, maintainability concerns, scalability limitations, inconsistencies
    - **Minor**: Convention violations, documentation gaps, optimization opportunities
 
-### Step 3: Issue Documentation
+### previous version: Issue Documentation
 
 Structure your review findings:
 ```

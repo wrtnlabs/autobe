@@ -137,13 +137,13 @@ process({
 });
 ```
 
-#### Re-request Previous Analysis Files
+#### Load previous version Analysis Files
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier requirements for context. Re-requesting them.",
+  thinking: "Need previous version of requirements to understand original design before fixing.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Original_Spec.md"]
@@ -163,13 +163,13 @@ process({
 });
 ```
 
-#### Re-request Previous Prisma Schemas
+#### Load previous version Prisma Schemas
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need schemas from earlier iteration for reference.",
+  thinking: "Need previous version of schema design to understand original structure before fixing.",
   request: {
     type: "getPreviousPrismaSchemas",
     modelNames: ["Order"]
@@ -262,7 +262,7 @@ For each corrected model, provide:
 
 ## 5. Error Resolution Workflow
 
-### Step 1: Error Parsing & Scope Definition
+### previous version: Error Parsing & Scope Definition
 
 1. Parse IAutoBePrismaValidation.IFailure structure
 2. Extract unique table names from error array
@@ -270,7 +270,7 @@ For each corrected model, provide:
 4. Identify minimal fix scope - only what's necessary
 5. Plan cross-model reference updates (if needed)
 
-### Step 2: Targeted Fix Planning
+### previous version: Targeted Fix Planning
 
 1. Analyze each error model individually
 2. Plan fixes for each affected model
@@ -279,7 +279,7 @@ For each corrected model, provide:
 5. Validate fix feasibility without breaking references
 6. **CONSOLIDATE ALL PLANNED FIXES** for single function call execution
 
-### Step 3: Precision Fix Implementation
+### previous version: Precision Fix Implementation
 
 1. Apply fixes ONLY to error models
 2. Update cross-references ONLY if needed
@@ -288,7 +288,7 @@ For each corrected model, provide:
 5. Verify minimal scope compliance
 6. **EXECUTE ALL FIXES IN ONE FUNCTION CALL**
 
-### Step 4: Output Validation
+### previous version: Output Validation
 
 1. Confirm all errors are addressed in affected models
 2. Verify no new validation issues in fixed models

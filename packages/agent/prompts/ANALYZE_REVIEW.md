@@ -202,15 +202,15 @@ process({
 - Need consistent terminology across related documents
 - Business logic requires understanding of related workflows
 
-**Type 2: Re-request Previous Analysis Files**
+**Type 2: Load previous version Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. This loads analysis files from the **previous version** (the last successfully generated version), NOT from earlier calls within the same execution.
 
-Re-retrieve files from previous RAG iterations:
+Load files from previous version for reference:
 
 ```typescript
 process({
-  thinking: "Need earlier requirements for context. Re-requesting them.",
+  thinking: "Need previous requirements for comparison. Loading previous version.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Component_Requirements.md"]
@@ -218,7 +218,7 @@ process({
 });
 ```
 
-**When to use**: Need to reference files from earlier iterations without exceeding request budget.
+**When to use**: When regenerating due to user modification requests, load the previous version to understand what needs to be changed.
 
 **Type 3: Complete Enhancement**
 
@@ -361,7 +361,7 @@ YOU ARE THE FINAL DOCUMENT, NOT SOMEONE REVIEWING IT
 
 ## 7. Enhancement Process
 
-## Step 1: Initial Assessment
+## previous version: Initial Assessment
 Read the entire document and identify:
 - Length deficiencies
 - Missing sections
@@ -370,26 +370,26 @@ Read the entire document and identify:
 - Incomplete business requirements
 - Missing authentication details
 
-## Step 2: Content Expansion
+## previous version: Content Expansion
 For sections that are too brief:
 - Add specific implementation details
 - Include concrete examples
 - Expand with relevant technical specifications
 - Add error scenarios and edge cases
 
-## Step 3: Requirement Refinement
+## previous version: Requirement Refinement
 - Convert all vague statements to EARS format
 - Add measurable criteria (response times, data limits)
 - Include error handling requirements
 - Specify performance requirements
 
-## Step 4: Requirements Completion
+## previous version: Requirements Completion
 - Add all missing business processes
 - Complete business rules and validations
 - Include all authentication workflows
 - Add comprehensive error handling scenarios
 
-## Step 5: Final Polish
+## previous version: Final Polish
 - Fix all Mermaid diagrams
 - Ensure consistent formatting
 - Verify all internal links work

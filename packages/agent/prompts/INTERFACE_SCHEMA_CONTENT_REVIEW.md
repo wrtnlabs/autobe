@@ -188,13 +188,13 @@ process({
 - Understanding entity business rules and validation requirements
 - Clarifying field purposes and documentation needs
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for field validation.",
+  thinking: "Need previous version of requirements to validate field changes.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Requirements.md", "Entity_Specs.md"]
@@ -202,9 +202,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive field validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive field validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are files from previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -222,13 +222,13 @@ process({
 - Checking field types, nullability, and constraints
 - Understanding entity relationships and foreign keys
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous Prisma schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for field mapping validation.",
+  thinking: "Need previous version of Prisma schemas to validate field mapping changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["users", "orders", "products"]
@@ -236,9 +236,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for field completeness validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for field completeness validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -259,13 +259,13 @@ process({
 - Clarifying which fields are used in which operations
 - Verifying field completeness for operation-specific DTOs
 
-**Type 3.5: Re-request Previous Interface Operations**
+**Type 3.5: Load previous version Interface Operations**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface operations. If this is the first iteration or no previous interface operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's operations for field usage validation.",
+  thinking: "Need previous version of operations to validate field usage changes.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -276,9 +276,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for field documentation validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for field documentation validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are operations from previous version. Only available when a previous version exists.
 
 **Type 4: Request Interface Schemas**
 
@@ -296,13 +296,13 @@ process({
 - Understanding how similar entities document fields
 - Verifying description quality standards across schemas
 
-**Type 4.5: Re-request Previous Interface Schemas**
+**Type 4.5: Load previous version Interface Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface schemas. If this is the first iteration or no previous interface schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's interface schemas for pattern validation.",
+  thinking: "Need previous version of interface schemas to validate pattern changes.",
   request: {
     type: "getPreviousInterfaceSchemas",
     typeNames: ["IUser.ISummary", "IProduct.ISummary"]
@@ -310,9 +310,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface schemas from earlier RAG iterations for description quality validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for description quality validation.
 
-**Important**: MUST have been requested in a previous iteration.
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -970,7 +970,7 @@ interface IUser.ISummary {
 
 ### 7.2. The Field Discovery Process
 
-**Step 1: Inventory ALL Prisma Fields**
+**previous version: Inventory ALL Prisma Fields**
 ```typescript
 // For each Prisma model, list:
 - id fields (usually uuid)
@@ -982,7 +982,7 @@ interface IUser.ISummary {
 - timestamps (createdAt, updatedAt) - VERIFY which ones exist!
 ```
 
-**Step 2: Map to Appropriate DTO Variants**
+**previous version: Map to Appropriate DTO Variants**
 ```typescript
 // For each field, decide:
 - IEntity: Include unless security-filtered

@@ -201,13 +201,15 @@ process({
 - Entity relationships or validation rules unclear from operations alone
 - Want to reference specific requirement details in schema descriptions
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-Re-retrieves requirement analysis documents from previous RAG iterations.
+Loads requirement analysis documents from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for schema design context.",
+  thinking: "Need previous version of requirements to validate schema design changes.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["business_requirements.md", "entity_specs.md"]
@@ -215,9 +217,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive schema generation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive schema generation.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+**Important**: These are files from the previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -236,15 +238,15 @@ process({
 - Need to verify relationships between entities for proper $ref usage
 - Generating schemas for entities whose Prisma models aren't yet loaded
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-Re-retrieves Prisma model definitions from previous RAG iterations.
+Loads Prisma model definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for schema generation context.",
+  thinking: "Need previous version of Prisma schemas to validate field type changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["shopping_sales", "shopping_orders", "shopping_products"]
@@ -252,9 +254,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for field types and relationship validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for field types and relationship validation.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -276,15 +278,15 @@ process({
 - Need to check authorizationActor to properly exclude actor identity fields
 - Understanding operation flow to design appropriate schema variants
 
-**Type 3.5: Re-request Previous Interface Operations**
+**Type 3.5: Load previous version Interface Operations**
 
-Re-retrieves API operation definitions from previous RAG iterations.
+Loads API operation definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface operations. If this is the first iteration or no previous operations exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's operations for schema design validation.",
+  thinking: "Need previous version of operations to validate schema usage pattern changes.",
   request: {
     type: "getPreviousInterfaceOperations",
     endpoints: [
@@ -295,9 +297,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference interface operations from earlier RAG iterations for schema usage pattern analysis.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for schema usage pattern analysis.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request operations that were never loaded before.
+**Important**: These are operations from the previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -1478,7 +1480,7 @@ interface IUser.ICreate {
 1. **Check operation type**:
    - `IEntityName.ILogin` → ALWAYS include
    - `IEntityName.IJoin` → ALWAYS include
-   - `IEntityName.ICreate` → Check authorization context (step 2)
+   - `IEntityName.ICreate` → Check authorization context
 
 2. **Check `operation.authorizationActor`**:
    - `null` or matches entity type (e.g., "user" for IUser.ICreate) → Self-signup → INCLUDE
@@ -3562,12 +3564,12 @@ interface IBbsArticleAttachment.ICreate {
 
 **Implementation Pattern**:
 ```typescript
-// Step 1: Client uploads file to storage (separate endpoint)
+// previous version: Client uploads file to storage (separate endpoint)
 POST /files/upload
 Content-Type: multipart/form-data
 → Returns: { url: "https://cdn.example.com/files/abc123.jpg" }
 
-// Step 2: Client creates entity with file URL
+// previous version: Client creates entity with file URL
 POST /articles
 {
   "title": "My Article",
@@ -3648,12 +3650,12 @@ interface IReport.ICreate {
 
 Use this checklist for every relation decision:
 
-#### Step 1: Identify Relation Type
+#### previous version: Identify Relation Type
 - [ ] **Same transaction?** → Consider Composition
 - [ ] **Independent entity?** → Consider Association
 - [ ] **Event-driven?** → Consider Aggregation
 
-#### Step 2: Apply DTO-Specific Rules
+#### previous version: Apply DTO-Specific Rules
 
 ##### For Response DTOs (Read)
 - [ ] **Composition?** → Include as full nested object/array
@@ -3674,7 +3676,7 @@ Use this checklist for every relation decision:
 - [ ] **Structural relation?** → EXCLUDE (immutable)
 - [ ] **Complex composition?** → Use separate endpoints
 
-#### Step 3: Consider Special Cases
+#### previous version: Consider Special Cases
 - [ ] **Is it an actor?** → Never include reverse references
 - [ ] **Many-to-many?** → Based on conceptual ownership
 - [ ] **Self-reference?** → Include parent, separate API for children
@@ -4267,14 +4269,14 @@ interface IBbsArticle.IUpdate {
      - Identify table naming patterns (parent_child relations)
    
    - **Apply Foreign Key Transformation Strategy**:
-     - **Step 1**: Identify all foreign keys in each entity
-     - **Step 2**: Classify each FK:
+     - **previous version**: Identify all foreign keys in each entity
+     - **previous version**: Classify each FK:
        - Direct Parent (Has relation inverse) → Keep as ID
        - Associated Reference (Actor/Category/Organization) → Transform to object
-     - **Step 3**: For Response DTOs (IEntityName, ISummary):
+     - **previous version**: For Response DTOs (IEntityName, ISummary):
        - Transform ALL associated reference FKs to objects
        - Keep direct parent FKs as IDs (prevent circular references)
-     - **Step 4**: For Request DTOs (ICreate, IUpdate):
+     - **previous version**: For Request DTOs (ICreate, IUpdate):
        - Actor FKs are FORBIDDEN (from JWT/session)
        - Other FKs remain as IDs
    
@@ -4784,18 +4786,18 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
    - Map table hierarchies and identify scope boundaries
 
 2. **Relation Analysis**:
-   - **Step 1**: Map table name hierarchies
-   - **Step 2**: Identify scope boundaries (different events/actors)
-   - **Step 3**: Validate FK directions
-   - **Step 4**: Classify relations (strong/weak/ID)
-   - **Step 5**: Plan IInvert types for reverse perspectives
+   - **previous version**: Map table name hierarchies
+   - **previous version**: Identify scope boundaries (different events/actors)
+   - **previous version**: Validate FK directions
+   - **previous version**: Classify relations (strong/weak/ID)
+   - **previous version**: Plan IInvert types for reverse perspectives
 
 3. **Security-First Schema Development**:
-   - **Step 1**: Remove all authentication fields from request types
-   - **Step 2**: Remove all sensitive fields from response types
-   - **Step 3**: Block ownership changes in update types
-   - **Step 4**: Apply relation rules based on scope analysis
-   - **Step 5**: Then proceed with business logic implementation
+   - **previous version**: Remove all authentication fields from request types
+   - **previous version**: Remove all sensitive fields from response types
+   - **previous version**: Block ownership changes in update types
+   - **previous version**: Apply relation rules based on scope analysis
+   - **previous version**: Then proceed with business logic implementation
    - Document all security decisions made
 
 4. **Schema Development**:

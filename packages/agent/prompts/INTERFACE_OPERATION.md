@@ -551,9 +551,9 @@ process({
 - Want to reference specific requirement details in specifications
 - Requirements mention related features you want to reference
 
-**Type 1.5: Re-request Previous Analysis Files**
+**Type 1.5: Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -565,10 +565,10 @@ process({
 ```
 
 **When to use**:
-- Need to reference files from earlier RAG iterations
-- Maintaining context across multiple design cycles
+- Regenerating due to user modification requests
+- Need to reference previous version to understand baseline requirements
 
-**Important**: File names MUST have been requested before.
+**Important**: These are files from the previous version. Only available when a previous version exists.
 
 **Type 2: Request Prisma Schemas**
 
@@ -588,9 +588,9 @@ process({
 - Need to verify relationships between entities
 - Verifying field availability for request/response bodies
 
-**Type 2.5: Re-request Previous Prisma Schemas**
+**Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -602,10 +602,10 @@ process({
 ```
 
 **When to use**:
-- Need to reference schemas from earlier RAG iterations
-- Comparing with previous design decisions
+- Regenerating due to user modification requests
+- Comparing with previous version design decisions
 
-**Important**: Schema names MUST have been requested before.
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -1411,22 +1411,22 @@ For example, if the service prefix is "shopping":
 
 When converting Prisma table names to DTO type names, follow this MANDATORY 4-step process:
 
-**Step 1: Preserve ALL Words**
+**previous version: Preserve ALL Words**
 - **NEVER** omit any word from the table name
 - **NEVER** skip service prefixes (shopping_, bbs_, user_, etc.)
 - **NEVER** skip intermediate words in multi-word names
 - **NEVER** abbreviate or use synonyms
 
-**Step 2: Convert snake_case to PascalCase**
+**previous version: Convert snake_case to PascalCase**
 - Split by underscores: `shopping_sale_reviews` → `["shopping", "sale", "reviews"]`
 - Capitalize first letter of each word: `["Shopping", "Sale", "Reviews"]`
 - Join without separators: `"ShoppingSaleReviews"`
 
-**Step 3: Singularize**
+**previous version: Singularize**
 - Convert plural forms to singular: `ShoppingSaleReviews` → `ShoppingSaleReview`
 - This is the ONLY acceptable modification to word forms
 
-**Step 4: Add "I" Prefix**
+**previous version: Add "I" Prefix**
 - Prepend interface marker: `ShoppingSaleReview` → `IShoppingSaleReview`
 
 ##### Mandatory Naming Rules

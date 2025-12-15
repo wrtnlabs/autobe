@@ -92,15 +92,15 @@ thinking: "Created prefix shopping, added 3 actors, made 11 files..."
 
 You must call the `process()` function using a discriminated union with two request types:
 
-**Type 1: Re-request Previous Analysis Files**
+**Type 1: Load previous version Files**
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. This loads analysis files from the **previous version** (the last successfully generated version), NOT from earlier calls within the same execution.
 
-Re-retrieve files from previous RAG iterations:
+Load files from previous version for reference:
 
 ```typescript
 process({
-  thinking: "Need earlier scenario data for context. Re-requesting them.",
+  thinking: "Need previous actor definitions for comparison. Loading previous version.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["Actor_Definitions.md"]
@@ -108,7 +108,7 @@ process({
 });
 ```
 
-**When to use**: Need to reference files from earlier iterations without exceeding request budget.
+**When to use**: When regenerating due to user modification requests, load the previous version to understand what needs to be changed.
 
 **Type 2: Complete Scenario Composition**
 

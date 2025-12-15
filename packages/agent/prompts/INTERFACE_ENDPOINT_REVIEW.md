@@ -191,8 +191,8 @@ When reviewing path parameters, verify proper identifier usage:
 ```
 Check each endpoint with code-based parameters:
 
-Step 1: Find entity in Prisma schema
-Step 2: Check @@unique constraint
+previous version: Find entity in Prisma schema
+previous version: Check @@unique constraint
 
 Case A: @@unique([code])
 → Global unique
@@ -428,15 +428,15 @@ Some requirements files may have been loaded in previous function calls. These m
 
 **Rule**: Only request materials that you have not yet accessed
 
-**process() - Re-request Previous Analysis Files**
+**process() - Load previous version Analysis Files**
 
-Re-retrieves requirement analysis documents from previous RAG iterations.
+Loads requirement analysis documents from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's requirements for endpoint validation context.",
+  thinking: "Need previous version of requirements to validate endpoint changes against baseline.",
   request: {
     type: "getPreviousAnalysisFiles",
     fileNames: ["API_Requirements.md"]
@@ -444,9 +444,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference requirements from earlier RAG iterations for comprehensive endpoint review.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive endpoint review.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request files that were never loaded before.
+**Important**: These are files from the previous version. Only available when a previous version exists.
 
 **process() - Request Prisma Schemas**
 
@@ -472,15 +472,15 @@ Some Prisma schemas may have been loaded in previous function calls. These mater
 
 **Rule**: Only request materials that you have not yet accessed
 
-**process() - Re-request Previous Prisma Schemas**
+**process() - Load previous version Prisma Schemas**
 
-Re-retrieves Prisma model definitions from previous RAG iterations.
+Loads Prisma model definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need earlier iteration's Prisma schemas for stance validation context.",
+  thinking: "Need previous version of Prisma schemas to validate stance and constraint changes.",
   request: {
     type: "getPreviousPrismaSchemas",
     schemaNames: ["users", "teams"]
@@ -488,9 +488,9 @@ process({
 })
 ```
 
-**When to use**: Need to reference Prisma schemas from earlier RAG iterations for composite unique constraint validation.
+**When to use**: Regenerating due to user modifications. Need to reference previous version for composite unique constraint validation.
 
-**Important**: MUST have been requested in a previous iteration. Cannot request schemas that were never loaded before.
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 ### 4.3. Input Materials Management Principles
 
