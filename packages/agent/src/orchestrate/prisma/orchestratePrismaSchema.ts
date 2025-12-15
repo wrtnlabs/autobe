@@ -93,6 +93,7 @@ async function process<Model extends ILlmSchema.Model>(
         targetComponent: props.component,
         otherTables: props.otherTables,
         instruction: props.instruction,
+        preliminary,
       }),
     });
     if (pointer.value !== null)
@@ -189,16 +190,17 @@ function createController<Model extends ILlmSchema.Model>(
       ],
     };
   };
-  const application: ILlmApplication<Model> = collection[
-    ctx.model === "chatgpt"
-      ? "chatgpt"
-      : ctx.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      ctx.model === "chatgpt"
+        ? "chatgpt"
+        : ctx.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

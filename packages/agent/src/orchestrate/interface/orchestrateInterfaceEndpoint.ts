@@ -149,8 +149,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   >;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;

@@ -23,11 +23,11 @@ export async function orchestratePrismaComponents<
   const start: Date = new Date();
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaComponentApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "previousAnalysisFiles"],
+    kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
     state: ctx.state(),
     all: {
       analysisFiles: ctx.state().analyze?.files ?? [],
@@ -77,7 +77,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBePrismaComponentApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
   >;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -92,16 +92,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
       request: result.data.request,
     });
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

@@ -208,7 +208,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    */
   public fixApplication<Model extends ILlmSchema.Model>(
     application: ILlmApplication<Model>,
-  ): void {
+  ): ILlmApplication<Model> {
     assertSchemaModel<Model>(application.model);
     fixPreliminaryApplication({
       state: this.state,
@@ -216,6 +216,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       application: application as ILlmApplication<Exclude<Model, "3.0">>,
       model: application.model,
     });
+    return application;
   }
 
   /**

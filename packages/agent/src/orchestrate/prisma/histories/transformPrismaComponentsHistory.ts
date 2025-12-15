@@ -13,7 +13,7 @@ export const transformPrismaComponentsHistory = (
     prefix: string | null;
     instruction: string;
     preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles"
+      "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
     >;
   },
 ): IAutoBeOrchestrateHistory => {
