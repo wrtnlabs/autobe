@@ -127,9 +127,9 @@ async function process<Model extends ILlmSchema.Model>(
     | "interfaceOperations"
     | "interfaceSchemas"
     | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
-    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceComplementApplication>(),
@@ -216,9 +216,9 @@ function createController<Model extends ILlmSchema.Model>(
       | "interfaceOperations"
       | "interfaceSchemas"
       | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
-      | "previousPrismaSchemas"
     >;
     build: (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
@@ -273,16 +273,17 @@ function createController<Model extends ILlmSchema.Model>(
     return result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

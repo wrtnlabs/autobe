@@ -11,6 +11,7 @@ export const transformInterfaceEndpointReviewHistory = (props: {
     | "prismaSchemas"
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   endpoints: AutoBeOpenApi.IEndpoint[];
 }): IAutoBeOrchestrateHistory => ({

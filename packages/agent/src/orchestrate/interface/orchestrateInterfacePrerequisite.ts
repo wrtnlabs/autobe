@@ -209,12 +209,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
   prerequisitesNotFound: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
-    | "previousPrismaSchemas"
     | "interfaceOperations"
-    | "previousInterfaceOperations"
     | "interfaceSchemas"
+    | "previousInterfaceOperations"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
     | "previousInterfaceSchemas"
   >;
   build: (next: AutoBeInterfacePrerequisite[]) => void;

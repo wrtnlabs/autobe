@@ -162,6 +162,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       | "prismaSchemas"
       | "previousAnalysisFiles"
       | "previousPrismaSchemas"
+      | "previousInterfaceSchemas"
     > = new AutoBePreliminaryController({
       application:
         typia.json.application<IAutoBeInterfaceSchemaRenameApplication>(),
@@ -171,6 +172,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         "prismaSchemas",
         "previousAnalysisFiles",
         "previousPrismaSchemas",
+        "previousInterfaceSchemas",
       ],
       state: ctx.state(),
     });
@@ -266,9 +268,10 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceSchemas"
   >;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
@@ -283,16 +286,18 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       request: result.data.request,
     });
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

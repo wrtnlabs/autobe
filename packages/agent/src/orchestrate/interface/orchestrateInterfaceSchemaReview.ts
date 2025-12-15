@@ -202,12 +202,12 @@ function createController<Model extends ILlmSchema.Model>(
     pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "previousAnalysisFiles"
       | "prismaSchemas"
-      | "previousPrismaSchemas"
       | "interfaceOperations"
-      | "previousInterfaceOperations"
       | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
+      | "previousInterfaceOperations"
       | "previousInterfaceSchemas"
     >;
   },
@@ -259,16 +259,17 @@ function createController<Model extends ILlmSchema.Model>(
     return result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

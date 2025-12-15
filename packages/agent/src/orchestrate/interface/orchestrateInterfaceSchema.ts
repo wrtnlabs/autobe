@@ -125,21 +125,23 @@ async function process<Model extends ILlmSchema.Model>(
   const already: string[] = Object.keys(props.oldbie);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
-    | "previousPrismaSchemas"
     | "interfaceOperations"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
     | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
-      "previousPrismaSchemas",
       "interfaceOperations",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
       "previousInterfaceOperations",
+      "previousInterfaceSchemas",
     ],
     state: ctx.state(),
   });
@@ -214,11 +216,12 @@ function createController<Model extends ILlmSchema.Model>(
     > | null>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "previousAnalysisFiles"
       | "prismaSchemas"
-      | "previousPrismaSchemas"
       | "interfaceOperations"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
       | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
     >;
   },
 ): IAgenticaController.IClass<Model> {
@@ -270,16 +273,17 @@ function createController<Model extends ILlmSchema.Model>(
     return result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

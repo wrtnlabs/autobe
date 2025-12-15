@@ -17,6 +17,7 @@ export const transformInterfaceEndpointHistory = (props: {
     | "prismaSchemas"
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => ({

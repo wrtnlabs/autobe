@@ -79,17 +79,19 @@ async function process<Model extends ILlmSchema.Model>(
   );
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceEndpointApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
+      "previousAnalysisFiles",
       "previousPrismaSchemas",
+      "previousInterfaceOperations",
     ],
     state: ctx.state(),
     local: {
@@ -152,6 +154,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "prismaSchemas"
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {
@@ -170,16 +173,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     });
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

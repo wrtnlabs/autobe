@@ -16,6 +16,7 @@ export const transformInterfaceSchemaHistory = (props: {
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
     | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
   >;
   instruction: string;
   already: string[];

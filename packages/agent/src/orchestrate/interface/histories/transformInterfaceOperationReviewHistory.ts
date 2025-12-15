@@ -12,6 +12,7 @@ export function transformInterfaceOperationReviewHistory(props: {
     | "prismaSchemas"
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   operations: AutoBeOpenApi.IOperation[];
 }): IAutoBeOrchestrateHistory {

@@ -120,17 +120,19 @@ async function process<Model extends ILlmSchema.Model>(
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
+      "previousAnalysisFiles",
       "previousPrismaSchemas",
+      "previousInterfaceOperations",
     ],
     state: ctx.state(),
   });
@@ -217,9 +219,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
   actors: string[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
@@ -276,17 +279,18 @@ function createController<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
 
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

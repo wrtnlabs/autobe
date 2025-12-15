@@ -40,18 +40,20 @@ async function process<Model extends ILlmSchema.Model>(
   const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceOperationReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "previousAnalysisFiles",
       "prismaSchemas",
+      "previousAnalysisFiles",
       "previousPrismaSchemas",
+      "previousInterfaceOperations",
     ],
     state: ctx.state(),
   });
@@ -107,9 +109,10 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "previousAnalysisFiles"
     | "prismaSchemas"
+    | "previousAnalysisFiles"
     | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   >;
   prismaSchemas: AutoBePrisma.IFile[];
   build: (
@@ -142,17 +145,18 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
-  props.preliminary.fixApplication(application);
 
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,
