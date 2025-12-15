@@ -46,7 +46,11 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteHistories(ctx, props),
+      ...transformAnalyzeWriteHistories(ctx, {
+        scenario: props.scenario,
+        file: props.file,
+        preliminary,
+      }),
     });
     if (pointer.value === null) return out(result)(null);
 

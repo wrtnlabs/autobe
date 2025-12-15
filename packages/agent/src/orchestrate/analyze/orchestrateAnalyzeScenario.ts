@@ -24,20 +24,13 @@ export const orchestrateAnalyzeScenario = async <
   ctx: AutoBeContext<Model>,
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
-  const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
-  > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
-    source: SOURCE,
-    kinds: ["analysisFiles", "previousAnalysisFiles"],
-    state: ctx.state(),
-    all: {
-      analysisFiles: [],
-    },
-    local: {
-      analysisFiles: [],
-    },
-  });
+  const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
+      source: SOURCE,
+      kinds: ["previousAnalysisFiles"],
+      state: ctx.state(),
+    });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null> =
       {
@@ -51,7 +44,7 @@ export const orchestrateAnalyzeScenario = async <
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeSceHistories(ctx),
+      ...transformAnalyzeSceHistories(ctx, preliminary),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({
@@ -81,9 +74,7 @@ export const orchestrateAnalyzeScenario = async <
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null>;
-  preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles"
-  >;
+  preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 

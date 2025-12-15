@@ -24,6 +24,7 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
     ...transformAnalyzeWriteHistories(ctx, {
       scenario: props.scenario,
       file: props.myFile,
+      preliminary: null,
     }).histories.slice(0, -2),
     {
       id: v7(),

@@ -5,9 +5,11 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformAnalyzeSceHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  preliminary: AutoBePreliminaryController<"previousAnalysisFiles">,
 ): IAutoBeOrchestrateHistory => ({
   histories: [
     ...ctx
@@ -33,6 +35,7 @@ export const transformAnalyzeSceHistories = <Model extends ILlmSchema.Model>(
       `,
       created_at: new Date().toISOString(),
     },
+    ...preliminary.getHistories(),
   ],
   userMessage: StringUtil.trim`
     Design a complete list of documents and user actors for this project.
