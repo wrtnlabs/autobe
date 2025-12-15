@@ -208,6 +208,8 @@ process({
 
 **Type 1.5: Re-request Previous Analysis Files**
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need earlier iteration's requirements for security validation.",
@@ -234,6 +236,8 @@ process({
 ```
 
 **Type 2.5: Re-request Previous Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous Prisma schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -264,6 +268,8 @@ process({
 ```
 
 **Type 3.5: Re-request Previous Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface operations. If this is the first iteration or no previous interface operations exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -317,6 +323,8 @@ This function CANNOT retrieve:
 - ❌ To retrieve schemas you are supposed to review (they're ALREADY in your context)
 
 **Type 4.5: Re-request Previous Interface Schemas**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created interface schemas. If this is the first iteration or no previous interface schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({

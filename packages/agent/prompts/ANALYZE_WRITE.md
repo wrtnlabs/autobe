@@ -87,146 +87,61 @@ thinking: "Wrote section 1 with overview, section 2 with actors, section 3 with 
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeAnalyzeWriteApplication.IProps` interface. This interface uses a discriminated union to support preliminary data requests and final document generation.
+You must call the `process()` function using a discriminated union with two request types:
 
-### TypeScript Interface
+**Type 1: Re-request Previous Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
+Re-retrieve files from previous RAG iterations:
 
 ```typescript
-export namespace IAutoBeAnalyzeWriteApplication {
-  export interface IProps {
-    /**
-     * Think before you act - reflection on your current state and reasoning
-     */
-    thinking: string;
-
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final document writing
-     * (complete). When preliminary returns empty array, that type is removed
-     * from the union, physically preventing repeated calls.
-     */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles;
+process({
+  thinking: "Need earlier document context. Re-requesting them.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
   }
-
-  /**
-   * Request to write complete planning documentation.
-   */
-  export interface IComplete {
-    /**
-     * Type discriminator indicating this is the final task execution request.
-     */
-    type: "complete";
-
-    /**
-     * Step 1 (CoT: Plan Phase) - Document Planning Structure
-     */
-    plan: string;
-
-    /**
-     * Step 2 (CoT: Write Phase) - Complete Document Content
-     */
-    content: string;
-  }
-}
-
-/**
- * Request to retrieve analysis files for additional context.
- */
-export interface IAutoBePreliminaryGetAnalysisFiles {
-  /**
-   * Type discriminator indicating this is a preliminary data request.
-   */
-  type: "getAnalysisFiles";
-
-  /**
-   * List of analysis file names to retrieve.
-   *
-   * CRITICAL: DO NOT request the same file names that you have already
-   * requested in previous calls.
-   */
-  fileNames: string[];
-}
-
-/**
- * Request to re-retrieve previously requested analysis files for context.
- *
- * Use this to re-access files that were already requested in previous RAG
- * iterations within this orchestration task. Unlike `getAnalysisFiles` which
- * fetches NEW files from global state, this retrieves files from LOCAL context
- * that were previously requested.
- */
-export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
-  /**
-   * Type discriminator for re-requesting previous analysis files.
-   */
-  type: "getPreviousAnalysisFiles";
-
-  /**
-   * List of analysis file names to re-retrieve from previous requests.
-   *
-   * These file names MUST have been requested in a previous iteration.
-   * Use this to maintain context across multiple RAG cycles.
-   */
-  fileNames: string[];
-}
+});
 ```
 
-### Field Descriptions
+**When to use**: Need to reference files from earlier iterations without exceeding request budget.
 
-#### request (Discriminated Union)
+**Type 2: Complete Document Writing**
 
-The `request` property is a **discriminated union** that can be one of three types:
+Generate the complete planning document:
 
-**1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve NEW analysis files:
-- **type**: `"getAnalysisFiles"` - Discriminator indicating preliminary data request
-- **fileNames**: Array of analysis file names to retrieve (e.g., `["Feature_A.md", "Related_System.md"]`)
-- **Purpose**: Request specific related documents needed for comprehensive writing
-- **When to use**: When document requires understanding of related systems or workflows
-- **Strategy**: Request only files you actually need, batch multiple requests efficiently
-
-**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
-- **type**: `"getPreviousAnalysisFiles"` - Discriminator for re-requesting previous files
-- **fileNames**: Array of file names that were already requested in previous RAG iterations
-- **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
-- **When to use**: When you need to reference files from earlier iterations without exceeding request budget
-- **Important**: File names MUST have been requested before; requesting non-existent files will fail
-
-**3. IComplete** - Generate the planning document:
-- **type**: `"complete"` - Discriminator indicating final task execution
-- **plan**: Document planning structure and roadmap
-- **content**: Complete, production-ready markdown document
-
-#### Step 1 (CoT: Plan Phase) - **plan** - Document Planning Structure
-The strategic outline for what needs to be written, including:
+```typescript
+process({
+  thinking: "Comprehensive document with all business requirements and workflows.",
+  request: {
+    type: "complete",
+    plan: `# Document Planning Structure
 - Document title and purpose
 - Table of contents structure
 - Key sections to be covered
 - Relationships with other documents
-- Target audience (backend developers)
+- Target audience: backend developers`,
+    content: `# Complete Document Content
 
-This serves as your roadmap to ensure all necessary topics are covered in the documentation process.
+## Business Requirements
 
-#### Step 2 (CoT: Write Phase) - **content** - Complete Document Content
-The fully written document that:
-- Transforms raw requirements into structured documentation
-- Follows the planning guidelines from the `plan` field
-- Removes all ambiguity for backend developers
-- Provides specific, measurable requirements in natural language
-- Focuses on business logic and requirements (NOT technical implementation)
-- Uses EARS format for all applicable requirements
-- Includes Mermaid diagrams with proper syntax
-- Contains 5,000-30,000+ characters as needed for completeness
+Complete, production-ready markdown content following the plan...`
+  }
+});
+```
 
-Transform the initial context and requirements into production-ready documentation that developers can immediately use to build the system.
+**Field requirements**:
+- **plan**: Document planning structure and roadmap showing what will be written
+- **content**: Complete, production-ready markdown document (5,000-30,000+ characters)
 
-Your document must be complete and implementation-ready on the first write.
-There is no review-feedback loop - you must get it right the first time.
-Your performance is measured by the completeness and clarity of your single document.
-
-Write a thorough, detailed document that leaves no ambiguity for developers.
-Every requirement must be specific, measurable, and actionable.
+**Critical Writing Requirements**:
+- Write ONCE - no iterations or feedback loops
+- Include EVERYTHING developers need in your single document
+- Use EARS format for all applicable requirements
+- Include Mermaid diagrams with proper syntax (double quotes mandatory)
+- Focus on business logic and requirements (NOT technical implementation)
+- Write exhaustively - cover all business requirements comprehensively
 
 # Guidelines
 

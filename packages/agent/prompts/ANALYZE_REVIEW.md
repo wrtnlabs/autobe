@@ -181,150 +181,12 @@ process({
 
 ## 4. Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeAnalyzeReviewApplication.IProps` interface. This interface uses a discriminated union to support two types of requests:
+You must call the `process()` function using a discriminated union with three request types:
 
-### TypeScript Interface
+**Type 1: Request Analysis Files**
 
-```typescript
-export namespace IAutoBeAnalyzeReviewApplication {
-  export interface IProps {
-    /**
-     * Think before you act - reflection on your current state and reasoning
-     */
-    thinking: string;
+Request NEW analysis files for additional context:
 
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final document
-     * enhancement (complete). When preliminary returns empty array, that
-     * type is removed from the union, physically preventing repeated calls.
-     */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles;
-  }
-
-  /**
-   * Request to enhance and finalize planning documentation.
-   */
-  export interface IComplete {
-    /**
-     * Type discriminator indicating this is the final task execution request.
-     */
-    type: "complete";
-
-    /**
-     * Enhancement criteria and quality standards.
-     */
-    review: string;
-
-    /**
-     * Original document structure plan.
-     */
-    plan: string;
-
-    /**
-     * Enhanced, production-ready markdown document.
-     */
-    content: string;
-  }
-}
-
-/**
- * Request to retrieve analysis files for additional context.
- */
-export interface IAutoBePreliminaryGetAnalysisFiles {
-  /**
-   * Type discriminator indicating this is a preliminary data request.
-   */
-  type: "getAnalysisFiles";
-
-  /**
-   * List of analysis file names to retrieve.
-   *
-   * CRITICAL: DO NOT request the same file names that you have already
-   * requested in previous calls.
-   */
-  fileNames: string[];
-}
-
-/**
- * Request to re-retrieve previously requested analysis files for context.
- *
- * Use this to re-access files that were already requested in previous RAG
- * iterations within this orchestration task. Unlike `getAnalysisFiles` which
- * fetches NEW files from global state, this retrieves files from LOCAL context
- * that were previously requested.
- */
-export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
-  /**
-   * Type discriminator for re-requesting previous analysis files.
-   */
-  type: "getPreviousAnalysisFiles";
-
-  /**
-   * List of analysis file names to re-retrieve from previous requests.
-   *
-   * These file names MUST have been requested in a previous iteration.
-   * Use this to maintain context across multiple RAG cycles.
-   */
-  fileNames: string[];
-}
-```
-
-### Field Descriptions
-
-#### request (Discriminated Union)
-
-The `request` property is a **discriminated union** that can be one of three types:
-
-**1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve NEW analysis files:
-- **type**: `"getAnalysisFiles"` - Discriminator indicating preliminary data request
-- **fileNames**: Array of analysis file names to retrieve (e.g., `["Feature_A.md", "Related_Workflow.md"]`)
-- **Purpose**: Request specific related documents needed for comprehensive enhancement
-- **When to use**: When document references other features or needs cross-document context
-- **Strategy**: Request only files you actually need, batch multiple requests efficiently
-
-**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
-- **type**: `"getPreviousAnalysisFiles"` - Discriminator for re-requesting previous files
-- **fileNames**: Array of file names that were already requested in previous RAG iterations
-- **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
-- **When to use**: When you need to reference files from earlier iterations without exceeding request budget
-- **Important**: File names MUST have been requested before; requesting non-existent files will fail
-
-**3. IComplete** - Generate the enhanced document:
-- **type**: `"complete"` - Discriminator indicating final task execution
-- **review**: Enhancement criteria and quality standards
-- **plan**: Original document structure plan
-- **content**: Enhanced, production-ready markdown document
-
-#### review - Enhancement Criteria
-The review guidelines that ensure:
-- Minimum document length requirements (2,000+ chars)
-- Section completeness and EARS format compliance
-- Mermaid syntax validation (double quotes mandatory)
-- Content specificity for backend developers
-- Natural language business requirements (NO technical specs)
-
-#### plan - Original Document Plan
-The planning structure showing:
-- What sections should be present
-- Intended structure and organization
-- Target audience and purpose
-- Expected level of detail
-
-#### content - Enhanced Document Content
-The complete markdown document that:
-- Has incorporated all review criteria
-- Is production-ready for immediate deployment
-- Contains all business requirements for developers
-- Becomes the actual saved .md file content
-
-### Output Method
-
-You must call the `process()` function with your structured output:
-
-**Phase 1: Request analysis files (when needed)**:
 ```typescript
 process({
   thinking: "Missing related feature context for cross-references. Need them.",
@@ -335,7 +197,33 @@ process({
 });
 ```
 
-**Phase 2: Generate enhanced document** (after gathering context or directly):
+**When to use**:
+- Document references features not fully explained in draft
+- Need consistent terminology across related documents
+- Business logic requires understanding of related workflows
+
+**Type 2: Re-request Previous Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
+Re-retrieve files from previous RAG iterations:
+
+```typescript
+process({
+  thinking: "Need earlier requirements for context. Re-requesting them.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
+  }
+});
+```
+
+**When to use**: Need to reference files from earlier iterations without exceeding request budget.
+
+**Type 3: Complete Enhancement**
+
+Generate the enhanced document:
+
 ```typescript
 process({
   thinking: "Enhanced document with complete business context and proper formatting.",
@@ -349,6 +237,11 @@ Complete, enhanced markdown content with all improvements applied...`
   }
 });
 ```
+
+**Field requirements**:
+- **review**: Enhancement criteria and quality standards
+- **plan**: Original document structure and organization
+- **content**: Enhanced, production-ready markdown document that becomes the actual saved .md file
 
 **REQUIRED ACTIONS:**
 - ✅ Execute the function immediately

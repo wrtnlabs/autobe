@@ -49,7 +49,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getAnalysisFiles, getPrismaSchemas, etc.):
 ```typescript
 {
   thinking: "Missing actor table field info for auth operation design. Don't have it.",
@@ -226,6 +226,8 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 Re-retrieves Prisma schemas from previous RAG iterations.
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need schemas from earlier iteration for reference.",
@@ -242,35 +244,6 @@ process({
 - Re-accessing known schemas without exceeding request budget
 
 **Important**: Schema names MUST have been requested before; requesting non-existent schemas will fail.
-
-**process() - Request Interface Operations**
-
-Retrieves existing API operations for consistency.
-
-```typescript
-process({
-  thinking: "I need user join and admin login operations for consistency. Don't have them yet.",
-  request: {
-    type: "getInterfaceOperations",
-    endpoints: [
-      { path: "/auth/user/join", method: "post" },
-      { path: "/auth/admin/login", method: "post" }
-    ]  // Batch request
-  }
-})
-```
-
-**When to use**:
-- Need to maintain consistency with existing authorization operations
-- Checking for already-defined authentication endpoints
-
-**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-
-Some API operations may have been loaded in previous function calls. These operations are already available in your conversation context.
-
-**ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
-
-**Rule**: Only request operations that you have not yet accessed
 
 ### 2.3. Input Materials Management Principles
 
@@ -316,8 +289,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -396,10 +367,6 @@ process({ thinking: "Still missing actor schemas. Need more.", request: { type: 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If "Authentication_Requirements.md" is already loaded:
 process({ thinking: "Missing password policy info. Need it.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
-
-// ❌ FORBIDDEN - Re-requesting already loaded operations
-// If operation "POST /auth/user/join" is already loaded:
-process({ thinking: "Missing join operation reference. Need it.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/auth/user/join", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 // If schemas "users", "admins", "sellers" are already loaded:
@@ -598,10 +565,9 @@ Your implementation should provide a complete authentication system with actor-a
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 7.2. Operation Generation Compliance

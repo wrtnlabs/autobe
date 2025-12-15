@@ -240,6 +240,8 @@ process({
 
 Re-retrieves Prisma model definitions from previous RAG iterations.
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need earlier iteration's Prisma schemas for schema generation context.",
@@ -277,6 +279,8 @@ process({
 **Type 3.5: Re-request Previous Interface Operations**
 
 Re-retrieves API operation definitions from previous RAG iterations.
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface operations. If this is the first iteration or no previous operations exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -349,7 +353,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions

@@ -90,128 +90,65 @@ thinking: "Created prefix shopping, added 3 actors, made 11 files..."
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeAnalyzeScenarioApplication.IProps` interface. This interface uses a discriminated union to support preliminary data requests and final scenario composition.
+You must call the `process()` function using a discriminated union with two request types:
 
-### TypeScript Interface
+**Type 1: Re-request Previous Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
+Re-retrieve files from previous RAG iterations:
 
 ```typescript
-export namespace IAutoBeAnalyzeScenarioApplication {
-  export interface IProps {
-    /**
-     * Think before you act - reflection on your current state and reasoning
-     */
-    thinking: string;
-
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final scenario
-     * composition (complete). When preliminary returns empty array, that type
-     * is removed from the union, physically preventing repeated calls.
-     */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles;
+process({
+  thinking: "Need earlier scenario data for context. Re-requesting them.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Actor_Definitions.md"]
   }
-
-  /**
-   * Request to compose project structure with actors and documentation files.
-   */
-  export interface IComplete {
-    /**
-     * Type discriminator indicating this is the final task execution request.
-     */
-    type: "complete";
-
-    /** Reason for the analysis and composition of the project structure */
-    reason: string;
-
-    /** Prefix for file names and variable names (camelCase) */
-    prefix: string;
-
-    /** Actors to be assigned for the project */
-    actors: AutoBeAnalyzeActor[];
-
-    /** Language for document content */
-    language?: string;
-
-    /** Number of pages (must match files.length) */
-    page: number;
-
-    /** Array of document metadata objects defining files to be generated */
-    files: Array<AutoBeAnalyzeFile.Scenario>;
-  }
-}
-
-/**
- * Request to retrieve analysis files for additional context.
- */
-export interface IAutoBePreliminaryGetAnalysisFiles {
-  /**
-   * Type discriminator indicating this is a preliminary data request.
-   */
-  type: "getAnalysisFiles";
-
-  /**
-   * List of analysis file names to retrieve.
-   *
-   * CRITICAL: DO NOT request the same file names that you have already
-   * requested in previous calls.
-   */
-  fileNames: string[];
-}
-
-/**
- * Request to re-retrieve previously requested analysis files for context.
- *
- * Use this to re-access files that were already requested in previous RAG
- * iterations within this orchestration task. Unlike `getAnalysisFiles` which
- * fetches NEW files from global state, this retrieves files from LOCAL context
- * that were previously requested.
- */
-export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
-  /**
-   * Type discriminator for re-requesting previous analysis files.
-   */
-  type: "getPreviousAnalysisFiles";
-
-  /**
-   * List of analysis file names to re-retrieve from previous requests.
-   *
-   * These file names MUST have been requested in a previous iteration.
-   * Use this to maintain context across multiple RAG cycles.
-   */
-  fileNames: string[];
-}
+});
 ```
 
-### Field Descriptions
+**When to use**: Need to reference files from earlier iterations without exceeding request budget.
 
-#### request (Discriminated Union)
+**Type 2: Complete Scenario Composition**
 
-The `request` property is a **discriminated union** that can be one of three types:
+Generate the project structure with actors and documentation files:
 
-**1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve NEW analysis files:
-- **type**: `"getAnalysisFiles"` - Discriminator indicating preliminary data request
-- **fileNames**: Array of analysis file names to retrieve
-- **Purpose**: Request specific related documents needed for comprehensive scenario composition
-- **When to use**: When building upon previous scenarios or need related context
-- **Strategy**: Request only files you actually need, batch multiple requests efficiently
+```typescript
+process({
+  thinking: "Composed complete scenario structure with actors and documentation plan.",
+  request: {
+    type: "complete",
+    reason: "Explanation for the analysis and composition",
+    prefix: "projectPrefix",
+    actors: [
+      {
+        name: "customer",
+        kind: "member",
+        description: "Regular user of the platform"
+      }
+    ],
+    language: "en",
+    page: 3,
+    files: [
+      {
+        name: "00-toc.md",
+        reason: "Table of contents",
+        type: "toc",
+        outline: "Main sections..."
+      }
+    ]
+  }
+});
+```
 
-**2. IAutoBePreliminaryGetPreviousAnalysisFiles** - Re-retrieve PREVIOUSLY requested analysis files:
-- **type**: `"getPreviousAnalysisFiles"` - Discriminator for re-requesting previous files
-- **fileNames**: Array of file names that were already requested in previous RAG iterations
-- **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
-- **When to use**: When you need to reference files from earlier iterations without exceeding request budget
-- **Important**: File names MUST have been requested before; requesting non-existent files will fail
-
-**3. IComplete** - Generate the scenario composition:
-- **type**: `"complete"` - Discriminator indicating final task execution
+**Field requirements**:
 - **reason**: Explanation for the analysis and composition
 - **prefix**: Project prefix (camelCase)
 - **actors**: Array of user actors with name, kind, and description
 - **language**: Optional language specification for documents
 - **page**: Number of pages (must match files.length)
-- **files**: Complete array of document metadata
+- **files**: Complete array of document metadata objects
 
 # Input Materials
 

@@ -432,6 +432,8 @@ Some requirements files may have been loaded in previous function calls. These m
 
 Re-retrieves requirement analysis documents from previous RAG iterations.
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need earlier iteration's requirements for endpoint validation context.",
@@ -473,6 +475,8 @@ Some Prisma schemas may have been loaded in previous function calls. These mater
 **process() - Re-request Previous Prisma Schemas**
 
 Re-retrieves Prisma model definitions from previous RAG iterations.
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -527,8 +531,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -911,10 +913,9 @@ Your review must:
   * These instructions ensure efficient resource usage and accurate analysis
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 10.2. Endpoint Review Compliance

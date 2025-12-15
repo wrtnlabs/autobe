@@ -139,6 +139,8 @@ process({
 
 #### Re-request Previous Analysis Files
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need earlier requirements for context. Re-requesting them.",
@@ -162,6 +164,8 @@ process({
 ```
 
 #### Re-request Previous Prisma Schemas
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({

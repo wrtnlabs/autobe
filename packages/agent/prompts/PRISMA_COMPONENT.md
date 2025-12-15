@@ -698,6 +698,11 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
  * iterations within this orchestration task. Unlike `getAnalysisFiles` which
  * fetches NEW files from global state, this retrieves files from LOCAL context
  * that were previously requested.
+ *
+ * IMPORTANT: This function is ONLY available when previous versions of this
+ * orchestration task have created artifacts. If this is the first iteration
+ * or no previous artifacts exist for this task, this function type will NOT
+ * be included in the discriminated union.
  */
 export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
   /**
@@ -734,6 +739,7 @@ The `request` property is a **discriminated union** that can be one of three typ
 - **Purpose**: Maintain context across multiple RAG cycles by re-accessing known files
 - **When to use**: When you need to reference files from earlier iterations without exceeding request budget
 - **Important**: File names MUST have been requested before; requesting non-existent files will fail
+- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
 
 **3. IComplete** - Extract the component organization:
 - **type**: `"complete"` - Discriminator indicating final task execution

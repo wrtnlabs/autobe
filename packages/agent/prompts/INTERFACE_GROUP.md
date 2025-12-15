@@ -184,6 +184,7 @@ The `request` property is a **discriminated union** that can be one of five type
 - **type**: `"getPreviousAnalysisFiles"`
 - **fileNames**: Array of file names that were already requested in previous RAG iterations
 - **Purpose**: Maintain context across multiple RAG cycles
+- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
 
 **3. IAutoBePreliminaryGetPrismaSchemas** - Retrieve NEW Prisma schemas:
 - **type**: `"getPrismaSchemas"`
@@ -195,6 +196,7 @@ The `request` property is a **discriminated union** that can be one of five type
 - **type**: `"getPreviousPrismaSchemas"`
 - **modelNames**: Array of model names that were already requested in previous RAG iterations
 - **Purpose**: Maintain schema context across multiple RAG cycles
+- **Availability**: This function is ONLY available when previous versions of the task exist; it will NOT be provided in first iterations
 
 **5. IComplete** - Generate the endpoint groups:
 - **type**: `"complete"`

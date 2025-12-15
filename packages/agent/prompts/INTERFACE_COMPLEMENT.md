@@ -184,6 +184,8 @@ process({
 
 Re-retrieves requirement analysis documents from previous RAG iterations.
 
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created artifacts. If this is the first iteration or no previous artifacts exist for this task, this function type will NOT be provided.
+
 ```typescript
 process({
   thinking: "Need earlier iteration's requirements for schema complement context.",
@@ -217,6 +219,8 @@ process({
 **Type 2.5: Re-request Previous Prisma Schemas**
 
 Re-retrieves Prisma model definitions from previous RAG iterations.
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Prisma schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -254,6 +258,8 @@ process({
 **Type 3.5: Re-request Previous Interface Operations**
 
 Re-retrieves API operation definitions from previous RAG iterations.
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface operations. If this is the first iteration or no previous operations exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
@@ -335,6 +341,8 @@ process({
 **Type 4.5: Re-request Previous Interface Schemas**
 
 Re-retrieves already-generated schema definitions from previous RAG iterations.
+
+**IMPORTANT**: This function is ONLY available when previous versions of this orchestration task have created Interface schemas. If this is the first iteration or no previous schemas exist for this task, this function type will NOT be provided.
 
 ```typescript
 process({
