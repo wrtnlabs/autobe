@@ -4,19 +4,26 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { transformInterfaceCommonHistory } from "./transformInterfaceCommonHistory";
 
 export const transformInterfaceGroupHistory = (props: {
   state: AutoBeState;
   instruction: string;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+  >;
 }): IAutoBeOrchestrateHistory => {
-  const prerequisite = transformInterfaceCommonHistory(props.state);
-  if (prerequisite !== null)
+  const common = transformInterfaceCommonHistory(props.state);
+  if (common !== null)
     return {
-      histories: prerequisite,
+      histories: common,
       userMessage: "Please wait for prerequisites to complete",
     };
-
   return {
     histories: [
       {
@@ -25,24 +32,7 @@ export const transformInterfaceGroupHistory = (props: {
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.INTERFACE_GROUP,
       },
-      {
-        id: v7(),
-        created_at: new Date().toISOString(),
-        type: "assistantMessage",
-        text: StringUtil.trim`
-          ## Requirement Analysis Report
-
-          \`\`\`json
-          ${JSON.stringify(props.state.analyze!.files)}
-          \`\`\`
-
-          ## Prisma DB Schemas
-
-          \`\`\`json
-          ${JSON.stringify(props.state.prisma!.schemas)}
-          \`\`\`
-        `,
-      },
+      ...props.preliminary.getHistories(),
       {
         id: v7(),
         created_at: new Date().toISOString(),

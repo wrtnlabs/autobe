@@ -66,6 +66,7 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
       ...transformInterfaceGroupHistory({
         state: ctx.state(),
         instruction: props.instruction,
+        preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
