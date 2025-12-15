@@ -2,7 +2,6 @@ import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 export interface IAutoBeAnalyzeScenarioApplication {
@@ -53,10 +52,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * composition (complete). When preliminary returns empty array, that type
      * is removed from the union, physically preventing repeated calls.
      */
-    request:
-      | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
   /**
@@ -117,11 +113,14 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Array of document metadata objects defining files to be generated.
      *
      * Each array element is an AutoBeAnalyzeFile.Scenario object containing:
-     * - filename: The output file name (e.g., "01-service-overview.md")
-     * - reason: Why this document is being created
-     * - documentType, outline, constraints, etc.: Metadata guiding content generation
+     *
+     * - Filename: The output file name (e.g., "01-service-overview.md")
+     * - Reason: Why this document is being created
+     * - DocumentType, outline, constraints, etc.: Metadata guiding content
+     *   generation
      *
      * These documents represent business-focused planning documentation:
+     *
      * - Business requirements and functional specifications in natural language
      * - User journey mapping and use case scenarios
      * - Business rules and workflow definitions
@@ -131,16 +130,18 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - DO NOT: Include database schemas, ERD, or API specifications
      * - DO: Write all requirements in natural language for clarity
      *
-     * Generate metadata objects based on actual requirements gathered from conversation.
-     * Do not create unnecessary documentation - only generate what is needed to
-     * properly define the business requirements and system specifications.
+     * Generate metadata objects based on actual requirements gathered from
+     * conversation. Do not create unnecessary documentation - only generate
+     * what is needed to properly define the business requirements and system
+     * specifications.
      *
      * # Array Length Rules
      *
-     * The array length must match the user's requested page count plus one for ToC.
-     * For example: user requests 3 pages → generate 4 objects (1 ToC + 3 content).
-     * If user does not specify a number, generate sufficient objects to adequately
-     * document the service (typically 11+ objects including ToC).
+     * The array length must match the user's requested page count plus one for
+     * ToC. For example: user requests 3 pages → generate 4 objects (1 ToC + 3
+     * content). If user does not specify a number, generate sufficient objects
+     * to adequately document the service (typically 11+ objects including
+     * ToC).
      */
     files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
   }
