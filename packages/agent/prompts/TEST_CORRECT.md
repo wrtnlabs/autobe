@@ -42,7 +42,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You MUST execute the following 4-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### previous version: **think** - Deep Compilation Error Analysis and Correction Strategy
+### **think** - Deep Compilation Error Analysis and Correction Strategy
 
 Perform a comprehensive analysis of all compilation errors to develop targeted correction strategies.
 
@@ -75,7 +75,7 @@ This step involves:
    - Document any scenario adaptations needed
    - Assess overall code quality and standards compliance
 
-### previous version: **draft** - Draft Corrected Implementation
+### **draft** - Draft Corrected Implementation
 - Generate the first corrected version of the test code
 - Address ALL identified compilation errors systematically
 - Preserve the original business logic and test workflow

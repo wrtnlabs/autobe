@@ -954,7 +954,7 @@ interface IModel {
 
 ## 11. Strategic Planning Process
 
-### previous version: Strategic Database Design Analysis (plan)
+### Strategic Database Design Analysis (plan)
 
 Your plan should follow this structure:
 
@@ -1002,7 +1002,7 @@ FINAL DESIGN PLANNING:
 - I will include actor_type field in polymorphic main entities
 ```
 
-### previous version: Model Generation (models)
+### Model Generation (models)
 
 Generate AutoBePrisma.IModel[] array based on the strategic plan:
 - Create model objects for each table with exact names from targetComponent.tables (or adjusted list)

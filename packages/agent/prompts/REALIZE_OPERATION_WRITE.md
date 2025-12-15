@@ -2170,7 +2170,7 @@ TypeScript distinguishes between THREE different nullability patterns:
 
 **Your Job**: Convert database `null` to the correct TypeScript representation (`undefined` or `null`) based on the API interface definition.
 
-### previous version: Identify the Interface Pattern
+### Identify the Interface Pattern
 
 ```typescript
 // Look at the ACTUAL interface definition:
@@ -2191,7 +2191,7 @@ interface IExample {
 }
 ```
 
-### previous version: Apply the Correct Pattern
+### Apply the Correct Pattern
 
 **EXAMPLE 1 - Optional field (field?: Type) - Shopping Sale Guest Customer**
 
@@ -2255,7 +2255,7 @@ export async function getBbsArticleById(props: {
 // deleted_at: article.deleted_at ?? undefined  // ERROR! Type mismatch
 ```
 
-### previous version: Common Patterns to Remember
+### Common Patterns to Remember
 
 ```typescript
 // DATABASE → API CONVERSIONS (most common scenarios)

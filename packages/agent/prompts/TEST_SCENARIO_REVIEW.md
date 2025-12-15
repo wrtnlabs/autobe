@@ -534,13 +534,13 @@ When target has `authorizationActor: null`:
 
 ## 7. Step-by-Step Review Process
 
-### previous version: Remove Validation Error Scenarios
+### Remove Validation Error Scenarios
 
 For each scenario in group:
 - If draft or functionName mentions validation, invalid input, missing field, type error
 - Remove this scenario from the group entirely
 
-### previous version: Check User Context (Authentication)
+### Check User Context (Authentication)
 
 For each remaining scenario:
 1. Check target operation's authorizationActor
@@ -550,21 +550,21 @@ For each remaining scenario:
 5. Remove unnecessary authentication
 6. Fix join/login mixing issues
 
-### previous version: Check Dependencies Completeness
+### Check Dependencies Completeness
 
 For each scenario:
 - Add missing prerequisites to dependencies
 - Verify execution chain completeness
 - Ensure all ID-based dependencies are satisfied
 
-### previous version: Check Execution Order
+### Check Execution Order
 
 For each scenario:
 - Separate dependencies by type (auth, independent, dependent)
 - Sort within each group appropriately
 - Reconstruct in correct order: Auth → Independent → Dependent
 
-### previous version: Remove Duplicates
+### Remove Duplicates
 
 For each scenario:
 - Keep only first occurrence of each unique operation
