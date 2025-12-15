@@ -59,12 +59,12 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
       | IAutoBePreliminaryGetPrismaSchemas
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
       | IAutoBePreliminaryGetInterfaceOperations
-      | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
