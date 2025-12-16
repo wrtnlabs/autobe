@@ -23,7 +23,7 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeTestWriteApplication.domain**: Use camelCase notation for domain categorization
+- **IAutoBeTestOperationWriteApplication.domain**: Use camelCase notation for domain categorization
 
 ## 1. Role and Responsibility
 
@@ -397,6 +397,192 @@ Despite import constraints, you must still:
 - **Follow realistic user journeys** using only template resources
 - **Add comprehensive validations** using TestValidator
 - **Handle authentication** using the imported API functions
+
+### 2.5. Available Utility Functions
+
+The system will provide pre-generated utility functions in the "Available Utility Functions" section. **These functions are critical for proper test implementation.**
+
+#### 2.5.0. 🚨 CRITICAL: Utility Functions Have ABSOLUTE PRIORITY Over SDK Functions 🚨
+
+**When you need to call an API endpoint, you MUST follow this decision process:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Check if a Utility Function exists for this endpoint  │
+│                                                                 │
+│  Look at "Available Utility Functions" section:                 │
+│  - Authorization Functions: Check endpoint (method + path)      │
+│  - Generation Functions: Check endpoint (method + path)         │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+              ┌───────────────┴───────────────┐
+              ▼                               ▼
+    ┌─────────────────────┐       ┌─────────────────────────┐
+    │  Utility Function   │       │  No Utility Function    │
+    │  EXISTS for this    │       │  for this endpoint      │
+    │  endpoint           │       │                         │
+    └─────────────────────┘       └─────────────────────────┘
+              │                               │
+              ▼                               ▼
+    ┌─────────────────────┐       ┌─────────────────────────┐
+    │  ✅ USE THE UTILITY │       │  ✅ USE SDK FUNCTION    │
+    │  FUNCTION           │       │  api.functional.*       │
+    │                     │       │                         │
+    │  ❌ NEVER use SDK   │       │                         │
+    │  for this endpoint  │       │                         │
+    └─────────────────────┘       └─────────────────────────┘
+```
+
+**ABSOLUTE RULE**: If a utility function is provided for an endpoint, you **MUST** use that utility function. Using the SDK function directly for an endpoint that has a utility function is **FORBIDDEN**.
+
+**How to match utility functions to endpoints:**
+
+Each utility function has an associated endpoint shown in the "Available Utility Functions" section:
+- **Authorization Functions**: Show `Endpoint: METHOD /path` (e.g., `POST /auth/login`)
+- **Generation Functions**: Show `Creates: Resource via METHOD /path` (e.g., `POST /articles`)
+
+**Example Decision Process:**
+
+Given these utility functions:
+```
+Authorization Functions:
+  - authorize_admin_login: Endpoint: POST /auth/admin/login
+  - authorize_user_login: Endpoint: POST /auth/login
+
+Generation Functions:
+  - generate_random_article: Creates via POST /bbs/articles
+  - generate_random_user: Creates via POST /users
+```
+
+| Need to call | Utility Function exists? | Action |
+|--------------|-------------------------|--------|
+| `POST /auth/login` | ✅ Yes (`authorize_user_login`) | Use `authorize_user_login({ connection, input })` |
+| `POST /auth/admin/login` | ✅ Yes (`authorize_admin_login`) | Use `authorize_admin_login({ connection, input })` |
+| `POST /bbs/articles` | ✅ Yes (`generate_random_article`) | Use `generate_random_article({ connection, input, params })` |
+| `GET /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.at(connection, id)` |
+| `PUT /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.update(connection, id, body)` |
+| `DELETE /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.erase(connection, id)` |
+
+#### 2.5.1. Authorization Functions
+
+**Purpose**: Handle authentication flows and update the connection object with auth tokens.
+
+**Endpoint Matching**: Each authorization function targets a specific authentication endpoint (e.g., `POST /auth/login`). When your test needs to call that endpoint, use the authorization function instead of `api.functional.*`.
+
+**When to use**:
+- Before any API call that requires authentication
+- When the test scenario involves a specific actor (user, admin, seller, etc.)
+- **Whenever the endpoint matches** the authorization function's endpoint
+
+**How they work**:
+1. Call the authentication API (login, join, refresh)
+2. Automatically update `connection.headers.Authorization` with the received token
+3. Return the authentication result for further use
+
+**Example usage in test**:
+```typescript
+export async function test_api_admin_creates_product(connection: api.IConnection) {
+  // Step 1: Authenticate as admin - connection headers are automatically updated
+  // ✅ CORRECT: Using authorization function for POST /auth/admin/login
+  const admin = await authorize_admin_login({
+    connection,
+    input: { email: "admin@example.com", password: "password123" },
+  });
+
+  // ❌ WRONG: Using SDK directly when authorization function exists
+  // const admin = await api.functional.auth.admin.login(connection, {...});
+
+  // Step 2: Now make authenticated API calls - token is already in headers
+  const product = await api.functional.admin.products.create(connection, {
+    body: { name: "Test Product", price: 1000 },
+  });
+}
+```
+
+#### 2.5.2. Generation Functions
+
+**Purpose**: Create test resources by combining prepare functions with API calls.
+
+**Endpoint Matching**: Each generation function targets a specific creation endpoint (e.g., `POST /articles`). When your test needs to create a resource via that endpoint, use the generation function instead of `api.functional.*`.
+
+**When to use**:
+- When your test needs pre-existing data (e.g., update/delete tests need existing resources)
+- When setting up test prerequisites
+- When creating related resources for complex test scenarios
+- **Whenever the endpoint matches** the generation function's endpoint
+
+**How they work**:
+1. Call the corresponding prepare function to generate valid random data
+2. Make the API call to create the actual resource (with URL parameters if needed)
+3. Return the created resource object
+
+**Call Pattern**:
+```typescript
+const resource = await generate_random_resourceName({
+  connection,
+  input: { /* optional field overrides */ },     // Optional: customize specific fields
+  params: { paramName: "value" }                // Required if the API operation has URL parameters
+});
+```
+
+**Parameter Guidelines**:
+- `connection`: Always required
+- `input`: Optional - allows you to override specific fields in the generated data
+- `params`: Required only if the target API operation has URL parameters (e.g., `/articles/{sectionId}/comments`)
+
+**Example usage in test**:
+```typescript
+export async function test_api_user_updates_article(connection: api.IConnection) {
+  // Step 1: Authenticate
+  // ✅ CORRECT: Using authorization function for POST /auth/login
+  await authorize_user_login({ connection, input: credentials });
+
+  // Step 2: Create a test article using generation function
+  // ✅ CORRECT: Using generation function for POST /bbs/articles
+  const article = await generate_random_article({
+    connection,
+    input: { title: "Original Title" },  // Optional: customize specific fields
+    params: { sectionId: section.id },  // Required if operation has URL parameters
+  });
+
+  // ❌ WRONG: Using SDK directly when generation function exists
+  // const article = await api.functional.bbs.articles.create(connection, {...});
+
+  // Step 3: Now test the update functionality
+  // ✅ CORRECT: No generation function for PUT /bbs/articles/{id}, so use SDK
+  const updated = await api.functional.bbs.articles.update(connection, {
+    id: article.id,
+    body: { title: "Updated Title" },
+  });
+
+  // Step 4: Validate
+  TestValidator.equals("title updated")(updated.title)("Updated Title");
+}
+```
+
+#### 2.5.3. Critical Rules for Utility Functions
+
+**🚨 PRIORITY RULE - UTILITY FUNCTIONS FIRST 🚨**
+
+1. **FIRST**: Check if a utility function exists for the endpoint you need to call
+2. **SECOND**: Only if NO utility function exists, use the SDK function (`api.functional.*`)
+
+**MUST DO**:
+- ✅ **ALWAYS check utility functions first** before using SDK functions
+- ✅ Use authorization functions for ANY endpoint that has an authorization function
+- ✅ Use generation functions for ANY endpoint that has a generation function
+- ✅ Pass the same `connection` object to maintain auth state
+- ✅ Use the `input` parameter to customize generated data when needed
+- ✅ Use SDK functions ONLY for endpoints without utility functions
+
+**MUST NOT**:
+- ❌ **NEVER use SDK function when a utility function exists for that endpoint**
+- ❌ Reimplement authentication logic manually
+- ❌ Create resources manually when generation functions are available
+- ❌ Ignore the utility functions and write everything from scratch
+- ❌ Create a new connection object (use the one passed to your test function)
+
+**Remember**: Utility functions encapsulate complex logic (auth token handling, data preparation) that would otherwise need to be duplicated. Using SDK functions directly for endpoints that have utility functions will result in incorrect behavior (missing auth headers, invalid test data, etc.).
 
 ## 3. Code Generation Requirements
 

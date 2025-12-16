@@ -1,5 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { AutoBeTestFile } from "../histories";
+import { AutoBeTestWriteFunction, AutoBeTestFile } from "../histories";
+import { IAutoBeTokenUsageJson } from "../json";
+import { AutoBeFunctionCallingMetric } from "../histories/contents/AutoBeFunctionCallingMetric";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -20,26 +22,19 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeTestCorrectEvent
-  extends AutoBeEventBase<"testCorrect">,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"testCorrect"> {
   kind: "casting" | "overall" | "request";
 
   /**
-   * The test file that contained compilation errors with its detailed scenario
-   * metadata.
+   * The test function that contained compilation errors.
    *
-   * Contains the structured test file object that failed compilation before
-   * correction. The file includes its location, problematic source code
-   * content, and associated scenario information that provides context for
-   * understanding the compilation issues. This file serves as a comprehensive
-   * baseline for measuring the effectiveness of the correction process.
-   *
-   * Unlike simple key-value pairs, this structure preserves the rich metadata
-   * about the test scenario, enabling better analysis of what specific test
-   * patterns or business logic implementations led to compilation failures and
-   * how they can be systematically improved.
+   * Contains the specific test function object that failed compilation,
+   * including its metadata, location, and source code. This can be any type
+   * of test function: prepare, generation, authorization, or main test write
+   * function. The function type determines which specialized correction
+   * strategy will be applied.
    */
-  file: AutoBeTestFile;
+  function: AutoBeTestWriteFunction;
 
   /**
    * The compilation failure details that triggered the correction process.
@@ -55,64 +50,6 @@ export interface AutoBeTestCorrectEvent
   result: IAutoBeTypeScriptCompileResult.IFailure;
 
   /**
-   * AI's deep compilation error analysis and correction strategy.
-   *
-   * Contains the AI's comprehensive analysis of compilation errors and the
-   * strategic approach for resolving them. This analysis examines each error
-   * message to understand root causes, identifies error patterns, and develops
-   * targeted correction strategies while maintaining the original test
-   * purpose.
-   *
-   * The AI correlates compilation diagnostics with business requirements to
-   * ensure that error corrections preserve the intended functionality. This
-   * deep analysis forms the foundation for all subsequent correction efforts,
-   * demonstrating the AI's ability to understand complex type errors and
-   * develop systematic solutions.
-   */
-  think: string;
-
-  /**
-   * The first corrected version of the test code addressing compilation errors.
-   *
-   * Contains the AI's initial attempt to fix the compilation issues while
-   * preserving the original business logic and test workflow. This draft
-   * represents the direct application of error correction strategies identified
-   * during the analysis phase.
-   *
-   * The draft code demonstrates the AI's approach to resolving TypeScript
-   * compilation errors while maintaining the intended test functionality and
-   * following established conventions.
-   */
-  draft: string;
-
-  /**
-   * AI's comprehensive review and validation of the corrected draft code.
-   *
-   * Contains the AI's evaluation of the draft implementation, examining both
-   * technical correctness and business logic preservation. This review process
-   * identifies any remaining issues and validates that compilation errors have
-   * been properly resolved.
-   *
-   * The review provides insight into the AI's quality assurance process and
-   * helps stakeholders understand how the correction maintains test integrity.
-   */
-  review?: string;
-
-  /**
-   * The final production-ready corrected test code.
-   *
-   * Contains the polished version of the corrected test code that incorporates
-   * all review feedback and validation results. This represents the completed
-   * error correction process, guaranteed to compile successfully while
-   * preserving all original test functionality.
-   *
-   * The final implementation serves as the definitive solution that replaces
-   * the compilation-failed code and demonstrates the AI's ability to learn from
-   * errors and produce high-quality test code.
-   */
-  final?: string;
-
-  /**
    * Iteration number of the requirements analysis this test correction was
    * performed for.
    *
@@ -125,5 +62,75 @@ export interface AutoBeTestCorrectEvent
    * activities and the underlying requirements, ensuring that test improvements
    * remain relevant to the current project scope and validation objectives.
    */
+  step: number;
+
+  /**
+   * Token usage metrics for the correction operation.
+   * 
+   * Tracks the computational resources consumed during the test correction
+   * process, including input and output tokens used by the LLM.
+   */
+  tokenUsage?: IAutoBeTokenUsageJson.IComponent;
+
+  /**
+   * Performance metric for the correction operation.
+   * 
+   * Records timing and efficiency metrics for tracking the correction process
+   * performance and optimization opportunities.
+   */
+  metric?: AutoBeFunctionCallingMetric;
+
+  /**
+   * Analysis thought process from the correction agent.
+   * 
+   * Contains the AI agent's analysis and reasoning about the compilation
+   * errors and how to fix them. This provides transparency into the
+   * correction decision-making process.
+   */
+  think?: string;
+
+  /**
+   * Draft correction code generated by the agent.
+   * 
+   * The initial corrected version of the test code that attempts to resolve
+   * the compilation errors. This may be further refined through review.
+   */
+  draft?: string;
+
+  /**
+   * Review analysis of the draft correction.
+   * 
+   * Contains the agent's self-review of the draft correction, identifying
+   * any remaining issues or improvements needed before finalization.
+   */
+  review?: string;
+
+  /**
+   * Final corrected code after review and refinement.
+   * 
+   * The polished version of the test code that incorporates all corrections
+   * and review feedback, ready for compilation validation.
+   */
+  final?: string;
+}
+
+/**
+ * @deprecated Use the new AutoBeTestCorrectEvent structure above
+ * 
+ * Legacy event structure that includes aggregated correction details.
+ * This structure is being phased out in favor of a simpler event model
+ * where correction details are tracked within each function type.
+ */
+export interface AutoBeTestCorrectEventLegacy
+  extends AutoBeEventBase<"testCorrect">,
+    AutoBeAggregateEventBase {
+  kind: "casting" | "overall" | "request";
+  functionType: "authorization" | "generation" | "prepare" | "operation";
+  file: AutoBeTestFile;
+  result: IAutoBeTypeScriptCompileResult.IFailure;
+  think: string;
+  draft: string;
+  review?: string;
+  final?: string;
   step: number;
 }

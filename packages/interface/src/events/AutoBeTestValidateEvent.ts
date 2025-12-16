@@ -1,5 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { AutoBeTestFile } from "../histories";
+import { AutoBeTestWriteFunction } from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -22,21 +22,27 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 export interface AutoBeTestValidateEvent
   extends AutoBeEventBase<"testValidate"> {
   /**
-   * Test file that is being validated or contained compilation errors with its
-   * detailed scenario metadata.
+   * Function type indicating the specific test writing operation performed.
    *
-   * Contains the structured test file object that is undergoing validation or
-   * failed compilation. The file includes its location, source code content,
-   * and associated scenario information that provides context for understanding
-   * any compilation issues. This file serves as a comprehensive baseline for
-   * measuring the effectiveness of the correction process.
+   * This discriminated union represents different stages and types of test code
+   * generation that occur during the test writing process:
    *
-   * Unlike simple key-value pairs, this structure preserves the rich metadata
-   * about the test scenario, enabling better analysis of what specific test
-   * patterns or business logic implementations led to compilation failures and
-   * how they can be systematically improved.
+   * - `AutoBeTestPrepareWriteFunction`: Generates test data preparation functions
+   *   that create mock DTO objects required by API endpoints
+   * - `AutoBeTestGenerationWriteFunction`: Creates resource generation functions
+   *   that produce test data and utilities needed by test scenarios
+   * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
+   *   authorization functions for different actors (login, signup, token
+   *   refresh)
+   * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
+   *   complete test implementations
+   *
+   * Each function type serves a specific purpose in building comprehensive test
+   * suites, from data preparation through authentication to actual scenario
+   * validation. The discriminated union pattern enables type-safe handling of
+   * different test writing stages while providing detailed progress tracking.
    */
-  file: AutoBeTestFile;
+  function: AutoBeTestWriteFunction;
 
   /**
    * Compilation result indicating success, failure, or exception during

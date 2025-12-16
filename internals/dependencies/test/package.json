@@ -10,6 +10,7 @@
     "@samchon/openapi": "^5.1.0",
     "@types/node": "^22.15.3",
     "typescript": "~5.9.3",
-    "typia": "^10.1.0"
+    "typia": "^10.1.0",
+    "tstl": "^3.0.0"
   }
 }

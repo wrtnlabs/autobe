@@ -103,7 +103,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
             Test file validation completed.
             <br />
             <br />
-            <strong>File:</strong> {event.file.location}
+            <strong>Function:</strong> {event.function.location}
             <br />
             <strong>Status:</strong> {isTestSuccess ? "Success" : "Failed"}
             {!isTestSuccess && (

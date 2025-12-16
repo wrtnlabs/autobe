@@ -17,7 +17,7 @@ const navbar = (
   />
 );
 
-const footer = <Footer>MIT {new Date().getFullYear()} © Wrtn Technologies.</Footer>
+const footer = <Footer>Wrtn Technologies.</Footer>
 const description = "Backend Vibe Coding";
 
 export default async function RootLayout(props) {

@@ -1,6 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeOpenApi,
+  AutoBeTestAuthorizationWriteFunction,
   AutoBeTestCorrectEvent,
+  AutoBeTestGenerationWriteFunction,
+  AutoBeTestPrepareWriteFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -19,26 +23,27 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
+import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
-import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
+import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
+import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
-    functions: IAutoBeTestFunction[];
+    items: IAutoBeTestAgentResult[];
   },
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
       ctx,
-      props.functions.map((w) => async (promptCacheKey) => {
+      props.items.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
             compileTestFile(ctx, {
-              ...w,
-              script,
+              ...insertScriptToTestResult(w, script),
             });
           const x: AutoBeTestValidateEvent =
             await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
@@ -47,36 +52,44 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
               ctx,
               {
                 source: "testCorrect",
-                validate: compile,
+                validate: async (script: string) => {
+                  const importStatement: string = getTestImportFromFunction({
+                    target: w,
+                  });
+
+                  return compile(
+                    await completeTestCode(
+                      ctx,
+                      w.artifacts,
+                      script,
+                      importStatement,
+                    ),
+                  );
+                },
                 correct: (next) =>
                   ({
                     type: "testCorrect",
                     kind: "casting",
                     id: v7(),
                     created_at: new Date().toISOString(),
-                    file: {
-                      scenario: w.scenario,
-                      location: w.location,
-                      content: next.final ?? next.draft,
-                    },
+                    function: insertScriptToTestResult(
+                      w,
+                      next.final ?? next.draft,
+                    ).function,
                     result: next.failure,
                     tokenUsage: next.tokenUsage,
                     metric: next.metric,
-                    think: next.think,
-                    draft: next.draft,
-                    review: next.review,
-                    final: next.final,
                     step: ctx.state().analyze?.step ?? 0,
                   }) satisfies AutoBeTestCorrectEvent,
-                script: (event) => event.file.content,
-                functionName: w.scenario.functionName,
+                script: (event) => event.function.content,
+                functionName: w.function.functionName,
               },
-              x.file.content,
+              x.function.content,
             );
           return await predicate(
             ctx,
             {
-              function: transformTestValidateEvent(y, w.artifacts),
+              target: transformTestValidateEvent(y, w),
               failures: [],
               validate: y,
               promptCacheKey,
@@ -94,24 +107,68 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 
 const compileTestFile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  func: IAutoBeTestFunction,
+  item: IAutoBeTestAgentResult,
 ): Promise<AutoBeTestValidateEvent> => {
   const compiler: IAutoBeCompiler = await ctx.compiler();
+  const template: Record<string, string> = Object.fromEntries(
+    Object.entries(
+      await compiler.getTemplate({
+        dbms: "sqlite",
+        phase: "test",
+      }),
+    ).filter(([key]) => key.startsWith("test/utils") && key.endsWith(".ts")),
+  );
+
+  // Use full document to generate complete SDK/DTO files
+  // This prevents type truncation when multiple artifacts reference the same DTO file
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const fullArtifacts: Record<string, string> = await compiler.interface.write(
+    document,
+    [],
+  );
+  const fullSdk: Record<string, string> = Object.fromEntries(
+    Object.entries(fullArtifacts).filter(
+      ([key]) =>
+        key.startsWith("src/api") && !key.startsWith("src/api/structures"),
+    ),
+  );
+  const fullDto: Record<string, string> = Object.fromEntries(
+    Object.entries(fullArtifacts).filter(([key]) =>
+      key.startsWith("src/api/structures"),
+    ),
+  );
+
+  const helperFunctions: (
+    | AutoBeTestAuthorizationWriteFunction
+    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestPrepareWriteFunction
+  )[] =
+    item.type === "operation"
+      ? [
+          ...item.authorizationFunctions,
+          ...item.generationFunctions,
+          ...item.prepareFunctions,
+        ]
+      : item.type === "generation"
+        ? [item.prepareFunction]
+        : [];
+
+  const files: Record<string, string> = {
+    ...template,
+    ...fullDto,
+    ...fullSdk,
+    ...Object.fromEntries(helperFunctions.map((f) => [f.location, f.content])),
+    [item.function.location]: item.function.content,
+  };
+
   const result: IAutoBeTypeScriptCompileResult = await compiler.test.compile({
-    files: {
-      ...func.artifacts.dto,
-      ...func.artifacts.sdk,
-      [func.location]: func.script,
-    },
+    files,
   });
+
   return {
     type: "testValidate",
     id: v7(),
-    file: {
-      scenario: func.scenario,
-      location: func.location,
-      content: func.script,
-    },
+    function: item.function,
     result,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
@@ -121,7 +178,7 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    function: IAutoBeTestFunction;
+    target: IAutoBeTestAgentResult;
     failures: IAutoBeTestFunctionFailure[];
     validate: AutoBeTestValidateEvent;
     promptCacheKey: string;
@@ -138,7 +195,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    function: IAutoBeTestFunction;
+    target: IAutoBeTestAgentResult;
     failures: IAutoBeTestFunctionFailure[];
     validate: AutoBeTestValidateEvent;
     promptCacheKey: string;
@@ -156,7 +213,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     controller: createController({
       model: ctx.model,
-      functionName: props.function.scenario.functionName,
+      functionName: props.target.function.functionName,
       failure: props.validate.result,
       build: (next) => {
         pointer.value = next;
@@ -166,11 +223,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     promptCacheKey: props.promptCacheKey,
     ...(await transformTestCorrectHistory(ctx, {
       instruction: props.instruction,
-      function: props.function,
+      target: props.target,
       failures: [
         ...props.failures,
         {
-          function: props.function,
+          target: props.target,
           failure: props.validate.result,
         },
       ],
@@ -178,16 +235,22 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
+  const importStatement: string = getTestImportFromFunction({
+    target: props.target,
+  });
+
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
-      props.function.artifacts,
+      props.target.artifacts,
       pointer.value.revise.final,
+      importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
-    props.function.artifacts,
+    props.target.artifacts,
     pointer.value.draft,
+    importStatement,
   );
 
   ctx.dispatch({
@@ -195,7 +258,10 @@ const correct = async <Model extends ILlmSchema.Model>(
     kind: "overall",
     id: v7(),
     created_at: new Date().toISOString(),
-    file: props.validate.file,
+    function: insertScriptToTestResult(
+      props.target,
+      pointer.value.revise.final ?? pointer.value.draft,
+    ).function,
     result: props.validate.result,
     metric,
     tokenUsage,
@@ -205,22 +271,23 @@ const correct = async <Model extends ILlmSchema.Model>(
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final ?? undefined,
   } satisfies AutoBeTestCorrectEvent);
-  const newFunction: IAutoBeTestFunction = {
-    ...props.function,
-    script: pointer.value.revise?.final ?? pointer.value.draft,
-  };
+
+  const newTarget: IAutoBeTestAgentResult = insertScriptToTestResult(
+    props.target,
+    pointer.value.revise?.final ?? pointer.value.draft,
+  );
   const newValidate: AutoBeTestValidateEvent = await compileTestFile(
     ctx,
-    newFunction,
+    newTarget,
   );
   return predicate(
     ctx,
     {
-      function: newFunction,
+      target: newTarget,
       failures: [
         ...props.failures,
         {
-          function: props.function,
+          target: props.target,
           failure: props.validate.result,
         },
       ],

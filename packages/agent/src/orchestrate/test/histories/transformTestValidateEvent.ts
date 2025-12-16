@@ -1,14 +1,11 @@
 import { AutoBeTestValidateEvent } from "@autobe/interface";
 
-import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
-import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
 
-export const transformTestValidateEvent = (
+export const transformTestValidateEvent = <T extends IAutoBeTestAgentResult>(
   event: AutoBeTestValidateEvent,
-  artifacts: IAutoBeTestScenarioArtifacts,
-): IAutoBeTestFunction => ({
-  scenario: event.file.scenario,
-  artifacts,
-  location: event.file.location,
-  script: event.file.content,
+  item: T,
+): T => ({
+  ...item,
+  function: event.function,
 });

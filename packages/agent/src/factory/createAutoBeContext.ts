@@ -431,7 +431,7 @@ const createDispatch = (props: {
           type: "test",
           id: v7(),
           instruction: testStart?.reason ?? "",
-          files: event.files,
+          functions: event.functions,
           compiled: event.compiled,
           aggregates: event.aggregates,
           step: event.step,

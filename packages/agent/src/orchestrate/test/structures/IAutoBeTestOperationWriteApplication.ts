@@ -1,6 +1,6 @@
 // import { tags } from "typia";
 
-export interface IAutoBeTestWriteApplication {
+export interface IAutoBeTestOperationWriteApplication {
   /**
    * Main entry point for AI Function Call - generates complete E2E test code.
    *
@@ -12,10 +12,10 @@ export interface IAutoBeTestWriteApplication {
    * @param props Complete specification for test generation including scenario,
    *   domain, and implementation steps
    */
-  write(props: IAutoBeTestWriteApplication.IProps): void;
+  write(props: IAutoBeTestOperationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeTestWriteApplication {
+export namespace IAutoBeTestOperationWriteApplication {
   export interface IProps {
     /**
      * Step 1: Strategic test planning and scenario analysis.

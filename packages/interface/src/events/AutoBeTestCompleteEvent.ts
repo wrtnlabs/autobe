@@ -1,5 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
-import { AutoBeTestFile } from "../histories";
+import { AutoBeTestWriteFunction } from "../histories";
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
@@ -38,7 +38,7 @@ export interface AutoBeTestCompleteEvent
    * appropriately. These tests serve as both validation tools and documentation
    * of expected system behavior.
    */
-  files: AutoBeTestFile[];
+  functions: AutoBeTestWriteFunction[];
 
   /**
    * Results of compiling the generated e2e test TypeScript files through the

@@ -1,7 +1,4 @@
-import {
-  AutoBeTestCorrectEvent,
-  AutoBeTestValidateEvent,
-} from "@autobe/interface";
+import { AutoBeTestValidateEvent } from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmController,
@@ -17,8 +14,10 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistory } from "./histories/transformTestCorrectInvalidRequestHistory";
+import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
-import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
+import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
+import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
 type CompileFunction = (script: string) => Promise<AutoBeTestValidateEvent>;
 
@@ -27,16 +26,16 @@ export const orchestrateTestCorrectInvalidRequest = async <
 >(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestFunction,
+  write: IAutoBeTestAgentResult,
 ): Promise<AutoBeTestValidateEvent> => {
-  const event: AutoBeTestValidateEvent = await compile(write.script);
+  const event: AutoBeTestValidateEvent = await compile(write.function.content);
   return await predicate(ctx, compile, write, event, ctx.retry);
 };
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestFunction,
+  write: IAutoBeTestAgentResult,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -50,7 +49,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestFunction,
+  write: IAutoBeTestAgentResult,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -66,7 +65,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     controller: createController({
       model: ctx.model,
-      functionName: write.scenario.functionName,
+      functionName: write.function.functionName,
       then: (next) => {
         pointer.value = next;
       },
@@ -76,33 +75,40 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     ...transformTestCorrectInvalidRequestHistory(
-      null!,
+      write,
       event.result.diagnostics,
     ),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event; // other's responsibility
 
+  const importStatement: string = getTestImportFromFunction({
+    target: write,
+  });
+
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
       write.artifacts,
       pointer.value.revise.final,
+      importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
     write.artifacts,
     pointer.value.draft,
+    importStatement,
   );
   ctx.dispatch({
     type: "testCorrect",
     kind: "request",
     id: v7(),
     created_at: new Date().toISOString(),
-    file: {
-      scenario: write.scenario,
-      location: write.location,
-      content: write.script,
+    function: {
+      ...insertScriptToTestResult(
+        write,
+        pointer.value.revise.final ?? pointer.value.draft,
+      ).function,
     },
     result: event.result,
     metric,
@@ -112,14 +118,15 @@ const correct = async <Model extends ILlmSchema.Model>(
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final ?? undefined,
-  } satisfies AutoBeTestCorrectEvent);
-  const newWrite: IAutoBeTestFunction = {
-    artifacts: write.artifacts,
-    scenario: write.scenario,
-    location: write.location,
-    script: pointer.value.revise?.final ?? pointer.value.draft,
-  };
-  const newEvent: AutoBeTestValidateEvent = await compile(newWrite.script);
+  });
+
+  const newWrite: IAutoBeTestAgentResult = insertScriptToTestResult(
+    write,
+    pointer.value.revise?.final ?? pointer.value.draft,
+  );
+  const newEvent: AutoBeTestValidateEvent = await compile(
+    newWrite.function.content,
+  );
   return await predicate(ctx, compile, newWrite, newEvent, life - 1);
 };
 

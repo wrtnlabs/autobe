@@ -149,7 +149,9 @@ const PROGRESS_STEPS = [
     title: "Test Code",
     getResults: (state: AutoBeListenerState) => {
       if (!state.test) return null;
-      const testCount = state.test.files.length;
+      const testCount = state.test.functions.filter(
+        (f) => f.kind === "operation",
+      ).length;
       return `${testCount} test files`;
     },
   },
