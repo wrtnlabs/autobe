@@ -897,19 +897,71 @@ In the `think.plan` field, document actions:
 ```typescript
 export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Reflection on current state before requesting preliminary data or completing.
+     */
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * When preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
+  /**
+   * Request to validate schemas against Prisma models.
+   *
+   * Identifies and removes phantom fields that don't exist in Prisma schema.
+   */
   export interface IComplete {
+    /**
+     * Type discriminator with value "complete".
+     */
     type: "complete";
+
+    /** Analysis and planning information for the review process. */
     think: IThink;
+
+    /**
+     * Modified schemas with phantom fields removed.
+     *
+     * Contains ONLY schemas that were modified. Return empty object {} when
+     * all schemas are already correct.
+     */
     content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 
+  /**
+   * Structured thinking process for schema review.
+   */
   export interface IThink {
-    review: string;  // Phantom fields found
-    plan: string;    // Deletions executed
+    /**
+     * Phantom fields found during validation.
+     *
+     * Documents all fields that exist in schemas but not in Prisma models.
+     */
+    review: string;
+
+    /**
+     * Deletions executed to fix phantom fields.
+     *
+     * Lists all fields removed from schemas to maintain consistency.
+     */
+    plan: string;
   }
 }
 ```

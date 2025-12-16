@@ -58,7 +58,13 @@ This is a required self-reflection step that helps you:
 ```typescript
 {
   thinking: "Missing operation auth info for dependency validation. Don't have it.",
-  request: { type: "getInterfaceOperations", operationNames: ["createPost", "updatePost"] }
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { method: "POST", path: "/posts" },
+      { method: "PATCH", path: "/posts/{id}" }
+    ]
+  }
 }
 ```
 - State what's MISSING that you don't already have

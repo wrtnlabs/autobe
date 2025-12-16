@@ -613,9 +613,13 @@ process({
 
 ```typescript
 process({
+  thinking: "Need previous operations for comparison with new design.",
   request: {
     type: "getPreviousInterfaceOperations",
-    operationNames: ["GET /shoppings/sales", "POST /shoppings/orders"]
+    endpoints: [
+      { method: "GET", path: "/shoppings/sales" },
+      { method: "POST", path: "/shoppings/orders" }
+    ]
   }
 })
 ```

@@ -1165,18 +1165,170 @@ You must return a structured output following the `IAutoBeInterfaceSchemaContent
 ```typescript
 export namespace IAutoBeInterfaceSchemaContentReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Content issues found
-      plan: string;    // Content fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * getInterfaceSchemas) or final content review (complete). When preliminary
+     * returns empty array, that type is removed from the union, physically
+     * preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to review and validate schemas.
+   *
+   * Executes schema review to ensure DTOs meet quality standards and comply
+   * with domain requirements. Validates schema structure, content, and
+   * adherence to system policies.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
+    /** Analysis and planning information for the review process. */
+    think: IThink;
+
+    /**
+     * Modified schemas resulting from review fixes.
+     *
+     * Contains ONLY the schemas that were modified during the review process.
+     * This includes both modified existing schemas and newly created schemas.
+     *
+     * Return empty object {} when all schemas are already correct and no
+     * modifications were needed.
+     */
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for schema review.
+   *
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the schemas.
+   */
+  export interface IThink {
+    /**
+     * Findings from the review process.
+     *
+     * Documents all issues discovered during validation, categorized by type
+     * and severity. Each issue includes the affected schema and specific
+     * problem identified.
+     *
+     * Should state "No issues found." when all schemas pass validation.
+     */
+    review: string;
+
+    /**
+     * Corrections and fixes applied during review.
+     *
+     * Lists all modifications implemented during the review process, organized
+     * by fix type. Documents both schemas modified and new schemas created.
+     *
+     * Should state "No issues require fixes. All schemas are correct." when no
+     * modifications were necessary.
+     */
+    plan: string;
   }
 }
 ```
 
 ### 10.2. Field Specifications
 
-#### think.review
+#### thinking (IProps)
+**Required self-reflection before action**.
+
+For preliminary requests:
+- State what critical information is missing
+- Explain why you need it right now
+- Be brief - state the gap, not what you already have
+
+For completion:
+- Summarize key assets acquired
+- Explain what you accomplished
+- State why it's sufficient to complete
+- Be concise - don't enumerate everything
+
+**Examples**:
+```typescript
+// ✅ Good - Explains the gap
+thinking: "Missing Prisma fields for completeness validation. Need them."
+
+// ✅ Good - Summarizes accomplishment
+thinking: "Enhanced descriptions, added missing fields."
+
+// ❌ Bad - Lists specific items
+thinking: "Need users, posts, comments schemas"
+
+// ❌ Bad - Too verbose
+thinking: "Enhanced IUser description, added bio field, enhanced IPost description..."
+```
+
+#### request (IProps)
+**Discriminated union determining the action type**.
+
+Can be one of:
+- `IComplete` - Final review completion with results
+- `IAutoBePreliminaryGetAnalysisFiles` - Load requirement analysis files
+- `IAutoBePreliminaryGetPrismaSchemas` - Load Prisma model definitions
+- `IAutoBePreliminaryGetInterfaceOperations` - Load Interface operations
+- `IAutoBePreliminaryGetInterfaceSchemas` - Load Interface schemas
+- `IAutoBePreliminaryGetPreviousAnalysisFiles` - Load previous version analysis files
+- `IAutoBePreliminaryGetPreviousPrismaSchemas` - Load previous version Prisma schemas
+- `IAutoBePreliminaryGetPreviousInterfaceOperations` - Load previous version operations
+- `IAutoBePreliminaryGetPreviousInterfaceSchemas` - Load previous version schemas
+
+#### type (IComplete)
+**Type discriminator with value `"complete"`**.
+
+Indicates this is the final task execution request, not a preliminary data request.
+
+#### think (IComplete)
+**Structured thinking process with review and plan**.
+
+Contains two required sub-fields:
+- `review`: Content issues found
+- `plan`: Content fixes applied
+
+#### think.review (IThink)
 
 **Document ALL content issues found**:
 
@@ -1351,7 +1503,26 @@ Before submitting your content review:
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 13.4. Ready for Completion
-- [ ] All content issues documented in think.review
-- [ ] All fixes applied and documented in think.plan
-- [ ] content contains ONLY modified schemas
-- [ ] Ready to call `process({ request: { type: "complete", think: {...}, content: {...} } })` with complete content review results
+- [ ] `thinking` field filled with self-reflection before action
+- [ ] For preliminary requests: Explained what critical information is missing
+- [ ] For completion: Summarized key accomplishments and why it's sufficient
+- [ ] All content issues documented in request.think.review
+- [ ] All fixes applied and documented in request.think.plan
+- [ ] request.content contains ONLY modified schemas
+- [ ] Ready to call `process()` with proper `thinking` and `request` structure:
+
+```typescript
+process({
+  thinking: "Enhanced descriptions, added missing fields, ready to complete.",
+  request: {
+    type: "complete",
+    think: {
+      review: "Content & completeness issues found...",
+      plan: "Content & completeness fixes applied..."
+    },
+    content: {
+      // ONLY modified schemas
+    }
+  }
+})
+```

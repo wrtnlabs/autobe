@@ -1514,18 +1514,57 @@ You must return a structured output following the `IAutoBeInterfaceSchemasSecuri
 ```typescript
 export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Security issues found
-      plan: string;    // Security fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to validate schema security.
+   */
+  export interface IComplete {
+    type: "complete";
+    think: IThink;
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for security review.
+   */
+  export interface IThink {
+    review: string;  // Security issues found
+    plan: string;    // Security fixes applied
   }
 }
 ```
 
 ### 9.2. Field Specifications
 
-#### think.review
+#### thinking (IProps)
+Required self-reflection before action. For completion, summarize accomplishments concisely.
+
+#### request (IProps)
+Discriminated union: IComplete or preliminary data requests.
+
+#### think (IComplete)
+Structured thinking with review and plan sub-fields.
+
+#### think.review (IThink)
 **Document ALL security violations found**:
 ```markdown
 ## Security Violations Found

@@ -3532,18 +3532,57 @@ You must return a structured output following the `IAutoBeInterfaceSchemasRelati
 ```typescript
 export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Relation issues found
-      plan: string;    // Relation fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to validate schema relations.
+   */
+  export interface IComplete {
+    type: "complete";
+    think: IThink;
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for relation review.
+   */
+  export interface IThink {
+    review: string;  // Relation issues found
+    plan: string;    // Relation fixes applied
   }
 }
 ```
 
 ### 10.2. Field Specifications
 
-#### 10.2.1. think.review - Document ALL Violations
+#### thinking (IProps)
+Required self-reflection before action. For completion, summarize accomplishments concisely.
+
+#### request (IProps)
+Discriminated union: IComplete or preliminary data requests.
+
+#### think (IComplete)
+Structured thinking with review and plan sub-fields.
+
+#### think.review (IThink) - Document ALL Violations
 
 The `think.review` field must document ALL relation and structural violations found.
 

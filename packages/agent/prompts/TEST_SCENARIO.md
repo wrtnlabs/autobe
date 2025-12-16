@@ -62,7 +62,13 @@ This is a required self-reflection step that helps you:
 ```typescript
 {
   thinking: "Missing operation details for dependency chain validation. Don't have them.",
-  request: { type: "getInterfaceOperations", operationNames: ["createPost", "updatePost"] }
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { method: "POST", path: "/posts" },
+      { method: "PATCH", path: "/posts/{id}" }
+    ]
+  }
 }
 ```
 - State what's MISSING that you don't already have
