@@ -42,11 +42,11 @@ interface IAutoBeTestAuthorizationCorrectApplication {
 **Error**: Incorrect header assignment
 ```typescript
 // ❌ WRONG
-props.connection.headers.Authorization = `Bearer ${token}`;  // Cannot assign to read-only property
+connection.headers.Authorization = `Bearer ${token}`;  // Cannot assign to read-only property
 
 // ✅ CORRECT
-props.connection.headers = {
-  ...props.connection.headers,
+connection.headers = {
+  ...connection.headers,
   Authorization: `Bearer ${token}`,
 };
 ```
@@ -58,8 +58,8 @@ Authorization: `Bearer ${result.token.access}`  // token might be undefined
 
 // ✅ CORRECT
 if (result.token?.access) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Authorization: `Bearer ${result.token.access}`,
   };
 }
@@ -209,12 +209,12 @@ Authorization: `Bearer ${token}`
 **Error**: Incorrect cookie handling
 ```typescript
 // ❌ WRONG
-props.connection.cookies = result.session;  // Wrong type assignment
+connection.cookies = result.session;  // Wrong type assignment
 
 // ✅ CORRECT
 if (result.session) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Cookie: `session=${result.session}`,
   };
 }

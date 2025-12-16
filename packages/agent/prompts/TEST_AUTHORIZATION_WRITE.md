@@ -132,7 +132,7 @@ export const authorize_user_login = async (
   },
 ): Promise<IUser.IAuthorized> => {
   return await api.functional.{accessor}.login(
-    props.connection,
+    connection,
     {
       body: props.body,
     },

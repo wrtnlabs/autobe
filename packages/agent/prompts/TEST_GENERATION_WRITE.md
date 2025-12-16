@@ -134,10 +134,7 @@ export const generate_random_{resource} = async (
 
 1. **Data Preparation**:
    ```typescript
-   const prepared: ISomeTypeName.ICreate = prepare_random_{resource}({
-     connection: props.connection,
-     input: props.input,
-   });
+   const prepared: ISomeTypeName.ICreate = prepare_random_{resource}(props.body);
    ```
 
 2. **API Call**:
