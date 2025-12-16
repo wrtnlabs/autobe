@@ -301,6 +301,26 @@ process({
 
 **Important**: These are operations from the previous version. Only available when a previous version exists.
 
+**Type 3.7: Load previous version Interface Schemas**
+
+Loads OpenAPI schema definitions from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of schemas to validate DTO design changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    schemaNames: ["IShoppingSale", "IShoppingSale.ICreate", "IShoppingSale.ISummary"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for DTO structure and field comparison.
+
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
+
 #### What Happens When You Request Already-Loaded Data
 
 The **runtime validator** will:

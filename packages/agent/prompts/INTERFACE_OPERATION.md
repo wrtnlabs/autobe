@@ -607,6 +607,25 @@ process({
 
 **Important**: These are schemas from the previous version. Only available when a previous version exists.
 
+**Type 2.7: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  request: {
+    type: "getPreviousInterfaceOperations",
+    operationNames: ["GET /shoppings/sales", "POST /shoppings/orders"]
+  }
+})
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference previous operation designs to understand what needs to be changed
+
+**Important**: These are operations from the previous version. Only available when a previous version exists.
+
 #### What Happens When You Request Already-Loaded Data
 
 The **runtime validator** will:

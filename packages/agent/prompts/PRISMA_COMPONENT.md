@@ -639,7 +639,7 @@ export namespace IAutoBePrismaComponentApplication {
      * extraction (complete). When preliminary returns empty array, that type is
      * removed from the union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousPrismaSchemas;
   }
 
   /**

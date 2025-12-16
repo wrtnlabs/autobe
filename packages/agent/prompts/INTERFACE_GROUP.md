@@ -148,7 +148,7 @@ export namespace IAutoBeInterfaceGroupApplication {
      * preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPrismaSchemas | IAutoBePreliminaryGetPreviousPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPrismaSchemas | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousPrismaSchemas | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
   /**
