@@ -50,7 +50,12 @@ namespace PreliminaryApplicationValidator {
   ): IValidation<
     IAutoBePreliminaryRequest<"analysisFiles" | "previousAnalysisFiles">
   > => {
-    const accessor = previous ? "previousAnalysisFiles" : "analysisFiles";
+    const accessor: "analysisFiles" | "previousAnalysisFiles" = previous
+      ? "previousAnalysisFiles"
+      : "analysisFiles";
+    if (controller.getAll()[accessor] === undefined)
+      return nonExisting(controller, accessor, input);
+
     const all: Set<string> = new Set(
       controller.getAll()[accessor].map((f) => f.filename),
     );
@@ -132,7 +137,12 @@ namespace PreliminaryApplicationValidator {
   ): IValidation<
     IAutoBePreliminaryRequest<"prismaSchemas" | "previousPrismaSchemas">
   > => {
-    const accessor = previous ? "previousPrismaSchemas" : "prismaSchemas";
+    const accessor: "prismaSchemas" | "previousPrismaSchemas" = previous
+      ? "previousPrismaSchemas"
+      : "prismaSchemas";
+    if (controller.getAll()[accessor] === undefined)
+      return nonExisting(controller, accessor, input);
+
     const all: Set<string> = new Set(
       controller.getAll()[accessor].map((s) => s.name),
     );
@@ -211,9 +221,11 @@ namespace PreliminaryApplicationValidator {
       "interfaceOperations" | "previousInterfaceOperations"
     >
   > => {
-    const accessor = previous
-      ? "previousInterfaceOperations"
-      : "interfaceOperations";
+    const accessor: "interfaceOperations" | "previousInterfaceOperations" =
+      previous ? "previousInterfaceOperations" : "interfaceOperations";
+    if (controller.getAll()[accessor] === undefined)
+      return nonExisting(controller, accessor, input);
+
     const all: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
       controller.getAll()[accessor].map((o) => ({
         method: o.method,
@@ -309,7 +321,12 @@ namespace PreliminaryApplicationValidator {
   ): IValidation<
     IAutoBePreliminaryRequest<"interfaceSchemas" | "previousInterfaceSchemas">
   > => {
-    const accessor = previous ? "previousInterfaceSchemas" : "interfaceSchemas";
+    const accessor: "interfaceSchemas" | "previousInterfaceSchemas" = previous
+      ? "previousInterfaceSchemas"
+      : "interfaceSchemas";
+    if (controller.getAll()[accessor] === undefined)
+      return nonExisting(controller, accessor, input);
+
     const all: Set<string> = new Set(
       Object.keys(controller.getAll()[accessor]),
     );
@@ -522,3 +539,32 @@ const finalize = <T>(data: T, errors: IValidation.IError[]): IValidation<T> =>
         data,
         errors,
       } satisfies IValidation.IFailure);
+
+const nonExisting = <Kind extends AutoBePreliminaryKind>(
+  controller: AutoBePreliminaryController<Kind>,
+  kind: Kind,
+  data: IAutoBePreliminaryRequest<Kind>,
+): IValidation.IFailure => ({
+  success: false,
+  data,
+  errors: [
+    {
+      path: "$input.request.type",
+      expected: controller
+        .getKinds()
+        .map((k) => JSON.stringify(k))
+        .join(" | "),
+      value: kind,
+      description: StringUtil.trim`
+        The preliminary data of type "${kind}" does not exist.
+
+        You must choose one of below available kinds:
+
+        ${controller
+          .getKinds()
+          .map((k) => `- ${k}`)
+          .join("\n")}
+      `,
+    },
+  ],
+});
