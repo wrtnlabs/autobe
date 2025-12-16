@@ -225,12 +225,12 @@ if (result.session) {
 **Error**: Incorrect OAuth token handling
 ```typescript
 // ❌ WRONG
-props.connection.oauth = result.oauth;  // No such property
+connection.oauth = result.oauth;  // No such property
 
 // ✅ CORRECT
 if (result.oauth?.access_token) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Authorization: `Bearer ${result.oauth.access_token}`,
   };
 }
