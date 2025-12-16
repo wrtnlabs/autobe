@@ -7,10 +7,10 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { transformTestAuthorizationWriteHistories } from "./transformTestAuthorizationWriteHistories";
+import { transformTestAuthorizationWriteHistory } from "./transformTestAuthorizationWriteHistory";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
-import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
+import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 
 export const transformTestCorrectHistory = async <
   Model extends ILlmSchema.Model,
@@ -55,7 +55,7 @@ export const transformTestCorrectHistory = async <
           generationFunctions: props.target.generationFunctions,
         });
       case "authorization":
-        return transformTestAuthorizationWriteHistories({
+        return transformTestAuthorizationWriteHistory({
           operation: props.target.operation,
           artifacts: props.target.artifacts,
         });
@@ -86,11 +86,13 @@ export const transformTestCorrectHistory = async <
 
   // previous 히스토리의 첫 번째 시스템 프롬프트에 식별자 추가
   const previousHistories =
-    previous?.histories.slice(0, -1)?.map((h, i) =>
-      i === 0 && h.type === "systemMessage"
-        ? { ...h, text: `# [SYSTEM PROMPT: TEST_WRITE]\n\n${h.text}` }
-        : h,
-    ) ?? [];
+    previous?.histories
+      .slice(0, -1)
+      ?.map((h, i) =>
+        i === 0 && h.type === "systemMessage"
+          ? { ...h, text: `# [SYSTEM PROMPT: TEST_WRITE]\n\n${h.text}` }
+          : h,
+      ) ?? [];
 
   return {
     histories: [

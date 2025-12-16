@@ -77,13 +77,13 @@ You will receive compilation errors. Your responsibility is to:
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Invalid auth types
 export const authorize_admin_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: IAdmin.ILogin
-  }
+    body: IAdmin.ILogin,
+  },
 ): Promise<IAdmin.IAuthorized> => {
-  const result = await api.functional.auth.admin.login(
-    props.connection,
+  return await api.functional.auth.admin.login(
+    connection,
     {
       body: {
         email: 12345 as any,           // 🚨 Wrong type
@@ -91,23 +91,21 @@ export const authorize_admin_login = async (
       }
     }
   );
-  
-  return result;
 };
 
 // ✅ CORRECTED VERSION - Fix type assertions
 export const authorize_admin_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: IAdmin.ILogin
-  }
+    body: IAdmin.ILogin,
+  },
 ): Promise<IAdmin.IAuthorized> => {
-  const result = await api.functional.auth.admin.login(
-    props.connection,
-    { body: props.input }
+  return await api.functional.auth.admin.login(
+    connection,
+    {
+      body: props.body,
+    },
   );
-  
-  return result;
 };
 ```
 
@@ -121,46 +119,44 @@ export const authorize_admin_login = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Invalid JOIN data
 export const authorize_user_join = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.IJoin>
+    body?: DeepPartial<IUser.IJoin>
   }
-): Promise<IUser.IJoin> => {
-  const user: IUser.IJoin = {
+): Promise<IUser.IAuthorized> => {
+  const joinInput = {
+    ...(props.body ?? {})
     email: 123 as any,              // 🚨 Wrong type
     password: true as any,          // 🚨 Wrong type
     nickname: { name: "user" } as any,  // 🚨 Wrong structure
-    ...(input ?? {})
-  };
-  
-  try {
-    await api.functional.auth.users.join(props.connection, { body: user });
-    return user;
-  } catch (err) {
-    throw err;
-  }
+  } satisfies IUser.IJoin;
+  return await api.functional.auth.users.join(
+    connection, 
+    {
+      body: joinInput,
+    },
+  );
 };
 
 // ✅ CORRECTED VERSION - Use RandomGenerator properly
 export const authorize_user_join = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.IJoin>
+    body?: DeepPartial<IUser.IJoin>
   }
 ): Promise<IUser.IJoin> => {
-  const user: IUser.IJoin = {
-    email: input?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
-    password: input?.password ?? RandomGenerator.alphaNumeric(16),
-    nickname: input?.nickname ?? RandomGenerator.name(),
-    ...(input ?? {})
+  const joinInput: IUser.IJoin = {
+    ...(props.body ?? {}),
+    email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
+    password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
+    nickname: props.body?.nickname ?? RandomGenerator.name(),
   };
-  
-  try {
-    await api.functional.auth.users.join(props.connection, { body: user });
-    return user;
-  } catch (err) {
-    throw err;
-  }
+  return await api.functional.auth.users.join(
+    connection,
+    {
+      body: joinInput,
+    },
+  );
 };
 ```
 
@@ -169,15 +165,17 @@ export const authorize_user_join = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Conditional invalid auth
 export const authorize_customer_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<ICustomer.ILogin> & { generateInvalid?: boolean }
-  }
+    body?: DeepPartial<ICustomer.ILogin> & {
+      generateInvalid?: boolean;
+    },
+  },
 ): Promise<ICustomer.IAuthorized> => {
-  if (props.input?.generateInvalid) {
+  if (props.body?.generateInvalid) {
     // 🚨 DELETE this entire conditional block
-    const result = await api.functional.auth.customers.login(
-      props.connection,
+    return await api.functional.auth.customers.login(
+      connection,
       {
         body: {
           username: null as any,      // 🚨 Wrong type
@@ -185,27 +183,29 @@ export const authorize_customer_login = async (
         }
       }
     );
-    return result;
   }
   
   // ✅ Keep only the valid auth code
-  const result = await api.functional.auth.customers.login(
-    props.connection,
-    { body: props.input! }
+  return await api.functional.auth.customers.login(
+    connection,
+    {
+      body: props.body,
+    },
   );
-  return result;
 };
 
 // ✅ CORRECTED VERSION - Remove invalid option
 export const authorize_customer_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: ICustomer.ILogin  // No generateInvalid option!
+    body: ICustomer.ILogin,  // No generateInvalid option!
   }
 ): Promise<ICustomer.IAuthorized> => {
   const result = await api.functional.auth.customers.login(
-    props.connection,
-    { body: props.input }
+    connection,
+    {
+      body: props.body,
+    },
   );
   return result;
 };
@@ -216,21 +216,24 @@ export const authorize_customer_login = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Wrong signature
 export async function authorizeUser(
-  connection: api.IConnection  // 🚨 Not using props pattern
+  connection: api.IConnection,
+  body: IUser.ILogin, // 🚨 Not using props pattern
 ): Promise<api.IConnection> {  // 🚨 Wrong return type
   // Implementation...
 }
 
 // ✅ CORRECTED VERSION - Fix signature
 export const authorize_user_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: IUser.ILogin
+    body: IUser.ILogin
   }
 ): Promise<IUser.IAuthorized> => {  // Correct return type
   const result = await api.functional.auth.users.login(
-    props.connection,
-    { body: props.input }
+    connection,
+    {
+      body: props.body,
+    },
   );
   return result;
 };
@@ -241,36 +244,37 @@ export const authorize_user_login = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Manipulating response
 export const authorize_seller_refresh = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: ISeller.IRefresh
-  }
+    body: ISeller.IRefresh,
+  },
 ): Promise<ISeller.IAuthorized> => {
-  const result = await api.functional.auth.sellers.refresh(
-    props.connection,
-    { body: props.input }
+  const result: ISeller.IAuthorized = await api.functional.auth.sellers.refresh(
+    connection,
+    {
+      body: props.body,
+    },
   );
   
   // 🚨 Manipulating the response
   result.token = "invalid-token" as any;
   result.expiresAt = "never" as any;
-  
   return result;
 };
 
 // ✅ CORRECTED VERSION - Don't manipulate response
 export const authorize_seller_refresh = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: ISeller.IRefresh
-  }
+    body: ISeller.IRefresh,
+  },
 ): Promise<ISeller.IAuthorized> => {
-  const result = await api.functional.auth.sellers.refresh(
-    props.connection,
-    { body: props.input }
+  return await api.functional.auth.sellers.refresh(
+    connection,
+    {
+      body: props.body, 
+    },
   );
-  
-  return result;
 };
 ```
 

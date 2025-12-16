@@ -20,7 +20,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
+import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistory";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";

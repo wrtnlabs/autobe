@@ -486,7 +486,10 @@ export async function test_api_admin_creates_product(connection: api.IConnection
   // ✅ CORRECT: Using authorization function for POST /auth/admin/login
   const admin = await authorize_admin_login({
     connection,
-    input: { email: "admin@example.com", password: "password123" },
+    body: {
+      email: "admin@example.com",
+      password: "password123",
+    },
   });
 
   // ❌ WRONG: Using SDK directly when authorization function exists
@@ -535,7 +538,12 @@ const resource = await generate_random_resourceName({
 export async function test_api_user_updates_article(connection: api.IConnection) {
   // Step 1: Authenticate
   // ✅ CORRECT: Using authorization function for POST /auth/login
-  await authorize_user_login({ connection, input: credentials });
+  await authorize_user_login(
+    connection,
+    {
+      body: credentials,
+    }
+  );
 
   // Step 2: Create a test article using generation function
   // ✅ CORRECT: Using generation function for POST /bbs/articles
