@@ -200,7 +200,7 @@ export const generate_random_comment = async (
     },
   },
 ): Promise<IComment> => {
-  const prepared: IComment.ICreatae = prepare_random_comment(props.body);
+  const prepared: IComment.ICreate = prepare_random_comment(props.body);
   const result: IComment = await api.functional.articles.comments.create(
     connection,
     {
