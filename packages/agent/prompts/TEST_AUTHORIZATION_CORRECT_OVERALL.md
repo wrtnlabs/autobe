@@ -88,14 +88,14 @@ const result = await api.functional.auth.user.login(
 ```typescript
 // ❌ WRONG
 body: {
-  email: input.email,
+  email: props.body.email,
   // password missing when required
 }
 
 // ✅ CORRECT
 body: {
-  email: input.email,
-  password: input.password,
+  email: props.body.email,
+  password: props.body.password,
 }
 ```
 

@@ -13,7 +13,7 @@ export const transformTestCorrectInvalidRequestHistory = (
   const systemPrompt: string = (() => {
     switch (write.function.kind) {
       case "operation":
-        return AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST;
+        return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_INVALID_REQUEST;
       case "prepare":
         return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_INVALID_REQUEST;
       case "generation":
@@ -28,7 +28,6 @@ export const transformTestCorrectInvalidRequestHistory = (
         );
     }
   })();
-
   return {
     histories: [
       {

@@ -12,7 +12,7 @@ import { transformTestGenerationWriteHistory } from "./transformTestGenerationWr
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 
-export const transformTestCorrectHistory = async <
+export const transformTestCorrectOverallHistory = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -25,13 +25,13 @@ export const transformTestCorrectHistory = async <
   const systemPrompt: string = (() => {
     switch (props.target.function.kind) {
       case "operation":
-        return AutoBeSystemPromptConstant.TEST_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_OVERALL;
       case "prepare":
-        return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_OVERALL;
       case "generation":
-        return AutoBeSystemPromptConstant.TEST_GENERATION_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_GENERATION_CORRECT_OVERALL;
       case "authorization":
-        return AutoBeSystemPromptConstant.TEST_AUTHORIZATION_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_AUTHORIZATION_CORRECT_OVERALL;
       default:
         props.target.function satisfies never;
 
