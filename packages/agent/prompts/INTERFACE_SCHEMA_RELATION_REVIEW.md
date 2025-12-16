@@ -237,6 +237,24 @@ process({
 - Want to verify relation design against business requirements
 - Need to understand domain boundaries and composition rules
 
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to validate relation changes.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Business_Requirements.md", "Entity_Relationships.md"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive relation validation.
+
+**Important**: These are files from previous version. Only available when a previous version exists.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -253,6 +271,24 @@ process({
 - Want to verify @relation annotations and cascade rules
 - Need to analyze foreign key patterns for transformation
 - Verifying entity dependencies and cardinalities
+
+**Type 2.5: Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of Prisma schemas to validate relation pattern changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["shopping_sales", "shopping_orders", "shopping_sale_units"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for relationship validation.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -273,6 +309,27 @@ process({
 - Want to verify how relations are used in request/response contexts
 - Analyzing atomic operation requirements
 - Understanding CRUD patterns for proper relation design
+
+**Type 3.5: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of operations to validate relation usage pattern changes.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/sales", method: "post" },
+      { path: "/orders/{orderId}", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for relation design validation.
+
+**Important**: These are operations from previous version. Only available when a previous version exists.
 
 **Type 4: Request Interface Schemas**
 
@@ -332,6 +389,24 @@ process({
 **KEY PRINCIPLE**:
 - **Your task target schemas** = Already in your initial context (provided as input)
 - **Reference schemas from other operations** = Available for pattern reference (already exist in system)
+
+**Type 4.5: Load previous version Interface Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of interface schemas to validate relation pattern changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["ICart.ISummary", "ICartItem.ICreate", "IUser.ISummary"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for relation pattern analysis.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists. Only retrieves EXISTING schemas from previous version.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -983,7 +1058,7 @@ interface IProject.ICreate {
 ```
 For each reference field (entity_code) in Create/Update DTO:
 
-Step 1: Is this entity in the endpoint path?
+previous version: Is this entity in the endpoint path?
 │
 ├─ YES → RED FLAG: Should NOT be in request body
 │   │
@@ -2308,17 +2383,17 @@ After transforming FKs to reference objects, verify:
 
 ```typescript
 // ❌ WRONG THOUGHT PROCESS:
-// Step 1: "I'll add seller object for better UX"
+// previous version: "I'll add seller object for better UX"
 interface IShoppingSale {
   shopping_seller_id: string;        // Original FK
   seller: IShoppingSeller.ISummary;  // Added for convenience
 }
-// Step 2: "Oh, maybe I should keep the ID too in case client needs just the ID"
+// previous version: "Oh, maybe I should keep the ID too in case client needs just the ID"
 // RESULT: Both fields, data redundancy, confusion
 
 // ✅ CORRECT THOUGHT PROCESS:
-// Step 1: "This FK should be a reference object"
-// Step 2: "Remove original FK, add reference object - ATOMIC REPLACEMENT"
+// previous version: "This FK should be a reference object"
+// previous version: "Remove original FK, add reference object - ATOMIC REPLACEMENT"
 interface IShoppingSale {
   seller: IShoppingSeller.ISummary;  // Complete replacement
 }
@@ -2802,14 +2877,14 @@ interface IComment {
 
 #### 7.1.3. The Extraction Process
 
-**Step 1: Identify inline objects**
+**previous version: Identify inline objects**
 ```javascript
 if (property.type === "object" && property.properties) {
   // VIOLATION FOUND - MUST EXTRACT
 }
 ```
 
-**Step 2: Create named type**
+**previous version: Create named type**
 ```json
 "INotificationSettings": {
   "type": "object",
@@ -2820,7 +2895,7 @@ if (property.type === "object" && property.properties) {
 }
 ```
 
-**Step 3: Replace with $ref**
+**previous version: Replace with $ref**
 ```json
 "notifications": {
   "$ref": "#/components/schemas/INotificationSettings"
@@ -2937,7 +3012,7 @@ For EVERY entity with foreign keys:
 For EVERY foreign key in Response DTOs:
 
 ```typescript
-// Step 1: Is it a direct parent FK?
+// previous version: Is it a direct parent FK?
 if (entity_array_contains_this) {
   // Keep as ID to prevent circular reference
   keep_as_id(fk);
@@ -3457,18 +3532,57 @@ You must return a structured output following the `IAutoBeInterfaceSchemasRelati
 ```typescript
 export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Relation issues found
-      plan: string;    // Relation fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to validate schema relations.
+   */
+  export interface IComplete {
+    type: "complete";
+    think: IThink;
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for relation review.
+   */
+  export interface IThink {
+    review: string;  // Relation issues found
+    plan: string;    // Relation fixes applied
   }
 }
 ```
 
 ### 10.2. Field Specifications
 
-#### 10.2.1. think.review - Document ALL Violations
+#### thinking (IProps)
+Required self-reflection before action. For completion, summarize accomplishments concisely.
+
+#### request (IProps)
+Discriminated union: IComplete or preliminary data requests.
+
+#### think (IComplete)
+Structured thinking with review and plan sub-fields.
+
+#### think.review (IThink) - Document ALL Violations
 
 The `think.review` field must document ALL relation and structural violations found.
 

@@ -4,12 +4,16 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformPrismaSchemaHistory = (props: {
   analysis: Record<string, string>;
   targetComponent: AutoBePrisma.IComponent;
   otherTables: string[];
   instruction: string;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -18,18 +22,7 @@ export const transformPrismaSchemaHistory = (props: {
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        Here is the requirement analysis report:
-
-        \`\`\`json
-        ${JSON.stringify(props.analysis)}
-        \`\`\`
-      `,
-    },
+    ...props.preliminary.getHistories(),
     {
       id: v7(),
       created_at: new Date().toISOString(),

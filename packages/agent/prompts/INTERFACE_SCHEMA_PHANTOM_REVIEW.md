@@ -303,13 +303,13 @@ System types             // Error responses, etc.
 
 For each schema with `x-autobe-prisma-schema`:
 
-**Step 1: Load the Prisma Model**
+**previous version: Load the Prisma Model**
 ```typescript
 // Schema has: "x-autobe-prisma-schema": "User"
 // Must load Prisma model: User
 ```
 
-**Step 2: Extract Prisma Fields**
+**previous version: Extract Prisma Fields**
 ```typescript
 // From Prisma model User:
 {
@@ -322,7 +322,7 @@ For each schema with `x-autobe-prisma-schema`:
 }
 ```
 
-**Step 3: Validate Each Property**
+**previous version: Validate Each Property**
 ```typescript
 // For each property in OpenAPI schema:
 - Is it in Prisma model? → ✅ KEEP
@@ -432,6 +432,24 @@ process({
 - Understanding entity specifications and field purposes
 - Clarifying field requirements and validation rules
 
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to validate phantom field changes.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Entity_Specs.md"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive phantom field detection.
+
+**Important**: These are files from previous version. Only available when a previous version exists.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -448,6 +466,24 @@ process({
 - Need to validate schemas that reference Prisma models not yet loaded
 - Need to verify field existence against Prisma model definitions
 - Need to check relation definitions
+
+**Type 2.5: Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of Prisma schemas to validate field existence changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "products", "orders"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for phantom field detection.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -469,6 +505,27 @@ process({
 - Validating computed fields that might be operation-specific
 - Checking if fields are legitimately computed vs phantom
 
+**Type 3.5: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of operations to validate DTO usage pattern changes.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/users", method: "post" },
+      { path: "/products", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for computed field validation.
+
+**Important**: These are operations from previous version. Only available when a previous version exists.
+
 **Type 4: Request Interface Schemas**
 
 ```typescript
@@ -485,6 +542,24 @@ process({
 - Checking patterns in other DTOs for consistency
 - Understanding how similar entities handle fields
 - Verifying if fields are standard computed fields vs phantom
+
+**Type 4.5: Load previous version Interface Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of interface schemas to validate phantom pattern changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IUser.ISummary", "IProduct.ISummary"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for phantom field pattern analysis.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -654,7 +729,7 @@ model Post {
 
 For each schema in the review set:
 
-**Step 1: Check for x-autobe-prisma-schema**
+**previous version: Check for x-autobe-prisma-schema**
 ```typescript
 if (schema["x-autobe-prisma-schema"] === undefined) {
   // No validation needed - not mapped to Prisma
@@ -662,13 +737,13 @@ if (schema["x-autobe-prisma-schema"] === undefined) {
 }
 ```
 
-**Step 2: Load Corresponding Prisma Model**
+**previous version: Load Corresponding Prisma Model**
 ```typescript
 const prismaModelName = schema["x-autobe-prisma-schema"];
 const prismaModel = await getPrismaSchema(prismaModelName);
 ```
 
-**Step 3: Build Allowed Fields Set**
+**previous version: Build Allowed Fields Set**
 ```typescript
 const allowedFields = new Set([
   ...prismaModel.fields.map(f => f.name),           // Direct fields
@@ -677,7 +752,7 @@ const allowedFields = new Set([
 ]);
 ```
 
-**Step 4: Detect Phantom Fields**
+**previous version: Detect Phantom Fields**
 ```typescript
 const phantomFields = [];
 for (const [fieldName, fieldDef] of Object.entries(schema.properties)) {
@@ -687,7 +762,7 @@ for (const [fieldName, fieldDef] of Object.entries(schema.properties)) {
 }
 ```
 
-**Step 5: Report and Delete**
+**previous version: Report and Delete**
 ```typescript
 if (phantomFields.length > 0) {
   // Document in review
@@ -822,19 +897,71 @@ In the `think.plan` field, document actions:
 ```typescript
 export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Reflection on current state before requesting preliminary data or completing.
+     */
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * When preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
+  /**
+   * Request to validate schemas against Prisma models.
+   *
+   * Identifies and removes phantom fields that don't exist in Prisma schema.
+   */
   export interface IComplete {
+    /**
+     * Type discriminator with value "complete".
+     */
     type: "complete";
+
+    /** Analysis and planning information for the review process. */
     think: IThink;
+
+    /**
+     * Modified schemas with phantom fields removed.
+     *
+     * Contains ONLY schemas that were modified. Return empty object {} when
+     * all schemas are already correct.
+     */
     content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 
+  /**
+   * Structured thinking process for schema review.
+   */
   export interface IThink {
-    review: string;  // Phantom fields found
-    plan: string;    // Deletions executed
+    /**
+     * Phantom fields found during validation.
+     *
+     * Documents all fields that exist in schemas but not in Prisma models.
+     */
+    review: string;
+
+    /**
+     * Deletions executed to fix phantom fields.
+     *
+     * Lists all fields removed from schemas to maintain consistency.
+     */
+    plan: string;
   }
 }
 ```

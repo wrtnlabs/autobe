@@ -196,17 +196,15 @@ gantt
   Realize  : done, 2025-11-24, 13d
 
   section Modularization
-  (Test) Authorization    : active, 2025-11-10, 14d
-  (Test) Data Creation    : active, 2025-11-17, 14d
-  (Realize) Transformation: done,   2025-11-17, 20d
+  (Test) Authorization    : done, 2025-11-10, 14d
+  (Test) Data Creation    : done, 2025-11-17, 14d
+  (Realize) Transformation: done, 2025-11-17, 20d
   (Realize) Collector     : done, 2025-11-24, 13d
 
   section Complementation
-  Analyze  : active, 2025-12-09,  7d
-  Prisma   : active, 2025-12-09, 14d
-  Interface: active, 2025-12-09, 14d
-  Test     : active, 2025-12-09, 13d
-  Realize  : active, 2025-12-09, 13d
+  Analyze  : done, 2025-12-09,  7d
+  Prisma   : done, 2025-12-09, 14d
+  Interface: done, 2025-12-09, 14d
 
   section Recruitment
   AutoBE Developer: active, 2025-11-10, 50d

@@ -191,8 +191,8 @@ When reviewing path parameters, verify proper identifier usage:
 ```
 Check each endpoint with code-based parameters:
 
-Step 1: Find entity in Prisma schema
-Step 2: Check @@unique constraint
+previous version: Find entity in Prisma schema
+previous version: Check @@unique constraint
 
 Case A: @@unique([code])
 → Global unique
@@ -428,6 +428,26 @@ Some requirements files may have been loaded in previous function calls. These m
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Load previous version Analysis Files**
+
+Loads requirement analysis documents from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to validate endpoint changes against baseline.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["API_Requirements.md"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive endpoint review.
+
+**Important**: These are files from the previous version. Only available when a previous version exists.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to verify entity stance and composite unique constraints.
@@ -451,6 +471,49 @@ process({
 Some Prisma schemas may have been loaded in previous function calls. These materials are already available in your conversation context.
 
 **Rule**: Only request materials that you have not yet accessed
+
+**process() - Load previous version Prisma Schemas**
+
+Loads Prisma model definitions from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of Prisma schemas to validate stance and constraint changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "teams"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for composite unique constraint validation.
+
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
+
+**process() - Load previous version Interface Operations**
+
+Loads Interface operations from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of operations to validate endpoint changes against baseline.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { method: "GET", path: "/enterprises/{enterpriseCode}" },
+      { method: "POST", path: "/enterprises" }
+    ]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version operations to understand what endpoints existed and how they're changing.
+
+**Important**: These are operations from the previous version. Only available when a previous version exists.
 
 ### 4.3. Input Materials Management Principles
 
@@ -491,8 +554,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -605,39 +666,208 @@ Your review should optimize for:
 
 ## 5. Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeInterfaceEndpointsReviewApplication.IProps` interface:
+You must return a structured output following the `IAutoBeInterfaceEndpointReviewApplication.IProps` interface:
 
 ### TypeScript Interface
 
 ```typescript
-export namespace IAutoBeInterfaceEndpointsReviewApplication {
+export namespace IAutoBeInterfaceEndpointReviewApplication {
   export interface IProps {
-    review: string;  // Comprehensive review analysis
-    endpoints: AutoBeOpenApi.IEndpoint[];  // Refined endpoint collection
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
+     * getPreviousPrismaSchemas, getPreviousInterfaceOperations) or final
+     * endpoint review (complete). When preliminary returns empty array, that
+     * type is removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations;
+  }
+
+  /**
+   * Request to review and refine API endpoints.
+   *
+   * Executes comprehensive endpoint review to consolidate independently
+   * generated endpoints, ensure consistency, eliminate redundancy, and create
+   * a clean, maintainable API structure following REST best practices.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
+    /**
+     * Comprehensive review analysis of all collected endpoints.
+     *
+     * Contains detailed findings from the holistic review including:
+     *
+     * - Identified inconsistencies in naming conventions
+     * - Duplicate endpoints that serve the same purpose
+     * - Over-engineered solutions that add unnecessary complexity
+     * - Violations of REST API design principles
+     * - Composite unique constraint violations
+     * - Stance-based violations
+     * - Recommendations for improvement and standardization
+     *
+     * The review provides actionable feedback for creating a clean, consistent,
+     * and maintainable API structure.
+     */
+    review: string;
+
+    /**
+     * Refined collection of API endpoints after review and cleanup.
+     *
+     * The final optimized set of endpoints after:
+     *
+     * - Removing duplicates and redundant endpoints
+     * - Eliminating composite unique constraint violations
+     * - Removing stance-based violations (SUBSIDIARY, SNAPSHOT)
+     * - Standardizing naming conventions across all paths
+     * - Simplifying over-engineered solutions
+     * - Ensuring consistent REST patterns
+     * - Aligning HTTP methods with their semantic meanings
+     *
+     * This collection represents the production-ready API structure that
+     * balances functionality with simplicity and maintainability.
+     */
+    endpoints: AutoBeOpenApi.IEndpoint[];
   }
 }
 ```
 
 ### Field Descriptions
 
-#### review
-Comprehensive review analysis of all collected endpoints:
+#### thinking (IProps)
+**Required self-reflection before action**.
+
+For preliminary requests:
+- State what critical information is missing
+- Explain why you need it right now
+- Be brief - state the gap, not what you already have
+
+For completion:
+- Summarize key assets acquired
+- Explain what you accomplished
+- State why it's sufficient to complete
+- Be concise - don't enumerate everything
+
+**Examples**:
+```typescript
+// ✅ Good - Explains the gap
+thinking: "Missing composite unique constraints for path validation. Don't have them."
+
+// ✅ Good - Summarizes accomplishment
+thinking: "Reviewed all endpoints, eliminated composite unique violations, removed duplicates."
+
+// ❌ Bad - Lists specific items
+thinking: "Need users, teams, projects schemas"
+
+// ❌ Bad - Too verbose
+thinking: "I have reviewed endpoint 1, 2, 3... and found issues A, B, C..."
+```
+
+#### request (IProps)
+**Discriminated union determining the action type**.
+
+Can be one of:
+- `IComplete` - Final review completion with results
+- `IAutoBePreliminaryGetAnalysisFiles` - Load requirement analysis files
+- `IAutoBePreliminaryGetPrismaSchemas` - Load Prisma model definitions
+- `IAutoBePreliminaryGetPreviousAnalysisFiles` - Load previous version analysis files
+- `IAutoBePreliminaryGetPreviousPrismaSchemas` - Load previous version Prisma schemas
+- `IAutoBePreliminaryGetPreviousInterfaceOperations` - Load previous version operations
+
+#### type (IComplete)
+**Type discriminator with value `"complete"`**.
+
+Indicates this is the final task execution request, not a preliminary data request.
+
+#### review (IComplete)
+**Comprehensive review analysis** of all collected endpoints.
+
+Must document:
 - Summary of major issues found
 - Specific redundancies identified
+- Composite unique constraint violations removed
+- Stance-based violations eliminated
 - Over-engineering patterns detected
 - Consistency violations discovered
 - Overall assessment of the original collection
 
-#### endpoints
-The refined, deduplicated endpoint collection:
+Should provide clear, actionable feedback on what was improved and why.
+
+#### endpoints (IComplete)
+**The refined, deduplicated endpoint collection**.
+
+Contains the final optimized endpoints after:
 - All redundancies removed
-- Consistent naming applied
+- Composite unique violations eliminated
+- Stance violations removed
+- Consistent naming applied (camelCase)
 - Simplified structures where appropriate
 - Only valuable, necessary endpoints retained
 
 ### Output Method
 
-You MUST call the `process()` function with `type: "complete"`, your review, and optimized endpoints.
+You MUST call the `process()` function following this pattern:
+
+**For preliminary data requests**:
+```typescript
+process({
+  thinking: "Missing schema constraints for composite unique validation. Don't have them.",
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["teams", "enterprises", "projects"]
+  }
+})
+```
+
+**For final completion**:
+```typescript
+process({
+  thinking: "Reviewed all endpoints, eliminated violations, ready to complete.",
+  request: {
+    type: "complete",
+    review: "Comprehensive analysis of the endpoint collection...",
+    endpoints: [
+      // Optimized, deduplicated endpoint array
+    ]
+  }
+})
+```
 
 ## 6. Critical Considerations
 
@@ -830,10 +1060,23 @@ GET /enterprises/{enterpriseCode}/teams/{teamCode}/projects/{projectCode}
 
 ## 8. Function Call Requirement
 
-**MANDATORY**: You MUST call the `process()` function with `type: "complete"`, your analysis, and optimized endpoint collection.
+**MANDATORY**: You MUST call the `process()` function with proper `thinking` and `request` structure.
 
+**For preliminary data requests**:
 ```typescript
 process({
+  thinking: "Missing entity structures for composite unique validation. Don't have them.",
+  request: {
+    type: "getPrismaSchemas",
+    schemaNames: ["teams", "enterprises", "projects"]
+  }
+})
+```
+
+**For final completion**:
+```typescript
+process({
+  thinking: "Reviewed all endpoints, eliminated violations, ready to complete.",
   request: {
     type: "complete",
     review: "Comprehensive analysis of the endpoint collection...",
@@ -841,8 +1084,10 @@ process({
       // Optimized, deduplicated endpoint array
     ]
   }
-});
+})
 ```
+
+**CRITICAL**: Always include the `thinking` field to reflect on your decision before calling `process()`.
 
 ## 9. Quality Standards
 
@@ -875,10 +1120,9 @@ Your review must:
   * These instructions ensure efficient resource usage and accurate analysis
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 10.2. Endpoint Review Compliance
@@ -896,11 +1140,15 @@ Your review must:
 - [ ] Core functionality is fully preserved
 
 ### 10.3. Function Calling Verification
+- [ ] `thinking` field filled with self-reflection before action
+- [ ] For preliminary requests: Explained what critical information is missing
+- [ ] For completion: Summarized key accomplishments and why it's sufficient
 - [ ] Review analysis documented (summary of issues found)
 - [ ] Endpoints array contains optimized collection
 - [ ] All redundancies removed from endpoints
 - [ ] Consistent naming applied across all endpoints
 - [ ] The API is more maintainable and intuitive
-- [ ] Ready to call `process()` with `type: "complete"`, review string, and endpoints array
+- [ ] Ready to call `process()` with proper `thinking` and `request` structure
+- [ ] Using `request: { type: "complete", review: "...", endpoints: [...] }` for final completion
 
 Your goal is to optimize the endpoint collection by removing genuine problems (redundancy, over-engineering, inconsistency) while preserving all necessary functionality. The final collection should be cleaner and more consistent, but only smaller if there were actual issues to fix. Do not force reduction if all endpoints serve legitimate purposes.

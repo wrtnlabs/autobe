@@ -15,6 +15,10 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
   >;
   reviewOperations: AutoBeOpenApi.IOperation[];
   reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;

@@ -188,6 +188,24 @@ process({
 - Understanding entity business rules and validation requirements
 - Clarifying field purposes and documentation needs
 
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to validate field changes.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Entity_Specs.md"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive field validation.
+
+**Important**: These are files from previous version. Only available when a previous version exists.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -203,6 +221,24 @@ process({
 - Need to verify all Prisma fields are mapped to DTO
 - Checking field types, nullability, and constraints
 - Understanding entity relationships and foreign keys
+
+**Type 2.5: Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of Prisma schemas to validate field mapping changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "orders", "products"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for field completeness validation.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -223,6 +259,27 @@ process({
 - Clarifying which fields are used in which operations
 - Verifying field completeness for operation-specific DTOs
 
+**Type 3.5: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of operations to validate field usage changes.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/users", method: "post" },
+      { path: "/products", method: "get" }
+    ]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for field documentation validation.
+
+**Important**: These are operations from previous version. Only available when a previous version exists.
+
 **Type 4: Request Interface Schemas**
 
 ```typescript
@@ -238,6 +295,24 @@ process({
 - Checking patterns in other DTOs for consistency
 - Understanding how similar entities document fields
 - Verifying description quality standards across schemas
+
+**Type 4.5: Load previous version Interface Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of interface schemas to validate pattern changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IUser.ISummary", "IProduct.ISummary"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for description quality validation.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -895,7 +970,7 @@ interface IUser.ISummary {
 
 ### 7.2. The Field Discovery Process
 
-**Step 1: Inventory ALL Prisma Fields**
+**previous version: Inventory ALL Prisma Fields**
 ```typescript
 // For each Prisma model, list:
 - id fields (usually uuid)
@@ -907,7 +982,7 @@ interface IUser.ISummary {
 - timestamps (createdAt, updatedAt) - VERIFY which ones exist!
 ```
 
-**Step 2: Map to Appropriate DTO Variants**
+**previous version: Map to Appropriate DTO Variants**
 ```typescript
 // For each field, decide:
 - IEntity: Include unless security-filtered
@@ -1090,18 +1165,170 @@ You must return a structured output following the `IAutoBeInterfaceSchemaContent
 ```typescript
 export namespace IAutoBeInterfaceSchemaContentReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Content issues found
-      plan: string;    // Content fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * getInterfaceSchemas) or final content review (complete). When preliminary
+     * returns empty array, that type is removed from the union, physically
+     * preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to review and validate schemas.
+   *
+   * Executes schema review to ensure DTOs meet quality standards and comply
+   * with domain requirements. Validates schema structure, content, and
+   * adherence to system policies.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
+    /** Analysis and planning information for the review process. */
+    think: IThink;
+
+    /**
+     * Modified schemas resulting from review fixes.
+     *
+     * Contains ONLY the schemas that were modified during the review process.
+     * This includes both modified existing schemas and newly created schemas.
+     *
+     * Return empty object {} when all schemas are already correct and no
+     * modifications were needed.
+     */
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for schema review.
+   *
+   * Contains analytical review findings and improvement action plan organized
+   * for systematic enhancement of the schemas.
+   */
+  export interface IThink {
+    /**
+     * Findings from the review process.
+     *
+     * Documents all issues discovered during validation, categorized by type
+     * and severity. Each issue includes the affected schema and specific
+     * problem identified.
+     *
+     * Should state "No issues found." when all schemas pass validation.
+     */
+    review: string;
+
+    /**
+     * Corrections and fixes applied during review.
+     *
+     * Lists all modifications implemented during the review process, organized
+     * by fix type. Documents both schemas modified and new schemas created.
+     *
+     * Should state "No issues require fixes. All schemas are correct." when no
+     * modifications were necessary.
+     */
+    plan: string;
   }
 }
 ```
 
 ### 10.2. Field Specifications
 
-#### think.review
+#### thinking (IProps)
+**Required self-reflection before action**.
+
+For preliminary requests:
+- State what critical information is missing
+- Explain why you need it right now
+- Be brief - state the gap, not what you already have
+
+For completion:
+- Summarize key assets acquired
+- Explain what you accomplished
+- State why it's sufficient to complete
+- Be concise - don't enumerate everything
+
+**Examples**:
+```typescript
+// ✅ Good - Explains the gap
+thinking: "Missing Prisma fields for completeness validation. Need them."
+
+// ✅ Good - Summarizes accomplishment
+thinking: "Enhanced descriptions, added missing fields."
+
+// ❌ Bad - Lists specific items
+thinking: "Need users, posts, comments schemas"
+
+// ❌ Bad - Too verbose
+thinking: "Enhanced IUser description, added bio field, enhanced IPost description..."
+```
+
+#### request (IProps)
+**Discriminated union determining the action type**.
+
+Can be one of:
+- `IComplete` - Final review completion with results
+- `IAutoBePreliminaryGetAnalysisFiles` - Load requirement analysis files
+- `IAutoBePreliminaryGetPrismaSchemas` - Load Prisma model definitions
+- `IAutoBePreliminaryGetInterfaceOperations` - Load Interface operations
+- `IAutoBePreliminaryGetInterfaceSchemas` - Load Interface schemas
+- `IAutoBePreliminaryGetPreviousAnalysisFiles` - Load previous version analysis files
+- `IAutoBePreliminaryGetPreviousPrismaSchemas` - Load previous version Prisma schemas
+- `IAutoBePreliminaryGetPreviousInterfaceOperations` - Load previous version operations
+- `IAutoBePreliminaryGetPreviousInterfaceSchemas` - Load previous version schemas
+
+#### type (IComplete)
+**Type discriminator with value `"complete"`**.
+
+Indicates this is the final task execution request, not a preliminary data request.
+
+#### think (IComplete)
+**Structured thinking process with review and plan**.
+
+Contains two required sub-fields:
+- `review`: Content issues found
+- `plan`: Content fixes applied
+
+#### think.review (IThink)
 
 **Document ALL content issues found**:
 
@@ -1276,7 +1503,26 @@ Before submitting your content review:
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 13.4. Ready for Completion
-- [ ] All content issues documented in think.review
-- [ ] All fixes applied and documented in think.plan
-- [ ] content contains ONLY modified schemas
-- [ ] Ready to call `process({ request: { type: "complete", think: {...}, content: {...} } })` with complete content review results
+- [ ] `thinking` field filled with self-reflection before action
+- [ ] For preliminary requests: Explained what critical information is missing
+- [ ] For completion: Summarized key accomplishments and why it's sufficient
+- [ ] All content issues documented in request.think.review
+- [ ] All fixes applied and documented in request.think.plan
+- [ ] request.content contains ONLY modified schemas
+- [ ] Ready to call `process()` with proper `thinking` and `request` structure:
+
+```typescript
+process({
+  thinking: "Enhanced descriptions, added missing fields, ready to complete.",
+  request: {
+    type: "complete",
+    think: {
+      review: "Content & completeness issues found...",
+      plan: "Content & completeness fixes applied..."
+    },
+    content: {
+      // ONLY modified schemas
+    }
+  }
+})
+```

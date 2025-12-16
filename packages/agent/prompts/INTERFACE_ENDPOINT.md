@@ -394,6 +394,15 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements.md"] }})
+```
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline requirements. **Important**: Only available when a previous version exists.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to understand database structure and relationships.
@@ -421,6 +430,15 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
 **Rule**: Only request schemas that you have not yet accessed
+
+**process() - Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})
+```
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
 
 ### 3.3. Input Materials Management Principles
 
@@ -466,8 +484,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -801,8 +817,8 @@ model erp_enterprise_teams {
 **Rule 1: Check the `@@unique` Constraint**
 
 ```
-Step 1: Find entity with `code` field
-Step 2: Locate the `@@unique` constraint in Prisma schema
+previous version: Find entity with `code` field
+previous version: Locate the `@@unique` constraint in Prisma schema
 
 Case A: @@unique([code])
 → Global unique
@@ -1043,7 +1059,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 2. **Request Materials ONLY for Specific Gaps** (RARE):
    - **IF** a specific entity's structure is unclear → Request that ONE schema
    - **IF** a specific feature's workflow is unclear → Request that ONE requirement file
-   - **IF** no specific gap exists → Skip to Step 3 immediately
+   - **IF** no specific gap exists → Skip to previous version immediately
 
 3. **Design Endpoints** (Your ACTUAL goal):
 
@@ -1331,10 +1347,9 @@ model erp_enterprise_team_projects {
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 11.2. Requirements Analysis

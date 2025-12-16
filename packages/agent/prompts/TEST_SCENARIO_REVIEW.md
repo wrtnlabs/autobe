@@ -58,7 +58,13 @@ This is a required self-reflection step that helps you:
 ```typescript
 {
   thinking: "Missing operation auth info for dependency validation. Don't have it.",
-  request: { type: "getInterfaceOperations", operationNames: ["createPost", "updatePost"] }
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { method: "POST", path: "/posts" },
+      { method: "PATCH", path: "/posts/{id}" }
+    ]
+  }
 }
 ```
 - State what's MISSING that you don't already have
@@ -534,13 +540,13 @@ When target has `authorizationActor: null`:
 
 ## 7. Step-by-Step Review Process
 
-### Step 1: Remove Validation Error Scenarios
+### Remove Validation Error Scenarios
 
 For each scenario in group:
 - If draft or functionName mentions validation, invalid input, missing field, type error
 - Remove this scenario from the group entirely
 
-### Step 2: Check User Context (Authentication)
+### Check User Context (Authentication)
 
 For each remaining scenario:
 1. Check target operation's authorizationActor
@@ -550,21 +556,21 @@ For each remaining scenario:
 5. Remove unnecessary authentication
 6. Fix join/login mixing issues
 
-### Step 3: Check Dependencies Completeness
+### Check Dependencies Completeness
 
 For each scenario:
 - Add missing prerequisites to dependencies
 - Verify execution chain completeness
 - Ensure all ID-based dependencies are satisfied
 
-### Step 4: Check Execution Order
+### Check Execution Order
 
 For each scenario:
 - Separate dependencies by type (auth, independent, dependent)
 - Sort within each group appropriately
 - Reconstruct in correct order: Auth → Independent → Dependent
 
-### Step 5: Remove Duplicates
+### Remove Duplicates
 
 For each scenario:
 - Keep only first occurrence of each unique operation

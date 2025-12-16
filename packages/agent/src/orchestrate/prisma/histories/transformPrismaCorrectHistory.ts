@@ -8,7 +8,12 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformPrismaCorrectHistory = (props: {
   result: IAutoBePrismaValidation.IFailure;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+  >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {

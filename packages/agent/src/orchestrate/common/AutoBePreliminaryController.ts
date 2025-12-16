@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
@@ -196,6 +197,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   /**
+   * Returns the current AutoBe state.
+   *
+   * @returns Current pipeline state containing all phase histories.
+   */
+  public getState(): AutoBeState {
+    return this.state;
+  }
+
+  /**
    * Dynamically adjusts LLM application schema at runtime.
    *
    * Removes `getPreviousXXX` types from union/oneOf when no previous iteration
@@ -205,15 +215,17 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @param application LLM application to modify (mutated in-place).
    */
-  public fixApplication<Model extends Exclude<ILlmSchema.Model, "3.0">>(
+  public fixApplication<Model extends ILlmSchema.Model>(
     application: ILlmApplication<Model>,
-  ): void {
+  ): ILlmApplication<Model> {
+    assertSchemaModel<Model>(application.model);
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
-      application,
+      application: application as ILlmApplication<Exclude<Model, "3.0">>,
       model: application.model,
     });
+    return application;
   }
 
   /**

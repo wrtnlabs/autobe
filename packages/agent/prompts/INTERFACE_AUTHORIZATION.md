@@ -49,7 +49,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getAnalysisFiles, getPrismaSchemas, etc.):
 ```typescript
 {
   thinking: "Missing actor table field info for auth operation design. Don't have it.",
@@ -174,6 +174,29 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **Rule**: Only request materials that you have not yet accessed
 
+**process() - Load previous version Analysis Files**
+
+Loads requirement analysis documents from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of authentication requirements to understand baseline before modifications.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Authentication_Requirements.md"]
+  }
+})
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference previous version to understand what needs to be changed
+- Comparing baseline requirements with current modifications
+
+**Important**: These are files from the previous version. Only available when a previous version exists.
+
 **process() - Request Prisma Schemas**
 
 Retrieves Prisma model definitions to verify actor table structures and authentication fields.
@@ -201,34 +224,28 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Request Interface Operations**
+**process() - Load previous version Prisma Schemas**
 
-Retrieves existing API operations for consistency.
+Loads Prisma schemas from the **previous version**.
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "I need user join and admin login operations for consistency. Don't have them yet.",
+  thinking: "Need previous version of user schema to compare authentication fields before modifications.",
   request: {
-    type: "getInterfaceOperations",
-    endpoints: [
-      { path: "/auth/user/join", method: "post" },
-      { path: "/auth/admin/login", method: "post" }
-    ]  // Batch request
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users"]
   }
 })
 ```
 
 **When to use**:
-- Need to maintain consistency with existing authorization operations
-- Checking for already-defined authentication endpoints
+- Regenerating due to user modification requests
+- Need to reference previous version to understand schema changes
+- Comparing baseline schema design with current modifications
 
-**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-
-Some API operations may have been loaded in previous function calls. These operations are already available in your conversation context.
-
-**ABSOLUTE PROHIBITION**: If operations have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
-
-**Rule**: Only request operations that you have not yet accessed
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
 
 ### 2.3. Input Materials Management Principles
 
@@ -274,8 +291,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -354,10 +369,6 @@ process({ thinking: "Still missing actor schemas. Need more.", request: { type: 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If "Authentication_Requirements.md" is already loaded:
 process({ thinking: "Missing password policy info. Need it.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })  // WRONG - already loaded!
-
-// ❌ FORBIDDEN - Re-requesting already loaded operations
-// If operation "POST /auth/user/join" is already loaded:
-process({ thinking: "Missing join operation reference. Need it.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/auth/user/join", method: "post" }] } })  // WRONG!
 
 // ✅ CORRECT - Only request NEW materials
 // If schemas "users", "admins", "sellers" are already loaded:
@@ -556,10 +567,9 @@ Your implementation should provide a complete authentication system with actor-a
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 7.2. Operation Generation Compliance

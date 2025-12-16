@@ -1,18 +1,80 @@
 import { AutoBePrisma } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
+
 export interface IAutoBePrismaComponentApplication {
   /**
-   * Organizes database tables into domain-based components for Prisma schema
-   * generation.
+   * Process component extraction task or preliminary data requests.
    *
-   * Takes business requirements and groups related tables into logical domains,
-   * with each component becoming a separate .prisma file.
+   * Organizes database tables into domain-based components for Prisma schema
+   * generation. Processes extraction with incremental context loading to ensure
+   * comprehensive domain organization.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
-  extractComponents(props: IAutoBePrismaComponentApplication.IProps): void;
+  process(props: IAutoBePrismaComponentApplication.IProps): void;
 }
+
 export namespace IAutoBePrismaComponentApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles):
+     *
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     *
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPreviousAnalysisFiles) or final component
+     * extraction (complete). When preliminary returns empty array, that type is
+     * removed from the union, physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas;
+  }
+
+  /**
+   * Request to extract domain components from database tables.
+   *
+   * Executes component extraction to organize tables into logical domains.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual
+     * task execution. Value "complete" indicates this is the final task
+     * execution request.
+     */
+    type: "complete";
+
     /**
      * Initial thoughts on namespace classification criteria.
      *

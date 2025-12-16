@@ -2198,7 +2198,7 @@ category: await ShoppingCategoryTransformer.transform(input.category),
 
 **NEVER GUESS - ALWAYS CHECK THE ACTUAL DTO/INTERFACE TYPE!**
 
-#### Step 1: Identify the Interface Pattern
+#### previous version: Identify the Interface Pattern
 
 ```typescript
 // Look at the ACTUAL interface definition:
@@ -2219,7 +2219,7 @@ interface IExample {
 }
 ```
 
-#### Step 2: Apply the Correct Pattern
+#### previous version: Apply the Correct Pattern
 
 **EXAMPLE 1 - Optional field (field?: Type)**
 ```typescript
@@ -2249,7 +2249,7 @@ deleted_at: updated.deleted_at
 deleted_at: updated.deleted_at ?? undefined  // ERROR!
 ```
 
-#### Step 3: Common Patterns to Remember
+#### previous version: Common Patterns to Remember
 
 ```typescript
 // DATABASE → API CONVERSIONS (most common scenarios)

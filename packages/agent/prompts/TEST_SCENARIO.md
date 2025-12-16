@@ -62,7 +62,13 @@ This is a required self-reflection step that helps you:
 ```typescript
 {
   thinking: "Missing operation details for dependency chain validation. Don't have them.",
-  request: { type: "getInterfaceOperations", operationNames: ["createPost", "updatePost"] }
+  request: {
+    type: "getInterfaceOperations",
+    endpoints: [
+      { method: "POST", path: "/posts" },
+      { method: "PATCH", path: "/posts/{id}" }
+    ]
+  }
 }
 ```
 - State what's MISSING that you don't already have
@@ -564,7 +570,7 @@ process({ thinking: "Missing additional operation specs. Don't have them yet.", 
 
 ## 4. Core Algorithm
 
-### 4.0. Step 0: Request Operation Details (ALMOST ALWAYS REQUIRED)
+### 4.0. previous version: Request Operation Details (ALMOST ALWAYS REQUIRED)
 
 **DEFAULT ASSUMPTION: You need to call getInterfaceOperations first**
 
@@ -578,7 +584,7 @@ Q: Does "Included in Test Plan" show authorizationActor for the target operation
 └─ YES → Check prerequisites
     Q: Do ALL prerequisites show authorizationActor?
     └─ NO → Request them via getInterfaceOperations
-    └─ YES → You can proceed to Step 1
+    └─ YES → You can proceed to previous version
 ```
 
 **In 90% of cases:** Call getInterfaceOperations first before designing scenarios.
@@ -628,14 +634,14 @@ process({
 **After Requesting:**
 - Wait for the data to be loaded (appears in next conversation turn)
 - Use the authorizationActor information to design scenarios
-- Then proceed to Step 1 below
+- Then proceed to previous version below
 
-### 4.1. Step 1: Target Analysis and Special Cases
+### 4.1. previous version: Target Analysis and Special Cases
 
 **First, identify your target operation type:**
 
 **A. Regular Business Operations**
-- Continue to Step 2 for normal workflow
+- Continue to previous version for normal workflow
 
 **B. Authentication Operations (Special User Context Handling)**
 
@@ -678,7 +684,7 @@ process({
 }
 ```
 
-### 4.2. Step 2: Authorization Analysis
+### 4.2. previous version: Authorization Analysis
 
 **🔴 MANDATORY: Create an authorization requirements table**
 
@@ -705,7 +711,7 @@ POST /articles/{id}/comments | "member"        | Yes
    - List all non-null authorizationActors
    - These roles MUST have authentication added
 
-### 4.3. Step 3: Build Dependencies with Authentication
+### 4.3. previous version: Build Dependencies with Authentication
 
 **Order Template**:
 ```javascript
@@ -740,7 +746,7 @@ dependencies = [
 ]
 ```
 
-### 4.4. Step 4: Generate Complete Scenario
+### 4.4. previous version: Generate Complete Scenario
 
 **Required Components**:
 
@@ -969,16 +975,16 @@ export namespace IAutoBeTestScenarioApplication {
 }
 ```
 
-**Step 1**: Check each authorizationActor
+**previous version**: Check each authorizationActor
 - GET /banners/{id}: null (public)
 - POST /communities: "member" (needs auth)
 - POST /communities/{id}/banners: "member" (needs auth)
 
-**Step 2**: Determine User Context
+**previous version**: Determine User Context
 - Need "member" role → Use join for NEW user context
 - Never use login unless testing login itself
 
-**Step 3**: Build dependencies
+**previous version**: Build dependencies
 ```json
 {
   "endpoint": { "method": "get", "path": "/banners/{id}" },

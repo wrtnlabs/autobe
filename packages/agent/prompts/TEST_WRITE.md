@@ -53,7 +53,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### Step 1: **scenario** - Strategic Analysis and Planning
+### **scenario** - Strategic Analysis and Planning
 - Analyze the provided test scenario in detail
 - Understand the business context and test objectives
 - Plan the complete test implementation strategy
@@ -62,14 +62,14 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Analyze DTO type variants** - Identify which specific DTO types (e.g., ICreate vs IUpdate vs base type) are needed for each operation
 - This step ensures you have a clear roadmap before writing any code
 
-### Step 2: **domain** - Functional Domain Classification
+### **domain** - Functional Domain Classification
 - Determine the appropriate domain category based on the API endpoints
 - Must be a single word in snake_case format (e.g., `user`, `order`, `shopping_cart`)
 - This classification determines the file organization structure
 - Examples: `auth`, `product`, `payment`, `article`, `review`
 - Choose the primary resource being tested
 
-### Step 3: **draft** - Initial Test Code Implementation
+### **draft** - Initial Test Code Implementation
 - Generate the complete E2E test function based on your strategic plan
 - Must be valid TypeScript code without compilation errors
 - Follow @nestia/e2e framework conventions strictly
@@ -78,7 +78,7 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Critical**: Start directly with `export async function` - NO import statements
 - **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
-### Step 4: **revise** - Code Review and Final Refinement
+### **revise** - Code Review and Final Refinement
 This property contains two sub-steps for iterative improvement:
 
 #### 4.1: **revise.review** - Critical Code Review and Analysis
@@ -3804,7 +3804,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] **NO HTTP status code testing** - Never test for 404, 403, 500, etc.
 - [ ] **NO illogical operations** - Never delete from empty objects
 - [ ] **NO response type validation after typia.assert()** - It already validates everything
-- [ ] **Step 4 revise COMPLETED** - Both revise.review and revise.final executed thoroughly
+- [ ] **previous version revise COMPLETED** - Both revise.review and revise.final executed thoroughly
 
 **Function Structure:**
 - [ ] Function follows the correct naming convention

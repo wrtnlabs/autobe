@@ -3,6 +3,7 @@ import {
   IMicroAgenticaHistoryJson,
 } from "@agentica/core";
 import {
+  AutoBeAnalyzeHistory,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
@@ -20,6 +21,7 @@ import { HashSet } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
@@ -35,6 +37,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
       ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
       return PreliminaryTransformer[type]({
         source: preliminary.getSource(),
+        state: preliminary.getState(),
         all: preliminary.getAll() as IAutoBePreliminaryCollection,
         local: preliminary.getLocal() as IAutoBePreliminaryCollection,
         config: preliminary.getConfig() as any,
@@ -47,6 +50,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
 namespace PreliminaryTransformer {
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    state: AutoBeState;
     all: Pick<IAutoBePreliminaryCollection, Kind>;
     local: Pick<IAutoBePreliminaryCollection, Kind>;
     config: AutoBePreliminaryController.IConfig<Kind>;
@@ -66,9 +70,19 @@ namespace PreliminaryTransformer {
       (f) => oldbie[f.filename] === undefined,
     );
 
+    const analyze: AutoBeAnalyzeHistory | null = props.previous
+      ? props.state.previousAnalyze
+      : props.state.analyze;
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
-        prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
+        prompt:
+          AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED.replace(
+            "{{PREFIX}}",
+            analyze?.prefix ?? "",
+          ).replace(
+            "{{ACTORS}}",
+            analyze?.actors ? toJsonBlock(analyze.actors) : "",
+          ),
         previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
         content: toJsonBlock(oldbie),
         replace: props.previous

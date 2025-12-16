@@ -130,6 +130,10 @@ async function process<Model extends ILlmSchema.Model>(
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfacePrerequisiteApplication>(),
@@ -139,6 +143,10 @@ async function process<Model extends ILlmSchema.Model>(
       "prismaSchemas",
       "interfaceOperations",
       "interfaceSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+      "previousInterfaceOperations",
+      "previousInterfaceSchemas",
     ],
     state: ctx.state(),
     all: {
@@ -204,6 +212,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
+    | "previousInterfaceOperations"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceSchemas"
   >;
   build: (next: AutoBeInterfacePrerequisite[]) => void;
 }): IAgenticaController.IClass<Model> {
@@ -309,6 +321,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  props.preliminary.fixApplication(application);
   return {
     protocol: "class",
     name: SOURCE,
