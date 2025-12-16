@@ -2,21 +2,24 @@ import { AutoBeOpenApi } from "../../openapi";
 import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
 
 /**
- * Interface defining generation functions that create resources used in test functions.
+ * Interface defining generation functions that create resources used in test
+ * functions.
  *
- * Defines functions that generate necessary resources required by test functions
- * to execute properly. These generation functions create resources that support
- * test execution, including test data, helper functions, and other testing utilities.
- * This interface is used by AutoBE to represent the structure and content of
- * resource generation functions when generating test code.
+ * Defines functions that generate necessary resources required by test
+ * functions to execute properly. These generation functions create resources
+ * that support test execution, including test data, helper functions, and other
+ * testing utilities. This interface is used by AutoBE to represent the
+ * structure and content of resource generation functions when generating test
+ * code.
  *
- * Generation functions are essential for providing the resources that test functions
- * need, ensuring tests have all required dependencies for proper execution.
+ * Generation functions are essential for providing the resources that test
+ * functions need, ensuring tests have all required dependencies for proper
+ * execution.
  *
  * @author Michael
  */
-export interface AutoBeTestGenerationWriteFunction
-  extends AutoBeTestWriteFunctionBase<"generation"> {
+export interface AutoBeTestGenerateWriteFunction
+  extends AutoBeTestWriteFunctionBase<"generate"> {
   /**
    * OpenAPI endpoint specification that this generation function corresponds
    * to.

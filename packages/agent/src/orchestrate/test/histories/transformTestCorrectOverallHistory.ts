@@ -23,15 +23,15 @@ export const transformTestCorrectOverallHistory = async <
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
   const systemPrompt: string = (() => {
-    switch (props.target.function.kind) {
+    switch (props.target.function.type) {
       case "operation":
         return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_OVERALL;
       case "prepare":
         return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_OVERALL;
-      case "generation":
-        return AutoBeSystemPromptConstant.TEST_GENERATION_CORRECT_OVERALL;
-      case "authorization":
-        return AutoBeSystemPromptConstant.TEST_AUTHORIZATION_CORRECT_OVERALL;
+      case "generate":
+        return AutoBeSystemPromptConstant.TEST_GENERATE_CORRECT_OVERALL;
+      case "authorize":
+        return AutoBeSystemPromptConstant.TEST_AUTHORIZE_CORRECT_OVERALL;
       default:
         props.target.function satisfies never;
 
@@ -51,15 +51,15 @@ export const transformTestCorrectOverallHistory = async <
             functionName: props.target.function.functionName,
           },
           artifacts: props.target.artifacts,
-          authorizationFunctions: props.target.authorizationFunctions,
-          generationFunctions: props.target.generationFunctions,
+          authorizationFunctions: props.target.authorizeFunctions,
+          generationFunctions: props.target.generateFunctions,
         });
-      case "authorization":
+      case "authorize":
         return transformTestAuthorizationWriteHistory({
           operation: props.target.operation,
           artifacts: props.target.artifacts,
         });
-      case "generation":
+      case "generate":
         return transformTestGenerationWriteHistory(
           props.instruction,
           props.target.prepareFunction,

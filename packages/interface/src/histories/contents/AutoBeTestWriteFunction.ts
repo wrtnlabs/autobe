@@ -1,5 +1,5 @@
-import { AutoBeTestAuthorizationWriteFunction } from "./AutoBeTestAuthorizationWriteFunction";
-import { AutoBeTestGenerationWriteFunction } from "./AutoBeTestGenerationWriteFunction";
+import { AutoBeTestAuthorizeWriteFunction } from "./AutoBeTestAuthorizeWriteFunction";
+import { AutoBeTestGenerateWriteFunction } from "./AutoBeTestGenerateWriteFunction";
 import { AutoBeTestOperationWriteFunction } from "./AutoBeTestOperationWriteFunction";
 import { AutoBeTestPrepareWriteFunction } from "./AutoBeTestPrepareWriteFunction";
 
@@ -13,7 +13,8 @@ import { AutoBeTestPrepareWriteFunction } from "./AutoBeTestPrepareWriteFunction
  * - `AutoBeTestGenerationWriteFunction`: Creates resource generation functions
  *   that produce test data and utilities needed by test scenarios
  * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
- *   authorization functions for different actors (login, signup, token refresh)
+ *   authorization functions for different actors (login, signup, token
+ *   refresh)
  * - `AutoBeTestOperationWriteFunction`: Writes the actual E2E test scenario files
  *   with complete test implementations
  *
@@ -26,8 +27,8 @@ import { AutoBeTestPrepareWriteFunction } from "./AutoBeTestPrepareWriteFunction
  */
 export type AutoBeTestWriteFunction =
   | AutoBeTestPrepareWriteFunction
-  | AutoBeTestGenerationWriteFunction
-  | AutoBeTestAuthorizationWriteFunction
+  | AutoBeTestGenerateWriteFunction
+  | AutoBeTestAuthorizeWriteFunction
   | AutoBeTestOperationWriteFunction;
 
 export namespace AutoBeTestWriteFunction {
@@ -35,24 +36,24 @@ export namespace AutoBeTestWriteFunction {
    * Type literal union of all possible test write function kind strings.
    *
    * Provides a compile-time enumeration of all function kinds that can occur
-   * during test generation. This type is extracted from the discriminant
-   * union property of the AutoBeTestWriteFunction type and is useful for
-   * type guards, switch statements, and function filtering logic.
+   * during test generation. This type is extracted from the discriminant union
+   * property of the AutoBeTestWriteFunction type and is useful for type guards,
+   * switch statements, and function filtering logic.
    */
-  export type Type = AutoBeTestWriteFunction["kind"];
+  export type Type = AutoBeTestWriteFunction["type"];
 
   /**
    * Type mapping interface that associates function kind strings with their
    * corresponding function object types.
    *
-   * This mapping provides a type-safe way to access specific function types
-   * by their string identifiers, enabling generic function handling patterns
-   * and type-safe filtering mechanisms.
+   * This mapping provides a type-safe way to access specific function types by
+   * their string identifiers, enabling generic function handling patterns and
+   * type-safe filtering mechanisms.
    */
   export type Mapper = {
     prepare: AutoBeTestPrepareWriteFunction;
-    generation: AutoBeTestGenerationWriteFunction;
-    authorization: AutoBeTestAuthorizationWriteFunction;
+    generation: AutoBeTestGenerateWriteFunction;
+    authorization: AutoBeTestAuthorizeWriteFunction;
     operation: AutoBeTestOperationWriteFunction;
   };
 }

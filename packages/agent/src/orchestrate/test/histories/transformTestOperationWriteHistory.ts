@@ -1,6 +1,6 @@
 import {
-  AutoBeTestAuthorizationWriteFunction,
-  AutoBeTestGenerationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
+  AutoBeTestGenerateWriteFunction,
   AutoBeTestScenario,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
@@ -20,19 +20,21 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export async function transformTestOperationWriteHistory<Model extends ILlmSchema.Model>(
+export async function transformTestOperationWriteHistory<
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
-    authorizationFunctions: AutoBeTestAuthorizationWriteFunction[];
-    generationFunctions: AutoBeTestGenerationWriteFunction[];
+    authorizationFunctions: AutoBeTestAuthorizeWriteFunction[];
+    generationFunctions: AutoBeTestGenerateWriteFunction[];
   },
 ): Promise<IAutoBeOrchestrateHistory> {
   const functions: (
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizeWriteFunction
+    | AutoBeTestGenerateWriteFunction
   )[] = [...props.authorizationFunctions, ...props.generationFunctions];
   return {
     histories: [
@@ -226,10 +228,9 @@ export namespace transformTestOperationWriteHistory {
 
   export function functional(
     artifacts: IAutoBeTestScenarioArtifacts,
-    excludeFunctions: (
-      | AutoBeTestAuthorizationWriteFunction
-      | AutoBeTestGenerationWriteFunction
-    )[],
+    excludeFunctions: Array<
+      AutoBeTestAuthorizeWriteFunction | AutoBeTestGenerateWriteFunction
+    >,
   ): string {
     const document: OpenApi.IDocument = transformOpenApiDocument(
       artifacts.document,

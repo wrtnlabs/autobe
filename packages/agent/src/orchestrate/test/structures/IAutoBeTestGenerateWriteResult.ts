@@ -1,15 +1,15 @@
 import {
   AutoBeOpenApi,
-  AutoBeTestGenerationWriteFunction,
+  AutoBeTestGenerateWriteFunction,
   AutoBeTestPrepareWriteFunction,
 } from "@autobe/interface";
 
 import { IAutoBeTestArtifacts } from "./IAutoBeTestArtifacts";
 
-export interface IAutoBeTestGenerationWriteResult {
-  type: "generation";
+export interface IAutoBeTestGenerateWriteResult {
+  type: "generate";
   operation: AutoBeOpenApi.IOperation;
   artifacts: IAutoBeTestArtifacts;
   prepareFunction: AutoBeTestPrepareWriteFunction;
-  function: AutoBeTestGenerationWriteFunction;
+  function: AutoBeTestGenerateWriteFunction;
 }

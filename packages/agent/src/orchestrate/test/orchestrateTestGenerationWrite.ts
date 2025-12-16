@@ -18,8 +18,8 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestGenerationWriteHistory } from "./histories/transformTestGenerationWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { IAutoBeTestGenerateWriteResult } from "./structures/IAutoBeTestGenerateWriteResult";
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
-import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
 export const orchestrateTestGenerationWrite = async <
@@ -31,7 +31,7 @@ export const orchestrateTestGenerationWrite = async <
     document: AutoBeOpenApi.IDocument;
     preparedFunctions: AutoBeTestPrepareWriteFunction[];
   },
-): Promise<IAutoBeTestGenerationWriteResult[]> => {
+): Promise<IAutoBeTestGenerateWriteResult[]> => {
   // Track existing function names to prevent duplicates
   const existingFunctionNames: string[] = [];
 
@@ -40,7 +40,7 @@ export const orchestrateTestGenerationWrite = async <
     completed: 0,
   };
 
-  const result: Array<IAutoBeTestGenerationWriteResult | null> =
+  const result: Array<IAutoBeTestGenerateWriteResult | null> =
     await executeCachedBatch(
       ctx,
       props.preparedFunctions.map(
@@ -70,19 +70,19 @@ export const orchestrateTestGenerationWrite = async <
               instruction: props.instruction,
               existingFunctionNames,
             });
-            if (event.function.kind !== "generation") return null;
+            if (event.function.type !== "generate") return null;
 
             // Add successfully generated function name to the tracking array
             existingFunctionNames.push(event.function.functionName);
 
             ctx.dispatch(event);
             return {
-              type: "generation",
+              type: "generate",
               prepareFunction,
               artifacts,
               function: event.function,
               operation,
-            } satisfies IAutoBeTestGenerationWriteResult;
+            } satisfies IAutoBeTestGenerateWriteResult;
           } catch {
             return null;
           }
@@ -105,11 +105,11 @@ async function process<Model extends ILlmSchema.Model>(
     existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { 
-    prepareFunction, 
-    artifacts, 
-    operation, 
-    progress, 
+  const {
+    prepareFunction,
+    artifacts,
+    operation,
+    progress,
     promptCacheKey,
     existingFunctionNames,
   } = props;
@@ -146,12 +146,12 @@ async function process<Model extends ILlmSchema.Model>(
   // Generate prepare function import statement
   const importStatement: string = getTestImportFromFunction({
     target: {
-      type: "generation",
+      type: "generate",
       operation,
       prepareFunction,
       artifacts,
       function: {
-        kind: "generation",
+        type: "generate",
         endpoint: prepareFunction.endpoint,
         actor: operation.authorizationActor,
         location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
@@ -180,7 +180,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     created_at: new Date().toISOString(),
     function: {
-      kind: "generation",
+      type: "generate",
       endpoint: prepareFunction.endpoint,
       actor: operation.authorizationActor,
       location: `test/features/utils/generation/${pointer.value.functionName}.ts`,

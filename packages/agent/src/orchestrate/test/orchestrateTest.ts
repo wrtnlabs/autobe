@@ -17,13 +17,13 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestrateTestAuthorizationWrite } from "./orchestrateTestAuthorizationWrite";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestGenerationWrite } from "./orchestrateTestGenerationWrite";
+import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
-import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
-import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
-import { IAutoBeTestGenerationWriteResult } from "./structures/IAutoBeTestGenerationWriteResult";
-import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
+import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthorizeWriteResult";
+import { IAutoBeTestGenerateWriteResult } from "./structures/IAutoBeTestGenerateWriteResult";
 import { IAutoBeTestOperationWriteResult } from "./structures/IAutoBeTestOperationWriteResult";
+import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -80,7 +80,7 @@ export const orchestrateTest =
       });
 
     // GENERATION FUNCTIONS
-    const generated: IAutoBeTestGenerationWriteResult[] =
+    const generated: IAutoBeTestGenerateWriteResult[] =
       await orchestrateTestGenerationWrite(ctx, {
         instruction: props.instruction,
         document,
@@ -90,7 +90,7 @@ export const orchestrateTest =
               p,
             ): p is AutoBeTestValidateEvent & {
               function: AutoBeTestPrepareWriteFunction;
-            } => p.function.kind === "prepare",
+            } => p.function.type === "prepare",
           )
           .map((p) => p.function),
       });
@@ -101,7 +101,7 @@ export const orchestrateTest =
       });
 
     // AUTHORIZATION FUNCTIONS
-    const authorized: IAutoBeTestAuthorizationWriteResult[] =
+    const authorized: IAutoBeTestAuthorizeWriteResult[] =
       await orchestrateTestAuthorizationWrite(ctx, {
         operations,
       });
@@ -120,15 +120,16 @@ export const orchestrateTest =
       throw new Error("No scenarios generated. Please check the logs.");
 
     // TEST CODE
-    const written: IAutoBeTestOperationWriteResult[] = await orchestrateTestOperationWrite(ctx, {
-      instruction: props.instruction,
-      scenarios,
-      events: [
-        ...prepareCorrects,
-        ...generationCorrects,
-        ...authorizationCorrects,
-      ],
-    });
+    const written: IAutoBeTestOperationWriteResult[] =
+      await orchestrateTestOperationWrite(ctx, {
+        instruction: props.instruction,
+        scenarios,
+        events: [
+          ...prepareCorrects,
+          ...generationCorrects,
+          ...authorizationCorrects,
+        ],
+      });
     if (written.length === 0)
       throw new Error("No test code written. Please check the logs.");
 

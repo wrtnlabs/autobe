@@ -1,13 +1,13 @@
 import {
   AutoBeOpenApi,
-  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
 } from "@autobe/interface";
 
 import { IAutoBeTestArtifacts } from "./IAutoBeTestArtifacts";
 
-export interface IAutoBeTestAuthorizationWriteResult {
-  type: "authorization";
+export interface IAutoBeTestAuthorizeWriteResult {
+  type: "authorize";
   operation: AutoBeOpenApi.IOperation;
   artifacts: IAutoBeTestArtifacts;
-  function: AutoBeTestAuthorizationWriteFunction;
+  function: AutoBeTestAuthorizeWriteFunction;
 }

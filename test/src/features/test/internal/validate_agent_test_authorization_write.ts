@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateTestAuthorizationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestAuthorizationWrite";
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
-import { IAutoBeTestAuthorizationWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestAuthorizationWriteResult";
+import { IAutoBeTestAuthorizeWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestAuthorizeWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -40,7 +40,7 @@ export const validate_agent_test_authorization_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE AUTHORIZATION FUNCTIONS
-  const authorizationResults: IAutoBeTestAuthorizationWriteResult[] =
+  const authorizationResults: IAutoBeTestAuthorizeWriteResult[] =
     await orchestrateTestAuthorizationWrite(agent.getContext(), {
       operations,
     });
@@ -125,7 +125,7 @@ const validate_agent_test_authorization_correct = async <
   project: AutoBeExampleProject;
   props: {
     agent: AutoBeAgent<Model>;
-    authorizationResults: IAutoBeTestAuthorizationWriteResult[];
+    authorizationResults: IAutoBeTestAuthorizeWriteResult[];
   };
 }) => {
   const { agent, authorizationResults } = props.props;

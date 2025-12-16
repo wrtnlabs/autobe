@@ -1,9 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
   AutoBeTestCorrectEvent,
-  AutoBeTestGenerationWriteFunction,
+  AutoBeTestGenerateWriteFunction,
   AutoBeTestPrepareWriteFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -139,17 +139,17 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
   );
 
   const helperFunctions: (
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizeWriteFunction
+    | AutoBeTestGenerateWriteFunction
     | AutoBeTestPrepareWriteFunction
   )[] =
     item.type === "operation"
       ? [
-          ...item.authorizationFunctions,
-          ...item.generationFunctions,
+          ...item.authorizeFunctions,
+          ...item.generateFunctions,
           ...item.prepareFunctions,
         ]
-      : item.type === "generation"
+      : item.type === "generate"
         ? [item.prepareFunction]
         : [];
 

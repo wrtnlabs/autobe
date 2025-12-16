@@ -21,7 +21,7 @@ export function transformTestAuthorizationWriteHistory(props: {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.TEST_AUTHORIZATION_WRITE,
+        text: AutoBeSystemPromptConstant.TEST_AUTHORIZE_WRITE,
       },
       {
         id: v7(),

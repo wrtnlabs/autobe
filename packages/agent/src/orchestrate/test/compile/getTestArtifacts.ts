@@ -1,7 +1,7 @@
 import {
   AutoBeOpenApi,
-  AutoBeTestAuthorizationWriteFunction,
-  AutoBeTestGenerationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
+  AutoBeTestGenerateWriteFunction,
   AutoBeTestPrepareWriteFunction,
   AutoBeTestScenario,
   AutoBeTestWriteFunction,
@@ -134,17 +134,17 @@ export async function getTestArtifactsFromFunction<
 >(
   ctx: AutoBeContext<Model>,
   func:
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizeWriteFunction
+    | AutoBeTestGenerateWriteFunction
     | AutoBeTestPrepareWriteFunction
     | AutoBeTestWriteFunction,
 ): Promise<IAutoBeTestArtifacts> {
   const endpoint: AutoBeOpenApi.IEndpoint = (() => {
-    switch (func.kind) {
+    switch (func.type) {
       case "operation":
         return func.scenario.endpoint;
-      case "authorization":
-      case "generation":
+      case "authorize":
+      case "generate":
       case "prepare":
         return func.endpoint;
     }

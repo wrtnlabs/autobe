@@ -7,13 +7,13 @@
  *
  * @author Michael
  */
-export interface AutoBeTestWriteFunctionBase<Kind extends string> {
+export interface AutoBeTestWriteFunctionBase<Type extends string> {
   /**
    * Discriminator field that identifies the specific type of test function.
    * Used for discriminated union pattern to distinguish between different test
    * function types.
    */
-  kind: Kind;
+  type: Type;
 
   /**
    * The file system location where this test function will be written. Should
