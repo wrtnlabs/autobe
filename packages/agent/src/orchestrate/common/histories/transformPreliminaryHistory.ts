@@ -3,6 +3,7 @@ import {
   IMicroAgenticaHistoryJson,
 } from "@agentica/core";
 import {
+  AutoBeAnalyzeHistory,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
@@ -19,8 +20,8 @@ import {
 import { HashSet } from "tstl";
 import { v7 } from "uuid";
 
-import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
@@ -69,21 +70,24 @@ namespace PreliminaryTransformer {
       (f) => oldbie[f.filename] === undefined,
     );
 
-    const analyze = props.previous
+    const analyze: AutoBeAnalyzeHistory | null = props.previous
       ? props.state.previousAnalyze
       : props.state.analyze;
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
-        prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED,
+        prompt:
+          AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED.replace(
+            "{{PREFIX}}",
+            analyze?.prefix ?? "",
+          ).replace(
+            "{{ACTORS}}",
+            analyze?.actors ? toJsonBlock(analyze.actors) : "",
+          ),
         previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
         content: toJsonBlock(oldbie),
         replace: props.previous
           ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
           : null,
-        prefix: analyze?.prefix ?? "",
-        actors: analyze?.actors
-          ? toJsonBlock(analyze.actors)
-          : "",
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
@@ -545,17 +549,13 @@ const createAssistantMessage = (props: {
   content: string;
   replace: IPromptReplace | null;
   previous: string | null;
-  prefix?: string;
-  actors?: string;
 }): IAgenticaHistoryJson.IAssistantMessage => {
   let text = props.prompt
     .replaceAll("{{CONTENT}}", props.content)
     .replaceAll(
       "{{PREVIOUS}}",
       props.replace !== null && props.previous !== null ? props.previous : "",
-    )
-    .replaceAll("{{PREFIX}}", props.prefix ?? "")
-    .replaceAll("{{ACTORS}}", props.actors ?? "");
+    );
   if (props.replace !== null)
     text = text.replaceAll(props.replace.from, props.replace.to);
   return {
