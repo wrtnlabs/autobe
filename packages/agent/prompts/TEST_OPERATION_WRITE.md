@@ -586,7 +586,7 @@ export async function test_api_user_updates_article(connection: api.IConnection)
 - ✅ Use authorization functions for ANY endpoint that has an authorization function
 - ✅ Use generation functions for ANY endpoint that has a generation function
 - ✅ Pass the same `connection` object to maintain auth state
-- ✅ Use the `input` parameter to customize generated data when needed
+- ✅ Use the `body` parameter to customize generated data when needed
 - ✅ Use SDK functions ONLY for endpoints without utility functions
 
 **MUST NOT**:
