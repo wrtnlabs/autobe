@@ -197,6 +197,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   /**
+   * Returns the current AutoBe state.
+   *
+   * @returns Current pipeline state containing all phase histories.
+   */
+  public getState(): AutoBeState {
+    return this.state;
+  }
+
+  /**
    * Dynamically adjusts LLM application schema at runtime.
    *
    * Removes `getPreviousXXX` types from union/oneOf when no previous iteration
