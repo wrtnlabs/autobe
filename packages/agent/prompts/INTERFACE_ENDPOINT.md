@@ -396,7 +396,7 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 **process() - Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements.md"] }})
@@ -433,7 +433,7 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 **process() - Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})

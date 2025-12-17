@@ -184,7 +184,7 @@ process({
 
 Loads requirement analysis documents from the previous version.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
@@ -220,7 +220,7 @@ process({
 
 Loads Prisma model definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
@@ -259,7 +259,7 @@ process({
 
 Loads API operation definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
@@ -342,7 +342,7 @@ process({
 
 Loads already-generated schema definitions from the previous version.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({

@@ -153,7 +153,7 @@ process({
 
 #### Load previous version Analysis Files
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -174,7 +174,7 @@ process({
 
 #### Load previous version Prisma Schemas
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. If no previous version exists, it will NOT be available in the request schema. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({

@@ -94,7 +94,7 @@ You must call the `process()` function using a discriminated union with two requ
 
 **Type 1: Load previous version Files**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. This loads analysis files from the **previous version** (the last successfully generated version), NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. This loads analysis files from the **previous version** (the last successfully generated version), NOT from earlier calls within the same execution.
 
 Load files from previous version for reference:
 
