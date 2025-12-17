@@ -1,13 +1,13 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { orchestrateTestGenerationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestGenerationWrite";
-import { IAutoBeTestGenerateWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestGenerateWriteResult";
+import { IAutoBeTestGenerateProcedure } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestGenerateProcedure";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeOpenApi,
-  AutoBeTestPrepareWriteFunction,
+  AutoBeTestPrepareFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -39,7 +39,7 @@ export const validate_agent_test_generation_write = async (props: {
   const document: AutoBeOpenApi.IDocument = interfaceState.document;
 
   // Create mock prepare functions for testing
-  const preparedFunctions: AutoBeTestPrepareWriteFunction[] = [];
+  const preparedFunctions: AutoBeTestPrepareFunction[] = [];
 
   // Create prepare functions based on create operations
   operations
@@ -56,13 +56,9 @@ export const validate_agent_test_generation_write = async (props: {
 
       preparedFunctions.push({
         type: "prepare",
-        endpoint: {
-          method: op.method,
-          path: op.path,
-        },
-        dtoTypeName: op.requestBody!.typeName,
+        typeName: op.requestBody!.typeName,
         location: `test/features/utils/prepare/${functionName}.ts`,
-        functionName,
+        name: functionName,
         content: StringUtil.trim`// Mock prepare function for ${resourceName}
         export const ${functionName} = (
           input?: any
@@ -77,7 +73,7 @@ export const validate_agent_test_generation_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE GENERATION FUNCTIONS
-  const generationResults: IAutoBeTestGenerateWriteResult[] =
+  const generationResults: IAutoBeTestGenerateProcedure[] =
     await orchestrateTestGenerationWrite(agent.getContext(), {
       instruction: "Generate generation functions for the prepared functions.",
       document,
@@ -162,12 +158,13 @@ const validate_agent_test_generation_correct = async <
   project: AutoBeExampleProject;
   props: {
     agent: AutoBeAgent<Model>;
-    generationResults: IAutoBeTestGenerateWriteResult[];
+    generationResults: IAutoBeTestGenerateProcedure[];
   };
 }) => {
   const { agent, generationResults } = props.props;
-  const preparedFunctions: AutoBeTestPrepareWriteFunction[] =
-    generationResults.map((r) => r.prepareFunction);
+  const preparedFunctions: AutoBeTestPrepareFunction[] = generationResults.map(
+    (r) => r.prepareFunction,
+  );
   // CORRECT
   const correctResults: AutoBeTestValidateEvent[] =
     await orchestrateTestCorrect(agent.getContext(), {

@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { orchestrateTestPrepareWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestPrepareWrite";
-import { IAutoBeTestPrepareWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestPrepareWriteResult";
+import { IAutoBeTestPrepareProcedure } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestPrepareProcedure";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -39,7 +39,7 @@ export const validate_agent_test_prepare_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE PREPARE FUNCTIONS
-  const prepareResults: IAutoBeTestPrepareWriteResult[] =
+  const prepareResults: IAutoBeTestPrepareProcedure[] =
     await orchestrateTestPrepareWrite(agent.getContext(), {
       instruction: "Generate prepare functions for the operations.",
       document,
@@ -118,7 +118,7 @@ const validate_agent_test_prepare_correct = async <
   project: AutoBeExampleProject;
   props: {
     agent: AutoBeAgent<Model>;
-    prepareResults: IAutoBeTestPrepareWriteResult[];
+    prepareResults: IAutoBeTestPrepareProcedure[];
   };
 }) => {
   const { agent, prepareResults } = props.props;

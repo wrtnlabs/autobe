@@ -143,6 +143,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
+      path: "$input",
       functionName: props.functionName,
       draft: result.data.draft,
       revise: result.data.revise,

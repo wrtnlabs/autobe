@@ -118,7 +118,7 @@ const correct = async <
   else if (pointer.value === false) return event;
 
   ctx.dispatch(
-    factory.correct({
+    await factory.correct({
       failure: event.result,
       think: pointer.value.think,
       draft: pointer.value.draft,
