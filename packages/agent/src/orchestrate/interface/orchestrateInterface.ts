@@ -22,9 +22,10 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
+import { orchestrateInterfaceActionEndpoint } from "./orchestrateInterfaceActionEndpoint";
 import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
+import { orchestrateInterfaceBaseEndpoint } from "./orchestrateInterfaceBaseEndpoint";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
-import { orchestrateInterfaceEndpoint } from "./orchestrateInterfaceEndpoint";
 import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
@@ -82,13 +83,26 @@ export const orchestrateInterface =
       .map((authorization) => authorization.operations)
       .flat();
 
-    // ENDPOINTS & OPERATIONS
-    const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoint(ctx, {
+    // BASE ENDPOINTS
+    const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceBaseEndpoint(ctx, {
+        instruction: props.instruction,
         groups: init.groups,
         authorizations: authOperations,
-        instruction: props.instruction,
       });
+    // ACTION ENDPOINTS
+    const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceActionEndpoint(ctx, {
+        instruction: props.instruction,
+        groups: init.groups,
+        authorizations: authOperations,
+        excluded: baseEndpoints,
+      });
+    const endpoints: AutoBeOpenApi.IEndpoint[] = [
+      ...baseEndpoints,
+      ...actionEndpoints,
+    ];
+
     const firstOperations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperation(ctx, {
         endpoints,
