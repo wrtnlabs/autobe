@@ -1,7 +1,7 @@
-import { AutoBeTestAuthorizeWriteFunction } from "./AutoBeTestAuthorizeWriteFunction";
-import { AutoBeTestGenerateWriteFunction } from "./AutoBeTestGenerateWriteFunction";
-import { AutoBeTestOperationWriteFunction } from "./AutoBeTestOperationWriteFunction";
-import { AutoBeTestPrepareWriteFunction } from "./AutoBeTestPrepareWriteFunction";
+import { AutoBeTestAuthorizeFunction } from "./AutoBeTestAuthorizeFunction";
+import { AutoBeTestGenerateFunction } from "./AutoBeTestGenerateFunction";
+import { AutoBeTestOperationFunction } from "./AutoBeTestOperationFunction";
+import { AutoBeTestPrepareFunction } from "./AutoBeTestPrepareFunction";
 
 /**
  * Union type representing all possible test write function types in AutoBE.
@@ -25,13 +25,13 @@ import { AutoBeTestPrepareWriteFunction } from "./AutoBeTestPrepareWriteFunction
  *
  * @author Michael
  */
-export type AutoBeTestWriteFunction =
-  | AutoBeTestPrepareWriteFunction
-  | AutoBeTestGenerateWriteFunction
-  | AutoBeTestAuthorizeWriteFunction
-  | AutoBeTestOperationWriteFunction;
+export type AutoBeTestFunction =
+  | AutoBeTestPrepareFunction
+  | AutoBeTestGenerateFunction
+  | AutoBeTestAuthorizeFunction
+  | AutoBeTestOperationFunction;
 
-export namespace AutoBeTestWriteFunction {
+export namespace AutoBeTestFunction {
   /**
    * Type literal union of all possible test write function kind strings.
    *
@@ -40,7 +40,7 @@ export namespace AutoBeTestWriteFunction {
    * property of the AutoBeTestWriteFunction type and is useful for type guards,
    * switch statements, and function filtering logic.
    */
-  export type Type = AutoBeTestWriteFunction["type"];
+  export type Type = AutoBeTestFunction["type"];
 
   /**
    * Type mapping interface that associates function kind strings with their
@@ -51,9 +51,9 @@ export namespace AutoBeTestWriteFunction {
    * type-safe filtering mechanisms.
    */
   export type Mapper = {
-    prepare: AutoBeTestPrepareWriteFunction;
-    generation: AutoBeTestGenerateWriteFunction;
-    authorization: AutoBeTestAuthorizeWriteFunction;
-    operation: AutoBeTestOperationWriteFunction;
+    prepare: AutoBeTestPrepareFunction;
+    generation: AutoBeTestGenerateFunction;
+    authorization: AutoBeTestAuthorizeFunction;
+    operation: AutoBeTestOperationFunction;
   };
 }

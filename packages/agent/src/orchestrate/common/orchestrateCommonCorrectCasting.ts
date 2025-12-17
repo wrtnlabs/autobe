@@ -35,7 +35,7 @@ interface IFactoryProps<
     final: string | undefined;
     metric: AutoBeFunctionCallingMetric;
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
-  }): CorrectEvent;
+  }): Promise<CorrectEvent>;
   script(event: ValidateEvent): string;
   source: "testCorrect" | "realizeCorrect";
   functionName: string;

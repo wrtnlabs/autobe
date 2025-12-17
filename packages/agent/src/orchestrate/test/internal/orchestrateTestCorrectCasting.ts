@@ -1,0 +1,83 @@
+import {
+  AutoBeTestCorrectEvent,
+  AutoBeTestValidateEvent,
+} from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
+import { v7 } from "uuid";
+
+import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { orchestrateCommonCorrectCasting } from "../../common/orchestrateCommonCorrectCasting";
+import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
+import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
+
+interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
+  histories(props: {
+    procedure: Procedure;
+    failures: IAutoBeTestFunctionFailure[];
+  }): Promise<IAutoBeOrchestrateHistory>;
+  replaceImportStatements(content: string): Promise<string>;
+  compile(props: Procedure): Promise<AutoBeTestValidateEvent>;
+}
+
+export async function orchestrateTestCorrectCasting<
+  Model extends ILlmSchema.Model,
+  Procedure extends IAutoBeTestProcedure,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    programmer: IProgrammer<Procedure>;
+    procedures: Procedure[];
+  },
+): Promise<AutoBeTestValidateEvent[]> {
+  const result: Array<AutoBeTestValidateEvent | null> =
+    await executeCachedBatch(
+      ctx,
+      props.procedures.map((procedure) => async () => {
+        try {
+          return await orchestrateCommonCorrectCasting<
+            Model,
+            AutoBeTestValidateEvent,
+            AutoBeTestCorrectEvent
+          >(
+            ctx,
+            {
+              source: "testCorrect",
+              validate: (content) =>
+                props.programmer.compile({
+                  ...procedure,
+                  function: {
+                    ...procedure.function,
+                    content,
+                  },
+                }),
+              correct: async (next) =>
+                ({
+                  type: "testCorrect",
+                  kind: "casting",
+                  id: v7(),
+                  created_at: new Date().toISOString(),
+                  function: {
+                    ...procedure.function,
+                    content: await props.programmer.replaceImportStatements(
+                      next.final ?? next.draft,
+                    ),
+                  },
+                  result: next.failure,
+                  tokenUsage: next.tokenUsage,
+                  metric: next.metric,
+                  step: ctx.state().analyze?.step ?? 0,
+                }) satisfies AutoBeTestCorrectEvent,
+              script: (event) => event.function.content,
+              functionName: procedure.function.name,
+            },
+            procedure.function.content,
+          );
+        } catch {
+          return null;
+        }
+      }),
+    );
+  return result.filter((r) => r !== null);
+}

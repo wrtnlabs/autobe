@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
-  AutoBeTestAuthorizeWriteFunction,
+  AutoBeTestAuthorizeFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -68,7 +68,7 @@ export const orchestrateTestAuthorizationWrite = async <
           if (event.function.type !== "authorize") return null;
 
           // Add successfully generated function name to the tracking array
-          existingFunctionNames.push(event.function.functionName);
+          existingFunctionNames.push(event.function.name);
 
           ctx.dispatch(event);
           return {
@@ -145,7 +145,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   // Create the authorization function object
-  const authorizationFunction: AutoBeTestAuthorizeWriteFunction = {
+  const authorizationFunction: AutoBeTestAuthorizeFunction = {
     type: "authorize",
     endpoint: {
       method: operation.method,
@@ -154,7 +154,7 @@ async function process<Model extends ILlmSchema.Model>(
     actor: pointer.value.actor,
     authType: operation.authorizationType!,
     location: `test/features/utils/authorize/${pointer.value.functionName}.ts`,
-    functionName: pointer.value.functionName,
+    name: pointer.value.functionName,
     content: pointer.value.revise.final ?? pointer.value.draft,
   };
 

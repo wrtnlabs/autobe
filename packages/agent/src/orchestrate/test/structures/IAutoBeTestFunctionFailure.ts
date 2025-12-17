@@ -1,8 +1,10 @@
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 
-import { IAutoBeTestAgentResult } from "./IAutoBeTestAgentResult";
+import { IAutoBeTestProcedure } from "./IAutoBeTestProcedure";
 
-export interface IAutoBeTestFunctionFailure {
-  target: IAutoBeTestAgentResult;
+export interface IAutoBeTestFunctionFailure<
+  Procedure extends IAutoBeTestProcedure = IAutoBeTestProcedure,
+> {
+  procedure: Procedure;
   failure: IAutoBeTypeScriptCompileResult.IFailure;
 }

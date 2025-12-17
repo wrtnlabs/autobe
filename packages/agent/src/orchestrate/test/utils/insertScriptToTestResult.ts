@@ -1,6 +1,6 @@
-import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
+import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
-export const insertScriptToTestResult = <Item extends IAutoBeTestAgentResult>(
+export const insertScriptToTestResult = <Item extends IAutoBeTestProcedure>(
   item: Item,
   script: string,
 ): Item => {

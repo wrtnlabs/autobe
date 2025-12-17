@@ -37,8 +37,8 @@ export * from "./AutoBeFunctionCallingMetric";
 export * from "./AutoBeProcessAggregateCollection";
 export * from "./AutoBeProcessAggregate";
 
-export * from "./AutoBeTestAuthorizeWriteFunction";
-export * from "./AutoBeTestPrepareWriteFunction";
-export * from "./AutoBeTestGenerateWriteFunction";
-export * from "./AutoBeTestOperationWriteFunction";
-export * from "./AutoBeTestWriteFunction";
+export * from "./AutoBeTestAuthorizeFunction";
+export * from "./AutoBeTestPrepareFunction";
+export * from "./AutoBeTestGenerateFunction";
+export * from "./AutoBeTestOperationFunction";
+export * from "./AutoBeTestFunction";

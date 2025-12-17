@@ -15,8 +15,8 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
+import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrepareWriteApplication";
-import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 
 /**
  * Orchestrates the generation of test data preparation functions.
@@ -44,7 +44,7 @@ export const orchestrateTestPrepareWrite = async <
     instruction: string;
     document: AutoBeOpenApi.IDocument;
   },
-): Promise<IAutoBeTestPrepareWriteResult[]> => {
+): Promise<IAutoBeTestPrepareProcedure[]> => {
   interface ICreateType {
     key: string;
     value: AutoBeOpenApi.IJsonSchema.IObject;
@@ -62,7 +62,7 @@ export const orchestrateTestPrepareWrite = async <
   };
 
   // Generate prepare functions using LLM in parallel with prompt caching
-  const result: Array<IAutoBeTestPrepareWriteResult | null> =
+  const result: Array<IAutoBeTestPrepareProcedure | null> =
     await executeCachedBatch(
       ctx,
       createTypes.map((entry) => async (promptCacheKey) => {
@@ -147,7 +147,7 @@ async function process<Model extends ILlmSchema.Model>(
         code: pointer.value.revise.final ?? pointer.value.draft,
       }),
       typeName: props.typeName,
-      functionName,
+      name: functionName,
     },
     completed: ++props.progress.completed,
     total: props.progress.total,

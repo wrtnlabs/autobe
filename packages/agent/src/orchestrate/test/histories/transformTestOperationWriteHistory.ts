@@ -1,6 +1,6 @@
 import {
-  AutoBeTestAuthorizeWriteFunction,
-  AutoBeTestGenerateWriteFunction,
+  AutoBeTestAuthorizeFunction,
+  AutoBeTestGenerateFunction,
   AutoBeTestScenario,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
@@ -28,13 +28,13 @@ export async function transformTestOperationWriteHistory<
     instruction: string;
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
-    authorizationFunctions: AutoBeTestAuthorizeWriteFunction[];
-    generationFunctions: AutoBeTestGenerateWriteFunction[];
+    authorizationFunctions: AutoBeTestAuthorizeFunction[];
+    generationFunctions: AutoBeTestGenerateFunction[];
   },
 ): Promise<IAutoBeOrchestrateHistory> {
   const functions: (
-    | AutoBeTestAuthorizeWriteFunction
-    | AutoBeTestGenerateWriteFunction
+    | AutoBeTestAuthorizeFunction
+    | AutoBeTestGenerateFunction
   )[] = [...props.authorizationFunctions, ...props.generationFunctions];
   return {
     histories: [
@@ -129,18 +129,18 @@ export async function transformTestOperationWriteHistory<
           ${props.authorizationFunctions
             .map(
               (f) =>
-                `| \`${f.functionName}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` | ${f.actor} |`,
+                `| \`${f.name}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` | ${f.actor} |`,
             )
             .join("\n")}
 
           ${props.authorizationFunctions
             .map(
               (f) => StringUtil.trim`
-          #### ${f.functionName}
+          #### ${f.name}
           - **Endpoint**: \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`
           - **Actor**: ${f.actor}
           - **Auth Type**: ${f.authType}
-          - **Usage**: \`await ${f.functionName}({ connection, input: { ... } })\`
+          - **Usage**: \`await ${f.name}({ connection, input: { ... } })\`
           - ⚠️ **Do NOT use \`api.functional.*\` for \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`** - use this function instead
 
           \`\`\`typescript
@@ -158,16 +158,16 @@ export async function transformTestOperationWriteHistory<
           ${props.generationFunctions
             .map(
               (f) =>
-                `| \`${f.functionName}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` |`,
+                `| \`${f.name}\` | \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\` |`,
             )
             .join("\n")}
 
           ${props.generationFunctions
             .map(
               (f) => StringUtil.trim`
-          #### ${f.functionName}
+          #### ${f.name}
           - **Endpoint**: \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`
-          - **Usage**: \`await ${f.functionName}({ connection, input: { ... } })\`
+          - **Usage**: \`await ${f.name}({ connection, input: { ... } })\`
           - ⚠️ **Do NOT use \`api.functional.*\` for \`${f.endpoint.method.toUpperCase()} ${f.endpoint.path}\`** - use this function instead
 
           \`\`\`typescript
@@ -229,7 +229,7 @@ export namespace transformTestOperationWriteHistory {
   export function functional(
     artifacts: IAutoBeTestScenarioArtifacts,
     excludeFunctions: Array<
-      AutoBeTestAuthorizeWriteFunction | AutoBeTestGenerateWriteFunction
+      AutoBeTestAuthorizeFunction | AutoBeTestGenerateFunction
     >,
   ): string {
     const document: OpenApi.IDocument = transformOpenApiDocument(

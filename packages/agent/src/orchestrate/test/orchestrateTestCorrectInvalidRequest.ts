@@ -14,8 +14,8 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistory } from "./histories/transformTestCorrectInvalidRequestHistory";
-import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
+import { IAutoBeTestProcedure } from "./structures/IAutoBeTestProcedure";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
@@ -26,7 +26,7 @@ export const orchestrateTestCorrectInvalidRequest = async <
 >(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestAgentResult,
+  write: IAutoBeTestProcedure,
 ): Promise<AutoBeTestValidateEvent> => {
   const event: AutoBeTestValidateEvent = await compile(write.function.content);
   return await predicate(ctx, compile, write, event, ctx.retry);
@@ -35,7 +35,7 @@ export const orchestrateTestCorrectInvalidRequest = async <
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestAgentResult,
+  write: IAutoBeTestProcedure,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -49,7 +49,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestAgentResult,
+  write: IAutoBeTestProcedure,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -65,7 +65,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     controller: createController({
       model: ctx.model,
-      functionName: write.function.functionName,
+      functionName: write.function.name,
       then: (next) => {
         pointer.value = next;
       },
@@ -120,7 +120,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     final: pointer.value.revise?.final ?? undefined,
   });
 
-  const newWrite: IAutoBeTestAgentResult = insertScriptToTestResult(
+  const newWrite: IAutoBeTestProcedure = insertScriptToTestResult(
     write,
     pointer.value.revise?.final ?? pointer.value.draft,
   );

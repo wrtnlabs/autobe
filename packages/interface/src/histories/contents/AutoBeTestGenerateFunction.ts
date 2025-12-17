@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi";
-import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
+import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
 
 /**
  * Interface defining generation functions that create resources used in test
@@ -18,8 +18,8 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestGenerateWriteFunction
-  extends AutoBeTestWriteFunctionBase<"generate"> {
+export interface AutoBeTestGenerateFunction
+  extends AutoBeTestFunctionBase<"generate"> {
   /**
    * OpenAPI endpoint specification that this generation function corresponds
    * to.

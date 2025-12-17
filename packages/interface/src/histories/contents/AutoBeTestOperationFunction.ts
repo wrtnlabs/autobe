@@ -1,5 +1,5 @@
+import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
 import { AutoBeTestScenario } from "./AutoBeTestScenario";
-import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
 
 /**
  * Test writing function content structure for individual test scenario files.
@@ -17,8 +17,8 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestOperationWriteFunction
-  extends AutoBeTestWriteFunctionBase<"operation"> {
+export interface AutoBeTestOperationFunction
+  extends AutoBeTestFunctionBase<"operation"> {
   /**
    * Detailed metadata describing the test scenario and its characteristics.
    *

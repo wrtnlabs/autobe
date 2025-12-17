@@ -2,7 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
   AutoBeTestHistory,
-  AutoBeTestPrepareWriteFunction,
+  AutoBeTestPrepareFunction,
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -21,9 +21,9 @@ import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthorizeWriteResult";
-import { IAutoBeTestGenerateWriteResult } from "./structures/IAutoBeTestGenerateWriteResult";
-import { IAutoBeTestOperationWriteResult } from "./structures/IAutoBeTestOperationWriteResult";
-import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
+import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGenerateProcedure";
+import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
+import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -68,7 +68,7 @@ export const orchestrateTest =
       });
 
     // PREPARE FUNCTIONS
-    const prepared: IAutoBeTestPrepareWriteResult[] =
+    const prepared: IAutoBeTestPrepareProcedure[] =
       await orchestrateTestPrepareWrite(ctx, {
         instruction: props.instruction,
         document,
@@ -80,7 +80,7 @@ export const orchestrateTest =
       });
 
     // GENERATION FUNCTIONS
-    const generated: IAutoBeTestGenerateWriteResult[] =
+    const generated: IAutoBeTestGenerateProcedure[] =
       await orchestrateTestGenerationWrite(ctx, {
         instruction: props.instruction,
         document,
@@ -89,7 +89,7 @@ export const orchestrateTest =
             (
               p,
             ): p is AutoBeTestValidateEvent & {
-              function: AutoBeTestPrepareWriteFunction;
+              function: AutoBeTestPrepareFunction;
             } => p.function.type === "prepare",
           )
           .map((p) => p.function),
@@ -120,7 +120,7 @@ export const orchestrateTest =
       throw new Error("No scenarios generated. Please check the logs.");
 
     // TEST CODE
-    const written: IAutoBeTestOperationWriteResult[] =
+    const written: IAutoBeTestOperationProcedure[] =
       await orchestrateTestOperationWrite(ctx, {
         instruction: props.instruction,
         scenarios,

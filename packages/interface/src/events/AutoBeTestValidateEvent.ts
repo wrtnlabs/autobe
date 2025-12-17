@@ -1,5 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { AutoBeTestWriteFunction } from "../histories";
+import { AutoBeTestFunction } from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -42,7 +42,7 @@ export interface AutoBeTestValidateEvent
    * validation. The discriminated union pattern enables type-safe handling of
    * different test writing stages while providing detailed progress tracking.
    */
-  function: AutoBeTestWriteFunction;
+  function: AutoBeTestFunction;
 
   /**
    * Compilation result indicating success, failure, or exception during

@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
-  AutoBeTestPrepareWriteFunction,
+  AutoBeTestPrepareFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
@@ -19,7 +19,7 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestGenerationWriteHistory } from "./histories/transformTestGenerationWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
-import { IAutoBeTestGenerateWriteResult } from "./structures/IAutoBeTestGenerateWriteResult";
+import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGenerateProcedure";
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
@@ -30,9 +30,9 @@ export const orchestrateTestGenerationWrite = async <
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
-    preparedFunctions: AutoBeTestPrepareWriteFunction[];
+    preparedFunctions: AutoBeTestPrepareFunction[];
   },
-): Promise<IAutoBeTestGenerateWriteResult[]> => {
+): Promise<IAutoBeTestGenerateProcedure[]> => {
   // Track existing function names to prevent duplicates
   const existingFunctionNames: string[] = [];
 
@@ -41,7 +41,7 @@ export const orchestrateTestGenerationWrite = async <
     completed: 0,
   };
 
-  const result: Array<IAutoBeTestGenerateWriteResult | null> =
+  const result: Array<IAutoBeTestGenerateProcedure | null> =
     await executeCachedBatch(
       ctx,
       props.document.operations.map((operation) => async (promptCacheKey) => {
@@ -60,7 +60,7 @@ export const orchestrateTestGenerationWrite = async <
         )
           return null;
 
-        const prepareFunction: AutoBeTestPrepareWriteFunction | undefined =
+        const prepareFunction: AutoBeTestPrepareFunction | undefined =
           props.preparedFunctions.find(
             (pf) => pf.typeName === operation.requestBody?.typeName,
           );
@@ -85,7 +85,7 @@ export const orchestrateTestGenerationWrite = async <
           if (event.function.type !== "generate") return null;
 
           // Add successfully generated function name to the tracking array
-          existingFunctionNames.push(event.function.functionName);
+          existingFunctionNames.push(event.function.name);
 
           ctx.dispatch(event);
           return {
@@ -94,7 +94,7 @@ export const orchestrateTestGenerationWrite = async <
             artifacts,
             function: event.function,
             operation,
-          } satisfies IAutoBeTestGenerateWriteResult;
+          } satisfies IAutoBeTestGenerateProcedure;
         } catch {
           return null;
         }
@@ -107,7 +107,7 @@ export const orchestrateTestGenerationWrite = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    prepareFunction: AutoBeTestPrepareWriteFunction;
+    prepareFunction: AutoBeTestPrepareFunction;
     artifacts: IAutoBeTestArtifacts;
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
@@ -169,7 +169,7 @@ async function process<Model extends ILlmSchema.Model>(
         },
         actor: operation.authorizationActor,
         location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
-        functionName: pointer.value.functionName,
+        name: pointer.value.functionName,
         content: pointer.value.revise.final ?? pointer.value.draft,
       },
     },
@@ -201,7 +201,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
       actor: operation.authorizationActor,
       location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
-      functionName: pointer.value.functionName,
+      name: pointer.value.functionName,
       content: pointer.value.revise.final ?? pointer.value.draft,
     },
     metric,

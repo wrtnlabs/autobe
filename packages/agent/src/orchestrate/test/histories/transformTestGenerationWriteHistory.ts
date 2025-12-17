@@ -1,7 +1,4 @@
-import {
-  AutoBeOpenApi,
-  AutoBeTestPrepareWriteFunction,
-} from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeTestPrepareFunction } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
   HttpMigration,
@@ -19,7 +16,7 @@ export function transformTestGenerationWriteHistory<
   Model extends ILlmSchema.Model,
 >(
   instruction: string,
-  prepareFunction: AutoBeTestPrepareWriteFunction,
+  prepareFunction: AutoBeTestPrepareFunction,
   operation: AutoBeOpenApi.IOperation,
   artifacts: IAutoBeTestArtifacts,
 ): IAutoBeOrchestrateHistory {
@@ -101,7 +98,7 @@ export function transformTestGenerationWriteHistory<
         `,
       },
     ],
-    userMessage: `Generate the resource generation function based on the prepare function "${prepareFunction.functionName}" and the API operation.`,
+    userMessage: `Generate the resource generation function based on the prepare function "${prepareFunction.name}" and the API operation.`,
   };
 }
 

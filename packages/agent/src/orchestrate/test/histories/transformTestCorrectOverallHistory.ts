@@ -5,8 +5,8 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
-import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
+import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 import { transformTestAuthorizationWriteHistory } from "./transformTestAuthorizationWriteHistory";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
@@ -18,7 +18,7 @@ export const transformTestCorrectOverallHistory = async <
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
-    target: IAutoBeTestAgentResult;
+    target: IAutoBeTestProcedure;
     failures: IAutoBeTestFunctionFailure[];
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
@@ -48,7 +48,7 @@ export const transformTestCorrectOverallHistory = async <
           instruction: props.instruction,
           scenario: {
             ...props.target.function.scenario,
-            functionName: props.target.function.functionName,
+            functionName: props.target.function.name,
           },
           artifacts: props.target.artifacts,
           authorizationFunctions: props.target.authorizeFunctions,
@@ -103,7 +103,7 @@ export const transformTestCorrectOverallHistory = async <
       ...(previous?.histories.slice(-1) ?? []),
       ...transformPreviousAndLatestCorrectHistory(
         props.failures.map((f) => ({
-          script: f.target.function.content,
+          script: f.procedure.function.content,
           diagnostics: f.failure.diagnostics,
         })),
       ),

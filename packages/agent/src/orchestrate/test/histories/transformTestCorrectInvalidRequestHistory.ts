@@ -4,10 +4,10 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
+import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
 export const transformTestCorrectInvalidRequestHistory = (
-  write: IAutoBeTestAgentResult,
+  write: IAutoBeTestProcedure,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): IAutoBeOrchestrateHistory => {
   const systemPrompt: string = (() => {

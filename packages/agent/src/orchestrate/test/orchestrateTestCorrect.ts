@@ -1,10 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestAuthorizeWriteFunction,
+  AutoBeTestAuthorizeFunction,
   AutoBeTestCorrectEvent,
-  AutoBeTestGenerateWriteFunction,
-  AutoBeTestPrepareWriteFunction,
+  AutoBeTestGenerateFunction,
+  AutoBeTestPrepareFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -23,9 +23,9 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectOverallHistory } from "./histories/transformTestCorrectOverallHistory";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
-import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
+import { IAutoBeTestProcedure } from "./structures/IAutoBeTestProcedure";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
 
@@ -33,7 +33,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
-    items: IAutoBeTestAgentResult[];
+    items: IAutoBeTestProcedure[];
   },
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
@@ -82,7 +82,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
                     step: ctx.state().analyze?.step ?? 0,
                   }) satisfies AutoBeTestCorrectEvent,
                 script: (event) => event.function.content,
-                functionName: w.function.functionName,
+                functionName: w.function.name,
               },
               x.function.content,
             );
@@ -107,7 +107,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 
 const compileTestFile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  item: IAutoBeTestAgentResult,
+  item: IAutoBeTestProcedure,
 ): Promise<AutoBeTestValidateEvent> => {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const template: Record<string, string> = Object.fromEntries(
@@ -139,9 +139,9 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
   );
 
   const helperFunctions: (
-    | AutoBeTestAuthorizeWriteFunction
-    | AutoBeTestGenerateWriteFunction
-    | AutoBeTestPrepareWriteFunction
+    | AutoBeTestAuthorizeFunction
+    | AutoBeTestGenerateFunction
+    | AutoBeTestPrepareFunction
   )[] =
     item.type === "operation"
       ? [
@@ -178,7 +178,7 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    target: IAutoBeTestAgentResult;
+    target: IAutoBeTestProcedure;
     failures: IAutoBeTestFunctionFailure[];
     validate: AutoBeTestValidateEvent;
     promptCacheKey: string;
@@ -195,7 +195,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    target: IAutoBeTestAgentResult;
+    target: IAutoBeTestProcedure;
     failures: IAutoBeTestFunctionFailure[];
     validate: AutoBeTestValidateEvent;
     promptCacheKey: string;
@@ -213,7 +213,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     controller: createController({
       model: ctx.model,
-      functionName: props.target.function.functionName,
+      functionName: props.target.function.name,
       failure: props.validate.result,
       build: (next) => {
         pointer.value = next;
@@ -227,7 +227,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       failures: [
         ...props.failures,
         {
-          target: props.target,
+          procedure: props.target,
           failure: props.validate.result,
         },
       ],
@@ -272,7 +272,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     final: pointer.value.revise?.final ?? undefined,
   } satisfies AutoBeTestCorrectEvent);
 
-  const newTarget: IAutoBeTestAgentResult = insertScriptToTestResult(
+  const newTarget: IAutoBeTestProcedure = insertScriptToTestResult(
     props.target,
     pointer.value.revise?.final ?? pointer.value.draft,
   );
@@ -287,7 +287,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       failures: [
         ...props.failures,
         {
-          target: props.target,
+          procedure: props.target,
           failure: props.validate.result,
         },
       ],

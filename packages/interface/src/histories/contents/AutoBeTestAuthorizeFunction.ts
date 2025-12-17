@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi";
-import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
+import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
 
 /**
  * Interface defining authorization functions used in test code.
@@ -11,8 +11,8 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestAuthorizeWriteFunction
-  extends AutoBeTestWriteFunctionBase<"authorize"> {
+export interface AutoBeTestAuthorizeFunction
+  extends AutoBeTestFunctionBase<"authorize"> {
   /**
    * OpenAPI endpoint specification that this authorization function corresponds
    * to.

@@ -7,7 +7,7 @@
  *
  * @author Michael
  */
-export interface AutoBeTestWriteFunctionBase<Type extends string> {
+export interface AutoBeTestFunctionBase<Type extends string> {
   /**
    * Discriminator field that identifies the specific type of test function.
    * Used for discriminated union pattern to distinguish between different test
@@ -31,5 +31,5 @@ export interface AutoBeTestWriteFunctionBase<Type extends string> {
    * The name identifier of the function. Used to reference the function within
    * the test suite.
    */
-  functionName: string;
+  name: string;
 }

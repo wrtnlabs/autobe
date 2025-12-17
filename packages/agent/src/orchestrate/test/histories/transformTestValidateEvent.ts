@@ -1,8 +1,8 @@
 import { AutoBeTestValidateEvent } from "@autobe/interface";
 
-import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
+import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
-export const transformTestValidateEvent = <T extends IAutoBeTestAgentResult>(
+export const transformTestValidateEvent = <T extends IAutoBeTestProcedure>(
   event: AutoBeTestValidateEvent,
   item: T,
 ): T => ({

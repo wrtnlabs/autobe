@@ -1,4 +1,4 @@
-import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
+import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
 
 /**
  * Interface defining prepare functions used in test code.
@@ -10,8 +10,8 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestPrepareWriteFunction
-  extends AutoBeTestWriteFunctionBase<"prepare"> {
+export interface AutoBeTestPrepareFunction
+  extends AutoBeTestFunctionBase<"prepare"> {
   /**
    * DTO (Data Transfer Object) type name that this prepare function generates.
    *
