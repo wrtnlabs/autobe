@@ -183,16 +183,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       revise: result.data.revise,
     });
 
-    if (result.data.functionName.startsWith("prepare_") === false) {
-      errors.push({
-        path: "$input.request.functionName",
-        expected: "string (starting with 'prepare_')",
-        value: result.data.functionName,
-        description:
-          "The function name must have format of 'prepare_random_{resource}'.",
-      });
-    }
-
     // // Incorrect template literal syntax validation
     // const backtickRegex: RegExp = /`/g;
     // const count: number = (
