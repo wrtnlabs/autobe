@@ -181,6 +181,10 @@ This is **not a formality** - this is where you catch errors before they cause c
 
 **Identify specific issues and required changes.** If you find problems, note exactly what needs to be fixed and why. If everything is correct, explicitly confirm you verified each category.
 
+**Final Code (`revise.final`):**
+- If review found issues: Apply ALL fixes and provide corrected implementation
+- If draft is already perfect: Return `null` (only when review found zero issues)
+
 ## Input Information
 
 You will receive via assistant message:
