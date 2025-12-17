@@ -4,20 +4,17 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { HashMap, IPointer, Pair } from "tstl";
+import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { completeTestCode } from "./compile/completeTestCode";
-import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestPrepareWriteHistories } from "./histories/transformTestPrepareWriteHistories";
-import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
+import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
 import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrepareWriteApplication";
 import { IAutoBeTestPrepareWriteResult } from "./structures/IAutoBeTestPrepareWriteResult";
 
@@ -43,81 +40,49 @@ export const orchestrateTestPrepareWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: { instruction: string; document: AutoBeOpenApi.IDocument },
+  props: {
+    instruction: string;
+    document: AutoBeOpenApi.IDocument;
+  },
 ): Promise<IAutoBeTestPrepareWriteResult[]> => {
-  const { instruction, document } = props;
-  const createOperations: AutoBeOpenApi.IOperation[] =
-    document.operations.filter(
-      (op) =>
-        op.method === "post" &&
-        op.requestBody !== null &&
-        (op.requestBody.typeName.includes(".ICreate") ||
-          op.requestBody.typeName.endsWith("ICreate")),
-    );
-
-  // Track existing function names to prevent duplicates
-  const existingFunctionNames: string[] = [];
-
+  interface ICreateType {
+    key: string;
+    value: AutoBeOpenApi.IJsonSchema.IObject;
+  }
+  const createTypes: ICreateType[] = [];
+  for (const [key, value] of Object.entries(props.document.components.schemas))
+    if (AutoBeOpenApiTypeChecker.isObject(value) === true)
+      createTypes.push({
+        key,
+        value,
+      });
   const progress: AutoBeProgressEventBase = {
     total: 0,
-    completed: 0,
+    completed: createTypes.length,
   };
-
-  // Filter operations with ICreate DTOs and map with schemas
-  const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IJsonSchema> =
-    new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IJsonSchema>(
-      createOperations.map(
-        (op) =>
-          new Pair(
-            { method: op.method, path: op.path },
-            document.components.schemas[op.requestBody?.typeName ?? ""] ?? {},
-          ),
-      ),
-      AutoBeOpenApiEndpointComparator.hashCode,
-      AutoBeOpenApiEndpointComparator.equals,
-    );
-
-  progress.total = dict.size();
 
   // Generate prepare functions using LLM in parallel with prompt caching
   const result: Array<IAutoBeTestPrepareWriteResult | null> =
     await executeCachedBatch(
       ctx,
-      createOperations.map((op) => async (promptCacheKey) => {
+      createTypes.map((entry) => async (promptCacheKey) => {
         try {
-          const endpoint: AutoBeOpenApi.IEndpoint = {
-            method: op.method,
-            path: op.path,
-          };
-          const schema: AutoBeOpenApi.IJsonSchema = dict.get(endpoint);
-          const typeName: string | undefined = op.requestBody?.typeName;
-          if (typeName === undefined) return null;
-
-          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-            endpoint,
-          });
-
-          const event = await process(ctx, {
-            operation: op,
-            artifacts,
-            typeName,
-            schema,
+          const event: AutoBeTestWriteEvent = await process(ctx, {
+            document: props.document,
+            typeName: entry.key,
+            schema: entry.value,
+            instruction: props.instruction,
             promptCacheKey,
             progress,
-            instruction,
-            existingFunctionNames,
           });
           if (event.function.type !== "prepare") return null;
-
-          // Add successfully generated function name to the tracking array
-          existingFunctionNames.push(event.function.functionName);
 
           ctx.dispatch(event);
           return {
             type: "prepare",
-            artifacts,
+            typeName: entry.key,
+            schema: entry.value,
             function: event.function,
-            operation: op,
           };
         } catch {
           return null;
@@ -133,33 +98,14 @@ export const orchestrateTestPrepareWrite = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    operation: AutoBeOpenApi.IOperation;
-    artifacts: IAutoBeTestArtifacts;
-    schema: AutoBeOpenApi.IJsonSchema;
+    document: AutoBeOpenApi.IDocument;
     typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
     instruction: string;
-    existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const {
-    operation,
-    artifacts,
-    schema,
-    promptCacheKey,
-    progress,
-    instruction,
-    existingFunctionNames,
-  } = props;
-
-  // Validate schema is an object schema
-  if (!("properties" in schema)) {
-    throw new Error(
-      `Failed to generate prepare function for ${props.typeName}`,
-    );
-  }
-
   const pointer: IPointer<IAutoBeTestPrepareWriteApplication.IProps | null> = {
     value: null,
   };
@@ -168,55 +114,43 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
-      dtoTypeName: props.operation.requestBody?.typeName ?? "",
-      existingFunctionNames,
+      dtoTypeName: props.typeName,
+      schema: props.schema,
       build: (app) => {
         pointer.value = app;
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
-    ...transformTestPrepareWriteHistories({
-      operation,
-      schema,
-      instruction,
-    }),
+    promptCacheKey: props.promptCacheKey,
+    ...(await transformTestPrepareWriteHistories(ctx, props)),
   });
   // Validate LLM response
   if (pointer.value === null) {
-    ++progress.completed;
+    ++props.progress.completed;
     throw new Error(
       `Failed to generate prepare function for ${props.typeName}`,
     );
   }
 
-  // Complete the code with imports
-  if (pointer.value.revise.final) {
-    pointer.value.revise.final = await completeTestCode(
-      ctx,
-      artifacts,
-      pointer.value.revise.final,
-    );
-  }
-  pointer.value.draft = await completeTestCode(
-    ctx,
-    artifacts,
-    pointer.value.draft,
+  const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
+    props.typeName,
   );
-
   const event: AutoBeTestWriteEvent = {
     id: v7(),
     type: "testWrite",
     function: {
       type: "prepare",
-      endpoint: props.operation,
-      dtoTypeName: props.typeName,
-      location: `test/features/utils/prepare/${pointer.value.functionName}.ts`,
-      functionName: pointer.value.functionName,
-      content: pointer.value.revise.final ?? pointer.value.draft,
+      location: `test/features/utils/prepare/${functionName}.ts`,
+      content: await AutoBeTestPrepareProgrammer.replaceImportStatements(ctx, {
+        typeName: props.typeName,
+        schemas: props.document.components.schemas,
+        code: pointer.value.revise.final ?? pointer.value.draft,
+      }),
+      typeName: props.typeName,
+      functionName,
     },
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
     tokenUsage,
     metric,
@@ -229,7 +163,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   dtoTypeName: string;
-  existingFunctionNames: string[];
+  schema: AutoBeOpenApi.IJsonSchema.IObject;
   build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -241,15 +175,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     // Custom business logic validation
-    const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: result.data.functionName,
+    const errors: IValidation.IError[] = AutoBeTestPrepareProgrammer.validate({
+      typeName: props.dtoTypeName,
+      schema: props.schema,
+      mappings: result.data.mappings,
       draft: result.data.draft,
       revise: result.data.revise,
     });
 
     if (result.data.functionName.startsWith("prepare_") === false) {
       errors.push({
-        path: "$input.functionName",
+        path: "$input.request.functionName",
         expected: "string (starting with 'prepare_')",
         value: result.data.functionName,
         description:
@@ -257,31 +193,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
       });
     }
 
-    // Check for duplicate function names
-    if (props.existingFunctionNames.includes(result.data.functionName)) {
-      errors.push({
-        path: "$input.functionName",
-        expected: "unique function name",
-        value: result.data.functionName,
-        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
-      });
-    }
+    // // Incorrect template literal syntax validation
+    // const backtickRegex: RegExp = /`/g;
+    // const count: number = (
+    //   (result.data.revise.final ?? result.data.draft).match(backtickRegex) ?? []
+    // ).length;
 
-    // Incorrect template literal syntax validation
-    const backtickRegex: RegExp = /`/g;
-    const count: number = (
-      (result.data.revise.final ?? result.data.draft).match(backtickRegex) ?? []
-    ).length;
-
-    if (count % 2 !== 0)
-      errors.push({
-        path: result.data.revise.final
-          ? "$input.request.revise.final"
-          : "$input.request.draft",
-        expected: "even number of backticks",
-        value: count,
-        description: "Unmatched backtick in template literal",
-      });
+    // if (count % 2 !== 0)
+    //   errors.push({
+    //     path: result.data.revise.final
+    //       ? "$input.request.revise.final"
+    //       : "$input.request.draft",
+    //     expected: "even number of backticks",
+    //     value: count,
+    //     description: "Unmatched backtick in template literal",
+    //   });
 
     return errors.length > 0
       ? {

@@ -12,6 +12,7 @@ export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceSchemaRefactor";
 
 export * from "./AutoBeTestFile";
+export * from "./AutoBeTestPrepareMapping";
 export * from "./AutoBeTestScenario";
 export * from "./AutoBeTestScenarioDependency";
 

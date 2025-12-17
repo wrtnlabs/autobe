@@ -9,6 +9,7 @@ import {
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
+  AutoBeTestWriteFunction,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -26,7 +27,6 @@ import { transformTestOperationWriteHistory } from "./histories/transformTestOpe
 import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestOperationWriteResult } from "./structures/IAutoBeTestOperationWriteResult";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
-import { getPrerequisites } from "./utils/getPrerequisites";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
 export async function orchestrateTestOperationWrite<
@@ -61,51 +61,37 @@ export async function orchestrateTestOperationWrite<
           const artifacts: IAutoBeTestScenarioArtifacts =
             await getTestScenarioArtifacts(ctx, scenario);
 
-          const prerequisites: AutoBeOpenApi.IPrerequisite[] = getPrerequisites(
-            {
-              document,
-              endpoint: scenario.endpoint,
-            },
+          const neighborFunctions: AutoBeTestWriteFunction[] = props.events.map(
+            (e) => e.function,
+          );
+          const usedActors: Set<string> = new Set(
+            artifacts.document.operations
+              .map((o) => o.authorizationActor)
+              .filter((a) => a !== null),
           );
 
           const authorizationFunctions: AutoBeTestAuthorizeWriteFunction[] =
-            props.events
-              .filter(
-                (
-                  e,
-                ): e is AutoBeTestValidateEvent & {
-                  function: AutoBeTestAuthorizeWriteFunction;
-                } => e.function.type === "authorize",
-              )
-              .map((e) => e.function);
-
-          const generationFunctions: AutoBeTestGenerateWriteFunction[] = [];
-          const prepareFunctions: AutoBeTestPrepareWriteFunction[] = [];
-
-          // Get Necessary Functions (generation, prepare only)
-          for (const event of props.events) {
-            const { function: func } = event;
-            if (func.type === "operation" || func.type === "authorize")
-              continue;
-
-            const isScenarioEndpoint =
-              func.endpoint.method === scenario.endpoint.method &&
-              func.endpoint.path === scenario.endpoint.path;
-
-            const isPrerequisiteEndpoint = prerequisites.some(
-              (p) =>
-                func.endpoint.method === p.endpoint.method &&
-                func.endpoint.path === p.endpoint.path,
-            );
-
-            if (isScenarioEndpoint || isPrerequisiteEndpoint) {
-              if (func.type === "generate") {
-                generationFunctions.push(func);
-              } else if (func.type === "prepare") {
-                prepareFunctions.push(func);
-              }
-            }
-          }
+            neighborFunctions
+              .filter((f) => f.type === "authorize")
+              .filter((f) => usedActors.has(f.actor));
+          const generationFunctions: AutoBeTestGenerateWriteFunction[] =
+            neighborFunctions
+              .filter((f) => f.type === "generate")
+              .filter((f) =>
+                artifacts.document.operations.some(
+                  (o) =>
+                    o.method === f.endpoint.method &&
+                    o.path === f.endpoint.path,
+                ),
+              );
+          const prepareFunctions: AutoBeTestPrepareWriteFunction[] =
+            neighborFunctions
+              .filter((f) => f.type === "prepare")
+              .filter((f) =>
+                Object.keys(artifacts.document.components.schemas).includes(
+                  f.typeName,
+                ),
+              );
 
           const event: AutoBeTestWriteEvent = await process(ctx, {
             document,
@@ -264,6 +250,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       functionName: props.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
+      path: "$input",
     });
     return errors.length
       ? {

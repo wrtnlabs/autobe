@@ -187,6 +187,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       functionName: result.data.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
+      path: "$input",
     });
 
     // Check for duplicate function names

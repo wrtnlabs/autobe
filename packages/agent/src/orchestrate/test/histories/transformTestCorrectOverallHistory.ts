@@ -67,17 +67,14 @@ export const transformTestCorrectOverallHistory = async <
           props.target.artifacts,
         );
       case "prepare":
-        return transformTestPrepareWriteHistories({
-          operation: props.target.operation,
-          schema:
-            ctx.state().interface!.document.components.schemas[
-              props.target.function.dtoTypeName
-            ],
+        return await transformTestPrepareWriteHistories(ctx, {
+          typeName: props.target.typeName,
+          schema: props.target.schema,
+          document: ctx.state().interface!.document,
           instruction: props.instruction,
         });
       default:
         props.target satisfies never;
-
         throw new Error(
           `Unreachable: Cannot create correct history of function kind`,
         );

@@ -19,6 +19,7 @@ import { IValidation } from "typia";
  * @returns Array of validation errors (empty if valid)
  */
 export const validateEmptyCode = (props: {
+  path: string;
   functionName: string;
   draft: string;
   revise: {
@@ -28,7 +29,7 @@ export const validateEmptyCode = (props: {
   const errors: IValidation.IError[] = [];
   if (props.draft.includes(props.functionName) === false)
     errors.push({
-      path: "$input.request.draft",
+      path: `${props.path}.draft`,
       expected: `string (including function named '${props.functionName}')`,
       value: props.draft,
       description: description(props.functionName),
@@ -38,7 +39,7 @@ export const validateEmptyCode = (props: {
     props.revise.final.includes(props.functionName) === false
   )
     errors.push({
-      path: "$input.request.revise.final",
+      path: `${props.path}.revise.final`,
       expected: `string (including function named '${props.functionName}')`,
       value: props.revise.final,
       description: description(props.functionName),

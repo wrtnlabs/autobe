@@ -1,4 +1,3 @@
-import { AutoBeOpenApi } from "../../openapi";
 import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
 
 /**
@@ -6,22 +5,13 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * Defines functions that generate test data objects for E2E test scenarios.
  * These functions create mock data instances that comply with the DTO schemas
- * required by API endpoints. This interface is used by AutoBE to represent
- * the structure and content of prepare functions when generating test code.
+ * required by API endpoints. This interface is used by AutoBE to represent the
+ * structure and content of prepare functions when generating test code.
  *
  * @author Michael
  */
 export interface AutoBeTestPrepareWriteFunction
   extends AutoBeTestWriteFunctionBase<"prepare"> {
-  /**
-   * OpenAPI endpoint specification that this prepare function corresponds to.
-   *
-   * Used to determine which endpoint this prepare function generates test data
-   * for. The prepare function creates data objects that match the request body
-   * schema of this endpoint.
-   */
-  endpoint: AutoBeOpenApi.IEndpoint;
-  
   /**
    * DTO (Data Transfer Object) type name that this prepare function generates.
    *
@@ -31,5 +21,5 @@ export interface AutoBeTestPrepareWriteFunction
    *
    * Example: "ICreateArticleDto", "IUpdateUserDto", "IOrderRequestDto"
    */
-  dtoTypeName: string;
+  typeName: string;
 }

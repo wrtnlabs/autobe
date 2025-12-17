@@ -318,6 +318,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       functionName: props.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
+      path: "$input",
     });
     return errors.length
       ? {

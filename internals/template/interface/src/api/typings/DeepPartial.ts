@@ -1,6 +1,11 @@
-type Primitive = string | number | boolean | bigint | symbol | null | undefined;
-
-export type DeepPartial<T> = T extends Primitive
+export type DeepPartial<T> = T extends
+  | string
+  | number
+  | boolean
+  | bigint
+  | symbol
+  | null
+  | undefined
   ? T
   : T extends (...args: unknown[]) => unknown
     ? T

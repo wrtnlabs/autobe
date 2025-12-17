@@ -1,15 +1,26 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBeTestPrepareProgrammer } from "../programmers/AutoBeTestPrepareProgrammer";
 
-export function transformTestPrepareWriteHistories(props: {
-  operation: AutoBeOpenApi.IOperation;
-  schema: AutoBeOpenApi.IJsonSchema;
-  instruction: string;
-}): IAutoBeOrchestrateHistory {
+export async function transformTestPrepareWriteHistories<
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+    document: AutoBeOpenApi.IDocument;
+    instruction: string;
+  },
+): Promise<IAutoBeOrchestrateHistory> {
+  const dto: Record<string, string> =
+    await AutoBeTestPrepareProgrammer.writeStructures(ctx, props.typeName);
   return {
     histories: [
       {
@@ -23,32 +34,27 @@ export function transformTestPrepareWriteHistories(props: {
         type: "assistantMessage",
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          ## Domain Context
+          You have to make ${AutoBeTestPrepareProgrammer.getFunctionName(props.typeName)} function.
 
-          ${props.instruction}
+          At first, here is the list of DTO types relavant with the ${props.typeName} type:
 
-          ## Target Operation
-
-          - **Method**: ${props.operation.method.toUpperCase()}
-          - **Path**: ${props.operation.path}
-          - **DTO Type**: ${props.operation.requestBody?.typeName ?? "Unknown"}
-
-          ## Schema Analysis
-
-          You must analyze the following schema to generate a prepare function for the DTO type: **${props.operation.requestBody?.typeName}**
-
-          The schema structure is:
           \`\`\`json
-          ${JSON.stringify(props.schema, null, 2)}
+          ${JSON.stringify(dto)}
           \`\`\`
 
-          ## Required Actions
+          At second, when you composing ${props.typeName} typed data, 
+          you have fill those properties:
+          
+          ${Object.keys(props.schema.properties)
+            .map((s) => `- ${s}`)
+            .join("\n")}
 
-          1. **Classify Properties**: Separate test-customizable fields from auto-generated fields
-          2. **Create DeepPartial Type**: Use DeepPartial<${props.operation.requestBody?.typeName}> for input parameter
-          3. **Generate Data**: Use RandomGenerator utilities to create realistic test data (ALL INLINE)
-          4. **Respect Constraints**: Follow all validation rules from the schema
-          `,
+          At last, here is the template code you have to implement.
+          Reference the template code, and fill the proper code to 
+          each property.
+
+          ${await AutoBeTestPrepareProgrammer.writeTemplateCode(props)}
+        `,
       },
     ],
     userMessage: "Generate the test data preparation function for this DTO.",

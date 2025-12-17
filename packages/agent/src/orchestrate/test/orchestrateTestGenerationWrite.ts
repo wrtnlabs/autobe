@@ -5,6 +5,7 @@ import {
   AutoBeTestPrepareWriteFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -43,51 +44,61 @@ export const orchestrateTestGenerationWrite = async <
   const result: Array<IAutoBeTestGenerateWriteResult | null> =
     await executeCachedBatch(
       ctx,
-      props.preparedFunctions.map(
-        (prepareFunction) => async (promptCacheKey) => {
-          try {
-            // Find matching operation by endpoint
-            const operation = props.document.operations.find(
-              (op) =>
-                op.method === prepareFunction.endpoint.method &&
-                op.path === prepareFunction.endpoint.path,
-            );
-            if (!operation) return null;
+      props.document.operations.map((operation) => async (promptCacheKey) => {
+        if (operation.requestBody === null) return null;
+        else if (operation.requestBody.typeName.endsWith(".ICreate") === false)
+          return null;
+        else if (
+          props.document.components.schemas[operation.requestBody.typeName] ===
+          undefined
+        )
+          return null;
+        else if (
+          AutoBeOpenApiTypeChecker.isObject(
+            props.document.components.schemas[operation.requestBody.typeName],
+          ) === false
+        )
+          return null;
 
-            const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(
-              ctx,
-              {
-                endpoint: prepareFunction.endpoint,
-              },
-            );
+        const prepareFunction: AutoBeTestPrepareWriteFunction | undefined =
+          props.preparedFunctions.find(
+            (pf) => pf.typeName === operation.requestBody?.typeName,
+          );
+        if (prepareFunction === undefined) return null;
 
-            const event: AutoBeTestWriteEvent = await process(ctx, {
-              prepareFunction,
-              artifacts,
-              operation,
-              progress,
-              promptCacheKey,
-              instruction: props.instruction,
-              existingFunctionNames,
-            });
-            if (event.function.type !== "generate") return null;
+        try {
+          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+            endpoint: {
+              path: operation.path,
+              method: operation.method,
+            },
+          });
+          const event: AutoBeTestWriteEvent = await process(ctx, {
+            prepareFunction,
+            artifacts,
+            operation,
+            progress,
+            promptCacheKey,
+            instruction: props.instruction,
+            existingFunctionNames,
+          });
+          if (event.function.type !== "generate") return null;
 
-            // Add successfully generated function name to the tracking array
-            existingFunctionNames.push(event.function.functionName);
+          // Add successfully generated function name to the tracking array
+          existingFunctionNames.push(event.function.functionName);
 
-            ctx.dispatch(event);
-            return {
-              type: "generate",
-              prepareFunction,
-              artifacts,
-              function: event.function,
-              operation,
-            } satisfies IAutoBeTestGenerateWriteResult;
-          } catch {
-            return null;
-          }
-        },
-      ),
+          ctx.dispatch(event);
+          return {
+            type: "generate",
+            prepareFunction,
+            artifacts,
+            function: event.function,
+            operation,
+          } satisfies IAutoBeTestGenerateWriteResult;
+        } catch {
+          return null;
+        }
+      }),
     );
 
   return result.filter((r) => r !== null);
@@ -152,7 +163,10 @@ async function process<Model extends ILlmSchema.Model>(
       artifacts,
       function: {
         type: "generate",
-        endpoint: prepareFunction.endpoint,
+        endpoint: {
+          method: operation.method,
+          path: operation.path,
+        },
         actor: operation.authorizationActor,
         location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
         functionName: pointer.value.functionName,
@@ -181,7 +195,10 @@ async function process<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
     function: {
       type: "generate",
-      endpoint: prepareFunction.endpoint,
+      endpoint: {
+        method: operation.method,
+        path: operation.path,
+      },
       actor: operation.authorizationActor,
       location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
       functionName: pointer.value.functionName,
@@ -211,6 +228,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       functionName: result.data.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
+      path: "$input",
     });
 
     if (result.data.functionName.startsWith("generate_") === false) {

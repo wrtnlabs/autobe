@@ -111,6 +111,7 @@ export const orchestrateRealizeOperationCorrectOverall = async <
             functionName: next.function.name,
             draft: result.data.request.draft,
             revise: result.data.request.revise,
+            path: "$input.request",
           });
           return errors.length
             ? {
