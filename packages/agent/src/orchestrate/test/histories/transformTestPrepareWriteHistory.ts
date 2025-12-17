@@ -8,7 +8,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBeTestPrepareProgrammer } from "../programmers/AutoBeTestPrepareProgrammer";
 
-export async function transformTestPrepareWriteHistories<
+export async function transformTestPrepareWriteHistory<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,

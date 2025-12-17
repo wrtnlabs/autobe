@@ -10,7 +10,7 @@ import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFai
 import { transformTestAuthorizationWriteHistory } from "./transformTestAuthorizationWriteHistory";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
-import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
+import { transformTestPrepareWriteHistory } from "./transformTestPrepareWriteHistory";
 
 export const transformTestCorrectOverallHistory = async <
   Model extends ILlmSchema.Model,
@@ -67,7 +67,7 @@ export const transformTestCorrectOverallHistory = async <
           props.target.artifacts,
         );
       case "prepare":
-        return await transformTestPrepareWriteHistories(ctx, {
+        return await transformTestPrepareWriteHistory(ctx, {
           typeName: props.target.typeName,
           schema: props.target.schema,
           document: ctx.state().interface!.document,
