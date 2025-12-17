@@ -1,31 +1,89 @@
 import { AutoBeTestPrepareMapping } from "@autobe/interface";
 
+/**
+ * Function calling interface for generating test data preparation functions.
+ *
+ * Guides the AI agent through creating reusable prepare functions that generate
+ * realistic, constraint-compliant test data for E2E testing. Each prepare
+ * function handles DeepPartial input for test customization and RandomGenerator
+ * utilities for realistic data generation.
+ *
+ * The generation follows a structured workflow: narrative planning → property
+ * mappings (CoT mechanism) → code generation → review and refinement. All
+ * necessary DTO type information is provided directly via the assistant
+ * message.
+ *
+ * @author Michael
+ * @author Samchon
+ */
 export interface IAutoBeTestPrepareWriteApplication {
   /**
-   * Generates type-safe test data preparation functions for E2E testing.
+   * Generate test data preparation function.
    *
-   * This function analyzes ICreate DTO schemas and generates prepare functions
-   * that create realistic, constraint-compliant test data while including only
-   * fields that benefit from test-time customization in input parameters.
+   * Executes three-phase generation to create complete prepare function with:
    *
-   * Key responsibilities:
+   * - DeepPartial input for test-time customization
+   * - RandomGenerator utilities for realistic data generation
+   * - Proper handling of nested structures (objects and arrays)
+   * - Constraint compliance (validation rules)
    *
-   * - Classify properties into test-customizable vs auto-generated fields
-   * - Generate functions using DeepPartial<ICreate> pattern (NEVER Partial)
-   * - Utilize RandomGenerator utilities for realistic data generation
-   * - Respect all schema validation constraints (min/max, patterns, formats)
+   * Follows plan → mappings → draft → revise pattern to ensure completeness and
+   * correctness.
    *
-   * @param props Complete prepare function specification with draft, review,
-   *   and final code
+   * @param props Request containing plan, mappings, and implementation phases
    */
   write(props: IAutoBeTestPrepareWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeTestPrepareWriteApplication {
-  /** Properties for generating a test data preparation function. */
+  /**
+   * Properties for generating a test data preparation function.
+   *
+   * Contains the complete specification including narrative plan, property
+   * mappings, function name, draft implementation, and review/final phases.
+   */
   export interface IProps {
+    /**
+     * Narrative plan and analysis strategy.
+     *
+     * Your planning should accomplish these objectives:
+     *
+     * 1. Understand the DTO Structure - Read through the actual DTO type
+     *    carefully, noting property names, types, and validation constraints
+     * 2. Classify Properties - Test-customizable vs auto-generated fields
+     * 3. Plan Data Generation Strategy - Think through how each property should
+     *    generate realistic data
+     *
+     * This reflection helps you avoid omissions and incorrect data generation.
+     */
     plan: string;
 
+    /**
+     * Property-by-property mapping table for complete DTO coverage.
+     *
+     * MUST include EVERY property from the DTO schema - no exceptions. Each
+     * mapping specifies:
+     *
+     * - `property`: Exact property name from DTO schema
+     * - `how`: How to generate the value for that property
+     *
+     * The `mappings` field is your Chain-of-Thought (CoT) mechanism - it forces
+     * you to explicitly think through EVERY property before coding, preventing
+     * omissions and incorrect data generation.
+     *
+     * Missing even a single property will cause validation failure and trigger
+     * regeneration.
+     *
+     * This structured approach:
+     *
+     * - Prevents property omissions through systematic coverage
+     * - Forces explicit decision-making for each property
+     * - Enables validation before code generation
+     * - Creates clear documentation of data generation strategy
+     *
+     * The validator will cross-check this list against the actual DTO schema
+     * and reject incomplete mappings.
+     */
     mappings: AutoBeTestPrepareMapping[];
 
     /**
@@ -33,70 +91,72 @@ export namespace IAutoBeTestPrepareWriteApplication {
      *
      * Format: `prepare_random_[entity_name]`
      *
+     * Naming examples:
+     *
      * - IUser.ICreate → prepare_random_user
      * - IBbsArticle.ICreate → prepare_random_bbs_article
      * - IShoppingSale.ICreate → prepare_random_shopping_sale
      * - IOrder.ICreate → prepare_random_order
+     *
+     * The entity name is derived from the DTO namespace in snake_case.
      */
     functionName: string;
 
     /**
      * Initial implementation of the prepare function.
      *
-     * Must follow the pattern:
+     * Complete implementation that strictly follows the plan's mapping table.
+     * EVERY property in the mappings MUST appear in this draft. Implement:
      *
-     * ```typescript
-     * import { RandomGenerator } from "@nestia/e2e";
-     * import { randint } from "tstl";
-     * import { v4 } from "uuid";
-     *
-     * import { I[Entity] } from "@ORGANIZATION/PROJECT-api/lib/structures/I[Entity]";
-     *
-     * export const prepare_random_[entity] = (
-     *   input?: DeepPartial<I[Entity].ICreate>
-     * ): I[Entity].ICreate => ({...})
-     * ```
-     *
-     * Requirements:
-     *
-     * - Import namespaces for DTOs (e.g., IBbsArticle, not IBbsArticle.ICreate)
-     * - Use DeepPartial<> to explicitly select test-customizable fields
-     * - NEVER use Partial<> for input parameter type
-     * - Generate auto-fields (id, timestamps) internally
-     * - Use RandomGenerator utilities for realistic data
+     * - Function with DeepPartial<ICreate> input parameter (NEVER Partial)
+     * - All property generation from mappings
+     * - RandomGenerator utilities for realistic data
+     * - Proper nested object/array handling with conditional mapping
      */
     draft: string;
 
-    /** Review and optimization phase for the prepare function. */
+    /**
+     * Revision and finalization phase.
+     *
+     * Reviews the draft implementation and produces the final code with all
+     * improvements and corrections applied.
+     */
     revise: IReviseProps;
   }
 
-  /** Review and final optimization properties. */
+  /**
+   * Review and final optimization properties.
+   *
+   * Contains the critical self-review analysis and the final production-ready
+   * implementation with all identified issues corrected.
+   */
   export interface IReviseProps {
     /**
-     * Field selection and quality review of the draft implementation.
+     * Critical review and improvement analysis.
      *
-     * Checks for:
+     * MUST systematically verify using these checklists:
      *
-     * - Proper use of DeepPartial<> instead of Partial<>
-     * - Inclusion of only test-beneficial fields in input parameter
-     * - Realistic data generation patterns
-     * - Constraint compliance (validation rules)
-     * - Proper use of RandomGenerator utilities
+     * 1. Schema Fidelity - Cross-check EVERY property name against the DTO schema,
+     *    verify all properties are generated, no fabricated properties
+     * 2. Type Safety - DeepPartial<> used (not Partial<>), proper typing, correct
+     *    nested handling
+     * 3. Constraint Compliance - String lengths, number bounds, formats, enums
+     * 4. Code Quality - Compilation check, template literal syntax, no errors
+     *
+     * Identify specific issues with reasoning and provide clear fixes. This
+     * catches hallucinated properties, missing mappings, and rule violations.
      */
     review: string;
 
     /**
-     * Final optimized implementation after review.
+     * Final prepare function code with all review improvements applied.
      *
-     * Contains the production-ready prepare function with:
+     * Apply ALL fixes identified in the review to produce production-ready
+     * code. If review found issues, this MUST contain the corrected
+     * implementation.
      *
-     * - Optimal field selection for test efficiency
-     * - Optimized RandomGenerator usage
-     * - Complete constraint compliance
-     * - Clean, maintainable code structure
-     *
-     * If null, the draft is used as-is.
+     * Return `null` ONLY if the draft is already perfect and review found zero
+     * issues.
      */
     final: string | null;
   }
