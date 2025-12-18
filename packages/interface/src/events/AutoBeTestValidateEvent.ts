@@ -19,8 +19,9 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Michael
  */
-export interface AutoBeTestValidateEvent
-  extends AutoBeEventBase<"testValidate"> {
+export interface AutoBeTestValidateEvent<
+  TestFunction extends AutoBeTestFunction = AutoBeTestFunction,
+> extends AutoBeEventBase<"testValidate"> {
   /**
    * Function type indicating the specific test writing operation performed.
    *
@@ -42,7 +43,7 @@ export interface AutoBeTestValidateEvent
    * validation. The discriminated union pattern enables type-safe handling of
    * different test writing stages while providing detailed progress tracking.
    */
-  function: AutoBeTestFunction;
+  function: TestFunction;
 
   /**
    * Compilation result indicating success, failure, or exception during

@@ -15,6 +15,8 @@ import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistory } from "./histories/transformTestCorrectInvalidRequestHistory";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
+import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGenerateProcedure";
+import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
 import { IAutoBeTestProcedure } from "./structures/IAutoBeTestProcedure";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 import { insertScriptToTestResult } from "./utils/insertScriptToTestResult";
@@ -23,33 +25,48 @@ type CompileFunction = (script: string) => Promise<AutoBeTestValidateEvent>;
 
 export const orchestrateTestCorrectInvalidRequest = async <
   Model extends ILlmSchema.Model,
+  Procedure extends
+    | IAutoBeTestOperationProcedure
+    | IAutoBeTestGenerateProcedure,
 >(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestProcedure,
+  procedure: Procedure,
 ): Promise<AutoBeTestValidateEvent> => {
-  const event: AutoBeTestValidateEvent = await compile(write.function.content);
-  return await predicate(ctx, compile, write, event, ctx.retry);
+  const event: AutoBeTestValidateEvent = await compile(
+    procedure.function.content,
+  );
+  return await predicate(ctx, compile, procedure, event, ctx.retry);
 };
 
-const predicate = async <Model extends ILlmSchema.Model>(
+const predicate = async <
+  Model extends ILlmSchema.Model,
+  Procedure extends
+    | IAutoBeTestOperationProcedure
+    | IAutoBeTestGenerateProcedure,
+>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestProcedure,
+  procedure: Procedure,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   if (event.result.type === "failure") {
     ctx.dispatch(event);
-    return await correct(ctx, compile, write, event, life - 1);
+    return await correct(ctx, compile, procedure, event, life - 1);
   }
   return event;
 };
 
-const correct = async <Model extends ILlmSchema.Model>(
+const correct = async <
+  Model extends ILlmSchema.Model,
+  Procedure extends
+    | IAutoBeTestOperationProcedure
+    | IAutoBeTestGenerateProcedure,
+>(
   ctx: AutoBeContext<Model>,
   compile: CompileFunction,
-  write: IAutoBeTestProcedure,
+  procedure: Procedure,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -65,7 +82,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     controller: createController({
       model: ctx.model,
-      functionName: write.function.name,
+      functionName: procedure.function.name,
       then: (next) => {
         pointer.value = next;
       },
@@ -75,7 +92,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     ...transformTestCorrectInvalidRequestHistory(
-      write,
+      procedure,
       event.result.diagnostics,
     ),
   });
@@ -83,19 +100,19 @@ const correct = async <Model extends ILlmSchema.Model>(
   else if (pointer.value === false) return event; // other's responsibility
 
   const importStatement: string = getTestImportFromFunction({
-    target: write,
+    target: procedure,
   });
 
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
-      write.artifacts,
+      procedure.artifacts,
       pointer.value.revise.final,
       importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
-    write.artifacts,
+    procedure.artifacts,
     pointer.value.draft,
     importStatement,
   );
@@ -106,7 +123,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
     function: {
       ...insertScriptToTestResult(
-        write,
+        procedure,
         pointer.value.revise.final ?? pointer.value.draft,
       ).function,
     },
@@ -121,7 +138,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
 
   const newWrite: IAutoBeTestProcedure = insertScriptToTestResult(
-    write,
+    procedure,
     pointer.value.revise?.final ?? pointer.value.draft,
   );
   const newEvent: AutoBeTestValidateEvent = await compile(

@@ -1,6 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestHistory,
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
@@ -16,8 +17,9 @@ import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestrateTestAuthorizationWrite } from "./orchestrateTestAuthorizationWrite";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
-import { orchestrateTestGenerationWrite } from "./orchestrateTestGenerationWrite";
+import { orchestrateTestGenerateWrite } from "./orchestrateTestGenerateWrite";
 import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
+import { orchestrateTestPrepare } from "./orchestrateTestPrepare";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthorizeWriteResult";
@@ -54,9 +56,7 @@ export const orchestrateTest =
       throw new Error("No document found. Please check the logs.");
 
     // CHECK OPERATIONS
-    const operations: AutoBeOpenApi.IOperation[] =
-      ctx.state().interface?.document.operations ?? [];
-    if (operations.length === 0)
+    if (document.operations.length === 0)
       return ctx.assistantMessage({
         id: v7(),
         type: "assistantMessage",
@@ -67,24 +67,29 @@ export const orchestrateTest =
           "please check if the Interface agent is called.",
       });
 
-    // PREPARE FUNCTIONS
-    const prepared: IAutoBeTestPrepareProcedure[] =
-      await orchestrateTestPrepareWrite(ctx, {
+    const writeProgress: AutoBeProgressEventBase = {
+      total: 0,
+      completed: 0,
+    };
+    const correctProgress: AutoBeProgressEventBase = {
+      total: 0,
+      completed: 0,
+    };
+
+    const prepares: AutoBeTestValidateEvent<AutoBeTestPrepareFunction>[] =
+      await orchestrateTestPrepare(ctx, {
         instruction: props.instruction,
         document,
-      });
-    const prepareCorrects: AutoBeTestValidateEvent[] =
-      await orchestrateTestCorrect(ctx, {
-        instruction: props.instruction,
-        items: prepared,
+        writeProgress,
+        correctProgress,
       });
 
     // GENERATION FUNCTIONS
     const generated: IAutoBeTestGenerateProcedure[] =
-      await orchestrateTestGenerationWrite(ctx, {
+      await orchestrateTestGenerateWrite(ctx, {
         instruction: props.instruction,
         document,
-        preparedFunctions: prepareCorrects
+        prepares: prepareCorrects
           .filter(
             (
               p,

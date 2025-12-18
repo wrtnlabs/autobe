@@ -25,7 +25,9 @@ interface IProgrammer<
     failures: IAutoBeTestFunctionFailure[];
   }): Promise<IAutoBeOrchestrateHistory>;
   replaceImportStatements(content: string): Promise<string>;
-  compile(props: Procedure): Promise<AutoBeTestValidateEvent>;
+  compile(
+    props: Procedure,
+  ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
 }
 
 export async function orchestrateTestCorrectOverall<
@@ -39,24 +41,27 @@ export async function orchestrateTestCorrectOverall<
     procedures: Procedure[];
     instruction: string;
   },
-): Promise<AutoBeTestValidateEvent[]> {
-  const results: Array<AutoBeTestValidateEvent | null> =
+): Promise<AutoBeTestValidateEvent<Procedure["function"]>[]> {
+  const results: Array<AutoBeTestValidateEvent<Procedure["function"]> | null> =
     await executeCachedBatch(
       ctx,
       props.procedures.map((procedure) => async (promptCacheKey) => {
         try {
-          return await predicate(
-            ctx,
-            {
-              programmer: props.programmer,
-              procedure,
-              failures: [],
-              validate: await props.programmer.compile(procedure),
-              promptCacheKey,
-              instruction: props.instruction,
-            },
-            ctx.retry,
-          );
+          const event: AutoBeTestValidateEvent<Procedure["function"]> =
+            await predicate(
+              ctx,
+              {
+                programmer: props.programmer,
+                procedure,
+                failures: [],
+                validate: await props.programmer.compile(procedure),
+                promptCacheKey,
+                instruction: props.instruction,
+              },
+              ctx.retry,
+            );
+          procedure.function = event.function;
+          return event;
         } catch {
           return null;
         }
@@ -75,12 +80,12 @@ async function predicate<
     programmer: IProgrammer<Model, Procedure, Complete>;
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure[];
-    validate: AutoBeTestValidateEvent;
+    validate: AutoBeTestValidateEvent<Procedure["function"]>;
     promptCacheKey: string;
     instruction: string;
   },
   life: number,
-): Promise<AutoBeTestValidateEvent> {
+): Promise<AutoBeTestValidateEvent<Procedure["function"]>> {
   if (props.validate.result.type === "failure") ctx.dispatch(props.validate);
   return props.validate.result.type === "failure"
     ? await correct(ctx, props, life - 1)
@@ -97,12 +102,12 @@ async function correct<
     programmer: IProgrammer<Model, Procedure, Complete>;
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure[];
-    validate: AutoBeTestValidateEvent;
+    validate: AutoBeTestValidateEvent<Procedure["function"]>;
     promptCacheKey: string;
     instruction: string;
   },
   life: number,
-): Promise<AutoBeTestValidateEvent> {
+): Promise<AutoBeTestValidateEvent<Procedure["function"]>> {
   if (props.validate.result.type !== "failure") return props.validate;
   else if (life < 0) return props.validate;
 
@@ -142,7 +147,7 @@ async function correct<
       ),
     },
   };
-  const newValidate: AutoBeTestValidateEvent =
+  const newValidate: AutoBeTestValidateEvent<Procedure["function"]> =
     await props.programmer.compile(newProcedure);
 
   ctx.dispatch({

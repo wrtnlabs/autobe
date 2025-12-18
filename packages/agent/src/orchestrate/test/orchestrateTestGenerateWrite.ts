@@ -23,21 +23,21 @@ import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGeneratePr
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
 import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
-export const orchestrateTestGenerationWrite = async <
+export const orchestrateTestGenerateWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
-    preparedFunctions: AutoBeTestPrepareFunction[];
+    prepares: AutoBeTestPrepareFunction[];
   },
 ): Promise<IAutoBeTestGenerateProcedure[]> => {
   // Track existing function names to prevent duplicates
   const existingFunctionNames: string[] = [];
 
   const progress: AutoBeProgressEventBase = {
-    total: props.preparedFunctions.length,
+    total: props.prepares.length,
     completed: 0,
   };
 
@@ -61,7 +61,7 @@ export const orchestrateTestGenerationWrite = async <
           return null;
 
         const prepareFunction: AutoBeTestPrepareFunction | undefined =
-          props.preparedFunctions.find(
+          props.prepares.find(
             (pf) => pf.typeName === operation.requestBody?.typeName,
           );
         if (prepareFunction === undefined) return null;

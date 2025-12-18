@@ -18,7 +18,9 @@ interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
     failures: IAutoBeTestFunctionFailure[];
   }): Promise<IAutoBeOrchestrateHistory>;
   replaceImportStatements(content: string): Promise<string>;
-  compile(props: Procedure): Promise<AutoBeTestValidateEvent>;
+  compile(
+    props: Procedure,
+  ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
 }
 
 export async function orchestrateTestCorrectCasting<
@@ -30,50 +32,53 @@ export async function orchestrateTestCorrectCasting<
     programmer: IProgrammer<Procedure>;
     procedures: Procedure[];
   },
-): Promise<AutoBeTestValidateEvent[]> {
-  const result: Array<AutoBeTestValidateEvent | null> =
+): Promise<AutoBeTestValidateEvent<Procedure["function"]>[]> {
+  const result: Array<AutoBeTestValidateEvent<Procedure["function"]> | null> =
     await executeCachedBatch(
       ctx,
       props.procedures.map((procedure) => async () => {
         try {
-          return await orchestrateCommonCorrectCasting<
-            Model,
-            AutoBeTestValidateEvent,
-            AutoBeTestCorrectEvent
-          >(
-            ctx,
-            {
-              source: "testCorrect",
-              validate: (content) =>
-                props.programmer.compile({
-                  ...procedure,
-                  function: {
-                    ...procedure.function,
-                    content,
-                  },
-                }),
-              correct: async (next) =>
-                ({
-                  type: "testCorrect",
-                  kind: "casting",
-                  id: v7(),
-                  created_at: new Date().toISOString(),
-                  function: {
-                    ...procedure.function,
-                    content: await props.programmer.replaceImportStatements(
-                      next.final ?? next.draft,
-                    ),
-                  },
-                  result: next.failure,
-                  tokenUsage: next.tokenUsage,
-                  metric: next.metric,
-                  step: ctx.state().analyze?.step ?? 0,
-                }) satisfies AutoBeTestCorrectEvent,
-              script: (event) => event.function.content,
-              functionName: procedure.function.name,
-            },
-            procedure.function.content,
-          );
+          const event: AutoBeTestValidateEvent<Procedure["function"]> =
+            await orchestrateCommonCorrectCasting<
+              Model,
+              AutoBeTestValidateEvent<Procedure["function"]>,
+              AutoBeTestCorrectEvent
+            >(
+              ctx,
+              {
+                source: "testCorrect",
+                validate: (content) =>
+                  props.programmer.compile({
+                    ...procedure,
+                    function: {
+                      ...procedure.function,
+                      content,
+                    },
+                  }),
+                correct: async (next) =>
+                  ({
+                    type: "testCorrect",
+                    kind: "casting",
+                    id: v7(),
+                    created_at: new Date().toISOString(),
+                    function: {
+                      ...procedure.function,
+                      content: await props.programmer.replaceImportStatements(
+                        next.final ?? next.draft,
+                      ),
+                    },
+                    result: next.failure,
+                    tokenUsage: next.tokenUsage,
+                    metric: next.metric,
+                    step: ctx.state().analyze?.step ?? 0,
+                  }) satisfies AutoBeTestCorrectEvent,
+                script: (event) => event.function.content,
+                functionName: procedure.function.name,
+              },
+              procedure.function.content,
+            );
+          procedure.function = event.function;
+          return event;
         } catch {
           return null;
         }
