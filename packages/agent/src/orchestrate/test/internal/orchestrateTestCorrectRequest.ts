@@ -10,7 +10,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
 import { IAutoBeTestAuthorizeProcedure } from "../structures/IAutoBeTestAuthorizeWriteResult";
-import { IAutoBeTestCorrectInvalidRequestApplication } from "../structures/IAutoBeTestCorrectInvalidRequestApplication";
+import { IAutoBeTestCorrectRequestApplication } from "../structures/IAutoBeTestCorrectRequestApplication";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
 import { IAutoBeTestOperationProcedure } from "../structures/IAutoBeTestOperationProcedure";
@@ -25,9 +25,7 @@ interface IProgrammer<
   controller(next: {
     model: Model;
     procedure: Procedure;
-    build: (
-      next: IAutoBeTestCorrectInvalidRequestApplication.IProps | false,
-    ) => void;
+    build: (next: IAutoBeTestCorrectRequestApplication.IProps | false) => void;
   }): ILlmController<Model>;
   histories(props: {
     procedure: Procedure;
@@ -130,7 +128,7 @@ async function correct<
   else if (life < 0) return props.validate;
 
   const pointer: IPointer<
-    IAutoBeTestCorrectInvalidRequestApplication.IProps | false | null
+    IAutoBeTestCorrectRequestApplication.IProps | false | null
   > = {
     value: null,
   };

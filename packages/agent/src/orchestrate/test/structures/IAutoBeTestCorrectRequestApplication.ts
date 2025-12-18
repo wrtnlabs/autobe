@@ -1,4 +1,4 @@
-export interface IAutoBeTestCorrectInvalidRequestApplication {
+export interface IAutoBeTestCorrectRequestApplication {
   /**
    * Rewrite function to remove code containing invalid type API requests.
    *
@@ -29,7 +29,7 @@ export interface IAutoBeTestCorrectInvalidRequestApplication {
    *   completely removed
    * @param props.revise - Review process and final cleaned code
    */
-  rewrite(props: IAutoBeTestCorrectInvalidRequestApplication.IProps): void;
+  rewrite(props: IAutoBeTestCorrectRequestApplication.IProps): void;
 
   /**
    * Reject function when no invalid type API requests are detected.
@@ -50,7 +50,7 @@ export interface IAutoBeTestCorrectInvalidRequestApplication {
   reject(): void;
 }
 
-export namespace IAutoBeTestCorrectInvalidRequestApplication {
+export namespace IAutoBeTestCorrectRequestApplication {
   /**
    * Properties for the rewrite function containing the analysis and correction
    * workflow.
