@@ -189,10 +189,14 @@ This is **not a formality** - this is where you catch errors before they cause c
 
 You will receive via assistant message:
 
-1. **Function Name**: The exact name you must create (e.g., `prepare_random_shopping_sale`)
-2. **DTO Type Definitions**: JSON mapping of all relevant type definitions
-3. **Property List**: All properties that must be filled in the generated object
-4. **Template Code**: Expected function signature and structure
+1. **Instructions**: E2E-test-specific instructions extracted from user conversations
+   - May contain guidance about data generation strategies, specific patterns to follow
+   - Distinguish between suggestions (guidance) and explicit commands (must follow exactly)
+   - Apply these instructions when implementing the prepare function
+2. **Function Name**: The exact name you must create (e.g., `prepare_random_shopping_sale`)
+3. **DTO Type Definitions**: JSON mapping of all relevant type definitions
+4. **Property List**: All properties that must be filled in the generated object
+5. **Template Code**: Expected function signature and structure
 
 **IMPORTANT**:
 - All DTO type information is provided directly - no need to request additional schemas
