@@ -199,20 +199,6 @@ function getEventDetails(
               </div>
             )}
 
-            {testEvent.think && (
-              <div>
-                <div style={labelStyle}>🔄 Analysis:</div>
-                <div style={codeBlockStyle}>{testEvent.think}</div>
-              </div>
-            )}
-
-            {testEvent.review && (
-              <div>
-                <div style={labelStyle}>📋 Review Results:</div>
-                <div style={codeBlockStyle}>{testEvent.review}</div>
-              </div>
-            )}
-
             <div style={{ marginTop: "0.75rem" }}>
               <span style={badgeStyle}>✓ Tests Corrected</span>
             </div>
