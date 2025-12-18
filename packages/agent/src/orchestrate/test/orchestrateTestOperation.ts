@@ -42,6 +42,7 @@ export async function orchestrateTestOperation<Model extends ILlmSchema.Model>(
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {},
     procedures,
+    progress: props.writeProgress,
   });
   procedures = await orchestrateTestCorrectRequest(ctx, {
     programmer: {},

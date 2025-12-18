@@ -116,6 +116,7 @@ export const orchestrateTest =
     const operations: AutoBeTestOperationFunction[] =
       await orchestrateTestOperation(ctx, {
         instruction: props.instruction,
+        document,
         scenarios,
         authorizes,
         prepares,

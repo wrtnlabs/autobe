@@ -44,6 +44,7 @@ export const orchestrateTestPrepareWrite = async <
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<IAutoBeTestPrepareProcedure[]> => {
   interface ICreateType {
@@ -52,15 +53,14 @@ export const orchestrateTestPrepareWrite = async <
   }
   const createTypes: ICreateType[] = [];
   for (const [key, value] of Object.entries(props.document.components.schemas))
-    if (AutoBeOpenApiTypeChecker.isObject(value) === true)
+    if (
+      key.endsWith(".ICreate") &&
+      AutoBeOpenApiTypeChecker.isObject(value) === true
+    )
       createTypes.push({
         key,
         value,
       });
-  const progress: AutoBeProgressEventBase = {
-    total: 0,
-    completed: createTypes.length,
-  };
 
   // Generate prepare functions using LLM in parallel with prompt caching
   const result: Array<IAutoBeTestPrepareProcedure | null> =
@@ -75,7 +75,7 @@ export const orchestrateTestPrepareWrite = async <
               schema: entry.value,
               instruction: props.instruction,
               promptCacheKey,
-              progress,
+              progress: props.progress,
             });
           ctx.dispatch(event);
           return {

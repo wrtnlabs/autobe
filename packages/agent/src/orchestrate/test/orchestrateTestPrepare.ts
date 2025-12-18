@@ -24,15 +24,18 @@ export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
     await orchestrateTestPrepareWrite(ctx, {
       instruction: props.instruction,
       document: props.document,
+      progress: props.writeProgress,
     });
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {},
     procedures,
+    progress: props.correctProgress,
   });
   procedures = await orchestrateTestCorrectOverall(ctx, {
     programmer: {},
     procedures,
     instruction: props.instruction,
+    progress: props.correctProgress,
   });
   return procedures.map((p) => p.function);
 }
