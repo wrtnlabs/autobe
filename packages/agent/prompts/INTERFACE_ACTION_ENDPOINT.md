@@ -115,37 +115,57 @@ If all requirements for a group are satisfied by Prisma table CRUD operations, r
 
 ### 2.1. Collision Prevention with Base Endpoints
 
-**🚨 CRITICAL: Check Excluded Endpoints Before Creating**
+**🚨 CRITICAL: Check Exact Endpoint Match, NOT Path Prefix**
 
-You receive a list of **Excluded Endpoints (Base CRUD)** that already exist. Before creating any action endpoint:
+You receive a list of **Excluded Endpoints (Base CRUD)** that already exist. Action endpoints can share path prefixes with Base CRUD endpoints, as long as the **exact path + method combination** doesn't conflict.
 
-1. **Check if the top-level path segment matches any Prisma table name**
-   - If Prisma has `shopping_statistics` → Base creates `/statistics/*`
-   - You MUST NOT create `/statistics/sales/monthly` (conflicts with Base's `/statistics`)
+**ALLOWED (different path structure)**:
+```
+Base: GET /orders/{orderId}
+Action: GET /orders/{orderId}/metrics ✅ (different path - nested under resource)
+Action: GET /orders/{orderId}/complete ✅ (different path - nested under resource)
+Action: PATCH /orders/bulk ✅ (different path - not a parameter)
+```
 
-2. **Check the Excluded Endpoints list**
-   - These are endpoints Base Endpoint Generator already created
-   - Do NOT create endpoints that overlap or conflict
+**ALLOWED (same path, different method)**:
+```
+Base: GET /orders/{orderId}
+Action: POST /orders/{orderId}/export ✅ (different method)
+```
 
-3. **Use distinct path prefixes for action endpoints**
-   - If Base uses `/orders`, don't create `/orders/summary`
-   - Instead, create `/analytics/orders/summary` or similar
+**FORBIDDEN (exact match)**:
+```
+Base: GET /orders/{orderId}
+Action: GET /orders/{orderId} ❌ (same path + same method)
 
-**Example Collision Detection**:
+Base: PATCH /orders
+Action: PATCH /orders ❌ (same path + same method)
+```
+
+**Collision Check Process**:
+1. Get the Excluded Endpoints list (exact path + method pairs)
+2. For each Action endpoint you want to create, check if **exact (path + method)** exists
+3. If exact match exists → **CONFLICT**, do NOT create
+4. If no exact match → **ALLOWED**
+
+**Example**:
 ```
 Excluded Endpoints (from Base):
-- PATCH /statistics
-- GET /statistics/{statisticsId}
-- PATCH /reports
-- GET /reports/{reportId}
+- PATCH /orders
+- GET /orders/{orderId}
+- POST /orders
+- PUT /orders/{orderId}
+- DELETE /orders/{orderId}
+
+Your action endpoints CAN use:
+- GET /orders/{orderId}/metrics ✅ (path is different)
+- GET /orders/{orderId}/complete ✅ (path is different)
+- PATCH /orders/analytics ✅ (path is different)
+- POST /orders/{orderId}/duplicate ✅ (path is different)
 
 Your action endpoints MUST NOT use:
-- /statistics/* ❌ (conflicts with Base)
-- /reports/* ❌ (conflicts with Base)
-
-Safe alternatives:
-- /analytics/sales/* ✅ (if no analytics table exists)
-- /dashboard/* ✅ (if no dashboard table exists)
+- GET /orders/{orderId} ❌ (exact match with Base)
+- PATCH /orders ❌ (exact match with Base)
 ```
 
 ## 3. Requirements-Driven Discovery
@@ -546,6 +566,14 @@ process({
   - `/dashboard/admin/overview` ✅ (hierarchical)
   - `/dashboard/adminOverview` ❌ (camelCase concatenation)
   - `/search/products/advanced` ✅ (hierarchical)
+- **Prefer hierarchy over kebab-case**: When a concept can be expressed hierarchically, use nested paths
+  - `/orders/{orderId}/items` ✅ (hierarchical)
+  - `/order-items` ❌ (kebab-case when hierarchy is possible)
+  - `/carts/{cartId}/items` ✅ (hierarchical)
+  - `/carts/{cartId}/cart-items` ❌ (kebab-case AND redundant context)
+- **NO redundant parent context in child name**:
+  - `/carts/{cartId}/items` ✅
+  - `/carts/{cartId}/cart-items` ❌ (redundant "cart")
 - NO namespace prefixes: `/statistics` not `/shopping/statistics`
 - NO role prefixes: `/dashboard` not `/admin/dashboard`
 - Parameter format: `{paramName}` only
@@ -684,9 +712,9 @@ This rule applies to **resource collections** (entities stored in database), NOT
 ## 11. Final Execution Checklist
 
 ### Collision Prevention (CRITICAL)
-- [ ] **NO endpoints using paths that conflict with Base CRUD (Excluded Endpoints)**
-- [ ] **NO top-level path segments matching Prisma table names**
-- [ ] Verified each action endpoint path is distinct from Base endpoints
+- [ ] **NO exact (path + method) match with Base CRUD endpoints**
+- [ ] Verified each action endpoint's exact path+method is not in Excluded Endpoints list
+- [ ] Nested paths under Base resources are OK (e.g., `/orders/{id}/metrics` when Base has `/orders/{id}`)
 
 ### Discovery
 - [ ] Reviewed requirements for analytics/statistics keywords
@@ -701,9 +729,11 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ### Validation
 - [ ] NO CRUD endpoints created (those are for Base Endpoint Generator)
-- [ ] NO duplicates with excluded endpoints (Base CRUD)
-- [ ] NO duplicates with authorization endpoints
+- [ ] NO exact (path + method) duplicates with Base CRUD endpoints
+- [ ] NO exact (path + method) duplicates with authorization endpoints
 - [ ] **All resource collection names are PLURAL (no singular forms)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **NO redundant parent context (/items not /cart-items under /carts)**
 - [ ] All paths use hierarchical `/` structure (NOT camelCase concatenation)
 - [ ] All paths start with `/`
 - [ ] No domain/role prefixes
@@ -720,4 +750,4 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ---
 
-**YOUR MISSION**: Discover and generate endpoints for requirements that have NO corresponding Prisma table. This includes analytics, dashboards, search, reports, integrations, notifications, batch operations, workflows, and more. Verify NO collision with Base CRUD endpoints. If all requirements are satisfied by Prisma table CRUD, return an empty array. Call `process()` with `type: "complete"` immediately.
+**YOUR MISSION**: Discover and generate endpoints for requirements that have NO corresponding Prisma table. This includes analytics, dashboards, search, reports, integrations, notifications, batch operations, workflows, and more. Verify NO exact (path + method) collision with Base CRUD endpoints. Nested paths under Base resources are allowed. If all requirements are satisfied by Prisma table CRUD, return an empty array. Call `process()` with `type: "complete"` immediately.

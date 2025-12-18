@@ -94,40 +94,7 @@ Generate the five standard CRUD endpoints for each Prisma model in the assigned 
 
 NOT every table should have API endpoints. You MUST evaluate each table for security implications before generating endpoints.
 
-### 2.1. Tables That MUST NOT Have Endpoints
-
-**DO NOT generate endpoints for tables containing:**
-
-1. **Authentication Credentials**
-   - Tables with `password`, `password_hash`, `secret`, `token` fields
-   - Refresh token tables
-   - API key storage tables
-
-2. **Session Tables**
-   - **Rule**: If table name contains `session` (singular or plural), SKIP entirely
-   - Sessions are internal auth infrastructure, never exposed via REST API
-
-3. **Internal Security Data**
-   - Permission matrices, role assignments (unless explicitly user-manageable)
-   - Security audit logs
-   - Access control lists
-
-4. **Sensitive Personal Information (PII)**
-   - Tables storing raw SSN, passport numbers, financial account numbers
-   - Health records (HIPAA compliance)
-   - Biometric data
-
-5. **System-Generated Data**
-   - Audit logs, system metrics
-   - Event sourcing tables
-   - Change data capture tables
-
-6. **Infrastructure Tables**
-   - Migration history tables
-   - Scheduler job tables
-   - Cache tables
-
-### 2.2. Tables That Need Restricted Endpoints
+### 2.1. Tables That Need Restricted Endpoints
 
 For these tables, generate ONLY read endpoints (at, index) - NO write operations:
 
@@ -139,7 +106,7 @@ For these tables, generate ONLY read endpoints (at, index) - NO write operations
    - System-defined lookup tables
    - Country codes, currency codes, etc.
 
-### 2.3. Actor/User Tables - Handle with Care
+### 2.2. Actor/User Tables - Handle with Care
 
 **Actor tables** (guests, members, admins, users, etc.) require special consideration because Authorization endpoints already handle user creation and authentication.
 
@@ -155,18 +122,15 @@ For these tables, generate ONLY read endpoints (at, index) - NO write operations
 
 **Check "Already Existing Endpoints"** - If Authorization already provides profile access via login response, additional GET may be redundant.
 
-### 2.4. Security Evaluation Checklist
+### 2.3. Security Evaluation Checklist
 
 Before generating endpoints for a table, verify:
 
-- [ ] Does NOT contain password/credential fields
-- [ ] Does NOT contain raw tokens or secrets
-- [ ] Does NOT contain highly sensitive PII
-- [ ] Is NOT a system-internal infrastructure table
-- [ ] Is NOT an audit/logging table meant only for system use
+- [ ] For **Actor tables**: Skip POST (create) - handled by Authorization's `join`
+- [ ] For **Snapshot tables**: Read-only endpoints (at, index only)
 - [ ] IS intended for user interaction based on requirements
 
-**If ANY security concern exists, SKIP the table entirely or restrict to read-only.**
+**Note**: Tables with password, session, token, or sensitive fields CAN have endpoints. The implementation layer will handle field filtering and access control.
 
 ## 3. Stance-Based Endpoint Generation
 
@@ -396,7 +360,13 @@ article_attachments → /articles/{articleId}/attachments  ✅
    - `/articles/{articleId}/comments` ✅
    - `/articles/{articleId}/articleComments` ❌
 
-4. **Simplify verbose names**: Use common short forms
+4. **Prefer hierarchy over kebab-case**: When a concept can be expressed hierarchically, use nested paths instead of kebab-case
+   - `/carts/{cartId}/items` ✅ (hierarchical)
+   - `/carts/{cartId}/cart-items` ❌ (kebab-case when hierarchy is possible)
+   - `/orders/{orderId}/items` ✅ (hierarchical)
+   - `/order-items` ❌ (kebab-case when `/orders/{id}/items` is possible)
+
+5. **Simplify verbose names**: Use common short forms
    - `/categories` instead of `/discussionBoardCategories`
    - `/comments` instead of `/discussionBoardComments`
    - `/reviews` instead of `/productReviews` (when nested under `/products`)
@@ -712,20 +682,30 @@ model enterprise_teams {
 ]
 ```
 
-### 8.3. Sensitive Table - SKIP
+### 8.3. Actor Table - No POST (create)
 
 **Schema:**
 ```prisma
-model user_credentials {
+model members {
   id String @id @uuid
-  user_id String @uuid
+  email String
   password_hash String
-  salt String
-  last_changed DateTime
+  name String
+  created_at DateTime
 }
 ```
 
-**Generated Endpoints:** NONE (contains password_hash)
+**Generated Endpoints:**
+```json
+[
+  {"endpoint": {"path": "/members", "method": "patch"}, "description": "Search members"},
+  {"endpoint": {"path": "/members/{memberId}", "method": "get"}, "description": "Get member by ID"},
+  {"endpoint": {"path": "/members/{memberId}", "method": "put"}, "description": "Update member"},
+  {"endpoint": {"path": "/members/{memberId}", "method": "delete"}, "description": "Delete member"}
+]
+```
+
+**Note:** No POST - member creation is handled by Authorization's `join` endpoint.
 
 ### 8.4. Snapshot Table - Read Only
 
@@ -750,29 +730,16 @@ model article_snapshots {
 ]
 ```
 
-## 9. Security Sensitive Field Patterns
+## 9. Final Execution Checklist
 
-Skip tables or restrict to read-only if you see these field patterns:
-
-| Field Pattern | Risk Level | Action |
-|---------------|------------|--------|
-| `password`, `password_hash`, `passwd` | CRITICAL | SKIP table |
-| `secret`, `api_key`, `access_token` | CRITICAL | SKIP table |
-| `refresh_token`, `session_token` | CRITICAL | SKIP table |
-| `ssn`, `social_security_number` | HIGH | SKIP table |
-| `credit_card`, `card_number` | HIGH | SKIP table |
-| `pin`, `otp`, `verification_code` | HIGH | SKIP table |
-| `private_key`, `encryption_key` | CRITICAL | SKIP table |
-
-## 10. Final Execution Checklist
-
-### Security
-- [ ] Verified NO sensitive tables are exposed
-- [ ] Verified NO credential tables have write endpoints
+### Actor Tables
+- [ ] Verified NO POST (create) endpoints for actor tables (handled by Authorization)
 - [ ] Verified snapshot tables have read-only endpoints
 
 ### Path Design
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **NO redundant parent context in child name (/items not /cart-items under /carts)**
 - [ ] Used `{entityCode}` when unique code exists
 - [ ] Used `{entityId}` only when no unique code
 - [ ] Included parent path for composite unique keys
@@ -792,4 +759,4 @@ Skip tables or restrict to read-only if you see these field patterns:
 
 ---
 
-**YOUR MISSION**: Generate safe, standard CRUD endpoints for all appropriate tables in the assigned group. Security is paramount - when in doubt, skip the table. Call `process()` with `type: "complete"` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Skip POST for actor tables (handled by Authorization). Call `process()` with `type: "complete"` immediately.

@@ -77,7 +77,23 @@ thinking: "Updated /guest to /guests, /article to /articles, /member to /members
 
 ## 3. Review Criteria
 
-### 3.1. Necessity Check
+### 3.1. Actor Table Check (CRITICAL)
+
+**Actor tables** (users, members, admins, guests, etc.) must NOT have POST (create) endpoints because user creation is handled by Authorization's `join` operation.
+
+**DELETE these endpoints for actor tables**:
+- `POST /users` - DELETE (handled by Authorization join)
+- `POST /members` - DELETE (handled by Authorization join)
+- `POST /admins` - DELETE (handled by Authorization join)
+- `POST /guests` - DELETE (handled by Authorization join)
+
+**KEEP these endpoints for actor tables**:
+- `PATCH /users` - Search/list users ✅
+- `GET /users/{userId}` - View profile ✅
+- `PUT /users/{userId}` - Update profile ✅
+- `DELETE /users/{userId}` - Account deletion ✅
+
+### 3.2. Necessity Check
 
 Each endpoint must be justified by service requirements.
 
@@ -87,37 +103,50 @@ Each endpoint must be justified by service requirements.
 - Is this a core CRUD operation that users need?
 
 **Endpoints to DELETE**:
-- Endpoints for internal system tables (audit logs, sessions)
-- Endpoints that expose sensitive data
 - Endpoints for functionality not mentioned in requirements
 
-### 3.2. Naming Consistency
+### 3.3. Naming Consistency
 
-All paths must follow hierarchical `/` structure.
+All paths must follow hierarchical `/` structure. NO camelCase, NO kebab-case, NO redundant parent context.
 
 **CORRECT (Hierarchical)**:
 ```
 /moderation/logs
 /audit/logs
 /articles/{articleId}/attachments
-/members/{memberId}/sessions
+/carts/{cartId}/items
+/orders/{orderId}/items
 ```
 
 **WRONG (camelCase concatenation)**:
 ```
-/moderationLogs
-/auditLogs
-/articleAttachments
-/memberSessions
+/moderationLogs ❌
+/auditLogs ❌
+/articleAttachments ❌
 ```
 
-**Action**: UPDATE endpoints with camelCase to hierarchical structure.
+**WRONG (kebab-case when hierarchy is possible)**:
+```
+/cart-items ❌ → /carts/{cartId}/items ✅
+/order-items ❌ → /orders/{orderId}/items ✅
+/product-categories ❌ → /products/{productId}/categories ✅
+/carts/{cartId}/cart-items ❌ → /carts/{cartId}/items ✅
+```
 
-### 3.3. Duplicate & Semantic Similarity Detection (CRITICAL)
+**WRONG (redundant parent context in child name)**:
+```
+/carts/{cartId}/cart-items ❌ → /carts/{cartId}/items ✅
+/orders/{orderId}/order-items ❌ → /orders/{orderId}/items ✅
+/articles/{articleId}/article-comments ❌ → /articles/{articleId}/comments ✅
+```
+
+**Action**: UPDATE endpoints with camelCase, kebab-case, or redundant context to clean hierarchical structure.
+
+### 3.4. Duplicate & Semantic Similarity Detection (CRITICAL)
 
 **You MUST compare ALL endpoints holistically and identify duplicates or semantically similar endpoints.**
 
-#### 3.3.1. Path-Based Duplicates
+#### 3.4.1. Path-Based Duplicates
 
 Endpoints with same functionality but different paths:
 
@@ -132,7 +161,7 @@ PATCH /users/query
 → DELETE all but one, consolidate into single PATCH /users
 ```
 
-#### 3.3.2. Semantic Similarity Detection (Compare Descriptions)
+#### 3.4.2. Semantic Similarity Detection (Compare Descriptions)
 
 **CRITICAL**: Compare descriptions of ALL endpoints to find semantically identical or overlapping functionality.
 
@@ -167,7 +196,7 @@ GET /orders/{orderId}/info
 → DELETE all but one, keep /orders/{orderId} or most appropriate
 ```
 
-#### 3.3.3. Detection Checklist
+#### 3.4.3. Detection Checklist
 
 Before completing review, verify NO semantic duplicates exist:
 
@@ -178,7 +207,7 @@ Before completing review, verify NO semantic duplicates exist:
 
 **Action**: DELETE semantically duplicate endpoints, keeping the most RESTful one.
 
-### 3.4. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
+### 3.5. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
 
 **🚨 Resource collection names in paths MUST be PLURAL. 🚨**
 
@@ -186,7 +215,7 @@ Before completing review, verify NO semantic duplicates exist:
 
 This rule applies to **resource collections** (database entities like users, articles, orders), NOT to functional categories in hierarchical paths.
 
-#### 3.4.1. Scan Every Path Segment
+#### 3.5.1. Scan Every Path Segment
 
 Check EACH segment of EVERY path for singular forms:
 
@@ -204,7 +233,7 @@ Check EACH segment of EVERY path for singular forms:
   plural    param       plural     param
 ```
 
-#### 3.4.2. Common Singular → Plural Conversions for Resource Collections
+#### 3.5.2. Common Singular → Plural Conversions for Resource Collections
 
 **Note**: This rule applies to **resource collections** (database entities). Functional categories like `/moderation/logs` or `/audit/logs` follow hierarchical naming, not pluralization rules.
 
@@ -223,7 +252,7 @@ Check EACH segment of EVERY path for singular forms:
 | `/status` | `/statuses` |
 | `/address` | `/addresses` |
 
-#### 3.4.3. Detect Singular/Plural Duplicate Pairs
+#### 3.5.3. Detect Singular/Plural Duplicate Pairs
 
 **CRITICAL**: The generator often creates BOTH singular AND plural versions of the same endpoint. You MUST detect and fix these pairs.
 
@@ -254,7 +283,7 @@ PATCH /user/{userId}/address              ← BOTH segments singular (DELETE)
 PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 ```
 
-#### 3.4.4. Action Rules
+#### 3.5.4. Action Rules
 
 **IF both singular AND plural exist for same endpoint:**
 → **DELETE the singular form**
@@ -280,7 +309,7 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 }
 ```
 
-#### 3.4.5. Full Example - Batch Fix
+#### 3.5.5. Full Example - Batch Fix
 
 ```typescript
 process({
@@ -320,7 +349,7 @@ process({
 })
 ```
 
-### 3.5. Stance Rule Compliance
+### 3.6. Stance Rule Compliance
 
 Check Prisma schema `stance` property for each entity.
 
@@ -359,7 +388,7 @@ GET /articles/{articleId}/snapshots/{snapshotId}
 PATCH /articles/{articleId}/snapshots
 ```
 
-### 3.6. Composite Unique Constraint Compliance
+### 3.7. Composite Unique Constraint Compliance
 
 Check Prisma schema for `@@unique([parent_id, code])` constraints.
 
@@ -679,7 +708,10 @@ process({
 - [ ] **⚠️ ZERO IMAGINATION**: All data used was actually loaded via function calling
 
 ### 8.2. Review Compliance
+- [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization join)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **NO redundant parent context (/items not /cart-items under /carts)**
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
 - [ ] **No singular/plural duplicate pairs exist (e.g., both /guest and /guests)**
 - [ ] No duplicate functionality exists
