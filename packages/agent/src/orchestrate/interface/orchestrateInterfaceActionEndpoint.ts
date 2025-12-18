@@ -89,8 +89,7 @@ async function process<Model extends ILlmSchema.Model>(
   const prismaSchemas: Map<string, AutoBePrisma.IModel> = new Map(
     ctx
       .state()
-      .prisma!.result.data.files.map((f) => f.models)
-      .flat()
+      .prisma!.result.data.files.flatMap((f) => f.models)
       .map((m) => [m.name, m]),
   );
 
