@@ -3,7 +3,6 @@ import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
   HttpMigration,
   IHttpMigrateApplication,
-  ILlmSchema,
   OpenApi,
 } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -12,14 +11,12 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
-export function transformTestGenerationWriteHistory<
-  Model extends ILlmSchema.Model,
->(
-  instruction: string,
-  prepareFunction: AutoBeTestPrepareFunction,
-  operation: AutoBeOpenApi.IOperation,
-  artifacts: IAutoBeTestArtifacts,
-): IAutoBeOrchestrateHistory {
+export function transformTestGenerateWriteHistory(props: {
+  instruction: string;
+  prepare: AutoBeTestPrepareFunction;
+  operation: AutoBeOpenApi.IOperation;
+  artifacts: IAutoBeTestArtifacts;
+}): IAutoBeOrchestrateHistory {
   return {
     histories: [
       {
@@ -49,7 +46,7 @@ export function transformTestGenerationWriteHistory<
           - Suggestions or recommendations (consider these as guidance)
           - Direct specifications or explicit commands (these must be followed exactly)
 
-          ${instruction}
+          ${props.instruction}
 
           ## Prepare Function
 
@@ -57,7 +54,7 @@ export function transformTestGenerationWriteHistory<
           Your generation function must use this prepare function to create the input data.
 
           \`\`\`json
-          ${JSON.stringify(prepareFunction, null, 2)}
+          ${JSON.stringify(props.prepare)}
           \`\`\`
 
           ## API Operation
@@ -70,7 +67,7 @@ export function transformTestGenerationWriteHistory<
           - parameters: URL path parameters that may be needed for the API call
 
           \`\`\`json
-          ${JSON.stringify(operation, null, 2)}
+          ${JSON.stringify(props.operation)}
           \`\`\`
 
           ## DTO Definitions
@@ -78,31 +75,31 @@ export function transformTestGenerationWriteHistory<
           These are the DTO type definitions available in the codebase.
           Use these to understand the structure of request and response types.
 
-          ${transformTestGenerationWriteHistory.structures(artifacts)}
+          ${transformTestGenerateWriteHistory.structures(props.artifacts)}
 
           ## API SDK Functions
 
           Here are the available SDK functions you can use to call the API.
           Find the appropriate function that matches the operation endpoint.
 
-          ${transformTestGenerationWriteHistory.functional(artifacts)}
+          ${transformTestGenerateWriteHistory.functional(props.artifacts)}
 
           ## E2E Mockup Functions
 
           Just reference, and never follow this code as it is.
 
           \`\`\`json
-          ${JSON.stringify(artifacts.e2e)}
+          ${JSON.stringify(props.artifacts.e2e)}
           \`\`\`
 
         `,
       },
     ],
-    userMessage: `Generate the resource generation function based on the prepare function "${prepareFunction.name}" and the API operation.`,
+    userMessage: `Generate the resource generation function based on the prepare function "${props.prepare.name}" and the API operation.`,
   };
 }
 
-export namespace transformTestGenerationWriteHistory {
+export namespace transformTestGenerateWriteHistory {
   export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)

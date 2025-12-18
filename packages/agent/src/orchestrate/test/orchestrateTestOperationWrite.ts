@@ -4,7 +4,6 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
   AutoBeTestGenerateFunction,
-  AutoBeTestOperationFunction,
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
@@ -19,13 +18,12 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestOperationWriteHistory } from "./histories/transformTestOperationWriteHistory";
+import { AutoBeTestOperationProgrammer } from "./programmers/AutoBeTestOperationProgrammer";
 import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
 import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
-import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
 export async function orchestrateTestOperationWrite<
   Model extends ILlmSchema.Model,
@@ -152,40 +150,6 @@ async function process<Model extends ILlmSchema.Model>(
     ++props.progress.completed;
     throw new Error("Failed to create test code.");
   }
-
-  const operationFunction: AutoBeTestOperationFunction = {
-    type: "operation",
-    domain: pointer.value.domain,
-    content: pointer.value.revise.final ?? pointer.value.draft,
-    name: props.scenario.functionName,
-    location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-    scenario: props.scenario,
-  };
-
-  const importStatement: string = getTestImportFromFunction({
-    target: {
-      type: "operation",
-      artifacts: props.artifacts,
-      function: operationFunction,
-      authorizes: props.authorizes,
-      generates: props.generates,
-      prepares: props.prepares,
-    },
-  });
-
-  if (pointer.value.revise.final)
-    pointer.value.revise.final = await completeTestCode(
-      ctx,
-      props.artifacts,
-      pointer.value.revise.final,
-      importStatement,
-    );
-  pointer.value.draft = await completeTestCode(
-    ctx,
-    props.artifacts,
-    pointer.value.draft,
-    importStatement,
-  );
   return {
     type: "testWrite",
     id: v7(),
@@ -193,10 +157,17 @@ async function process<Model extends ILlmSchema.Model>(
     function: {
       type: "operation",
       domain: pointer.value.domain,
-      content: pointer.value.revise.final ?? pointer.value.draft,
+      scenario: props.scenario,
       name: props.scenario.functionName,
       location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-      scenario: props.scenario,
+      content: await AutoBeTestOperationProgrammer.replaceImportStatements({
+        compiler: await ctx.compiler(),
+        artifacts: props.artifacts,
+        authorizes: props.authorizes,
+        prepares: props.prepares,
+        generates: props.generates,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+      }),
     },
     metric,
     tokenUsage,

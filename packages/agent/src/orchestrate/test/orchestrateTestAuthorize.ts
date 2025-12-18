@@ -2,7 +2,6 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
-  IAutoBeCompiler,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 

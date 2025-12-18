@@ -14,9 +14,9 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestAuthorizeWriteHistory } from "./histories/transformTestAuthorizeWriteHistory";
+import { AutoBeTestAuthorizeProgrammer } from "./programmers/AutoBeTestAuthorizeProgrammer";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizationWriteApplication } from "./structures/IAutoBeTestAuthorizationWriteApplication";
 import { IAutoBeTestAuthorizeProcedure } from "./structures/IAutoBeTestAuthorizeWriteResult";
@@ -112,20 +112,6 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to create authorization function.");
   }
 
-  // Complete the code with imports
-  if (pointer.value.revise.final) {
-    pointer.value.revise.final = await completeTestCode(
-      ctx,
-      props.artifacts,
-      pointer.value.revise.final,
-    );
-  }
-  pointer.value.draft = await completeTestCode(
-    ctx,
-    props.artifacts,
-    pointer.value.draft,
-  );
-
   // Create the authorize function
   const authorizationFunction: AutoBeTestAuthorizeFunction = {
     type: "authorize",
@@ -137,7 +123,11 @@ async function process<Model extends ILlmSchema.Model>(
     authType: props.operation.authorizationType!,
     location: `test/features/utils/authorize/${pointer.value.functionName}.ts`,
     name: pointer.value.functionName,
-    content: pointer.value.revise.final ?? pointer.value.draft,
+    content: await AutoBeTestAuthorizeProgrammer.replaceImportStatements({
+      compiler: await ctx.compiler(),
+      artifacts: props.artifacts,
+      content: pointer.value.revise.final ?? pointer.value.draft,
+    }),
   };
   return {
     type: "testWrite",

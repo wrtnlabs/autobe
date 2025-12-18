@@ -15,13 +15,12 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestGenerationWriteHistory } from "./histories/transformTestGenerationWriteHistory";
+import { transformTestGenerateWriteHistory } from "./histories/transformTestGenerationWriteHistory";
+import { AutoBeTestGenerateProgrammer } from "./programmers/AutoBeTestGenerateProgrammer";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGenerateProcedure";
 import { IAutoBeTestGenerationWriteApplication } from "./structures/IAutoBeTestGenerationWriteApplication";
-import { getTestImportFromFunction } from "./utils/getTestImportFromFunction";
 
 export const orchestrateTestGenerateWrite = async <
   Model extends ILlmSchema.Model,
@@ -31,16 +30,9 @@ export const orchestrateTestGenerateWrite = async <
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     prepares: AutoBeTestPrepareFunction[];
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<IAutoBeTestGenerateProcedure[]> => {
-  // Track existing function names to prevent duplicates
-  const existingFunctionNames: string[] = [];
-
-  const progress: AutoBeProgressEventBase = {
-    total: props.prepares.length,
-    completed: 0,
-  };
-
   const result: Array<IAutoBeTestGenerateProcedure | null> =
     await executeCachedBatch(
       ctx,
@@ -74,18 +66,14 @@ export const orchestrateTestGenerateWrite = async <
             },
           });
           const event: AutoBeTestWriteEvent = await process(ctx, {
-            prepareFunction,
+            prepare: prepareFunction,
             artifacts,
             operation,
-            progress,
+            progress: props.progress,
             promptCacheKey,
             instruction: props.instruction,
-            existingFunctionNames,
           });
           if (event.function.type !== "generate") return null;
-
-          // Add successfully generated function name to the tracking array
-          existingFunctionNames.push(event.function.name);
 
           ctx.dispatch(event);
           return {
@@ -107,88 +95,40 @@ export const orchestrateTestGenerateWrite = async <
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    prepareFunction: AutoBeTestPrepareFunction;
+    prepare: AutoBeTestPrepareFunction;
     artifacts: IAutoBeTestArtifacts;
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
-    existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const {
-    prepareFunction,
-    artifacts,
-    operation,
-    progress,
-    promptCacheKey,
-    existingFunctionNames,
-  } = props;
-
   const pointer: IPointer<IAutoBeTestGenerationWriteApplication.IProps | null> =
     {
       value: null,
     };
-
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     controller: createController({
       model: ctx.model,
-      existingFunctionNames,
       build: (next) => {
         pointer.value = next;
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
-    ...transformTestGenerationWriteHistory(
-      props.instruction,
-      prepareFunction,
-      operation,
-      artifacts,
-    ),
+    promptCacheKey: props.promptCacheKey,
+    ...transformTestGenerateWriteHistory({
+      instruction: props.instruction,
+      prepare: props.prepare,
+      operation: props.operation,
+      artifacts: props.artifacts,
+    }),
   });
 
   if (pointer.value === null) {
-    ++progress.completed;
+    ++props.progress.completed;
     throw new Error("Failed to create generation function.");
   }
-
-  // Generate prepare function import statement
-  const importStatement: string = getTestImportFromFunction({
-    target: {
-      type: "generate",
-      operation,
-      prepare: prepareFunction,
-      artifacts,
-      function: {
-        type: "generate",
-        endpoint: {
-          method: operation.method,
-          path: operation.path,
-        },
-        actor: operation.authorizationActor,
-        location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
-        name: pointer.value.functionName,
-        content: pointer.value.revise.final ?? pointer.value.draft,
-      },
-    },
-  });
-
-  if (pointer.value.revise.final)
-    pointer.value.revise.final = await completeTestCode(
-      ctx,
-      artifacts,
-      pointer.value.revise.final,
-      importStatement,
-    );
-  pointer.value.draft = await completeTestCode(
-    ctx,
-    artifacts,
-    pointer.value.draft,
-    importStatement,
-  );
-
   return {
     type: "testWrite",
     id: v7(),
@@ -196,25 +136,29 @@ async function process<Model extends ILlmSchema.Model>(
     function: {
       type: "generate",
       endpoint: {
-        method: operation.method,
-        path: operation.path,
+        method: props.operation.method,
+        path: props.operation.path,
       },
-      actor: operation.authorizationActor,
+      actor: props.operation.authorizationActor,
       location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
       name: pointer.value.functionName,
-      content: pointer.value.revise.final ?? pointer.value.draft,
+      content: await AutoBeTestGenerateProgrammer.replaceImportStatements({
+        compiler: await ctx.compiler(),
+        artifacts: props.artifacts,
+        prepare: props.prepare,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+      }),
     },
     metric,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().test?.step ?? 0,
   } satisfies AutoBeTestWriteEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  existingFunctionNames: string[];
   build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -230,27 +174,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       revise: result.data.revise,
       path: "$input",
     });
-
-    if (result.data.functionName.startsWith("generate_") === false) {
-      errors.push({
-        path: "$input.functionName",
-        expected: "string (starting with 'generate_')",
-        value: result.data.functionName,
-        description:
-          "The function name must have format of 'generate_random_{resource}'.",
-      });
-    }
-
-    // Check for duplicate function names
-    if (props.existingFunctionNames.includes(result.data.functionName)) {
-      errors.push({
-        path: "$input.functionName",
-        expected: "unique function name",
-        value: result.data.functionName,
-        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
-      });
-    }
-
     return errors.length
       ? {
           success: false,

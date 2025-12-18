@@ -8,7 +8,7 @@ import { transformPreviousAndLatestCorrectHistory } from "../../common/histories
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 import { transformTestAuthorizeWriteHistory } from "./transformTestAuthorizeWriteHistory";
-import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
+import { transformTestGenerateWriteHistory } from "./transformTestGenerationWriteHistory";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 import { transformTestPrepareWriteHistory } from "./transformTestPrepareWriteHistory";
 
@@ -60,12 +60,12 @@ export const transformTestCorrectOverallHistory = async <
           artifacts: props.target.artifacts,
         });
       case "generate":
-        return transformTestGenerationWriteHistory(
-          props.instruction,
-          props.target.prepare,
-          props.target.operation,
-          props.target.artifacts,
-        );
+        return transformTestGenerateWriteHistory({
+          instruction: props.instruction,
+          prepare: props.target.prepare,
+          operation: props.target.operation,
+          artifacts: props.target.artifacts,
+        });
       case "prepare":
         return await transformTestPrepareWriteHistory(ctx, {
           typeName: props.target.typeName,
