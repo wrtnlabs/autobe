@@ -74,8 +74,13 @@ export namespace ArchiveLogger {
       content.push(
         ...printCompiled(event.result, Object.keys(event.files).length),
       );
+    else if (event.type === "testWrite")
+      content.push(`  - function: ${event.function.type}`);
     else if (event.type === "testCorrect")
-      content.push(`  - kind: ${event.kind}`);
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - function: ${event.function.type}`,
+      );
     else if (event.type === "interfaceComplement")
       content.push(
         `  - missed: ${event.missed.join(", ")}`,
