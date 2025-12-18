@@ -34,26 +34,53 @@ export async function transformTestPrepareWriteHistory<
         type: "assistantMessage",
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
+          Here is the list of input material composition.
+
+          Generate a resource preparation function based on the following information.
+
+          ## Instructions
+
+          The following instructions were extracted from the user's requirements
+          and conversations. These instructions may contain specific guidance about
+          how generation functions should be implemented, including authentication
+          patterns, error handling approaches, and data transformation strategies.
+
+          Follow these instructions when implementing the generation function.
+          Carefully distinguish between:
+          
+          - Suggestions or recommendations (consider these as guidance)
+          - Direct specifications or explicit commands (these must be followed exactly)
+
+          
+          ${props.instruction}
+
+          ## Function Name
+
           You have to make ${AutoBeTestPrepareProgrammer.getFunctionName(props.typeName)} function.
 
-          At first, here is the list of DTO types relavant with the ${props.typeName} type:
+          ## DTO Types
+
+          Here is the list of DTO types relavant with the ${props.typeName} type:
 
           \`\`\`json
           ${JSON.stringify(dto)}
           \`\`\`
 
-          At second, when you composing ${props.typeName} typed data, 
-          you have fill those properties:
+          ### Properties
+
+          When you composing ${props.typeName} typed data, you have check those properties:
           
           ${Object.keys(props.schema.properties)
             .map((s) => `- ${s}`)
             .join("\n")}
 
-          At last, here is the template code you have to implement.
-          Reference the template code, and fill the proper code to 
-          each property.
+          ## Template Code
 
-          ${await AutoBeTestPrepareProgrammer.writeTemplateCode(props)}
+          Here is the template code you have to implement.
+          
+          Reference the template code, and fill the proper code to each property.
+
+          ${AutoBeTestPrepareProgrammer.writeTemplateCode(props)}
         `,
       },
     ],

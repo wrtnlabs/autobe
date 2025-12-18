@@ -45,6 +45,7 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
       instruction: props.instruction,
       document: props.document,
       prepares: props.prepares,
+      progress: props.writeProgress,
     });
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {
@@ -52,6 +53,7 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
       replaceImportStatements,
     },
     procedures,
+    progress: props.correctProgress,
   });
   procedures = await orchestrateTestCorrectRequest(ctx, {
     programmer: {
@@ -67,8 +69,9 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
       compile,
       replaceImportStatements,
     },
-    procedures,
     instruction: props.instruction,
+    pgoress: props.correctProgress,
+    procedures,
   });
   return procedures.map((p) => p.function);
 }

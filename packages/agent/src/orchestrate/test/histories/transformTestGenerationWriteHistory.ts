@@ -9,6 +9,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBeTestGenerateProgrammer } from "../programmers/AutoBeTestGenerateProgrammer";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
 export function transformTestGenerateWriteHistory(props: {
@@ -43,6 +44,7 @@ export function transformTestGenerateWriteHistory(props: {
 
           Follow these instructions when implementing the generation function.
           Carefully distinguish between:
+
           - Suggestions or recommendations (consider these as guidance)
           - Direct specifications or explicit commands (these must be followed exactly)
 
@@ -92,6 +94,13 @@ export function transformTestGenerateWriteHistory(props: {
           ${JSON.stringify(props.artifacts.e2e)}
           \`\`\`
 
+          ## Template Code
+
+          Here is the template code you have to implement.
+
+          Reference the template code, and fill the proper code to each section.
+
+          ${AutoBeTestGenerateProgrammer.writeTemplateCode(props)}
         `,
       },
     ],

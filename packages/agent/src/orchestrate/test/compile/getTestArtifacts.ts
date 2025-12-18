@@ -8,7 +8,6 @@ import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
-import { getTestTemplateCode } from "./getTestTemplateCode";
 
 export async function getTestArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -80,7 +79,6 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
     sdk: filter("src/api", "src/api/structures"),
     dto: filter("src/api/structures"),
     e2e: filter("test/features"),
-    template: getTestTemplateCode(scenario, document),
   };
 }
 

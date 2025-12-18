@@ -18,6 +18,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
+import { AutoBeTestOperationProgrammer } from "../programmers/AutoBeTestOperationProgrammer";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
 export async function transformTestOperationWriteHistory<
@@ -205,7 +206,7 @@ export async function transformTestOperationWriteHistory<
           make your implementation code in the import scope.
 
           \`\`\`typescript
-          ${props.artifacts.template}
+          ${AutoBeTestOperationProgrammer.writeTemplateCode(props.scenario)}
           \`\`\`
         `,
       },
