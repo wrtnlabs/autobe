@@ -11,7 +11,7 @@ export interface IAutoBeTestOperationProcedure {
   type: "operation";
   artifacts: IAutoBeTestScenarioArtifacts;
   function: AutoBeTestOperationFunction;
-  prepareFunctions: AutoBeTestPrepareFunction[];
-  generateFunctions: AutoBeTestGenerateFunction[];
-  authorizeFunctions: AutoBeTestAuthorizeFunction[];
+  prepares: AutoBeTestPrepareFunction[];
+  generates: AutoBeTestGenerateFunction[];
+  authorizes: AutoBeTestAuthorizeFunction[];
 }

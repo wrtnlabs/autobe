@@ -51,8 +51,8 @@ export const transformTestCorrectOverallHistory = async <
             functionName: props.target.function.name,
           },
           artifacts: props.target.artifacts,
-          authorizationFunctions: props.target.authorizeFunctions,
-          generationFunctions: props.target.generateFunctions,
+          authorizationFunctions: props.target.authorizes,
+          generationFunctions: props.target.generates,
         });
       case "authorize":
         return transformTestAuthorizationWriteHistory({
@@ -62,7 +62,7 @@ export const transformTestCorrectOverallHistory = async <
       case "generate":
         return transformTestGenerationWriteHistory(
           props.instruction,
-          props.target.prepareFunction,
+          props.target.prepare,
           props.target.operation,
           props.target.artifacts,
         );

@@ -18,7 +18,7 @@ interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure[];
   }): Promise<IAutoBeOrchestrateHistory>;
-  replaceImportStatements(content: string): Promise<string>;
+  replaceImportStatements(procedure: Procedure): Promise<string>;
   compile(
     props: Procedure,
   ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
@@ -64,9 +64,13 @@ export async function orchestrateTestCorrectCasting<
                   created_at: new Date().toISOString(),
                   function: {
                     ...procedure.function,
-                    content: await props.programmer.replaceImportStatements(
-                      next.final ?? next.draft,
-                    ),
+                    content: await props.programmer.replaceImportStatements({
+                      ...procedure,
+                      function: {
+                        ...procedure.function,
+                        content: next.final ?? next.draft,
+                      },
+                    }),
                   },
                   result: next.failure,
                   tokenUsage: next.tokenUsage,

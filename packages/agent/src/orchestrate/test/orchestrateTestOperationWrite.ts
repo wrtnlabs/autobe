@@ -98,9 +98,9 @@ export async function orchestrateTestOperationWrite<
             type: "operation",
             artifacts,
             function: event.function,
-            authorizeFunctions: authorizationFunctions,
-            generateFunctions: generationFunctions,
-            prepareFunctions,
+            authorizes: authorizationFunctions,
+            generates: generationFunctions,
+            prepares: prepareFunctions,
           } satisfies IAutoBeTestOperationProcedure;
         } catch {
           return null;
@@ -167,9 +167,9 @@ async function process<Model extends ILlmSchema.Model>(
       type: "operation",
       artifacts: props.artifacts,
       function: operationFunction,
-      authorizeFunctions: props.authorizes,
-      generateFunctions: props.generates,
-      prepareFunctions: props.prepares,
+      authorizes: props.authorizes,
+      generates: props.generates,
+      prepares: props.prepares,
     },
   });
 

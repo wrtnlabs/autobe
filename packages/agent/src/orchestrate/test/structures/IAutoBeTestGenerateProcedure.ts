@@ -10,6 +10,6 @@ export interface IAutoBeTestGenerateProcedure {
   type: "generate";
   operation: AutoBeOpenApi.IOperation;
   artifacts: IAutoBeTestArtifacts;
-  prepareFunction: AutoBeTestPrepareFunction;
+  prepare: AutoBeTestPrepareFunction;
   function: AutoBeTestGenerateFunction;
 }

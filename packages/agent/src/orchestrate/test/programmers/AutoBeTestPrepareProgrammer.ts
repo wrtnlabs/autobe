@@ -1,6 +1,8 @@
 import {
   AutoBeOpenApi,
+  AutoBeTestPrepareFunction,
   AutoBeTestPrepareMapping,
+  AutoBeTestValidateEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -12,8 +14,13 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { AutoBeRealizeCollectorProgrammer } from "../../realize/programmers/AutoBeRealizeCollectorProgrammer";
+import { IAutoBeTestPrepareProcedure } from "../structures/IAutoBeTestPrepareProcedure";
+import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
 
 export namespace AutoBeTestPrepareProgrammer {
+  /* ----------------------------------------------------------------
+    GETTERS
+  ---------------------------------------------------------------- */
   export function is(key: string, value: AutoBeOpenApi.IJsonSchema): boolean {
     return (
       key.endsWith(".ICreate") && OpenApiTypeChecker.isObject(value) === true
@@ -33,6 +40,9 @@ export namespace AutoBeTestPrepareProgrammer {
     return `prepare_random_${snake}`;
   }
 
+  /* ----------------------------------------------------------------
+    WRITERS
+  ---------------------------------------------------------------- */
   export function writeTemplateCode(props: {
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchema.IObject;
@@ -58,17 +68,55 @@ ${Object.keys(props.schema.properties).map(
     return AutoBeRealizeCollectorProgrammer.writeStructures(ctx, typeName);
   }
 
-  export async function replaceImportStatements<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
-    props: {
-      typeName: string;
-      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-      code: string;
-    },
-  ): Promise<string> {
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    let code: string = props.code;
-    code = await compiler.typescript.beautify(code);
+  /* ----------------------------------------------------------------
+    COMPILERS
+  ---------------------------------------------------------------- */
+  export async function compile(props: {
+    compiler: IAutoBeCompiler;
+    document: AutoBeOpenApi.IDocument;
+    procedure: IAutoBeTestPrepareProcedure;
+    step: number;
+  }): Promise<AutoBeTestValidateEvent<AutoBeTestPrepareFunction>> {
+    const operation: AutoBeOpenApi.IOperation | undefined =
+      props.document.operations.find(
+        (o) => o.requestBody?.typeName === props.procedure.typeName,
+      );
+    const components: AutoBeOpenApi.IComponents = {
+      authorizations: [],
+      schemas: {},
+    };
+    OpenApiTypeChecker.visit({
+      components: props.document.components,
+      schema: { $ref: `#/components/schemas/${props.procedure.typeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = props.document.components.schemas[key];
+        }
+      },
+    });
+    return await AutoBeTestFunctionProgrammer.compile({
+      compiler: props.compiler,
+      step: props.step,
+      document: {
+        operations: operation ? [operation] : [],
+        components,
+      },
+      function: props.procedure.function,
+      files: {
+        [props.procedure.function.location]: props.procedure.function.content,
+      },
+    });
+  }
+
+  export async function replaceImportStatements(props: {
+    compiler: IAutoBeCompiler;
+    typeName: string;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    content: string;
+  }): Promise<string> {
+    let code: string = props.content;
+    code = await props.compiler.typescript.beautify(code);
     code = code
       .split("\r\n")
       .join("\n")
@@ -78,7 +126,7 @@ ${Object.keys(props.schema.properties).map(
 
     const imports: string[] = writeImportStatements(props);
     code = [...imports, code].join("\n");
-    return await compiler.typescript.beautify(code);
+    return await props.compiler.typescript.beautify(code);
   }
 
   function writeImportStatements(props: {
@@ -101,7 +149,6 @@ ${Object.keys(props.schema.properties).map(
 
     const imports: string[] = [
       `import { ArrayUtil, RandomGenerator } from "@nestia/e2e";`,
-      `import { v4 } from "uuid";`,
       "",
       `import { DeepPartial } from "@ORGANIZATION/PROJECT-api/lib/typings/DeepPartial";`,
       `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
@@ -113,6 +160,9 @@ ${Object.keys(props.schema.properties).map(
     return imports;
   }
 
+  /* ----------------------------------------------------------------
+    VALIDATORS
+  ---------------------------------------------------------------- */
   export function validate(props: {
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchema.IObject;

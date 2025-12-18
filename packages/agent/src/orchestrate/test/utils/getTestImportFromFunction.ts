@@ -5,14 +5,14 @@ export const getTestImportFromFunction = (props: {
 }): string => {
   switch (props.target.type) {
     case "generate":
-      return `import { ${props.target.prepareFunction.name} } from "test/features/utils/prepare/${props.target.prepareFunction.name}";`;
+      return `import { ${props.target.prepare.name} } from "test/features/utils/prepare/${props.target.prepare.name}";`;
     case "operation":
       const importStatements = [
-        ...props.target.generateFunctions.map(
+        ...props.target.generates.map(
           (f) =>
             `import { ${f.name} } from "test/features/utils/generation/${f.name}";`,
         ),
-        ...props.target.authorizeFunctions.map(
+        ...props.target.authorizes.map(
           (f) =>
             `import { ${f.name} } from "test/features/utils/authorize/${f.name}";`,
         ),

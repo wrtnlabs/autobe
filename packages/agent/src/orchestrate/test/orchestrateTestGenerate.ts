@@ -11,6 +11,7 @@ import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrect
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
 import { orchestrateTestGenerateWrite } from "./orchestrateTestGenerateWrite";
+import { AutoBeTestGenerateProgrammer } from "./programmers/AutoBeTestGenerateProgrammer";
 import { IAutoBeTestGenerateProcedure } from "./structures/IAutoBeTestGenerateProcedure";
 
 export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
@@ -23,6 +24,22 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
     correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeTestGenerateFunction[]> {
+  const compile = async (procedure: IAutoBeTestGenerateProcedure) =>
+    AutoBeTestGenerateProgrammer.compile({
+      compiler: await ctx.compiler(),
+      step: ctx.state().analyze?.step ?? 0,
+      procedure,
+    });
+  const replaceImportStatements = async (
+    procedure: IAutoBeTestGenerateProcedure,
+  ) =>
+    AutoBeTestGenerateProgrammer.replaceImportStatements({
+      compiler: await ctx.compiler(),
+      artifacts: procedure.artifacts,
+      prepare: procedure.prepare,
+      content: procedure.function.content,
+    });
+
   let procedures: IAutoBeTestGenerateProcedure[] =
     await orchestrateTestGenerateWrite(ctx, {
       instruction: props.instruction,
@@ -30,17 +47,26 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
       prepares: props.prepares,
     });
   procedures = await orchestrateTestCorrectCasting(ctx, {
-    programmer: {},
+    programmer: {
+      compile,
+      replaceImportStatements,
+    },
     procedures,
   });
   procedures = await orchestrateTestCorrectRequest(ctx, {
-    programmer: {},
+    programmer: {
+      compile,
+      replaceImportStatements,
+    },
     instruction: props.instruction,
     progress: props.correctProgress,
     procedures,
   });
   procedures = await orchestrateTestCorrectOverall(ctx, {
-    programmer: {},
+    programmer: {
+      compile,
+      replaceImportStatements,
+    },
     procedures,
     instruction: props.instruction,
   });

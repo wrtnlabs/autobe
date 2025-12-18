@@ -27,7 +27,7 @@ interface IProgrammer<
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure<Procedure>[];
   }): Promise<IAutoBeOrchestrateHistory>;
-  replaceImportStatements(content: string): Promise<string>;
+  replaceImportStatements(procedure: Procedure): Promise<string>;
   compile(
     procedure: Procedure,
   ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
@@ -148,9 +148,13 @@ async function correct<
     ...props.procedure,
     function: {
       ...props.procedure.function,
-      content: await props.programmer.replaceImportStatements(
-        pointer.value.revise.final ?? pointer.value.draft,
-      ),
+      content: await props.programmer.replaceImportStatements({
+        ...props.procedure,
+        function: {
+          ...props.procedure.function,
+          content: pointer.value.revise.final ?? pointer.value.draft,
+        },
+      }),
     },
   };
   const newValidate: AutoBeTestValidateEvent<Procedure["function"]> =

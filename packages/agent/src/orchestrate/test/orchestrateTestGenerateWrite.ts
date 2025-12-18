@@ -90,7 +90,7 @@ export const orchestrateTestGenerateWrite = async <
           ctx.dispatch(event);
           return {
             type: "generate",
-            prepareFunction,
+            prepare: prepareFunction,
             artifacts,
             function: event.function,
             operation,
@@ -159,7 +159,7 @@ async function process<Model extends ILlmSchema.Model>(
     target: {
       type: "generate",
       operation,
-      prepareFunction,
+      prepare: prepareFunction,
       artifacts,
       function: {
         type: "generate",
