@@ -5,6 +5,8 @@ import {
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
@@ -35,8 +37,68 @@ export namespace AutoBeTestGenerateProgrammer {
     ).length;
   }
 
+  export function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
+    const accessor: string[] = operation.accessor!.map(NamingConvention.snake);
+    return `generate_random_${accessor.join("_")}`;
+  }
+
   /* ----------------------------------------------------------------
     WRITERS
+  ---------------------------------------------------------------- */
+  export function writeTemplateCode(props: {
+    operation: AutoBeOpenApi.IOperation;
+    prepare: AutoBeTestPrepareFunction;
+  }): string {
+    const functionName: string = getFunctionName(props.operation);
+    const input: string = props.operation.requestBody?.typeName ?? "unknown";
+    const output: string = props.operation.responseBody?.typeName ?? "void";
+    return StringUtil.trim`
+      export async function ${functionName}(
+        connection: api.IConnection,
+        props: {
+          body?: DeepPartial<${input}> | undefined;
+${writeParameterDeclarations(props.operation)}
+        }
+      ): Promise<${output}> {
+        const prepared: ${input} = ${props.prepare.name}(
+          props.body
+        );
+        return await api.functional.${props.operation.accessor!.join(".")}(
+          connection,
+          {
+            body,
+${writeParameterArguments(props.operation)}
+        );
+      }
+    `;
+  }
+
+  function writeParameterDeclarations(
+    operation: AutoBeOpenApi.IOperation,
+  ): string {
+    if (operation.parameters.length === 0) return "";
+    return StringUtil.trim`
+      params: {
+${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
+      }
+    `
+      .split("\n")
+      .filter((line) => line.length !== 0)
+      .map((line) => `    ${line.trim()}`)
+      .join("\n");
+  }
+
+  function writeParameterArguments(
+    operation: AutoBeOpenApi.IOperation,
+  ): string {
+    if (operation.parameters.length === 0) return "";
+    return operation.parameters
+      .map((p) => `    ${p.name}: props.params.${p.name},`)
+      .join("\n");
+  }
+
+  /* ----------------------------------------------------------------
+    COMPILERS
   ---------------------------------------------------------------- */
   export function compile(props: {
     compiler: IAutoBeCompiler;
