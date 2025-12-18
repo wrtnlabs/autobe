@@ -60,7 +60,7 @@ export async function transformTestPrepareWriteHistory<
 
           ## DTO Types
 
-          Here is the list of DTO types relavant with the ${props.typeName} type:
+          Here is the list of DTO types relevant with the ${props.typeName} type:
 
           \`\`\`json
           ${JSON.stringify(dto)}

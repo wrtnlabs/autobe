@@ -1,7 +1,5 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
-import { AutoBeTestFile, AutoBeTestFunction } from "../histories";
-import { AutoBeFunctionCallingMetric } from "../histories/contents/AutoBeFunctionCallingMetric";
-import { IAutoBeTokenUsageJson } from "../json";
+import { AutoBeTestFunction } from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -21,7 +19,9 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
+export interface AutoBeTestCorrectEvent
+  extends AutoBeEventBase<"testCorrect">,
+    AutoBeAggregateEventBase {
   kind: "casting" | "overall" | "request";
 
   /**
@@ -61,42 +61,5 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
    * activities and the underlying requirements, ensuring that test improvements
    * remain relevant to the current project scope and validation objectives.
    */
-  step: number;
-
-  /**
-   * Token usage metrics for the correction operation.
-   *
-   * Tracks the computational resources consumed during the test correction
-   * process, including input and output tokens used by the LLM.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Performance metric for the correction operation.
-   *
-   * Records timing and efficiency metrics for tracking the correction process
-   * performance and optimization opportunities.
-   */
-  metric: AutoBeFunctionCallingMetric;
-}
-
-/**
- * @deprecated Use the new AutoBeTestCorrectEvent structure above
- *
- *   Legacy event structure that includes aggregated correction details. This
- *   structure is being phased out in favor of a simpler event model where
- *   correction details are tracked within each function type.
- */
-export interface AutoBeTestCorrectEventLegacy
-  extends AutoBeEventBase<"testCorrect">,
-    AutoBeAggregateEventBase {
-  kind: "casting" | "overall" | "request";
-  functionType: "authorization" | "generation" | "prepare" | "operation";
-  file: AutoBeTestFile;
-  result: IAutoBeTypeScriptCompileResult.IFailure;
-  think: string;
-  draft: string;
-  review?: string;
-  final?: string;
   step: number;
 }
