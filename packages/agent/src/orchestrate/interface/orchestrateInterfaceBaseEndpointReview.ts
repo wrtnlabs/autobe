@@ -195,14 +195,15 @@ function createController<Model extends ILlmSchema.Model>(props: {
         shouldExist: boolean,
       ): IValidation.IError | null => {
         const exists = props.endpointSet.has({ endpoint, description: "" });
-        if (shouldExist && !exists)
+        if (shouldExist === exists) return null;
+        if (!exists)
           return {
             path,
             expected: "existing endpoint",
             value: endpoint,
             description: `Endpoint ${endpoint.method.toUpperCase()} ${endpoint.path} does not exist.`,
           };
-        if (!shouldExist && exists)
+        else if (exists)
           return {
             path,
             expected: "non-existing endpoint",
