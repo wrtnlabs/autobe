@@ -30,13 +30,9 @@ export async function orchestrateInterfaceActionEndpoint<
     groups: AutoBeInterfaceGroup[];
     authorizations: AutoBeOpenApi.IOperation[];
     excluded: AutoBeOpenApi.IEndpoint[];
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: props.groups.length,
-  };
-
   const endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] = (
     await executeCachedBatch(
       ctx,
@@ -44,7 +40,7 @@ export async function orchestrateInterfaceActionEndpoint<
         const event: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] =
           await process(ctx, {
             group,
-            progress,
+            progress: props.progress,
             promptCacheKey,
             instruction: props.instruction,
             authorizations: props.authorizations,

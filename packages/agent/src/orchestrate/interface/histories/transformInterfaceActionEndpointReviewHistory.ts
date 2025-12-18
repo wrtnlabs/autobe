@@ -40,13 +40,13 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
         ## Action Endpoints for Review
 
         \`\`\`json
-        ${JSON.stringify(props.endpoints, null, 2)}
+        ${JSON.stringify(props.endpoints)}
         \`\`\`
 
         ## Base CRUD Endpoints (Already Exist)
 
         \`\`\`json
-        ${JSON.stringify(props.baseEndpoints, null, 2)}
+        ${JSON.stringify(props.baseEndpoints)}
         \`\`\`
 
         ## Authorization Endpoints (Already Exist)

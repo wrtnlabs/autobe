@@ -83,12 +83,17 @@ export const orchestrateInterface =
       .map((authorization) => authorization.operations)
       .flat();
 
+    const endpointProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: init.groups.length * 2, // BASE x ACTION
+    };
     // BASE ENDPOINTS
     const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
       await orchestrateInterfaceBaseEndpoint(ctx, {
         instruction: props.instruction,
         groups: init.groups,
         authorizations: authOperations,
+        progress: endpointProgress,
       });
     // ACTION ENDPOINTS
     const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
@@ -97,6 +102,7 @@ export const orchestrateInterface =
         groups: init.groups,
         authorizations: authOperations,
         excluded: baseEndpoints,
+        progress: endpointProgress,
       });
     const endpoints: AutoBeOpenApi.IEndpoint[] = [
       ...baseEndpoints,
