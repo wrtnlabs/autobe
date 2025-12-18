@@ -76,8 +76,8 @@ export const orchestrateTest =
       throw new Error("No scenarios generated. Please check the logs.");
 
     const writeProgress: AutoBeProgressEventBase = {
-      total: 0,
-      completed:
+      completed: 0,
+      total:
         AutoBeTestAuthorizeProgrammer.size(document) +
         AutoBeTestPrepareProgrammer.size(document) +
         AutoBeTestGenerateProgrammer.size(document) +
