@@ -128,7 +128,7 @@ async function process<Model extends ILlmSchema.Model>(
         id: v7(),
         type: SOURCE,
         kind: "base",
-        endpoints: props.endpointSet.toJSON().map((e) => e.endpoint),
+        endpoints: finalEndpoints,
         content: finalEndpoints,
         review: props.pointer.value.review,
         created_at: start.toISOString(),
