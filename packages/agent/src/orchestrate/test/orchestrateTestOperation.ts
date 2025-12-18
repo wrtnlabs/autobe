@@ -12,7 +12,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
-import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
+// import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
 import { orchestrateTestOperationWrite } from "./orchestrateTestOperationWrite";
 import { AutoBeTestOperationProgrammer } from "./programmers/AutoBeTestOperationProgrammer";
 import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
@@ -66,15 +66,15 @@ export async function orchestrateTestOperation<Model extends ILlmSchema.Model>(
     procedures,
     progress: props.writeProgress,
   });
-  procedures = await orchestrateTestCorrectRequest(ctx, {
-    programmer: {
-      compile,
-      replaceImportStatements,
-    },
-    instruction: props.instruction,
-    progress: props.correctProgress,
-    procedures,
-  });
+  // procedures = await orchestrateTestCorrectRequest(ctx, {
+  //   programmer: {
+  //     compile,
+  //     replaceImportStatements,
+  //   },
+  //   instruction: props.instruction,
+  //   progress: props.correctProgress,
+  //   procedures,
+  // });
   procedures = await orchestrateTestCorrectOverall(ctx, {
     programmer: {
       compile,

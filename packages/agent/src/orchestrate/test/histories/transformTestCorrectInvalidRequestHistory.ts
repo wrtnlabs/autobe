@@ -1,59 +1,62 @@
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
-import { v7 } from "uuid";
+// import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+// import { StringUtil } from "@autobe/utils";
+// import { v7 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
+// import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+// import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+// import { IAutoBeTestAuthorizeProcedure } from "../structures/IAutoBeTestAuthorizeWriteResult";
+// import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
+// import { IAutoBeTestOperationProcedure } from "../structures/IAutoBeTestOperationProcedure";
 
-export const transformTestCorrectInvalidRequestHistory = (
-  write: IAutoBeTestProcedure,
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-): IAutoBeOrchestrateHistory => {
-  const systemPrompt: string = (() => {
-    switch (write.function.type) {
-      case "operation":
-        return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_INVALID_REQUEST;
-      case "prepare":
-        return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_INVALID_REQUEST;
-      case "generate":
-        return AutoBeSystemPromptConstant.TEST_GENERATE_CORRECT_INVALID_REQUEST;
-      case "authorize":
-        return AutoBeSystemPromptConstant.TEST_AUTHORIZE_CORRECT_INVALID_REQUEST;
-      default:
-        write.function satisfies never;
-        throw new Error(
-          `Unreachable: Cannot create correct invalid request system prompt of function kind`,
-        );
-    }
-  })();
-  return {
-    histories: [
-      {
-        id: v7(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: systemPrompt,
-      },
-      {
-        id: v7(),
-        created_at: new Date().toISOString(),
-        type: "assistantMessage",
-        text: StringUtil.trim`
-        ## TypeScript Code
+// export const transformTestCorrectInvalidRequestHistory = (
+//   write:
+//     | IAutoBeTestAuthorizeProcedure
+//     | IAutoBeTestGenerateProcedure
+//     | IAutoBeTestOperationProcedure,
+//   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+// ): IAutoBeOrchestrateHistory => {
+//   const systemPrompt: string = (() => {
+//     switch (write.function.type) {
+//       case "operation":
+//         return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_REQUEST;
+//       case "generate":
+//         return AutoBeSystemPromptConstant.TEST_GENERATE_CORRECT_REQUEST;
+//       case "authorize":
+//         return AutoBeSystemPromptConstant.TEST_AUTHORIZE_CORRECT_REQUEST;
+//       default:
+//         write.function satisfies never;
+//         throw new Error(
+//           `Unreachable: Cannot create correct invalid request system prompt of function kind`,
+//         );
+//     }
+//   })();
+//   return {
+//     histories: [
+//       {
+//         id: v7(),
+//         created_at: new Date().toISOString(),
+//         type: "systemMessage",
+//         text: systemPrompt,
+//       },
+//       {
+//         id: v7(),
+//         created_at: new Date().toISOString(),
+//         type: "assistantMessage",
+//         text: StringUtil.trim`
+//         ## TypeScript Code
 
-        \`\`\`typescript
-        ${write.function.content}
-        \`\`\`
+//         \`\`\`typescript
+//         ${write.function.content}
+//         \`\`\`
 
-        ## Compile Errors
+//         ## Compile Errors
 
-        \`\`\`json
-        ${JSON.stringify(diagnostics)}
-        \`\`\`
-      `,
-      },
-    ],
-    userMessage: "Fix the compile errors in the test code please",
-  };
-};
+//         \`\`\`json
+//         ${JSON.stringify(diagnostics)}
+//         \`\`\`
+//       `,
+//       },
+//     ],
+//     userMessage: "Fix the compile errors in the test code please",
+//   };
+// };
