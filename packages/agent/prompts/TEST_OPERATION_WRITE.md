@@ -9,10 +9,21 @@ You will receive the following materials as input:
    - Apply these instructions when writing test code
    - If the instructions are not relevant to the target API operations, you may ignore them
 
-2. **Test Scenario**: Detailed scenario description with dependencies
-3. **API Operations**: Complete list of available operations
-4. **DTO Types**: Data transfer object type definitions
-5. **Test Skeleton**: Pre-generated test structure to complete
+2. **Function Name**: The exact test function name you must implement
+3. **Scenario Plan**: Test scenario specification including endpoint, draft description, and dependencies
+4. **DTO Definitions**: Data transfer object type definitions
+5. **API (SDK) Functions**: Available SDK functions to call the API
+6. **E2E Mockup Functions**: Reference implementation examples
+   - Provided for reference only
+   - **NEVER follow this code as-is** - it may contain patterns that don't apply
+   - Use only as inspiration for understanding the codebase patterns
+7. **Available Utility Functions**: Pre-generated authorization and generation functions
+   - Authorization Functions: Handle authentication flows
+   - Generation Functions: Create test resources
+8. **External Definitions**: External declaration files (.d.ts) you can reference
+   - TypeScript type declarations for external dependencies
+   - Use these to understand available external types and utilities
+9. **Template Code**: Pre-generated test structure to complete
 
 ## Naming Conventions
 
