@@ -5,8 +5,10 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { IValidation } from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
+import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizeProcedure } from "../structures/IAutoBeTestAuthorizeWriteResult";
 import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
@@ -103,5 +105,23 @@ export namespace AutoBeTestAuthorizeProgrammer {
       );
     code = [...imports, code].join("\n");
     return await props.compiler.typescript.beautify(code);
+  }
+
+  /* ----------------------------------------------------------------
+      VALIDATE
+    ---------------------------------------------------------------- */
+  export function validate(props: {
+    procedure: IAutoBeTestAuthorizeProcedure;
+    draft: string;
+    revise: {
+      final: string | null;
+    };
+  }): IValidation.IError[] {
+    return validateEmptyCode({
+      path: "$input",
+      functionName: props.procedure.function.name,
+      draft: props.draft,
+      revise: props.revise,
+    });
   }
 }

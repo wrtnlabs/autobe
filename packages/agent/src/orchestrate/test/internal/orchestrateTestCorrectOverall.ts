@@ -7,26 +7,22 @@ import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
-import { IAutoBeTestCorrectApplication } from "../structures/IAutoBeTestCorrectApplication";
+import { transformTestCorrectOverallHistory } from "../histories/transformTestCorrectOverallHistory";
+import { IAutoBeTestCorrectOverallApplication } from "../structures/IAutoBeTestCorrectOverallApplication";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
 interface IProgrammer<
   Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 > {
   controller(next: {
     model: Model;
     procedure: Procedure;
     build: (next: Complete) => void;
   }): ILlmController<Model>;
-  histories(props: {
-    procedure: Procedure;
-    failures: IAutoBeTestFunctionFailure<Procedure>[];
-  }): Promise<IAutoBeOrchestrateHistory>;
   replaceImportStatements(procedure: Procedure): Promise<string>;
   compile(
     procedure: Procedure,
@@ -36,7 +32,7 @@ interface IProgrammer<
 export async function orchestrateTestCorrectOverall<
   Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
   ctx: AutoBeContext<Model>,
   props: {
@@ -78,7 +74,7 @@ export async function orchestrateTestCorrectOverall<
 async function predicate<
   Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
   ctx: AutoBeContext<Model>,
   props: {
@@ -101,7 +97,7 @@ async function predicate<
 async function correct<
   Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
   ctx: AutoBeContext<Model>,
   props: {
@@ -131,7 +127,8 @@ async function correct<
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...(await props.programmer.histories({
+    ...(await transformTestCorrectOverallHistory(ctx, {
+      instruction: props.instruction,
       procedure: props.procedure,
       failures: [
         ...props.failures,

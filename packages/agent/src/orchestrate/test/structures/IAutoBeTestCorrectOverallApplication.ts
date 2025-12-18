@@ -1,14 +1,4 @@
-// import { tags } from "typia";
-
-// export interface ICheck {
-//   /** The title or description of the validation rule/check item */
-//   title: string;
-
-//   /** The validation state (true: passed/satisfied, false: failed/violated) */
-//   state: boolean;
-// }
-
-export interface IAutoBeTestCorrectApplication {
+export interface IAutoBeTestCorrectOverallApplication {
   /**
    * Main entry point for AI Function Call - analyzes compilation errors and
    * generates corrected E2E test code.
@@ -27,10 +17,10 @@ export interface IAutoBeTestCorrectApplication {
    *   analysis steps, draft implementation, review process, and final code
    *   generation
    */
-  rewrite(props: IAutoBeTestCorrectApplication.IProps): void;
+  rewrite(props: IAutoBeTestCorrectOverallApplication.IProps): void;
 }
 
-export namespace IAutoBeTestCorrectApplication {
+export namespace IAutoBeTestCorrectOverallApplication {
   export interface IProps {
     /**
      * Step 1: Deep compilation error analysis and correction strategy.

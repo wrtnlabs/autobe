@@ -8,7 +8,9 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { IValidation } from "typia";
 
+import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestOperationProcedure } from "../structures/IAutoBeTestOperationProcedure";
 import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
@@ -79,5 +81,23 @@ export namespace AutoBeTestOperationProgrammer {
     ];
     code = [...imports, code].join("\n");
     return await props.compiler.typescript.beautify(code);
+  }
+
+  /* ----------------------------------------------------------------
+    VALIDATE
+  ---------------------------------------------------------------- */
+  export function validate(props: {
+    procedure: IAutoBeTestOperationProcedure;
+    draft: string;
+    revise: {
+      final: string | null;
+    };
+  }): IValidation.IError[] {
+    return validateEmptyCode({
+      path: "$input",
+      functionName: props.procedure.function.name,
+      draft: props.draft,
+      revise: props.revise,
+    });
   }
 }

@@ -87,22 +87,6 @@ export namespace IAutoBeTestPrepareWriteApplication {
     mappings: AutoBeTestPrepareMapping[];
 
     /**
-     * Name of the prepare function.
-     *
-     * Format: `prepare_random_[entity_name]`
-     *
-     * Naming examples:
-     *
-     * - IUser.ICreate → prepare_random_user
-     * - IBbsArticle.ICreate → prepare_random_bbs_article
-     * - IShoppingSale.ICreate → prepare_random_shopping_sale
-     * - IOrder.ICreate → prepare_random_order
-     *
-     * The entity name is derived from the DTO namespace in snake_case.
-     */
-    functionName: string;
-
-    /**
      * Initial implementation of the prepare function.
      *
      * Complete implementation that strictly follows the plan's mapping table.

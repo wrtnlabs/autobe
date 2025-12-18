@@ -39,26 +39,12 @@ export namespace IAutoBeTestGenerationWriteApplication {
     think: string;
 
     /**
-     * Function name following the `generate_random_{resource}` naming pattern.
-     *
-     * The resource name MUST be extracted from the corresponding prepare
-     * function name. For example:
-     *
-     * - `prepare_random_article` → `generate_random_article`
-     * - `prepare_random_user` → `generate_random_user`
-     * - `prepare_random_bbs_article` → `generate_random_bbs_article`
-     *
-     * CRITICAL: Never use just "generate" alone. Always include the full
-     * resource name suffix matching the prepare function.
-     */
-    functionName: string;
-
-    /**
      * Step 2: Initial TypeScript generation function implementation.
      *
      * AI generates the first working version of the generation function that:
      *
-     * 1. Accepts connection, optional input parameters (using the same DeepPartial type as prepare function), and optional URL parameters
+     * 1. Accepts connection, optional input parameters (using the same DeepPartial
+     *    type as prepare function), and optional URL parameters
      * 2. Calls the prepare function to create test data
      * 3. Uses the SDK to create the actual resource via API
      * 4. Returns the created resource
@@ -103,7 +89,8 @@ export namespace IAutoBeTestGenerationWriteApplication {
      * - TypeScript compilation errors and type mismatches
      * - Correct import statements and module references
      * - Proper function signatures and parameter types
-     * - Import path format for types (must be @ORGANIZATION/PROJECT-api/lib/structures/{Namespace})
+     * - Import path format for types (must be
+     *   @ORGANIZATION/PROJECT-api/lib/structures/{Namespace})
      *
      * **Functional Correctness:**
      *

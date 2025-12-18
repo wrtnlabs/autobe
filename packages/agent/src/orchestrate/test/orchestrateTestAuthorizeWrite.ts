@@ -96,6 +96,7 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
+      operatiopn: props.operation,
       build: (next) => {
         pointer.value = next;
       },
@@ -113,6 +114,10 @@ async function process<Model extends ILlmSchema.Model>(
   }
 
   // Create the authorize function
+  const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName({
+    actor: pointer.value.actor,
+    operation: props.operation,
+  });
   const authorizationFunction: AutoBeTestAuthorizeFunction = {
     type: "authorize",
     endpoint: {
@@ -121,8 +126,8 @@ async function process<Model extends ILlmSchema.Model>(
     },
     actor: pointer.value.actor,
     authType: props.operation.authorizationType!,
-    location: `test/features/utils/authorize/${pointer.value.functionName}.ts`,
-    name: pointer.value.functionName,
+    location: `test/features/utils/authorize/${functionName}.ts`,
+    name: functionName,
     content: await AutoBeTestAuthorizeProgrammer.replaceImportStatements({
       compiler: await ctx.compiler(),
       artifacts: props.artifacts,
@@ -144,6 +149,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  operatiopn: AutoBeOpenApi.IOperation;
   build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -153,8 +159,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeTestAuthorizationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
+    const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName({
+      actor: result.data.actor,
+      operation: props.operatiopn,
+    });
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: result.data.functionName,
+      functionName,
       draft: result.data.draft,
       revise: result.data.revise,
       path: "$input",

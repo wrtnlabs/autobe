@@ -103,6 +103,9 @@ async function process<Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
+  const functionName: string = AutoBeTestGenerateProgrammer.getFunctionName(
+    props.operation,
+  );
   const pointer: IPointer<IAutoBeTestGenerationWriteApplication.IProps | null> =
     {
       value: null,
@@ -111,6 +114,7 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
+      functionName,
       build: (next) => {
         pointer.value = next;
       },
@@ -129,6 +133,7 @@ async function process<Model extends ILlmSchema.Model>(
     ++props.progress.completed;
     throw new Error("Failed to create generation function.");
   }
+
   return {
     type: "testWrite",
     id: v7(),
@@ -140,8 +145,8 @@ async function process<Model extends ILlmSchema.Model>(
         path: props.operation.path,
       },
       actor: props.operation.authorizationActor,
-      location: `test/features/utils/generation/${pointer.value.functionName}.ts`,
-      name: pointer.value.functionName,
+      location: `test/features/utils/generation/${functionName}.ts`,
+      name: functionName,
       content: await AutoBeTestGenerateProgrammer.replaceImportStatements({
         compiler: await ctx.compiler(),
         artifacts: props.artifacts,
@@ -159,6 +164,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  functionName: string;
   build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -169,7 +175,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: result.data.functionName,
+      functionName: props.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
       path: "$input",

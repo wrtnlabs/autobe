@@ -19,9 +19,9 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      * Step 1: Strategic authorization analysis.
      *
      * AI analyzes the operation to understand authorization requirements,
-     * including the type of authentication flow, actor permissions, and required
-     * SDK functions. This analysis forms the
-     * foundation for generating appropriate authorization utilities.
+     * including the type of authentication flow, actor permissions, and
+     * required SDK functions. This analysis forms the foundation for generating
+     * appropriate authorization utilities.
      *
      * Workflow: Operation analysis → Authorization strategy → Implementation
      * plan
@@ -31,34 +31,21 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
     /**
      * Step 2: Actor identification.
      *
-     * AI determines the actor (user type) for this authorization function.
-     * This should be extracted from the context, such as the API path or
-     * operation details.
+     * AI determines the actor (user type) for this authorization function. This
+     * should be extracted from the context, such as the API path or operation
+     * details.
      *
      * Examples: "user", "admin", "moderator", "seller", "customer"
      */
     actor: string;
 
     /**
-     * Step 3: Function naming definition.
-     *
-     * AI determines the appropriate function name following the established
-     * pattern: authorize_{actor}_{authType}. The name should clearly indicate
-     * the actor role and authentication type for easy identification and use.
-     *
-     * Examples: authorize_admin_login, authorize_user_join,
-     * authorize_guest_refresh
-     */
-    functionName: string;
-
-    /**
      * Step 4: Initial authorization function implementation.
      *
      * AI generates the authorization utility function that properly handles the
      * authentication flow. The implementation must use correct SDK functions,
-     * return required authentication
-     * data, and include comprehensive error handling with fallback logic where
-     * needed.
+     * return required authentication data, and include comprehensive error
+     * handling with fallback logic where needed.
      *
      * Critical: NO import statements, start directly with 'export const'
      */

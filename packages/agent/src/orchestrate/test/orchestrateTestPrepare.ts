@@ -1,15 +1,24 @@
 import {
+  AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestPrepareFunction,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmController,
+  ILlmSchema,
+  IValidation,
+} from "@samchon/openapi";
+import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
+import { IAutoBeTestPrepareCorrectOverallApplication } from "./structures/IAutoBeTestPrepareCorrectOverallApplicaion";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 
 export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
@@ -56,6 +65,7 @@ export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
     programmer: {
       compile,
       replaceImportStatements,
+      controller: (next) => createCorrectOverallController(next),
     },
     procedures,
     instruction: props.instruction,
@@ -63,3 +73,85 @@ export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
   });
   return procedures.map((p) => p.function);
 }
+
+function createCorrectOverallController<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  procedure: IAutoBeTestPrepareProcedure;
+  build: (next: IAutoBeTestPrepareCorrectOverallApplication.IProps) => void;
+}): ILlmController<Model, IAutoBeTestPrepareCorrectOverallApplication> {
+  assertSchemaModel(props.model);
+
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps> =
+      typia.validate<IAutoBeTestPrepareCorrectOverallApplication.IProps>(input);
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = AutoBeTestPrepareProgrammer.validate({
+      typeName: props.procedure.typeName,
+      schema: props.procedure.schema,
+      mappings: result.data.mappings,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
+
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt"
+      ? "chatgpt"
+      : props.model === "gemini"
+        ? "gemini"
+        : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "testCorrect" satisfies AutoBeEventSource,
+    application,
+    execute: {
+      rewrite: (v) => {
+        props.build(v);
+      },
+    } satisfies IAutoBeTestPrepareCorrectOverallApplication,
+  };
+}
+
+const collection = {
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestPrepareCorrectOverallApplication,
+      "chatgpt"
+    >({
+      validate: {
+        rewrite: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestPrepareCorrectOverallApplication,
+      "claude"
+    >({
+      validate: {
+        rewrite: validate,
+      },
+    }),
+  gemini: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestPrepareCorrectOverallApplication,
+      "gemini"
+    >({
+      validate: {
+        rewrite: validate,
+      },
+    }),
+};
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps>;
