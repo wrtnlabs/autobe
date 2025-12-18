@@ -247,11 +247,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         };
   };
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
+    normalizeApplicationModel(props.model)
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;

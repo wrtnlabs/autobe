@@ -14,6 +14,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { orchestrateAnalyze } from "../analyze/orchestrateAnalyze";
 import { orchestrateInterface } from "../interface/orchestrateInterface";
 import { orchestratePrisma } from "../prisma/orchestratePrisma";
@@ -29,11 +30,7 @@ export const createAutoBeFacadeController = <
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
+    normalizeApplicationModel(props.model)
   ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",

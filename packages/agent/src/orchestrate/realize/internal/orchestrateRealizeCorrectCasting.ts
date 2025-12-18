@@ -17,6 +17,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { assertSchemaModel } from "../../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { normalizeApplicationModel } from "../../../utils/normalizeApplicationModel";
 import { IAutoBeCommonCorrectCastingApplication } from "../../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistory } from "../histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
@@ -356,13 +357,9 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     // @todo: validate empty code?
     return result;
   };
-  const application = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
+  const application = collection[normalizeApplicationModel(props.model)](
+    validate,
+  ) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "correctInvalidRequest",

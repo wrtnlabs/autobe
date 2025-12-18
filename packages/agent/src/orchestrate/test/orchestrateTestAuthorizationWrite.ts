@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
@@ -209,11 +210,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
+    normalizeApplicationModel(props.model)
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;

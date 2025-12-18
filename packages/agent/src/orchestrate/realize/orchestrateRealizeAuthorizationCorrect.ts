@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationCorrectHistory } from "./histories/transformRealizeAuthorizationCorrectHistory";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
@@ -182,11 +183,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
+    normalizeApplicationModel(props.model)
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;

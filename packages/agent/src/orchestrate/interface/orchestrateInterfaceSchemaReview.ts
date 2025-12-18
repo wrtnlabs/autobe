@@ -16,6 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
@@ -260,13 +261,7 @@ function createController<Model extends ILlmSchema.Model>(
   };
 
   const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      props.model === "chatgpt"
-        ? "chatgpt"
-        : props.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
+    collection[normalizeApplicationModel(props.model)](
       validate,
     ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
   );

@@ -12,6 +12,8 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
@@ -119,6 +121,8 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
   ) => void;
 }): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
@@ -147,13 +151,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   };
 
   const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      props.model === "chatgpt"
-        ? "chatgpt"
-        : props.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
+    collection[normalizeApplicationModel(props.model)](
       validate,
     ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
   );

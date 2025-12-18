@@ -20,6 +20,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { normalizeApplicationModel } from "../../utils/normalizeApplicationModel";
 import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
 import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";
 
@@ -157,11 +158,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 
   const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
+    normalizeApplicationModel(props.model)
   ](
     validate,
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
