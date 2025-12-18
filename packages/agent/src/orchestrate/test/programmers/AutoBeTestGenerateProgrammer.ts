@@ -66,8 +66,9 @@ ${writeParameterDeclarations(props.operation)}
         return await api.functional.${props.operation.accessor!.join(".")}(
           connection,
           {
-            body,
+            body: prepared,
 ${writeParameterArguments(props.operation)}
+          },
         );
       }
     `;
@@ -80,7 +81,7 @@ ${writeParameterArguments(props.operation)}
     return StringUtil.trim`
       params: {
 ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
-      }
+      };
     `
       .split("\n")
       .filter((line) => line.length !== 0)
