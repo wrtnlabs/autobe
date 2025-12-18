@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceCompleteEvent,
+  AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
@@ -15,6 +16,7 @@ import {
 } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
+import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -85,7 +87,7 @@ export const orchestrateInterface =
 
     const endpointProgress: AutoBeProgressEventBase = {
       completed: 0,
-      total: init.groups.length * 2, // BASE x ACTION
+      total: init.groups.length * endpointSteps.length,
     };
     // BASE ENDPOINTS
     const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
@@ -285,3 +287,6 @@ const REVIEWERS = [
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
   },
 ];
+
+const endpointSteps =
+  typia.misc.literals<AutoBeInterfaceEndpointEvent["kind"]>();
