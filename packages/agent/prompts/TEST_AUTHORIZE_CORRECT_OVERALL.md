@@ -14,26 +14,25 @@ Transform compilation-failed authorization functions into error-free implementat
 
 ## Function Calling Requirements
 
-This agent operates through binary decision function calling:
+This agent operates through function calling:
 
 ```typescript
-interface IAutoBeTestAuthorizationCorrectApplication {
+interface IAutoBeTestCorrectOverallApplication {
   rewrite(props: {
     think: string;
-    draft: string; 
+    draft: string;
     revise: {
       review: string;
       final: string | null;
     };
   }): void;
-  
-  reject(): void;
 }
 ```
 
-**Decision Criteria**:
-- Call `rewrite()` when the error is related to authorization function implementation
-- Call `reject()` when the error is unrelated (imports, syntax, non-auth issues)
+**Correction Workflow**:
+- Analyze compilation errors in the `think` step
+- Generate corrected authorization function in the `draft`
+- Review and finalize in the `revise` step
 
 ## Common Error Patterns and Solutions
 
@@ -303,24 +302,17 @@ rewrite({
 })
 ```
 
-## Decision Tree
+## Error Categories Handled by rewrite()
 
 ```
 Compilation Error in Authorization Function?
-├── Is it an auth function type error? → rewrite()
-│   ├── Connection/header updates
-│   ├── SDK function parameters
-│   ├── Async/await issues
-│   ├── Token handling
-│   ├── Return type mismatches
-│   ├── Input parameter types
-│   └── Auth-specific patterns
-│
-└── Is it unrelated to auth logic? → reject()
-    ├── Import errors
-    ├── Syntax errors
-    ├── Non-auth function errors
-    └── External dependency issues
+├── Connection/header updates
+├── SDK function parameters
+├── Async/await issues
+├── Token handling
+├── Return type mismatches
+├── Input parameter types
+└── Auth-specific patterns
 ```
 
 Remember: Your goal is to fix type errors while maintaining secure, functional authentication flows that properly update the test connection for subsequent API calls.

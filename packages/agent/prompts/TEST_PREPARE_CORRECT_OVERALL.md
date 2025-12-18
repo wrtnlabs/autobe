@@ -14,26 +14,32 @@ Transform compilation-failed prepare functions into error-free implementations t
 
 ## Function Calling Requirements
 
-This agent operates through binary decision function calling:
+This agent operates through function calling:
 
 ```typescript
-interface IAutoBeTestPrepareCorrectApplication {
+interface IAutoBeTestPrepareCorrectOverallApplication {
   rewrite(props: {
     think: string;
-    draft: string; 
+    mappings: AutoBeTestPrepareMapping[];  // Property-by-property mapping table
+    draft: string;
     revise: {
       review: string;
       final: string | null;
     };
   }): void;
-  
-  reject(): void;
+}
+
+interface AutoBeTestPrepareMapping {
+  property: string;  // Exact property name from DTO schema
+  how: string;       // How to generate the value for that property
 }
 ```
 
-**Decision Criteria**:
-- Call `rewrite()` when the error is related to prepare function implementation
-- Call `reject()` when the error is unrelated (imports, syntax, non-prepare issues)
+**Correction Workflow**:
+- Analyze compilation errors in the `think` step
+- Create property mappings to ensure complete DTO coverage
+- Generate corrected prepare function in the `draft`
+- Review and finalize in the `revise` step
 
 ## Common Error Patterns and Solutions
 
@@ -280,9 +286,10 @@ When you receive a compilation error:
 When calling `rewrite()`:
 
 **think**: Analyze the specific compilation error and identify the correction strategy
+**mappings**: Property-by-property mapping table ensuring complete DTO coverage (this is your Chain-of-Thought mechanism to prevent omissions during error correction)
 **draft**: Provide the corrected function with all type errors resolved
-**review**: Evaluate if the correction maintains test efficiency and functionality
-**final**: Provide optimized version if draft needs improvement, otherwise null
+**revise.review**: Evaluate if the correction maintains test efficiency and functionality
+**revise.final**: Provide optimized version if draft needs improvement, otherwise null
 
 ## Example Correction
 
@@ -295,6 +302,13 @@ Type 'Partial<IUserCreate>' is not assignable to type 'DeepPartial<IUserCreate>'
 ```typescript
 rewrite({
   think: "The error indicates using Partial<> instead of DeepPartial<>. The function parameter type must be changed to DeepPartial for the user-controllable fields.",
+  mappings: [
+    { property: "name", how: "RandomGenerator.name() for realistic name" },
+    { property: "email", how: "RandomGenerator.alphabets(8) + @example.com for test email" },
+    { property: "id", how: "RandomGenerator.alphaNumeric(32) for system-generated ID" },
+    { property: "created_at", how: "new Date().toISOString() for timestamp" },
+    { property: "updated_at", how: "new Date().toISOString() for timestamp" }
+  ],
   draft: `export const prepare_random_user = (
   input?: DeepPartial<IUserCreate>
 ): IUserCreate => ({
@@ -305,31 +319,25 @@ rewrite({
   updated_at: new Date().toISOString(),
 })`,
   revise: {
-    review: "The correction properly uses DeepPartial<> with only user-controllable fields. System fields remain internally generated. Type safety is maintained.",
+    review: "The correction properly uses DeepPartial<> with only user-controllable fields. System fields remain internally generated. Type safety is maintained. All 5 properties are covered per mappings.",
     final: null
   }
 })
 ```
 
-## Decision Tree
+## Error Categories Handled by rewrite()
 
 ```
 Compilation Error in Prepare Function?
-├── Is it a prepare function type error? → rewrite()
-│   ├── DeepPartial/Partial type issues
-│   ├── RandomGenerator API usage
-│   ├── Date/time format errors
-│   ├── Number type mismatches
-│   ├── Array generation problems
-│   ├── Missing required fields
-│   ├── Nested object structures
-│   ├── Non-existent function calls (prepare_random_*, helper functions)
-│   └── Multiple function definitions
-│
-└── Is it unrelated to prepare logic? → reject()
-    ├── Import errors (handled by system)
-    ├── Syntax errors (basic TypeScript)
-    └── External dependency issues
+├── DeepPartial/Partial type issues
+├── RandomGenerator API usage
+├── Date/time format errors
+├── Number type mismatches
+├── Array generation problems
+├── Missing required fields
+├── Nested object structures
+├── Non-existent function calls (prepare_random_*, helper functions)
+└── Multiple function definitions
 ```
 
-Remember: Your goal is surgical precision - fix only the type errors while preserving the test efficiency model and data generation quality of prepare functions.
+Remember: Your goal is surgical precision - fix only the type errors while preserving the test efficiency model and data generation quality of prepare functions. Always include property mappings to ensure complete DTO coverage during correction.

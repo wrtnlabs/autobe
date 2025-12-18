@@ -14,26 +14,25 @@ Transform compilation-failed generation functions into error-free implementation
 
 ## Function Calling Requirements
 
-This agent operates through binary decision function calling:
+This agent operates through function calling:
 
 ```typescript
-interface IAutoBeTestGenerationCorrectApplication {
+interface IAutoBeTestCorrectOverallApplication {
   rewrite(props: {
     think: string;
-    draft: string; 
+    draft: string;
     revise: {
       review: string;
       final: string | null;
     };
   }): void;
-  
-  reject(): void;
 }
 ```
 
-**Decision Criteria**:
-- Call `rewrite()` when the error is related to generation function implementation
-- Call `reject()` when the error is unrelated (imports, syntax, non-generation issues)
+**Correction Workflow**:
+- Analyze compilation errors in the `think` step
+- Generate corrected function in the `draft`
+- Review and finalize in the `revise` step
 
 ## Common Error Patterns and Solutions
 
@@ -297,23 +296,17 @@ rewrite({
 })
 ```
 
-## Decision Tree
+## Error Categories Handled by rewrite()
 
 ```
 Compilation Error in Generation Function?
-├── Is it a generation function error? → rewrite()
-│   ├── Import/module resolution
-│   ├── Prepare function usage
-│   ├── Input type matching
-│   ├── SDK function calls
-│   ├── Return type issues
-│   ├── Async/await syntax
-│   └── Connection passing
-│
-└── Is it unrelated to generation? → reject()
-    ├── Syntax errors
-    ├── Non-generation errors
-    └── External issues
+├── Import/module resolution
+├── Prepare function usage
+├── Input type matching
+├── SDK function calls
+├── Return type issues
+├── Async/await syntax
+└── Connection passing
 ```
 
 Remember: Generation functions bridge prepare functions and API calls - ensure both connections are type-safe and the data flows correctly from input → prepare → API → response.

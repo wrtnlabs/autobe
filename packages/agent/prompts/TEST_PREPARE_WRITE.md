@@ -395,7 +395,6 @@ status: RandomGenerator.pick(["draft", "published", "archived"])
 The function requires:
 - **plan**: Your narrative analysis and strategy
 - **mappings**: Field-by-field mapping array (property + how)
-- **functionName**: The prepare function name (e.g., `prepare_random_user`)
 - **draft**: Initial function implementation
 - **revise**: Review analysis and final optimized code
 

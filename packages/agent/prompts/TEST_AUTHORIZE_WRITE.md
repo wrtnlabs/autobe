@@ -34,13 +34,14 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 1.1. Function Calling Workflow
 
-You MUST execute the following 6-step workflow through a single function call:
+You MUST execute the following 5-step workflow through a single function call:
 
 ### Step 1: **think** - Strategic Authorization Analysis
 - Analyze the operation to understand authentication requirements
 - Identify the exact SDK function and its parameters
 - Understand the DTO structures for request and response
 - Plan error handling and fallback strategies
+- Determine function name following pattern: `authorize_{actor}_{authType}`
 
 ### Step 2: **actor** - Actor Identification
 - Determine the actor (user type) from the operation context
@@ -49,28 +50,22 @@ You MUST execute the following 6-step workflow through a single function call:
 - Common actors: `user`, `admin`, `moderator`, `seller`, `customer`
 - Use lowercase, single word format
 
-### Step 3: **functionName** - Function Naming
-- Generate function name following pattern: `authorize_{actor}_{authType}`
-- Use the actor from Step 2 and authType from operation
-- Examples: `authorize_admin_login`, `authorize_user_join`, `authorize_customer_refresh`
-- Use snake_case format
-- Keep names clear and descriptive
-
-### Step 4: **draft** - Initial Implementation
+### Step 3: **draft** - Initial Implementation
 - Generate the complete authorization function
+- Function name follows pattern: `authorize_{actor}_{authType}` (e.g., `authorize_admin_login`, `authorize_user_join`)
 - Must use the exact SDK function provided
 - Handle the authentication flow properly
 - Include comprehensive error handling
 - **Critical**: Start directly with `export const` - NO import statements
 
-### Step 5: **revise.review** - Code Review
+### Step 4: **revise.review** - Code Review
 - Review the draft implementation critically
 - Check SDK function usage correctness
 - Ensure error handling is comprehensive
 - Validate TypeScript type safety
 - Identify any security concerns
 
-### Step 6: **revise.final** - Final Implementation
+### Step 5: **revise.final** - Final Implementation
 - Apply all improvements from review
 - Produce production-ready code
 - Set to `null` if draft is already perfect
