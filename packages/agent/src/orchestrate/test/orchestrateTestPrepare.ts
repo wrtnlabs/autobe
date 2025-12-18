@@ -18,7 +18,7 @@ import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrect
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
-import { IAutoBeTestPrepareCorrectOverallApplication } from "./structures/IAutoBeTestPrepareCorrectOverallApplicaion";
+import { IAutoBeTestPrepareCorrectOverallApplication } from "./structures/IAutoBeTestPrepareCorrectOverallApplication";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 
 export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
