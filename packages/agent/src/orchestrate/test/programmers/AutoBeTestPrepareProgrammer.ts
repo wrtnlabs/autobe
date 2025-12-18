@@ -14,6 +14,18 @@ import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { AutoBeRealizeCollectorProgrammer } from "../../realize/programmers/AutoBeRealizeCollectorProgrammer";
 
 export namespace AutoBeTestPrepareProgrammer {
+  export function is(key: string, value: AutoBeOpenApi.IJsonSchema): boolean {
+    return (
+      key.endsWith(".ICreate") && OpenApiTypeChecker.isObject(value) === true
+    );
+  }
+
+  export function size(document: AutoBeOpenApi.IDocument): number {
+    return Object.entries(document.components.schemas).filter(([key, value]) =>
+      AutoBeTestPrepareProgrammer.is(key, value),
+    ).length;
+  }
+
   export function getFunctionName(typeName: string): string {
     const snake: string = NamingConvention.snake(
       typeName.split(".")[0]!.slice(1),

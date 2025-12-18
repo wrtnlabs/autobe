@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
+  AutoBeTestPrepareFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
@@ -67,16 +68,15 @@ export const orchestrateTestPrepareWrite = async <
       ctx,
       createTypes.map((entry) => async (promptCacheKey) => {
         try {
-          const event: AutoBeTestWriteEvent = await process(ctx, {
-            document: props.document,
-            typeName: entry.key,
-            schema: entry.value,
-            instruction: props.instruction,
-            promptCacheKey,
-            progress,
-          });
-          if (event.function.type !== "prepare") return null;
-
+          const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
+            await process(ctx, {
+              document: props.document,
+              typeName: entry.key,
+              schema: entry.value,
+              instruction: props.instruction,
+              promptCacheKey,
+              progress,
+            });
           ctx.dispatch(event);
           return {
             type: "prepare",
@@ -105,7 +105,7 @@ async function process<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
     instruction: string;
   },
-): Promise<AutoBeTestWriteEvent> {
+): Promise<AutoBeTestWriteEvent<AutoBeTestPrepareFunction>> {
   const pointer: IPointer<IAutoBeTestPrepareWriteApplication.IProps | null> = {
     value: null,
   };
@@ -135,7 +135,7 @@ async function process<Model extends ILlmSchema.Model>(
   const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
     props.typeName,
   );
-  const event: AutoBeTestWriteEvent = {
+  const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> = {
     id: v7(),
     type: "testWrite",
     function: {

@@ -9,19 +9,25 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
-import { IAutoBeTestCorrectApplication } from "../structures/IAutoBeTestCorrectApplication";
+import { IAutoBeTestAuthorizeProcedure } from "../structures/IAutoBeTestAuthorizeWriteResult";
+import { IAutoBeTestCorrectInvalidRequestApplication } from "../structures/IAutoBeTestCorrectInvalidRequestApplication";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
+import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
+import { IAutoBeTestOperationProcedure } from "../structures/IAutoBeTestOperationProcedure";
 
 interface IProgrammer<
   Model extends ILlmSchema.Model,
-  Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Procedure extends
+    | IAutoBeTestAuthorizeProcedure
+    | IAutoBeTestGenerateProcedure
+    | IAutoBeTestOperationProcedure,
 > {
   controller(next: {
     model: Model;
     procedure: Procedure;
-    build: (next: Complete) => void;
+    build: (
+      next: IAutoBeTestCorrectInvalidRequestApplication.IProps | false,
+    ) => void;
   }): ILlmController<Model>;
   histories(props: {
     procedure: Procedure;
@@ -33,16 +39,18 @@ interface IProgrammer<
   ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
 }
 
-export async function orchestrateTestCorrectOverall<
+export async function orchestrateTestCorrectRequest<
   Model extends ILlmSchema.Model,
-  Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Procedure extends
+    | IAutoBeTestAuthorizeProcedure
+    | IAutoBeTestGenerateProcedure
+    | IAutoBeTestOperationProcedure,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
-    procedures: Procedure[];
+    programmer: IProgrammer<Model, Procedure>;
     instruction: string;
+    procedures: Procedure[];
     progress: AutoBeProgressEventBase;
   },
 ): Promise<Procedure[]> {
@@ -77,14 +85,16 @@ export async function orchestrateTestCorrectOverall<
 
 async function predicate<
   Model extends ILlmSchema.Model,
-  Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Procedure extends
+    | IAutoBeTestAuthorizeProcedure
+    | IAutoBeTestGenerateProcedure
+    | IAutoBeTestOperationProcedure,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
+    programmer: IProgrammer<Model, Procedure>;
     procedure: Procedure;
-    failures: IAutoBeTestFunctionFailure[];
+    failures: IAutoBeTestFunctionFailure<Procedure>[];
     validate: AutoBeTestValidateEvent<Procedure["function"]>;
     promptCacheKey: string;
     instruction: string;
@@ -100,12 +110,14 @@ async function predicate<
 
 async function correct<
   Model extends ILlmSchema.Model,
-  Procedure extends IAutoBeTestProcedure,
-  Complete extends IAutoBeTestCorrectApplication.IProps,
+  Procedure extends
+    | IAutoBeTestAuthorizeProcedure
+    | IAutoBeTestGenerateProcedure
+    | IAutoBeTestOperationProcedure,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
+    programmer: IProgrammer<Model, Procedure>;
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure<Procedure>[];
     validate: AutoBeTestValidateEvent<Procedure["function"]>;
@@ -117,7 +129,9 @@ async function correct<
   if (props.validate.result.type !== "failure") return props.validate;
   else if (life < 0) return props.validate;
 
-  const pointer: IPointer<Complete | null> = {
+  const pointer: IPointer<
+    IAutoBeTestCorrectInvalidRequestApplication.IProps | false | null
+  > = {
     value: null,
   };
   const { metric, tokenUsage } = await ctx.conversate({
@@ -143,6 +157,7 @@ async function correct<
     })),
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
+  else if (pointer.value === false) return props.validate; // other's responsibility
 
   const newProcedure: Procedure = {
     ...props.procedure,
@@ -158,7 +173,7 @@ async function correct<
 
   ctx.dispatch({
     type: "testCorrect",
-    kind: "overall",
+    kind: "request",
     id: v7(),
     created_at: new Date().toISOString(),
     function: newProcedure.function,

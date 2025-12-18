@@ -3,12 +3,10 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
-  AutoBeTestFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestOperationFunction,
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
-  AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -35,19 +33,14 @@ export async function orchestrateTestOperationWrite<
   ctx: AutoBeContext<Model>,
   props: {
     instruction: string;
+    document: AutoBeOpenApi.IDocument;
     scenarios: AutoBeTestScenario[];
-    events: AutoBeTestValidateEvent[];
+    authorizes: AutoBeTestAuthorizeFunction[];
+    prepares: AutoBeTestPrepareFunction[];
+    generates: AutoBeTestGenerateFunction[];
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<IAutoBeTestOperationProcedure[]> {
-  const document: AutoBeOpenApi.IDocument | undefined =
-    ctx.state().interface?.document;
-  if (document === undefined) {
-    throw new Error("Cannot write test code because these are no document.");
-  }
-  const progress: AutoBeProgressEventBase = {
-    total: props.scenarios.length,
-    completed: 0,
-  };
   const result: Array<IAutoBeTestOperationProcedure | null> =
     await executeCachedBatch(
       ctx,
@@ -61,9 +54,6 @@ export async function orchestrateTestOperationWrite<
           const artifacts: IAutoBeTestScenarioArtifacts =
             await getTestScenarioArtifacts(ctx, scenario);
 
-          const neighborFunctions: AutoBeTestFunction[] = props.events.map(
-            (e) => e.function,
-          );
           const usedActors: Set<string> = new Set(
             artifacts.document.operations
               .map((o) => o.authorizationActor)
@@ -71,37 +61,29 @@ export async function orchestrateTestOperationWrite<
           );
 
           const authorizationFunctions: AutoBeTestAuthorizeFunction[] =
-            neighborFunctions
-              .filter((f) => f.type === "authorize")
-              .filter((f) => usedActors.has(f.actor));
+            props.authorizes.filter((f) => usedActors.has(f.actor));
           const generationFunctions: AutoBeTestGenerateFunction[] =
-            neighborFunctions
-              .filter((f) => f.type === "generate")
-              .filter((f) =>
-                artifacts.document.operations.some(
-                  (o) =>
-                    o.method === f.endpoint.method &&
-                    o.path === f.endpoint.path,
-                ),
-              );
+            props.generates.filter((f) =>
+              artifacts.document.operations.some(
+                (o) =>
+                  o.method === f.endpoint.method && o.path === f.endpoint.path,
+              ),
+            );
           const prepareFunctions: AutoBeTestPrepareFunction[] =
-            neighborFunctions
-              .filter((f) => f.type === "prepare")
-              .filter((f) =>
-                Object.keys(artifacts.document.components.schemas).includes(
-                  f.typeName,
-                ),
-              );
+            props.prepares.filter((f) =>
+              Object.keys(artifacts.document.components.schemas).includes(
+                f.typeName,
+              ),
+            );
 
           const event: AutoBeTestWriteEvent = await process(ctx, {
-            document,
+            document: props.document,
             scenario,
-            authorizationFunctions,
-            generationFunctions,
-            prepareFunctions,
+            authorizes: authorizationFunctions,
+            generates: generationFunctions,
+            prepares: prepareFunctions,
             artifacts,
-            events: props.events,
-            progress,
+            progress: props.progress,
             promptCacheKey,
             instruction: props.instruction,
           });
@@ -132,10 +114,9 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     document: AutoBeOpenApi.IDocument;
-    events: AutoBeTestValidateEvent[];
-    authorizationFunctions: AutoBeTestAuthorizeFunction[];
-    generationFunctions: AutoBeTestGenerateFunction[];
-    prepareFunctions: AutoBeTestPrepareFunction[];
+    authorizes: AutoBeTestAuthorizeFunction[];
+    generates: AutoBeTestGenerateFunction[];
+    prepares: AutoBeTestPrepareFunction[];
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
     progress: AutoBeProgressEventBase;
@@ -143,15 +124,6 @@ async function process<Model extends ILlmSchema.Model>(
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const {
-    authorizationFunctions,
-    generationFunctions,
-    prepareFunctions,
-    scenario,
-    artifacts,
-    progress,
-    promptCacheKey,
-  } = props;
   const pointer: IPointer<IAutoBeTestOperationWriteApplication.IProps | null> =
     {
       value: null,
@@ -167,17 +139,17 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
     ...(await transformTestOperationWriteHistory(ctx, {
-      authorizationFunctions,
-      generationFunctions,
-      scenario,
-      artifacts,
+      authorizationFunctions: props.authorizes,
+      generationFunctions: props.generates,
+      scenario: props.scenario,
+      artifacts: props.artifacts,
       instruction: props.instruction,
     })),
   });
   if (pointer.value === null) {
-    ++progress.completed;
+    ++props.progress.completed;
     throw new Error("Failed to create test code.");
   }
 
@@ -187,30 +159,30 @@ async function process<Model extends ILlmSchema.Model>(
     content: pointer.value.revise.final ?? pointer.value.draft,
     name: props.scenario.functionName,
     location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-    scenario,
+    scenario: props.scenario,
   };
 
   const importStatement: string = getTestImportFromFunction({
     target: {
       type: "operation",
-      artifacts,
+      artifacts: props.artifacts,
       function: operationFunction,
-      authorizeFunctions: authorizationFunctions,
-      generateFunctions: generationFunctions,
-      prepareFunctions,
+      authorizeFunctions: props.authorizes,
+      generateFunctions: props.generates,
+      prepareFunctions: props.prepares,
     },
   });
 
   if (pointer.value.revise.final)
     pointer.value.revise.final = await completeTestCode(
       ctx,
-      artifacts,
+      props.artifacts,
       pointer.value.revise.final,
       importStatement,
     );
   pointer.value.draft = await completeTestCode(
     ctx,
-    artifacts,
+    props.artifacts,
     pointer.value.draft,
     importStatement,
   );
@@ -224,12 +196,12 @@ async function process<Model extends ILlmSchema.Model>(
       content: pointer.value.revise.final ?? pointer.value.draft,
       name: props.scenario.functionName,
       location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
-      scenario,
+      scenario: props.scenario,
     },
     metric,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
   } satisfies AutoBeTestWriteEvent;
 }

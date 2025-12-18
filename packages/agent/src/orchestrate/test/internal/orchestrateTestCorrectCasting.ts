@@ -1,4 +1,5 @@
 import {
+  AutoBeProgressEventBase,
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
@@ -31,58 +32,60 @@ export async function orchestrateTestCorrectCasting<
   props: {
     programmer: IProgrammer<Procedure>;
     procedures: Procedure[];
+    progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeTestValidateEvent<Procedure["function"]>[]> {
-  const result: Array<AutoBeTestValidateEvent<Procedure["function"]> | null> =
-    await executeCachedBatch(
-      ctx,
-      props.procedures.map((procedure) => async () => {
-        try {
-          const event: AutoBeTestValidateEvent<Procedure["function"]> =
-            await orchestrateCommonCorrectCasting<
-              Model,
-              AutoBeTestValidateEvent<Procedure["function"]>,
-              AutoBeTestCorrectEvent
-            >(
-              ctx,
-              {
-                source: "testCorrect",
-                validate: (content) =>
-                  props.programmer.compile({
-                    ...procedure,
-                    function: {
-                      ...procedure.function,
-                      content,
-                    },
-                  }),
-                correct: async (next) =>
-                  ({
-                    type: "testCorrect",
-                    kind: "casting",
-                    id: v7(),
-                    created_at: new Date().toISOString(),
-                    function: {
-                      ...procedure.function,
-                      content: await props.programmer.replaceImportStatements(
-                        next.final ?? next.draft,
-                      ),
-                    },
-                    result: next.failure,
-                    tokenUsage: next.tokenUsage,
-                    metric: next.metric,
-                    step: ctx.state().analyze?.step ?? 0,
-                  }) satisfies AutoBeTestCorrectEvent,
-                script: (event) => event.function.content,
-                functionName: procedure.function.name,
-              },
-              procedure.function.content,
-            );
-          procedure.function = event.function;
-          return event;
-        } catch {
-          return null;
-        }
-      }),
-    );
+): Promise<Procedure[]> {
+  const result: Array<Procedure | null> = await executeCachedBatch(
+    ctx,
+    props.procedures.map((procedure) => async () => {
+      try {
+        const event: AutoBeTestValidateEvent<Procedure["function"]> =
+          await orchestrateCommonCorrectCasting<
+            Model,
+            AutoBeTestValidateEvent<Procedure["function"]>,
+            AutoBeTestCorrectEvent
+          >(
+            ctx,
+            {
+              source: "testCorrect",
+              validate: (content) =>
+                props.programmer.compile({
+                  ...procedure,
+                  function: {
+                    ...procedure.function,
+                    content,
+                  },
+                }),
+              correct: async (next) =>
+                ({
+                  type: "testCorrect",
+                  kind: "casting",
+                  id: v7(),
+                  created_at: new Date().toISOString(),
+                  function: {
+                    ...procedure.function,
+                    content: await props.programmer.replaceImportStatements(
+                      next.final ?? next.draft,
+                    ),
+                  },
+                  result: next.failure,
+                  tokenUsage: next.tokenUsage,
+                  metric: next.metric,
+                  step: ctx.state().analyze?.step ?? 0,
+                }) satisfies AutoBeTestCorrectEvent,
+              script: (event) => event.function.content,
+              functionName: procedure.function.name,
+            },
+            procedure.function.content,
+          );
+        return {
+          ...procedure,
+          function: event.function,
+        };
+      } catch {
+        return null;
+      }
+    }),
+  );
   return result.filter((r) => r !== null);
 }

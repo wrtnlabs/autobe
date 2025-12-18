@@ -20,7 +20,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Michael
  */
 export interface AutoBeTestValidateEvent<
-  TestFunction extends AutoBeTestFunction = AutoBeTestFunction,
+  Function extends AutoBeTestFunction = AutoBeTestFunction,
 > extends AutoBeEventBase<"testValidate"> {
   /**
    * Function type indicating the specific test writing operation performed.
@@ -28,11 +28,11 @@ export interface AutoBeTestValidateEvent<
    * This discriminated union represents different stages and types of test code
    * generation that occur during the test writing process:
    *
-   * - `AutoBeTestPrepareWriteFunction`: Generates test data preparation functions
-   *   that create mock DTO objects required by API endpoints
-   * - `AutoBeTestGenerationWriteFunction`: Creates resource generation functions
-   *   that produce test data and utilities needed by test scenarios
-   * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
+   * - `AutoBeTestPrepareFunction`: Generates test data preparation functions that
+   *   create mock DTO objects required by API endpoints
+   * - `AutoBeTestGenerationFunction`: Creates resource generation functions that
+   *   produce test data and utilities needed by test scenarios
+   * - `AutoBeTestAuthorizationFunction`: Implements authentication and
    *   authorization functions for different actors (login, signup, token
    *   refresh)
    * - `AutoBeTestWriteFunction`: Writes the actual E2E test scenario files with
@@ -43,7 +43,7 @@ export interface AutoBeTestValidateEvent<
    * validation. The discriminated union pattern enables type-safe handling of
    * different test writing stages while providing detailed progress tracking.
    */
-  function: TestFunction;
+  function: Function;
 
   /**
    * Compilation result indicating success, failure, or exception during

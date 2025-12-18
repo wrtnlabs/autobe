@@ -1,10 +1,10 @@
-import { IAutoBeTestAuthorizeWriteResult } from "./IAutoBeTestAuthorizeWriteResult";
+import { IAutoBeTestAuthorizeProcedure } from "./IAutoBeTestAuthorizeWriteResult";
 import { IAutoBeTestGenerateProcedure } from "./IAutoBeTestGenerateProcedure";
 import { IAutoBeTestOperationProcedure } from "./IAutoBeTestOperationProcedure";
 import { IAutoBeTestPrepareProcedure } from "./IAutoBeTestPrepareProcedure";
 
 export type IAutoBeTestProcedure =
-  | IAutoBeTestOperationProcedure
+  | IAutoBeTestAuthorizeProcedure
   | IAutoBeTestPrepareProcedure
   | IAutoBeTestGenerateProcedure
-  | IAutoBeTestAuthorizeWriteResult;
+  | IAutoBeTestOperationProcedure;

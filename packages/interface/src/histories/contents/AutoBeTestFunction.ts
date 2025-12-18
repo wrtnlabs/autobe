@@ -8,15 +8,15 @@ import { AutoBeTestPrepareFunction } from "./AutoBeTestPrepareFunction";
  *
  * This discriminated union encompasses all test file generation operations:
  *
- * - `AutoBeTestPrepareWriteFunction`: Generates test data preparation functions
- *   that create mock DTO objects required by API endpoints
- * - `AutoBeTestGenerationWriteFunction`: Creates resource generation functions
- *   that produce test data and utilities needed by test scenarios
- * - `AutoBeTestAuthorizationWriteFunction`: Implements authentication and
+ * - `AutoBeTestPrepareFunction`: Generates test data preparation functions that
+ *   create mock DTO objects required by API endpoints
+ * - `AutoBeTestGenerationFunction`: Creates resource generation functions that
+ *   produce test data and utilities needed by test scenarios
+ * - `AutoBeTestAuthorizationFunction`: Implements authentication and
  *   authorization functions for different actors (login, signup, token
  *   refresh)
- * - `AutoBeTestOperationWriteFunction`: Writes the actual E2E test scenario files
- *   with complete test implementations
+ * - `AutoBeTestOperationFunction`: Writes the actual E2E test scenario files with
+ *   complete test implementations
  *
  * Each function type serves a specific purpose in building comprehensive test
  * suites, from data preparation through authentication to actual scenario
@@ -51,9 +51,9 @@ export namespace AutoBeTestFunction {
    * type-safe filtering mechanisms.
    */
   export type Mapper = {
+    authorize: AutoBeTestAuthorizeFunction;
     prepare: AutoBeTestPrepareFunction;
-    generation: AutoBeTestGenerateFunction;
-    authorization: AutoBeTestAuthorizeFunction;
+    generate: AutoBeTestGenerateFunction;
     operation: AutoBeTestOperationFunction;
   };
 }

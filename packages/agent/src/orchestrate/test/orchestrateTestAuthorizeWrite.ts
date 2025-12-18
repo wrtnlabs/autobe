@@ -19,7 +19,7 @@ import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestAuthorizationWriteHistory } from "./histories/transformTestAuthorizationWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizationWriteApplication } from "./structures/IAutoBeTestAuthorizationWriteApplication";
-import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthorizeWriteResult";
+import { IAutoBeTestAuthorizeProcedure } from "./structures/IAutoBeTestAuthorizeWriteResult";
 
 /**
  * Test Authorization Write Orchestrator
@@ -27,27 +27,24 @@ import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthori
  * Creates authorization utility functions for test scenarios using LLM to
  * generate proper authentication handling code.
  */
-export const orchestrateTestAuthorizationWrite = async <
+export const orchestrateTestAuthorizeWrite = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    operations: AutoBeOpenApi.IOperation[];
+    instruction: string;
+    progress: AutoBeProgressEventBase;
+    document: AutoBeOpenApi.IDocument;
   },
-): Promise<IAutoBeTestAuthorizeWriteResult[]> => {
-  const authOperations: AutoBeOpenApi.IOperation[] = props.operations.filter(
-    (op) => op.authorizationType !== null,
-  );
-
-  // Track existing function names to prevent duplicates
-  const existingFunctionNames: string[] = [];
-
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: authOperations.length,
-  };
-
-  const results: Array<IAutoBeTestAuthorizeWriteResult | null> =
+): Promise<IAutoBeTestAuthorizeProcedure[]> => {
+  const authOperations: AutoBeOpenApi.IOperation[] =
+    props.document.operations.filter(
+      (op) =>
+        op.authorizationType !== null &&
+        op.requestBody !== null &&
+        op.responseBody !== null,
+    );
+  const results: Array<IAutoBeTestAuthorizeProcedure | null> =
     await executeCachedBatch(
       ctx,
       authOperations.map((operation) => async (promptCacheKey) => {
@@ -58,18 +55,13 @@ export const orchestrateTestAuthorizationWrite = async <
               path: operation.path,
             },
           });
-          const event = await process(ctx, {
-            operation,
-            artifacts,
-            progress,
-            promptCacheKey,
-            existingFunctionNames,
-          });
-          if (event.function.type !== "authorize") return null;
-
-          // Add successfully generated function name to the tracking array
-          existingFunctionNames.push(event.function.name);
-
+          const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
+            await process(ctx, {
+              operation,
+              artifacts,
+              progress: props.progress,
+              promptCacheKey,
+            });
           ctx.dispatch(event);
           return {
             type: "authorize",
@@ -93,17 +85,8 @@ async function process<Model extends ILlmSchema.Model>(
     artifacts: IAutoBeTestArtifacts;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
-    existingFunctionNames: string[];
   },
-): Promise<AutoBeTestWriteEvent> {
-  const {
-    operation,
-    artifacts,
-    progress,
-    promptCacheKey,
-    existingFunctionNames,
-  } = props;
-
+): Promise<AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>> {
   const pointer: IPointer<IAutoBeTestAuthorizationWriteApplication.IProps | null> =
     {
       value: null,
@@ -113,20 +96,19 @@ async function process<Model extends ILlmSchema.Model>(
     source: "testWrite",
     controller: createController({
       model: ctx.model,
-      existingFunctionNames,
       build: (next) => {
         pointer.value = next;
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
     ...transformTestAuthorizationWriteHistory({
-      operation,
-      artifacts,
+      operation: props.operation,
+      artifacts: props.artifacts,
     }),
   });
   if (pointer.value === null) {
-    ++progress.completed;
+    ++props.progress.completed;
     throw new Error("Failed to create authorization function.");
   }
 
@@ -134,30 +116,29 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value.revise.final) {
     pointer.value.revise.final = await completeTestCode(
       ctx,
-      artifacts,
+      props.artifacts,
       pointer.value.revise.final,
     );
   }
   pointer.value.draft = await completeTestCode(
     ctx,
-    artifacts,
+    props.artifacts,
     pointer.value.draft,
   );
 
-  // Create the authorization function object
+  // Create the authorize function
   const authorizationFunction: AutoBeTestAuthorizeFunction = {
     type: "authorize",
     endpoint: {
-      method: operation.method,
-      path: operation.path,
+      method: props.operation.method,
+      path: props.operation.path,
     },
     actor: pointer.value.actor,
-    authType: operation.authorizationType!,
+    authType: props.operation.authorizationType!,
     location: `test/features/utils/authorize/${pointer.value.functionName}.ts`,
     name: pointer.value.functionName,
     content: pointer.value.revise.final ?? pointer.value.draft,
   };
-
   return {
     type: "testWrite",
     id: v7(),
@@ -165,15 +146,14 @@ async function process<Model extends ILlmSchema.Model>(
     function: authorizationFunction,
     metric,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
-  } satisfies AutoBeTestWriteEvent;
+  } satisfies AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  existingFunctionNames: string[];
   build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -189,17 +169,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       revise: result.data.revise,
       path: "$input",
     });
-
-    // Check for duplicate function names
-    if (props.existingFunctionNames.includes(result.data.functionName)) {
-      errors.push({
-        path: "$input.functionName",
-        expected: "unique function name",
-        value: result.data.functionName,
-        description: `Function name '${result.data.functionName}' already exists. Please analyze the resource more accurately and use a more specific name. Existing function names: [${props.existingFunctionNames.join(", ")}]`,
-      });
-    }
-
     return errors.length
       ? {
           success: false,
