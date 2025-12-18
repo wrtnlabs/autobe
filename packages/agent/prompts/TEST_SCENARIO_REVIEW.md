@@ -114,10 +114,17 @@ Your function follows this interface:
 ```typescript
 export namespace IAutoBeTestScenarioReviewApplication {
   export interface IProps {
+    thinking: string;   // Chain-of-thought reasoning about your decision
+    request: IComplete | IPreliminaryRequest;  // Either complete review or request more data
+  }
+
+  // When you're ready to submit the final review
+  export interface IComplete {
+    type: "complete";
     review: string;     // Concise summary of findings and corrections
     plan: string;       // Structured action plan with priorities
     pass: boolean;      // true if no changes needed, false if corrections made
-    scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+    scenarioGroups: IScenarioGroup[];
   }
 }
 
@@ -127,18 +134,18 @@ export namespace IAutoBeTestScenarioApplication {
     endpoint: IEndpoint;
     scenarios: IScenario[];
   }
-  
+
   export interface IScenario {
     functionName: string;
     draft: string;
     dependencies: IDependency[];
   }
-  
+
   export interface IDependency {
     endpoint: IEndpoint;
     purpose: string;
   }
-  
+
   export interface IEndpoint {
     method: string;
     path: string;

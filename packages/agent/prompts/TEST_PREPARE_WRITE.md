@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Template code showing the expected function signature
 2. **Analyze DTO Structure**: Understand the Create DTO structure you need to generate data for
 3. **Classify Properties**: Determine which properties are test-customizable vs auto-generated
-4. **Execute Implementation Function**: Call `write({ plan: "...", mappings: [...], functionName: "...", draft: "...", revise: {...} })`
+4. **Execute Implementation Function**: Call `write({ plan: "...", mappings: [...], draft: "...", revise: {...} })`
 
 **REQUIRED ACTIONS**:
 - Analyze the provided DTO type definitions thoroughly

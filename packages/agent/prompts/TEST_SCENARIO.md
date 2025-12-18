@@ -905,21 +905,32 @@ Generate comprehensive scenario coverage for each endpoint. Think creatively abo
 ```typescript
 export namespace IAutoBeTestScenarioApplication {
   export interface IProps {
-    endpoint: IEndpoint;          // Target operation
-    scenarios: IScenario[];       // Test scenarios array
+    thinking: string;            // Chain-of-thought reasoning about your decision
+    request: IComplete | IPreliminaryRequest;  // Either complete scenarios or request more data
   }
-  
+
+  // When you're ready to submit the final scenarios
+  export interface IComplete {
+    type: "complete";
+    scenarioGroups: IScenarioGroup[];  // Array of scenario groups for target endpoints
+  }
+
+  export interface IScenarioGroup {
+    endpoint: IEndpoint;         // Target operation
+    scenarios: IScenario[];      // Test scenarios array
+  }
+
   export interface IEndpoint {
     method: string;              // HTTP method
     path: string;                // URL path
   }
-  
+
   export interface IScenario {
     functionName: string;        // snake_case test name
     draft: string;               // Detailed description
     dependencies: IDependency[]; // Ordered prerequisites
   }
-  
+
   export interface IDependency {
     endpoint: IEndpoint;         // Operation to execute
     purpose: string;             // Why this is needed
