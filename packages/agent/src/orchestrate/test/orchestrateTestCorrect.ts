@@ -1,9 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
   AutoBeTestCorrectEvent,
-  AutoBeTestGenerationWriteFunction,
+  AutoBeTestGenerateWriteFunction,
   AutoBeTestPrepareWriteFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -20,7 +20,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
-import { transformTestCorrectHistory } from "./histories/transformTestCorrectHistories";
+import { transformTestCorrectOverallHistory } from "./histories/transformTestCorrectOverallHistory";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestAgentResult } from "./structures/IAutoBeTestAgentResult";
@@ -139,17 +139,17 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
   );
 
   const helperFunctions: (
-    | AutoBeTestAuthorizationWriteFunction
-    | AutoBeTestGenerationWriteFunction
+    | AutoBeTestAuthorizeWriteFunction
+    | AutoBeTestGenerateWriteFunction
     | AutoBeTestPrepareWriteFunction
   )[] =
     item.type === "operation"
       ? [
-          ...item.authorizationFunctions,
-          ...item.generationFunctions,
+          ...item.authorizeFunctions,
+          ...item.generateFunctions,
           ...item.prepareFunctions,
         ]
-      : item.type === "generation"
+      : item.type === "generate"
         ? [item.prepareFunction]
         : [];
 
@@ -221,7 +221,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...(await transformTestCorrectHistory(ctx, {
+    ...(await transformTestCorrectOverallHistory(ctx, {
       instruction: props.instruction,
       target: props.target,
       failures: [

@@ -5,6 +5,8 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request specific analysis files
  * that provide business requirements and domain context.
+ *
+ * @author Samchon
  */
 export interface IAutoBePreliminaryGetAnalysisFiles {
   /**

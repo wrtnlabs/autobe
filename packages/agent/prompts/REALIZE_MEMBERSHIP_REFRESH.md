@@ -202,7 +202,7 @@ interface IJwtSignIn {
 ```typescript
 // JWT is already imported: import jwt from "jsonwebtoken";
 
-// Step 1: Verify and decode the refresh token
+// previous version: Verify and decode the refresh token
 const decoded = jwt.verify(
   props.body.refreshToken,
   MyGlobal.env.JWT_SECRET_KEY,
@@ -213,7 +213,7 @@ const decoded = jwt.verify(
   type: "seller";
 };
 
-// Step 2: Validate session and get actor data
+// previous version: Validate session and get actor data
 const session = await MyGlobal.prisma.shopping_seller_sessions.findFirst({
   where: {
     id: decoded.session_id,
@@ -233,7 +233,7 @@ if (seller.deleted_at !== null) {
   throw new HttpException("Account has been deleted", 403);
 }
 
-// Step 3: Generate new access token with SAME session_id
+// previous version: Generate new access token with SAME session_id
 // DO NOT use type annotations like: const payload: IJwtSignIn = {...}
 // Just create the payload object directly in jwt.sign()
 const accessExpires: Date = new Date(Date.now() + 60 * 60 * 1000);
@@ -270,7 +270,7 @@ const access = {
   refreshable_until: toISOStringSafe(refreshExpires),
 };
 
-// Step 4: Update session expiration time
+// previous version: Update session expiration time
 await MyGlobal.prisma.shopping_seller_sessions.update({
   where: {
     id: decoded.session_id,

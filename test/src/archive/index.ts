@@ -1,7 +1,6 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
-import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { IAutoBeCompilerListener } from "@autobe/interface";
+import { AutoBePhase, IAutoBeCompilerListener } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
@@ -10,10 +9,9 @@ import typia from "typia";
 import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
 
-type Step = keyof AutoBeState;
 interface ITestFunction {
   name: string;
-  step: Step;
+  phase: AutoBePhase;
   project: AutoBeExampleProject;
   execute: (props: {
     factory: TestFactory;
@@ -31,7 +29,7 @@ const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
   account: 5,
 };
 
-const STEP_INDEXES: Record<Step, number> = {
+const PHASE_INDEXES: Record<AutoBePhase, number> = {
   analyze: 0,
   prisma: 1,
   interface: 2,
@@ -54,13 +52,13 @@ const collect = async (): Promise<ITestFunction[]> => {
         if (key.startsWith("archive_") === false || typeof value !== "function")
           continue;
         const step: string = key.split("archive_")?.[1] ?? "";
-        if (typia.is<Step>(step) === false) continue;
+        if (typia.is<AutoBePhase>(step) === false) continue;
         typia.misc.literals<AutoBeExampleProject>().forEach((project) => {
           container.push({
             name: key,
             execute: (props) => value(props),
             project,
-            step,
+            phase: step,
           });
         });
       }
@@ -68,8 +66,8 @@ const collect = async (): Promise<ITestFunction[]> => {
   };
   await iterate(`${TestGlobal.ROOT}/src/archive/features`);
   container.sort((a, b) => {
-    const x: number = PROJECT_INDEXES[a.project] * 100 + STEP_INDEXES[a.step];
-    const y: number = PROJECT_INDEXES[b.project] * 100 + STEP_INDEXES[b.step];
+    const x: number = PROJECT_INDEXES[a.project] * 100 + PHASE_INDEXES[a.phase];
+    const y: number = PROJECT_INDEXES[b.project] * 100 + PHASE_INDEXES[b.phase];
     return x - y;
   });
 
@@ -81,8 +79,8 @@ const collect = async (): Promise<ITestFunction[]> => {
   return container.filter(
     (func) =>
       projects.some((v) => v.includes(func.project)) &&
-      STEP_INDEXES[func.step] >= (STEP_INDEXES[from as "analyze"] ?? 0) &&
-      STEP_INDEXES[func.step] <= (STEP_INDEXES[to as "realize"] ?? 4),
+      PHASE_INDEXES[func.phase] >= (PHASE_INDEXES[from as "analyze"] ?? 0) &&
+      PHASE_INDEXES[func.phase] <= (PHASE_INDEXES[to as "realize"] ?? 4),
   );
 };
 
@@ -147,7 +145,7 @@ const main = async (): Promise<void> => {
   console.log("");
   for (const tf of testFunctions)
     console.log(
-      `- (${tf.project}, ${tf.step})`,
+      `- (${tf.project}, ${tf.phase})`,
       `- code results/${TestGlobal.vendorModel}/${tf.project}/realize`,
     );
   console.log("");
@@ -161,7 +159,7 @@ const main = async (): Promise<void> => {
   for (const tf of testFunctions) {
     console.log(StringUtil.trim`
       -----------------------------------------------------------
-        ${tf.project}, ${tf.step}
+        ${tf.project}, ${tf.phase}
       -----------------------------------------------------------
     `);
     const start: Date = new Date();

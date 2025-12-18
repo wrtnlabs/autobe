@@ -7,5 +7,5 @@ export const transformTestValidateEvent = <T extends IAutoBeTestAgentResult>(
   item: T,
 ): T => ({
   ...item,
-  function: event.function,
+  operationFunction: event.function,
 });

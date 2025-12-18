@@ -42,7 +42,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You MUST execute the following 4-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### Step 1: **think** - Deep Compilation Error Analysis and Correction Strategy
+### **think** - Deep Compilation Error Analysis and Correction Strategy
 
 Perform a comprehensive analysis of all compilation errors to develop targeted correction strategies.
 
@@ -75,7 +75,7 @@ This step involves:
    - Document any scenario adaptations needed
    - Assess overall code quality and standards compliance
 
-### Step 2: **draft** - Draft Corrected Implementation
+### **draft** - Draft Corrected Implementation
 - Generate the first corrected version of the test code
 - Address ALL identified compilation errors systematically
 - Preserve the original business logic and test workflow
@@ -83,7 +83,7 @@ This step involves:
 - Follow all established conventions and type safety requirements
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 3-4: **revise** - Review and Final Implementation
+### previous version-4: **revise** - Review and Final Implementation
 
 **🔥 CRITICAL: THE REVISE STEP IS WHERE YOU FIX YOUR MISTAKES - DO NOT SKIP OR RUSH! 🔥**
 
@@ -164,7 +164,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 
 **CRITICAL**: You must follow ALL instructions from the original test writing system prompt (marked as [SYSTEM PROMPT: TEST_WRITE]) when making corrections.
 
-**🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED - THIS IS WHERE YOU FIX ERRORS! 🚨**
+**🚨 MANDATORY: previous version revise MUST ALWAYS BE PERFORMED - THIS IS WHERE YOU FIX ERRORS! 🚨**
 
 **THE REVISE STEP IS YOUR SALVATION - USE IT PROPERLY:**
 1. **revise.review is NOT a formality** - It's where you FIND your mistakes
@@ -185,7 +185,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 - Even if you think the draft is perfect, you MUST perform the revise step
 - The revise.review MUST thoroughly check ALL prohibitions from [SYSTEM PROMPT: TEST_WRITE] AND all patterns from [SYSTEM PROMPT: TEST_CORRECT]
 - The revise.final MUST incorporate ALL fixes for issues found in review
-- This is NOT optional - failing to properly execute Step 4 means compilation failure
+- This is NOT optional - failing to properly execute previous version means compilation failure
 
 ## 2. TypeScript Compilation Results Analysis
 
@@ -1017,12 +1017,12 @@ When you encounter errors like:
    ```
 
 3. **THE INVESTIGATION CHECKLIST**
-   - **Step 1**: Read the EXACT type definition
-   - **Step 2**: Determine if the property exists AT ALL (often it doesn't!)
-   - **Step 3**: IF it doesn't exist, check for properties with SIMILAR meanings
-   - **Step 4**: Check naming conventions (password → password_hash, userName → user_name, etc.)
-   - **Step 5**: Consider the LOGICAL intent (what was the code TRYING to do?)
-   - **Step 6**: Make the decision: REMOVE (if truly non-existent) or REPLACE (if similar exists)
+   - **previous version**: Read the EXACT type definition
+   - **previous version**: Determine if the property exists AT ALL (often it doesn't!)
+   - **previous version**: IF it doesn't exist, check for properties with SIMILAR meanings
+   - **previous version**: Check naming conventions (password → password_hash, userName → user_name, etc.)
+   - **previous version**: Consider the LOGICAL intent (what was the code TRYING to do?)
+   - **previous version**: Make the decision: REMOVE (if truly non-existent) or REPLACE (if similar exists)
 
 4. **COMMON MISLEADING PATTERNS**
    ```typescript

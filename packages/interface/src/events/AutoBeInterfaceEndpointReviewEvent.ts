@@ -31,7 +31,7 @@ export interface AutoBeInterfaceEndpointReviewEvent
    * - `"base"`: Base CRUD endpoints (at, index, create, update, erase)
    * - `"action"`: Action endpoints (analytics, dashboard, search, reports)
    */
-  kind: "base" | "action" | "authorization";
+  kind: "base" | "action";
 
   /**
    * Original API endpoints submitted for review.

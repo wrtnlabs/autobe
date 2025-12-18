@@ -440,14 +440,14 @@ Follow this decision tree for EVERY operation you implement:
 START: Implementing operation
     ↓
 ┌───┴────────────────────────────────────────────────┐
-│ STEP 1: Analyze the operation                     │
+│ previous version: Analyze the operation                     │
 │ - What DTOs are involved?                          │
 │ - What database tables are accessed?               │
 │ - What transformations are needed?                 │
 └───┬────────────────────────────────────────────────┘
     ↓
 ┌───┴────────────────────────────────────────────────┐
-│ STEP 2: Check for Collectors (CREATE operations)  │
+│ previous version: Check for Collectors (CREATE operations)  │
 │                                                     │
 │ For POST/CREATE operations:                        │
 │ - Request collectors via getRealizeCollectors      │
@@ -459,7 +459,7 @@ START: Implementing operation
 └───┬────────────────────────────────────────────────┘
     ↓
 ┌───┴────────────────────────────────────────────────┐
-│ STEP 3: Check for Transformers (READ operations)  │
+│ previous version: Check for Transformers (READ operations)  │
 │                                                     │
 │ For GET/READ operations:                           │
 │ - Request transformers via getRealizeTransformers  │
@@ -471,7 +471,7 @@ START: Implementing operation
 └───┬────────────────────────────────────────────────┘
     ↓
 ┌───┴────────────────────────────────────────────────┐
-│ STEP 4: Implement with chosen pattern             │
+│ previous version: Implement with chosen pattern             │
 │                                                     │
 │ Pattern A: WITH Collector/Transformer              │
 │ → Go to LEVEL 3A                                   │
@@ -874,7 +874,7 @@ export async function postShoppingSales(props: {
   customer: ActorPayload;  // Logged-in customer from auth
   body: IShoppingSale.ICreate;
 }): Promise<IShoppingSale> {
-  // Step 1: Collector transforms API DTO → Prisma CreateInput
+  // previous version: Collector transforms API DTO → Prisma CreateInput
   // Automatically handles: UUIDs, timestamps, nested relationships
   const created = await MyGlobal.prisma.shopping_sales.create({
     data: await ShoppingSaleCollector.collect({
@@ -885,7 +885,7 @@ export async function postShoppingSales(props: {
     ...ShoppingSaleTransformer.select()  // Fetch fields needed by transformer
   });
 
-  // Step 2: Transformer converts Prisma result → API DTO
+  // previous version: Transformer converts Prisma result → API DTO
   // Automatically handles: date conversion, null/undefined, branded types
   return await ShoppingSaleTransformer.transform(created);
 }
@@ -935,7 +935,7 @@ return {
 export async function getBbsArticlesById(props: {
   articleId: string & tags.Format<"uuid">;
 }): Promise<IBbsArticle> {
-  // Step 1: Query database with transformer's select
+  // previous version: Query database with transformer's select
   // This ensures we fetch all fields the transformer needs (including nested relations)
   const article = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.articleId },
@@ -946,7 +946,7 @@ export async function getBbsArticlesById(props: {
     throw new HttpException("Article not found", 404);
   }
 
-  // Step 2: Transformer converts Prisma result → API DTO
+  // previous version: Transformer converts Prisma result → API DTO
   // Automatically handles: date conversion, null/undefined mapping, branded types
   return await BbsArticleTransformer.transform(article);
 }
@@ -969,7 +969,7 @@ export async function putBbsArticlesById(props: {
   articleId: string & tags.Format<"uuid">;
   body: IBbsArticle.IUpdate;
 }): Promise<IBbsArticle> {
-  // Step 1: Verify record exists and user is the author
+  // previous version: Verify record exists and user is the author
   const existing = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.articleId },
   });
@@ -983,7 +983,7 @@ export async function putBbsArticlesById(props: {
     throw new HttpException("Forbidden - You can only edit your own articles", 403);
   }
 
-  // Step 2: Collector transforms update DTO → Prisma UpdateInput
+  // previous version: Collector transforms update DTO → Prisma UpdateInput
   // Handles: timestamp updates, field mapping, nested updates
   const updated = await MyGlobal.prisma.bbs_articles.update({
     where: { id: props.articleId },
@@ -995,7 +995,7 @@ export async function putBbsArticlesById(props: {
     ...BbsArticleTransformer.select(),
   });
 
-  // Step 3: Transformer converts result → API DTO
+  // previous version: Transformer converts result → API DTO
   return await BbsArticleTransformer.transform(updated);
 }
 ```
@@ -1012,7 +1012,7 @@ export async function deleteBbsArticlesById(props: {
   member: ActorPayload;  // Logged-in member from auth
   articleId: string & tags.Format<"uuid">;
 }): Promise<void> {
-  // Step 1: Verify record exists and user owns it
+  // previous version: Verify record exists and user owns it
   const existing = await MyGlobal.prisma.bbs_articles.findUnique({
     where: { id: props.articleId },
   });
@@ -1026,7 +1026,7 @@ export async function deleteBbsArticlesById(props: {
     throw new HttpException("Forbidden", 403);
   }
 
-  // Step 2: Delete (no transformer needed for void return)
+  // previous version: Delete (no transformer needed for void return)
   await MyGlobal.prisma.bbs_articles.delete({
     where: { id: props.articleId },
   });
@@ -1048,7 +1048,7 @@ export async function patchShoppingSales(props: {
   const limit = props.body.limit ?? 100;
   const skip = (page - 1) * limit;
 
-  // Step 1: Query data with transformer's select
+  // previous version: Query data with transformer's select
   // Ensures we fetch all fields needed for transformation
   const data = await MyGlobal.prisma.shopping_sales.findMany({
     where: { deleted_at: null },
@@ -1058,13 +1058,13 @@ export async function patchShoppingSales(props: {
     ...ShoppingSaleAtSummaryTransformer.select(),
   });
 
-  // Step 2: Count total records (use same where condition)
+  // previous version: Count total records (use same where condition)
   // IMPORTANT: Do NOT use Promise.all - use sequential await
   const total = await MyGlobal.prisma.shopping_sales.count({
     where: { deleted_at: null },
   });
 
-  // Step 3: Transform each record using ArrayUtil.asyncMap
+  // previous version: Transform each record using ArrayUtil.asyncMap
   // This handles async transformation of arrays correctly
   return {
     data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
@@ -1589,7 +1589,7 @@ return {
 **Example Verification Process**:
 
 ```typescript
-// Step 1: READ the Prisma schema
+// previous version: READ the Prisma schema
 model shopping_sales {
   id          String   @id @db.Uuid
   title       String   @db.VarChar
@@ -1600,7 +1600,7 @@ model shopping_sales {
   customer    shopping_customers @relation(fields: [customer_id], references: [id])
 }
 
-// Step 2: VERIFY each field in your select
+// previous version: VERIFY each field in your select
 const sale = await MyGlobal.prisma.shopping_sales.findUnique({
   where: { id: props.saleId },
   select: {
@@ -2091,7 +2091,7 @@ data: {
 **Example Verification Process**:
 
 ```typescript
-// Step 1: READ the Prisma schema
+// previous version: READ the Prisma schema
 model shopping_sale_reviews {
   id                   String   @id @db.Uuid
   content              String   @db.Text
@@ -2104,7 +2104,7 @@ model shopping_sale_reviews {
   customer shopping_customers @relation(fields: [shopping_customer_id], references: [id])
 }
 
-// Step 2: VERIFY each field in your CreateInput
+// previous version: VERIFY each field in your CreateInput
 await MyGlobal.prisma.shopping_sale_reviews.create({
   data: {
     id: v4(),              // ✅ Verified: exists as String @id @db.Uuid
@@ -2170,7 +2170,7 @@ TypeScript distinguishes between THREE different nullability patterns:
 
 **Your Job**: Convert database `null` to the correct TypeScript representation (`undefined` or `null`) based on the API interface definition.
 
-### Step 1: Identify the Interface Pattern
+### Identify the Interface Pattern
 
 ```typescript
 // Look at the ACTUAL interface definition:
@@ -2191,7 +2191,7 @@ interface IExample {
 }
 ```
 
-### Step 2: Apply the Correct Pattern
+### Apply the Correct Pattern
 
 **EXAMPLE 1 - Optional field (field?: Type) - Shopping Sale Guest Customer**
 
@@ -2255,7 +2255,7 @@ export async function getBbsArticleById(props: {
 // deleted_at: article.deleted_at ?? undefined  // ERROR! Type mismatch
 ```
 
-### Step 3: Common Patterns to Remember
+### Common Patterns to Remember
 
 ```typescript
 // DATABASE → API CONVERSIONS (most common scenarios)
@@ -2867,7 +2867,7 @@ export async function postShoppingSaleReview(props: {
   saleId: string & tags.Format<"uuid">;
   body: IShoppingSaleReview.ICreate;
 }): Promise<IShoppingSaleReview> {
-  // Step 1: Verify sale exists
+  // previous version: Verify sale exists
   const sale = await MyGlobal.prisma.shopping_sales.findUnique({
     where: { id: props.saleId },
   });
@@ -2876,7 +2876,7 @@ export async function postShoppingSaleReview(props: {
     throw new HttpException("Sale not found", 404);
   }
 
-  // Step 2: Manually construct Prisma CreateInput
+  // previous version: Manually construct Prisma CreateInput
   // You must handle everything a collector would do
   const created = await MyGlobal.prisma.shopping_sale_reviews.create({
     data: {
@@ -2892,7 +2892,7 @@ export async function postShoppingSaleReview(props: {
     },
   });
 
-  // Step 3: Manually construct response DTO
+  // previous version: Manually construct response DTO
   // You must handle everything a transformer would do
   return {
     id: created.id,
@@ -2924,7 +2924,7 @@ export async function postShoppingSaleReview(props: {
 export async function getShoppingSaleById(props: {
   saleId: string & tags.Format<"uuid">;
 }): Promise<IShoppingSale> {
-  // Step 1: Query database
+  // previous version: Query database
   const sale = await MyGlobal.prisma.shopping_sales.findUnique({
     where: { id: props.saleId },
   });
@@ -2933,7 +2933,7 @@ export async function getShoppingSaleById(props: {
     throw new HttpException("Sale not found", 404);
   }
 
-  // Step 2: Manually construct response DTO with proper null/undefined handling
+  // previous version: Manually construct response DTO with proper null/undefined handling
   return {
     id: sale.id,
     title: sale.title,
@@ -2974,7 +2974,7 @@ export async function putBbsArticleCommentsById(props: {
   commentId: string & tags.Format<"uuid">;
   body: IBbsComment.IUpdate;
 }): Promise<IBbsComment> {
-  // Step 1: Verify comment exists
+  // previous version: Verify comment exists
   const existing = await MyGlobal.prisma.bbs_article_comments.findUnique({
     where: { id: props.commentId },
   });
@@ -2993,7 +2993,7 @@ export async function putBbsArticleCommentsById(props: {
     throw new HttpException("Forbidden - You can only edit your own comments", 403);
   }
 
-  // Step 2: Manually construct update data
+  // previous version: Manually construct update data
   const updated = await MyGlobal.prisma.bbs_article_comments.update({
     where: { id: props.commentId },
     data: {
@@ -3002,7 +3002,7 @@ export async function putBbsArticleCommentsById(props: {
     },
   });
 
-  // Step 3: Manually construct response
+  // previous version: Manually construct response
   return {
     id: updated.id,
     content: updated.content,
@@ -3068,7 +3068,7 @@ export async function patchBbsArticleComments(props: {
   const limit = props.body.limit ?? 100;
   const skip = (page - 1) * limit;
 
-  // Step 1: Query data (DO NOT use Promise.all)
+  // previous version: Query data (DO NOT use Promise.all)
   const data = await MyGlobal.prisma.bbs_article_comments.findMany({
     where: { bbs_article_id: props.articleId },
     skip,
@@ -3076,12 +3076,12 @@ export async function patchBbsArticleComments(props: {
     orderBy: { created_at: "desc" },
   });
 
-  // Step 2: Count total
+  // previous version: Count total
   const total = await MyGlobal.prisma.bbs_article_comments.count({
     where: { bbs_article_id: props.articleId },
   });
 
-  // Step 3: Manually transform each record
+  // previous version: Manually transform each record
   // Use regular .map() because transformations are synchronous
   return {
     data: data.map((comment) => ({

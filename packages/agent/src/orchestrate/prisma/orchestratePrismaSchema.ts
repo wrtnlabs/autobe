@@ -58,13 +58,14 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey: string;
   },
 ): Promise<AutoBePrismaSchemaEvent> {
-  const preliminary: AutoBePreliminaryController<"analysisFiles"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBePrismaSchemaApplication>(),
-      source: SOURCE,
-      kinds: ["analysisFiles"],
-      state: ctx.state(),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBePrismaSchemaApplication>(),
+    source: SOURCE,
+    kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
+    state: ctx.state(),
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBePrismaSchemaApplication.IComplete | null> = {
       value: null,
@@ -92,6 +93,7 @@ async function process<Model extends ILlmSchema.Model>(
         targetComponent: props.component,
         otherTables: props.otherTables,
         instruction: props.instruction,
+        preliminary,
       }),
     });
     if (pointer.value !== null)
@@ -119,7 +121,9 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"analysisFiles">;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    >;
     targetComponent: AutoBePrisma.IComponent;
     otherTables: string[];
     build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
@@ -186,15 +190,17 @@ function createController<Model extends ILlmSchema.Model>(
       ],
     };
   };
-  const application: ILlmApplication<Model> = collection[
-    ctx.model === "chatgpt"
-      ? "chatgpt"
-      : ctx.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      ctx.model === "chatgpt"
+        ? "chatgpt"
+        : ctx.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

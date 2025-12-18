@@ -1,21 +1,40 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
-import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  IValidation,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
 import { IJsonSchemaApplication } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
+import { fixPreliminaryApplication } from "./internal/fixPrelminaryApplication";
 import { validatePreliminary } from "./internal/validatePreliminary";
 import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
+/**
+ * RAG controller for incremental context loading.
+ *
+ * Manages LLM's incremental data requests via function calling, preventing
+ * duplicates and auto-resolving dependencies.
+ *
+ * - `all`: globally available data (from state)
+ * - `local`: currently loaded data (agent context)
+ * - Auto-complements prerequisites, $ref dependencies, and neighbors
+ *
+ * @author Samchon
+ */
 export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   // METADATA
   private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
@@ -27,7 +46,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly local: Pick<IAutoBePreliminaryCollection, Kind>;
   private readonly config: AutoBePreliminaryController.IConfig<Kind>;
+  private readonly state: AutoBeState;
 
+  /**
+   * Initializes controller with data collections and auto-complements
+   * dependencies.
+   *
+   * @param props Constructor configuration including kinds, state, and initial
+   *   data.
+   */
   public constructor(props: AutoBePreliminaryController.IProps<Kind>) {
     this.source = props.source;
     this.source_id = v7();
@@ -80,6 +107,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       });
     })();
 
+    this.state = props.state;
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
@@ -87,43 +115,132 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
       local: this.local as IAutoBePreliminaryCollection,
+      prerequisite: false,
     });
   }
 
+  /**
+   * Validates request for duplicates and non-existent items.
+   *
+   * @param input LLM's function calling request to validate.
+   * @returns Validation result with errors if duplicates or non-existent items
+   *   found.
+   */
   public validate(
     input: IAutoBePreliminaryRequest<Kind>,
   ): IValidation<IAutoBePreliminaryRequest<Kind>> {
     return validatePreliminary(this, input);
   }
 
+  /**
+   * Generates dynamic system prompts with `LOADED`/`AVAILABLE` lists.
+   *
+   * @returns Assistant and system messages with loaded/available item lists.
+   */
   public getHistories(): IMicroAgenticaHistoryJson[] {
     return transformPreliminaryHistory(this);
   }
 
+  /**
+   * Returns the orchestration source that created this controller.
+   *
+   * @returns Source event type (e.g., `"realizeWrite"`, `"interfaceSchema"`).
+   */
   public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
     return this.source;
   }
 
+  /**
+   * Returns data types enabled for this controller.
+   *
+   * @returns Array of enabled kinds (e.g., `["prismaSchemas",
+   *   "interfaceSchemas"]`).
+   */
   public getKinds(): Kind[] {
     return this.kinds;
   }
 
+  /**
+   * Returns configuration (e.g., Prisma format: `"ast"` | `"text"`).
+   *
+   * @returns Controller configuration object.
+   */
   public getConfig(): AutoBePreliminaryController.IConfig<Kind> {
     return this.config;
   }
 
+  /**
+   * Returns function calling type names available in LLM application.
+   *
+   * @returns Array of request type names from `oneOf` union.
+   */
   public getArgumentTypeNames(): string[] {
     return this.argumentTypeNames;
   }
 
+  /**
+   * Returns all globally available data from state.
+   *
+   * @returns Complete dataset that can be requested.
+   */
   public getAll(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.all;
   }
 
+  /**
+   * Returns currently loaded data in agent context.
+   *
+   * @returns Subset of data already provided to LLM.
+   */
   public getLocal(): Pick<IAutoBePreliminaryCollection, Kind> {
     return this.local;
   }
 
+  /**
+   * Returns the current AutoBe state.
+   *
+   * @returns Current pipeline state containing all phase histories.
+   */
+  public getState(): AutoBeState {
+    return this.state;
+  }
+
+  /**
+   * Dynamically adjusts LLM application schema at runtime.
+   *
+   * Removes `getPreviousXXX` types from union/oneOf when no previous iteration
+   * exists. Mutates application's `anyOf`/`oneOf` array, `$defs`, and
+   * `discriminator` mapping. Also erases corresponding `kinds` from
+   * controller's `all`/`local` collections.
+   *
+   * @param application LLM application to modify (mutated in-place).
+   */
+  public fixApplication<Model extends ILlmSchema.Model>(
+    application: ILlmApplication<Model>,
+  ): ILlmApplication<Model> {
+    assertSchemaModel<Model>(application.model);
+    fixPreliminaryApplication({
+      state: this.state,
+      preliminary: this,
+      application: application as ILlmApplication<Exclude<Model, "3.0">>,
+      model: application.model,
+    });
+    return application;
+  }
+
+  /**
+   * Runs RAG loop for incremental context loading.
+   *
+   * Repeats until process returns non-null value or exceeds the maximum number
+   * of iterations (`AutoBeConfigConstant.RAG_LIMIT`). Each iteration: LLM
+   * requests data → `orchestratePreliminary` adds to `local` → next iteration
+   * with updated context.
+   *
+   * @param ctx AutoBe context for `conversate` and state access.
+   * @param process Callback that runs LLM `conversate` and returns result.
+   * @returns Final value when process returns non-null or throws after
+   *   exceeding `AutoBeConfigConstant.RAG_LIMIT` retries.
+   */
   public async orchestrate<Model extends ILlmSchema.Model, T>(
     ctx: AutoBeContext<Model>,
     process: (
@@ -155,21 +272,42 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 }
 export namespace AutoBePreliminaryController {
+  /** Constructor props for `AutoBePreliminaryController`. */
   export interface IProps<Kind extends AutoBePreliminaryKind> {
+    /** Orchestration source creating this controller. */
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+
+    /** LLM application schema for function calling validation. */
     application: IJsonSchemaApplication;
+
+    /** Data types to enable (e.g., `["prismaSchemas", "interfaceOperations"]`). */
     kinds: Kind[];
+
+    /** Current AutoBe state containing generated artifacts. */
     state: AutoBeState;
+
+    /** Override globally available data (defaults to state). */
     all?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
+
+    /** Initial loaded data for agent context. */
     local?: Partial<Pick<IAutoBePreliminaryCollection, Kind>>;
+
+    /** Controller configuration options. */
     config?: Partial<IConfig<Kind>>;
   }
+
+  /** Result from orchestration process callback. */
   export interface IProcessResult<T> {
+    /** Returned value if task completed, `undefined` if needs more context. */
     value: T | undefined;
+
+    /** Conversation histories including function calling. */
     histories: IMicroAgenticaHistoryJson[];
   }
 
+  /** Controller configuration options. */
   export interface IConfig<Kind extends AutoBePreliminaryKind> {
+    /** Prisma schema format: `"ast"` (JSON) or `"text"` (Prisma DSL). */
     prisma: Kind extends "prismaSchemas" ? "ast" | "text" : never;
   }
 }

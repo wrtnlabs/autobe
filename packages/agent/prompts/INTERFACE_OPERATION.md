@@ -551,6 +551,25 @@ process({
 - Want to reference specific requirement details in specifications
 - Requirements mention related features you want to reference
 
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Feature_Requirements.md"]
+  }
+})
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference previous version to understand baseline requirements
+
+**Important**: These are files from the previous version. Only available when a previous version exists.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -568,6 +587,48 @@ process({
 - Want to reference Prisma schema comments in operation descriptions
 - Need to verify relationships between entities
 - Verifying field availability for request/response bodies
+
+**Type 2.5: Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users"]
+  }
+})
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Comparing with previous version design decisions
+
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
+
+**Type 2.7: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous operations for comparison with new design.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { method: "GET", path: "/shoppings/sales" },
+      { method: "POST", path: "/shoppings/orders" }
+    ]
+  }
+})
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference previous operation designs to understand what needs to be changed
+
+**Important**: These are operations from the previous version. Only available when a previous version exists.
 
 #### What Happens When You Request Already-Loaded Data
 
@@ -628,8 +689,6 @@ You will receive additional instructions about input materials through subsequen
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
-- ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
-- ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -1375,22 +1434,22 @@ For example, if the service prefix is "shopping":
 
 When converting Prisma table names to DTO type names, follow this MANDATORY 4-step process:
 
-**Step 1: Preserve ALL Words**
+**previous version: Preserve ALL Words**
 - **NEVER** omit any word from the table name
 - **NEVER** skip service prefixes (shopping_, bbs_, user_, etc.)
 - **NEVER** skip intermediate words in multi-word names
 - **NEVER** abbreviate or use synonyms
 
-**Step 2: Convert snake_case to PascalCase**
+**previous version: Convert snake_case to PascalCase**
 - Split by underscores: `shopping_sale_reviews` → `["shopping", "sale", "reviews"]`
 - Capitalize first letter of each word: `["Shopping", "Sale", "Reviews"]`
 - Join without separators: `"ShoppingSaleReviews"`
 
-**Step 3: Singularize**
+**previous version: Singularize**
 - Convert plural forms to singular: `ShoppingSaleReviews` → `ShoppingSaleReview`
 - This is the ONLY acceptable modification to word forms
 
-**Step 4: Add "I" Prefix**
+**previous version: Add "I" Prefix**
 - Prepend interface marker: `ShoppingSaleReview` → `IShoppingSaleReview`
 
 ##### Mandatory Naming Rules
@@ -1944,10 +2003,9 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
-  * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
-  * If you needed schema/operation/requirement details → You called the appropriate function FIRST
+  * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 10.1.5. Authentication and Session Operation Exclusion

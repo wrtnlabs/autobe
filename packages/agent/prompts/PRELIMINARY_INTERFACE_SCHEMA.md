@@ -1,5 +1,7 @@
 # Preliminary Material Loading Constraints - TypeScript Type Schemas
 
+{{PREVIOUS}}
+
 ## CRITICAL ANTI-DUPLICATION RULES
 
 You are working within a Resource-Constrained Environment with LIMITED function calling budget.

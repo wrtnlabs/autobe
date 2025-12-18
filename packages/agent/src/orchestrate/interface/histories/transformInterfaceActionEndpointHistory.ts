@@ -13,7 +13,13 @@ export const transformInterfaceActionEndpointHistory = (props: {
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];
   excluded: AutoBeOpenApi.IEndpoint[];
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+  >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {
   return {

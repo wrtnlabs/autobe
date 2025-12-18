@@ -117,9 +117,83 @@ You will receive the following materials to guide your schema generation:
 - Constraint requirements and indexing strategies
 - Performance optimization hints
 
-**Note**: All necessary information is provided initially. No additional context requests are needed.
+**Note**: Additional related analysis documents can be requested via function calling when needed for cross-component context.
 
-### 3.2. Table List Flexibility
+### 3.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch supplementary context when the initially provided materials are insufficient. Use these strategically to enhance schema design quality.
+
+**CRITICAL EFFICIENCY REQUIREMENTS**:
+- Request ONLY files you actually need for comprehensive schema design
+- Use batch requests to minimize function call count
+- Never request files you already have
+
+#### Request Analysis Files
+
+```typescript
+process({
+  thinking: "Missing related component context for foreign key design. Need them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Related_Component.md", "Dependency_Features.md"]
+  }
+});
+```
+
+**When to use**:
+- Schema requires understanding of related components
+- Need consistent terminology across domain boundaries
+- Foreign key relationships require understanding of referenced entities
+- Cross-cutting concerns need alignment
+
+**When NOT to use**:
+- Target component requirements are self-contained
+- Foreign key references are clear from otherTables list
+- Schema design doesn't span multiple domains
+
+#### Load previous version Analysis Files
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous requirements for reference when designing modified version.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
+  }
+});
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference the previous version to understand what needs to be changed
+- Understanding the baseline design before applying modifications
+
+**Important**: These are files from the previous version. Only available when a previous version exists, NOT during initial generation.
+
+#### Load previous version Prisma Schemas
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous database schema for reference when modifying design.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["component_tables", "related_models"]
+  }
+});
+```
+
+**When to use**:
+- Regenerating due to user modification requests
+- Need to reference the previous version to understand what schemas need to be changed
+- Comparing baseline schema design before applying modifications
+
+**Important**: These are schemas from the previous version. Only available when a previous version exists, NOT during initial generation.
+
+### 3.3. Table List Flexibility
 
 The `targetComponent.tables` array serves as a **recommended starting point**, not an absolute constraint. You have the **authority and responsibility** to modify this list when necessary to maintain proper database normalization and design principles.
 
@@ -880,7 +954,7 @@ interface IModel {
 
 ## 11. Strategic Planning Process
 
-### Step 1: Strategic Database Design Analysis (plan)
+### Strategic Database Design Analysis (plan)
 
 Your plan should follow this structure:
 
@@ -928,7 +1002,7 @@ FINAL DESIGN PLANNING:
 - I will include actor_type field in polymorphic main entities
 ```
 
-### Step 2: Model Generation (models)
+### Model Generation (models)
 
 Generate AutoBePrisma.IModel[] array based on the strategic plan:
 - Create model objects for each table with exact names from targetComponent.tables (or adjusted list)

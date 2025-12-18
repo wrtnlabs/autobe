@@ -206,6 +206,24 @@ process({
 })
 ```
 
+**Type 1.5: Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to validate security changes.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Requirements.md", "Security_Policies.md"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for comprehensive security validation.
+
+**Important**: These are files from previous version. Only available when a previous version exists.
+
 **Type 2: Request Prisma Schemas**
 
 ```typescript
@@ -216,6 +234,24 @@ process({
   }
 })
 ```
+
+**Type 2.5: Load previous version Prisma Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of Prisma schemas to validate security pattern changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    schemaNames: ["users", "sessions", "tokens"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security field validation.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists.
 
 **Type 3: Request Interface Operations**
 
@@ -230,6 +266,27 @@ process({
   }
 })
 ```
+
+**Type 3.5: Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of operations to validate security context changes.",
+  request: {
+    type: "getPreviousInterfaceOperations",
+    endpoints: [
+      { path: "/auth/login", method: "post" },
+      { path: "/users", method: "post" }
+    ]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security pattern validation.
+
+**Important**: These are operations from previous version. Only available when a previous version exists.
 
 **Type 4: Request Interface Schemas**
 
@@ -264,6 +321,24 @@ This function CANNOT retrieve:
 
 **When NOT to use**:
 - ❌ To retrieve schemas you are supposed to review (they're ALREADY in your context)
+
+**Type 4.5: Load previous version Interface Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of interface schemas to validate security pattern changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IAdminAuth.ILogin", "ICustomerAuth.ILogin", "IUser.ISummary"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for security pattern analysis.
+
+**Important**: These are schemas from previous version. Only available when a previous version exists. Only retrieves EXISTING schemas from previous version.
 - ❌ To fetch IUserAuth.ILogin if that's your security review target
 - ❌ To "check" schemas you're actively working on
 
@@ -691,18 +766,18 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 **Concrete Detection Example**:
 
 ```typescript
-// Step 1: You're reviewing schema "IBbsArticle.ICreate"
-// Step 2: Find operation using this schema
+// previous version: You're reviewing schema "IBbsArticle.ICreate"
+// previous version: Find operation using this schema
 {
   path: "POST /articles",
   authorizationActor: "member",  // ← CRITICAL: Member is the actor!
   requestBody: { typeName: "IBbsArticle.ICreate" }
 }
 
-// Step 3: Identify actor pattern
+// previous version: Identify actor pattern
 // authorizationActor: "member" → *_member_id fields represent current actor
 
-// Step 4: Review the schema
+// previous version: Review the schema
 {
   "IBbsArticle.ICreate": {
     "properties": {
@@ -715,7 +790,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
   }
 }
 
-// Step 5: After deletion
+// previous version: After deletion
 {
   "IBbsArticle.ICreate": {
     "properties": {
@@ -1279,7 +1354,7 @@ Session context fields MUST be RETAINED:
 1. **Check operation suffix**:
    - `IEntity.ILogin` → ALWAYS require (self-login)
    - `IEntity.IJoin` → ALWAYS require (self-signup)
-   - `IEntity.ICreate` → Continue to step 2
+   - `IEntity.ICreate` → Continue to previous version
 
 2. **Check `operation.authorizationActor`**:
    - `null` → Self-signup (public registration) → REQUIRE
@@ -1439,18 +1514,57 @@ You must return a structured output following the `IAutoBeInterfaceSchemasSecuri
 ```typescript
 export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
   export interface IProps {
-    think: {
-      review: string;  // Security issues found
-      plan: string;    // Security fixes applied
-    };
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Modified schemas only
+    /**
+     * Think before you act.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  /**
+   * Request to validate schema security.
+   */
+  export interface IComplete {
+    type: "complete";
+    think: IThink;
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  /**
+   * Structured thinking process for security review.
+   */
+  export interface IThink {
+    review: string;  // Security issues found
+    plan: string;    // Security fixes applied
   }
 }
 ```
 
 ### 9.2. Field Specifications
 
-#### think.review
+#### thinking (IProps)
+Required self-reflection before action. For completion, summarize accomplishments concisely.
+
+#### request (IProps)
+Discriminated union: IComplete or preliminary data requests.
+
+#### think (IComplete)
+Structured thinking with review and plan sub-fields.
+
+#### think.review (IThink)
 **Document ALL security violations found**:
 ```markdown
 ## Security Violations Found

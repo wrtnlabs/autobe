@@ -15,6 +15,10 @@ export const transformInterfaceComplementHistory = (props: {
     | "prismaSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousInterfaceSchemas"
+    | "previousInterfaceOperations"
+    | "previousPrismaSchemas"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

@@ -2,6 +2,8 @@
 
 The following TypeScript type schemas have been loaded into your context through previous `process()` calls with `type: "getInterfaceSchemas"`.
 
+{{PREVIOUS}}
+
 These schema definitions are now available for you to reference. Use them to:
 - Verify property names, types, and required fields
 - Check DTO variant structures (.ICreate, .IUpdate, .ISummary, etc.)

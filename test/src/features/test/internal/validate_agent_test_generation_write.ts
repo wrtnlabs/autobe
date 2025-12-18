@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { orchestrateTestGenerationWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestGenerationWrite";
-import { IAutoBeTestGenerationWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestGenerationWriteResult";
+import { IAutoBeTestGenerateWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestGenerateWriteResult";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -55,7 +55,7 @@ export const validate_agent_test_generation_write = async (props: {
       const functionName: string = `prepare_random_${NamingConvention.snake(resourceName)}`;
 
       preparedFunctions.push({
-        kind: "prepare",
+        type: "prepare",
         endpoint: {
           method: op.method,
           path: op.path,
@@ -77,7 +77,7 @@ export const validate_agent_test_generation_write = async (props: {
   agent.on("vendorResponse", (e) => ArchiveLogger.event(start, e));
 
   // GENERATE GENERATION FUNCTIONS
-  const generationResults: IAutoBeTestGenerationWriteResult[] =
+  const generationResults: IAutoBeTestGenerateWriteResult[] =
     await orchestrateTestGenerationWrite(agent.getContext(), {
       instruction: "Generate generation functions for the prepared functions.",
       document,
@@ -162,7 +162,7 @@ const validate_agent_test_generation_correct = async <
   project: AutoBeExampleProject;
   props: {
     agent: AutoBeAgent<Model>;
-    generationResults: IAutoBeTestGenerationWriteResult[];
+    generationResults: IAutoBeTestGenerateWriteResult[];
   };
 }) => {
   const { agent, generationResults } = props.props;

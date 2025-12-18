@@ -1,6 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 export interface IAutoBeInterfaceActionEndpointReviewApplication {
@@ -54,12 +57,13 @@ export namespace IAutoBeInterfaceActionEndpointReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas;
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /**
-   * Action type for endpoint modifications.
-   */
+  /** Action type for endpoint modifications. */
   export type IAction = ICreate | IUpdate | IDelete;
 
   /**
@@ -193,8 +197,8 @@ export namespace IAutoBeInterfaceActionEndpointReviewApplication {
      * All endpoint modifications to apply.
      *
      * Include all create, update, and delete actions identified during review.
-     * Actions are validated and applied in order.
-     * If no modifications are needed, provide an empty array.
+     * Actions are validated and applied in order. If no modifications are
+     * needed, provide an empty array.
      */
     actions: IAction[];
 

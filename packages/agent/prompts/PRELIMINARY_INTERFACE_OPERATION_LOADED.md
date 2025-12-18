@@ -2,6 +2,8 @@
 
 The following API operations have been loaded into your context through previous `process()` calls with `type: "getInterfaceOperations"`.
 
+{{PREVIOUS}}
+
 These operation specifications are now available for you to reference. Use them to:
 - Understand existing API patterns and naming conventions
 - Ensure consistency with already-defined operations

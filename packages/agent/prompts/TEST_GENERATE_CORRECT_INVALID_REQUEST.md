@@ -77,9 +77,9 @@ You will receive compilation errors. Your responsibility is to:
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Invalid type generation
 export const generate_random_user = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.ICreate>
+    body?: DeepPartial<IUser.ICreate>
   }
 ): Promise<IUser> => {
   // Passing wrong types to prepare function
@@ -87,29 +87,29 @@ export const generate_random_user = async (
     email: 123 as any,          // 🚨 Wrong type
     age: "old" as any           // 🚨 Wrong type
   } as any);
-  
+
   const result = await api.functional.users.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 
 // ✅ CORRECTED VERSION - Fix type assertions
 export const generate_random_user = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.ICreate>
+    body?: DeepPartial<IUser.ICreate>
   }
 ): Promise<IUser> => {
-  const prepared = prepare_random_user(props.input);
-  
+  const prepared = prepare_random_user(props.body);
+
   const result = await api.functional.users.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 ```
@@ -124,38 +124,40 @@ export const generate_random_user = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Bypassing prepare function
 export const generate_random_product = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IProduct.ICreate>
+    body?: DeepPartial<IProduct.ICreate>
   }
 ): Promise<IProduct> => {
   // Not using prepare function at all!
   const result = await api.functional.products.create(
-    props.connection,
+    connection,
     {
-      name: 123 as any,           // 🚨 Wrong type
-      price: "expensive" as any,  // 🚨 Wrong type
-      stock: "lots" as any        // 🚨 Wrong type
+      body: {
+        name: 123 as any,           // 🚨 Wrong type
+        price: "expensive" as any,  // 🚨 Wrong type
+        stock: "lots" as any        // 🚨 Wrong type
+      }
     }
   );
-  
+
   return result;
 };
 
 // ✅ CORRECTED VERSION - Use prepare function
 export const generate_random_product = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IProduct.ICreate>
+    body?: DeepPartial<IProduct.ICreate>
   }
 ): Promise<IProduct> => {
-  const prepared = prepare_random_product(props.input);
-  
+  const prepared = prepare_random_product(props.body);
+
   const result = await api.functional.products.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 ```
@@ -170,43 +172,43 @@ export const generate_random_product = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Conditional invalid generation
 export const generate_random_order = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IOrder.ICreate> & { generateInvalid?: boolean }
+    body?: DeepPartial<IOrder.ICreate> & { generateInvalid?: boolean }
   }
 ): Promise<IOrder> => {
-  if (props.input?.generateInvalid) {
+  if (props.body?.generateInvalid) {
     // 🚨 DELETE this entire conditional block
     const prepared = prepare_random_order({
       items: "no items" as any,      // 🚨 Wrong type
       totalPrice: "free" as any      // 🚨 Wrong type
     } as any);
-    
+
     return await api.functional.orders.create(
-      props.connection,
-      prepared
+      connection,
+      { body: prepared }
     );
   }
-  
+
   // ✅ Keep only the valid generation code
-  const prepared = prepare_random_order(props.input);
-  return await api.functional.orders.create(props.connection, prepared);
+  const prepared = prepare_random_order(props.body);
+  return await api.functional.orders.create(connection, { body: prepared });
 };
 
 // ✅ CORRECTED VERSION - Remove invalid option
 export const generate_random_order = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IOrder.ICreate>  // No generateInvalid!
+    body?: DeepPartial<IOrder.ICreate>  // No generateInvalid!
   }
 ): Promise<IOrder> => {
-  const prepared = prepare_random_order(props.input);
-  
+  const prepared = prepare_random_order(props.body);
+
   const result = await api.functional.orders.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 ```
@@ -216,37 +218,41 @@ export const generate_random_order = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Wrong props structure
 export const generate_random_comment = async (
-  connection: api.IConnection,  // 🚨 Not using props object
-  articleId: string,
+  connection: api.IConnection,
+  articleId: string,  // 🚨 Not using props object for params
   input?: any  // 🚨 Using any type
 ): Promise<IComment> => {
   const prepared = prepare_random_comment(input as any);
-  
+
   const result = await api.functional.articles.comments.create(
     connection,
-    articleId,
-    prepared
+    {
+      articleId,
+      body: prepared
+    }
   );
-  
+
   return result as any;  // 🚨 Wrong return type
 };
 
 // ✅ CORRECTED VERSION - Fix parameter structure
 export const generate_random_comment = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IComment.ICreate>,
+    body?: DeepPartial<IComment.ICreate>,
     params?: { articleId: string }
   }
 ): Promise<IComment> => {
-  const prepared = prepare_random_comment(props.input);
-  
+  const prepared = prepare_random_comment(props.body);
+
   const result = await api.functional.articles.comments.create(
-    props.connection,
-    props.params?.articleId!,
-    prepared
+    connection,
+    {
+      articleId: props.params?.articleId!,
+      body: prepared
+    }
   );
-  
+
   return result;
 };
 ```
@@ -256,38 +262,38 @@ export const generate_random_comment = async (
 ```typescript
 // 🚨 FIX THIS IMMEDIATELY - Invalid relationships
 export const generate_random_blog_post = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IBlogPost.ICreate>
+    body?: DeepPartial<IBlogPost.ICreate>
   }
 ): Promise<IBlogPost> => {
   // Manipulating prepare function result
-  const prepared = prepare_random_blog_post(props.input);
+  const prepared = prepare_random_blog_post(props.body);
   prepared.authorId = { id: "123" } as any;  // 🚨 Wrong type
   prepared.tags = "tech,news" as any;        // 🚨 Should be array
-  
+
   const result = await api.functional.blog.posts.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 
 // ✅ CORRECTED VERSION - Don't manipulate prepared data
 export const generate_random_blog_post = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IBlogPost.ICreate>
+    body?: DeepPartial<IBlogPost.ICreate>
   }
 ): Promise<IBlogPost> => {
-  const prepared = prepare_random_blog_post(props.input);
-  
+  const prepared = prepare_random_blog_post(props.body);
+
   const result = await api.functional.blog.posts.create(
-    props.connection,
-    prepared
+    connection,
+    { body: prepared }
   );
-  
+
   return result;
 };
 ```

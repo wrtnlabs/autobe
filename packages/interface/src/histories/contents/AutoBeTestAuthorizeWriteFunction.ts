@@ -11,8 +11,8 @@ import { AutoBeTestWriteFunctionBase } from "./AutoBeTestWriteFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestAuthorizationWriteFunction
-  extends AutoBeTestWriteFunctionBase<"authorization"> {
+export interface AutoBeTestAuthorizeWriteFunction
+  extends AutoBeTestWriteFunctionBase<"authorize"> {
   /**
    * OpenAPI endpoint specification that this authorization function corresponds
    * to.

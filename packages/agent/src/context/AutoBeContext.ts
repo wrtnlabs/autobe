@@ -28,6 +28,23 @@ import { ILlmController, ILlmSchema } from "@samchon/openapi";
 import { AutoBeState } from "./AutoBeState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
+/**
+ * Core execution context providing orchestrators access to configuration,
+ * state, compiler, events, and AI conversation.
+ *
+ * Follows Dependency Injection pattern for testability. Generic `Model`
+ * parameter ensures LLM schema consistency. State transitions are atomic,
+ * and event dispatch is type-safe with automatic WebSocket forwarding.
+ *
+ * Key methods:
+ * - `state()`: Current pipeline state with step counters
+ * - `compiler()`: Three-tier compilation infrastructure
+ * - `dispatch()`: Type-safe event emission with automatic state updates
+ * - `conversate()`: Creates MicroAgentica for LLM interactions
+ *
+ * @template Model - LLM model schema type from @samchon/openapi
+ * @author Samchon
+ */
 export interface AutoBeContext<Model extends ILlmSchema.Model> {
   // configuration
   model: Model;

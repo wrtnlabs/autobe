@@ -7,12 +7,12 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestAgentResult } from "../structures/IAutoBeTestAgentResult";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
-import { transformTestAuthorizationWriteHistories } from "./transformTestAuthorizationWriteHistories";
+import { transformTestAuthorizationWriteHistory } from "./transformTestAuthorizationWriteHistory";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
-import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
+import { transformTestPrepareWriteHistories } from "./transformTestPrepareWriteHistories";
 
-export const transformTestCorrectHistory = async <
+export const transformTestCorrectOverallHistory = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -23,15 +23,15 @@ export const transformTestCorrectHistory = async <
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
   const systemPrompt: string = (() => {
-    switch (props.target.function.kind) {
+    switch (props.target.function.type) {
       case "operation":
-        return AutoBeSystemPromptConstant.TEST_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_OVERALL;
       case "prepare":
-        return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT;
-      case "generation":
-        return AutoBeSystemPromptConstant.TEST_GENERATION_CORRECT;
-      case "authorization":
-        return AutoBeSystemPromptConstant.TEST_AUTHORIZATION_CORRECT;
+        return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_OVERALL;
+      case "generate":
+        return AutoBeSystemPromptConstant.TEST_GENERATE_CORRECT_OVERALL;
+      case "authorize":
+        return AutoBeSystemPromptConstant.TEST_AUTHORIZE_CORRECT_OVERALL;
       default:
         props.target.function satisfies never;
 
@@ -51,15 +51,15 @@ export const transformTestCorrectHistory = async <
             functionName: props.target.function.functionName,
           },
           artifacts: props.target.artifacts,
-          authorizationFunctions: props.target.authorizationFunctions,
-          generationFunctions: props.target.generationFunctions,
+          authorizationFunctions: props.target.authorizeFunctions,
+          generationFunctions: props.target.generateFunctions,
         });
-      case "authorization":
-        return transformTestAuthorizationWriteHistories({
+      case "authorize":
+        return transformTestAuthorizationWriteHistory({
           operation: props.target.operation,
           artifacts: props.target.artifacts,
         });
-      case "generation":
+      case "generate":
         return transformTestGenerationWriteHistory(
           props.instruction,
           props.target.prepareFunction,
@@ -86,11 +86,13 @@ export const transformTestCorrectHistory = async <
 
   // previous 히스토리의 첫 번째 시스템 프롬프트에 식별자 추가
   const previousHistories =
-    previous?.histories.slice(0, -1)?.map((h, i) =>
-      i === 0 && h.type === "systemMessage"
-        ? { ...h, text: `# [SYSTEM PROMPT: TEST_WRITE]\n\n${h.text}` }
-        : h,
-    ) ?? [];
+    previous?.histories
+      .slice(0, -1)
+      ?.map((h, i) =>
+        i === 0 && h.type === "systemMessage"
+          ? { ...h, text: `# [SYSTEM PROMPT: TEST_WRITE]\n\n${h.text}` }
+          : h,
+      ) ?? [];
 
   return {
     histories: [

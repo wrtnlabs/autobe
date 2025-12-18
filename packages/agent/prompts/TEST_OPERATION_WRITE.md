@@ -53,7 +53,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### Step 1: **scenario** - Strategic Analysis and Planning
+### **scenario** - Strategic Analysis and Planning
 - Analyze the provided test scenario in detail
 - Understand the business context and test objectives
 - Plan the complete test implementation strategy
@@ -62,14 +62,14 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Analyze DTO type variants** - Identify which specific DTO types (e.g., ICreate vs IUpdate vs base type) are needed for each operation
 - This step ensures you have a clear roadmap before writing any code
 
-### Step 2: **domain** - Functional Domain Classification
+### **domain** - Functional Domain Classification
 - Determine the appropriate domain category based on the API endpoints
 - Must be a single word in snake_case format (e.g., `user`, `order`, `shopping_cart`)
 - This classification determines the file organization structure
 - Examples: `auth`, `product`, `payment`, `article`, `review`
 - Choose the primary resource being tested
 
-### Step 3: **draft** - Initial Test Code Implementation
+### **draft** - Initial Test Code Implementation
 - Generate the complete E2E test function based on your strategic plan
 - Must be valid TypeScript code without compilation errors
 - Follow @nestia/e2e framework conventions strictly
@@ -78,7 +78,7 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Critical**: Start directly with `export async function` - NO import statements
 - **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
-### Step 4: **revise** - Code Review and Final Refinement
+### **revise** - Code Review and Final Refinement
 This property contains two sub-steps for iterative improvement:
 
 #### 4.1: **revise.review** - Critical Code Review and Analysis
@@ -456,9 +456,9 @@ Generation Functions:
 
 | Need to call | Utility Function exists? | Action |
 |--------------|-------------------------|--------|
-| `POST /auth/login` | ✅ Yes (`authorize_user_login`) | Use `authorize_user_login({ connection, input })` |
-| `POST /auth/admin/login` | ✅ Yes (`authorize_admin_login`) | Use `authorize_admin_login({ connection, input })` |
-| `POST /bbs/articles` | ✅ Yes (`generate_random_article`) | Use `generate_random_article({ connection, input, params })` |
+| `POST /auth/login` | ✅ Yes (`authorize_user_login`) | Use `authorize_user_login(connection, { body })` |
+| `POST /auth/admin/login` | ✅ Yes (`authorize_admin_login`) | Use `authorize_admin_login(connection, { body })` |
+| `POST /bbs/articles` | ✅ Yes (`generate_random_article`) | Use `generate_random_article(connection, { body, params })` |
 | `GET /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.at(connection, id)` |
 | `PUT /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.update(connection, id, body)` |
 | `DELETE /bbs/articles/{id}` | ❌ No | Use `api.functional.bbs.articles.erase(connection, id)` |
@@ -484,10 +484,15 @@ Generation Functions:
 export async function test_api_admin_creates_product(connection: api.IConnection) {
   // Step 1: Authenticate as admin - connection headers are automatically updated
   // ✅ CORRECT: Using authorization function for POST /auth/admin/login
-  const admin = await authorize_admin_login({
+  const admin = await authorize_admin_login(
     connection,
-    input: { email: "admin@example.com", password: "password123" },
-  });
+    {
+      body: {
+        email: "admin@example.com",
+        password: "password123",
+      },
+    },
+  );
 
   // ❌ WRONG: Using SDK directly when authorization function exists
   // const admin = await api.functional.auth.admin.login(connection, {...});
@@ -518,16 +523,18 @@ export async function test_api_admin_creates_product(connection: api.IConnection
 
 **Call Pattern**:
 ```typescript
-const resource = await generate_random_resourceName({
+const resource = await generate_random_resourceName(
   connection,
-  input: { /* optional field overrides */ },     // Optional: customize specific fields
-  params: { paramName: "value" }                // Required if the API operation has URL parameters
-});
+  {
+    body: { /* optional field overrides */ },     // Optional: customize specific fields
+    params: { paramName: "value" }                // Required if the API operation has URL parameters
+  },
+);
 ```
 
 **Parameter Guidelines**:
-- `connection`: Always required
-- `input`: Optional - allows you to override specific fields in the generated data
+- `connection`: First parameter, always required
+- `body`: Optional - allows you to override specific fields in the generated data
 - `params`: Required only if the target API operation has URL parameters (e.g., `/articles/{sectionId}/comments`)
 
 **Example usage in test**:
@@ -535,15 +542,22 @@ const resource = await generate_random_resourceName({
 export async function test_api_user_updates_article(connection: api.IConnection) {
   // Step 1: Authenticate
   // ✅ CORRECT: Using authorization function for POST /auth/login
-  await authorize_user_login({ connection, input: credentials });
+  await authorize_user_login(
+    connection,
+    {
+      body: credentials,
+    }
+  );
 
   // Step 2: Create a test article using generation function
   // ✅ CORRECT: Using generation function for POST /bbs/articles
-  const article = await generate_random_article({
+  const article = await generate_random_article(
     connection,
-    input: { title: "Original Title" },  // Optional: customize specific fields
-    params: { sectionId: section.id },  // Required if operation has URL parameters
-  });
+    {
+      body: { title: "Original Title" },  // Optional: customize specific fields
+      params: { sectionId: section.id },  // Required if operation has URL parameters
+    },
+  );
 
   // ❌ WRONG: Using SDK directly when generation function exists
   // const article = await api.functional.bbs.articles.create(connection, {...});
@@ -572,7 +586,7 @@ export async function test_api_user_updates_article(connection: api.IConnection)
 - ✅ Use authorization functions for ANY endpoint that has an authorization function
 - ✅ Use generation functions for ANY endpoint that has a generation function
 - ✅ Pass the same `connection` object to maintain auth state
-- ✅ Use the `input` parameter to customize generated data when needed
+- ✅ Use the `body` parameter to customize generated data when needed
 - ✅ Use SDK functions ONLY for endpoints without utility functions
 
 **MUST NOT**:
@@ -3990,7 +4004,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] **NO HTTP status code testing** - Never test for 404, 403, 500, etc.
 - [ ] **NO illogical operations** - Never delete from empty objects
 - [ ] **NO response type validation after typia.assert()** - It already validates everything
-- [ ] **Step 4 revise COMPLETED** - Both revise.review and revise.final executed thoroughly
+- [ ] **previous version revise COMPLETED** - Both revise.review and revise.final executed thoroughly
 
 **Function Structure:**
 - [ ] Function follows the correct naming convention

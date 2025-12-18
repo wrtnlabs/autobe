@@ -107,7 +107,7 @@ export const orchestrateTestPrepareWrite = async <
             instruction,
             existingFunctionNames,
           });
-          if (event.function.kind !== "prepare") return null;
+          if (event.function.type !== "prepare") return null;
 
           // Add successfully generated function name to the tracking array
           existingFunctionNames.push(event.function.functionName);
@@ -208,7 +208,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     type: "testWrite",
     function: {
-      kind: "prepare",
+      type: "prepare",
       endpoint: props.operation,
       dtoTypeName: props.typeName,
       location: `test/features/utils/prepare/${pointer.value.functionName}.ts`,

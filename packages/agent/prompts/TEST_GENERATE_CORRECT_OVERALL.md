@@ -45,7 +45,7 @@ interface IAutoBeTestGenerationCorrectApplication {
 const prepared = prepare_random_user({...});  // prepare function not imported
 
 // ✅ CORRECT (assuming prepare function is pre-imported)
-const prepared = prepare_random_user(props.input);
+const prepared = prepare_random_user(props.body);
 ```
 
 **Error**: Incorrect relative import path
@@ -55,8 +55,13 @@ import { prepare_random_user } from "../prepare/user";  // Wrong path
 
 // ✅ CORRECT
 // No import needed - all functions are pre-imported in test environment
-export const generate_random_user = async (...) => {
-  const prepared = prepare_random_user(props.input);
+export const generate_random_user = async (
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IUser.ICreate>,
+  }
+) => {
+  const prepared = prepare_random_user(props.body);
   // ...
 }
 ```
@@ -68,25 +73,25 @@ export const generate_random_user = async (...) => {
 // ❌ WRONG
 const prepared = prepare_random_article({
   connection: props.connection,  // prepare functions don't take connection
-  input: props.input,
+  input: props.body,
 });
 
 // ✅ CORRECT
-const prepared = prepare_random_article(props.input);
+const prepared = prepare_random_article(props.body);
 ```
 
 **Error**: Missing prepare function call
 ```typescript
 // ❌ WRONG
 const result = await api.functional.articles.create(
-  props.connection,
-  props.input  // Passing raw input instead of prepared data
+  connection,
+  props.body  // Passing raw input instead of prepared data
 );
 
 // ✅ CORRECT
-const prepared = prepare_random_article(props.input);
+const prepared = prepare_random_article(props.body);
 const result = await api.functional.articles.create(
-  props.connection,
+  connection,
   { body: prepared }
 );
 ```
@@ -96,19 +101,19 @@ const result = await api.functional.articles.create(
 **Error**: Using Partial instead of DeepPartial
 ```typescript
 // ❌ WRONG
-input?: Partial<IArticle.ICreate>  // Should match prepare function's DeepPartial type
+body?: Partial<IArticle.ICreate>  // Should match prepare function's DeepPartial type
 
 // ✅ CORRECT
-input?: DeepPartial<IArticle.ICreate>  // Same as prepare function
+body?: DeepPartial<IArticle.ICreate>  // Same as prepare function
 ```
 
-**Error**: Wrong type in input
+**Error**: Wrong type in body
 ```typescript
 // ❌ WRONG
-input?: Partial<IUser.ICreate>  // Wrong type
+body?: Partial<IUser.ICreate>  // Wrong type
 
 // ✅ CORRECT
-input?: DeepPartial<IUser.ICreate>  // Only user-controllable fields
+body?: DeepPartial<IUser.ICreate>  // Only user-controllable fields
 ```
 
 ### 4. **SDK Function Call Errors**
@@ -117,13 +122,13 @@ input?: DeepPartial<IUser.ICreate>  // Only user-controllable fields
 ```typescript
 // ❌ WRONG
 const result = await api.functional.articles.create(
-  props.connection,
+  connection,
   prepared  // Missing { body: ... } wrapper
 );
 
 // ✅ CORRECT
 const result = await api.functional.articles.create(
-  props.connection,
+  connection,
   { body: prepared }
 );
 ```
@@ -183,7 +188,7 @@ const result = await api.functional.orders.create({
 
 // ✅ CORRECT
 const result = await api.functional.orders.create(
-  props.connection,
+  connection,
   { body: prepared }
 );
 ```
@@ -216,14 +221,14 @@ When you receive a compilation error:
 ### Standard Generation Function Pattern:
 ```typescript
 export const generate_random_article = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IArticle.ICreate>
+    body?: DeepPartial<IArticle.ICreate>
   }
 ): Promise<IArticle> => {
-  const prepared = prepare_random_article(props.input);
+  const prepared = prepare_random_article(props.body);
   const result = await api.functional.articles.create(
-    props.connection,
+    connection,
     { body: prepared }
   );
   return result;
@@ -233,15 +238,15 @@ export const generate_random_article = async (
 ### With Error Handling:
 ```typescript
 export const generate_random_order = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IOrder.ICreate>
+    body?: DeepPartial<IOrder.ICreate>
   }
 ): Promise<IOrder> => {
   try {
-    const prepared = prepare_random_order(props.input);
+    const prepared = prepare_random_order(props.body);
     const result = await api.functional.orders.create(
-      props.connection,
+      connection,
       { body: prepared }
     );
     return result;
@@ -273,20 +278,20 @@ Cannot find module '../prepare/prepare_random_user'
 rewrite({
   think: "The error indicates an import issue. In the test environment, prepare functions are pre-imported. Need to remove the import and use the function directly.",
   draft: `export const generate_random_user = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.ICreate>
+    body?: DeepPartial<IUser.ICreate>
   }
 ): Promise<IUser> => {
-  const prepared = prepare_random_user(props.input);
+  const prepared = prepare_random_user(props.body);
   const result = await api.functional.auth.users.create(
-    props.connection,
+    connection,
     { body: prepared }
   );
   return result;
 }`,
   revise: {
-    review: "The correction removes the import statement and uses the pre-imported prepare function. Input type matches the prepare function's DeepPartial type. API call structure is correct.",
+    review: "The correction removes the import statement and uses the pre-imported prepare function. Body type matches the prepare function's DeepPartial type. API call structure is correct.",
     final: null
   }
 })

@@ -15,6 +15,14 @@ export function createPreliminaryCollection(
       ),
       realizeCollectors: (defined?.realizeCollectors ?? []).slice(),
       realizeTransformers: (defined?.realizeTransformers ?? []).slice(),
+      previousAnalysisFiles: (defined?.previousAnalysisFiles ?? []).slice(),
+      previousPrismaSchemas: (defined?.previousPrismaSchemas ?? []).slice(),
+      previousInterfaceSchemas: Object.fromEntries(
+        Object.entries(defined?.previousInterfaceSchemas ?? {}),
+      ),
+      previousInterfaceOperations: (
+        defined?.previousInterfaceOperations ?? []
+      ).slice(),
     };
   return {
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
@@ -38,5 +46,12 @@ export function createPreliminaryCollection(
       defined?.realizeTransformers ??
       state.realize?.functions.filter((f) => f.type === "transformer") ??
       [],
+    previousAnalysisFiles: state.previousAnalyze?.files ?? [],
+    previousPrismaSchemas:
+      state.previousPrisma?.result.data.files.map((f) => f.models).flat() ?? [],
+    previousInterfaceSchemas:
+      state.previousInterface?.document.components.schemas ?? {},
+    previousInterfaceOperations:
+      state.previousInterface?.document.operations ?? [],
   };
 }

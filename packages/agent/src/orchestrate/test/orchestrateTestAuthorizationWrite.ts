@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
-  AutoBeTestAuthorizationWriteFunction,
+  AutoBeTestAuthorizeWriteFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -16,10 +16,10 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestAuthorizationWriteHistories } from "./histories/transformTestAuthorizationWriteHistories";
+import { transformTestAuthorizationWriteHistory } from "./histories/transformTestAuthorizationWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizationWriteApplication } from "./structures/IAutoBeTestAuthorizationWriteApplication";
-import { IAutoBeTestAuthorizationWriteResult } from "./structures/IAutoBeTestAuthorizationWriteResult";
+import { IAutoBeTestAuthorizeWriteResult } from "./structures/IAutoBeTestAuthorizeWriteResult";
 
 /**
  * Test Authorization Write Orchestrator
@@ -34,7 +34,7 @@ export const orchestrateTestAuthorizationWrite = async <
   props: {
     operations: AutoBeOpenApi.IOperation[];
   },
-): Promise<IAutoBeTestAuthorizationWriteResult[]> => {
+): Promise<IAutoBeTestAuthorizeWriteResult[]> => {
   const authOperations: AutoBeOpenApi.IOperation[] = props.operations.filter(
     (op) => op.authorizationType !== null,
   );
@@ -47,7 +47,7 @@ export const orchestrateTestAuthorizationWrite = async <
     total: authOperations.length,
   };
 
-  const results: Array<IAutoBeTestAuthorizationWriteResult | null> =
+  const results: Array<IAutoBeTestAuthorizeWriteResult | null> =
     await executeCachedBatch(
       ctx,
       authOperations.map((operation) => async (promptCacheKey) => {
@@ -65,14 +65,14 @@ export const orchestrateTestAuthorizationWrite = async <
             promptCacheKey,
             existingFunctionNames,
           });
-          if (event.function.kind !== "authorization") return null;
+          if (event.function.type !== "authorize") return null;
 
           // Add successfully generated function name to the tracking array
           existingFunctionNames.push(event.function.functionName);
 
           ctx.dispatch(event);
           return {
-            type: "authorization",
+            type: "authorize",
             artifacts,
             function: event.function,
             operation,
@@ -96,10 +96,10 @@ async function process<Model extends ILlmSchema.Model>(
     existingFunctionNames: string[];
   },
 ): Promise<AutoBeTestWriteEvent> {
-  const { 
-    operation, 
-    artifacts, 
-    progress, 
+  const {
+    operation,
+    artifacts,
+    progress,
     promptCacheKey,
     existingFunctionNames,
   } = props;
@@ -120,7 +120,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    ...transformTestAuthorizationWriteHistories({
+    ...transformTestAuthorizationWriteHistory({
       operation,
       artifacts,
     }),
@@ -145,8 +145,8 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   // Create the authorization function object
-  const authorizationFunction: AutoBeTestAuthorizationWriteFunction = {
-    kind: "authorization",
+  const authorizationFunction: AutoBeTestAuthorizeWriteFunction = {
+    type: "authorize",
     endpoint: {
       method: operation.method,
       path: operation.path,

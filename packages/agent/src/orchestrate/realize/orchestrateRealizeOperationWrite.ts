@@ -23,8 +23,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { complementPreliminaryCollection } from "../common/internal/complementPreliminaryCollection";
-import { IAutoBePreliminaryCollection } from "../common/structures/IAutoBePreliminaryCollection";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
@@ -93,26 +91,6 @@ async function process<Model extends ILlmSchema.Model>(
       realizeTransformers: props.transformers,
     },
   });
-  complementPreliminaryCollection({
-    kinds: [
-      "prismaSchemas",
-      "interfaceOperations",
-      "interfaceSchemas",
-      "realizeCollectors",
-      "realizeTransformers",
-    ],
-    all: {
-      ...preliminary.getAll(),
-      interfaceOperations: props.document.operations,
-      interfaceSchemas: props.document.components.schemas,
-    } as IAutoBePreliminaryCollection,
-    local: {
-      ...(preliminary.getLocal() as IAutoBePreliminaryCollection),
-      interfaceOperations: [props.scenario.operation],
-      interfaceSchemas: {},
-    },
-  });
-
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
       {

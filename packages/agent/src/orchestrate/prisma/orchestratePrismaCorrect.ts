@@ -116,11 +116,19 @@ async function execute<Model extends ILlmSchema.Model>(
   failure: IAutoBePrismaValidation.IFailure,
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaCorrectApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "prismaSchemas",
+      "previousPrismaSchemas",
+    ],
     state: ctx.state(),
     all: {
       prismaSchemas: failure.data.files.map((f) => f.models).flat(),
@@ -207,7 +215,12 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
   build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -221,15 +234,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
       request: result.data.request,
     });
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE satisfies AutoBeEventSource,

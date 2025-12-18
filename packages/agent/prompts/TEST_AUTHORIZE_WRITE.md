@@ -99,57 +99,44 @@ The system supports various authorization types beyond the common ones:
 ### For JOIN operations:
 ```typescript
 export const authorize_user_join = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input?: DeepPartial<IUser.IJoin>,
-  }
-): Promise<IUser.IJoin> => {
-  const user: IUser.IJoin = {
-    email: input?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
-    password: input?.password ?? RandomGenerator.alphaNumeric(16),
-    nickname: input?.nickname ?? RandomGenerator.name(),
+    body?: DeepPartial<IUser.IJoin>,
+  },
+): Promise<IUser.IAuthorized> => {
+  const joinInput = {
+    ...(props.body ?? {}),
+    email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
+    password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
+    nickname: props.body?.nickname ?? RandomGenerator.name(),
     citizen: {
-      mobile: input?.citizen?.mobile ?? RandomGenerator.mobile(),
-      name: input?.citizen?.name ?? RandomGenerator.name(),
+      mobile: props.body?.citizen?.mobile ?? RandomGenerator.mobile(),
+      name: props.body?.citizen?.name ?? RandomGenerator.name(),
     },
-    ...(input ?? {}),
-  };
-  
-  // Create user
-    try {
-      await api.functional.{accessor}.join(
-        props.connection,
-        {
-          body: user,
-        }
-      );
-      return user;
-    } catch (err) {
-      throw err;
-    }
-  })();
-  
-  // Return user data for subsequent login operations
-  return user;
+  } satisfies IUser.IJoin;
+  return await api.functional.{accessor}.join(
+    connection,
+    {
+      body: joinInput,
+    },
+  );
 };
 ```
 
 ### For LOGIN operations:
 ```typescript
 export const authorize_user_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: IUser.ILogin,
-  }
+    body: IUser.ILogin,
+  },
 ): Promise<IUser.IAuthorized> => {
-  const result: IUser.IAuthorized = await api.functional.{accessor}.login(
-    props.connection,
+  return await api.functional.{accessor}.login(
+    connection,
     {
-      body: props.input,
-    }
+      body: props.body,
+    },
   );
-  
-  return result;
 };
 ```
 
@@ -173,68 +160,69 @@ When generating test data in authorization functions, use the RandomGenerator ut
 
 ```typescript
 // Email Generation
-email: input?.email ?? `customer-${RandomGenerator.alphaNumeric(16)}@wrtn.io`
+email: props.body?.email ?? `customer-${RandomGenerator.alphaNumeric(16)}@wrtn.io`
 // or more variations:
-email: input?.email ?? `${RandomGenerator.alphabets(8)}@example.com`
-email: input?.email ?? `${RandomGenerator.name(1).toLowerCase().replace(/\s/g, ".")}@example.com`
+email: props.body?.email ?? `${RandomGenerator.alphabets(8)}@example.com`
+email: props.body?.email ?? `${RandomGenerator.name(1).toLowerCase().replace(/\s/g, ".")}@example.com`
 
 // Name Generation
-name: input?.name ?? RandomGenerator.name()  // Full name (2-3 words)
-nickname: input?.nickname ?? RandomGenerator.name(1)  // Single word name
-username: input?.username ?? RandomGenerator.alphaNumeric(8)
+name: props.body?.name ?? RandomGenerator.name()  // Full name (2-3 words)
+nickname: props.body?.nickname ?? RandomGenerator.name(1)  // Single word name
+username: props.body?.username ?? RandomGenerator.alphaNumeric(8)
 
 // Phone Number Generation
-mobile: input?.mobile ?? RandomGenerator.mobile()  // Korean format: "01012345678"
-phone: input?.phone ?? RandomGenerator.mobile("+1")  // International: "+13341234"
+mobile: props.body?.mobile ?? RandomGenerator.mobile()  // Korean format: "01012345678"
+phone: props.body?.phone ?? RandomGenerator.mobile("+1")  // International: "+13341234"
 
 // ID Generation (for non-UUID fields)
-user_id: input?.user_id ?? RandomGenerator.alphaNumeric(32)
-api_key: input?.api_key ?? RandomGenerator.alphaNumeric(64)
+user_id: props.body?.user_id ?? RandomGenerator.alphaNumeric(32)
+api_key: props.body?.api_key ?? RandomGenerator.alphaNumeric(64)
 
 // Address Components
-address: input?.address ?? RandomGenerator.paragraph({ sentences: 1 })
-city: input?.city ?? RandomGenerator.name(1)
-zip_code: input?.zip_code ?? RandomGenerator.alphaNumeric(5)
+address: props.body?.address ?? RandomGenerator.paragraph({ sentences: 1 })
+city: props.body?.city ?? RandomGenerator.name(1)
+zip_code: props.body?.zip_code ?? RandomGenerator.alphaNumeric(5)
 ```
 
 ### Complete Example for Complex User Registration:
 
 ```typescript
-const user: IUser.IJoin = {
+const joinInput = {
+  // Apply additional custom inputs
+  ...(props.body ?? {}),  
+
   // Account Information
-  email: input?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.io`,
-  password: input?.password ?? RandomGenerator.alphaNumeric(16),
-  username: input?.username ?? RandomGenerator.alphaNumeric(8),
+  email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.io`,
+  password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
+  username: props.body?.username ?? RandomGenerator.alphaNumeric(8),
   
   // Personal Information
   profile: {
-    firstName: input?.profile?.firstName ?? RandomGenerator.name(1),
-    lastName: input?.profile?.lastName ?? RandomGenerator.name(1),
-    nickname: input?.profile?.nickname ?? RandomGenerator.name(),
-    bio: input?.profile?.bio ?? RandomGenerator.paragraph({ sentences: randint(2, 4) }),
+    firstName: props.body?.profile?.firstName ?? RandomGenerator.name(1),
+    lastName: props.body?.profile?.lastName ?? RandomGenerator.name(1),
+    nickname: props.body?.profile?.nickname ?? RandomGenerator.name(),
+    bio: props.body?.profile?.bio ?? RandomGenerator.paragraph({ sentences: randint(2, 4) }),
   },
   
   // Contact Information
   contact: {
-    mobile: input?.contact?.mobile ?? RandomGenerator.mobile(),
-    alternateEmail: input?.contact?.alternateEmail ?? `${RandomGenerator.alphaNumeric(10)}@example.com`,
+    mobile: props.body?.contact?.mobile ?? RandomGenerator.mobile(),
+    alternateEmail: props.body?.contact?.alternateEmail ?? `${RandomGenerator.alphaNumeric(10)}@example.com`,
   },
   
   // Settings (if applicable)
   settings: {
-    language: input?.settings?.language ?? RandomGenerator.pick(["en", "ko", "ja"]),
-    timezone: input?.settings?.timezone ?? RandomGenerator.pick(["UTC", "Asia/Seoul", "America/New_York"]),
+    language: props.body?.settings?.language ?? RandomGenerator.pick(["en", "ko", "ja"]),
+    timezone: props.body?.settings?.timezone ?? RandomGenerator.pick(["UTC", "Asia/Seoul", "America/New_York"]),
   },
-  
-  ...(input ?? {}),  // Apply any additional custom inputs
-};
+} satisfies IUser.IJoin;
 ```
 
 ### Important Notes:
-- Always use the null coalescing pattern: `input?.field ?? generatedValue`
+- Always use the null coalescing pattern: `body?.field ?? generatedValue`
 - Use `RandomGenerator.alphaNumeric()` for IDs and keys (not UUID)
 - Use `randint()` from `tstl` for numeric ranges
-- Include proper typing with `DeepPartial<>` for the input parameter
+- Include proper typing with `DeepPartial<>` for the body parameter
 
 ## 6. Implementation Requirements
 

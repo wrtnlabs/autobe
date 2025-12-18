@@ -29,7 +29,7 @@ export function transformTestGenerationWriteHistory<
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.TEST_GENERATION_WRITE,
+        text: AutoBeSystemPromptConstant.TEST_GENERATE_WRITE,
       },
       {
         id: v7(),

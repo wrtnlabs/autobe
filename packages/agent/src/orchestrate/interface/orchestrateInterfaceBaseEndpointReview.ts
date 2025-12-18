@@ -32,12 +32,22 @@ export async function orchestrateInterfaceBaseEndpointReview<
     );
 
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceBaseEndpointReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "prismaSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+      "previousInterfaceOperations",
+    ],
     state: ctx.state(),
     local: {
       analysisFiles: ctx.state().analyze?.files ?? [],
@@ -66,7 +76,13 @@ async function predicate<Model extends ILlmSchema.Model>(
   props: {
     endpoints: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[];
     authorizations: AutoBeOpenApi.IOperation[];
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "prismaSchemas"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
+      | "previousInterfaceOperations"
+    >;
     endpointSet: HashSet<IAutoBeInterfaceBaseEndpointApplication.IEndpoint>;
   },
   life: number,
@@ -94,7 +110,13 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     authorizations: AutoBeOpenApi.IOperation[];
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "prismaSchemas"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
+      | "previousInterfaceOperations"
+    >;
     endpointSet: HashSet<IAutoBeInterfaceBaseEndpointApplication.IEndpoint>;
     pointer: IPointer<IAutoBeInterfaceBaseEndpointReviewApplication.IComplete | null>;
   },
@@ -145,7 +167,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+  >;
   endpointSet: HashSet<IAutoBeInterfaceBaseEndpointApplication.IEndpoint>;
   build: (
     props: IAutoBeInterfaceBaseEndpointReviewApplication.IComplete,
@@ -160,7 +188,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       );
     if (result.success === false) return result;
     const request = result.data.request;
-
     if (request.type === "complete") {
       const checkExists = (
         endpoint: AutoBeOpenApi.IEndpoint,
@@ -186,19 +213,19 @@ function createController<Model extends ILlmSchema.Model>(props: {
       };
 
       const errors: IValidation.IError[] = request.actions
-        .flatMap((item, i) => {
+        .flatMap((action, i) => {
           const path = `request.actions[${i}]`;
 
-          switch (item.type) {
+          switch (action.type) {
             case "create":
-              return checkExists(item.endpoint, path, false);
+              return checkExists(action.endpoint, path, false);
             case "update":
               return (
-                checkExists(item.original, path, true) ??
-                checkExists(item.updated, path, false)
+                checkExists(action.original, path, true) ??
+                checkExists(action.updated, path, false)
               );
             case "delete":
-              return checkExists(item.endpoint, path, true);
+              return checkExists(action.endpoint, path, true);
           }
         })
         .filter((error) => error !== null);
@@ -215,15 +242,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     });
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
 
   return {
     protocol: "class",
@@ -235,44 +264,44 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
         if (request.type === "complete") {
           // Process all actions
-          for (const item of request.actions) {
-            switch (item.type) {
+          for (const action of request.actions) {
+            switch (action.type) {
               case "create":
                 if (
                   props.endpointSet.has({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   }) === false
                 )
                   props.endpointSet.insert({
-                    endpoint: item.endpoint,
-                    description: item.description,
+                    endpoint: action.endpoint,
+                    description: action.description,
                   });
                 break;
               case "update": {
                 const hasOriginal = props.endpointSet.has({
-                  endpoint: item.original,
+                  endpoint: action.original,
                   description: "",
                 });
                 const hasUpdated = props.endpointSet.has({
-                  endpoint: item.updated,
+                  endpoint: action.updated,
                   description: "",
                 });
                 if (
                   hasOriginal &&
                   (AutoBeOpenApiEndpointComparator.equals(
-                    item.original,
-                    item.updated,
+                    action.original,
+                    action.updated,
                   ) ||
                     !hasUpdated)
                 ) {
                   props.endpointSet.erase({
-                    endpoint: item.original,
+                    endpoint: action.original,
                     description: "",
                   });
                   props.endpointSet.insert({
-                    endpoint: item.updated,
-                    description: item.description,
+                    endpoint: action.updated,
+                    description: action.description,
                   });
                 }
                 break;
@@ -280,12 +309,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
               case "delete":
                 if (
                   props.endpointSet.has({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   }) === true
                 )
                   props.endpointSet.erase({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   });
                 break;

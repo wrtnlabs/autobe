@@ -57,11 +57,19 @@ async function step<Model extends ILlmSchema.Model>(
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBePrismaReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "prismaSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+    ],
     state: ctx.state(),
     all: {
       prismaSchemas: props.application.files.map((f) => f.models).flat(),
@@ -126,7 +134,12 @@ async function step<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "previousAnalysisFiles"
+      | "prismaSchemas"
+      | "previousPrismaSchemas"
+    >;
     build: (next: IAutoBePrismaReviewApplication.IComplete) => void;
   },
 ): IAgenticaController.IClass<Model> {
@@ -145,15 +158,17 @@ function createController<Model extends ILlmSchema.Model>(
     });
   };
 
-  const application: ILlmApplication<Model> = collection[
-    ctx.model === "chatgpt"
-      ? "chatgpt"
-      : ctx.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      ctx.model === "chatgpt"
+        ? "chatgpt"
+        : ctx.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

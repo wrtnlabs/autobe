@@ -42,11 +42,11 @@ interface IAutoBeTestAuthorizationCorrectApplication {
 **Error**: Incorrect header assignment
 ```typescript
 // ❌ WRONG
-props.connection.headers.Authorization = `Bearer ${token}`;  // Cannot assign to read-only property
+connection.headers.Authorization = `Bearer ${token}`;  // Cannot assign to read-only property
 
 // ✅ CORRECT
-props.connection.headers = {
-  ...props.connection.headers,
+connection.headers = {
+  ...connection.headers,
   Authorization: `Bearer ${token}`,
 };
 ```
@@ -58,8 +58,8 @@ Authorization: `Bearer ${result.token.access}`  // token might be undefined
 
 // ✅ CORRECT
 if (result.token?.access) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Authorization: `Bearer ${result.token.access}`,
   };
 }
@@ -71,13 +71,13 @@ if (result.token?.access) {
 ```typescript
 // ❌ WRONG
 const result = await api.functional.auth.user.login(
-  props.connection,
+  connection,
   user  // Wrong - expecting { body: user }
 );
 
 // ✅ CORRECT
 const result = await api.functional.auth.user.login(
-  props.connection,
+  connection,
   {
     body: user,
   }
@@ -88,14 +88,14 @@ const result = await api.functional.auth.user.login(
 ```typescript
 // ❌ WRONG
 body: {
-  email: input.email,
+  email: props.body.email,
   // password missing when required
 }
 
 // ✅ CORRECT
 body: {
-  email: input.email,
-  password: input.password,
+  email: props.body.email,
+  password: props.body.password,
 }
 ```
 
@@ -104,12 +104,18 @@ body: {
 **Error**: Missing async keyword
 ```typescript
 // ❌ WRONG
-export const authorize_user_login = (props: {...}): Promise<IAuthResponse> => {
+export const authorize_user_login = (
+  connection: api.IConnection,
+  props: {...}
+): Promise<IAuthResponse> => {
   const result = await api.functional...  // 'await' only allowed in async function
 }
 
 // ✅ CORRECT
-export const authorize_user_login = async (props: {...}): Promise<IAuthResponse> => {
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: {...}
+): Promise<IAuthResponse> => {
   const result = await api.functional...
 }
 ```
@@ -145,25 +151,29 @@ export const authorize_user_join = async (...): Promise<IUserCreate> => {
 **Error**: Wrong optional parameter type
 ```typescript
 // ❌ WRONG
-input?: RequestDto  // Should be DeepPartial for optional override
+body?: RequestDto  // Should be DeepPartial for optional override
 
 // ✅ CORRECT
-input?: DeepPartial<RequestDto>
+body?: DeepPartial<RequestDto>
 ```
 
-**Error**: Missing required input for LOGIN
+**Error**: Missing required body for LOGIN
 ```typescript
 // ❌ WRONG
-authorize_user_login = async (props: {
+authorize_user_login = async (
   connection: api.IConnection,
-  input?: LoginDto,  // Login always needs credentials
-})
+  props: {
+    body?: LoginDto,  // Login always needs credentials
+  }
+)
 
 // ✅ CORRECT
-authorize_user_login = async (props: {
+authorize_user_login = async (
   connection: api.IConnection,
-  input: LoginDto,  // Required, not optional
-})
+  props: {
+    body: LoginDto,  // Required, not optional
+  }
+)
 ```
 
 ### 6. **Token Format Errors**
@@ -199,12 +209,12 @@ Authorization: `Bearer ${token}`
 **Error**: Incorrect cookie handling
 ```typescript
 // ❌ WRONG
-props.connection.cookies = result.session;  // Wrong type assignment
+connection.cookies = result.session;  // Wrong type assignment
 
 // ✅ CORRECT
 if (result.session) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Cookie: `session=${result.session}`,
   };
 }
@@ -215,12 +225,12 @@ if (result.session) {
 **Error**: Incorrect OAuth token handling
 ```typescript
 // ❌ WRONG
-props.connection.oauth = result.oauth;  // No such property
+connection.oauth = result.oauth;  // No such property
 
 // ✅ CORRECT
 if (result.oauth?.access_token) {
-  props.connection.headers = {
-    ...props.connection.headers,
+  connection.headers = {
+    ...connection.headers,
     Authorization: `Bearer ${result.oauth.access_token}`,
   };
 }
@@ -265,25 +275,25 @@ Cannot assign to 'Authorization' because it is a read-only property
 rewrite({
   think: "The error shows direct assignment to a read-only headers property. Need to create a new headers object with spread operator to maintain immutability.",
   draft: `export const authorize_admin_login = async (
+  connection: api.IConnection,
   props: {
-    connection: api.IConnection,
-    input: IAdminLoginDto,
+    body: IAdminLoginDto,
   }
 ): Promise<IAuthResponse> => {
   const result = await api.functional.auth.admin.login(
-    props.connection,
+    connection,
     {
-      body: props.input,
+      body: props.body,
     }
   );
-  
+
   if (result.token?.access) {
-    props.connection.headers = {
-      ...props.connection.headers,
+    connection.headers = {
+      ...connection.headers,
       Authorization: \`Bearer \${result.token.access}\`,
     };
   }
-  
+
   return result;
 }`,
   revise: {

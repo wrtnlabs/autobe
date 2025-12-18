@@ -6,6 +6,8 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request already-generated API
  * operations for review, validation, or complementary generation tasks.
+ *
+ * @author Samchon
  */
 export interface IAutoBePreliminaryGetInterfaceOperations {
   /**

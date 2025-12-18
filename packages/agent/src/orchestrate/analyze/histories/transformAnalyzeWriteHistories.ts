@@ -7,12 +7,14 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
+    preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => ({
   histories: [
@@ -35,6 +37,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.ANALYZE_WRITE,
     },
+    ...(props.preliminary?.getHistories() ?? []),
     {
       id: v7(),
       created_at: new Date().toISOString(),

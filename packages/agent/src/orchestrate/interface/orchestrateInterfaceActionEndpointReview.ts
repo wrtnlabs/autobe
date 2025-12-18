@@ -33,12 +33,22 @@ export async function orchestrateInterfaceActionEndpointReview<
     );
 
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceActionEndpointReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "prismaSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+      "previousInterfaceOperations",
+    ],
     state: ctx.state(),
     local: {
       analysisFiles: ctx.state().analyze?.files ?? [],
@@ -69,7 +79,13 @@ async function predicate<Model extends ILlmSchema.Model>(
     endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
     authorizations: AutoBeOpenApi.IOperation[];
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "prismaSchemas"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
+      | "previousInterfaceOperations"
+    >;
     endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;
   },
   life: number,
@@ -99,7 +115,13 @@ async function process<Model extends ILlmSchema.Model>(
   props: {
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
     authorizations: AutoBeOpenApi.IOperation[];
-    preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+    preliminary: AutoBePreliminaryController<
+      | "analysisFiles"
+      | "prismaSchemas"
+      | "previousAnalysisFiles"
+      | "previousPrismaSchemas"
+      | "previousInterfaceOperations"
+    >;
     endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;
     pointer: IPointer<IAutoBeInterfaceActionEndpointReviewApplication.IComplete | null>;
   },
@@ -152,7 +174,13 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+  >;
   endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;
   build: (
     props: IAutoBeInterfaceActionEndpointReviewApplication.IComplete,
@@ -167,7 +195,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       );
     if (result.success === false) return result;
     const request = result.data.request;
-
     if (request.type === "complete") {
       const checkExists = (
         endpoint: AutoBeOpenApi.IEndpoint,
@@ -227,15 +254,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     });
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
 
   return {
     protocol: "class",

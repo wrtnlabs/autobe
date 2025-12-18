@@ -5,12 +5,16 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformPrismaComponentsHistory = (
   state: AutoBeState,
   props: {
     prefix: string | null;
     instruction: string;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    >;
   },
 ): IAutoBeOrchestrateHistory => {
   if (state.analyze === null)
@@ -25,22 +29,12 @@ export const transformPrismaComponentsHistory = (
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
       },
+      ...props.preliminary.getHistories(),
       {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          ## Requirement Analysis Report
-
-          Here is the requirement analysis report.
-          
-          Call the provided tool function to generate Prisma DB schema
-          referencing below requirement analysis report.
-          
-          \`\`\`json
-          ${JSON.stringify(state.analyze.files)}
-          \`\`\`
-          
           ## Prefix
           
           - Prefix provided by the user: ${props.prefix}

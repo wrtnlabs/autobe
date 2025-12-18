@@ -119,11 +119,21 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "prismaSchemas"
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "prismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "prismaSchemas",
+      "previousAnalysisFiles",
+      "previousPrismaSchemas",
+      "previousInterfaceOperations",
+    ],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -207,7 +217,13 @@ async function process<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   actors: string[];
-  preliminary: AutoBePreliminaryController<"analysisFiles" | "prismaSchemas">;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "prismaSchemas"
+    | "previousAnalysisFiles"
+    | "previousPrismaSchemas"
+    | "previousInterfaceOperations"
+  >;
   build: (
     operations: IAutoBeInterfaceOperationApplication.IOperation[],
   ) => void;
@@ -247,7 +263,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
             description: StringUtil.trim`
               Actor "${actor}" is not defined in the roles list.
 
-              Please select one of them below, or do not define (\`null\`):  
+              Please select one of them below, or do not define (\`null\`):
 
               ${props.actors.map((role) => `- ${role}`).join("\n")}
             `,
@@ -263,16 +279,18 @@ function createController<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
+  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
+    collection[
+      props.model === "chatgpt"
+        ? "chatgpt"
+        : props.model === "gemini"
+          ? "gemini"
+          : "claude"
+    ](
+      validate,
+    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  );
   return {
     protocol: "class",
     name: SOURCE,

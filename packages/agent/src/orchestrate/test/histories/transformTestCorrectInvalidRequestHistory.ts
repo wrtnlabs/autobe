@@ -11,24 +11,22 @@ export const transformTestCorrectInvalidRequestHistory = (
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): IAutoBeOrchestrateHistory => {
   const systemPrompt: string = (() => {
-    switch (write.function.kind) {
+    switch (write.function.type) {
       case "operation":
-        return AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST;
+        return AutoBeSystemPromptConstant.TEST_OPERATION_CORRECT_INVALID_REQUEST;
       case "prepare":
         return AutoBeSystemPromptConstant.TEST_PREPARE_CORRECT_INVALID_REQUEST;
-      case "generation":
-        return AutoBeSystemPromptConstant.TEST_GENERATION_CORRECT_INVALID_REQUEST;
-      case "authorization":
-        return AutoBeSystemPromptConstant.TEST_AUTHORIZATION_CORRECT_INVALID_REQUEST;
+      case "generate":
+        return AutoBeSystemPromptConstant.TEST_GENERATE_CORRECT_INVALID_REQUEST;
+      case "authorize":
+        return AutoBeSystemPromptConstant.TEST_AUTHORIZE_CORRECT_INVALID_REQUEST;
       default:
         write.function satisfies never;
-
         throw new Error(
           `Unreachable: Cannot create correct invalid request system prompt of function kind`,
         );
     }
   })();
-
   return {
     histories: [
       {

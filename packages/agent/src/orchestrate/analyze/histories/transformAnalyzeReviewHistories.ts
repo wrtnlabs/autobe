@@ -15,13 +15,16 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     myFile: AutoBeAnalyzeFile;
-    preliminary: AutoBePreliminaryController<"analysisFiles">;
+    preliminary: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles"
+    >;
   },
 ): IAutoBeOrchestrateHistory => ({
   histories: [
     ...transformAnalyzeWriteHistories(ctx, {
       scenario: props.scenario,
       file: props.myFile,
+      preliminary: null,
     }).histories.slice(0, -2),
     {
       id: v7(),

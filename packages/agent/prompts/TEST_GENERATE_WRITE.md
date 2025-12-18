@@ -67,11 +67,11 @@ You MUST execute the following 3-step workflow through a single function call:
 - Function structure MUST follow this pattern:
   ```typescript
   export const generate_random_resource = async (
-      props: {
-          connection: api.IConnection,
-          input?: DeepPartial<CreateType>,
-          params?: { commentId: string }  // For URL parameters if needed
-      }
+    connection: api.IConnection,
+    props: {
+      body?: DeepPartial<CreateType>,
+      params?: { commentId: string }  // For URL parameters if needed
+    }
   ): Promise<[ResponseTypeName]> => {
       // Implementation
   };
@@ -118,11 +118,11 @@ Perform a thorough review checking for:
 ### 2.1. Function Signature
 ```typescript
 export const generate_random_{resource} = async (
-    props: {
-        connection: api.IConnection,
-        input?: DeepPartial<{ResourceType}.ICreate>,
-        params?: { commentId: string }  // For URL parameters if needed
-    }
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<{ResourceType}.ICreate>,
+    params?: { commentId: string }  // For URL parameters if needed
+  }
 ): Promise<{ResponseType}> => {
     // Implementation
 };
@@ -134,25 +134,26 @@ export const generate_random_{resource} = async (
 
 1. **Data Preparation**:
    ```typescript
-   const prepared = prepare_random_{resource}({
-       connection: props.connection,
-       input: props.input,
-   });
+   const prepared: ISomeTypeName.ICreate = prepare_random_{resource}(props.body);
    ```
 
 2. **API Call**:
    ```typescript
    // For operations without URL parameters
-   const result: ResponseType = await api.functional.{accessor}(
-       props.connection,
-       prepared
+   const result: ISomeResponseType = await api.functional.{accessor}(
+     connection,
+     {
+       body: prepared,
+     },
    );
    
    // For operations with URL parameters
-   const result: ResponseType = await api.functional.{accessor}(
-       props.connection,
-       props.params?.commentId,  // URL parameters
-       prepared
+   const result: ISomeResponseType = await api.functional.{accessor}(
+     connection,
+     {
+       commentId: props.params?.commentId,  // URL parameters
+       body: prepared, // request body
+     },
    );
    ```
 
@@ -172,68 +173,61 @@ export const generate_random_{resource} = async (
 ### 3.1. Standard Generation Function (without URL parameters)
 ```typescript
 export const generate_random_bbs_article = async (
-    props: {
-        connection: api.IConnection,
-        input?: DeepPartial<IBbsArticle.ICreate>
-    }
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IBbsArticle.ICreate>
+  }
 ): Promise<IBbsArticle> => {
-    const prepared = prepare_random_bbs_article({
-        connection: props.connection,
-        input: props.input,
-    });
-    
-    const result: IBbsArticle = await api.functional.bbs.articles.create(
-        props.connection,
-        prepared
-    );
-    
-    return result;
+  const prepared = prepare_random_bbs_article(props.body);
+  const result: IBbsArticle = await api.functional.bbs.articles.create(
+    connection,
+    {
+      body: prepared
+    },
+  );
+  return result;
 };
 ```
 
 ### 3.2. Generation Function with URL parameters
 ```typescript
 export const generate_random_comment = async (
-    props: {
-        connection: api.IConnection,
-        input?: DeepPartial<IComment.ICreate>,
-        params?: { articleId: string }
-    }
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IComment.ICreate>,
+    params?: {
+      articleId: string,
+    },
+  },
 ): Promise<IComment> => {
-    const prepared = prepare_random_comment({
-        connection: props.connection,
-        input: props.input,
-    });
-    
-    const result: IComment = await api.functional.articles.comments.create(
-        props.connection,
-        props.params?.articleId,
-        prepared
-    );
-    
-    return result;
+  const prepared: IComment.ICreate = prepare_random_comment(props.body);
+  const result: IComment = await api.functional.articles.comments.create(
+    connection,
+    {
+      articleId: props.params?.articleId,
+      body: prepared,
+    },
+  );
+  return result;
 };
 ```
 
 ### 3.3. Simple Example
 ```typescript
 export const generate_random_user = async (
-    props: {
-        connection: api.IConnection,
-        input?: DeepPartial<IUser.ICreate>
-    }
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IUser.ICreate>,
+  },
 ): Promise<IUser> => {
-    const prepared = prepare_random_user({
-        connection: props.connection,
-        input: props.input,
-    });
-    
-    const result: IUser = await api.functional.users.create(
-        props.connection,
-        prepared
-    );
-    
-    return result;
+  const prepared: IUser.ICreate = prepare_random_user(props.body);  
+  const result: IUser = await api.functional.users.create(
+    connection,
+    {
+      body: prepared,
+    },
+  );
+  return result;
 };
 ```
 
@@ -253,21 +247,23 @@ While not always required, consider adding error handling for critical resources
 
 ```typescript
 try {
-    const result = await api.functional.resource.create(
-        props.connection,
-        prepared
-    );
-    return result;
+  const result: ISomeResponseType = await api.functional.resource.create(
+    connection,
+    {
+      body: prepared,
+    },
+  );
+  return result;
 } catch (error) {
-    console.error(`Failed to generate ${resourceName}:`, error);
-    throw error;
+  console.error(`Failed to generate ${resourceName}:`, error);
+  throw error;
 }
 ```
 
 ## 6. Note on Authentication
 
 This generation function does not handle authentication.
-Authentication should be handled separately in the test scenarios
-that use these generation functions.
+
+Authentication should be handled separately in the test scenarios that use these generation functions.
 
 Remember: Your goal is to create a reliable, reusable generation function that other test scenarios can depend on for creating test resources.

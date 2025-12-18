@@ -1535,14 +1535,14 @@ export async function collect(props: {
   body: IBbsArticleCommentLike.ICreate;
   member: IEntity;
 }) {
-  // Step 1: Query comment to get article_id (indirect reference)
+  // previous version: Query comment to get article_id (indirect reference)
   const comment = await MyGlobal.prisma.bbs_article_comments.findFirstOrThrow({
     where: {
       id: props.body.bbs_article_comment_id,
     },
   });
 
-  // Step 2: Use both direct and indirect FK values
+  // previous version: Use both direct and indirect FK values
   return {
     id: v4(),
     // Direct reference: comment_id from props.body
@@ -1907,7 +1907,7 @@ For field 'X' required by Prisma but missing from DTO:
       └─ This is an API operation + DTO design flaw - missing critical information
 ```
 
-**Key Insight**: The fallback values (step 4) are **defaults for when DTO doesn't provide them**. If DTO includes `closed_at` or `completed`, you MUST use those values.
+**Key Insight**: The fallback values are **defaults for when DTO doesn't provide them**. If DTO includes `closed_at` or `completed`, you MUST use those values.
 
 #### Field Categories and Fallback Strategies
 

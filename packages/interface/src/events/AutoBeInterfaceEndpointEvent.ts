@@ -29,11 +29,10 @@ export interface AutoBeInterfaceEndpointEvent
    *
    * Specifies the type of endpoint event that occurred:
    *
-   * - `"authorization"`: Authorization endpoint event
    * - `"base"`: Base CRUD endpoint event (at, index, create, update, erase)
    * - `"action"`: Action endpoint event (analytics, dashboard, search, reports)
    */
-  kind: "authorization" | "base" | "action";
+  kind: "base" | "action";
 
   /**
    * Array of API endpoints that have been defined for the application.

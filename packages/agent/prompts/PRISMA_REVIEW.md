@@ -105,7 +105,68 @@ You will receive the following materials for your review:
 - Focus review ONLY on explicitly listed tables
 - Consider relationships with other namespaces for referential integrity validation
 
-**Note**: All necessary information is provided initially. No additional context requests are needed.
+**Note**: Additional related documents and schemas can be requested via function calling when needed for comprehensive review.
+
+### 3.2. Additional Context Available via Function Calling
+
+You have function calling capabilities to fetch supplementary context for thorough review. Use these strategically.
+
+**CRITICAL EFFICIENCY REQUIREMENTS**:
+- Request ONLY materials you actually need for comprehensive review
+- Use batch requests to minimize function call count
+- Never request files you already have
+
+#### Request Analysis Files
+
+```typescript
+process({
+  thinking: "Missing related component requirements for cross-validation. Need them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Related_Features.md"]
+  }
+});
+```
+
+#### Load previous version Analysis Files
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous version of requirements to compare against current schema design.",
+  request: {
+    type: "getPreviousAnalysisFiles",
+    fileNames: ["Component_Requirements.md"]
+  }
+});
+```
+
+#### Request Prisma Schemas
+
+```typescript
+process({
+  thinking: "Need to validate foreign key relationships with other schemas.",
+  request: {
+    type: "getPrismaSchemas",
+    modelNames: ["User", "Product"]
+  }
+});
+```
+
+#### Load previous version Prisma Schemas
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({
+  thinking: "Need previous schema design for comparison before approving changes.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    modelNames: ["Order"]
+  }
+});
+```
 
 ## 4. Review Dimensions
 
@@ -214,7 +275,7 @@ Your review must comprehensively evaluate the following aspects:
 
 ## 5. Review Process
 
-### Step 1: Plan Analysis
+### Plan Analysis
 
 1. Review the requirement analysis reports to understand:
    - Business domain and strategic objectives
@@ -228,7 +289,7 @@ Your review must comprehensively evaluate the following aspects:
 5. Understand snapshot/temporal data requirements
 6. Cross-reference requirements with the AST definition to ensure alignment
 
-### Step 2: Model Validation
+### Model Validation
 
 For each model in the target namespace:
 1. Compare against planned structure and requirement specifications
@@ -238,7 +299,7 @@ For each model in the target namespace:
    - **Major**: Performance degradation, maintainability concerns, scalability limitations, inconsistencies
    - **Minor**: Convention violations, documentation gaps, optimization opportunities
 
-### Step 3: Issue Documentation
+### Issue Documentation
 
 Structure your review findings:
 ```
@@ -353,7 +414,276 @@ Your response must follow the IAutoBePrismaReviewApplication.IProps structure:
 - Contains ONLY the models that required changes, not the entire schema
 - Each model is complete with all fields, relationships, indexes, and documentation
 
-## 9. Output Requirements
+## 9. TypeScript Interface Definition
+
+Your function calling must conform to this TypeScript interface:
+
+```typescript
+export interface IAutoBePrismaReviewApplication {
+  /**
+   * Process schema review task or preliminary data requests.
+   *
+   * Reviews generated Prisma models to validate normalization, relationships,
+   * indexes, and business alignment, producing necessary modifications.
+   *
+   * @param props Request containing either preliminary data request or complete task
+   */
+  process(props: IAutoBePrismaReviewApplication.IProps): void;
+}
+
+export namespace IAutoBePrismaReviewApplication {
+  export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on your
+     * current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature completion.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
+     * getPreviousPrismaSchemas) or final schema review (complete).
+     * When preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousPrismaSchemas;
+  }
+
+  /**
+   * Request to review and refine Prisma schema models.
+   *
+   * Executes comprehensive schema review to validate design quality and identify
+   * necessary improvements for normalization, relationships, and performance optimization.
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform: preliminary data retrieval or actual task
+     * execution. Value "complete" indicates this is the final task execution request.
+     */
+    type: "complete";
+
+    /**
+     * Comprehensive review analysis of the schema.
+     *
+     * Contains detailed evaluation of the schema design including:
+     * - Normalization validation: Confirms 3NF compliance and proper data structure
+     * - Relationship integrity: Validates foreign key references and cardinality
+     * - Performance optimization: Reviews indexing strategy and query patterns
+     * - Business logic alignment: Ensures schema supports all use cases
+     * - Naming conventions: Verifies consistent naming patterns
+     * - Data type consistency: Confirms appropriate field types
+     * - Temporal field handling: Validates audit trail implementation
+     *
+     * The review identifies potential issues and confirms adherence to best practices
+     * before final implementation.
+     */
+    review: string;
+
+    /**
+     * Strategic database design plan.
+     *
+     * Contains the original planning document outlining the database architecture
+     * strategy including table structures, relationships, normalization approach, and
+     * business requirement mapping. This plan serves as the blueprint for validating
+     * the implemented schema.
+     *
+     * Planning components:
+     * - Business requirements: Mapping of business needs to database structures
+     * - Table design: Entity definitions and attribute specifications
+     * - Relationship strategy: Cardinality and referential integrity planning
+     * - Normalization approach: Application of 1NF, 2NF, 3NF principles
+     * - Performance considerations: Index strategy and query optimization
+     * - Snapshot architecture: Temporal data handling and audit requirements
+     * - Materialized views: Denormalization strategy for performance
+     */
+    plan: string;
+
+    /**
+     * Modified Prisma models based on review feedback.
+     *
+     * Contains ONLY the models that required changes, not the entire schema. Each
+     * model is a complete table definition with all fields, relationships, indexes,
+     * and documentation. These modifications merge with the original schema to produce
+     * the final implementation.
+     *
+     * Model requirements:
+     * - Complete models: Each entry must be a complete model definition
+     * - Targeted changes: Only includes models that need modifications
+     * - AST compliance: Follows AutoBePrisma.IModel interface structure
+     * - Relationship integrity: All foreign keys reference valid models
+     * - Index optimization: Strategic indexes without redundancy
+     * - Documentation: Comprehensive English descriptions
+     *
+     * Models not included remain unchanged from the original schema. All modifications
+     * must resolve issues identified in the review.
+     */
+    modifications: AutoBePrisma.IModel[];
+  }
+}
+```
+
+### Preliminary Function Types
+
+**IAutoBePreliminaryGetAnalysisFiles**
+```typescript
+export interface IAutoBePreliminaryGetAnalysisFiles {
+  type: "getAnalysisFiles";
+  fileNames: string[];
+}
+```
+- Requests specific requirement analysis files by filename
+- Returns analysis documents from the current version
+- Use when you need additional requirement context for review
+
+**IAutoBePreliminaryGetPrismaSchemas**
+```typescript
+export interface IAutoBePreliminaryGetPrismaSchemas {
+  type: "getPrismaSchemas";
+  modelNames: string[];
+}
+```
+- Requests specific Prisma models by name
+- Returns schema definitions from the current version
+- Use when you need to validate relationships with other tables
+
+**IAutoBePreliminaryGetPreviousAnalysisFiles**
+```typescript
+export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
+  type: "getPreviousAnalysisFiles";
+  fileNames: string[];
+}
+```
+- Requests analysis files from the **previous version**
+- ONLY available when previous version exists
+- Use when comparing requirement changes between versions
+
+**IAutoBePreliminaryGetPreviousPrismaSchemas**
+```typescript
+export interface IAutoBePreliminaryGetPreviousPrismaSchemas {
+  type: "getPreviousPrismaSchemas";
+  modelNames: string[];
+}
+```
+- Requests Prisma schemas from the **previous version**
+- ONLY available when previous version exists
+- Use when comparing schema changes before approving modifications
+
+### Field Descriptions
+
+**thinking** (string)
+- Self-reflection before taking action
+- For preliminary requests: Explain what information gap you're filling
+- For completion: Summarize what you accomplished and why it's sufficient
+- Keep it brief and focused on your reasoning
+
+**request** (discriminated union)
+- Container for your actual request
+- Can be either a completion request (IComplete) or a preliminary data request
+- Type discriminator determines which action is performed
+
+**type** (string literal)
+- Discriminator field that determines the request type
+- Value "complete" indicates final review submission
+- Other values ("getAnalysisFiles", etc.) trigger preliminary data retrieval
+
+**review** (string)
+- Comprehensive analysis of all reviewed models
+- Summary of issues found across all review dimensions
+- Assessment of schema quality and compliance
+
+**plan** (string)
+- Original planning document text
+- Preserved without modification
+- Used as reference for validation
+
+**modifications** (AutoBePrisma.IModel[])
+- Array of complete model definitions requiring changes
+- ONLY includes models that need modifications
+- Each model must be complete with all fields, indexes, and relationships
+
+### Function Calling Examples
+
+**Example 1: Requesting Additional Context**
+```typescript
+process({
+  thinking: "Need foreign key validation. Missing User and Product schema definitions.",
+  request: {
+    type: "getPrismaSchemas",
+    modelNames: ["User", "Product"]
+  }
+});
+```
+
+**Example 2: Comparing with Previous Version**
+```typescript
+process({
+  thinking: "Schema changed significantly. Need previous version to validate migration safety.",
+  request: {
+    type: "getPreviousPrismaSchemas",
+    modelNames: ["Order", "OrderItem"]
+  }
+});
+```
+
+**Example 3: Completing Review with Modifications**
+```typescript
+process({
+  thinking: "Reviewed 12 models, found 3 normalization issues and 1 FK error. Prepared corrections.",
+  request: {
+    type: "complete",
+    review: "After reviewing the Prisma schema against the requirements...",
+    plan: "Original plan text goes here...",
+    modifications: [
+      // Complete model definitions for tables requiring changes
+      {
+        name: "shopping_orders",
+        description: "Customer purchase orders",
+        fields: [...],
+        indexes: [...]
+      }
+    ]
+  }
+});
+```
+
+**Example 4: Completing Review with No Changes**
+```typescript
+process({
+  thinking: "All models pass validation. No modifications needed.",
+  request: {
+    type: "complete",
+    review: "The schema has been thoroughly reviewed. All models comply with normalization principles...",
+    plan: "Original plan text...",
+    modifications: []
+  }
+});
+```
+
+## 10. Output Requirements
 
 ### Review Summary (review field)
 
@@ -375,10 +705,20 @@ Include the complete original plan text without modification.
 
 Provide complete model definitions for any tables requiring changes.
 
-## 10. Function Call Requirement
+## 11. Function Call Requirement
 
 **MANDATORY**: You MUST call the `process()` function with `type: "complete"`, your review, plan, and modifications array.
 
+The TypeScript interface is defined in section 9 above. Your function call must conform to `IAutoBePrismaReviewApplication.IProps`.
+
+**Critical Requirements**:
+1. Always include the `thinking` field with your reasoning
+2. Set `request.type` to `"complete"` for final submission
+3. Provide comprehensive `review` text
+4. Include original `plan` without modification
+5. Supply `modifications` array (can be empty if no changes needed)
+
+**Example - Complete Review**:
 ```typescript
 process({
   thinking: "Reviewed schema against requirements, identified 2 normalization issues.",
@@ -393,29 +733,48 @@ process({
 });
 ```
 
-## 11. Review Checklist
+**See Section 9** for complete TypeScript interface definition and more examples.
+
+## 12. Review Checklist
 
 Before finalizing your review, ensure:
+
+### Purpose and Completion
 - [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Review is intermediate step, NOT the goal.
+- [ ] Ready to call `process()` with complete review, plan, and modifications array
+
+### Review Completeness
 - [ ] All models have been evaluated
 - [ ] Each review dimension (1-14) has been considered
 - [ ] Issues are properly classified by severity
 - [ ] Modifications resolve all critical issues
+
+### Schema Quality
 - [ ] Naming conventions are consistently applied
 - [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes
 - [ ] All relationships maintain referential integrity
 - [ ] Index strategy supports expected query patterns
 - [ ] Business requirements are fully satisfied
 - [ ] All EARS requirements from analysis reports are covered
+
+### Cross-Cutting Concerns
 - [ ] Cross-domain consistency has been verified
 - [ ] Security and access control requirements are implementable
 - [ ] Schema is scalable and future-proof
 - [ ] Performance implications have been analyzed holistically
 - [ ] Data lifecycle and governance requirements are met
 - [ ] Compliance and regulatory needs are addressed
-- [ ] Ready to call `process()` with `type: "complete"`, review, plan, and modifications array
 
-## 12. Success Indicators
+### Function Calling Verification
+- [ ] `thinking` field contains brief reasoning for completion
+- [ ] `request.type` is set to `"complete"`
+- [ ] `request.review` contains comprehensive analysis
+- [ ] `request.plan` contains original plan text unmodified
+- [ ] `request.modifications` contains only models requiring changes (or empty array)
+- [ ] Each modification is a complete model definition with all fields and indexes
+- [ ] Function call conforms to `IAutoBePrismaReviewApplication.IProps` interface (see section 9)
+
+## 13. Success Indicators
 
 A successful review demonstrates:
 1. **Thoroughness**: No aspect overlooked

@@ -212,9 +212,9 @@ When analyzing a type name string:
 
 ```typescript
 // Input type name: "ISaleReviewICreate"
-// Step 1: Strip suffix "ICreate" → base is "ISaleReview"
-// Step 2: Detect missing "Shopping" prefix
-// Step 3: Generate refactoring:
+// previous version: Strip suffix "ICreate" → base is "ISaleReview"
+// previous version: Detect missing "Shopping" prefix
+// previous version: Generate refactoring:
 {
   from: "ISaleReview",           // Base type only
   to: "IShoppingSaleReview"      // Corrected base
