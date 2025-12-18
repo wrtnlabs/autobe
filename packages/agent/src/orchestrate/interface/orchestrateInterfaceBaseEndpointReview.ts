@@ -221,6 +221,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
             case "create":
               return checkExists(action.endpoint, path, false);
             case "update":
+              if (
+                AutoBeOpenApiEndpointComparator.equals(
+                  action.original,
+                  action.updated,
+                )
+              )
+                return null;
               return (
                 checkExists(action.original, path, true) ??
                 checkExists(action.updated, path, false)

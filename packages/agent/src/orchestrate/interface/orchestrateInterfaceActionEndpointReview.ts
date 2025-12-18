@@ -221,24 +221,31 @@ function createController<Model extends ILlmSchema.Model>(props: {
       };
 
       const errors: IValidation.IError[] = request.actions
-        .flatMap((item, i) => {
+        .flatMap((action, i) => {
           const path = `request.actions[${i}]`;
 
-          switch (item.type) {
+          switch (action.type) {
             case "create":
-              return checkExists(item.endpoint, path, false);
+              return checkExists(action.endpoint, path, false);
             case "update":
+              if (
+                AutoBeOpenApiEndpointComparator.equals(
+                  action.original,
+                  action.updated,
+                )
+              )
+                return null;
               return (
-                checkExists(item.original, path, true) ??
+                checkExists(action.original, path, true) ??
                 (AutoBeOpenApiEndpointComparator.equals(
-                  item.original,
-                  item.updated,
+                  action.original,
+                  action.updated,
                 )
                   ? null
-                  : checkExists(item.updated, path, false))
+                  : checkExists(action.updated, path, false))
               );
             case "delete":
-              return checkExists(item.endpoint, path, true);
+              return checkExists(action.endpoint, path, true);
           }
         })
         .filter((error) => error !== null);
@@ -277,44 +284,44 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
         if (request.type === "complete") {
           // Process all actions
-          for (const item of request.actions) {
-            switch (item.type) {
+          for (const action of request.actions) {
+            switch (action.type) {
               case "create":
                 if (
                   props.endpointSet.has({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   }) === false
                 )
                   props.endpointSet.insert({
-                    endpoint: item.endpoint,
-                    description: item.description,
+                    endpoint: action.endpoint,
+                    description: action.description,
                   });
                 break;
               case "update": {
                 const hasOriginal = props.endpointSet.has({
-                  endpoint: item.original,
+                  endpoint: action.original,
                   description: "",
                 });
                 const hasUpdated = props.endpointSet.has({
-                  endpoint: item.updated,
+                  endpoint: action.updated,
                   description: "",
                 });
                 if (
                   hasOriginal &&
                   (AutoBeOpenApiEndpointComparator.equals(
-                    item.original,
-                    item.updated,
+                    action.original,
+                    action.updated,
                   ) ||
                     !hasUpdated)
                 ) {
                   props.endpointSet.erase({
-                    endpoint: item.original,
+                    endpoint: action.original,
                     description: "",
                   });
                   props.endpointSet.insert({
-                    endpoint: item.updated,
-                    description: item.description,
+                    endpoint: action.updated,
+                    description: action.description,
                   });
                 }
                 break;
@@ -322,12 +329,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
               case "delete":
                 if (
                   props.endpointSet.has({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   }) === true
                 )
                   props.endpointSet.erase({
-                    endpoint: item.endpoint,
+                    endpoint: action.endpoint,
                     description: "",
                   });
                 break;
