@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
-import { transformTestAuthorizationWriteHistory } from "./histories/transformTestAuthorizationWriteHistory";
+import { transformTestAuthorizeWriteHistory } from "./histories/transformTestAuthorizeWriteHistory";
 import { IAutoBeTestArtifacts } from "./structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizationWriteApplication } from "./structures/IAutoBeTestAuthorizationWriteApplication";
 import { IAutoBeTestAuthorizeProcedure } from "./structures/IAutoBeTestAuthorizeWriteResult";
@@ -102,7 +102,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...transformTestAuthorizationWriteHistory({
+    ...transformTestAuthorizeWriteHistory({
       operation: props.operation,
       artifacts: props.artifacts,
     }),

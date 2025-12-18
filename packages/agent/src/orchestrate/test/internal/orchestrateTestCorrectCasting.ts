@@ -7,17 +7,11 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
 import { orchestrateCommonCorrectCasting } from "../../common/orchestrateCommonCorrectCasting";
-import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
 interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
-  histories(props: {
-    procedure: Procedure;
-    failures: IAutoBeTestFunctionFailure[];
-  }): Promise<IAutoBeOrchestrateHistory>;
   replaceImportStatements(procedure: Procedure): Promise<string>;
   compile(
     props: Procedure,

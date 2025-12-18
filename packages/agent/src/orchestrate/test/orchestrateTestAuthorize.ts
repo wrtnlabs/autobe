@@ -23,20 +23,17 @@ export async function orchestrateTestAuthorize<Model extends ILlmSchema.Model>(
     correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeTestAuthorizeFunction[]> {
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  const step: number = ctx.state().analyze?.step ?? 0;
-
-  const compile = (procedure: IAutoBeTestAuthorizeProcedure) =>
+  const compile = async (procedure: IAutoBeTestAuthorizeProcedure) =>
     AutoBeTestAuthorizeProgrammer.compile({
-      compiler,
+      compiler: await ctx.compiler(),
       procedure,
-      step,
+      step: ctx.state().analyze?.step ?? 0,
     });
   const replaceImportStatements = async (
     procedure: IAutoBeTestAuthorizeProcedure,
   ) =>
     AutoBeTestAuthorizeProgrammer.replaceImportStatements({
-      compiler,
+      compiler: await ctx.compiler(),
       artifacts: procedure.artifacts,
       content: procedure.function.content,
     });

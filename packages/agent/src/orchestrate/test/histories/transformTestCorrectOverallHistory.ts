@@ -7,7 +7,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
-import { transformTestAuthorizationWriteHistory } from "./transformTestAuthorizationWriteHistory";
+import { transformTestAuthorizeWriteHistory } from "./transformTestAuthorizeWriteHistory";
 import { transformTestGenerationWriteHistory } from "./transformTestGenerationWriteHistory";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 import { transformTestPrepareWriteHistory } from "./transformTestPrepareWriteHistory";
@@ -55,7 +55,7 @@ export const transformTestCorrectOverallHistory = async <
           generationFunctions: props.target.generates,
         });
       case "authorize":
-        return transformTestAuthorizationWriteHistory({
+        return transformTestAuthorizeWriteHistory({
           operation: props.target.operation,
           artifacts: props.target.artifacts,
         });

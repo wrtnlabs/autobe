@@ -141,10 +141,11 @@ async function process<Model extends ILlmSchema.Model>(
     function: {
       type: "prepare",
       location: `test/features/utils/prepare/${functionName}.ts`,
-      content: await AutoBeTestPrepareProgrammer.replaceImportStatements(ctx, {
+      content: await AutoBeTestPrepareProgrammer.replaceImportStatements({
+        compiler: await ctx.compiler(),
         typeName: props.typeName,
         schemas: props.document.components.schemas,
-        code: pointer.value.revise.final ?? pointer.value.draft,
+        content: pointer.value.revise.final ?? pointer.value.draft,
       }),
       typeName: props.typeName,
       name: functionName,

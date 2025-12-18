@@ -11,7 +11,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 
-export function transformTestAuthorizationWriteHistory(props: {
+export function transformTestAuthorizeWriteHistory(props: {
   operation: AutoBeOpenApi.IOperation;
   artifacts: IAutoBeTestArtifacts;
 }): IAutoBeOrchestrateHistory {
@@ -39,13 +39,13 @@ export function transformTestAuthorizationWriteHistory(props: {
           
           You can use these DTO definitions:
           
-          ${transformTestAuthorizationWriteHistory.structures(props.artifacts)}
+          ${transformTestAuthorizeWriteHistory.structures(props.artifacts)}
           
           ## API (SDK) Functions
           
           You can use these API functions:
           
-          ${transformTestAuthorizationWriteHistory.functional(props.artifacts)}
+          ${transformTestAuthorizeWriteHistory.functional(props.artifacts)}
         `,
       },
     ],
@@ -56,7 +56,7 @@ export function transformTestAuthorizationWriteHistory(props: {
   };
 }
 
-export namespace transformTestAuthorizationWriteHistory {
+export namespace transformTestAuthorizeWriteHistory {
   export function structures(artifacts: IAutoBeTestArtifacts): string {
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)
