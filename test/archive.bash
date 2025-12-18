@@ -43,19 +43,13 @@ pnpm run archive:go --vendor openai/gpt-4.1-mini --project bbs > archive.openai-
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project reddit > archive.openai-gpt-4.1-mini.reddit.log
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project shopping > archive.openai-gpt-4.1-mini.shopping.log
 
-# openai/gpt-5.1
-pnpm run archive:go --vendor openai/gpt-5.1 --project todo > archive.openai-gpt-5.1.todo.log
-pnpm run archive:go --vendor openai/gpt-5.1 --project bbs > archive.openai-gpt-5.1.bbs.log
-pnpm run archive:go --vendor openai/gpt-5.1 --project reddit > archive.openai-gpt-5.1.reddit.log
-pnpm run archive:go --vendor openai/gpt-5.1 --project shopping > archive.openai-gpt-5.1.shopping.log
+# openai/gpt-5.2
+pnpm run archive:go --vendor openai/gpt-5.2 --project todo > archive.openai-gpt-5.2.todo.log
+pnpm run archive:go --vendor openai/gpt-5.2 --project bbs > archive.openai-gpt-5.2.bbs.log
+pnpm run archive:go --vendor openai/gpt-5.2 --project reddit > archive.openai-gpt-5.2.reddit.log
+pnpm run archive:go --vendor openai/gpt-5.2 --project shopping > archive.openai-gpt-5.2.shopping.log
 
-pnpm run archive:go --vendor openai/gpt-5.1 --project chat > archive.openai-gpt-5.1.chat.log
-
-# openai/gpt-5-mini
-pnpm run archive:go --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5-mini.bbs.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
+pnpm run archive:go --vendor openai/gpt-5.2 --project chat > archive.openai-gpt-5.2.chat.log
 
 # openai/gpt-oss-120b
 pnpm run archive:go --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b.todo.log
