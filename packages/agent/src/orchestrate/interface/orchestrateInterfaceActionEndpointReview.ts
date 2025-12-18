@@ -192,31 +192,28 @@ function createController<Model extends ILlmSchema.Model>(props: {
         return null;
       };
 
-      const errors = request.actions.flatMap((item, i) => {
-        const path = `request.actions[${i}]`;
-        let error: IValidation.IError | null = null;
+      const errors: IValidation.IError[] = request.actions
+        .flatMap((item, i) => {
+          const path = `request.actions[${i}]`;
 
-        switch (item.type) {
-          case "create":
-            error = checkExists(item.endpoint, path, false);
-            break;
-          case "update":
-            error =
-              checkExists(item.original, path, true) ??
-              (AutoBeOpenApiEndpointComparator.equals(
-                item.original,
-                item.updated,
-              )
-                ? null
-                : checkExists(item.updated, path, false));
-            break;
-          case "delete":
-            error = checkExists(item.endpoint, path, true);
-            break;
-        }
-
-        return error ? [error] : [];
-      });
+          switch (item.type) {
+            case "create":
+              return checkExists(item.endpoint, path, false);
+            case "update":
+              return (
+                checkExists(item.original, path, true) ??
+                (AutoBeOpenApiEndpointComparator.equals(
+                  item.original,
+                  item.updated,
+                )
+                  ? null
+                  : checkExists(item.updated, path, false))
+              );
+            case "delete":
+              return checkExists(item.endpoint, path, true);
+          }
+        })
+        .filter((error) => error !== null);
 
       if (errors.length > 0) {
         return { success: false, data: result.data, errors };
