@@ -7,3 +7,5 @@
 > - Maintain consistent property naming and type conventions
 >
 > **DO NOT** use these to design new types. They describe what has **ALREADY BEEN DEFINED** in the codebase.
+>
+> **IMPORTANT**: Use `getPreviousInterfaceSchemas` to load these types, NOT `getInterfaceSchemas` (which is for NEW types you need to define in current iteration).

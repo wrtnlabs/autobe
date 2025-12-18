@@ -434,7 +434,7 @@ process({
 
 **Type 1.5: Load previous version Analysis Files**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -469,7 +469,7 @@ process({
 
 **Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -507,7 +507,7 @@ process({
 
 **Type 3.5: Load previous version Interface Operations**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads interface operations from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -545,7 +545,7 @@ process({
 
 **Type 4.5: Load previous version Interface Schemas**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads interface schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({

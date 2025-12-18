@@ -7,3 +7,5 @@
 > - Ensure consistent error handling and response formats
 >
 > **DO NOT** use these to design new endpoints. They describe what has **ALREADY BEEN IMPLEMENTED** in the API.
+>
+> **IMPORTANT**: Use `getPreviousInterfaceOperations` to load these operations, NOT `getInterfaceOperations` (which is for NEW operations you need to implement in current iteration).
