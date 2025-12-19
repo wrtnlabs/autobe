@@ -196,12 +196,17 @@ You will receive via assistant message:
 2. **Function Name**: The exact name you must create (e.g., `prepare_random_shopping_sale`)
 3. **DTO Type Definitions**: JSON mapping of all relevant type definitions
 4. **Property List**: All properties that must be filled in the generated object
-5. **Template Code**: Expected function signature and structure
+5. **External Definitions**: External declaration files (d.ts) you can reference
+   - Contains type definitions from external packages (e.g., `typia`, `@nestia/e2e`)
+   - Use these to understand available utilities like `typia.random<T>()`, `RandomGenerator`, `ArrayUtil`
+   - Reference the exact function signatures and type constraints available
+6. **Template Code**: Expected function signature and structure
 
 **IMPORTANT**:
 - All DTO type information is provided directly - no need to request additional schemas
 - The template code shows the exact signature you must implement
 - The property list tells you exactly which properties need generation
+- External definitions show available utilities - use `typia.random<T>()` with proper tags for type-safe random generation
 
 ## Property Classification Guidelines
 
