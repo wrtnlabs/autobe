@@ -76,7 +76,7 @@ export namespace AutoBeTestOperationProgrammer {
         props.artifacts.document.components.schemas,
       ),
       ...[...props.prepares, ...props.generates, ...props.authorizes].map(
-        (f) => `import { ${f.name} } from "${f.location}";`,
+        (f) => `import { ${f.name} } from "${f.location.replace(".ts", "")}";`,
       ),
     ];
     code = [...imports, code].join("\n");

@@ -138,7 +138,7 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
       ...AutoBeTestFunctionProgrammer.writeImportStatements(
         props.artifacts.document.components.schemas,
       ),
-      `import { ${props.prepare.name} } from "${props.prepare.location}";`,
+      `import { ${props.prepare.name} } from "${props.prepare.location.replace(".ts", "")}";`,
     ];
     code = [...imports, code].join("\n");
     return await props.compiler.typescript.beautify(code);
