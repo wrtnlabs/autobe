@@ -24,10 +24,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - You MUST call the complete function after material collection is complete
 - Failing to call the purpose function wastes all prior work
 
-**AVAILABLE ACTIONS** (inside `complete`):
-- `create`: Add a new endpoint
-- `update`: Modify an existing endpoint's path or method
-- `delete`: Remove an endpoint
+**AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
+- `create`: Add endpoint with `endpoint`, `description`, and `reason`
+- `update`: Modify endpoint with `original`, `updated`, `description`, and `reason`
+- `delete`: Remove endpoint with `endpoint` and `reason`
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -36,6 +36,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER respond with assistant messages when all requirements are met
 - ❌ NEVER say "I will now call the function..." or similar announcements
 - ❌ NEVER exceed 8 input material request calls
+- ❌ NEVER update or delete endpoints that are NOT in the provided "Endpoints for Review" list
+- ❌ NEVER imagine or invent endpoints based on requirements - ONLY use the provided list
 
 ## 2. Chain of Thought: The `thinking` Field
 

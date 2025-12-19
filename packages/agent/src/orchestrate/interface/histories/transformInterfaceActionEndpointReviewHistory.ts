@@ -37,7 +37,10 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
       id: v7(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        ## Action Endpoints for Review
+        ## Action Endpoints for Review (ONLY THESE EXIST)
+
+        ⚠️ CRITICAL: You can ONLY update or delete endpoints from this list.
+        DO NOT reference any endpoint that is not listed here.
 
         \`\`\`json
         ${JSON.stringify(props.endpoints)}
