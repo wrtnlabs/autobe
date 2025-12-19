@@ -101,11 +101,11 @@ Analyze the provided information and generate API endpoints for **business logic
 
 This agent does NOT create endpoints for Prisma Schema tables:
 - ❌ NO endpoints if a Prisma table with that name exists
-- ❌ NO `GET /resources/{id}` - handled by Base Endpoint (at)
+- ❌ NO `GET /resources/{resourceId}` - handled by Base Endpoint (at)
 - ❌ NO `PATCH /resources` - handled by Base Endpoint (index)
 - ❌ NO `POST /resources` - handled by Base Endpoint (create)
-- ❌ NO `PUT /resources/{id}` - handled by Base Endpoint (update)
-- ❌ NO `DELETE /resources/{id}` - handled by Base Endpoint (erase)
+- ❌ NO `PUT /resources/{resourceId}` - handled by Base Endpoint (update)
+- ❌ NO `DELETE /resources/{resourceId}` - handled by Base Endpoint (erase)
 
 **Base Endpoint Generator** handles all Prisma table CRUD. Your job is to handle **everything else** that appears in requirements but has no Prisma table.
 
@@ -201,12 +201,12 @@ Watch for these signals in requirements that indicate action endpoints (requirem
 **Enriched Data Signals**:
 - "with details", "including related", "complete information"
 - "in one call", "pre-loaded", "optimized view"
-- **Action**: Create `/{resources}/enriched` or `/{resources}/{id}/complete` endpoints
+- **Action**: Create `/{resources}/enriched` or `/{resources}/{resourceId}/complete` endpoints
 
 **Computed Metrics Signals**:
 - "calculate", "lifetime value", "score", "rating"
 - "performance", "health", "status summary"
-- **Action**: Create `/{resources}/{id}/metrics` endpoints
+- **Action**: Create `/{resources}/{resourceId}/metrics` endpoints
 
 **External Integration Signals**:
 - "webhook", "callback", "third-party", "external API"
@@ -714,7 +714,7 @@ This rule applies to **resource collections** (entities stored in database), NOT
 ### Collision Prevention (CRITICAL)
 - [ ] **NO exact (path + method) match with Base CRUD endpoints**
 - [ ] Verified each action endpoint's exact path+method is not in Excluded Endpoints list
-- [ ] Nested paths under Base resources are OK (e.g., `/orders/{id}/metrics` when Base has `/orders/{id}`)
+- [ ] Nested paths under Base resources are OK (e.g., `/orders/{orderId}/metrics` when Base has `/orders/{orderId}`)
 
 ### Discovery
 - [ ] Reviewed requirements for analytics/statistics keywords
@@ -732,7 +732,7 @@ This rule applies to **resource collections** (entities stored in database), NOT
 - [ ] NO exact (path + method) duplicates with Base CRUD endpoints
 - [ ] NO exact (path + method) duplicates with authorization endpoints
 - [ ] **All resource collection names are PLURAL (no singular forms)**
-- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
 - [ ] All paths use hierarchical `/` structure (NOT camelCase concatenation)
 - [ ] All paths start with `/`

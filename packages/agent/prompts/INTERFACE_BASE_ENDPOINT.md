@@ -75,7 +75,7 @@ thinking: "Completed all CRUD endpoints for business entities."
 
 // ❌ Lists specific items or too verbose
 thinking: "Need users, products, orders schemas"
-thinking: "Created GET /users, POST /users, GET /users/{id}, PUT /users/{id}..."
+thinking: "Created GET /users, POST /users, GET /users/{userId}, PUT /users/{userId}..."
 ```
 
 ## 2. Your Mission
@@ -192,16 +192,16 @@ Read-only endpoints:
 
 | Table Pattern | Parent Reference | Nested Path |
 |---------------|------------------|-------------|
-| `*_comments` | `article_id`, `post_id` | `/articles/{id}/comments` |
-| `*_attachments` | `article_id`, `document_id` | `/articles/{id}/attachments` |
-| `*_items` | `order_id`, `cart_id` | `/orders/{id}/items` |
-| `*_reviews` | `product_id`, `sale_id` | `/products/{id}/reviews` |
-| `*_replies` | `comment_id` | `/comments/{id}/replies` |
-| `*_tags` | `article_id` | `/articles/{id}/tags` |
+| `*_comments` | `article_id`, `post_id` | `/articles/{articleId}/comments` |
+| `*_attachments` | `article_id`, `document_id` | `/articles/{articleId}/attachments` |
+| `*_items` | `order_id`, `cart_id` | `/orders/{orderId}/items` |
+| `*_reviews` | `product_id`, `sale_id` | `/products/{productId}/reviews` |
+| `*_replies` | `comment_id` | `/comments/{commentId}/replies` |
+| `*_tags` | `article_id` | `/articles/{articleId}/tags` |
 
 **Decision rule**: If an entity has a required foreign key to a parent AND the entity name suggests it belongs to that parent, create nested endpoints under the parent.
 
-**DO NOT create independent endpoints** like `/comments/{id}` when comments always belong to articles. Always nest: `/articles/{articleId}/comments/{commentId}`.
+**DO NOT create independent endpoints** like `/comments/{commentId}` when comments always belong to articles. Always nest: `/articles/{articleId}/comments/{commentId}`.
 
 ## 4. Path Parameter Rules
 
@@ -341,10 +341,10 @@ article_attachments → /articles/{articleId}/attachments  ✅
 |------------------------|----------------------|
 | `/discussionBoardArticleCategories` | `/articles/categories` |
 | `/articleCategories` | `/articles/categories` |
-| `/discussionBoardArticles/{id}/discussionBoardComments` | `/articles/{id}/comments` |
-| `/productReviewComments` | `/products/{id}/reviews/{id}/comments` |
-| `/userProfileImages` | `/users/{id}/profile/images` |
-| `/orderPaymentHistories` | `/orders/{id}/payments/history` |
+| `/discussionBoardArticles/{discussionBoardArticleId}/discussionBoardComments` | `/articles/{articleId}/comments` |
+| `/productReviewComments` | `/products/{productId}/reviews/{reviewId}/comments` |
+| `/userProfileImages` | `/users/{userId}/profile/images` |
+| `/orderPaymentHistories` | `/orders/{orderId}/payments/history` |
 
 **Rules for Concise Paths**:
 
@@ -364,7 +364,7 @@ article_attachments → /articles/{articleId}/attachments  ✅
    - `/carts/{cartId}/items` ✅ (hierarchical)
    - `/carts/{cartId}/cart-items` ❌ (kebab-case when hierarchy is possible)
    - `/orders/{orderId}/items` ✅ (hierarchical)
-   - `/order-items` ❌ (kebab-case when `/orders/{id}/items` is possible)
+   - `/order-items` ❌ (kebab-case when `/orders/{orderId}/items` is possible)
 
 5. **Simplify verbose names**: Use common short forms
    - `/categories` instead of `/discussionBoardCategories`
@@ -738,7 +738,7 @@ model article_snapshots {
 
 ### Path Design
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
-- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context in child name (/items not /cart-items under /carts)**
 - [ ] Used `{entityCode}` when unique code exists
 - [ ] Used `{entityId}` only when no unique code

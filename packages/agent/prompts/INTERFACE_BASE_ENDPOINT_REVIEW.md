@@ -710,7 +710,7 @@ process({
 ### 8.2. Review Compliance
 - [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization join)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
-- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
 - [ ] **No singular/plural duplicate pairs exist (e.g., both /guest and /guests)**

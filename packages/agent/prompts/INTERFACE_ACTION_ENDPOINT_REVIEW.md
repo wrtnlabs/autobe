@@ -735,9 +735,9 @@ process({
 ### 8.2. Review Compliance
 - [ ] Each remaining endpoint is justified by specific requirements
 - [ ] **No exact (path + method) match with Base CRUD endpoints**
-- [ ] Nested paths under Base resources are allowed (e.g., `/orders/{id}/metrics`)
+- [ ] Nested paths under Base resources are allowed (e.g., `/orders/{orderId}/metrics`)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
-- [ ] **Prefer hierarchy over kebab-case (use /orders/{id}/items not /order-items)**
+- [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
 - [ ] **All resource names are PLURAL (no singular forms)**
 - [ ] **No singular/plural duplicate pairs exist**
