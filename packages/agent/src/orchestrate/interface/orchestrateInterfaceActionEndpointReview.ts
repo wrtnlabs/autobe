@@ -195,66 +195,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       );
     if (result.success === false) return result;
     const request = result.data.request;
-    if (request.type === "complete") {
-      const checkExists = (
-        endpoint: AutoBeOpenApi.IEndpoint,
-        path: string,
-        shouldExist: boolean,
-      ): IValidation.IError | null => {
-        const exists = props.endpointSet.has({ endpoint, description: "" });
-        if (shouldExist === exists) return null;
-        if (!exists)
-          return {
-            path,
-            expected: "existing endpoint",
-            value: endpoint,
-            description: `Endpoint ${endpoint.method.toUpperCase()} ${endpoint.path} does not exist.`,
-          };
-        else if (exists)
-          return {
-            path,
-            expected: "non-existing endpoint",
-            value: endpoint,
-            description: `Endpoint ${endpoint.method.toUpperCase()} ${endpoint.path} already exists.`,
-          };
-        return null;
-      };
-
-      const errors: IValidation.IError[] = request.actions
-        .flatMap((action, i) => {
-          const path = `request.actions[${i}]`;
-
-          switch (action.type) {
-            case "create":
-              return checkExists(action.endpoint, path, false);
-            case "update":
-              if (
-                AutoBeOpenApiEndpointComparator.equals(
-                  action.original,
-                  action.updated,
-                )
-              )
-                return null;
-              return (
-                checkExists(action.original, path, true) ??
-                (AutoBeOpenApiEndpointComparator.equals(
-                  action.original,
-                  action.updated,
-                )
-                  ? null
-                  : checkExists(action.updated, path, false))
-              );
-            case "delete":
-              return checkExists(action.endpoint, path, true);
-          }
-        })
-        .filter((error) => error !== null);
-
-      if (errors.length > 0) {
-        return { success: false, data: result.data, errors };
-      }
-      return result;
-    }
+    if (request.type === "complete") return result;
 
     return props.preliminary.validate({
       thinking: result.data.thinking,
@@ -287,15 +228,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
           for (const action of request.actions) {
             switch (action.type) {
               case "create":
-                if (
-                  props.endpointSet.has({
-                    endpoint: action.endpoint,
-                    description: "",
-                  }) === false
-                )
+                if (props.endpointSet.has(action) === false)
                   props.endpointSet.insert({
                     endpoint: action.endpoint,
-                    description: action.description,
+                    description: "",
                   });
                 break;
               case "update": {
@@ -321,7 +257,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
                   });
                   props.endpointSet.insert({
                     endpoint: action.updated,
-                    description: action.description,
+                    description: "",
                   });
                 }
                 break;

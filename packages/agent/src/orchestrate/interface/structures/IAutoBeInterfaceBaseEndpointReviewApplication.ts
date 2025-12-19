@@ -115,7 +115,9 @@ export namespace IAutoBeInterfaceBaseEndpointReviewApplication {
     /**
      * The original endpoint to modify.
      *
-     * Must match an existing endpoint exactly (path + method).
+     * ⚠️ CRITICAL: Must be from the "Endpoints for Review" list provided above.
+     * DO NOT reference endpoints that are not in the provided list.
+     * Must match exactly (path + method).
      */
     original: AutoBeOpenApi.IEndpoint;
 
@@ -160,7 +162,9 @@ export namespace IAutoBeInterfaceBaseEndpointReviewApplication {
     /**
      * The endpoint to remove.
      *
-     * Must match an existing endpoint exactly (path + method).
+     * ⚠️ CRITICAL: Must be from the "Endpoints for Review" list provided above.
+     * DO NOT reference endpoints that are not in the provided list.
+     * Must match exactly (path + method).
      */
     endpoint: AutoBeOpenApi.IEndpoint;
 
