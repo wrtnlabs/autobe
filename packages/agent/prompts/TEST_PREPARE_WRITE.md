@@ -90,7 +90,7 @@ After your narrative plan, you MUST create a complete property-by-property mappi
 ```typescript
 {
   property: "title",           // Exact property name from DTO
-  how: "RandomGenerator.paragraph({ sentences: randint(2, 5) })"  // Generation strategy
+  how: "RandomGenerator.paragraph({ sentences: typia.random<number & tags.Type<'uint32'> & tags.Minimum<2> & tags.Maximum<5>>() })"  // Generation strategy
 }
 ```
 
@@ -99,12 +99,12 @@ After your narrative plan, you MUST create a complete property-by-property mappi
 ```typescript
 mappings: [
   // Test-customizable fields (from DeepPartial input)
-  { property: "title", how: "input?.title ?? RandomGenerator.paragraph({ sentences: randint(2, 5) })" },
-  { property: "content", how: "input?.content ?? RandomGenerator.content({ paragraphs: randint(2, 4) })" },
-  { property: "category_id", how: "input?.category_id ?? RandomGenerator.alphaNumeric(32)" },
+  { property: "title", how: "input?.title ?? RandomGenerator.paragraph({ sentences: typia.random<number & tags.Type<'uint32'> & tags.Minimum<2> & tags.Maximum<5>>() })" },
+  { property: "content", how: "input?.content ?? RandomGenerator.content({ paragraphs: typia.random<number & tags.Type<'uint32'> & tags.Minimum<2> & tags.Maximum<4>>() })" },
+  { property: "category_id", how: "input?.category_id ?? typia.random<string & tags.Format<'uuid'>>()" },
 
   // Arrays with nested objects
-  { property: "tags", how: "Map through input?.tags or generate ArrayUtil.repeat with RandomGenerator" },
+  { property: "tags", how: "Map through input?.tags or generate ArrayUtil.repeat with typia.random for count" },
   { property: "attachments", how: "Map through input?.attachments or generate empty array" },
 ]
 ```
@@ -218,9 +218,9 @@ You will receive via assistant message:
 
 **Pattern for test-customizable fields:**
 ```typescript
-title: input?.title ?? RandomGenerator.paragraph({ sentences: randint(2, 5) }),
-price: input?.price ?? randint(1000, 999999),
-email: input?.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
+title: input?.title ?? RandomGenerator.paragraph({ sentences: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<5>>() }),
+price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<999999>>(),
+email: input?.email ?? typia.random<string & tags.Format<"email">>(),
 ```
 
 ### Auto-Generated Fields (Exclude from input)
@@ -235,7 +235,7 @@ email: input?.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
 
 **Pattern for auto-generated fields:**
 ```typescript
-id: RandomGenerator.alphaNumeric(32),
+id: typia.random<string & tags.Format<"uuid">>(),
 created_at: new Date().toISOString(),
 updated_at: new Date().toISOString(),
 ```
@@ -249,11 +249,11 @@ updated_at: new Date().toISOString(),
 address: input?.address ? {
   street: input.address.street ?? RandomGenerator.paragraph({ sentences: 1 }),
   city: input.address.city ?? RandomGenerator.name(1),
-  zipCode: input.address.zipCode ?? RandomGenerator.alphaNumeric(5),
+  zipCode: input.address.zipCode ?? typia.random<string & tags.Pattern<"^[0-9]{5}$">>(),
 } : {
   street: RandomGenerator.paragraph({ sentences: 1 }),
   city: RandomGenerator.name(1),
-  zipCode: RandomGenerator.alphaNumeric(5),
+  zipCode: typia.random<string & tags.Pattern<"^[0-9]{5}$">>(),
 },
 ```
 
@@ -263,13 +263,16 @@ address: input?.address ? {
 // For arrays, map through input or generate random array
 items: input?.items
   ? input.items.map(item => ({
-      productId: item.productId ?? RandomGenerator.alphaNumeric(32),
-      quantity: item.quantity ?? randint(1, 10),
+      productId: item.productId ?? typia.random<string & tags.Format<"uuid">>(),
+      quantity: item.quantity ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
     }))
-  : ArrayUtil.repeat(randint(1, 5), () => ({
-      productId: RandomGenerator.alphaNumeric(32),
-      quantity: randint(1, 10),
-    })),
+  : ArrayUtil.repeat(
+      typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+      () => ({
+        productId: typia.random<string & tags.Format<"uuid">>(),
+        quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+      })
+    ),
 ```
 
 ## CRITICAL IMPLEMENTATION RULES
@@ -341,53 +344,169 @@ filename: `${RandomGenerator.alphabets(5)}.txt",  // WRONG!
 name: "user's name",  // Use escaping: "user\'s name" or 'user\'s name'
 ```
 
-## RandomGenerator API Reference
+## Random Data Generation
 
-The `@nestia/e2e` RandomGenerator provides these key methods:
+### Primary Method: typia.random<T>()
 
-**Text Generation**:
-- `alphabets(length: number)` - lowercase letters only (e.g., "abcdef")
-- `alphaNumeric(length: number)` - lowercase letters + digits (e.g., "a1b2c3")
-- `name(words?: number)` - random name with 2-3 words default
-- `paragraph(props?: {sentences, wordMin, wordMax})` - single paragraph
-- `content(props?: {paragraphs, sentenceMin, sentenceMax, wordMin, wordMax})` - multi-paragraph content
-- `substring(content: string)` - extract random substring
+**CRITICAL: Always use `typia.random<T>()` with explicit generic type arguments for type-safe, constraint-compliant random data generation.**
 
-**Selection**:
-- `pick<T>(array: readonly T[])` - select one element randomly
-- `sample<T>(array: T[], count: number)` - select multiple unique elements
-
-**Contact Information**:
-- `mobile(prefix?: string)` - phone number (default: "010" for Korean format)
-
-**Date & Time**:
-- `date(from: Date, range: number)` - random date within range (milliseconds)
-
-**Number Generation**:
-- Use `randint(min, max)` from `tstl` for integer ranges
-- RandomGenerator does NOT have `integer()` or `boolean()` methods
-
-**Common Patterns**:
 ```typescript
-// UUID-like string (DO NOT use v4() from uuid package)
-id: RandomGenerator.alphaNumeric(32)
+import typia, { tags } from "typia";
 
-// Numbers
-age: randint(18, 80)
-price: randint(100, 999999)  // cents
+// ❌ WRONG: Missing generic type argument
+const x = typia.random(); // Compilation error
+const x: string & tags.Format<"uuid"> = typia.random(); // Still wrong!
 
-// Booleans
-isActive: RandomGenerator.pick([true, false])
-hasDiscount: randint(0, 9) < 3  // 30% probability
+// ✅ CORRECT: Always provide generic type argument
+const x = typia.random<string & tags.Format<"uuid">>();
+const userId = typia.random<string & tags.Format<"uuid">>();
+```
 
-// Arrays
-tags: ArrayUtil.repeat(randint(1, 5), () => RandomGenerator.alphabets(randint(3, 10)))
+**⚠️ CRITICAL: Tag Generic Syntax - Common Mistake**
+
+Tags use generic `<>` syntax, NOT function call `()` syntax:
+
+```typescript
+// ✅ CORRECT: Tags use generic angle brackets
+typia.random<string & tags.Format<"email">>();  // CORRECT
+typia.random<string & tags.Format<"uuid">>();   // CORRECT
+typia.random<number & tags.Type<"int32">>();    // CORRECT
+
+// ❌ WRONG: Tags are NOT function calls - this causes compilation error
+typia.random<string & tags.Format("email")>();  // COMPILATION ERROR!
+typia.random<string & tags.Format("uuid")>();   // COMPILATION ERROR!
+typia.random<number & tags.Type("int32")>();    // COMPILATION ERROR!
+
+// More examples:
+// ✅ CORRECT
+typia.random<string & tags.MinLength<5> & tags.MaxLength<10>>();
+typia.random<number & tags.Minimum<0> & tags.Maximum<100>>();
+
+// ❌ WRONG
+typia.random<string & tags.MinLength(5) & tags.MaxLength(10)>();  // ERROR!
+typia.random<number & tags.Minimum(0) & tags.Maximum(100)>();      // ERROR!
+```
+
+### Common Type Constraint Patterns
+
+**String formats:**
+```typescript
+typia.random<string & tags.Format<"email">>();
+typia.random<string & tags.Format<"uuid">>();
+typia.random<string & tags.Format<"url">>();
+typia.random<string & tags.Format<"date-time">>();
+```
+
+**Number constraints:**
+```typescript
+typia.random<number & tags.Type<"uint32">>();
+typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>>();
+typia.random<number & tags.Type<"uint32"> & tags.ExclusiveMinimum<100> & tags.ExclusiveMaximum<1000> & tags.MultipleOf<10>>();
+```
+
+**String patterns:**
+```typescript
+typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>();
+typia.random<string & tags.MinLength<5> & tags.MaxLength<100>>();
+```
+
+### RandomGenerator Utility Functions
+
+**⚠️ CRITICAL: paragraph() and content() take OBJECT parameters, NOT numbers!**
+
+```typescript
+// Functions that take NUMBER parameters:
+RandomGenerator.alphabets(3)      // generates 3 random letters
+RandomGenerator.alphaNumeric(4)   // generates 4 random alphanumeric chars
+RandomGenerator.name()            // default 2-3 words
+RandomGenerator.name(1)           // generates 1 word name
+RandomGenerator.mobile()          // phone number
+RandomGenerator.mobile("011")     // phone with "011" prefix
+
+// ❌ WRONG - Common AI mistake:
+RandomGenerator.paragraph(5)      // ERROR! Cannot pass number directly
+RandomGenerator.content(3)        // ERROR! Cannot pass number directly
+
+// ✅ CORRECT - paragraph() takes OBJECT:
+RandomGenerator.paragraph()                                      // uses defaults
+RandomGenerator.paragraph({ sentences: 5 })                      // 5 words
+RandomGenerator.paragraph({ sentences: 10, wordMin: 3, wordMax: 7 })
+
+// ✅ CORRECT - content() takes OBJECT:
+RandomGenerator.content()                                        // uses defaults
+RandomGenerator.content({ paragraphs: 3 })                       // 3 paragraphs
+RandomGenerator.content({
+  paragraphs: 5,
+  sentenceMin: 10,
+  sentenceMax: 20,
+  wordMin: 4,
+  wordMax: 8
+})
+```
+
+### Array Generation and Selection
+
+```typescript
+// Array generation
+ArrayUtil.repeat(3, () => ({ name: RandomGenerator.name() }))
+
+// ❌ WRONG: Without 'as const', literal types are lost
+const roles = ["admin", "user", "guest"];
+const role = RandomGenerator.pick(roles); // role is 'string', not literal union
+
+// ✅ CORRECT: Use 'as const' to preserve literal types
+const roles = ["admin", "user", "guest"] as const;
+const role = RandomGenerator.pick(roles); // role is "admin" | "user" | "guest"
+
+// For multiple selections:
+RandomGenerator.sample(roles, 2); // Select 2 random roles
+```
+
+**CRITICAL - String Usage with RandomGenerator.pick:**
+
+```typescript
+// ❌ WRONG: Passing a string directly to RandomGenerator.pick
+const randomChar = RandomGenerator.pick("abcdef0123456789"); // COMPILATION ERROR!
+
+// ✅ CORRECT: Convert string to array using spread operator
+const randomChar = RandomGenerator.pick([..."abcdef0123456789"]);
+```
+
+### When to Use typia.random vs RandomGenerator
+
+| Scenario | Use This | Example |
+|----------|----------|---------|
+| UUID, email, url, date-time | `typia.random<T>()` | `typia.random<string & tags.Format<"uuid">>()` |
+| Numbers with constraints | `typia.random<T>()` | `typia.random<number & tags.Type<"uint32"> & tags.Minimum<1>>()` |
+| Pattern-based strings | `typia.random<T>()` | `typia.random<string & tags.Pattern<"^[A-Z]{3}$">>()` |
+| Human-readable names | `RandomGenerator` | `RandomGenerator.name()` |
+| Paragraph/content text | `RandomGenerator` | `RandomGenerator.paragraph({ sentences: 5 })` |
+| Phone numbers | `RandomGenerator` | `RandomGenerator.mobile()` |
+| Picking from literal array | `RandomGenerator` | `RandomGenerator.pick(values)` |
+
+### Common Patterns
+
+```typescript
+// UUID (prefer typia.random over RandomGenerator.alphaNumeric)
+id: typia.random<string & tags.Format<"uuid">>()
 
 // Email
-email: `${RandomGenerator.alphabets(8)}@example.com`
+email: typia.random<string & tags.Format<"email">>()
 
-// Enum values
-status: RandomGenerator.pick(["draft", "published", "archived"])
+// Numbers with bounds
+price: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<999999>>()
+
+// Booleans
+isActive: RandomGenerator.pick([true, false] as const)
+
+// Arrays with nested objects
+tags: ArrayUtil.repeat(
+  typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+  () => ({ name: RandomGenerator.alphabets(typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()) })
+)
+
+// Enum values (use 'as const')
+status: RandomGenerator.pick(["draft", "published", "archived"] as const)
 ```
 
 ## Function Calling Interface
@@ -426,7 +545,7 @@ export namespace ITag {
 **Generated Function:**
 ```typescript
 import { ArrayUtil, RandomGenerator } from "@nestia/e2e";
-import { randint } from "tstl";
+import typia, { tags } from "typia";
 
 import { DeepPartial } from "@ORGANIZATION/PROJECT-api/lib/typings/DeepPartial";
 import { IShoppingSale } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingSale";
@@ -435,28 +554,37 @@ import { ITag } from "@ORGANIZATION/PROJECT-api/lib/structures/ITag";
 export const prepare_random_shopping_sale = (
   input?: DeepPartial<IShoppingSale.ICreate>
 ): IShoppingSale.ICreate => ({
-  // Test-customizable fields
+  // Test-customizable fields (use RandomGenerator for human-readable text)
   title: input?.title ?? RandomGenerator.paragraph({
-    sentences: randint(2, 5),
+    sentences: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<5>>(),
     wordMin: 3,
     wordMax: 7
   }),
   content: input?.content ?? RandomGenerator.content({
-    paragraphs: randint(2, 4),
+    paragraphs: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<4>>(),
     sentenceMin: 5,
     sentenceMax: 10
   }),
-  price: input?.price ?? randint(1000, 999999),
-  category_id: input?.category_id ?? RandomGenerator.alphaNumeric(32),
+  // Use typia.random for numbers with constraints
+  price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<999999>>(),
+  // Use typia.random for UUID-like identifiers
+  category_id: input?.category_id ?? typia.random<string & tags.Format<"uuid">>(),
 
   // Array with nested objects
   tags: input?.tags
     ? input.tags.map(tag => ({
-        name: tag.name ?? RandomGenerator.alphabets(randint(3, 10)),
+        name: tag.name ?? RandomGenerator.alphabets(
+          typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()
+        ),
       }))
-    : ArrayUtil.repeat(randint(1, 5), () => ({
-        name: RandomGenerator.alphabets(randint(3, 10)),
-      })),
+    : ArrayUtil.repeat(
+        typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+        () => ({
+          name: RandomGenerator.alphabets(
+            typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()
+          ),
+        })
+      ),
 });
 ```
 
