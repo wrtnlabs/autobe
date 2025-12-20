@@ -1,4 +1,5 @@
 import {
+  AutoBeOpenApi,
   AutoBeTestAuthorizeFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestOperationFunction,
@@ -7,8 +8,13 @@ import {
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  AutoBeOpenApiTypeChecker,
+  StringUtil,
+} from "@autobe/utils";
 import path from "path";
+import { HashSet } from "tstl";
 import { IValidation } from "typia";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
@@ -35,12 +41,51 @@ export namespace AutoBeTestOperationProgrammer {
   ---------------------------------------------------------------- */
   export function compile(props: {
     compiler: IAutoBeCompiler;
+    document: AutoBeOpenApi.IDocument;
     procedure: IAutoBeTestOperationProcedure;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestOperationFunction>> {
+    const endpoints: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+      props.procedure.artifacts.document.operations.map((o) => ({
+        method: o.method,
+        path: o.path,
+      })),
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
+    );
+    for (const authorize of props.procedure.authorizes)
+      endpoints.insert(authorize.endpoint);
+
+    const operations: AutoBeOpenApi.IOperation[] = endpoints
+      .toJSON()
+      .map((endpoint) =>
+        props.document.operations.find(
+          (o) => o.method === endpoint.method && o.path === endpoint.path,
+        ),
+      )
+      .filter((o) => o !== undefined);
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+    const visit = (value: AutoBeOpenApi.IJsonSchema) => {
+      if (AutoBeOpenApiTypeChecker.isReference(value)) {
+        const key: string = value.$ref.split("/").pop()!;
+        schemas[key] = props.document.components.schemas[key];
+      }
+    };
+    for (const op of operations) {
+      if (op.requestBody) visit({ $ref: op.requestBody.typeName });
+      if (op.responseBody) visit({ $ref: op.responseBody.typeName });
+    }
+
     return AutoBeTestFunctionProgrammer.compile({
       compiler: props.compiler,
-      document: props.procedure.artifacts.document,
+      document: {
+        ...props.document,
+        operations,
+        components: {
+          authorizations: props.document.components.authorizations,
+          schemas,
+        },
+      },
       function: props.procedure.function,
       files: {
         ...Object.fromEntries(

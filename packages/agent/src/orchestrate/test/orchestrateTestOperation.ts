@@ -42,6 +42,7 @@ export async function orchestrateTestOperation<Model extends ILlmSchema.Model>(
   const compile = async (procedure: IAutoBeTestOperationProcedure) =>
     AutoBeTestOperationProgrammer.compile({
       compiler: await ctx.compiler(),
+      document: props.document,
       procedure,
       step: ctx.state().analyze?.step ?? 0,
     });
