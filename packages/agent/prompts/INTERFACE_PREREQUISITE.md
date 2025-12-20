@@ -115,7 +115,7 @@ Some requirement files may have been loaded in previous function calls. These ma
 
 Loads requirement analysis documents from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
@@ -159,7 +159,7 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 
 Loads Prisma model definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
@@ -207,7 +207,7 @@ Some API operations may have been loaded in previous function calls. These opera
 
 Loads API operation definitions from the **previous version**.
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. NOT available during initial generation.
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({

@@ -698,7 +698,7 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
  * iteration** of the AutoBE generation pipeline. Used when
  * regenerating due to user modifications to reference the previous version.
  *
- * IMPORTANT: This function is ONLY available when a previous version exists.
+ * IMPORTANT: This type is ONLY available when a previous version exists.
  * NOT available during initial generation (initial generation).
  */
 export interface IAutoBePreliminaryGetPreviousAnalysisFiles {

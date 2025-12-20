@@ -48,9 +48,8 @@ export const fixPreliminaryApplication = <
   });
   if (eraseMetadata === null) return;
 
-  for (const kind of props.preliminary.getKinds()) {
-    if (kind.startsWith("previous") === false) continue;
-    else if (kind === "previousAnalysisFiles") {
+  for (const kind of props.preliminary.getKinds().slice())
+    if (kind === "previousAnalysisFiles") {
       if (props.state.previousAnalyze === null) {
         eraseMetadata("getPreviousAnalysisFiles");
         eraseKind(kind);
@@ -71,7 +70,6 @@ export const fixPreliminaryApplication = <
         eraseKind(kind);
       }
     }
-  }
 };
 
 const getUnionErasure = <
@@ -105,7 +103,10 @@ const getUnionErasureOfChatGpt = (props: {
       Extract<AutoBePreliminaryKind, `previous${string}`>
     >["request"]["type"],
   ): void => {
-    const index: number = children.findIndex((c) => c.$ref.endsWith(`/${key}`));
+    const type: string = `IAutoBePreliminary${key[0].toUpperCase()}${key.substring(1)}`;
+    const index: number = children.findIndex((c) =>
+      c.$ref.endsWith(`/${type}`),
+    );
     if (index !== -1) children.splice(index, 1);
     delete props.$defs[key];
     delete mapping[key];
@@ -132,7 +133,10 @@ const getUnionErasureOfClaude = (props: {
       Extract<AutoBePreliminaryKind, `previous${string}`>
     >["request"]["type"],
   ): void => {
-    const index: number = children.findIndex((c) => c.$ref.endsWith(`/${key}`));
+    const type: string = `IAutoBePreliminary${key[0].toUpperCase()}${key.substring(1)}`;
+    const index: number = children.findIndex((c) =>
+      c.$ref.endsWith(`/${type}`),
+    );
     if (index !== -1) children.splice(index, 1);
     delete props.$defs[key];
     delete mapping[key];
