@@ -64,28 +64,41 @@ export namespace AutoBeTestOperationProgrammer {
         ),
       )
       .filter((o) => o !== undefined);
-    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-    const visit = (value: AutoBeOpenApi.IJsonSchema) => {
-      if (AutoBeOpenApiTypeChecker.isReference(value)) {
-        const key: string = value.$ref.split("/").pop()!;
-        schemas[key] = props.document.components.schemas[key];
-      }
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+      ...props.procedure.artifacts.document.components.schemas,
+    };
+    const visit = (x: AutoBeOpenApi.IJsonSchema) => {
+      AutoBeOpenApiTypeChecker.visit({
+        components: props.document.components,
+        schema: x,
+        closure: (next) => {
+          if (AutoBeOpenApiTypeChecker.isReference(next)) {
+            const key: string = next.$ref.split("/").pop()!;
+            schemas[key] ??= props.document.components.schemas[key];
+          }
+        },
+      });
     };
     for (const op of operations) {
-      if (op.requestBody) visit({ $ref: op.requestBody.typeName });
-      if (op.responseBody) visit({ $ref: op.responseBody.typeName });
+      if (op.requestBody)
+        visit({
+          $ref: `#/$defs/${op.requestBody.typeName}`,
+        } satisfies AutoBeOpenApi.IJsonSchema.IReference);
+      if (op.responseBody)
+        visit({
+          $ref: `#/$defs/${op.responseBody.typeName}`,
+        } satisfies AutoBeOpenApi.IJsonSchema.IReference);
     }
 
     return AutoBeTestFunctionProgrammer.compile({
       compiler: props.compiler,
       document: {
-        ...props.document,
         operations,
         components: {
           authorizations: props.document.components.authorizations,
           schemas,
         },
-      },
+      } satisfies AutoBeOpenApi.IDocument,
       function: props.procedure.function,
       files: {
         ...Object.fromEntries(
@@ -96,7 +109,7 @@ export namespace AutoBeTestOperationProgrammer {
           ].map((f) => [f.location, f.content]),
         ),
         [props.procedure.function.location]: props.procedure.function.content,
-      },
+      } satisfies Record<string, string>,
       step: props.step,
     });
   }
