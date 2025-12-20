@@ -46,6 +46,7 @@ export async function orchestrateTestGenerate<Model extends ILlmSchema.Model>(
       compiler: await ctx.compiler(),
       artifacts: procedure.artifacts,
       prepare: procedure.prepare,
+      location: procedure.function.location,
       content: procedure.function.content,
     });
 

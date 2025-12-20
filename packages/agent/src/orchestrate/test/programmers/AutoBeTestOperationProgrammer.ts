@@ -8,6 +8,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import path from "path";
 import { IValidation } from "typia";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
@@ -61,6 +62,7 @@ export namespace AutoBeTestOperationProgrammer {
     prepares: AutoBeTestPrepareFunction[];
     generates: AutoBeTestGenerateFunction[];
     authorizes: AutoBeTestAuthorizeFunction[];
+    location: string;
     content: string;
   }): Promise<string> {
     let code: string = await props.compiler.typescript.beautify(props.content);
@@ -76,7 +78,13 @@ export namespace AutoBeTestOperationProgrammer {
         props.artifacts.document.components.schemas,
       ),
       ...[...props.prepares, ...props.generates, ...props.authorizes].map(
-        (f) => `import { ${f.name} } from "${f.location.replace(".ts", "")}";`,
+        (f) =>
+          `import { ${f.name} } from "${path
+            .relative(
+              path.dirname(props.location),
+              f.location.replace(".ts", ""),
+            )
+            .replaceAll(path.sep, "/")}";`,
       ),
     ];
     code = [...imports, code].join("\n");

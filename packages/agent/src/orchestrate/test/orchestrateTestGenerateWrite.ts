@@ -134,6 +134,7 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to create generation function.");
   }
 
+  const location: string = `test/features/utils/generation/${functionName}.ts`;
   return {
     type: "testWrite",
     id: v7(),
@@ -145,12 +146,13 @@ async function process<Model extends ILlmSchema.Model>(
         path: props.operation.path,
       },
       actor: props.operation.authorizationActor,
-      location: `test/features/utils/generation/${functionName}.ts`,
+      location,
       name: functionName,
       content: await AutoBeTestGenerateProgrammer.replaceImportStatements({
         compiler: await ctx.compiler(),
         artifacts: props.artifacts,
         prepare: props.prepare,
+        location,
         content: pointer.value.revise.final ?? pointer.value.draft,
       }),
     },

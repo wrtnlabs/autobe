@@ -54,6 +54,7 @@ export async function orchestrateTestOperation<Model extends ILlmSchema.Model>(
       prepares: props.prepares,
       generates: props.generates,
       authorizes: props.authorizes,
+      location: procedure.function.location,
       content: procedure.function.content,
     });
 

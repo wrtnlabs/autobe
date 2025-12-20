@@ -6,6 +6,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import path from "path";
 import { IValidation } from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
@@ -124,6 +125,7 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
     compiler: IAutoBeCompiler;
     artifacts: IAutoBeTestArtifacts;
     prepare: AutoBeTestPrepareFunction;
+    location: string;
     content: string;
   }): Promise<string> {
     let code: string = await props.compiler.typescript.beautify(props.content);
@@ -138,7 +140,12 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
       ...AutoBeTestFunctionProgrammer.writeImportStatements(
         props.artifacts.document.components.schemas,
       ),
-      `import { ${props.prepare.name} } from "${props.prepare.location.replace(".ts", "")}";`,
+      `import { ${props.prepare.name} } from "${path
+        .relative(
+          path.dirname(props.location),
+          props.prepare.location.replace(".ts", ""),
+        )
+        .replaceAll(path.sep, "/")}";`,
     ];
     code = [...imports, code].join("\n");
     return await props.compiler.typescript.beautify(code);

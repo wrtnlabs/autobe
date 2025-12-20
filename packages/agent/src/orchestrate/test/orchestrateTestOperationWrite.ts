@@ -150,6 +150,8 @@ async function process<Model extends ILlmSchema.Model>(
     ++props.progress.completed;
     throw new Error("Failed to create test code.");
   }
+
+  const location: string = `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`;
   return {
     type: "testWrite",
     id: v7(),
@@ -159,13 +161,14 @@ async function process<Model extends ILlmSchema.Model>(
       domain: pointer.value.domain,
       scenario: props.scenario,
       name: props.scenario.functionName,
-      location: `test/features/api/${pointer.value.domain}/${props.scenario.functionName}.ts`,
+      location,
       content: await AutoBeTestOperationProgrammer.replaceImportStatements({
         compiler: await ctx.compiler(),
         artifacts: props.artifacts,
         authorizes: props.authorizes,
         prepares: props.prepares,
         generates: props.generates,
+        location,
         content: pointer.value.revise.final ?? pointer.value.draft,
       }),
     },
