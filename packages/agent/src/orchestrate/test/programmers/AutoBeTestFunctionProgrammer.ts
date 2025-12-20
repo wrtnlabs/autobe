@@ -61,9 +61,9 @@ export namespace AutoBeTestFunctionProgrammer {
   export function writeImportStatements(
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   ): string[] {
-    const typeReferences: string[] = Array.from(
-      new Set(Object.keys(schemas).map((key) => key.split(".")[0]!)),
-    ).sort();
+    const typeReferences: Set<string> = new Set(
+      Object.keys(schemas).map((key) => key.split(".")[0]!),
+    );
     return [
       `import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";`,
       `import { IConnection } from "@nestia/fetcher";`,
@@ -72,10 +72,12 @@ export namespace AutoBeTestFunctionProgrammer {
       `import api from "@ORGANIZATION/PROJECT-api";`,
       `import { DeepPartial } from "@ORGANIZATION/PROJECT-api/lib/typings/DeepPartial";`,
       `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
-      ...typeReferences.map(
-        (ref) =>
-          `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-      ),
+      ...Array.from(typeReferences)
+        .sort()
+        .map(
+          (ref) =>
+            `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+        ),
     ];
   }
 }
