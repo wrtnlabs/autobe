@@ -103,10 +103,10 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...transformTestAuthorizeWriteHistory({
+    ...(await transformTestAuthorizeWriteHistory(ctx, {
       operation: props.operation,
       artifacts: props.artifacts,
-    }),
+    })),
   });
   if (pointer.value === null) {
     ++props.progress.completed;

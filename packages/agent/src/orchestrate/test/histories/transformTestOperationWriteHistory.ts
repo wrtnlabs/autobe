@@ -2,6 +2,7 @@ import {
   AutoBeTestAuthorizeFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestScenario,
+  IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
@@ -90,7 +91,7 @@ export async function transformTestOperationWriteHistory<
 
           Never use the DTO definitions that are not listed here.
 
-          ${transformTestOperationWriteHistory.structures(props.artifacts)}
+          ${await transformTestOperationWriteHistory.structures(ctx, props.artifacts)}
 
           ## API (SDK) Functions
 
@@ -215,14 +216,21 @@ export async function transformTestOperationWriteHistory<
   };
 }
 export namespace transformTestOperationWriteHistory {
-  export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {
+  export async function structures<Model extends ILlmSchema.Model>(
+    ctx: AutoBeContext<Model>,
+    artifacts: IAutoBeTestScenarioArtifacts,
+  ): Promise<string> {
+    const compiler: IAutoBeCompiler = await ctx.compiler();
     return StringUtil.trim`
       ${Object.keys(artifacts.document.components.schemas)
         .map((k) => `- ${k}`)
         .join("\n")}
 
       \`\`\`json
-      ${JSON.stringify(artifacts.dto)}
+      ${JSON.stringify({
+        ...artifacts.dto,
+        ...(await compiler.test.getDefaultTypes()),
+      })}
       \`\`\`
     `;
   }

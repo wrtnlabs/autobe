@@ -61,11 +61,17 @@ ${Object.keys(props.schema.properties).map(
     `;
   }
 
-  export function writeStructures<Model extends ILlmSchema.Model>(
+  export async function writeStructures<Model extends ILlmSchema.Model>(
     ctx: AutoBeContext<Model>,
     typeName: string,
   ): Promise<Record<string, string>> {
-    return AutoBeRealizeCollectorProgrammer.writeStructures(ctx, typeName);
+    return {
+      ...(await AutoBeRealizeCollectorProgrammer.writeStructures(
+        ctx,
+        typeName,
+      )),
+      ...(await (await ctx.compiler()).test.getDefaultTypes()),
+    };
   }
 
   /* ----------------------------------------------------------------
@@ -77,10 +83,6 @@ ${Object.keys(props.schema.properties).map(
     procedure: IAutoBeTestPrepareProcedure;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestPrepareFunction>> {
-    const operation: AutoBeOpenApi.IOperation | undefined =
-      props.document.operations.find(
-        (o) => o.requestBody?.typeName === props.procedure.typeName,
-      );
     const components: AutoBeOpenApi.IComponents = {
       authorizations: [],
       schemas: {},
@@ -99,12 +101,14 @@ ${Object.keys(props.schema.properties).map(
       compiler: props.compiler,
       step: props.step,
       document: {
-        operations: operation ? [operation] : [],
+        operations: [],
         components,
       },
       function: props.procedure.function,
       files: {
         [props.procedure.function.location]: props.procedure.function.content,
+        ["src/api/functional/index.ts"]:
+          "export const NO_SDK_FUNCTION_AT_ALL = 1",
       },
     });
   }

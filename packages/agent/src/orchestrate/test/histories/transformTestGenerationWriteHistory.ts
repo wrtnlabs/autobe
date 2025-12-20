@@ -1,23 +1,26 @@
 import { AutoBeOpenApi, AutoBeTestPrepareFunction } from "@autobe/interface";
-import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
-import {
-  HttpMigration,
-  IHttpMigrateApplication,
-  OpenApi,
-} from "@samchon/openapi";
+import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBeTestGenerateProgrammer } from "../programmers/AutoBeTestGenerateProgrammer";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
+import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 
-export function transformTestGenerateWriteHistory(props: {
-  instruction: string;
-  prepare: AutoBeTestPrepareFunction;
-  operation: AutoBeOpenApi.IOperation;
-  artifacts: IAutoBeTestArtifacts;
-}): IAutoBeOrchestrateHistory {
+export async function transformTestGenerateWriteHistory<
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    instruction: string;
+    prepare: AutoBeTestPrepareFunction;
+    operation: AutoBeOpenApi.IOperation;
+    artifacts: IAutoBeTestArtifacts;
+  },
+): Promise<IAutoBeOrchestrateHistory> {
   return {
     histories: [
       {
@@ -77,14 +80,14 @@ export function transformTestGenerateWriteHistory(props: {
           These are the DTO type definitions available in the codebase.
           Use these to understand the structure of request and response types.
 
-          ${transformTestGenerateWriteHistory.structures(props.artifacts)}
+          ${await transformTestOperationWriteHistory.structures(ctx, props.artifacts)}
 
           ## API SDK Functions
 
           Here are the available SDK functions you can use to call the API.
           Find the appropriate function that matches the operation endpoint.
 
-          ${transformTestGenerateWriteHistory.functional(props.artifacts)}
+          ${transformTestOperationWriteHistory.functional(props.artifacts, [])}
 
           ## E2E Mockup Functions
 
@@ -106,40 +109,4 @@ export function transformTestGenerateWriteHistory(props: {
     ],
     userMessage: `Generate the resource generation function based on the prepare function "${props.prepare.name}" and the API operation.`,
   };
-}
-
-export namespace transformTestGenerateWriteHistory {
-  export function structures(artifacts: IAutoBeTestArtifacts): string {
-    return StringUtil.trim`
-      ${Object.keys(artifacts.document.components.schemas)
-        .map((k) => `- ${k}`)
-        .join("\n")}
-
-      \`\`\`json
-      ${JSON.stringify(artifacts.dto)}
-      \`\`\`
-    `;
-  }
-
-  export function functional(artifacts: IAutoBeTestArtifacts): string {
-    const document: OpenApi.IDocument = transformOpenApiDocument(
-      artifacts.document,
-    );
-    const app: IHttpMigrateApplication = HttpMigration.application(document);
-    return StringUtil.trim`
-      Method | Path | Function Accessor
-      -------|------|-------------------
-      ${app.routes
-        .map((r) =>
-          [r.method, r.path, `api.functional.${r.accessor.join(".")}`].join(
-            " | ",
-          ),
-        )
-        .join("\n")}
-
-      \`\`\`json
-      ${JSON.stringify(artifacts.sdk)}
-      \`\`\`
-    `;
-  }
 }

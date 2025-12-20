@@ -42,9 +42,10 @@ export namespace AutoBeTestFunctionProgrammer {
       ...sdk,
       ...dto,
       ...props.files,
+      ...(await props.compiler.test.getDefaultTypes()),
     };
     const result: IAutoBeTypeScriptCompileResult =
-      await props.compiler.typescript.compile({
+      await props.compiler.test.compile({
         files: everything,
       });
     return {

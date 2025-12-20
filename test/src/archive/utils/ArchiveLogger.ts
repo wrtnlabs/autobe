@@ -72,16 +72,17 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "realizeValidate")
       content.push(
-        ...printCompiled(event.result, Object.keys(event.files).length),
+        ...printRealizeCompiled(event.result, Object.keys(event.files).length),
       );
     else if (event.type === "testWrite")
       content.push(`  - function: ${event.function.type}`);
-    else if (event.type === "testCorrect")
+    else if (event.type === "testCorrect") {
       content.push(
         `  - kind: ${event.kind}`,
         `  - function: ${event.function.type}`,
       );
-    else if (event.type === "interfaceComplement")
+      console.log(event.result.diagnostics);
+    } else if (event.type === "interfaceComplement")
       content.push(
         `  - missed: ${event.missed.join(", ")}`,
         `  - filled: ${Object.keys(event.schemas).join(", ")}`,
@@ -121,7 +122,7 @@ export namespace ArchiveLogger {
     console.log(content.join("\n"));
   };
 
-  const printCompiled = (
+  const printRealizeCompiled = (
     result: IAutoBeTypeScriptCompileResult,
     total: number,
   ): string[] => {

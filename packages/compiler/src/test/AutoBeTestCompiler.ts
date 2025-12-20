@@ -16,6 +16,7 @@ import ts from "typescript";
 import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
+import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import TestExternal from "../raw/test.json";
 import { FilePrinter } from "../utils/FilePrinter";
 import { shrinkCompileResult } from "../utils/shrinkCompileResult";
@@ -99,5 +100,13 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
 
   public async getExternal(): Promise<Record<string, string>> {
     return TestExternal as Record<string, string>;
+  }
+
+  public async getDefaultTypes(): Promise<Record<string, string>> {
+    return Object.fromEntries(
+      Object.entries(AutoBeCompilerInterfaceTemplate).filter(([key]) =>
+        key.startsWith("src/api/"),
+      ),
+    );
   }
 }

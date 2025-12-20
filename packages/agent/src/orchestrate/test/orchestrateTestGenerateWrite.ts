@@ -121,12 +121,12 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey: props.promptCacheKey,
-    ...transformTestGenerateWriteHistory({
+    ...(await transformTestGenerateWriteHistory(ctx, {
       instruction: props.instruction,
       prepare: props.prepare,
       operation: props.operation,
       artifacts: props.artifacts,
-    }),
+    })),
   });
 
   if (pointer.value === null) {

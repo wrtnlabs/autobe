@@ -36,6 +36,7 @@ export const getCriticalCompiler = (
       validate: (props) => lock(() => compiler.test.validate(props)),
       write: (props) => lock(() => compiler.test.write(props)),
       getExternal: () => lock(() => compiler.test.getExternal()),
+      getDefaultTypes: () => lock(() => compiler.test.getDefaultTypes()),
     },
     realize: {
       controller: (props) => lock(() => compiler.realize.controller(props)),

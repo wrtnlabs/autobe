@@ -55,12 +55,12 @@ export const transformTestCorrectOverallHistory = async <
           generationFunctions: props.procedure.generates,
         });
       case "authorize":
-        return transformTestAuthorizeWriteHistory({
+        return await transformTestAuthorizeWriteHistory(ctx, {
           operation: props.procedure.operation,
           artifacts: props.procedure.artifacts,
         });
       case "generate":
-        return transformTestGenerateWriteHistory({
+        return await transformTestGenerateWriteHistory(ctx, {
           instruction: props.instruction,
           prepare: props.procedure.prepare,
           operation: props.procedure.operation,
