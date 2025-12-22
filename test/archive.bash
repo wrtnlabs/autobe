@@ -7,8 +7,6 @@ pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project bbs > archive
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project reddit > archive.claude-sonnet-4.5.reddit.log &
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project shopping > archive.claude-sonnet-4.5.shopping.log &
 
-pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project chat > archive.claude-sonnet-4.5.chat.log &
-
 # anthropic/claude-haiku-4.5
 pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project todo > archive.claude-haiku-4.5.todo.log &
 pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project bbs > archive.claude-haiku-4.5.bbs.log &
@@ -35,8 +33,6 @@ pnpm run archive:go --vendor openai/gpt-4.1 --project bbs > archive.openai-gpt-4
 pnpm run archive:go --vendor openai/gpt-4.1 --project reddit > archive.openai-gpt-4.1.reddit.log &
 pnpm run archive:go --vendor openai/gpt-4.1 --project shopping > archive.openai-gpt-4.1.shopping.log &
 
-pnpm run archive:go --vendor openai/gpt-4.1 --project chat > archive.openai-gpt-4.1.chat.log &
-
 # openai/gpt-4.1-mini
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project todo > archive.openai-gpt-4.1-mini.todo.log &
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project bbs > archive.openai-gpt-4.1-mini.bbs.log &
@@ -48,8 +44,6 @@ pnpm run archive:go --vendor openai/gpt-5.2 --project todo > archive.openai-gpt-
 pnpm run archive:go --vendor openai/gpt-5.2 --project bbs > archive.openai-gpt-5.2.bbs.log &
 pnpm run archive:go --vendor openai/gpt-5.2 --project reddit > archive.openai-gpt-5.2.reddit.log &
 pnpm run archive:go --vendor openai/gpt-5.2 --project shopping > archive.openai-gpt-5.2.shopping.log &
-
-pnpm run archive:go --vendor openai/gpt-5.2 --project chat > archive.openai-gpt-5.2.chat.log &
 
 # openai/gpt-oss-120b
 pnpm run archive:go --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b.todo.log &
