@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceCompleteEvent,
+  AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
@@ -15,6 +16,7 @@ import {
 } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
+import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -22,9 +24,10 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
+import { orchestrateInterfaceActionEndpoint } from "./orchestrateInterfaceActionEndpoint";
 import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
+import { orchestrateInterfaceBaseEndpoint } from "./orchestrateInterfaceBaseEndpoint";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
-import { orchestrateInterfaceEndpoint } from "./orchestrateInterfaceEndpoint";
 import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
@@ -82,13 +85,32 @@ export const orchestrateInterface =
       .map((authorization) => authorization.operations)
       .flat();
 
-    // ENDPOINTS & OPERATIONS
-    const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoint(ctx, {
+    const endpointProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: init.groups.length * endpointSteps.length,
+    };
+    // BASE ENDPOINTS
+    const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceBaseEndpoint(ctx, {
+        instruction: props.instruction,
         groups: init.groups,
         authorizations: authOperations,
-        instruction: props.instruction,
+        progress: endpointProgress,
       });
+    // ACTION ENDPOINTS
+    const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceActionEndpoint(ctx, {
+        instruction: props.instruction,
+        groups: init.groups,
+        authorizations: authOperations,
+        excluded: baseEndpoints,
+        progress: endpointProgress,
+      });
+    const endpoints: AutoBeOpenApi.IEndpoint[] = [
+      ...baseEndpoints,
+      ...actionEndpoints,
+    ];
+
     const firstOperations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperation(ctx, {
         endpoints,
@@ -265,3 +287,6 @@ const REVIEWERS = [
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
   },
 ];
+
+const endpointSteps =
+  typia.misc.literals<AutoBeInterfaceEndpointEvent["kind"]>();

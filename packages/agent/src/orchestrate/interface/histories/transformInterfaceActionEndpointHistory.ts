@@ -8,10 +8,11 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceEndpointHistory = (props: {
+export const transformInterfaceActionEndpointHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];
+  excluded: AutoBeOpenApi.IEndpoint[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -20,20 +21,21 @@ export const transformInterfaceEndpointHistory = (props: {
     | "previousInterfaceOperations"
   >;
   instruction: string;
-}): IAutoBeOrchestrateHistory => ({
-  histories: [
-    {
-      type: "systemMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
-    },
-    ...props.preliminary.getHistories(),
-    {
-      type: "assistantMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: StringUtil.trim`
+}): IAutoBeOrchestrateHistory => {
+  return {
+    histories: [
+      {
+        type: "systemMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT,
+      },
+      ...props.preliminary.getHistories(),
+      {
+        type: "assistantMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: StringUtil.trim`
         ## API Design Instructions
 
         The following API-specific instructions were extracted from
@@ -41,7 +43,7 @@ export const transformInterfaceEndpointHistory = (props: {
         such as endpoint patterns, request/response formats, DTO schemas,
         and operation specifications.
 
-        Follow these instructions when designing endpoints for the ${props.group.name} group.
+        Follow these instructions when designing action endpoints for the ${props.group.name} group.
         Carefully distinguish between:
         - Suggestions or recommendations (consider these as guidance)
         - Direct specifications or explicit commands (these must be followed exactly)
@@ -59,9 +61,9 @@ export const transformInterfaceEndpointHistory = (props: {
         ${JSON.stringify(props.group)}
         \`\`\`
 
-        ## Already Existing Operations
+        ## Already Existing Endpoints (Authorization)
 
-        These operations already exist. Do NOT create similar endpoints:
+        These authorization endpoints already exist. Do NOT create similar endpoints:
 
         \`\`\`json
         ${JSON.stringify(
@@ -73,8 +75,18 @@ export const transformInterfaceEndpointHistory = (props: {
           })),
         )}
         \`\`\`
-      `,
-    },
-  ],
-  userMessage: `Design endpoints for the ${props.group.name} group please`,
-});
+
+        ## Excluded Endpoints (Base CRUD)
+
+        These base CRUD endpoints already exist. Do NOT create similar endpoints.
+        Action endpoints should complement these, not duplicate them:
+
+        \`\`\`json
+        ${JSON.stringify(props.excluded)}
+        \`\`\`
+        `,
+      },
+    ],
+    userMessage: `Design action endpoints for the ${props.group.name} group please`,
+  };
+};

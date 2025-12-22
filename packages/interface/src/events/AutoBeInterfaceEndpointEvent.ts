@@ -25,6 +25,16 @@ export interface AutoBeInterfaceEndpointEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
+   * Type discriminator for the endpoint event.
+   *
+   * Specifies the type of endpoint event that occurred:
+   *
+   * - `"base"`: Base CRUD endpoint event (at, index, create, update, erase)
+   * - `"action"`: Action endpoint event (analytics, dashboard, search, reports)
+   */
+  kind: "base" | "action";
+
+  /**
    * Array of API endpoints that have been defined for the application.
    *
    * Contains the complete list of {@link AutoBeOpenApi.IEndpoint} definitions

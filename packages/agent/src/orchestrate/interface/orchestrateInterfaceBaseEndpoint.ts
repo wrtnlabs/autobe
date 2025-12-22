@@ -17,66 +17,74 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformInterfaceEndpointHistory } from "./histories/transformInterfaceEndpointHistory";
-import { orchestrateInterfaceEndpointReview } from "./orchestrateInterfaceEndpointReview";
-import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
+import { transformInterfaceBaseEndpointHistory } from "./histories/transformInterfaceBaseEndpointHistory";
+import { orchestrateInterfaceBaseEndpointReview } from "./orchestrateInterfaceBaseEndpointReview";
+import { IAutoBeInterfaceBaseEndpointApplication } from "./structures/IAutoBeInterfaceBaseEndpointApplication";
 
-export async function orchestrateInterfaceEndpoint<
+export async function orchestrateInterfaceBaseEndpoint<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
+    instruction: string;
     groups: AutoBeInterfaceGroup[];
     authorizations: AutoBeOpenApi.IOperation[];
-    instruction: string;
-    message?: string;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const progress: AutoBeProgressEventBase = {
-    total: props.groups.length,
-    completed: 0,
-  };
-  const endpoints: AutoBeOpenApi.IEndpoint[] = (
+  const endpoints: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] = (
     await executeCachedBatch(
       ctx,
-      props.groups.map(
-        (group) => (promptCacheKey) =>
-          process(ctx, {
+      props.groups.map((group) => async (promptCacheKey) => {
+        const event: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] =
+          await process(ctx, {
             group,
-            authorizations: props.authorizations,
-            instruction: props.instruction,
-            progress,
+            progress: props.progress,
             promptCacheKey,
-          }),
-      ),
+            instruction: props.instruction,
+            authorizations: props.authorizations,
+          });
+        return event;
+      }),
     )
   ).flat();
-  const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
-    endpoints,
-    AutoBeOpenApiEndpointComparator.hashCode,
-    AutoBeOpenApiEndpointComparator.equals,
-  ).toJSON();
-  return await orchestrateInterfaceEndpointReview(ctx, deduplicated);
+
+  const deduplicated: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] =
+    new HashSet(
+      endpoints,
+      (key) => AutoBeOpenApiEndpointComparator.hashCode(key.endpoint),
+      (a, b) =>
+        a.endpoint.path === b.endpoint.path &&
+        a.endpoint.method === b.endpoint.method,
+    ).toJSON();
+
+  // Review the endpoints
+  const reviewed: AutoBeOpenApi.IEndpoint[] =
+    await orchestrateInterfaceBaseEndpointReview(ctx, {
+      endpoints: deduplicated,
+      authorizations: props.authorizations,
+    });
+  return reviewed;
 }
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    instruction: string;
+    promptCacheKey: string;
     group: AutoBeInterfaceGroup;
     progress: AutoBeProgressEventBase;
     authorizations: AutoBeOpenApi.IOperation[];
-    promptCacheKey: string;
-    instruction: string;
   },
-): Promise<AutoBeOpenApi.IEndpoint[]> {
+): Promise<IAutoBeInterfaceBaseEndpointApplication.IEndpoint[]> {
   const start: Date = new Date();
   const prismaSchemas: Map<string, AutoBePrisma.IModel> = new Map(
     ctx
       .state()
-      .prisma!.result.data.files.map((f) => f.models)
-      .flat()
+      .prisma!.result.data.files.flatMap((f) => f.models)
       .map((m) => [m.name, m]),
   );
+
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -84,8 +92,8 @@ async function process<Model extends ILlmSchema.Model>(
     | "previousPrismaSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeInterfaceEndpointApplication>(),
-    source: SOURCE,
+    application:
+      typia.json.application<IAutoBeInterfaceBaseEndpointApplication>(),
     kinds: [
       "analysisFiles",
       "prismaSchemas",
@@ -93,6 +101,7 @@ async function process<Model extends ILlmSchema.Model>(
       "previousPrismaSchemas",
       "previousInterfaceOperations",
     ],
+    source: SOURCE,
     state: ctx.state(),
     local: {
       prismaSchemas: props.group.prismaSchemas
@@ -101,35 +110,39 @@ async function process<Model extends ILlmSchema.Model>(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceBaseEndpointApplication.IComplete | null> =
+      {
+        value: null,
+      };
+
     const result: AutoBeContext.IResult<Model> = await ctx.conversate({
       source: SOURCE,
       controller: createController({
         model: ctx.model,
-        build: (endpoints) => {
-          pointer.value ??= endpoints;
-          pointer.value.push(...endpoints);
-        },
         preliminary,
+        build: (next) => {
+          pointer.value ??= next;
+          pointer.value.endpoints.push(...next.endpoints);
+        },
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceEndpointHistory({
+      ...transformInterfaceBaseEndpointHistory({
         state: ctx.state(),
         group: props.group,
-        authorizations: props.authorizations,
         instruction: props.instruction,
+        authorizations: props.authorizations,
         preliminary,
       }),
     });
+
     if (pointer.value !== null) {
       const event: AutoBeInterfaceEndpointEvent = {
         type: SOURCE,
+        kind: "base",
         id: v7(),
         endpoints: new HashSet(
-          pointer.value,
+          pointer.value.endpoints.map((e) => e.endpoint),
           AutoBeOpenApiEndpointComparator.hashCode,
           AutoBeOpenApiEndpointComparator.equals,
         ).toJSON(),
@@ -141,7 +154,7 @@ async function process<Model extends ILlmSchema.Model>(
         total: props.progress.total,
       };
       ctx.dispatch(event);
-      return out(result)(pointer.value);
+      return out(result)(pointer.value.endpoints);
     }
     return out(result)(null);
   });
@@ -156,15 +169,15 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousPrismaSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
+  build: (next: IAutoBeInterfaceBaseEndpointApplication.IComplete) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (
     input: unknown,
-  ): IValidation<IAutoBeInterfaceEndpointApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceEndpointApplication.IProps> =
-      typia.validate<IAutoBeInterfaceEndpointApplication.IProps>(input);
+  ): IValidation<IAutoBeInterfaceBaseEndpointApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceBaseEndpointApplication.IProps> =
+      typia.validate<IAutoBeInterfaceBaseEndpointApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -184,34 +197,34 @@ function createController<Model extends ILlmSchema.Model>(props: {
       validate,
     ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
   );
+
   return {
     protocol: "class",
     name: SOURCE,
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete")
-          props.build(next.request.endpoints);
+        if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeInterfaceEndpointApplication,
+    } satisfies IAutoBeInterfaceBaseEndpointApplication,
   };
 }
 
 const collection = {
   chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceEndpointApplication, "chatgpt">({
+    typia.llm.application<IAutoBeInterfaceBaseEndpointApplication, "chatgpt">({
       validate: {
         process: validate,
       },
     }),
   claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceEndpointApplication, "claude">({
+    typia.llm.application<IAutoBeInterfaceBaseEndpointApplication, "claude">({
       validate: {
         process: validate,
       },
     }),
   gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceEndpointApplication, "gemini">({
+    typia.llm.application<IAutoBeInterfaceBaseEndpointApplication, "gemini">({
       validate: {
         process: validate,
       },
@@ -220,6 +233,6 @@ const collection = {
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceEndpointApplication.IProps>;
+) => IValidation<IAutoBeInterfaceBaseEndpointApplication.IProps>;
 
 const SOURCE = "interfaceEndpoint" satisfies AutoBeEventSource;

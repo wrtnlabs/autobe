@@ -32,9 +32,15 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   ...preliminary
     .getKinds()
     .map((key): IMicroAgenticaHistoryJson[] => {
-      const type: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
-        key.startsWith("previous") ? key.replace("previous", "") : key
-      ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+      const newKey: string = key.startsWith("previous")
+        ? key.replace("previous", "")
+        : key;
+      const type: Exclude<AutoBePreliminaryKind, `previous${string}`> = (newKey
+        .slice(0, 1)
+        .toLowerCase() + newKey.slice(1)) as Exclude<
+        AutoBePreliminaryKind,
+        `previous${string}`
+      >;
       return PreliminaryTransformer[type]({
         source: preliminary.getSource(),
         state: preliminary.getState(),

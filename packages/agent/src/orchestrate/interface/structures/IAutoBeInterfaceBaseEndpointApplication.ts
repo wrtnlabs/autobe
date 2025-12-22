@@ -7,7 +7,7 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBeInterfaceEndpointApplication {
+export interface IAutoBeInterfaceBaseEndpointApplication {
   /**
    * Process endpoint generation task or preliminary data requests.
    *
@@ -18,10 +18,10 @@ export interface IAutoBeInterfaceEndpointApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceEndpointApplication.IProps): void;
+  process(props: IAutoBeInterfaceBaseEndpointApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceEndpointApplication {
+export namespace IAutoBeInterfaceBaseEndpointApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -65,13 +65,6 @@ export namespace IAutoBeInterfaceEndpointApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /**
-   * Request to create Restful API endpoints.
-   *
-   * Executes endpoint generation to create comprehensive API endpoints covering
-   * all requirements and entities. Each combination of path and method must be
-   * unique to avoid duplicates.
-   */
   export interface IComplete {
     /**
      * Type discriminator for the request.
@@ -82,7 +75,24 @@ export namespace IAutoBeInterfaceEndpointApplication {
      */
     type: "complete";
 
-    /** The endpoints to generate. */
-    endpoints: AutoBeOpenApi.IEndpoint[] & tags.MinItems<1>;
+    /** The base endpoints to generate. */
+    endpoints: IEndpoint[] & tags.MinItems<1>;
+  }
+
+  export interface IEndpoint {
+    /** The endpoint definition containing path and HTTP method. */
+    endpoint: AutoBeOpenApi.IEndpoint;
+
+    /**
+     * Explanation of why this endpoint was created.
+     *
+     * Describes the purpose, use case, or requirement that this endpoint
+     * fulfills. This context helps the EndpointReview agent to:
+     *
+     * - Identify duplicate or redundant endpoints
+     * - Detect missing functionality
+     * - Verify that path/method aligns with the intended purpose
+     */
+    description: string;
   }
 }
