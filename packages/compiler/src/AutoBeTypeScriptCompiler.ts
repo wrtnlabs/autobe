@@ -6,6 +6,7 @@ import {
 import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { EmbedEsLint } from "embed-eslint";
 import { Pair } from "tstl";
+// import { Pair } from "tstl";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
@@ -119,10 +120,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         .join("\n");
     } catch {
       script = await this.beautify(script);
-      const lines: string[] = script
-        .replaceAll("\r\n", "\n")
-        .split("\n")
-        .map((s) => s.trim());
+      const lines: string[] = script.replaceAll("\r\n", "\n").split("\n");
       const indexes: Pair<number, number>[] = lines
         .map((s, i) =>
           s.startsWith("import ")

@@ -1,7 +1,6 @@
 {
   "extends": "../internals/config/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "../",
     "noEmit": true,
     // "outDir": "bin",
     "plugins": [
