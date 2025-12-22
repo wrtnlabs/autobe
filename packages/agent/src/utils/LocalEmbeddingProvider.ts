@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { EmbeddingProvider } from "./LocalEmbeddingProvider";
+import type { EmbeddingProvider } from "./EmbeddingProvider";
 
 type FeatureExtractionPipeline = (
   inputs: string[] | string,
