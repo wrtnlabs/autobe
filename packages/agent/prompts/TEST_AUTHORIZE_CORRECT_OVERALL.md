@@ -235,6 +235,98 @@ if (result.oauth?.access_token) {
 }
 ```
 
+### 10. **Variable Declaration Errors - `let` Usage**
+
+**CRITICAL: Immutability Violation - Using `let` Instead of `const`**
+
+**Error Pattern**: Using `let` for variable declarations in authorization functions
+
+This violates the **single assignment principle** (immutability-first programming), which is a fundamental best practice in modern JavaScript/TypeScript. Using `let` introduces the possibility of accidental reassignment bugs and makes code harder to reason about.
+
+**Error**: Using `let` for mutable variables
+```typescript
+// ❌ WRONG: Using let declaration
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> => {
+  let result;  // WRONG! Should use const
+  result = await api.functional.auth.user.login(connection, { body: props.body });
+
+  let token;  // WRONG! Should use const
+  if (result.token?.access) {
+    token = result.token.access;
+  }
+
+  return result;
+};
+
+// ❌ WRONG: Declaring variable without immediate assignment
+let authResult;
+if (someCondition) {
+  authResult = await api.functional.auth.methodA(connection, props);
+} else {
+  authResult = await api.functional.auth.methodB(connection, props);
+}
+
+// ❌ WRONG: Reassignment pattern
+let counter = 0;
+counter = counter + 1;
+```
+
+**Solution**: Always use `const` for immutability
+```typescript
+// ✅ CORRECT: Use const for all declarations
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> => {
+  const result = await api.functional.auth.user.login(connection, { body: props.body });
+
+  // Each value gets its own const declaration
+  const token = result.token?.access;
+
+  if (token) {
+    connection.headers = {
+      ...connection.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  return result;
+};
+
+// ✅ CORRECT: Use ternary expression for conditional values
+const authResult = someCondition
+  ? await api.functional.auth.methodA(connection, props)
+  : await api.functional.auth.methodB(connection, props);
+
+// ✅ CORRECT: Use separate const in each branch
+if (someCondition) {
+  const resultA = await api.functional.auth.methodA(connection, props);
+  // Use resultA
+} else {
+  const resultB = await api.functional.auth.methodB(connection, props);
+  // Use resultB
+}
+
+// ✅ CORRECT: Use const with calculated value
+const counter = previousCount + 1;
+```
+
+**Why This Matters:**
+- **Prevents mutation bugs**: Eliminates accidental reassignment
+- **Improves predictability**: Variables can't change unexpectedly
+- **Enhances readability**: Each const has exactly one source
+- **Enables optimization**: Compilers optimize immutable code better
+
+**Correction Strategy:**
+1. **Find all `let` declarations** in the code
+2. **Convert to `const`** with immediate assignment
+3. **Use ternary expressions** for conditional values
+4. **Use separate `const` declarations** in different branches when needed
+5. **Never use deferred assignment pattern** - always assign immediately
+
 ## Analysis Process
 
 When you receive a compilation error:

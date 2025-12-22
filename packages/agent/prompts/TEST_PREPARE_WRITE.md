@@ -282,6 +282,152 @@ items: input?.items
 
 ## CRITICAL IMPLEMENTATION RULES
 
+### Immutable Variable Declaration - The Foundation of Reliable Code
+
+**ABSOLUTE REQUIREMENT: Single Assignment Principle with `const`**
+
+All prepare functions MUST strictly adhere to the **immutability-first programming paradigm**:
+
+**NON-NEGOTIABLE RULES:**
+- ✅ **ALWAYS declare with `const`** - Every variable must use `const`
+- ❌ **NEVER use `let`** - Mutable variable declarations are absolutely forbidden
+- ✅ **Declare new `const` for each value** - If you need multiple values of the same type, declare multiple `const` variables
+- ❌ **NEVER use placeholder pattern** - No `let x; ... x = value;` patterns allowed
+
+**Why This Is Critical:**
+The immutability principle is a cornerstone of functional programming and modern JavaScript best practices:
+- **Prevents mutation bugs**: Eliminates an entire category of bugs caused by accidental reassignment
+- **Improves readability**: Makes data flow explicit - each value has one source
+- **Enhances predictability**: Variables can't change unexpectedly, making code behavior deterministic
+- **Enables better optimization**: Compilers can optimize immutable code more aggressively
+- **Facilitates debugging**: No need to track value changes across time
+
+**Correct Patterns:**
+
+```typescript
+// ✅ CORRECT: All const declarations
+export const prepare_random_user = (
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate => ({
+  email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+  password: input?.password ?? RandomGenerator.alphaNumeric(16),
+  name: input?.name ?? RandomGenerator.name(),
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+});
+
+// ✅ CORRECT: Multiple const declarations for complex logic
+export const prepare_random_order = (
+  input?: DeepPartial<IOrder.ICreate>
+): IOrder.ICreate => {
+  const itemCount = input?.items?.length ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>();
+  const basePrice = typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<50000>>();
+  const taxRate = 0.1;
+  const totalPrice = basePrice * (1 + taxRate);
+
+  return {
+    customer_id: input?.customer_id ?? typia.random<string & tags.Format<"uuid">>(),
+    items: input?.items ?? ArrayUtil.repeat(itemCount, () => ({
+      product_id: typia.random<string & tags.Format<"uuid">>(),
+      quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+    })),
+    total: totalPrice,
+  };
+};
+
+// ✅ CORRECT: Ternary expressions for conditional values
+export const prepare_random_product = (
+  input?: DeepPartial<IProduct.ICreate>
+): IProduct.ICreate => {
+  const categoryType = input?.category ?? RandomGenerator.pick(["electronics", "books", "clothing"] as const);
+  const priceRange = categoryType === "electronics"
+    ? { min: 10000, max: 500000 }
+    : { min: 1000, max: 50000 };
+
+  return {
+    name: input?.name ?? RandomGenerator.paragraph({ sentences: 2 }),
+    category: categoryType,
+    price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<typeof priceRange.min> & tags.Maximum<typeof priceRange.max>>(),
+  };
+};
+```
+
+**Prohibited Anti-Patterns:**
+
+```typescript
+// ❌ WRONG: Using let
+export const prepare_random_article = (
+  input?: DeepPartial<IArticle.ICreate>
+): IArticle.ICreate => {
+  let title;  // FORBIDDEN!
+  if (input?.title) {
+    title = input.title;
+  } else {
+    title = RandomGenerator.paragraph({ sentences: 3 });
+  }
+
+  return { title, /* ... */ };
+};
+
+// ❌ WRONG: Deferred assignment with let
+export const prepare_random_comment = (
+  input?: DeepPartial<IComment.ICreate>
+): IComment.ICreate => {
+  let content;  // FORBIDDEN!
+  content = input?.content ?? RandomGenerator.content();
+
+  return { content, /* ... */ };
+};
+
+// ❌ WRONG: Reassignment pattern
+let counter = 0;
+counter = counter + 1;  // FORBIDDEN!
+
+// ❌ WRONG: Accumulator pattern with mutation
+let items = [];
+for (let i = 0; i < 5; i++) {
+  items.push(createItem());  // Should use ArrayUtil.repeat or map instead
+}
+```
+
+**How to Handle Complex Conditional Logic:**
+
+```typescript
+// ✅ CORRECT: Use ternary expressions
+const status = input?.is_active === false
+  ? "inactive"
+  : "active";
+
+// ✅ CORRECT: Use IIFE for complex branching
+const configValue = (() => {
+  if (input?.advanced_mode) {
+    return computeAdvancedConfig(input);
+  } else if (input?.standard_mode) {
+    return computeStandardConfig(input);
+  } else {
+    return computeDefaultConfig();
+  }
+})();
+
+// ✅ CORRECT: Use separate const in different branches
+if (input?.items) {
+  const processedItems = input.items.map(item => ({
+    product_id: item.product_id ?? typia.random<string & tags.Format<"uuid">>(),
+    quantity: item.quantity ?? 1,
+  }));
+  return { items: processedItems, /* ... */ };
+} else {
+  const defaultItems = ArrayUtil.repeat(3, () => ({
+    product_id: typia.random<string & tags.Format<"uuid">>(),
+    quantity: 1,
+  }));
+  return { items: defaultItems, /* ... */ };
+}
+```
+
+**Key Takeaway:**
+The `const`-only pattern isn't just a style preference—it's a fundamental principle that prevents bugs and makes your code more maintainable. Every variable should be immutable by default. If you find yourself needing `let`, you're likely approaching the problem incorrectly. Refactor to use `const` with ternary expressions, IIFEs, or separate branches.
+
 ### SINGLE FUNCTION ONLY - VIOLATION CAUSES COMPILATION FAILURE
 
 **ABSOLUTE PROHIBITION**: Creating multiple functions or calling external prepare functions

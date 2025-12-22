@@ -252,6 +252,121 @@ export const generate_random_user = async (
 7. **NEVER skip the input parameter passing** - It allows test customization
 8. **ALWAYS match response type** - Return type MUST be operation.responseBody.typeName
 
+### 4.1. Immutable Variable Declaration - Single Assignment Principle
+
+**CRITICAL: Embrace Immutability with `const`-Only Pattern**
+
+All generation functions MUST follow the **single assignment principle**:
+
+**MANDATORY RULES:**
+- ✅ **USE `const` exclusively** - All variable declarations must use `const`
+- ❌ **NEVER use `let`** - Mutable variables are strictly forbidden
+- ✅ **Multiple `const` declarations** - If you need different values, declare separate `const` variables
+- ❌ **NO deferred assignment** - Never declare first and assign later with conditional logic
+
+**Rationale:**
+This immutability-first approach is a proven best practice in functional programming that:
+- Eliminates an entire class of bugs related to unintended variable mutations
+- Makes code flow more explicit and easier to trace
+- Improves code reliability and testability
+- Enforces clear separation of concerns
+
+**Correct Implementation:**
+
+```typescript
+// ✅ CORRECT: All variables declared with const
+export const generate_random_article = async (
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IArticle.ICreate>
+  }
+): Promise<IArticle> => {
+  const prepared = prepare_random_article(props.body);
+  const result = await api.functional.articles.create(
+    connection,
+    { body: prepared }
+  );
+
+  // If you need to extract specific fields
+  const articleId = result.id;
+  const articleTitle = result.title;
+
+  return result;
+};
+
+// ✅ CORRECT: Conditional values with separate const declarations
+export const generate_random_product = async (
+  connection: api.IConnection,
+  props: {
+    body?: DeepPartial<IProduct.ICreate>,
+    params?: { categoryId: string }
+  }
+): Promise<IProduct> => {
+  const prepared = prepare_random_product(props.body);
+
+  // Use ternary for conditional const
+  const categoryId = props.params?.categoryId ?? prepared.default_category_id;
+
+  const result = await api.functional.products.create(
+    connection,
+    {
+      categoryId,
+      body: prepared
+    }
+  );
+  return result;
+};
+```
+
+**Prohibited Patterns:**
+
+```typescript
+// ❌ WRONG: Using let declaration
+let prepared;
+if (props.body) {
+  prepared = prepare_random_article(props.body);
+} else {
+  prepared = prepare_random_article();
+}
+
+// ❌ WRONG: Declaring without immediate assignment
+let result;
+result = await api.functional.articles.create(connection, { body });
+
+// ❌ WRONG: Variable reassignment
+let counter = 0;
+counter++;
+```
+
+**Handling Complex Conditional Logic:**
+
+```typescript
+// ✅ CORRECT: Use ternary expressions for conditional const
+const categoryId = hasCustomCategory
+  ? props.params.categoryId
+  : defaultCategoryId;
+
+// ✅ CORRECT: Use IIFE (Immediately Invoked Function Expression) for complex logic
+const processedData = (() => {
+  if (complexCondition) {
+    return processOptionA(data);
+  } else {
+    return processOptionB(data);
+  }
+})();
+
+// ✅ CORRECT: Separate const declarations in different scopes
+if (isSpecialCase) {
+  const specialResult = await handleSpecialCase(connection, props);
+  return specialResult;
+} else {
+  const normalResult = await handleNormalCase(connection, props);
+  return normalResult;
+}
+```
+
+Remember: Immutability is not a constraint—it's a design principle that leads to more robust and maintainable code.
+
 ## 5. Error Handling
 
 While not always required, consider adding error handling for critical resources:

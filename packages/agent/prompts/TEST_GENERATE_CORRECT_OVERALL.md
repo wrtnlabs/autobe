@@ -205,6 +205,84 @@ const result: IProduct = await api.functional.products.create(...);
 const result = await api.functional.products.create(...);  // Type inference works
 ```
 
+### 9. **Variable Declaration Errors - Using `let` Instead of `const`**
+
+**CRITICAL: Immutability Principle Violation**
+
+**Error Pattern**: Using `let` for mutable variable declarations
+
+The **single assignment principle** (immutability-first programming) requires all variables to be declared with `const`. Using `let` violates this fundamental best practice and introduces the risk of accidental mutations.
+
+**Error**: Using `let` declaration
+```typescript
+// ❌ WRONG: Mutable variable declaration
+export const generate_random_article = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IArticle.ICreate> }
+): Promise<IArticle> => {
+  let prepared;  // WRONG! Violates immutability
+  prepared = prepare_random_article(props.body);
+
+  let result;  // WRONG! Deferred assignment
+  result = await api.functional.articles.create(connection, { body: prepared });
+
+  return result;
+};
+
+// ❌ WRONG: Conditional assignment with let
+let categoryId;
+if (props.params?.categoryId) {
+  categoryId = props.params.categoryId;
+} else {
+  categoryId = prepared.default_category_id;
+}
+
+// ❌ WRONG: Accumulator pattern
+let count = 0;
+count = count + 1;
+```
+
+**Solution**: Use `const` exclusively
+```typescript
+// ✅ CORRECT: Immutable declarations with const
+export const generate_random_article = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IArticle.ICreate> }
+): Promise<IArticle> => {
+  const prepared = prepare_random_article(props.body);
+  const result = await api.functional.articles.create(connection, { body: prepared });
+  return result;
+};
+
+// ✅ CORRECT: Use ternary for conditional const
+const categoryId = props.params?.categoryId ?? prepared.default_category_id;
+
+// OR: Use separate const in each branch
+if (props.params?.categoryId) {
+  const categoryIdFromParams = props.params.categoryId;
+  // Use categoryIdFromParams
+} else {
+  const categoryIdFromDefault = prepared.default_category_id;
+  // Use categoryIdFromDefault
+}
+
+// ✅ CORRECT: Calculate new value
+const count = previousCount + 1;
+```
+
+**Why Immutability Matters:**
+- Eliminates an entire class of bugs from unintended reassignment
+- Makes data flow explicit and easier to trace
+- Improves code predictability and reliability
+- Enables better compiler optimizations
+
+**Correction Protocol:**
+1. **Identify all `let` declarations** in the failing code
+2. **Convert to `const`** with immediate value assignment
+3. **Refactor conditional logic** to use ternary expressions or separate const declarations
+4. **Verify no reassignment occurs** - each const should have exactly one assignment
+5. **Use IIFE if needed** for complex conditional logic: `const x = (() => { /* logic */ return value; })();`
+
 ## Analysis Process
 
 When you receive a compilation error:

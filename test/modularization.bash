@@ -1,3 +1,5 @@
+pnpm run build:prompt
+
 # anthropic/claude-sonnet-4.5
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project todo > archive.anthropic-claude-sonnet-4.5.todo.log &
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project bbs > archive.anthropic-claude-sonnet-4.5.bbs.log &

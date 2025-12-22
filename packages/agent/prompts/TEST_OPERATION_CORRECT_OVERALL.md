@@ -1649,6 +1649,215 @@ const config = {
 **IMPORTANT:** All nullable Date handling is now managed by the TestCorrectTypiaTag agent. This agent (TestCorrect) should NOT attempt to fix Date conversion errors.
 - Never use `.toString()` for dates - always use `.toISOString()`
 
+### 4.18. Variable Declaration Errors - Immutability Violations with `let`
+
+**CRITICAL: Single Assignment Principle - `const`-Only Pattern Required**
+
+**Error Pattern**: Using `let` for variable declarations in E2E test code
+
+This violates the **immutability-first programming paradigm**, a fundamental principle of reliable, maintainable code. Using `let` introduces mutable state that:
+- Enables accidental reassignment bugs
+- Makes data flow harder to trace and understand
+- Reduces code predictability and reliability
+- Goes against functional programming best practices
+- Makes debugging more difficult
+
+**Common Error Examples:**
+
+```typescript
+// ❌ WRONG: Using let for deferred assignment
+export async function test_api_user_workflow(connection: api.IConnection) {
+  let user;  // WRONG! Violates immutability
+  user = await authorize_user_login(connection, { body: credentials });
+
+  let product;  // WRONG! Deferred assignment
+  product = await generate_random_product(connection, {});
+
+  let totalPrice;  // WRONG! Should use const
+  totalPrice = product.price * 1.1;
+
+  return totalPrice;
+}
+
+// ❌ WRONG: Conditional assignment with let
+export async function test_api_admin_or_user_access(connection: api.IConnection) {
+  let account;  // WRONG!
+  if (isAdmin) {
+    account = await authorize_admin_login(connection, adminCreds);
+  } else {
+    account = await authorize_user_login(connection, userCreds);
+  }
+
+  // Use account...
+}
+
+// ❌ WRONG: Loop accumulator with let
+export async function test_api_process_multiple_orders(connection: api.IConnection) {
+  let processedCount = 0;  // WRONG! Mutation pattern
+  for (const order of orders) {
+    await api.functional.orders.process(connection, { id: order.id });
+    processedCount = processedCount + 1;  // Reassignment!
+  }
+}
+
+// ❌ WRONG: Building arrays with mutation
+export async function test_api_bulk_user_creation(connection: api.IConnection) {
+  let users = [];  // WRONG!
+  for (let i = 0; i < 5; i++) {  // Double violation: let i and let users
+    const user = await generate_random_user(connection, {});
+    users.push(user);  // Mutation!
+  }
+}
+```
+
+**Correct Solutions - Use `const` Exclusively:**
+
+```typescript
+// ✅ CORRECT: Use const for all declarations
+export async function test_api_user_workflow(connection: api.IConnection) {
+  const user = await authorize_user_login(connection, { body: credentials });
+  const product = await generate_random_product(connection, {});
+  const totalPrice = product.price * 1.1;
+
+  return totalPrice;
+}
+
+// ✅ CORRECT: Use ternary for conditional const
+export async function test_api_admin_or_user_access(connection: api.IConnection) {
+  const account = isAdmin
+    ? await authorize_admin_login(connection, adminCreds)
+    : await authorize_user_login(connection, userCreds);
+
+  // Use account...
+}
+
+// ✅ CORRECT: Use array index instead of counter
+export async function test_api_process_multiple_orders(connection: api.IConnection) {
+  for (const [index, order] of orders.entries()) {
+    await api.functional.orders.process(connection, { id: order.id });
+    const processedCount = index + 1;
+    TestValidator.equals("processed count", processedCount, index + 1);
+  }
+
+  // OR: Get the final count from array length
+  const totalProcessed = orders.length;
+}
+
+// ✅ CORRECT: Use Promise.all for parallel async operations
+export async function test_api_bulk_user_creation(connection: api.IConnection) {
+  const users = await Promise.all(
+    Array.from({ length: 5 }, () => generate_random_user(connection, {}))
+  );
+
+  // OR: Use map if you need sequential processing
+  const userPromises = [0, 1, 2, 3, 4].map(() =>
+    generate_random_user(connection, {})
+  );
+  const users = await Promise.all(userPromises);
+}
+
+// ✅ CORRECT: Separate const declarations in different scopes
+export async function test_api_conditional_workflow(connection: api.IConnection) {
+  if (scenario === "premium") {
+    const premiumUser = await authorize_premium_user(connection, premiumCreds);
+    const premiumOrder = await createPremiumOrder(connection, premiumUser);
+    TestValidator.equals("order type", premiumOrder.type, "premium");
+  } else {
+    const standardUser = await authorize_user_login(connection, standardCreds);
+    const standardOrder = await createStandardOrder(connection, standardUser);
+    TestValidator.equals("order type", standardOrder.type, "standard");
+  }
+}
+```
+
+**Advanced Patterns for Complex Scenarios:**
+
+```typescript
+// ✅ CORRECT: Use IIFE for complex conditional logic
+export async function test_api_pricing_calculation(connection: api.IConnection) {
+  const user = await authorize_user_login(connection, { body: credentials });
+  const cart = await generate_random_cart(connection, { userId: user.id });
+
+  const discount = (() => {
+    if (cart.total > 100000) {
+      return 0.2; // 20% off for orders over 100,000
+    } else if (cart.total > 50000) {
+      return 0.1; // 10% off for orders over 50,000
+    } else {
+      return 0; // No discount
+    }
+  })();
+
+  const finalPrice = cart.total * (1 - discount);
+
+  TestValidator.equals("discount applied", cart.discount, discount);
+  TestValidator.equals("final price", cart.final_price, finalPrice);
+}
+
+// ✅ CORRECT: Multiple const for step-by-step calculations
+export async function test_api_order_with_shipping_and_tax(connection: api.IConnection) {
+  const user = await authorize_user_login(connection, { body: credentials });
+  const product = await generate_random_product(connection, {});
+
+  // Each calculation step gets its own const
+  const basePrice = product.price;
+  const quantity = 2;
+  const subtotal = basePrice * quantity;
+  const taxRate = 0.1;
+  const taxAmount = subtotal * taxRate;
+  const shippingCost = 5000;
+  const total = subtotal + taxAmount + shippingCost;
+
+  const order = await api.functional.orders.create(connection, {
+    body: {
+      product_id: product.id,
+      quantity,
+      subtotal,
+      tax: taxAmount,
+      shipping: shippingCost,
+      total
+    } satisfies IOrder.ICreate
+  });
+
+  TestValidator.equals("order total", order.total, total);
+}
+```
+
+**Why This Matters in E2E Tests:**
+- **Test reproducibility**: Immutable variables ensure tests behave consistently
+- **Debugging clarity**: No need to track variable changes across time
+- **Code reliability**: Eliminates mutation bugs that could cause flaky tests
+- **Maintainability**: Clear data flow makes tests easier to understand and modify
+- **Best practices alignment**: Follows modern JavaScript/TypeScript conventions
+
+**Correction Strategy:**
+
+1. **Scan for all `let` keywords** in the failing test code
+2. **Analyze each `let` usage**:
+   - Simple assignment → Convert to `const` with immediate value
+   - Conditional assignment → Use ternary expression or separate branches
+   - Loop counter → Use array methods (map, forEach with index)
+   - Accumulator → Use reduce or Promise.all
+3. **Refactor patterns**:
+   - `let x; x = value;` → `const x = value;`
+   - `let x; if (cond) x = a; else x = b;` → `const x = cond ? a : b;`
+   - `let arr = []; arr.push(...)` → `const arr = array.map(...)`
+   - `let sum = 0; sum += n;` → `const sum = array.reduce((acc, n) => acc + n, 0);`
+4. **Verify immutability**: Ensure no variable is ever reassigned after declaration
+5. **Test the fix**: Ensure all test logic still works correctly with const
+
+**Common Patterns and Their `const` Equivalents:**
+
+| ❌ `let` Pattern | ✅ `const` Solution |
+|-----------------|-------------------|
+| `let x; x = await f();` | `const x = await f();` |
+| `let x; if (c) x = a; else x = b;` | `const x = c ? a : b;` |
+| `let i = 0; i++;` | `array.forEach((item, i) => ...)` or `for (const [i, item] of array.entries())` |
+| `let arr = []; arr.push(x);` | `const arr = array.map(...)` or `const arr = [...existing, newItem]` |
+| `let sum = 0; sum += n;` | `const sum = numbers.reduce((acc, n) => acc + n, 0);` |
+
+**Remember**: Every `let` in E2E test code represents a potential source of bugs and maintenance issues. The `const`-only pattern is not a stylistic preference—it's a proven best practice that directly improves code quality and reliability.
+
 ## 5. Correction Requirements
 
 Your corrected code must:

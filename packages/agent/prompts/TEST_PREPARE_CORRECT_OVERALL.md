@@ -262,6 +262,162 @@ export const prepare_random_order = (
 
 **Rule**: Generate exactly ONE exported function with ALL logic inline.
 
+### 11. **Variable Declaration Errors - Immutability Violations**
+
+**CRITICAL: Using `let` Violates Single Assignment Principle**
+
+**Error Pattern**: Using `let` for variable declarations in prepare functions
+
+The **immutability-first programming paradigm** mandates that ALL variables must be declared with `const`. Using `let` introduces mutable state, which:
+- Enables accidental reassignment bugs
+- Makes code flow harder to trace
+- Violates functional programming principles
+- Reduces code reliability and predictability
+
+**Error**: Using `let` declaration
+```typescript
+// ❌ WRONG: Mutable variable with let
+export const prepare_random_user = (
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate => {
+  let email;  // WRONG! Violates immutability
+  if (input?.email) {
+    email = input.email;
+  } else {
+    email = typia.random<string & tags.Format<"email">>();
+  }
+
+  let password;  // WRONG! Deferred assignment pattern
+  password = input?.password ?? RandomGenerator.alphaNumeric(16);
+
+  return {
+    email,
+    password,
+    name: input?.name ?? RandomGenerator.name(),
+  };
+};
+
+// ❌ WRONG: Loop accumulator with let
+export const prepare_random_article = (
+  input?: DeepPartial<IArticle.ICreate>
+): IArticle.ICreate => {
+  let tagCount = 0;  // WRONG! Reassignment pattern
+  for (const tag of input?.tags ?? []) {
+    tagCount = tagCount + 1;  // Mutation!
+  }
+
+  return { /* ... */ };
+};
+
+// ❌ WRONG: Conditional logic with let
+let priceRange;
+if (categoryType === "electronics") {
+  priceRange = { min: 10000, max: 500000 };
+} else {
+  priceRange = { min: 1000, max: 50000 };
+}
+```
+
+**Solution**: Use `const` exclusively with immediate assignment
+```typescript
+// ✅ CORRECT: Immutable const with ternary expression
+export const prepare_random_user = (
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate => {
+  const email = input?.email ?? typia.random<string & tags.Format<"email">>();
+  const password = input?.password ?? RandomGenerator.alphaNumeric(16);
+
+  return {
+    email,
+    password,
+    name: input?.name ?? RandomGenerator.name(),
+  };
+};
+
+// ✅ CORRECT: Use array length instead of counter
+export const prepare_random_article = (
+  input?: DeepPartial<IArticle.ICreate>
+): IArticle.ICreate => {
+  const tags = input?.tags ?? [];
+  const tagCount = tags.length;  // No mutation needed
+
+  return { /* ... */ };
+};
+
+// ✅ CORRECT: Use const with ternary for conditional values
+const priceRange = categoryType === "electronics"
+  ? { min: 10000, max: 500000 }
+  : { min: 1000, max: 50000 };
+
+// ✅ CORRECT: Use IIFE for complex conditional logic
+const configValue = (() => {
+  if (input?.advanced_mode) {
+    return computeAdvancedConfig(input);
+  } else if (input?.standard_mode) {
+    return computeStandardConfig(input);
+  } else {
+    return computeDefaultConfig();
+  }
+})();
+
+// ✅ CORRECT: Multiple const declarations in different scopes
+if (input?.items) {
+  const processedItems = input.items.map(item => ({
+    product_id: item.product_id ?? typia.random<string & tags.Format<"uuid">>(),
+    quantity: item.quantity ?? 1,
+  }));
+  return { items: processedItems };
+} else {
+  const defaultItems = ArrayUtil.repeat(3, () => ({
+    product_id: typia.random<string & tags.Format<"uuid">>(),
+    quantity: 1,
+  }));
+  return { items: defaultItems };
+}
+```
+
+**Why This Matters in Prepare Functions:**
+- Prepare functions are pure data generators - they should be side-effect free
+- Immutability aligns perfectly with functional programming principles
+- Prevents accidental state mutations during test data generation
+- Makes data generation logic predictable and reproducible
+- Improves testability and reliability of test data
+
+**Correction Strategy:**
+1. **Scan for all `let` keywords** in the failing prepare function
+2. **Convert each `let` to `const`** with immediate value assignment
+3. **Refactor conditional assignments** to use ternary expressions (`x ? y : z`)
+4. **Use IIFE** for complex multi-branch logic: `const value = (() => { /* logic */ return result; })();`
+5. **Replace accumulator patterns** with functional alternatives (map, reduce, filter)
+6. **Use separate `const` declarations** in different code branches when needed
+7. **Verify immutability** - ensure no variable is ever reassigned after declaration
+
+**Common Patterns and Fixes:**
+
+```typescript
+// PATTERN 1: Simple conditional
+// ❌ let status; if (x) status = "A"; else status = "B";
+// ✅ const status = x ? "A" : "B";
+
+// PATTERN 2: Null coalescing
+// ❌ let value; value = input?.value ?? default;
+// ✅ const value = input?.value ?? default;
+
+// PATTERN 3: Complex conditional
+// ❌ let result; if (a) result = x; else if (b) result = y; else result = z;
+// ✅ const result = (() => { if (a) return x; if (b) return y; return z; })();
+
+// PATTERN 4: Array building
+// ❌ let arr = []; for (item of items) arr.push(transform(item));
+// ✅ const arr = items.map(item => transform(item));
+
+// PATTERN 5: Counter/accumulator
+// ❌ let sum = 0; for (n of nums) sum += n;
+// ✅ const sum = nums.reduce((acc, n) => acc + n, 0);
+```
+
+**Remember**: Every `let` in a prepare function represents a potential bug and a violation of immutability principles. Refactor to `const` always.
+
 ## Analysis Process
 
 When you receive a compilation error:

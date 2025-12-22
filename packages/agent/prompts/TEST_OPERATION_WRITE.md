@@ -3053,6 +3053,219 @@ This example demonstrates:
 - Follow TypeScript best practices and maintain strict type safety
 - Ensure proper error handling and comprehensive edge case coverage
 
+#### 4.1.1. Immutable Variable Declaration - Single Assignment Principle
+
+**MANDATORY: `const`-Only Variable Declaration Pattern**
+
+All E2E test implementations MUST follow the **immutability-first programming paradigm** - a fundamental principle of reliable, maintainable code:
+
+**ABSOLUTE REQUIREMENTS:**
+- ✅ **ALWAYS use `const`** for all variable declarations
+- ❌ **NEVER use `let`** - mutable variable declarations are strictly prohibited
+- ✅ **Declare multiple `const` variables** when you need different values at different points
+- ❌ **NEVER use deferred assignment pattern** - no `let x; ... x = value;` allowed
+
+**Why This Principle Matters:**
+The immutability-first approach is a cornerstone of modern JavaScript/TypeScript best practices:
+- **Eliminates mutation bugs**: Prevents an entire class of bugs caused by accidental reassignment
+- **Improves code clarity**: Makes data flow explicit - each variable has exactly one source
+- **Enhances debuggability**: No need to track variable changes across time and scopes
+- **Enables better optimization**: Compilers can optimize immutable code more effectively
+- **Reduces cognitive load**: Readers don't need to track variable state changes
+
+**Correct Implementation Patterns:**
+
+```typescript
+// ✅ CORRECT: All variables declared with const
+export async function test_api_user_creates_order_with_multiple_items(
+  connection: api.IConnection,
+) {
+  // Step 1: Authenticate user
+  const user = await authorize_user_login(connection, {
+    body: { email: "test@example.com", password: "password123" }
+  });
+
+  // Step 2: Create multiple products
+  const productA = await generate_random_product(connection, {
+    body: { name: "Product A", price: 10000 }
+  });
+  const productB = await generate_random_product(connection, {
+    body: { name: "Product B", price: 20000 }
+  });
+  const productC = await generate_random_product(connection, {
+    body: { name: "Product C", price: 30000 }
+  });
+
+  // Step 3: Calculate total (use const for calculations)
+  const subtotal = productA.price + productB.price + productC.price;
+  const taxRate = 0.1;
+  const totalPrice = subtotal * (1 + taxRate);
+
+  // Step 4: Create order
+  const order = await api.functional.orders.create(connection, {
+    body: {
+      items: [
+        { product_id: productA.id, quantity: 1 },
+        { product_id: productB.id, quantity: 2 },
+        { product_id: productC.id, quantity: 1 },
+      ],
+      total: totalPrice
+    } satisfies IOrder.ICreate
+  });
+
+  // Step 5: Validate each aspect separately
+  const expectedItemCount = 3;
+  const actualItemCount = order.items.length;
+
+  TestValidator.equals("order item count", actualItemCount, expectedItemCount);
+  TestValidator.equals("order total", order.total, totalPrice);
+}
+
+// ✅ CORRECT: Conditional values with ternary expressions
+export async function test_api_admin_updates_user_status(
+  connection: api.IConnection,
+) {
+  const admin = await authorize_admin_login(connection, {
+    body: { email: "admin@example.com", password: "admin123" }
+  });
+
+  const user = await generate_random_user(connection, {});
+
+  // Use ternary for conditional const values
+  const newStatus = user.is_active ? "inactive" : "active";
+  const statusReason = user.is_active ? "User requested deactivation" : "Account reactivation approved";
+
+  const updatedUser = await api.functional.users.update(connection, {
+    id: user.id,
+    body: {
+      status: newStatus,
+      reason: statusReason
+    } satisfies IUser.IUpdate
+  });
+
+  TestValidator.equals("user status updated", updatedUser.status, newStatus);
+}
+
+// ✅ CORRECT: Complex conditional logic with IIFE
+export async function test_api_calculate_shipping_cost(
+  connection: api.IConnection,
+) {
+  const user = await authorize_user_login(connection, { body: credentials });
+  const order = await generate_random_order(connection, {});
+
+  // Use IIFE (Immediately Invoked Function Expression) for complex logic
+  const shippingCost = (() => {
+    if (order.total > 100000) {
+      return 0; // Free shipping for orders over 100,000
+    } else if (order.total > 50000) {
+      return 2500; // Discounted shipping
+    } else {
+      return 5000; // Standard shipping
+    }
+  })();
+
+  const finalTotal = order.total + shippingCost;
+
+  TestValidator.equals("shipping cost calculated", order.shipping_cost, shippingCost);
+  TestValidator.equals("final total", order.final_total, finalTotal);
+}
+
+// ✅ CORRECT: Different const in different branches
+export async function test_api_process_payment_by_method(
+  connection: api.IConnection,
+) {
+  const user = await authorize_user_login(connection, { body: credentials });
+  const order = await generate_random_order(connection, {});
+
+  const paymentMethod = RandomGenerator.pick(["card", "bank_transfer"] as const);
+
+  if (paymentMethod === "card") {
+    const cardPayment = await api.functional.payments.processCard(connection, {
+      order_id: order.id,
+      card_number: "1234-5678-9012-3456"
+    });
+    TestValidator.equals("card payment status", cardPayment.status, "completed");
+  } else {
+    const bankPayment = await api.functional.payments.processBankTransfer(connection, {
+      order_id: order.id,
+      bank_account: "123-456-7890"
+    });
+    TestValidator.equals("bank payment status", bankPayment.status, "pending");
+  }
+}
+```
+
+**Prohibited Anti-Patterns:**
+
+```typescript
+// ❌ WRONG: Using let declaration
+let user;
+if (isAdmin) {
+  user = await authorize_admin_login(connection, adminCreds);
+} else {
+  user = await authorize_user_login(connection, userCreds);
+}
+
+// ❌ WRONG: Deferred assignment pattern
+let totalPrice;
+const products = await getProducts();
+totalPrice = products.reduce((sum, p) => sum + p.price, 0);
+
+// ❌ WRONG: Reassignment in loops
+let counter = 0;
+for (const item of items) {
+  counter = counter + 1;  // Should use const with index instead
+  processItem(item);
+}
+
+// ❌ WRONG: Accumulator pattern with mutation
+let results = [];
+for (const id of ids) {
+  const result = await api.functional.items.get(connection, { id });
+  results.push(result);  // Should use Promise.all or map instead
+}
+```
+
+**Correct Alternatives for Common Patterns:**
+
+```typescript
+// ✅ CORRECT: Use ternary for conditional assignment
+const user = isAdmin
+  ? await authorize_admin_login(connection, adminCreds)
+  : await authorize_user_login(connection, userCreds);
+
+// ✅ CORRECT: Use reduce without mutation
+const products = await getProducts();
+const totalPrice = products.reduce((sum, p) => sum + p.price, 0);
+
+// ✅ CORRECT: Use array index or forEach
+items.forEach((item, index) => {
+  const itemNumber = index + 1;
+  processItem(item, itemNumber);
+});
+
+// ✅ CORRECT: Use Promise.all for async operations
+const results = await Promise.all(
+  ids.map(id => api.functional.items.get(connection, { id }))
+);
+
+// ✅ CORRECT: Use map for transformation
+const transformedResults = results.map(result => ({
+  id: result.id,
+  processed: true,
+  timestamp: new Date().toISOString()
+}));
+```
+
+**Key Principles:**
+1. **One variable, one value** - Each const represents a single, immutable binding
+2. **Expression over statement** - Prefer expressions (ternary, IIFE) over imperative statements
+3. **Transformation over mutation** - Use map/filter/reduce instead of mutating arrays
+4. **Clarity over cleverness** - Multiple clear const declarations beat one complex mutable variable
+5. **Scope your consts** - Different branches can have different const declarations with the same name
+
+This immutability-first approach is not a stylistic choice—it's a fundamental principle that directly improves code reliability and maintainability in E2E tests.
+
 ### 4.2. Test Design
 
 - Create realistic business scenarios that mirror real user workflows

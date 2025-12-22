@@ -234,3 +234,99 @@ const joinInput = {
 - Proper async/await usage throughout
 - Comments only where logic is complex
 - Follow existing code patterns in the project
+
+### 7.1. Immutable Variable Declaration Pattern
+
+**CRITICAL: Single Assignment Principle - `const` Only, Never `let`**
+
+Follow the **immutability-first programming** pattern throughout all authorization function implementations:
+
+**ABSOLUTE RULES:**
+- ✅ **ALWAYS use `const`** for variable declarations
+- ❌ **NEVER use `let`** - this is strictly prohibited
+- ✅ **Declare multiple `const` variables** if you need different values at different times
+- ❌ **NEVER declare with `let` first and assign later** - this violates immutability
+
+**Why This Matters:**
+- Enforces immutability at the language level
+- Prevents accidental variable reassignment bugs
+- Makes code more predictable and easier to reason about
+- Aligns with functional programming principles
+
+**Correct Patterns:**
+
+```typescript
+// ✅ CORRECT: Use const for all declarations
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin },
+): Promise<IUser.IAuthorized> => {
+  const result = await api.functional.auth.user.login(connection, { body: props.body });
+
+  // If you need different auth tokens in different scenarios
+  const primaryToken = result.token.access;
+  const refreshToken = result.token.refresh;
+
+  return result;
+};
+
+// ✅ CORRECT: Multiple const declarations for conditional values
+export const authorize_admin_join = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IAdmin.IJoin> },
+): Promise<IAdmin.IAuthorized> => {
+  const joinInput = {
+    ...(props.body ?? {}),
+    email: props.body?.email ?? `admin-${RandomGenerator.alphaNumeric(8)}@example.com`,
+    password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
+  } satisfies IAdmin.IJoin;
+
+  const joinResult = await api.functional.auth.admin.join(connection, { body: joinInput });
+
+  // Each value gets its own const declaration
+  const authToken = joinResult.token;
+  const adminProfile = joinResult.profile;
+
+  return joinResult;
+};
+```
+
+**Prohibited Patterns:**
+
+```typescript
+// ❌ WRONG: Using let
+let token;
+if (condition) {
+  token = await getTokenA();
+} else {
+  token = await getTokenB();
+}
+
+// ❌ WRONG: Declaring let first, assigning later
+let result;
+result = await api.functional.auth.login(connection, { body });
+
+// ❌ WRONG: Reassigning variables
+let counter = 0;
+counter = counter + 1;
+```
+
+**How to Handle Conditional Values:**
+
+```typescript
+// ✅ CORRECT: Use ternary or separate const declarations
+const token = condition
+  ? await getTokenA()
+  : await getTokenB();
+
+// ✅ CORRECT: Or use separate const declarations in each branch
+if (condition) {
+  const tokenA = await getTokenA();
+  // Use tokenA
+} else {
+  const tokenB = await getTokenB();
+  // Use tokenB
+}
+```
+
+This immutability-first approach is a cornerstone of reliable, maintainable test code. Treat every variable as immutable by default.
