@@ -30,6 +30,8 @@ export const getCriticalCompiler = (
       getExternal: (location) =>
         lock(() => compiler.typescript.getExternal(location)),
       beautify: (code) => lock(() => compiler.typescript.beautify(code)),
+      removeImportStatements: (code) =>
+        lock(() => compiler.typescript.removeImportStatements(code)),
     },
     test: {
       compile: (props) => lock(() => compiler.test.compile(props)),

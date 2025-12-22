@@ -71,15 +71,7 @@ export namespace AutoBeRealizeOperationProgrammer {
 
     // Beautify code first for consistent formatting
     const compiler: IAutoBeCompiler = await ctx.compiler();
-    code = await compiler.typescript.beautify(code);
-
-    // Remove all LLM-generated imports
-    code = code
-      .split("\r\n")
-      .join("\n")
-      .split("\n")
-      .filter((str) => str.trim().startsWith("import") === false)
-      .join("\n");
+    code = await compiler.typescript.removeImportStatements(code);
 
     // Build the standard imports
     const imports = writeImportStatements(props);

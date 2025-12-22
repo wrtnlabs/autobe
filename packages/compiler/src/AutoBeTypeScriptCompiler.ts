@@ -98,4 +98,23 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
   public beautify(script: string): Promise<string> {
     return FilePrinter.beautify(script);
   }
+
+  public async removeImportStatements(script: string): Promise<string> {
+    const sourceFile: ts.SourceFile = ts.createSourceFile(
+      "module.ts",
+      script,
+      ts.ScriptTarget.ESNext,
+      true,
+    );
+    const statements: ts.Statement[] = sourceFile.statements.filter(
+      (stmt) => stmt.kind !== ts.SyntaxKind.ImportDeclaration,
+    );
+    const printer: ts.Printer = ts.createPrinter();
+    const result: string = statements
+      .map((stmt) =>
+        printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile),
+      )
+      .join("\n");
+    return result;
+  }
 }

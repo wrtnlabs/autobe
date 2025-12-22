@@ -92,13 +92,9 @@ export namespace AutoBeTestAuthorizeProgrammer {
     artifacts: IAutoBeTestArtifacts;
     content: string;
   }): Promise<string> {
-    let code: string = await props.compiler.typescript.beautify(props.content);
-    code = code
-      .split("\r\n")
-      .join("\n")
-      .split("\n")
-      .filter((str) => str.trim().startsWith("import") === false)
-      .join("\n");
+    let code: string = await props.compiler.typescript.removeImportStatements(
+      props.content,
+    );
     const imports: string[] =
       AutoBeTestFunctionProgrammer.writeImportStatements(
         props.artifacts.document.components.schemas,

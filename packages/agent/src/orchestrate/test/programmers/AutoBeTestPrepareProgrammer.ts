@@ -119,15 +119,9 @@ ${Object.keys(props.schema.properties).map(
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     content: string;
   }): Promise<string> {
-    let code: string = props.content;
-    code = await props.compiler.typescript.beautify(code);
-    code = code
-      .split("\r\n")
-      .join("\n")
-      .split("\n")
-      .filter((str) => str.trim().startsWith("import") === false)
-      .join("\n");
-
+    let code: string = await props.compiler.typescript.removeImportStatements(
+      props.content,
+    );
     const imports: string[] = writeImportStatements(props);
     code = [...imports, code].join("\n");
     return await props.compiler.typescript.beautify(code);

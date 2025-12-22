@@ -118,15 +118,9 @@ ${Object.keys(props.schema.properties)
     },
   ): Promise<string> {
     const compiler: IAutoBeCompiler = await ctx.compiler();
-    let code: string = props.code;
-    code = await compiler.typescript.beautify(code);
-    code = code
-      .split("\r\n")
-      .join("\n")
-      .split("\n")
-      .filter((str) => str.trim().startsWith("import") === false)
-      .join("\n");
-
+    let code: string = await compiler.typescript.removeImportStatements(
+      props.code,
+    );
     const imports: string[] = writeImportStatements(props);
     code = [
       ...imports,

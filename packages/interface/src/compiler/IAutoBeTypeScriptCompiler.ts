@@ -94,4 +94,6 @@ export interface IAutoBeTypeScriptCompiler {
    *   consistent styling and improved readability
    */
   beautify(script: string): Promise<string>;
+
+  removeImportStatements(script: string): Promise<string>;
 }

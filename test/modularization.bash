@@ -1,3 +1,15 @@
+# anthropic/claude-sonnet-4.5
+pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project todo --from test > archive.anthropic-claude-sonnet-4.5.todo.log &
+pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project bbs --from test > archive.anthropic-claude-sonnet-4.5.bbs.log &
+pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project reddit --from test > archive.anthropic-claude-sonnet-4.5.reddit.log &
+pnpm run archive:go --vendor anthropic/claude-sonnet-4.5 --project shopping --from test > archive.anthropic-claude-sonnet-4.5.shopping.log &
+
+# anthropic/claude-haiku-4.5
+pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project todo --from test > archive.anthropic-claude-haiku-4.5.todo.log &
+pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project bbs --from test > archive.anthropic-claude-haiku-4.5.bbs.log &
+pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project reddit --from test > archive.anthropic-claude-haiku-4.5.reddit.log &
+pnpm run archive:go --vendor anthropic/claude-haiku-4.5 --project shopping --from test > archive.anthropic-claude-haiku-4.5.shopping.log &
+
 # openai/gpt-4.1
 pnpm run archive:go --vendor openai/gpt-4.1 --project todo --from test > archive.openai-gpt-4.1.todo.log &
 pnpm run archive:go --vendor openai/gpt-4.1 --project bbs --from test > archive.openai-gpt-4.1.bbs.log &
