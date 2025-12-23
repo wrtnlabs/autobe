@@ -258,11 +258,18 @@ const process = async <Model extends ILlmSchema.Model>(
         step: ctx.state().interface?.step ?? 0,
         created_at: new Date().toISOString(),
       });
+      const filteredGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
+        pointer.value.map((g) => {
+          return {
+            ...g,
+            scenarios: g.scenarios.slice(0, MAX_SCENARIO_COUNT),
+          };
+        });
       return out(result)(
         await orchestrateTestScenarioReview(ctx, {
           preliminary,
           instruction: props.instruction,
-          groups: pointer.value,
+          groups: filteredGroups,
           progress: props.reviewProgress,
         }),
       );
@@ -506,3 +513,4 @@ type Validator = (
 ) => IValidation<IAutoBeTestScenarioApplication.IProps>;
 
 const SOURCE = "testScenario" satisfies AutoBeEventSource;
+const MAX_SCENARIO_COUNT = 3 as const;

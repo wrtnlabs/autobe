@@ -87,8 +87,8 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * - Modified scenarios identification by functionName
      *
      * The review provides actionable feedback for creating implementable,
-     * comprehensive test scenarios that accurately reflect business
-     * requirements.
+     * focused test scenarios (max 3 per endpoint) that accurately reflect
+     * business requirements.
      */
     review: string;
 

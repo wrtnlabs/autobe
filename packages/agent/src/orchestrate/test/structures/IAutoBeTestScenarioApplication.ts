@@ -9,9 +9,9 @@ export interface IAutoBeTestScenarioApplication {
   /**
    * Process test scenario generation task or preliminary data requests.
    *
-   * Creates comprehensive test scenarios for API endpoints by retrieving
-   * necessary interface operations via RAG (Retrieval-Augmented Generation) and
-   * generating detailed test drafts with dependencies.
+   * Creates focused test scenarios (1-3 per endpoint) for API endpoints by
+   * retrieving necessary interface operations via RAG (Retrieval-Augmented
+   * Generation) and generating detailed test drafts with dependencies.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -24,21 +24,24 @@ export namespace IAutoBeTestScenarioApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on your
-     * current state and explain your reasoning:
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
      *
      * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
      * For completion (complete):
+     *
      * - What key assets did you acquire?
      * - What did you accomplish?
      * - Why is it sufficient to complete?
      * - Summarize - don't enumerate every single item.
      *
-     * This reflection helps you avoid duplicate requests and premature completion.
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
      */
     thinking: string;
 
@@ -46,10 +49,10 @@ export namespace IAutoBeTestScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas) or
-     * final test scenario generation (complete). When preliminary returns
-     * empty array, that type is removed from the union, physically
-     * preventing repeated calls.
+     * (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas) or final
+     * test scenario generation (complete). When preliminary returns empty
+     * array, that type is removed from the union, physically preventing
+     * repeated calls.
      */
     request:
       | IComplete
@@ -61,9 +64,9 @@ export namespace IAutoBeTestScenarioApplication {
   /**
    * Request to generate test scenarios for API endpoints.
    *
-   * Executes test scenario generation to create comprehensive, implementable
-   * test scenarios covering all endpoint behaviors, edge cases, and business
-   * logic validations.
+   * Executes test scenario generation to create focused, implementable test
+   * scenarios (1-3 per endpoint) covering the most critical business workflows,
+   * primary success paths, and important edge cases.
    */
   export interface IComplete {
     /**
@@ -101,7 +104,9 @@ export namespace IAutoBeTestScenarioApplication {
      * An array of test scenarios associated with the given endpoint.
      *
      * Each scenario represents a specific test case for the same `path` and
-     * `method`.
+     * `method`. **STRICT LIMIT: Maximum 3 scenarios per endpoint.** Focus on:
+     * (1) Primary success path, (2) Most important edge case, (3) Critical
+     * error handling if applicable.
      *
      * IMPORTANT: Each scenario must be actually implementable. A scenario's
      * implementability is determined by the existence of ALL APIs (endpoints)
@@ -115,7 +120,7 @@ export namespace IAutoBeTestScenarioApplication {
      * AND a ban user API. If the ban API doesn't exist, this scenario is not
      * implementable regardless of database schema fields.
      */
-    scenarios: IScenario[] & tags.MinItems<1>;
+    scenarios: IScenario[] & tags.MinItems<1> & tags.MaxItems<3>;
   }
 
   /**

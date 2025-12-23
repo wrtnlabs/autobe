@@ -132,7 +132,7 @@ export namespace IAutoBeTestScenarioReviewApplication {
 export namespace IAutoBeTestScenarioApplication {
   export interface IScenarioGroup {
     endpoint: IEndpoint;
-    scenarios: IScenario[];
+    scenarios: IScenario[];  // STRICT LIMIT: Maximum 3 scenarios per endpoint (MinItems<1>, MaxItems<3>)
   }
 
   export interface IScenario {
@@ -201,6 +201,8 @@ Review the generated test scenarios with focus on:
 2. **Dependencies Completeness**: Ensure all prerequisites are included
 3. **Execution Order**: Confirm correct operation sequencing
 4. **Remove Validation Error Scenarios**: Eliminate framework-level validation tests
+5. **Remove Duplicate/Similar Scenarios**: Eliminate scenarios that test the same business logic with minor variations. Keep only the most comprehensive one.
+6. **Enforce Scenario Limit**: Each endpoint MUST have at most 3 scenarios. If more exist, remove the least valuable ones (keep: primary success path > critical edge case > error handling).
 
 ## 4. Review Scope
 
