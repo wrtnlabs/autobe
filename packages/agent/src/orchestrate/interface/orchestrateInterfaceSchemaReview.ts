@@ -3,6 +3,7 @@ import {
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaPropertyRevise,
+  AutoBeInterfaceSchemaReviewEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -12,7 +13,9 @@ import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { LocalEmbeddingProvider } from "../../utils/LocalEmbeddingProvider";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { retrieveRelevantAnalysisFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
@@ -23,6 +26,24 @@ import { IAutoBeInterfaceSchemaReviewConfig } from "./structures/IAutoBeInterfac
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
+
+interface IConfig {
+  kind: AutoBeInterfaceSchemaReviewEvent["kind"];
+  systemPrompt: string;
+}
+
+let _embedder: LocalEmbeddingProvider | null = null;
+function getEmbedder(): LocalEmbeddingProvider {
+  if (!_embedder) {
+    _embedder = new LocalEmbeddingProvider({
+      modelIdOrPath: "Xenova/all-MiniLM-L6-v2",
+      quantized: true,
+      batchSize: 32,
+      enableCache: true,
+    });
+  }
+  return _embedder;
+}
 
 export async function orchestrateInterfaceSchemaReview<
   Revise extends AutoBeInterfaceSchemaPropertyRevise,
@@ -106,6 +127,30 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const previousAnalyzeFiles = ctx.state().previousAnalyze?.files ?? [];
+  const allAnalyzeFiles = [...analyzeFiles, ...previousAnalyzeFiles];
+
+  const schemaNames = [props.typeName];
+  const opSummaries = props.reviewOperations
+    .map((op) => `${op.method} ${op.path}: ${op.name}`)
+    .join("\n");
+  const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
+
+  const allRagResults = await retrieveRelevantAnalysisFiles(
+    getEmbedder(),
+    allAnalyzeFiles,
+    queryText,
+  );
+
+  const currentFilenames = new Set(analyzeFiles.map((f) => f.filename));
+  const ragAnalysisFiles = allRagResults.filter((f) =>
+    currentFilenames.has(f.filename as `${string}.md`),
+  );
+  const ragPreviousAnalysisFiles = allRagResults.filter(
+    (f) => !currentFilenames.has(f.filename as `${string}.md`),
+  );
+
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -138,6 +183,8 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
+      previousAnalysisFiles: ragPreviousAnalysisFiles,
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
       databaseSchemas: (() => {

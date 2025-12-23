@@ -1,7 +1,8 @@
 import { EmbeddingProvider } from "./EmbeddingProvider";
+import { createHash } from "node:crypto";
 
 export interface RequirementSection {
-  filename: string;
+  filename: `${string}.md`;
   heading: string;
   content: string;
   index: number;
@@ -9,7 +10,7 @@ export interface RequirementSection {
 }
 
 export interface AutoBeAnalyzeFile {
-  filename: string;
+  filename: `${string}.md`;
   content: string;
 }
 
@@ -21,12 +22,11 @@ export interface RetrievalHit {
 
 export interface VectorIndexItem {
   id: string;
-  text: string;
   section: RequirementSection;
   vector: number[];
 
-  tokens: string[];
   tf: Map<string, number>;
+  docLen: number;
 }
 
 export interface Bm25Stats {
@@ -82,23 +82,55 @@ function parseByLevel(file: AutoBeAnalyzeFile, level: 2 | 3): RequirementSection
   return sections;
 }
 
-function parseByH3(section: RequirementSection, maxLength: number = 1000): RequirementSection[] {
-  if (section.content.length < maxLength) return [section];
+function parseByH3(
+  section: RequirementSection,
+  maxLength: number = 1000
+): RequirementSection[] {
+  if (section.content.length <= maxLength) return [section];
+
   const fileLike: AutoBeAnalyzeFile = {
     filename: section.filename,
     content: section.content,
   };
+
   const children = parseByLevel(fileLike, 3);
-  if (children.length === 0) return [section];
-  return children.map((c, i) => ({
-    ...c,
-    heading: `${section.heading} > ${c.heading}`,
-    index: section.index * 1000 + i,
-    level: 3,
-  }));
+
+  if (children.length > 0) {
+    return children.flatMap((c, i) =>
+      parseByH3(
+        {
+          ...c,
+          heading: `${section.heading} > ${c.heading}`,
+          index: section.index * 1000 + i,
+          level: 3,
+        },
+        maxLength
+      )
+    );
+  }
+
+  const forcedChunks: RequirementSection[] = [];
+  const text = section.content;
+
+  const totalParts = Math.ceil(text.length / maxLength);
+  for (let i = 0; i < text.length; i += maxLength) {
+    const chunkContent = text.slice(i, i + maxLength);
+    const partNum = Math.floor(i / maxLength) + 1;
+
+    forcedChunks.push({
+      ...section,
+      heading: `${section.heading} (${partNum}/${totalParts})`,
+      content: chunkContent,
+      index: section.index * 1000 + partNum,
+      level: 3,
+    });
+  }
+
+  return forcedChunks;
 }
 
-//BM25
+
+// BM25
 function tokenize(text: string): string[] {
   return text
     .toLowerCase()
@@ -148,7 +180,7 @@ function minMaxNormalize(values: number[]): number[] {
   if (values.length === 0) return [];
   const min = Math.min(...values);
   const max = Math.max(...values);
-  if (max === min) return values.map(() => 1);
+  if (max === min) return values.map(() => (max === 0 ? 0 : 1));
   return values.map((v) => (v - min) / (max - min));
 }
 
@@ -159,29 +191,31 @@ export async function buildVectorIndexHybrid(
   const docs = sections.map((s) => {
     const text = `${s.heading}\n${s.content}`;
     const tokens = tokenize(text);
+    const tf = buildTf(tokens);
     return {
       id: `${s.filename}:${s.index}`,
-      text,
+      text, 
       section: s,
-      tokens,
-      tf: buildTf(tokens),
+      tokens, 
+      tf,
       docLen: tokens.length,
     };
   });
 
   const vectors = await embedder.embed(docs.map((d) => d.text));
+
   const N = docs.length;
   const totalLen = docs.reduce((acc, d) => acc + d.docLen, 0);
   const avgdl = N > 0 ? totalLen / N : 0;
   const df = buildDf(docs);
   const bm25: Bm25Stats = { N, avgdl, df };
+
   const index: VectorIndexItem[] = docs.map((d, i) => ({
     id: d.id,
-    text: d.text,
     section: d.section,
     vector: vectors[i]!,
-    tokens: d.tokens,
-    tf: d.tf, 
+    tf: d.tf,
+    docLen: d.docLen,
   }));
   return { index, bm25 };
 }
@@ -220,4 +254,187 @@ function computeDynamicK(scores: number[], kMin: number, kMax: number): number {
   const GAP_MAX = 0.20;
   const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
   return Math.round(kMin + (1 - sharpness) * (kMax - kMin));
+}
+
+// Hybrid Retrieval
+export async function retrieveTopKAdaptiveHybrid(
+  embedder: EmbeddingProvider,
+  queryText: string,
+  index: VectorIndexItem[],
+  bm25: Bm25Stats,
+  kMin: number = 5,
+  kMax?: number,
+  wVec: number = 0.6,
+  wBm25: number = 0.4
+): Promise<RetrievalHit[]> {
+  const N = index.length;
+  const effectiveKMax =
+    kMax ?? Math.min(200, Math.max(60, Math.ceil(0.15 * N)));
+
+  const qVecs = await embedder.embed([queryText]);
+  const qVec = qVecs[0];
+  if (!qVec) return [];
+
+  const qTokens = tokenize(queryText);
+
+  const vecScores = index.map((item) => cosineSimilarity(qVec, item.vector));
+  const bmScores = index.map((item) =>
+    bm25Score(qTokens, item.tf, item.docLen, bm25)
+  );
+
+  const vecNorm = minMaxNormalize(vecScores);
+  const bmNorm = minMaxNormalize(bmScores);
+
+  const hits: RetrievalHit[] = index.map((item, i) => {
+    const score = wVec * vecNorm[i]! + wBm25 * bmNorm[i]!;
+    return {
+      section: item.section,
+      score,
+      reason: `hybrid=${score.toFixed(4)} (vec=${vecNorm[i]!.toFixed(3)}, bm25=${bmNorm[
+        i
+      ]!.toFixed(3)})`,
+    };
+  });
+
+  const K = computeDynamicK(hits.map((h) => h.score), kMin, effectiveKMax);
+  return hits.sort((a, b) => b.score - a.score).slice(0, K);
+}
+
+// Caching
+interface CachedRetrievalIndex {
+  filesHash: string;
+  index: VectorIndexItem[];
+  bm25: Bm25Stats;
+}
+
+type BuildResult = { index: VectorIndexItem[]; bm25: Bm25Stats };
+
+const _indexCache = new Map<string, CachedRetrievalIndex>();
+const _buildingPromises = new Map<string, Promise<BuildResult>>();
+
+function computeFilesHash(files: AutoBeAnalyzeFile[]): string {
+  const combinedPayload = files
+    .map((f) => `file:${f.filename}\ncontent:${f.content}`)
+    .sort()
+    .join("\n---\n");
+
+  return createHash("sha256").update(combinedPayload).digest("hex");
+}
+
+export async function getOrBuildIndex(
+  embedder: EmbeddingProvider,
+  files: AutoBeAnalyzeFile[],
+  h3MaxLength: number = 1000
+): Promise<BuildResult> {
+  const hash = computeFilesHash(files);
+
+  const cached = _indexCache.get(hash);
+  if (cached) {
+    return { index: cached.index, bm25: cached.bm25 };
+  }
+
+  const existingPromise = _buildingPromises.get(hash);
+  if (existingPromise) {
+    return existingPromise;
+  }
+
+  const buildPromise = (async (): Promise<BuildResult> => {
+    const sections = preprocessFiles(files, h3MaxLength);
+    if (sections.length === 0) {
+      return { index: [], bm25: { N: 0, avgdl: 0, df: new Map<string, number>() } };
+    }
+
+    const { index, bm25 } = await buildVectorIndexHybrid(embedder, sections);
+    _indexCache.set(hash, { filesHash: hash, index, bm25 });
+    return { index, bm25 };
+  })();
+
+  _buildingPromises.set(hash, buildPromise);
+
+  try {
+    return await buildPromise;
+  } finally {
+    _buildingPromises.delete(hash);
+  }
+}
+
+export interface RagAnalysisFile extends AutoBeAnalyzeFile {
+  reason: string;
+}
+
+export function hitsToAnalysisFiles(hits: RetrievalHit[]): RagAnalysisFile[] {
+  if (hits.length === 0) return [];
+
+  const grouped = new Map<string, RetrievalHit[]>();
+  for (const hit of hits) {
+    const filename = hit.section.filename;
+    const arr = grouped.get(filename) ?? [];
+    arr.push(hit);
+    grouped.set(filename, arr);
+  }
+
+  const result: RagAnalysisFile[] = [];
+  for (const [filename, fileHits] of grouped) {
+    fileHits.sort((a, b) => a.section.index - b.section.index);
+
+    const content = fileHits
+      .map((h) => `${h.section.heading}\n${h.section.content.trim()}`)
+      .join("\n\n");
+
+    const avgScore = fileHits.reduce((sum, h) => sum + h.score, 0) / fileHits.length;
+
+    result.push({
+      filename: filename as `${string}.md`,
+      content,
+      reason: `Retrieved ${fileHits.length} relevant sections (avg score: ${avgScore.toFixed(3)})`,
+    });
+  }
+
+  return result;
+}
+
+export async function retrieveRelevantAnalysisFiles(
+  embedder: EmbeddingProvider,
+  files: AutoBeAnalyzeFile[],
+  query: string,
+  options?: {
+    kMin?: number;
+    kMax?: number;
+    h3MaxLength?: number;
+  }
+): Promise<RagAnalysisFile[]> {
+  if (files.length === 0 || !query.trim()) {
+    return [];
+  }
+
+  try {
+    const { index, bm25 } = await getOrBuildIndex(
+      embedder,
+      files,
+      options?.h3MaxLength ?? 1000
+    );
+
+    if (index.length === 0) {
+      return [];
+    }
+
+    const hits = await retrieveTopKAdaptiveHybrid(
+      embedder,
+      query,
+      index,
+      bm25,
+      options?.kMin,
+      options?.kMax
+    );
+
+    return hitsToAnalysisFiles(hits);
+  } catch (error) {
+    console.error("[vectorDB] retrieveRelevantAnalysisFiles failed:", error);
+    return [];
+  }
+}
+
+export function clearIndexCache(): void {
+  _indexCache.clear();
+  _buildingPromises.clear();
 }
