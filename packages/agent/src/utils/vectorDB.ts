@@ -24,6 +24,7 @@ export interface VectorIndexItem {
   text: string;
   section: RequirementSection;
   vector: number[];
+
   tokens: string[];
   tf: Map<string, number>;
 }
@@ -50,6 +51,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
+// Parse
 function parseByLevel(file: AutoBeAnalyzeFile, level: 2 | 3): RequirementSection[] {
   const lines = file.content.split("\n");
   const re = level === 3 ? /^###\s+/ : /^##\s+/;
@@ -146,7 +148,7 @@ function minMaxNormalize(values: number[]): number[] {
   if (values.length === 0) return [];
   const min = Math.min(...values);
   const max = Math.max(...values);
-  if (max === min) return values.map(() => 0);
+  if (max === min) return values.map(() => 1);
   return values.map((v) => (v - min) / (max - min));
 }
 
@@ -166,6 +168,7 @@ export async function buildVectorIndexHybrid(
       docLen: tokens.length,
     };
   });
+
   const vectors = await embedder.embed(docs.map((d) => d.text));
   const N = docs.length;
   const totalLen = docs.reduce((acc, d) => acc + d.docLen, 0);
@@ -178,12 +181,43 @@ export async function buildVectorIndexHybrid(
     section: d.section,
     vector: vectors[i]!,
     tokens: d.tokens,
-    tf: d.tf,
+    tf: d.tf, 
   }));
   return { index, bm25 };
 }
 
-export function preprocessFiles(files: AutoBeAnalyzeFile[], h3MaxLength: number = 1000): RequirementSection[] {
+export function preprocessFiles(
+  files: AutoBeAnalyzeFile[],
+  h3MaxLength: number = 1000
+): RequirementSection[] {
   const h2Sections = files.flatMap((f) => parseByLevel(f, 2));
   return h2Sections.flatMap((s) => parseByH3(s, h3MaxLength));
+}
+
+
+function clamp(x: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, x));
+}
+
+function percentile(sortedAsc: number[], p: number): number {
+  if (sortedAsc.length === 0) return 0;
+  const pos = (p / 100) * (sortedAsc.length - 1);
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  const a = sortedAsc[base]!;
+  const b = sortedAsc[Math.min(base + 1, sortedAsc.length - 1)]!;
+  return a + (b - a) * rest;
+}
+
+function computeDynamicK(scores: number[], kMin: number, kMax: number): number {
+  if (scores.length === 0) return kMin;
+  const sorted = [...scores].sort((a, b) => a - b);
+  const p90 = percentile(sorted, 90);
+  const p50 = percentile(sorted, 50);
+  const gap = p90 - p50;
+  
+  const GAP_MIN = 0.02;
+  const GAP_MAX = 0.20;
+  const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
+  return Math.round(kMin + (1 - sharpness) * (kMax - kMin));
 }
