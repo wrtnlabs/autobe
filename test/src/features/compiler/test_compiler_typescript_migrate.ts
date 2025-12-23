@@ -9,9 +9,9 @@ import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_typescript_migrate = async (): Promise<void> => {
   const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
-    await fetch("https://shopping-be.wrtn.ai/editor/swagger.json").then((r) =>
-      r.json(),
-    ),
+    await fetch(
+      "https://raw.githubusercontent.com/samchon/shopping-backend/refs/heads/master/packages/api/swagger.json",
+    ).then((r) => r.json()),
   );
   const files: Record<string, string> = migrate.nest({
     keyword: true,
