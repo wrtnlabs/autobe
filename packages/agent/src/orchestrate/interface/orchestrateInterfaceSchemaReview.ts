@@ -14,6 +14,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { LocalEmbeddingProvider } from "../../utils/LocalEmbeddingProvider";
+import { retrieveRelevantAnalysisFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
@@ -29,8 +31,23 @@ interface IConfig {
   systemPrompt: string;
 }
 
-export async function orchestrateInterfaceSchemaReview(
-  ctx: AutoBeContext,
+let _embedder: LocalEmbeddingProvider | null = null;
+function getEmbedder(): LocalEmbeddingProvider {
+  if (!_embedder) {
+    _embedder = new LocalEmbeddingProvider({
+      modelIdOrPath: "Xenova/all-MiniLM-L6-v2",
+      quantized: true,
+      batchSize: 32,
+      enableCache: true,
+    });
+  }
+  return _embedder;
+}
+
+export async function orchestrateInterfaceSchemaReview<
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
   config: IConfig,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -107,7 +124,27 @@ async function process(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const previousAnalyzeFiles = ctx.state().previousAnalyze?.files ?? [];
+  const allAnalyzeFiles = [...analyzeFiles, ...previousAnalyzeFiles];
+
+  const schemaNames = Object.keys(props.reviewSchemas);
+  const opSummaries = props.reviewOperations
+    .map((op) => `${op.method} ${op.path}: ${op.name}`)
+    .join("\n");
+  const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
+
+  const allRagResults = await retrieveRelevantAnalysisFiles(
+    getEmbedder(),
+    allAnalyzeFiles,
+    queryText,
+  );
+
+  const currentFilenames = new Set(analyzeFiles.map((f) => f.filename));
+  const ragAnalysisFiles = allRagResults.filter((f) => currentFilenames.has(f.filename as `${string}.md`));
+  const ragPreviousAnalysisFiles = allRagResults.filter((f) => !currentFilenames.has(f.filename as `${string}.md`));
+
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -137,6 +174,8 @@ async function process(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
+      previousAnalysisFiles: ragPreviousAnalysisFiles,
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
       databaseSchemas: (() => {
