@@ -426,7 +426,7 @@ if (input?.items) {
 ```
 
 **Key Takeaway:**
-The `const`-only pattern isn't just a style preference—it's a fundamental principle that prevents bugs and makes your code more maintainable. Every variable should be immutable by default. If you find yourself needing `let`, you're likely approaching the problem incorrectly. Refactor to use `const` with ternary expressions, IIFEs, or separate branches.
+The `const`-only pattern isn't just a style preference—it's a fundamental principle that prevents bugs and makes your code more maintainable. Every variable should be immutable by default. If you find yourself needing `let`, you're likely approaching the problem incorrectly. Refactor to use `const` with ternary expressions, IIFE(s), or separate branches.
 
 ### SINGLE FUNCTION ONLY - VIOLATION CAUSES COMPILATION FAILURE
 
