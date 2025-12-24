@@ -50,7 +50,7 @@ catalogs:
     '@types/react-dom': ^19.1.5
     vite: ^6.3.5
   libs:
-    openai: ^6.7.0
+    openai: ^6.15.0
 useNodeVersion: 22.15.0
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

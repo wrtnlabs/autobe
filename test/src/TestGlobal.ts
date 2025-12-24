@@ -30,6 +30,7 @@ export class TestGlobal {
     vendor: string = TestGlobal.vendorModel,
   ): IAutoBeVendor {
     const isOpenAi: boolean =
+      TestGlobal.env.OPENAI_API_KEY !== undefined &&
       vendor.startsWith("openai/") &&
       vendor.startsWith("openai/gpt-oss-") === false;
     return {
