@@ -1,4 +1,4 @@
-import { AutoBeUserConversateContent } from "@autobe/interface";
+import { AutoBeHistory, AutoBeUserConversateContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef } from "react";
 
@@ -27,6 +27,12 @@ export interface IAutoBeChatMainProps {
 
   /** Additional required config fields beyond openApiKey */
   requiredFields?: string[];
+  conversate: (
+    content:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[],
+  ) => Promise<AutoBeHistory[]>;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -91,7 +97,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           title="Server Connection Required"
           fields={props.configFields || []}
           onSave={() => {
-            conversate(messages);
+            props.conversate(messages);
           }}
         />
       ));

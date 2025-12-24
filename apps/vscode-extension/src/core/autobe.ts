@@ -2,6 +2,7 @@ import { AutoBeTokenUsage } from "@autobe/agent";
 import {
   AutoBeEvent,
   AutoBeHistory,
+  AutoBeUserConversateContent,
   AutoBeUserMessageContent,
   IAutoBeRpcListener,
   IAutoBeRpcService,
@@ -335,7 +336,10 @@ export class AutoBeWrapper {
 
   private async conversate(props: {
     session: Session;
-    message: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+    message:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[];
   }) {
     if (this.config?.apiKey === undefined) {
       Logger.debug(JSON.stringify(this.config));

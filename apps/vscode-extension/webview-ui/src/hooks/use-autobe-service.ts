@@ -1,5 +1,6 @@
 import {
   AutoBeHistory,
+  AutoBePhase,
   IAutoBeGetFilesOptions,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
@@ -145,6 +146,10 @@ export const useAutoBeService = () => {
         });
       });
       return await tokenUsage;
+    },
+    getPhase: async (): Promise<AutoBePhase | null> => {
+      // @todo SunRabbit
+      return null;
     },
   } satisfies IAutoBeRpcService;
 

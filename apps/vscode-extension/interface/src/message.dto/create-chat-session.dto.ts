@@ -1,9 +1,12 @@
-import { AutoBeHistory, AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeHistory, AutoBeUserConversateContent } from "@autobe/interface";
 
 export interface IRequestCreateChatSession {
   type: "req_create_chat_session";
   data: {
-    message: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+    message:
+      | string
+      | AutoBeUserConversateContent
+      | AutoBeUserConversateContent[];
     nonce: string;
   };
 }

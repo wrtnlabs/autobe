@@ -67,10 +67,9 @@ const Chat = () => {
         <AutoBeChatMain
           isMobile={true}
           conversate={async (contents) => {
-            await service.conversate(contents);
+            return await service.conversate(contents);
           }}
           setError={setError}
-          uploadConfig={undefined}
           className="h-full"
         />
       </div>
