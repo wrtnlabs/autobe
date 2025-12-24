@@ -3,9 +3,8 @@ import {
   IAutoBeRpcListener,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { AutoBeChatMain, AutoBeListener, IAutoBeEventGroup } from "@autobe/ui";
+import { AutoBeChatMain, AutoBeListener } from "@autobe/ui";
 import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
 import { useAutoBeService } from "../hooks/use-autobe-service";
@@ -19,8 +18,7 @@ const Chat = () => {
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const [header, setHeader] =
-    useState<IAutoBePlaygroundHeader<ILlmSchema.Model> | null>(null);
+  const [header, setHeader] = useState<IAutoBePlaygroundHeader | null>(null);
 
   useEffect(() => {
     const defaultEventListenFn = (message: IAutoBeWebviewMessage) => {
@@ -37,7 +35,6 @@ const Chat = () => {
         }
         case "res_get_config":
           setHeader({
-            model: message.data.model as ILlmSchema.Model,
             vendor: {
               model: message.data.model,
               apiKey: message.data.apiKey ?? "",

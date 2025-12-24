@@ -4,7 +4,6 @@ import {
   IAutoBeRpcListener,
   IAutoBeRpcService,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
 import { WebSocketAcceptor } from "tgrid";
 
@@ -13,7 +12,7 @@ import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
 export namespace AutoBePlaygroundProvider {
   export const start = async (
     acceptor: WebSocketAcceptor<
-      IAutoBePlaygroundHeader<ILlmSchema.Model>,
+      IAutoBePlaygroundHeader,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,
@@ -23,7 +22,6 @@ export namespace AutoBePlaygroundProvider {
       acceptor,
       agent: (compiler) =>
         new AutoBeAgent({
-          model: acceptor.header.model,
           vendor: {
             api: new OpenAI({
               apiKey: acceptor.header.vendor.apiKey,

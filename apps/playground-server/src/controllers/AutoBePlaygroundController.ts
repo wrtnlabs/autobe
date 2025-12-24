@@ -5,7 +5,6 @@ import {
 } from "@autobe/interface";
 import { WebSocketRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
-import { ILlmSchema } from "@samchon/openapi";
 import { WebSocketAcceptor } from "tgrid";
 
 import { AutoBePlaygroundProvider } from "../providers/AutoBePlaygroundProvider";
@@ -16,7 +15,7 @@ export class AutoBePlaygroundController {
   public async start(
     @WebSocketRoute.Acceptor()
     acceptor: WebSocketAcceptor<
-      IAutoBePlaygroundHeader<ILlmSchema.Model>,
+      IAutoBePlaygroundHeader,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,

@@ -10,7 +10,6 @@ import type {
   IAutoBeRpcService,
 } from "@autobe/interface";
 import type { IConnection } from "@nestia/fetcher";
-import type { ILlmSchema } from "@samchon/openapi";
 import type { Driver } from "tgrid";
 import { WebSocketConnector } from "tgrid";
 
@@ -44,7 +43,7 @@ export namespace start {
     connector: WebSocketConnector<Header, Provider, Listener>;
     driver: Driver<Listener>;
   };
-  export type Header = IAutoBePlaygroundHeader<ILlmSchema.Model>;
+  export type Header = IAutoBePlaygroundHeader;
   export type Provider = IAutoBeRpcListener;
   export type Listener = IAutoBeRpcService;
 

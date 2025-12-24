@@ -19,19 +19,6 @@ import { IAutoBePlaygroundVendor } from "./IAutoBePlaygroundVendor";
  */
 export interface IAutoBePlaygroundHeader {
   /**
-   * AI model type specification for type-safe function calling schemas.
-   *
-   * Specifies the AI model type that determines the function calling schema
-   * generation and optimization characteristics.
-   *
-   * Different model types may have varying function calling capabilities,
-   * parameter limitations, and schema requirements that need to be accounted
-   * for during the vibe coding pipeline to ensure optimal AI performance and
-   * compatibility.
-   */
-  model: string;
-
-  /**
    * AI vendor configuration for service provider integration.
    *
    * Contains the complete {@link IAutoBePlaygroundVendor} configuration

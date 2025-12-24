@@ -30,16 +30,12 @@ export function AutoBePlaygroundApplication() {
       semaphore: playgroundConfig.semaphore ?? 16,
     };
 
-    const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
-      model: (playgroundConfig.schemaModel ?? "chatgpt") as Exclude<
-        ILlmSchema.Model,
-        "gemini" | "3.0"
-      >,
+    const headers: IAutoBePlaygroundHeader = {
       vendor: vendorConfig,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       locale: playgroundConfig.locale ?? window.navigator.language,
     };
-    const listener = new AutoBeListener();
+    const listener: AutoBeListener = new AutoBeListener();
     const {
       driver: service,
       sessionId,

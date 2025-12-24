@@ -2,7 +2,6 @@ import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { AutoBeRpcService } from "@autobe/rpc";
-import { ILlmSchema } from "@samchon/openapi";
 import { OpenAI } from "openai";
 import { WorkerServer } from "tgrid";
 
@@ -25,8 +24,7 @@ async function main() {
   >();
 
   const header = await worker.getHeader();
-  const agent = new AutoBeAgent({
-    model: header.schemaModel as ILlmSchema.Model,
+  const agent: AutoBeAgent = new AutoBeAgent({
     vendor: {
       api: new OpenAI({
         apiKey: header.apiKey,
