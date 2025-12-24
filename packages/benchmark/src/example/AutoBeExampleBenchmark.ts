@@ -98,7 +98,7 @@ export namespace AutoBeExampleBenchmark {
         count: 0,
       };
       props.projectState.phases.push(phaseState);
-      for (let i: number = 0; i < 3; ++i) {
+      for (let i: number = 0; i < 1; ++i) {
         try {
           ++phaseState.trial;
           phaseState.started_at = new Date();
