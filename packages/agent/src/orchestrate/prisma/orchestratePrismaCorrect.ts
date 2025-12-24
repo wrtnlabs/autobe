@@ -17,8 +17,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
 
-export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export function orchestratePrismaCorrect(
+  ctx: AutoBeContext,
   application: AutoBePrisma.IApplication,
 ): Promise<IAutoBePrismaValidation> {
   const unique: Set<string> = new Set();
@@ -32,8 +32,8 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   return iterate(ctx, application, Math.max(ctx.retry, 8));
 }
 
-async function iterate<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function iterate(
+  ctx: AutoBeContext,
   application: AutoBePrisma.IApplication,
   life: number,
 ): Promise<IAutoBePrismaValidation> {
@@ -64,8 +64,8 @@ async function iterate<Model extends ILlmSchema.Model>(
   return iterate(ctx, next.correction, life - 1);
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   failure: IAutoBePrismaValidation.IFailure,
   capacity: number = 8,
 ): Promise<IExecutionResult> {
@@ -111,8 +111,8 @@ async function process<Model extends ILlmSchema.Model>(
   };
 }
 
-async function execute<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function execute(
+  ctx: AutoBeContext,
   failure: IAutoBePrismaValidation.IFailure,
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
@@ -154,7 +154,7 @@ async function execute<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
         preliminary,
@@ -213,8 +213,8 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
   return unique.size;
 };
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
+  model: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
@@ -222,7 +222,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousPrismaSchemas"
   >;
   build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
-}): IAgenticaController.IClass<Model> {
+}): IAgenticaController.IClass {
   assertSchemaModel(props.model);
   const validate: Validator = (input) => {
     const result =
@@ -234,16 +234,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
       request: result.data.request,
     });
   };
-  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      props.model === "chatgpt"
-        ? "chatgpt"
-        : props.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
-      validate,
-    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBePrismaCorrectApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -256,27 +252,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBePrismaCorrectApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">({
-      validate: {
-        process: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaCorrectApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaCorrectApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

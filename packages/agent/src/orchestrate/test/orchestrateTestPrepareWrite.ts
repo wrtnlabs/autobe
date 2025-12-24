@@ -37,10 +37,8 @@ import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrep
  * @param instruction User instructions for test data generation context
  * @returns Array of generated prepare function definitions
  */
-export const orchestrateTestPrepareWrite = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateTestPrepareWrite = async (
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
@@ -95,8 +93,8 @@ export const orchestrateTestPrepareWrite = async <
 };
 
 /** Processes the generation of a single prepare function using LLM. */
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
     typeName: string;
@@ -161,12 +159,12 @@ async function process<Model extends ILlmSchema.Model>(
 }
 
 /** Creates LLM controller for function calling. */
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
+  model: string;
   dtoTypeName: string;
   schema: AutoBeOpenApi.IJsonSchema.IObject;
   build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
-}): IAgenticaController.IClass<Model> {
+}): IAgenticaController.IClass {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
@@ -209,15 +207,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication = typia.llm.application<IAutoBeTestPrepareWriteApplication>({
+    validate: {
+      write: validate,
+    },
+  });
 
   return {
     protocol: "class",
@@ -230,28 +224,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeTestPrepareWriteApplication,
   };
 }
-
-/** LLM application collection for different models. */
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestPrepareWriteApplication, "chatgpt">({
-      validate: {
-        write: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestPrepareWriteApplication, "claude">({
-      validate: {
-        write: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestPrepareWriteApplication, "gemini">({
-      validate: {
-        write: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

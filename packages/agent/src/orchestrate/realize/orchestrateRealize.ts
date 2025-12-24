@@ -23,7 +23,7 @@ import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCol
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 
 export const orchestrateRealize =
-  <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
+  (ctx: AutoBeContext) =>
   async (
     props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {

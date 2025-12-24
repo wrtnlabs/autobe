@@ -11,10 +11,10 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
-export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
-  operations: readonly AgenticaOperation<Model>[];
+export function createAgenticaHistory(props: {
+  operations: readonly AgenticaOperation[];
   history: AutoBeHistory;
-}): MicroAgenticaHistory<Model> | null {
+}): MicroAgenticaHistory | null {
   if (props.history.type === "userMessage") {
     // @todo Seems to need more explanation that
     //       this is not a pure text
@@ -37,7 +37,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
       toJSON: () => props.history as AutoBeAssistantMessageHistory,
     };
 
-  const operation: AgenticaOperation<Model> | undefined = props.operations.find(
+  const operation: AgenticaOperation | undefined = props.operations.find(
     (op) => op.function.name === props.history.type,
   );
   if (operation === undefined) return null;
@@ -58,15 +58,15 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
           : props.history.compiled.type === "success",
     },
     success: true,
-  } satisfies Partial<AgenticaExecuteHistory<Model>>;
+  } satisfies Partial<AgenticaExecuteHistory>;
   return {
     ...partial,
     protocol: operation.protocol as "class",
-    operation: operation as AgenticaOperation.Class<Model>,
+    operation: operation as AgenticaOperation.Class,
     toJSON: () => ({
       ...partial,
       protocol: operation.protocol as "class",
       operation: operation.toJSON(),
     }),
-  } satisfies AgenticaExecuteHistory<Model>;
+  } satisfies AgenticaExecuteHistory;
 }

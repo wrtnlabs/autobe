@@ -21,8 +21,8 @@ import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProg
 import { IAutoBeTestPrepareCorrectOverallApplication } from "./structures/IAutoBeTestPrepareCorrectOverallApplication";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 
-export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateTestPrepare(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
@@ -74,11 +74,11 @@ export async function orchestrateTestPrepare<Model extends ILlmSchema.Model>(
   return procedures.map((p) => p.function);
 }
 
-function createCorrectOverallController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createCorrectOverallController(props: {
+  model: string;
   procedure: IAutoBeTestPrepareProcedure;
   build: (next: IAutoBeTestPrepareCorrectOverallApplication.IProps) => void;
-}): ILlmController<Model, IAutoBeTestPrepareCorrectOverallApplication> {
+}): ILlmController<IAutoBeTestPrepareCorrectOverallApplication> {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
@@ -101,15 +101,11 @@ function createCorrectOverallController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication = typia.llm.application<IAutoBeTestPrepareCorrectOverallApplication>({
+    validate: {
+      rewrite: validate,
+    },
+  });
   return {
     protocol: "class",
     name: "testCorrect" satisfies AutoBeEventSource,
@@ -121,36 +117,6 @@ function createCorrectOverallController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeTestPrepareCorrectOverallApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeTestPrepareCorrectOverallApplication,
-      "chatgpt"
-    >({
-      validate: {
-        rewrite: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeTestPrepareCorrectOverallApplication,
-      "claude"
-    >({
-      validate: {
-        rewrite: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeTestPrepareCorrectOverallApplication,
-      "gemini"
-    >({
-      validate: {
-        rewrite: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

@@ -51,8 +51,8 @@ import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { supportMistral } from "./supportMistral";
 
-export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
-  model: Model;
+export const createAutoBeContext = (props: {
+  model: string;
   vendor: IAutoBeVendor;
   compiler: () => Promise<IAutoBeCompiler>;
   compilerListener: IAutoBeCompilerListener;
@@ -63,7 +63,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   usage: () => AutoBeTokenUsage;
   dispatch: (event: AutoBeEvent) => Promise<void>;
   aggregates: AutoBeProcessAggregateCollection;
-}): AutoBeContext<Model> => {
+}): AutoBeContext => {
   const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
     {
       retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
@@ -130,9 +130,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         response: 0,
         timeout: 0,
       };
-      const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
+      const execute = async (): Promise<AutoBeContext.IResult> => {
         // CREATE AGENT
-        const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+        const agent: MicroAgentica = new MicroAgentica({
           model: props.model,
           vendor: props.vendor,
           config: {
@@ -225,7 +225,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
                     .join("\n")}
                 `
             : next.userMessage;
-        const result: TimedConversation.IResult<Model> =
+        const result: TimedConversation.IResult =
           await TimedConversation.process({
             timeout: config.timeout,
             agent,
@@ -241,7 +241,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           ]);
         consume(tokenUsage);
 
-        const success = (histories: MicroAgenticaHistory<Model>[]) => {
+        const success = (histories: MicroAgenticaHistory[]) => {
           metric("success");
           return {
             histories,
@@ -283,7 +283,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               `,
             );
           };
-          const last: MicroAgenticaHistory<Model> | undefined =
+          const last: MicroAgenticaHistory | undefined =
             result.histories.at(-1);
           if (
             last?.type === "assistantMessage" &&
@@ -300,7 +300,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               assistantMessage: last.text,
             });
             if (consent !== null) {
-              const newHistories: MicroAgenticaHistory<Model>[] =
+              const newHistories: MicroAgenticaHistory[] =
                 await agent.conversate(consent);
               const newTokenUsage: IAutoBeTokenUsageJson.IComponent =
                 AutoBeTokenUsageComponent.minus(

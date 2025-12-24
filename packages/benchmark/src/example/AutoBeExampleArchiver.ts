@@ -242,6 +242,7 @@ export namespace AutoBeExampleArchiver {
                 )
                 .map((h) => [`autobe/${h.type}.instruction.md`, h.instruction]),
             ),
+            "pnpm-workspace.yaml": "",
           },
         });
       } catch {}

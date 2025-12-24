@@ -21,8 +21,8 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
  * @param agent MicroAgentica instance to patch
  * @param vendor Vendor configuration containing model name
  */
-export const supportMistral = <Model extends ILlmSchema.Model>(
-  agent: MicroAgentica<Model>,
+export const supportMistral = (
+  agent: MicroAgentica,
   vendor: IAutoBeVendor,
 ): void => {
   if (

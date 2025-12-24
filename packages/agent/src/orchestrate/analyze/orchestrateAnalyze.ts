@@ -16,8 +16,8 @@ import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 
-export const orchestrateAnalyze = async <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export const orchestrateAnalyze = async (
+  ctx: AutoBeContext,
 ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
   // Initialize analysis state
   const step: number = (ctx.state().analyze?.step ?? -1) + 1;

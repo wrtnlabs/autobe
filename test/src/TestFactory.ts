@@ -4,10 +4,9 @@ import {
   IAutoBeCompiler,
   IAutoBeCompilerListener,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 export interface TestFactory {
-  createAgent: (histories: AutoBeHistory[]) => AutoBeAgent<ILlmSchema.Model>;
+  createAgent: (histories: AutoBeHistory[]) => AutoBeAgent;
   createCompiler: (listener?: IAutoBeCompilerListener) => IAutoBeCompiler;
   getTokenUsage: () => AutoBeTokenUsage;
 }

@@ -21,8 +21,8 @@ import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaReview } from "./orchestratePrismaReview";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 
-export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export const orchestratePrisma = async (
+  ctx: AutoBeContext,
   props: IAutoBeFacadeApplicationProps,
 ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
   // PREDICATION

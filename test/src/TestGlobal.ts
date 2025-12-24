@@ -1,5 +1,4 @@
 import { IAutoBeVendor } from "@autobe/agent";
-import { ILlmSchema } from "@samchon/openapi";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 import OpenAI from "openai";
@@ -56,15 +55,11 @@ export class TestGlobal {
   public static archive: boolean = process.argv.includes("--archive");
   public static vendorModel: string =
     this.getArguments("vendor")?.[0] ?? "openai/gpt-4.1";
-  public static schemaModel: ILlmSchema.Model = (this.getArguments(
-    "schema",
-  )?.[0] ?? "chatgpt") as ILlmSchema.Model;
 }
 
 interface IEnvironments {
   OPENAI_API_KEY?: string;
   OPENROUTER_API_KEY?: string;
-  SCHEMA_MODEL?: ILlmSchema.Model;
   SEMAPHORE?: string;
   TIMEOUT?: string;
   BENCHMARK_RUNS_PER_SCENARIO?: string;

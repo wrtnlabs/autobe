@@ -19,19 +19,18 @@ import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
 export const orchestratePreliminary = async <
-  Model extends ILlmSchema.Model,
   Kind extends AutoBePreliminaryKind,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
     source_id: string;
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    histories: MicroAgenticaHistory<Model>[];
+    histories: MicroAgenticaHistory[];
     preliminary: AutoBePreliminaryController<Kind>;
     trial: number;
   },
 ): Promise<void> => {
-  const executes: AgenticaExecuteHistory<Model>[] = props.histories.filter(
+  const executes: AgenticaExecuteHistory[] = props.histories.filter(
     (h) => h.type === "execute",
   );
   if (executes.length === 0) throw new Error("Failed to function calling");

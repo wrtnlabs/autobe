@@ -230,16 +230,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
     return result;
   };
 
-  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      props.model === "chatgpt"
-        ? "chatgpt"
-        : props.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
-      validate,
-    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -252,29 +248,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validator: Validator) =>
-    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "chatgpt">(
-      {
-        validate: {
-          process: validator,
-        },
-      },
-    ),
-  claude: (validator: Validator) =>
-    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "claude">({
-      validate: {
-        process: validator,
-      },
-    }),
-  gemini: (validator: Validator) =>
-    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "gemini">({
-      validate: {
-        process: validator,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

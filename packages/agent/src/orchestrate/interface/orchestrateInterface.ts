@@ -38,7 +38,7 @@ import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 
 export const orchestrateInterface =
-  <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
+  (ctx: AutoBeContext) =>
   async (
     props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {

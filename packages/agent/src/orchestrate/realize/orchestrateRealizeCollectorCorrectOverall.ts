@@ -15,10 +15,8 @@ import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeC
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorCorrectApplication } from "./structures/IAutoBeRealizeCollectorCorrectApplication";
 
-export const orchestrateRealizeCollectorCorrectOverall = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateRealizeCollectorCorrectOverall = async (
+  ctx: AutoBeContext,
   props: {
     functions: AutoBeRealizeCollectorFunction[];
     progress: AutoBeProgressEventBase;
@@ -124,15 +122,12 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
             : result;
         };
 
-        const application: ILlmApplication<Model> = collection[
-          next.model === "chatgpt"
-            ? "chatgpt"
-            : next.model === "gemini"
-              ? "gemini"
-              : "claude"
-        ](
-          validate,
-        ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+        const application: ILlmApplication =
+          typia.llm.application<IAutoBeRealizeCollectorCorrectApplication>({
+            validate: {
+              process: validate,
+            },
+          });
 
         return {
           protocol: "class",
@@ -149,29 +144,6 @@ export const orchestrateRealizeCollectorCorrectOverall = async <
     functions: props.functions,
     progress: props.progress,
   });
-};
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "chatgpt">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorCorrectApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
 };
 
 type Validator = (

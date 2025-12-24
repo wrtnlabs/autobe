@@ -14,8 +14,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 
-export async function orchestratePrismaSchema<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function orchestratePrismaSchema(
+  ctx: AutoBeContext,
   instruction: string,
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaSchemaEvent[]> {
@@ -46,8 +46,8 @@ export async function orchestratePrismaSchema<Model extends ILlmSchema.Model>(
   );
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     component: AutoBePrisma.IComponent;
@@ -70,7 +70,7 @@ async function process<Model extends ILlmSchema.Model>(
     const pointer: IPointer<IAutoBePrismaSchemaApplication.IComplete | null> = {
       value: null,
     };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
         preliminary,
@@ -118,8 +118,8 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+function createController(
+  ctx: AutoBeContext,
   props: {
     preliminary: AutoBePreliminaryController<
       "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
@@ -128,7 +128,7 @@ function createController<Model extends ILlmSchema.Model>(
     otherTables: string[];
     build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
   },
-): IAgenticaController.IClass<Model> {
+): IAgenticaController.IClass {
   assertSchemaModel(ctx.model);
 
   const validate = (
@@ -190,16 +190,12 @@ function createController<Model extends ILlmSchema.Model>(
       ],
     };
   };
-  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      ctx.model === "chatgpt"
-        ? "chatgpt"
-        : ctx.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
-      validate,
-    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBePrismaSchemaApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -212,27 +208,6 @@ function createController<Model extends ILlmSchema.Model>(
     } satisfies IAutoBePrismaSchemaApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaSchemaApplication, "chatgpt">({
-      validate: {
-        process: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaSchemaApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBePrismaSchemaApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

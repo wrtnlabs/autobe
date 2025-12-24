@@ -17,10 +17,8 @@ import { transformInterfaceOperationReviewHistory } from "./histories/transformI
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
 import { OperationValidator } from "./utils/OperationValidator";
 
-export async function orchestrateInterfaceOperationReview<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceOperationReview(
+  ctx: AutoBeContext,
   operations: AutoBeOpenApi.IOperation[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
@@ -32,8 +30,8 @@ export async function orchestrateInterfaceOperationReview<
   }
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   operations: AutoBeOpenApi.IOperation[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
@@ -62,7 +60,7 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createReviewController({
         preliminary,
@@ -105,8 +103,8 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createReviewController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createReviewController(props: {
+  model: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -118,7 +116,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
   ) => void;
-}): IAgenticaController.IClass<Model> {
+}): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
@@ -146,16 +144,12 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     return result;
   };
 
-  const application: ILlmApplication<Model> = props.preliminary.fixApplication(
-    collection[
-      props.model === "chatgpt"
-        ? "chatgpt"
-        : props.model === "gemini"
-          ? "gemini"
-          : "claude"
-    ](
-      validate,
-    ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>,
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceOperationReviewApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -168,34 +162,6 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceOperationReviewApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<
-      IAutoBeInterfaceOperationReviewApplication,
-      "chatgpt"
-    >({
-      validate: {
-        process: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "claude">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "gemini">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
-};
 
 type Validator = (
   input: unknown,

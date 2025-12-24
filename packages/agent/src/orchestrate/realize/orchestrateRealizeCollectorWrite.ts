@@ -27,10 +27,8 @@ import { transformRealizeCollectorWriteHistory } from "./histories/transformReal
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorWriteApplication } from "./structures/IAutoBeRealizeCollectorWriteApplication";
 
-export async function orchestrateRealizeCollectorWrite<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeCollectorWrite(
+  ctx: AutoBeContext,
   props: {
     plans: AutoBeRealizeCollectorPlan[];
     progress: AutoBeProgressEventBase;
@@ -77,8 +75,8 @@ export async function orchestrateRealizeCollectorWrite<
   return result;
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
     plan: AutoBeRealizeCollectorPlan;
@@ -111,7 +109,7 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeWrite",
       controller: createController(ctx, {
         model: ctx.model,
@@ -160,16 +158,16 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+function createController(
+  ctx: AutoBeContext,
   props: {
-    model: Model;
+    model: string;
     plan: AutoBeRealizeCollectorPlan;
     neighbors: AutoBeRealizeCollectorPlan[];
     build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
-): ILlmController<Model> {
+): ILlmController {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
@@ -199,15 +197,12 @@ function createController<Model extends ILlmSchema.Model>(
         }
       : result;
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeRealizeCollectorWriteApplication>({
+      validate: {
+        process: validate,
+      },
+    });
 
   return {
     protocol: "class",
@@ -220,27 +215,6 @@ function createController<Model extends ILlmSchema.Model>(
     } satisfies IAutoBeRealizeCollectorWriteApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorWriteApplication, "chatgpt">({
-      validate: {
-        process: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorWriteApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeCollectorWriteApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

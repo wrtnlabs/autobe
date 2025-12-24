@@ -239,14 +239,12 @@ const uniqueRefactors = (
   return Array.from(resolved.values());
 };
 
-const createController = <Model extends ILlmSchema.Model>(
-  model: Model,
+const createController = (
+  model: string,
   build: (value: IAutoBeInterfaceSchemaRenameApplication.IProps) => void,
-): IAgenticaController.IClass<Model> => {
+): IAgenticaController.IClass => {
   assertSchemaModel(model);
-  const application: ILlmApplication<Model> = collection[
-    model === "chatgpt" ? "chatgpt" : model === "gemini" ? "gemini" : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication = typia.llm.application<IAutoBeInterfaceSchemaRenameApplication>();
   return {
     protocol: "class",
     name: SOURCE,
@@ -257,21 +255,6 @@ const createController = <Model extends ILlmSchema.Model>(
       },
     } satisfies IAutoBeInterfaceSchemaRenameApplication,
   };
-};
-
-const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "claude"
-  >(),
-  gemini: typia.llm.application<
-    IAutoBeInterfaceSchemaRenameApplication,
-    "gemini"
-  >(),
 };
 
 const SOURCE = "interfaceSchemaRename" satisfies AutoBeEventSource;

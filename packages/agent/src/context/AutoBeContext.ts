@@ -23,7 +23,7 @@ import {
   IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { ILlmController, ILlmSchema } from "@samchon/openapi";
+import { ILlmController } from "@samchon/openapi";
 
 import { AutoBeState } from "./AutoBeState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
@@ -32,22 +32,20 @@ import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
  * Core execution context providing orchestrators access to configuration,
  * state, compiler, events, and AI conversation.
  *
- * Follows Dependency Injection pattern for testability. Generic `Model`
- * parameter ensures LLM schema consistency. State transitions are atomic,
- * and event dispatch is type-safe with automatic WebSocket forwarding.
+ * Follows Dependency Injection pattern for testability. State transitions are
+ * atomic, and event dispatch is type-safe with automatic WebSocket forwarding.
  *
  * Key methods:
+ *
  * - `state()`: Current pipeline state with step counters
  * - `compiler()`: Three-tier compilation infrastructure
  * - `dispatch()`: Type-safe event emission with automatic state updates
  * - `conversate()`: Creates MicroAgentica for LLM interactions
  *
- * @template Model - LLM model schema type from @samchon/openapi
  * @author Samchon
  */
-export interface AutoBeContext<Model extends ILlmSchema.Model> {
+export interface AutoBeContext {
   // configuration
-  model: Model;
   vendor: IAgenticaVendor;
   locale: string;
   retry: number;
@@ -74,9 +72,9 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
 
   // factories
   conversate(
-    props: AutoBeContext.IConversate<Model>,
-    closure?: (agent: MicroAgentica<Model>) => void,
-  ): Promise<AutoBeContext.IResult<Model>>;
+    props: AutoBeContext.IConversate,
+    closure?: (agent: MicroAgentica) => void,
+  ): Promise<AutoBeContext.IResult>;
 }
 export namespace AutoBeContext {
   export type DispatchHistory<
@@ -92,16 +90,16 @@ export namespace AutoBeContext {
     testComplete: AutoBeTestHistory;
     realizeComplete: AutoBeRealizeHistory;
   };
-  export interface IConversate<Model extends ILlmSchema.Model> {
+  export interface IConversate {
     source: AutoBeEventSource;
-    controller: ILlmController<Model>;
+    controller: ILlmController;
     histories: Array<IMicroAgenticaHistoryJson>;
     enforceFunctionCall: boolean;
     userMessage: string;
     promptCacheKey?: string;
   }
-  export interface IResult<Model extends ILlmSchema.Model> {
-    histories: MicroAgenticaHistory<Model>[];
+  export interface IResult {
+    histories: MicroAgenticaHistory[];
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
     metric: AutoBeFunctionCallingMetric;
   }

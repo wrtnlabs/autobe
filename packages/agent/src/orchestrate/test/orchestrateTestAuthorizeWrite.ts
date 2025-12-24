@@ -27,10 +27,8 @@ import { IAutoBeTestAuthorizeProcedure } from "./structures/IAutoBeTestAuthorize
  * Creates authorization utility functions for test scenarios using LLM to
  * generate proper authentication handling code.
  */
-export const orchestrateTestAuthorizeWrite = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateTestAuthorizeWrite = async (
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     progress: AutoBeProgressEventBase;
@@ -78,8 +76,8 @@ export const orchestrateTestAuthorizeWrite = async <
   return results.filter((r) => r !== null);
 };
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     operation: AutoBeOpenApi.IOperation;
     artifacts: IAutoBeTestArtifacts;
@@ -147,11 +145,11 @@ async function process<Model extends ILlmSchema.Model>(
   } satisfies AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
+  model: string;
   operatiopn: AutoBeOpenApi.IOperation;
   build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
-}): IAgenticaController.IClass<Model> {
+}): IAgenticaController.IClass {
   assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
@@ -178,15 +176,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication = typia.llm.application<IAutoBeTestAuthorizationWriteApplication>({
+    validate: {
+      write: validate,
+    },
+  });
 
   return {
     protocol: "class",
@@ -199,27 +193,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeTestAuthorizationWriteApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "chatgpt">({
-      validate: {
-        write: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "claude">({
-      validate: {
-        write: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeTestAuthorizationWriteApplication, "gemini">({
-      validate: {
-        write: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

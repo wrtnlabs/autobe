@@ -27,27 +27,7 @@ import { IAutoBeVendor } from "./IAutoBeVendor";
  *
  * @author Samchon
  */
-export interface IAutoBeProps<Model extends ILlmSchema.Model> {
-  /**
-   * AI model type specification for type-safe function calling schema
-   * generation.
-   *
-   * Determines the specific AI model schema used for generating function
-   * calling interfaces through
-   * [`typia.llm.application()`](https://typia.io/docs/llm/application). This
-   * type parameter ensures compile-time type safety and enables model-specific
-   * optimizations in the AI function calling interface generation process.
-   *
-   * Common values include "chatgpt" for OpenAI models, "claude" for Anthropic
-   * models, "deepseek" for DeepSeek models, and "llama" for Meta Llama models.
-   * The choice affects function calling capabilities, parameter limitations,
-   * and schema requirements throughout the vibe coding pipeline.
-   *
-   * Note that Google Gemini ("gemini") is not supported due to its lack of
-   * reference types and union types support required for OpenAPI document
-   * composition in the vibe coding process.
-   */
-  model: Model;
+export interface IAutoBeProps {
 
   /**
    * AI vendor configuration for service provider integration.
