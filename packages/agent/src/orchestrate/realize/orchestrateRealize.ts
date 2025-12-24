@@ -9,7 +9,6 @@ import {
   AutoBeRealizeTransformerFunction,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

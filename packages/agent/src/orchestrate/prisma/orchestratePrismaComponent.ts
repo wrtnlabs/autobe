@@ -3,13 +3,12 @@ import {
   AutoBeEventSource,
   AutoBePrismaComponentEvent,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
@@ -42,7 +41,6 @@ export async function orchestratePrismaComponents(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         pointer,
         preliminary,
       }),
@@ -72,14 +70,11 @@ export async function orchestratePrismaComponents(
 }
 
 function createController(props: {
-  model: string;
   pointer: IPointer<IAutoBePrismaComponentApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
   >;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBePrismaComponentApplication.IProps> =
       typia.validate<IAutoBePrismaComponentApplication.IProps>(input);

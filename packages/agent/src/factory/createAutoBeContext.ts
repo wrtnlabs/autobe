@@ -32,7 +32,6 @@ import {
   StringUtil,
   TokenUsageComputer,
 } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -52,7 +51,6 @@ import { getCriticalCompiler } from "./getCriticalCompiler";
 import { supportMistral } from "./supportMistral";
 
 export const createAutoBeContext = (props: {
-  model: string;
   vendor: IAutoBeVendor;
   compiler: () => Promise<IAutoBeCompiler>;
   compilerListener: IAutoBeCompilerListener;
@@ -72,7 +70,6 @@ export const createAutoBeContext = (props: {
     };
   const critical: Semaphore = new Semaphore(2);
   return {
-    model: props.model,
     vendor: props.vendor,
     retry: config.retry,
     locale: config.locale,
@@ -133,7 +130,6 @@ export const createAutoBeContext = (props: {
       const execute = async (): Promise<AutoBeContext.IResult> => {
         // CREATE AGENT
         const agent: MicroAgentica = new MicroAgentica({
-          model: props.model,
           vendor: props.vendor,
           config: {
             ...(props.config ?? {}),

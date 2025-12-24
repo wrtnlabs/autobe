@@ -1,5 +1,4 @@
 import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
-import { ILlmSchema } from "@samchon/openapi";
 import { ConditionVariable, IPointer, Singleton, sleep_for } from "tstl";
 
 import { AutoBeTimeoutError } from "./AutoBeTimeoutError";
@@ -27,10 +26,7 @@ export namespace TimedConversation {
   }
 
   /** Discriminated union of possible conversation outcomes. */
-  export type IResult =
-    | ISuccessResult
-    | ITimeoutResult
-    | IErrorResult;
+  export type IResult = ISuccessResult | ITimeoutResult | IErrorResult;
 
   /** Successful conversation completion. */
   export interface ISuccessResult {
@@ -60,13 +56,12 @@ export namespace TimedConversation {
    * @param props Agent, message, and timeout configuration
    * @returns Discriminated result indicating success, timeout, or error
    */
-  export const process = async (
-    props: IProps,
-  ): Promise<IResult> => {
+  export const process = async (props: IProps): Promise<IResult> => {
     if (props.timeout === null)
       try {
-        const histories: MicroAgenticaHistory[] =
-          await props.agent.conversate(props.message);
+        const histories: MicroAgenticaHistory[] = await props.agent.conversate(
+          props.message,
+        );
         return {
           type: "success",
           histories,

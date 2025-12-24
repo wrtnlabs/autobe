@@ -6,15 +6,14 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
 import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
 
-export const imageDescribe = async <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export const imageDescribe = async (
+  ctx: AutoBeContext,
   props: {
     content: AutoBeUserConversateContent[];
   },

@@ -3,7 +3,6 @@ import {
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeCollectorPlan,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeCollectorCorrectCasting } from "./orchestrateRealizeCollectorCorrectCasting";
@@ -11,10 +10,8 @@ import { orchestrateRealizeCollectorCorrectOverall } from "./orchestrateRealizeC
 import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
 import { orchestrateRealizeCollectorWrite } from "./orchestrateRealizeCollectorWrite";
 
-export async function orchestrateRealizeCollector<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeCollector(
+  ctx: AutoBeContext,
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;

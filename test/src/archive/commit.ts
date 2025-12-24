@@ -38,8 +38,7 @@ const main = async (): Promise<void> => {
       );
     if (replayList.length === 0) continue;
     for (const replay of replayList) {
-      const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-        model: "chatgpt",
+      const agent: AutoBeAgent = new AutoBeAgent({
         vendor: {
           api: new OpenAI({
             apiKey: "",

@@ -5,19 +5,18 @@ import {
   AutoBePrismaHistory,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceGroupHistory } from "./histories/transformInterfaceGroupHistory";
 import { IAutoBeInterfaceGroupApplication } from "./structures/IAutoBeInterfaceGroupApplication";
 
-export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceGroup(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
   },
@@ -47,10 +46,9 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         pointer,
         preliminary,
         prismaSchemas: new Set(
@@ -84,8 +82,7 @@ export async function orchestrateInterfaceGroup<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -95,10 +92,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousInterfaceOperations"
   >;
   prismaSchemas: Set<string>;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+}): IAgenticaController.IClass {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeInterfaceGroupApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceGroupApplication.IProps> =
       typia.validate<IAutoBeInterfaceGroupApplication.IProps>(input);
     if (result.success === false) return result;
@@ -163,9 +160,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceGroupApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceGroupApplication.IProps>;
 
 const SOURCE = "interfaceGroup" satisfies AutoBeEventSource;

@@ -8,13 +8,12 @@ import {
   IAutoBeCompiler,
   IAutoBePrismaCompileResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationWriteHistory } from "./histories/transformRealizeAuthorizationWriteHistory";
@@ -29,7 +28,9 @@ import { InternalFileSystem } from "./utils/InternalFileSystem";
  *
  * @param ctx
  */
-export async function orchestrateRealizeAuthorizationWrite(ctx: AutoBeContext): Promise<AutoBeRealizeAuthorization[]> {
+export async function orchestrateRealizeAuthorizationWrite(
+  ctx: AutoBeContext,
+): Promise<AutoBeRealizeAuthorization[]> {
   ctx.dispatch({
     type: "realizeAuthorizationStart",
     id: v7(),
@@ -96,7 +97,6 @@ async function process(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeAuthorizationWrite",
       controller: createController({
-        model: ctx.model,
         build: (next) => {
           pointer.value = next;
         },
@@ -165,12 +165,9 @@ async function process(
 }
 
 function createController(props: {
-  model: string;
   build: (next: IAutoBeRealizeAuthorizationWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeAuthorizationWriteApplication.IProps>(input);
@@ -181,6 +178,7 @@ function createController(props: {
       request: result.data.request,
     });
   };
+
   const application: ILlmApplication =
     typia.llm.application<IAutoBeRealizeAuthorizationWriteApplication>({
       validate: {

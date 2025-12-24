@@ -6,7 +6,7 @@ import {
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmController, ILlmSchema } from "@samchon/openapi";
+import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
@@ -18,7 +18,6 @@ import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
 interface IProgrammer<
-  Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete,
@@ -34,12 +33,11 @@ interface IProgrammer<
     preliminary: AutoBePreliminaryController<PreliminaryKind>;
   }): Promise<IAutoBeOrchestrateHistory>;
   controller(next: {
-    model: Model;
     function: RealizeFunction;
     preliminary: AutoBePreliminaryController<PreliminaryKind>;
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     build(next: Complete): void;
-  }): ILlmController<Model>;
+  }): ILlmController;
   preliminary(props: {
     function: RealizeFunction;
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
@@ -61,14 +59,13 @@ interface ICorrectionResult<RealizeFunction extends AutoBeRealizeFunction> {
 }
 
 export const orchestrateRealizeCorrectOverall = async <
-  Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete extends IComplete,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
+    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     progress: AutoBeProgressEventBase;
   },
@@ -95,14 +92,13 @@ export const orchestrateRealizeCorrectOverall = async <
 };
 
 const predicate = async <
-  Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete extends IComplete,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
+    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -118,14 +114,13 @@ const predicate = async <
 };
 
 const correct = async <
-  Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete extends IComplete,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
+    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -267,14 +262,13 @@ const correct = async <
 };
 
 const process = async <
-  Model extends ILlmSchema.Model,
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete extends IComplete,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, RealizeFunction, PreliminaryKind, Complete>;
+    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     function: RealizeFunction;
     failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
     progress: AutoBeProgressEventBase;
@@ -289,8 +283,7 @@ const process = async <
     const pointer: IPointer<Complete | null> = {
       value: null,
     };
-    const controller: ILlmController<Model> = props.programmer.controller({
-      model: ctx.model,
+    const controller: ILlmController = props.programmer.controller({
       preliminary,
       build(next: Complete) {
         pointer.value = next;
@@ -298,7 +291,7 @@ const process = async <
       function: props.function,
       source: SOURCE,
     });
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller,
       enforceFunctionCall: true,

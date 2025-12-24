@@ -7,13 +7,12 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeEventSource,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeSceHistories } from "./histories/transformAnalyzeScenarioHistories";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
@@ -34,10 +33,9 @@ export const orchestrateAnalyzeScenario = async (
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         pointer,
         preliminary,
       }),
@@ -69,14 +67,13 @@ export const orchestrateAnalyzeScenario = async (
   });
 };
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+}): IAgenticaController.IClass {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
@@ -105,9 +102,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeAnalyzeScenarioApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeAnalyzeScenarioApplication.IProps>;
 
 const SOURCE = "analyzeScenario" satisfies AutoBeEventSource;

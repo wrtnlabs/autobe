@@ -10,7 +10,6 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { writePrismaApplication } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

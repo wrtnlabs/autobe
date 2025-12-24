@@ -17,7 +17,6 @@ import {
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 import { AutoBeProcessAggregateFactory } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore, Singleton } from "tstl";
 import { v7 } from "uuid";
 
@@ -62,21 +61,18 @@ import { randomBackoffStrategy } from "./utils/backoffRetry";
  *
  * @author Samchon
  */
-export class AutoBeAgent<Model extends ILlmSchema.Model>
-  extends AutoBeAgentBase
-  implements IAutoBeAgent
-{
+export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
   /** @internal */
-  private readonly props_: IAutoBeProps<Model>;
+  private readonly props_: IAutoBeProps;
 
   /** @internal */
-  private readonly agentica_: MicroAgentica<Model>;
+  private readonly agentica_: MicroAgentica;
 
   /** @internal */
   private readonly histories_: AutoBeHistory[];
 
   /** @internal */
-  private readonly context_: AutoBeContext<Model>;
+  private readonly context_: AutoBeContext;
 
   /** @internal */
   private readonly state_: AutoBeState;
@@ -107,7 +103,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
    *   behavioral context, compilation tools, and optional conversation
    *   histories for session continuation
    */
-  public constructor(props: IAutoBeProps<Model>) {
+  public constructor(props: IAutoBeProps) {
     // INITIALIZE MEMBERS
     super();
     this.props_ = props;
@@ -151,7 +147,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         )
       : AutoBeProcessAggregateFactory.createCollection();
     this.context_ = createAutoBeContext({
-      model: props.model,
       vendor: props.vendor,
       aggregates: this.aggregates_,
       config: {
@@ -170,7 +165,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     // AGENTICA
     this.agentica_ = new MicroAgentica({
       vendor,
-      model: props.model,
       config: {
         ...(props.config ?? {}),
         retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
@@ -184,7 +178,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       },
       controllers: [
         createAutoBeFacadeController({
-          model: props.model,
           context: this.getContext(),
         }),
       ],
@@ -272,8 +265,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
   }
 
   /** @internal */
-  public clone(): AutoBeAgent<Model> {
-    return new AutoBeAgent<Model>({
+  public clone(): AutoBeAgent {
+    return new AutoBeAgent({
       ...this.props_,
       histories: this.histories_.slice(),
     });
@@ -313,11 +306,11 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     );
     this.histories_.push(userMessageHistory);
 
-    const agenticaHistories: MicroAgenticaHistory<Model>[] =
+    const agenticaHistories: MicroAgenticaHistory[] =
       await this.agentica_.conversate(userMessageHistory.contents);
-    const errorHistory: AgenticaExecuteHistory<Model> | undefined =
+    const errorHistory: AgenticaExecuteHistory | undefined =
       agenticaHistories.find(
-        (h): h is AgenticaExecuteHistory<Model> =>
+        (h): h is AgenticaExecuteHistory =>
           h.type === "execute" && h.success === false,
       );
     if (errorHistory !== undefined) {
@@ -377,7 +370,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
   }
 
   /** @internal */
-  public getContext(): AutoBeContext<Model> {
+  public getContext(): AutoBeContext {
     return this.context_;
   }
 }

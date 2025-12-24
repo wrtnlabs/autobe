@@ -3,7 +3,6 @@ import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeHistory } from "@autobe/interface";
 import { AutoBeExampleProject } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -21,8 +20,7 @@ export const prepare_agent_realize = async (props: {
     project: props.project,
     phase: "test",
   });
-  const agent: AutoBeAgent<ILlmSchema.Model> =
-    props.factory.createAgent(histories);
+  const agent: AutoBeAgent = props.factory.createAgent(histories);
   const state: AutoBeState = agent.getContext().state();
 
   return {

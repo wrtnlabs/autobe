@@ -8,14 +8,13 @@ import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
@@ -127,7 +126,6 @@ async function process(
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     controller: createController({
-      model: ctx.model,
       functionName: props.scenario.functionName,
       build: (next) => {
         next.domain = NamingConvention.snake(next.domain);
@@ -179,13 +177,12 @@ async function process(
 }
 
 function createController(props: {
-  model: string;
   functionName: string;
   build: (next: IAutoBeTestOperationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeTestOperationWriteApplication.IProps> => {
     const result: IValidation<IAutoBeTestOperationWriteApplication.IProps> =
       typia.validate<IAutoBeTestOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
@@ -204,11 +201,12 @@ function createController(props: {
         }
       : result;
   };
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestOperationWriteApplication>({
-    validate: {
-      write: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestOperationWriteApplication>({
+      validate: {
+        write: validate,
+      },
+    });
   return {
     protocol: "class",
     name: "Create Test Code",
@@ -220,7 +218,3 @@ function createController(props: {
     } satisfies IAutoBeTestOperationWriteApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestOperationWriteApplication.IProps>;

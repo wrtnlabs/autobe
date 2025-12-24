@@ -6,13 +6,12 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteHistories } from "./histories/transformAnalyzeWriteHistories";
 import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWriteApplication";
@@ -37,10 +36,9 @@ export const orchestrateAnalyzeWrite = async (
     const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null> = {
       value: null,
     };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         pointer,
         preliminary,
       }),
@@ -73,14 +71,13 @@ export const orchestrateAnalyzeWrite = async (
   });
 };
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+}): IAgenticaController.IClass {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeAnalyzeWriteApplication.IProps> => {
     const result: IValidation<IAutoBeAnalyzeWriteApplication.IProps> =
       typia.validate<IAutoBeAnalyzeWriteApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
@@ -109,9 +106,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeAnalyzeWriteApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeAnalyzeWriteApplication.IProps>;
 
 const SOURCE = "analyzeWrite" satisfies AutoBeEventSource;

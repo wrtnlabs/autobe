@@ -8,7 +8,7 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
-import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -292,8 +292,8 @@ const isRealizeTransformers = (
 /* -----------------------------------------------------------
   ORCHESTRATORS
 ----------------------------------------------------------- */
-const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestrateAnalyzeFiles = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
@@ -340,8 +340,8 @@ const orchestrateAnalyzeFiles = <Model extends ILlmSchema.Model>(
   });
 };
 
-const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestratePrismaSchemas = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
@@ -388,8 +388,8 @@ const orchestratePrismaSchemas = <Model extends ILlmSchema.Model>(
   });
 };
 
-const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestrateInterfaceOperations = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
@@ -446,8 +446,8 @@ const orchestrateInterfaceOperations = <Model extends ILlmSchema.Model>(
   });
 };
 
-const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestrateInterfaceSchemas = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
@@ -507,8 +507,8 @@ const orchestrateInterfaceSchemas = <Model extends ILlmSchema.Model>(
     });
 };
 
-const orchestrateRealizeCollectors = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestrateRealizeCollectors = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
@@ -547,8 +547,8 @@ const orchestrateRealizeCollectors = <Model extends ILlmSchema.Model>(
   });
 };
 
-const orchestrateRealizeTransformers = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const orchestrateRealizeTransformers = (
+  ctx: AutoBeContext,
   props: {
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;

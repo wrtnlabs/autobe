@@ -8,23 +8,20 @@ import {
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceActionEndpointHistory } from "./histories/transformInterfaceActionEndpointHistory";
 import { orchestrateInterfaceActionEndpointReview } from "./orchestrateInterfaceActionEndpointReview";
 import { IAutoBeInterfaceActionEndpointApplication } from "./structures/IAutoBeInterfaceActionEndpointApplication";
 
-export async function orchestrateInterfaceActionEndpoint<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceActionEndpoint(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     groups: AutoBeInterfaceGroup[];
@@ -70,8 +67,8 @@ export async function orchestrateInterfaceActionEndpoint<
   return reviewed;
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     promptCacheKey: string;
@@ -120,10 +117,9 @@ async function process<Model extends ILlmSchema.Model>(
         value: null,
       };
 
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         preliminary,
         build: (next) => {
           pointer.value ??= next;
@@ -166,8 +162,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -176,10 +171,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousInterfaceOperations"
   >;
   build: (next: IAutoBeInterfaceActionEndpointApplication.IComplete) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (
+}): IAgenticaController.IClass {
+  const validate = (
     input: unknown,
   ): IValidation<IAutoBeInterfaceActionEndpointApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceActionEndpointApplication.IProps> =
@@ -211,9 +204,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceActionEndpointApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceActionEndpointApplication.IProps>;
 
 const SOURCE = "interfaceEndpoint" satisfies AutoBeEventSource;

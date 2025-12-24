@@ -7,19 +7,13 @@ import {
   AutoBeRealizePlanEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -108,7 +102,6 @@ async function process(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizePlan",
       controller: createController({
-        model: ctx.model,
         prismaSchemaNames: props.prismaSchemaNames,
         dtoTypeNames: props.dtoTypeNames,
         build: (next) => {
@@ -151,7 +144,6 @@ async function process(
 }
 
 function createController(props: {
-  model: string;
   prismaSchemaNames: Set<string>;
   dtoTypeNames: string[];
   build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
@@ -159,8 +151,6 @@ function createController(props: {
     "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
   >;
 }): ILlmController {
-  assertSchemaModel(props.model);
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeCollectorPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeCollectorPlanApplication.IProps>(input);

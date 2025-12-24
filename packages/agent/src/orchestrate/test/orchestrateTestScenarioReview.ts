@@ -5,22 +5,19 @@ import {
   AutoBeTestScenario,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioReviewHistory } from "./histories/transformTestScenarioReviewHistory";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestScenarioReviewApplication";
 
-export const orchestrateTestScenarioReview = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateTestScenarioReview = async (
+  ctx: AutoBeContext,
   props: {
     preliminary: AutoBePreliminaryController<
       "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
@@ -38,8 +35,8 @@ export const orchestrateTestScenarioReview = async <
   }
 };
 
-const process = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const process = (
+  ctx: AutoBeContext,
   props: {
     preliminary: AutoBePreliminaryController<
       "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
@@ -54,10 +51,9 @@ const process = <Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         originalGroups: props.groups,
         pointer,
         preliminary: props.preliminary,
@@ -106,17 +102,14 @@ const process = <Model extends ILlmSchema.Model>(
     return out(result)(null);
   });
 
-const createController = <Model extends ILlmSchema.Model>(props: {
-  model: Model;
+const createController = (props: {
   pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null>;
   originalGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
-}): IAgenticaController.IClass<Model> => {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (
+}): IAgenticaController.IClass => {
+  const validate = (
     next: unknown,
   ): IValidation<IAutoBeTestScenarioReviewApplication.IProps> => {
     const result: IValidation<IAutoBeTestScenarioReviewApplication.IProps> =
@@ -194,9 +187,5 @@ const uniqueScenarioGroups = (
   )
     .toJSON()
     .map((it) => it.second);
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestScenarioReviewApplication.IProps>;
 
 const SOURCE = "testScenarioReview" satisfies AutoBeEventSource;

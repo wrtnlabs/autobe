@@ -2,7 +2,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { ILlmController, ILlmSchema } from "@samchon/openapi";
+import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
@@ -14,15 +14,13 @@ import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFai
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
 interface IProgrammer<
-  Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
   Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 > {
   controller(next: {
-    model: Model;
     procedure: Procedure;
     build: (next: Complete) => void;
-  }): ILlmController<Model>;
+  }): ILlmController;
   replaceImportStatements(procedure: Procedure): Promise<string>;
   compile(
     procedure: Procedure,
@@ -30,13 +28,12 @@ interface IProgrammer<
 }
 
 export async function orchestrateTestCorrectOverall<
-  Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
   Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
+    programmer: IProgrammer<Procedure, Complete>;
     procedures: Procedure[];
     instruction: string;
     progress: AutoBeProgressEventBase;
@@ -72,13 +69,12 @@ export async function orchestrateTestCorrectOverall<
 }
 
 async function predicate<
-  Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
   Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
+    programmer: IProgrammer<Procedure, Complete>;
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure[];
     validate: AutoBeTestValidateEvent<Procedure["function"]>;
@@ -95,13 +91,12 @@ async function predicate<
 }
 
 async function correct<
-  Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
   Complete extends IAutoBeTestCorrectOverallApplication.IProps,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
-    programmer: IProgrammer<Model, Procedure, Complete>;
+    programmer: IProgrammer<Procedure, Complete>;
     procedure: Procedure;
     failures: IAutoBeTestFunctionFailure<Procedure>[];
     validate: AutoBeTestValidateEvent<Procedure["function"]>;
@@ -119,7 +114,6 @@ async function correct<
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testCorrect",
     controller: props.programmer.controller({
-      model: ctx.model,
       procedure: props.procedure,
       build: (next) => {
         pointer.value = next;

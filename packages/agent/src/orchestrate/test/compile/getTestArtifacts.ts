@@ -3,14 +3,14 @@ import {
   AutoBeTestScenario,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export async function getTestArtifacts<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function getTestArtifacts(
+  ctx: AutoBeContext,
   props: {
     endpoint: AutoBeOpenApi.IEndpoint;
     dependencies?: AutoBeOpenApi.IEndpoint[];
@@ -46,8 +46,8 @@ export async function getTestArtifacts<Model extends ILlmSchema.Model>(
   };
 }
 
-export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function getTestScenarioArtifacts(
+  ctx: AutoBeContext,
   scenario: Pick<
     AutoBeTestScenario,
     "endpoint" | "dependencies" | "functionName"

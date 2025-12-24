@@ -9,7 +9,6 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 export function createAgenticaHistory(props: {
   operations: readonly AgenticaOperation[];

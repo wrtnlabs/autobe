@@ -4,11 +4,10 @@ import {
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorCorrectHistory } from "./histories/transformRealizeCollectorCorrectHistory";
 import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
@@ -90,7 +89,6 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
 
       // Create controller with Collector-specific validation
       controller: (next) => {
-        assertSchemaModel(next.model);
         const validate: Validator = (input) => {
           const result: IValidation<IAutoBeRealizeCollectorCorrectApplication.IProps> =
             typia.validate<IAutoBeRealizeCollectorCorrectApplication.IProps>(

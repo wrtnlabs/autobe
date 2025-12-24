@@ -11,7 +11,7 @@ import {
   MapUtil,
   StringUtil,
 } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
@@ -19,7 +19,6 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -204,7 +203,6 @@ const process = async (
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         endpointNotFound: props.endpointNotFound,
         dict: props.dict,
         authorizations,
@@ -279,7 +277,6 @@ const process = async (
 };
 
 const createController = (props: {
-  model: string;
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
@@ -288,8 +285,6 @@ const createController = (props: {
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
 }): IAgenticaController.IClass => {
-  assertSchemaModel(props.model);
-
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeTestScenarioApplication.IProps> => {
@@ -455,11 +450,13 @@ const createController = (props: {
           errors,
         };
   };
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestScenarioApplication>({
-    validate: {
-      process: validate,
-    },
-  });
+
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestScenarioApplication>({
+      validate: {
+        process: validate,
+      },
+    });
   return {
     protocol: "class",
     name: SOURCE,
@@ -482,10 +479,6 @@ const uniqueScenarioGroups = (
   )
     .toJSON()
     .map((it) => it.second);
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestScenarioApplication.IProps>;
 
 const SOURCE = "testScenario" satisfies AutoBeEventSource;
 const MAX_SCENARIO_COUNT = 3 as const;

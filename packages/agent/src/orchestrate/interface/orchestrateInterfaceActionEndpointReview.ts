@@ -2,22 +2,19 @@ import { IAgenticaController } from "@agentica/core";
 import { AutoBeEventSource, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeInterfaceEndpointReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceEndpointReviewEvent";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceActionEndpointReviewHistory } from "./histories/transformInterfaceActionEndpointReviewHistory";
 import { IAutoBeInterfaceActionEndpointApplication } from "./structures/IAutoBeInterfaceActionEndpointApplication";
 import { IAutoBeInterfaceActionEndpointReviewApplication } from "./structures/IAutoBeInterfaceActionEndpointReviewApplication";
 
-export async function orchestrateInterfaceActionEndpointReview<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceActionEndpointReview(
+  ctx: AutoBeContext,
   props: {
     endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
@@ -73,8 +70,8 @@ export async function orchestrateInterfaceActionEndpointReview<
   );
 }
 
-async function predicate<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function predicate(
+  ctx: AutoBeContext,
   props: {
     endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
@@ -110,8 +107,8 @@ async function predicate<Model extends ILlmSchema.Model>(
   return await predicate(ctx, props, life - 1);
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
     authorizations: AutoBeOpenApi.IOperation[];
@@ -129,11 +126,10 @@ async function process<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
 
   await props.preliminary.orchestrate(ctx, async (out) => {
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
         preliminary: props.preliminary,
-        model: ctx.model,
         endpointSet: props.endpointSet,
         build: (next) => {
           props.pointer.value = next;
@@ -172,8 +168,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -185,10 +180,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
   build: (
     props: IAutoBeInterfaceActionEndpointReviewApplication.IComplete,
   ) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+}): IAgenticaController.IClass {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeInterfaceActionEndpointReviewApplication.IProps> => {
     const result =
       typia.validate<IAutoBeInterfaceActionEndpointReviewApplication.IProps>(
         input,
@@ -279,9 +274,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceActionEndpointReviewApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceActionEndpointReviewApplication.IProps>;
 
 const SOURCE = "interfaceEndpointReview" satisfies AutoBeEventSource;

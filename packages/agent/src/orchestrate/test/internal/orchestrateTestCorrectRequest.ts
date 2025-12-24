@@ -2,7 +2,7 @@
 //   AutoBeProgressEventBase,
 //   AutoBeTestValidateEvent,
 // } from "@autobe/interface";
-// import { ILlmController, ILlmSchema } from "@samchon/openapi";
+// import { ILlmController } from "@samchon/openapi";
 // import { IPointer } from "tstl";
 // import { v7 } from "uuid";
 
@@ -44,7 +44,7 @@
 //     | IAutoBeTestGenerateProcedure
 //     | IAutoBeTestOperationProcedure,
 // >(
-//   ctx: AutoBeContext<Model>,
+//   ctx: AutoBeContext,
 //   props: {
 //     programmer: IProgrammer<Model, Procedure>;
 //     instruction: string;
@@ -88,7 +88,7 @@
 //     | IAutoBeTestGenerateProcedure
 //     | IAutoBeTestOperationProcedure,
 // >(
-//   ctx: AutoBeContext<Model>,
+//   ctx: AutoBeContext,
 //   props: {
 //     programmer: IProgrammer<Model, Procedure>;
 //     procedure: Procedure;
@@ -113,7 +113,7 @@
 //     | IAutoBeTestGenerateProcedure
 //     | IAutoBeTestOperationProcedure,
 // >(
-//   ctx: AutoBeContext<Model>,
+//   ctx: AutoBeContext,
 //   props: {
 //     programmer: IProgrammer<Model, Procedure>;
 //     procedure: Procedure;

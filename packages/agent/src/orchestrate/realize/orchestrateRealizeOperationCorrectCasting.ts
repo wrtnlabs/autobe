@@ -6,17 +6,14 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
-export const orchestrateRealizeOperationCorrectCasting = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateRealizeOperationCorrectCasting = async (
+  ctx: AutoBeContext,
   props: {
     authorizations: AutoBeRealizeAuthorization[];
     collectors: AutoBeRealizeCollectorFunction[];

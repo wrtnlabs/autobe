@@ -1,5 +1,3 @@
-import { ILlmSchema } from "@samchon/openapi";
-
 import { IAutoBePlaygroundVendor } from "./IAutoBePlaygroundVendor";
 
 /**

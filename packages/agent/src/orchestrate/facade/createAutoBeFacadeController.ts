@@ -9,11 +9,10 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { orchestrateAnalyze } from "../analyze/orchestrateAnalyze";
 import { orchestrateInterface } from "../interface/orchestrateInterface";
 import { orchestratePrisma } from "../prisma/orchestratePrisma";
@@ -21,20 +20,11 @@ import { orchestrateRealize } from "../realize/orchestrateRealize";
 import { orchestrateTest } from "../test/orchestrateTest";
 import { IAutoBeFacadeApplication } from "./histories/IAutoBeFacadeApplication";
 
-export const createAutoBeFacadeController = <
-  Model extends ILlmSchema.Model,
->(props: {
-  model: Model;
-  context: AutoBeContext<Model>;
-}): IAgenticaController.IClass<Model> => {
-  assertSchemaModel(props.model);
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+export const createAutoBeFacadeController = (props: {
+  context: AutoBeContext;
+}): IAgenticaController.IClass => {
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeFacadeApplication>();
   return {
     protocol: "class",
     name: "autobe",
@@ -127,10 +117,4 @@ export const createAutoBeFacadeController = <
       },
     } satisfies IAutoBeFacadeApplication,
   };
-};
-
-const collection = {
-  chatgpt: typia.llm.application<IAutoBeFacadeApplication, "chatgpt">(),
-  claude: typia.llm.application<IAutoBeFacadeApplication, "claude">(),
-  gemini: typia.llm.application<IAutoBeFacadeApplication, "gemini">(),
 };

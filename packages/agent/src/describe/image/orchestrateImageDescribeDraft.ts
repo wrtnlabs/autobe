@@ -10,23 +10,20 @@ import {
   AutoBeUserConversateContent,
   AutoBeUserImageConversateContent,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
 import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";
 
-export const orchestrateImageDescribeDrafts = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateImageDescribeDrafts = async (
+  ctx: AutoBeContext,
   props: {
     content: AutoBeUserConversateContent[];
   },
@@ -71,8 +68,8 @@ export const orchestrateImageDescribeDrafts = async <
   );
 };
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     imageContents: AutoBeUserImageConversateContent[];
     userContents: AutoBeUserConversateContent[];
@@ -89,8 +86,7 @@ async function process<Model extends ILlmSchema.Model>(
     ...props.userContents,
   ];
 
-  const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
-    model: ctx.model,
+  const agent: MicroAgentica = new MicroAgentica({
     vendor: ctx.vendor,
     config: {
       executor: {
@@ -101,7 +97,6 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformImageDescribeDraftHistories(),
     controllers: [
       createController({
-        model: ctx.model,
         build: (next) => {
           pointer.value = next;
         },
@@ -143,28 +138,24 @@ async function process<Model extends ILlmSchema.Model>(
   return event;
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   build: (next: IAutoBeImageDescribeDraftApplication.IProps) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (next: unknown) => {
+}): IAgenticaController.IClass {
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeImageDescribeDraftApplication.IProps> => {
     const result: IValidation<IAutoBeImageDescribeDraftApplication.IProps> =
       typia.validate<IAutoBeImageDescribeDraftApplication.IProps>(next);
     if (result.success === false) return result;
     return result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeImageDescribeDraftApplication>({
+      validate: {
+        analyzeImage: validate,
+      },
+    });
   return {
     protocol: "class",
     name: "image",
@@ -176,28 +167,3 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeImageDescribeDraftApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeImageDescribeDraftApplication, "chatgpt">({
-      validate: {
-        analyzeImage: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeImageDescribeDraftApplication, "claude">({
-      validate: {
-        analyzeImage: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeImageDescribeDraftApplication, "gemini">({
-      validate: {
-        analyzeImage: validate,
-      },
-    }),
-};
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeImageDescribeDraftApplication.IProps>;

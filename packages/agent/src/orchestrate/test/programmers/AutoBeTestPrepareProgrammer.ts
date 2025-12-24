@@ -6,7 +6,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
@@ -61,8 +61,8 @@ ${Object.keys(props.schema.properties).map(
     `;
   }
 
-  export async function writeStructures<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function writeStructures(
+    ctx: AutoBeContext,
     typeName: string,
   ): Promise<Record<string, string>> {
     return {

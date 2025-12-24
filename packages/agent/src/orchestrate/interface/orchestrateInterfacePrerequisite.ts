@@ -6,24 +6,21 @@ import {
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
 import { IAutoBeInterfacePrerequisiteApplication } from "./structures/IAutoBeInterfacePrerequisiteApplication";
 
-export async function orchestrateInterfacePrerequisite<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfacePrerequisite(
+  ctx: AutoBeContext,
   document: AutoBeOpenApi.IDocument,
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const operations: AutoBeOpenApi.IOperation[] =
@@ -95,8 +92,8 @@ export async function orchestrateInterfacePrerequisite<
   return exclude;
 }
 
-async function divideAndConquer<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function divideAndConquer(
+  ctx: AutoBeContext,
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     document: AutoBeOpenApi.IDocument;
@@ -114,8 +111,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   }
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     document: AutoBeOpenApi.IDocument;
@@ -161,10 +158,9 @@ async function process<Model extends ILlmSchema.Model>(
     const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
       value: null,
     };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         document: props.document,
         dict: props.dict,
         includes: props.includes,
@@ -201,8 +197,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   document: AutoBeOpenApi.IDocument;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   includes: AutoBeOpenApi.IOperation[];
@@ -218,9 +213,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousInterfaceSchemas"
   >;
   build: (next: AutoBeInterfacePrerequisite[]) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
+}): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> => {
@@ -312,11 +305,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
         };
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeInterfacePrerequisiteApplication>({
-    validate: {
-      process: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeInterfacePrerequisiteApplication>({
+      validate: {
+        process: validate,
+      },
+    });
   props.preliminary.fixApplication(application);
   return {
     protocol: "class",
@@ -330,9 +324,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfacePrerequisiteApplication.IProps>;
 
 const SOURCE = "interfacePrerequisite" satisfies AutoBeEventSource;

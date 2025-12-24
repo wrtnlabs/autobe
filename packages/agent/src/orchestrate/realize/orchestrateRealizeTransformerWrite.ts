@@ -9,28 +9,20 @@ import {
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerWriteHistory } from "./histories/transformRealizeTransformerWriteHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerWriteApplication } from "./structures/IAutoBeRealizeTransformerWriteApplication";
 
-export async function orchestrateRealizeTransformerWrite<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeTransformerWrite(
+  ctx: AutoBeContext,
   props: {
     plans: AutoBeRealizeTransformerPlan[];
     progress: AutoBeProgressEventBase;
@@ -75,8 +67,8 @@ export async function orchestrateRealizeTransformerWrite<
   );
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     plan: AutoBeRealizeTransformerPlan;
     neighbors: AutoBeRealizeTransformerPlan[];
@@ -108,10 +100,9 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeWrite",
       controller: createController({
-        model: ctx.model,
         application: ctx.state().prisma!.result.data,
         document,
         plan: props.plan,
@@ -162,17 +153,14 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   application: AutoBePrisma.IApplication;
   document: AutoBeOpenApi.IDocument;
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];
   build: (next: IAutoBeRealizeTransformerWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<"prismaSchemas">;
-}): ILlmController<Model> {
-  assertSchemaModel(props.model);
-
+}): ILlmController {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerWriteApplication.IProps>(input);
@@ -202,15 +190,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
         }
       : result;
   };
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeRealizeTransformerWriteApplication>({
+      validate: {
+        process: validate,
+      },
+    });
   return {
     protocol: "class",
     name: SOURCE,
@@ -222,29 +207,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeRealizeTransformerWriteApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "chatgpt">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerWriteApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

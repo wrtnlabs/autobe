@@ -2,16 +2,13 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 
-export const orchestrateRealizeCollectorCorrectCasting = <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateRealizeCollectorCorrectCasting = (
+  ctx: AutoBeContext,
   props: {
     functions: AutoBeRealizeCollectorFunction[];
     progress: AutoBeProgressEventBase;

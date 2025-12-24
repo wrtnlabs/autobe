@@ -2,13 +2,12 @@ import { IAgenticaController } from "@agentica/core";
 import { AutoBeEventSource, AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
@@ -72,13 +71,14 @@ async function process(
     };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
-      controller: createController(ctx, {
+      controller: createController({
         preliminary,
         targetComponent: props.component,
         otherTables: props.otherTables,
         build: (next) => {
           pointer.value = next;
         },
+        dispatch: ctx.dispatch,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -118,19 +118,15 @@ async function process(
   });
 }
 
-function createController(
-  ctx: AutoBeContext,
-  props: {
-    preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
-    >;
-    targetComponent: AutoBePrisma.IComponent;
-    otherTables: string[];
-    build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
-  },
-): IAgenticaController.IClass {
-  assertSchemaModel(ctx.model);
-
+function createController(props: {
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+  >;
+  targetComponent: AutoBePrisma.IComponent;
+  otherTables: string[];
+  build: (next: IAutoBePrismaSchemaApplication.IComplete) => void;
+  dispatch: AutoBeContext["dispatch"];
+}): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBePrismaSchemaApplication.IProps> => {
@@ -150,7 +146,7 @@ function createController(
     );
     if (missed.length === 0) return result;
 
-    ctx.dispatch({
+    props.dispatch({
       type: "prismaInsufficient",
       id: v7(),
       created_at: new Date().toISOString(),

@@ -4,16 +4,10 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
 } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 // import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
@@ -83,12 +77,9 @@ export async function orchestrateTestAuthorize(
 }
 
 function createCorrectOverallController(props: {
-  model: string;
   procedure: IAutoBeTestAuthorizeProcedure;
   build: (next: IAutoBeTestCorrectOverallApplication.IProps) => void;
 }): ILlmController<IAutoBeTestCorrectOverallApplication> {
-  assertSchemaModel(props.model);
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeTestCorrectOverallApplication.IProps> =
       typia.validate<IAutoBeTestCorrectOverallApplication.IProps>(input);
@@ -109,11 +100,12 @@ function createCorrectOverallController(props: {
       : result;
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestCorrectOverallApplication>({
-    validate: {
-      rewrite: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestCorrectOverallApplication>({
+      validate: {
+        rewrite: validate,
+      },
+    });
   return {
     protocol: "class",
     name: "testCorrect" satisfies AutoBeEventSource,

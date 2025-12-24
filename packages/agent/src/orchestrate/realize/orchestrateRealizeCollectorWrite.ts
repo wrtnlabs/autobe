@@ -9,18 +9,12 @@ import {
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorWriteHistory } from "./histories/transformRealizeCollectorWriteHistory";
@@ -112,7 +106,6 @@ async function process(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeWrite",
       controller: createController(ctx, {
-        model: ctx.model,
         plan: props.plan,
         neighbors: props.neighbors,
         build: (next) => {
@@ -161,16 +154,15 @@ async function process(
 function createController(
   ctx: AutoBeContext,
   props: {
-    model: string;
     plan: AutoBeRealizeCollectorPlan;
     neighbors: AutoBeRealizeCollectorPlan[];
     build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
 ): ILlmController {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeRealizeCollectorWriteApplication.IProps> => {
     const result: IValidation<IAutoBeRealizeCollectorWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeCollectorWriteApplication.IProps>(input);
     if (result.success === false) return result;
@@ -215,9 +207,5 @@ function createController(
     } satisfies IAutoBeRealizeCollectorWriteApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeRealizeCollectorWriteApplication.IProps>;
 
 const SOURCE = "realizeWrite" satisfies AutoBeEventSource;

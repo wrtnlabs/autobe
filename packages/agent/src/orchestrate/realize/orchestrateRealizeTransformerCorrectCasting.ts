@@ -3,16 +3,13 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 
-export const orchestrateRealizeTransformerCorrectCasting = <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateRealizeTransformerCorrectCasting = (
+  ctx: AutoBeContext,
   props: {
     functions: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;

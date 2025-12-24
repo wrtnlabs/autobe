@@ -101,7 +101,6 @@ const main = async (): Promise<void> => {
     getTokenUsage: () => tokenUsage,
     createAgent: (histories) =>
       new AutoBeAgent({
-        model: TestGlobal.schemaModel,
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
@@ -137,7 +136,6 @@ const main = async (): Promise<void> => {
     Configurations
     
     - Vendor Model: ${TestGlobal.vendorModel}
-    - Schema Model: ${TestGlobal.schemaModel}
     - Semaphore: ${semaphore}
 
     List of functions to archive

@@ -5,17 +5,14 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeOperationCorrectCasting } from "./orchestrateRealizeOperationCorrectCasting";
 import { orchestrateRealizeOperationCorrectOverall } from "./orchestrateRealizeOperationCorrectOverall";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
 
-export async function orchestrateRealizeOperation<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeOperation(
+  ctx: AutoBeContext,
   props: {
     authorizations: AutoBeRealizeAuthorization[];
     collectors: AutoBeRealizeCollectorFunction[];

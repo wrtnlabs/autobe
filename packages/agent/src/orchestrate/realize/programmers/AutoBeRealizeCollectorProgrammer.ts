@@ -6,7 +6,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import { IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -128,8 +128,8 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
     `;
   }
 
-  export async function writeStructures<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function writeStructures(
+    ctx: AutoBeContext,
     dtoTypeName: string,
   ): Promise<Record<string, string>> {
     const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
@@ -163,8 +163,8 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
     );
   }
 
-  export async function replaceImportStatements<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function replaceImportStatements(
+    ctx: AutoBeContext,
     props: {
       dtoTypeName: string;
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;

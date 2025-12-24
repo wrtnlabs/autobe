@@ -6,13 +6,12 @@ import {
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
@@ -111,7 +110,6 @@ async function process(
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     controller: createController({
-      model: ctx.model,
       dtoTypeName: props.typeName,
       schema: props.schema,
       build: (app) => {
@@ -160,14 +158,13 @@ async function process(
 
 /** Creates LLM controller for function calling. */
 function createController(props: {
-  model: string;
   dtoTypeName: string;
   schema: AutoBeOpenApi.IJsonSchema.IObject;
   build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeTestPrepareWriteApplication.IProps> => {
     // Basic typia validation
     const result: IValidation<IAutoBeTestPrepareWriteApplication.IProps> =
       typia.validate<IAutoBeTestPrepareWriteApplication.IProps>(input);
@@ -207,11 +204,12 @@ function createController(props: {
       : result;
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestPrepareWriteApplication>({
-    validate: {
-      write: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestPrepareWriteApplication>({
+      validate: {
+        write: validate,
+      },
+    });
 
   return {
     protocol: "class",
@@ -224,7 +222,3 @@ function createController(props: {
     } satisfies IAutoBeTestPrepareWriteApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestPrepareWriteApplication.IProps>;

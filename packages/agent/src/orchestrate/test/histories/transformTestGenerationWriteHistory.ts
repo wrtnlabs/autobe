@@ -1,6 +1,5 @@
 import { AutoBeOpenApi, AutoBeTestPrepareFunction } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -10,10 +9,8 @@ import { AutoBeTestGenerateProgrammer } from "../programmers/AutoBeTestGenerateP
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 
-export async function transformTestGenerateWriteHistory<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function transformTestGenerateWriteHistory(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     prepare: AutoBeTestPrepareFunction;

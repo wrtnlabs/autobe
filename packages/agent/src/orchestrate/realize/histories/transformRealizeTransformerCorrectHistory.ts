@@ -4,7 +4,6 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -15,10 +14,8 @@ import { transformPreviousAndLatestCorrectHistory } from "../../common/histories
 import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
-export const transformRealizeTransformerCorrectHistory = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const transformRealizeTransformerCorrectHistory = async (
+  ctx: AutoBeContext,
   props: {
     function: AutoBeRealizeTransformerFunction;
     neighbors: AutoBeRealizeTransformerFunction[];

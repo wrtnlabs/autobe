@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceSchemaReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceSchemaReviewEvent";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -13,7 +13,6 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -29,10 +28,8 @@ interface IConfig {
   systemPrompt: string;
 }
 
-export async function orchestrateInterfaceSchemaReview<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceSchemaReview(
+  ctx: AutoBeContext,
   config: IConfig,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -80,8 +77,8 @@ export async function orchestrateInterfaceSchemaReview<
   return x;
 }
 
-async function divideAndConquer<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function divideAndConquer(
+  ctx: AutoBeContext,
   config: IConfig,
   props: {
     instruction: string;
@@ -100,8 +97,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   }
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   config: IConfig,
   props: {
     instruction: string;
@@ -150,12 +147,11 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
         preliminary,
         pointer,
-        model: ctx.model,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -195,10 +191,9 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+function createController(
+  ctx: AutoBeContext,
   props: {
-    model: Model;
     pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
@@ -211,11 +206,8 @@ function createController<Model extends ILlmSchema.Model>(
       | "previousInterfaceSchemas"
     >;
   },
-): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-  const validate = (
-    next: unknown,
-  ): IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps> => {
+): IAgenticaController.IClass {
+  const validate: Validator = (next) => {
     if (
       typia.is<{
         request: {

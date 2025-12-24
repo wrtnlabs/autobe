@@ -6,13 +6,12 @@ import {
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
@@ -111,7 +110,6 @@ async function process(
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     controller: createController({
-      model: ctx.model,
       functionName,
       build: (next) => {
         pointer.value = next;
@@ -163,11 +161,9 @@ async function process(
 }
 
 function createController(props: {
-  model: string;
   functionName: string;
   build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeTestGenerationWriteApplication.IProps> =

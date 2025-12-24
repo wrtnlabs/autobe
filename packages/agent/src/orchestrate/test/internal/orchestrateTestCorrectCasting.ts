@@ -3,7 +3,6 @@ import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -19,10 +18,9 @@ interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
 }
 
 export async function orchestrateTestCorrectCasting<
-  Model extends ILlmSchema.Model,
   Procedure extends IAutoBeTestProcedure,
 >(
-  ctx: AutoBeContext<Model>,
+  ctx: AutoBeContext,
   props: {
     programmer: IProgrammer<Procedure>;
     procedures: Procedure[];
@@ -35,7 +33,6 @@ export async function orchestrateTestCorrectCasting<
       try {
         const event: AutoBeTestValidateEvent<Procedure["function"]> =
           await orchestrateCommonCorrectCasting<
-            Model,
             AutoBeTestValidateEvent<Procedure["function"]>,
             AutoBeTestCorrectEvent
           >(

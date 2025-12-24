@@ -8,16 +8,10 @@ import {
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 // import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
@@ -100,13 +94,12 @@ export async function orchestrateTestOperation(
 }
 
 function createCorrectOverallController(props: {
-  model: string;
   procedure: IAutoBeTestOperationProcedure;
   build: (next: IAutoBeTestCorrectOverallApplication.IProps) => void;
 }): ILlmController<IAutoBeTestCorrectOverallApplication> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeTestCorrectOverallApplication.IProps> => {
     const result: IValidation<IAutoBeTestCorrectOverallApplication.IProps> =
       typia.validate<IAutoBeTestCorrectOverallApplication.IProps>(input);
     if (result.success === false) return result;
@@ -126,11 +119,12 @@ function createCorrectOverallController(props: {
       : result;
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestCorrectOverallApplication>({
-    validate: {
-      rewrite: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestCorrectOverallApplication>({
+      validate: {
+        rewrite: validate,
+      },
+    });
   return {
     protocol: "class",
     name: "testCorrect" satisfies AutoBeEventSource,
@@ -142,7 +136,3 @@ function createCorrectOverallController(props: {
     } satisfies IAutoBeTestCorrectOverallApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestCorrectOverallApplication.IProps>;

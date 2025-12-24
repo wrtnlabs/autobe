@@ -3,7 +3,6 @@ import {
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -14,10 +13,8 @@ import { transformPreviousAndLatestCorrectHistory } from "../../common/histories
 import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
-export const transformRealizeCollectorCorrectHistory = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const transformRealizeCollectorCorrectHistory = async (
+  ctx: AutoBeContext,
   props: {
     function: AutoBeRealizeCollectorFunction;
     neighbors: AutoBeRealizeCollectorFunction[];

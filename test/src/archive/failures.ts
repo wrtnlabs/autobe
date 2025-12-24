@@ -96,8 +96,7 @@ const main = async (): Promise<void> => {
         console.log("-------------------------------------------------------");
         console.log("\n");
 
-        const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-          model: "chatgpt",
+        const agent: AutoBeAgent = new AutoBeAgent({
           vendor: {
             api: new OpenAI({
               apiKey: "",

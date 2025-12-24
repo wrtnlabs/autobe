@@ -5,7 +5,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -13,7 +13,6 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -24,10 +23,8 @@ import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export async function orchestrateInterfaceSchema<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceSchema(
+  ctx: AutoBeContext,
   props: {
     operations: AutoBeOpenApi.IOperation[];
     instruction: string;
@@ -80,8 +77,8 @@ export async function orchestrateInterfaceSchema<
   return x;
 }
 
-async function divideAndConquer<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function divideAndConquer(
+  ctx: AutoBeContext,
   props: {
     operations: AutoBeOpenApi.IOperation[];
     typeNames: string[];
@@ -111,8 +108,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   return schemas;
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     operations: AutoBeOpenApi.IOperation[];
     oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -152,10 +149,9 @@ async function process<Model extends ILlmSchema.Model>(
     > | null> = {
       value: null,
     };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
-        model: ctx.model,
         operations: props.operations,
         build: async (next) => {
           pointer.value ??= {};
@@ -202,10 +198,9 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+function createController(
+  ctx: AutoBeContext,
   props: {
-    model: Model;
     operations: AutoBeOpenApi.IOperation[];
     build: (
       next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
@@ -224,8 +219,7 @@ function createController<Model extends ILlmSchema.Model>(
       | "previousInterfaceSchemas"
     >;
   },
-): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
+): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
@@ -292,9 +286,5 @@ function createController<Model extends ILlmSchema.Model>(
     } satisfies IAutoBeInterfaceSchemaApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceSchemaApplication.IProps>;
 
 const SOURCE = "interfaceSchema" satisfies AutoBeEventSource;

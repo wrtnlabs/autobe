@@ -5,13 +5,12 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePrismaReviewEvent";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaReviewHistory } from "./histories/transformPrismaReviewHistory";
@@ -96,7 +95,7 @@ async function step(
     };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
-      controller: createController(ctx, {
+      controller: createController({
         preliminary,
         build: (next) => {
           pointer.value = next;
@@ -131,20 +130,15 @@ async function step(
   });
 }
 
-function createController(
-  ctx: AutoBeContext,
-  props: {
-    preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
-      | "previousAnalysisFiles"
-      | "prismaSchemas"
-      | "previousPrismaSchemas"
-    >;
-    build: (next: IAutoBePrismaReviewApplication.IComplete) => void;
-  },
-): IAgenticaController.IClass {
-  assertSchemaModel(ctx.model);
-
+function createController(props: {
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "previousAnalysisFiles"
+    | "prismaSchemas"
+    | "previousPrismaSchemas"
+  >;
+  build: (next: IAutoBePrismaReviewApplication.IComplete) => void;
+}): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBePrismaReviewApplication.IProps> => {
@@ -176,9 +170,5 @@ function createController(
     } satisfies IAutoBePrismaReviewApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBePrismaReviewApplication.IProps>;
 
 const SOURCE = "prismaReview" satisfies AutoBeEventSource;

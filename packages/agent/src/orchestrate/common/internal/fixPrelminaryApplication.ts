@@ -1,11 +1,9 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 import {
-  ChatGptTypeChecker,
-  ClaudeTypeChecker,
-  IChatGptSchema,
   ILlmApplication,
   ILlmFunction,
   ILlmSchema,
+  LlmTypeChecker,
 } from "@samchon/openapi";
 
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -14,24 +12,22 @@ import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryReques
 
 export const fixPreliminaryApplication = <
   Kind extends AutoBePreliminaryKind,
-  Model extends Exclude<ILlmSchema.Model, "3.0">,
 >(props: {
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
-  application: ILlmApplication<Model>;
-  model: Model;
+  application: ILlmApplication;
 }): void => {
   if (
     props.preliminary.getKinds().some((k) => k.includes("previous")) === false
   )
     return;
 
-  const func: ILlmFunction<Model> | undefined =
-    props.application.functions.find((f) => f.name === "process");
+  const func: ILlmFunction | undefined = props.application.functions.find(
+    (f) => f.name === "process",
+  );
   if (func === undefined) return;
 
-  const request: ILlmSchema<Model> | undefined =
-    func.parameters.properties.request;
+  const request: ILlmSchema | undefined = func.parameters.properties.request;
   if (request === undefined) return;
 
   const eraseKind = (kind: AutoBePreliminaryKind) => {
@@ -42,7 +38,6 @@ export const fixPreliminaryApplication = <
     delete (props.preliminary.getLocal() as any)[kind];
   };
   const eraseMetadata = getUnionErasure({
-    model: props.model,
     $defs: func.parameters.$defs,
     request,
   });
@@ -72,61 +67,25 @@ export const fixPreliminaryApplication = <
     }
 };
 
-const getUnionErasure = <
-  Model extends Exclude<ILlmSchema.Model, "3.0">,
->(props: {
-  model: Model;
-  $defs: Record<string, IChatGptSchema>;
-  request: ILlmSchema<Model>;
-}) =>
-  props.model === "chatgpt" || props.model === "gemini"
-    ? getUnionErasureOfChatGpt(props)
-    : getUnionErasureOfClaude(props);
+const getUnionErasure = (props: {
+  $defs: Record<string, ILlmSchema>;
+  request: ILlmSchema;
+}) => getUnionErasureOfChatGpt(props);
 
 const getUnionErasureOfChatGpt = (props: {
-  $defs: Record<string, IChatGptSchema>;
-  request: IChatGptSchema;
+  $defs: Record<string, ILlmSchema>;
+  request: ILlmSchema;
 }) => {
-  if (ChatGptTypeChecker.isAnyOf(props.request) === false) return null;
+  if (LlmTypeChecker.isAnyOf(props.request) === false) return null;
   else if (
-    props.request.anyOf.some((s) => ChatGptTypeChecker.isReference(s) === false)
+    props.request.anyOf.some((s) => LlmTypeChecker.isReference(s) === false)
   )
     return null;
 
-  const children: IChatGptSchema.IReference[] = props.request
-    .anyOf as IChatGptSchema.IReference[];
+  const children: ILlmSchema.IReference[] = props.request
+    .anyOf as ILlmSchema.IReference[];
   const mapping: Record<string, string> =
     props.request["x-discriminator"]?.mapping ?? {};
-
-  return (
-    key: IAutoBePreliminaryRequest<
-      Extract<AutoBePreliminaryKind, `previous${string}`>
-    >["request"]["type"],
-  ): void => {
-    const type: string = `IAutoBePreliminary${key[0].toUpperCase()}${key.substring(1)}`;
-    const index: number = children.findIndex((c) =>
-      c.$ref.endsWith(`/${type}`),
-    );
-    if (index !== -1) children.splice(index, 1);
-    delete props.$defs[key];
-    delete mapping[key];
-  };
-};
-
-const getUnionErasureOfClaude = (props: {
-  $defs: Record<string, IChatGptSchema>;
-  request: IChatGptSchema;
-}) => {
-  if (ClaudeTypeChecker.isOneOf(props.request) === false) return null;
-  else if (
-    props.request.oneOf.some((s) => ClaudeTypeChecker.isReference(s) === false)
-  )
-    return null;
-
-  const children: IChatGptSchema.IReference[] = props.request
-    .oneOf as IChatGptSchema.IReference[];
-  const mapping: Record<string, string> =
-    props.request.discriminator?.mapping ?? {};
 
   return (
     key: IAutoBePreliminaryRequest<

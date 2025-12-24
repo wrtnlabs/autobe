@@ -3,7 +3,6 @@ import {
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeTransformerCorrectCasting } from "./orchestrateRealizeTransformerCorrectCasting";
@@ -11,10 +10,8 @@ import { orchestrateRealizeTransformerCorrectOverall } from "./orchestrateRealiz
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
 
-export async function orchestrateRealizeTransformer<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeTransformer(
+  ctx: AutoBeContext,
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;

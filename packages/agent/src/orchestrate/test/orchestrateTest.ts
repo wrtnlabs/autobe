@@ -12,7 +12,6 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

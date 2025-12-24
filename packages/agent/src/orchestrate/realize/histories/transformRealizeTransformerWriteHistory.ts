@@ -4,7 +4,6 @@ import {
   AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -13,10 +12,8 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 
-export const transformRealizeTransformerWriteHistory = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const transformRealizeTransformerWriteHistory = async (
+  ctx: AutoBeContext,
   props: {
     plan: AutoBeRealizeTransformerPlan;
     neighbors: AutoBeRealizeTransformerPlan[];

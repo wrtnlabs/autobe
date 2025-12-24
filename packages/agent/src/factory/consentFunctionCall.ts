@@ -39,8 +39,7 @@ export const consentFunctionCall = async (props: {
   const pointer: IPointer<AutoBeConsentFunctionCallEvent.IResult | null> = {
     value: null,
   };
-  const agent: MicroAgentica<"chatgpt"> = new MicroAgentica({
-    model: "chatgpt",
+  const agent: MicroAgentica = new MicroAgentica({
     vendor: props.vendor,
     config: {
       ...(props.config ?? []),
@@ -67,7 +66,7 @@ export const consentFunctionCall = async (props: {
       } satisfies IAgenticaHistoryJson.IAssistantMessage,
     ],
     controllers: [
-      typia.llm.controller<IConsentApplication, "chatgpt">("consent", {
+      typia.llm.controller<IConsentApplication>("consent", {
         consent: (props) => {
           pointer.value = {
             type: "consent",
@@ -84,11 +83,11 @@ export const consentFunctionCall = async (props: {
   });
   supportMistral(agent, props.vendor);
 
-  const histories: MicroAgenticaHistory<"chatgpt">[] = await agent.conversate(
+  const histories: MicroAgenticaHistory[] = await agent.conversate(
     "Analyze and judge this assistant message please.",
   );
   if (pointer.value === null) {
-    const last: MicroAgenticaHistory<"chatgpt"> | undefined =
+    const last: MicroAgenticaHistory | undefined =
       histories[histories.length - 1];
     if (last?.type === "assistantMessage")
       pointer.value = {

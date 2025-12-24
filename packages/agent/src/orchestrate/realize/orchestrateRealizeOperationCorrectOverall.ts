@@ -6,11 +6,10 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
@@ -19,10 +18,8 @@ import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOpe
 import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
-export const orchestrateRealizeOperationCorrectOverall = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const orchestrateRealizeOperationCorrectOverall = async (
+  ctx: AutoBeContext,
   props: {
     authorizations: AutoBeRealizeAuthorization[];
     collectors: AutoBeRealizeCollectorFunction[];
@@ -95,7 +92,6 @@ export const orchestrateRealizeOperationCorrectOverall = async <
         });
       },
       controller: (next) => {
-        assertSchemaModel(next.model);
         const validate: Validator = (input) => {
           const result: IValidation<IAutoBeRealizeOperationCorrectApplication.IProps> =
             typia.validate<IAutoBeRealizeOperationCorrectApplication.IProps>(
@@ -121,15 +117,12 @@ export const orchestrateRealizeOperationCorrectOverall = async <
               }
             : result;
         };
-        const application: ILlmApplication<Model> = collection[
-          next.model === "chatgpt"
-            ? "chatgpt"
-            : next.model === "gemini"
-              ? "gemini"
-              : "claude"
-        ](
-          validate,
-        ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+        const application: ILlmApplication =
+          typia.llm.application<IAutoBeRealizeOperationCorrectApplication>({
+            validate: {
+              process: validate,
+            },
+          });
         return {
           protocol: "class",
           name: next.source,
@@ -145,29 +138,6 @@ export const orchestrateRealizeOperationCorrectOverall = async <
     functions: props.functions,
     progress: props.progress,
   });
-};
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "chatgpt">(
-      {
-        validate: {
-          process: validate,
-        },
-      },
-    ),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeOperationCorrectApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
 };
 
 type Validator = (

@@ -1,5 +1,4 @@
 import { MicroAgentica } from "@agentica/core";
-import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
 
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";

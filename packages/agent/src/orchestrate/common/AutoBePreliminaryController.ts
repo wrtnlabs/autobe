@@ -2,7 +2,6 @@ import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
 import {
   ILlmApplication,
-  ILlmSchema,
   IValidation,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
@@ -12,7 +11,6 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
@@ -215,15 +213,11 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @param application LLM application to modify (mutated in-place).
    */
-  public fixApplication<Model extends ILlmSchema.Model>(
-    application: ILlmApplication<Model>,
-  ): ILlmApplication<Model> {
-    assertSchemaModel<Model>(application.model);
+  public fixApplication(application: ILlmApplication): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
-      application: application as ILlmApplication<Exclude<Model, "3.0">>,
-      model: application.model,
+      application,
     });
     return application;
   }
@@ -241,16 +235,16 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * @returns Final value when process returns non-null or throws after
    *   exceeding `AutoBeConfigConstant.RAG_LIMIT` retries.
    */
-  public async orchestrate<Model extends ILlmSchema.Model, T>(
-    ctx: AutoBeContext<Model>,
+  public async orchestrate<T>(
+    ctx: AutoBeContext,
     process: (
       out: (
-        result: AutoBeContext.IResult<Model>,
-      ) => (value: T | null) => IAutoBeOrchestrateResult<Model, T>,
-    ) => Promise<IAutoBeOrchestrateResult<Model, T>>,
+        result: AutoBeContext.IResult,
+      ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
+    ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
     for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
-      const result: IAutoBeOrchestrateResult<Model, T> = await process(
+      const result: IAutoBeOrchestrateResult<T> = await process(
         (x) => (value) => ({
           ...x,
           value,

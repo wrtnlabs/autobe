@@ -8,7 +8,6 @@ import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
   HttpMigration,
   IHttpMigrateApplication,
-  ILlmSchema,
   OpenApi,
 } from "@samchon/openapi";
 import { Singleton } from "tstl";
@@ -22,10 +21,8 @@ import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarati
 import { AutoBeTestOperationProgrammer } from "../programmers/AutoBeTestOperationProgrammer";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export async function transformTestOperationWriteHistory<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function transformTestOperationWriteHistory(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     scenario: AutoBeTestScenario;
@@ -216,8 +213,8 @@ export async function transformTestOperationWriteHistory<
   };
 }
 export namespace transformTestOperationWriteHistory {
-  export async function structures<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function structures(
+    ctx: AutoBeContext,
     artifacts: IAutoBeTestScenarioArtifacts,
   ): Promise<string> {
     const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -277,6 +274,6 @@ export namespace transformTestOperationWriteHistory {
 const systemPrompt = new Singleton(() =>
   AutoBeSystemPromptConstant.TEST_OPERATION_WRITE.replace(
     "{{AutoBeTestScenario}}",
-    JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "claude">()),
+    JSON.stringify(typia.llm.parameters<AutoBeTestScenario>()),
   ),
 );

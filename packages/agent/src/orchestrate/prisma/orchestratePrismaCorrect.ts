@@ -6,13 +6,12 @@ import {
   IAutoBeCompiler,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
@@ -158,7 +157,6 @@ async function execute(
       source: SOURCE,
       controller: createController({
         preliminary,
-        model: ctx.model,
         build: (next) => {
           pointer.value = next;
         },
@@ -214,7 +212,6 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
 };
 
 function createController(props: {
-  model: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
@@ -223,7 +220,6 @@ function createController(props: {
   >;
   build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
   const validate: Validator = (input) => {
     const result =
       typia.validate<IAutoBePrismaCorrectApplication.IProps>(input);

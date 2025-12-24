@@ -47,8 +47,8 @@ const getStateMessage = (phase: AutoBePhase | null): string => {
 const main = async (): Promise<void> => {
   const instructions: Record<string, string> = {};
   const currentPhase: IPointer<AutoBePhase | null> = { value: null };
-  const controller: ILlmController<"chatgpt", IAutoBeFacadeApplication> =
-    typia.llm.controller<IAutoBeFacadeApplication, "chatgpt">("facade", {
+  const controller: ILlmController<IAutoBeFacadeApplication> =
+    typia.llm.controller<IAutoBeFacadeApplication>("facade", {
       analyze: async () => {
         currentPhase.value = "analyze";
         return {
@@ -91,9 +91,8 @@ const main = async (): Promise<void> => {
       },
     } satisfies IAutoBeFacadeApplication);
 
-  const agent: MicroAgentica<"chatgpt"> = new MicroAgentica({
+  const agent: MicroAgentica = new MicroAgentica({
     vendor: TestGlobal.getVendorConfig(),
-    model: "chatgpt",
     config: {
       executor: {
         describe: null,
@@ -120,7 +119,7 @@ const main = async (): Promise<void> => {
     );
 
     const start: Date = new Date();
-    const histories: MicroAgenticaHistory<"chatgpt">[] = await agent.conversate(
+    const histories: MicroAgenticaHistory[] = await agent.conversate(
       message.map((m) => {
         if (m.type === "image") {
           return {
@@ -131,8 +130,9 @@ const main = async (): Promise<void> => {
         return m;
       }),
     );
-    const execute: AgenticaExecuteHistory<"chatgpt"> | undefined =
-      histories.find((h) => h.type === "execute");
+    const execute: AgenticaExecuteHistory | undefined = histories.find(
+      (h) => h.type === "execute",
+    );
     if (execute !== undefined)
       console.log(
         execute.operation.name,

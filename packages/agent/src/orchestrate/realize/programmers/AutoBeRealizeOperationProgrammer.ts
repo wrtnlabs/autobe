@@ -7,7 +7,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema, IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import { IValidation, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
@@ -58,8 +58,8 @@ export namespace AutoBeRealizeOperationProgrammer {
     };
   }
 
-  export async function replaceImportStatements<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function replaceImportStatements(
+    ctx: AutoBeContext,
     props: {
       operation: AutoBeOpenApi.IOperation;
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -133,8 +133,8 @@ export namespace AutoBeRealizeOperationProgrammer {
     });
   }
 
-  export async function writeStructures<Model extends ILlmSchema.Model>(
-    ctx: AutoBeContext<Model>,
+  export async function writeStructures(
+    ctx: AutoBeContext,
     operation: AutoBeOpenApi.IOperation,
   ): Promise<Record<string, string>> {
     const document: AutoBeOpenApi.IDocument = filterDocument(

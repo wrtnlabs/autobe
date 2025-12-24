@@ -4,16 +4,10 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestPrepareFunction,
 } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmController,
-  ILlmSchema,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
 import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
@@ -75,13 +69,12 @@ export async function orchestrateTestPrepare(
 }
 
 function createCorrectOverallController(props: {
-  model: string;
   procedure: IAutoBeTestPrepareProcedure;
   build: (next: IAutoBeTestPrepareCorrectOverallApplication.IProps) => void;
 }): ILlmController<IAutoBeTestPrepareCorrectOverallApplication> {
-  assertSchemaModel(props.model);
-
-  const validate: Validator = (input) => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps> => {
     const result: IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps> =
       typia.validate<IAutoBeTestPrepareCorrectOverallApplication.IProps>(input);
     if (result.success === false) return result;
@@ -101,11 +94,12 @@ function createCorrectOverallController(props: {
       : result;
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestPrepareCorrectOverallApplication>({
-    validate: {
-      rewrite: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestPrepareCorrectOverallApplication>({
+      validate: {
+        rewrite: validate,
+      },
+    });
   return {
     protocol: "class",
     name: "testCorrect" satisfies AutoBeEventSource,
@@ -117,7 +111,3 @@ function createCorrectOverallController(props: {
     } satisfies IAutoBeTestPrepareCorrectOverallApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps>;

@@ -6,7 +6,7 @@ import {
   AutoBePrisma,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -64,7 +64,6 @@ async function process(
       source: SOURCE,
       controller: createReviewController({
         preliminary,
-        model: ctx.model,
         prismaSchemas: files,
         build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
           pointer.value = next;
@@ -104,7 +103,6 @@ async function process(
 }
 
 function createReviewController(props: {
-  model: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -162,9 +160,5 @@ function createReviewController(props: {
     } satisfies IAutoBeInterfaceOperationReviewApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceOperationReviewApplication.IProps>;
 
 const SOURCE = "interfaceOperationReview" satisfies AutoBeEventSource;

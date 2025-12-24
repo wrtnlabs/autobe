@@ -5,13 +5,12 @@ import {
   IAutoBePrismaCompileResult,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function compileRealizeFiles(
+  ctx: AutoBeContext,
   props: {
     functions: AutoBeRealizeFunction[];
     additional: Record<string, string>;

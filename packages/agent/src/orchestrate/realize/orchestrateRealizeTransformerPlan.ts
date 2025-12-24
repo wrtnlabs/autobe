@@ -10,7 +10,6 @@ import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmController,
-  ILlmSchema,
   IValidation,
 } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -19,7 +18,6 @@ import { v4 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -27,10 +25,8 @@ import { transformRealizeTransformerPlanHistory } from "./histories/transformRea
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerPlanApplication } from "./structures/IAutoBeRealizeTransformerPlanApplication";
 
-export async function orchestrateRealizeTransformerPlan<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateRealizeTransformerPlan(
+  ctx: AutoBeContext,
   props: {
     progress: AutoBeProgressEventBase;
   },
@@ -76,8 +72,8 @@ export async function orchestrateRealizeTransformerPlan<
   return result.flat();
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
     dtoTypeNames: string[];
@@ -107,10 +103,9 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizePlan",
       controller: createController({
-        model: ctx.model,
         prismaSchemaNames: props.prismaSchemaNames,
         dtoTypeNames: props.dtoTypeNames,
         build: (next) => {
@@ -151,16 +146,14 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   prismaSchemaNames: Set<string>;
   dtoTypeNames: string[];
   build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
     "prismaSchemas" | "interfaceSchemas"
   >;
-}): ILlmController<Model> {
-  assertSchemaModel(props.model);
+}): ILlmController {
 
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
@@ -215,15 +208,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
       : result;
   };
 
-  const application: ILlmApplication<Model> = collection[
-    props.model === "chatgpt"
-      ? "chatgpt"
-      : props.model === "gemini"
-        ? "gemini"
-        : "claude"
-  ](
-    validate,
-  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeRealizeTransformerPlanApplication>({
+      validate: {
+        process: validate,
+      },
+    });
   return {
     protocol: "class",
     name: SOURCE,
@@ -235,27 +225,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeRealizeTransformerPlanApplication,
   };
 }
-
-const collection = {
-  chatgpt: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "chatgpt">({
-      validate: {
-        process: validate,
-      },
-    }),
-  claude: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "claude">({
-      validate: {
-        process: validate,
-      },
-    }),
-  gemini: (validate: Validator) =>
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication, "gemini">({
-      validate: {
-        process: validate,
-      },
-    }),
-};
 
 type Validator = (
   input: unknown,

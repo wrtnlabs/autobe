@@ -4,7 +4,6 @@ import {
   IAutoBeCompilerListener,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { IAutoBeConfig } from "./IAutoBeConfig";
@@ -28,7 +27,6 @@ import { IAutoBeVendor } from "./IAutoBeVendor";
  * @author Samchon
  */
 export interface IAutoBeProps {
-
   /**
    * AI vendor configuration for service provider integration.
    *

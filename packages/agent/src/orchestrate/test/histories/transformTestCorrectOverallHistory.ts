@@ -1,4 +1,3 @@
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -12,10 +11,8 @@ import { transformTestGenerateWriteHistory } from "./transformTestGenerationWrit
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 import { transformTestPrepareWriteHistory } from "./transformTestPrepareWriteHistory";
 
-export const transformTestCorrectOverallHistory = async <
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export const transformTestCorrectOverallHistory = async (
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     procedure: IAutoBeTestProcedure;

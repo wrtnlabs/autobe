@@ -20,8 +20,7 @@ const archive = async (props: {
     project: props.project,
     phase: props.phase,
   });
-  const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-    model: "chatgpt",
+  const agent: AutoBeAgent = new AutoBeAgent({
     vendor: {
       api: new OpenAI({
         apiKey: "",

@@ -4,11 +4,7 @@ import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orche
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { TestValidator } from "@nestia/e2e";
-import {
-  ClaudeTypeChecker,
-  IClaudeSchema,
-  ILlmApplication,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import OpenAI from "openai";
 import typia from "typia";
 
@@ -24,8 +20,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
   )
     return false;
 
-  const agent: AutoBeAgent<"claude"> = new AutoBeAgent({
-    model: "claude",
+  const agent: AutoBeAgent = new AutoBeAgent({
     vendor: {
       api: new OpenAI({ apiKey: "" }),
       model: "gpt-4.1",
@@ -38,10 +33,8 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     }),
   });
 
-  const application: ILlmApplication<"claude"> = typia.llm.application<
-    IAutoBeInterfaceSchemaReviewApplication,
-    "claude"
-  >();
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -69,12 +62,12 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
   });
   preliminary.fixApplication(application);
 
-  const request: IClaudeSchema.IOneOf = application.functions[0].parameters
-    .properties.request as IClaudeSchema.IOneOf;
+  const request: ILlmSchema.IAnyOf = application.functions[0].parameters
+    .properties.request as ILlmSchema.IAnyOf;
   TestValidator.equals(
     "typeNames",
-    request.oneOf
-      .filter(ClaudeTypeChecker.isReference)
+    request.anyOf
+      .filter(LlmTypeChecker.isReference)
       .map((r) => r.$ref.split("/").pop()!)
       .sort(),
     [
@@ -87,7 +80,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
   );
   TestValidator.equals(
     "mapping",
-    Object.keys(request.discriminator?.mapping ?? {}).sort(),
+    Object.keys(request["x-discriminator"]?.mapping ?? {}).sort(),
     [
       "complete",
       "getAnalysisFiles",

@@ -8,22 +8,19 @@ import {
 } from "@autobe/interface";
 import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
-export async function orchestrateInterfaceAuthorization<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceAuthorization(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
   },
@@ -53,8 +50,8 @@ export async function orchestrateInterfaceAuthorization<
   return authorizations;
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+async function process(
+  ctx: AutoBeContext,
   props: {
     instruction: string;
     actor: AutoBeAnalyzeActor;
@@ -84,10 +81,9 @@ async function process<Model extends ILlmSchema.Model>(
       {
         value: null,
       };
-    const result: AutoBeContext.IResult<Model> = await ctx.conversate({
+    const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        model: ctx.model,
         actor: props.actor,
         build: (next) => {
           pointer.value = next;
@@ -121,8 +117,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 }
 
-function createController<Model extends ILlmSchema.Model>(props: {
-  model: Model;
+function createController(props: {
   actor: AutoBeAnalyzeActor;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -131,9 +126,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     | "previousPrismaSchemas"
   >;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IComplete) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-
+}): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> => {
@@ -248,9 +241,5 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps>;
 
 const SOURCE = "interfaceAuthorization" satisfies AutoBeEventSource;

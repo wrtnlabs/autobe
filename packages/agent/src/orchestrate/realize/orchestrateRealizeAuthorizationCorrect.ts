@@ -6,13 +6,12 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationCorrectHistory } from "./histories/transformRealizeAuthorizationCorrectHistory";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
@@ -90,7 +89,6 @@ export async function orchestrateRealizeAuthorizationCorrect(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeAuthorizationCorrect",
       controller: createController({
-        model: ctx.model,
         build: (next) => {
           pointer.value = next;
         },
@@ -158,13 +156,11 @@ export async function orchestrateRealizeAuthorizationCorrect(
 }
 
 function createController(props: {
-  model: string;
   build: (
     next: IAutoBeRealizeAuthorizationCorrectApplication.IComplete,
   ) => void;
   preliminary: AutoBePreliminaryController<"prismaSchemas">;
 }): IAgenticaController.IClass {
-  assertSchemaModel(props.model);
 
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationCorrectApplication.IProps> =

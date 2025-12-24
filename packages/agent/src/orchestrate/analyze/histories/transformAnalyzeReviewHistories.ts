@@ -1,7 +1,6 @@
 import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -10,8 +9,8 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
-export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export const transformAnalyzeReviewHistories = (
+  ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     myFile: AutoBeAnalyzeFile;

@@ -6,28 +6,20 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  OpenApi,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { ILlmApplication, OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 
-export async function orchestrateInterfaceSchemaRename<
-  Mode extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Mode>,
+export async function orchestrateInterfaceSchemaRename(
+  ctx: AutoBeContext,
   document: AutoBeOpenApi.IDocument,
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY * 10,
 ): Promise<void> {
@@ -145,8 +137,8 @@ export namespace orchestrateInterfaceSchemaRename {
   };
 }
 
-const divideAndConquer = async <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+const divideAndConquer = async (
+  ctx: AutoBeContext,
   props: {
     tableNames: string[];
     typeNames: string[];
@@ -161,10 +153,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       };
     const { metric, tokenUsage } = await ctx.conversate({
       source: SOURCE,
-      controller: createController<Model>(
-        ctx.model,
-        (value) => (pointer.value = value),
-      ),
+      controller: createController((value) => (pointer.value = value)),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceSchemaRenameHistory(props),
@@ -240,11 +229,10 @@ const uniqueRefactors = (
 };
 
 const createController = (
-  model: string,
   build: (value: IAutoBeInterfaceSchemaRenameApplication.IProps) => void,
 ): IAgenticaController.IClass => {
-  assertSchemaModel(model);
-  const application: ILlmApplication = typia.llm.application<IAutoBeInterfaceSchemaRenameApplication>();
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeInterfaceSchemaRenameApplication>();
   return {
     protocol: "class",
     name: SOURCE,

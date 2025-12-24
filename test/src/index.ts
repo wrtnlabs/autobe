@@ -24,7 +24,6 @@ async function main(): Promise<void> {
     getTokenUsage: () => tokenUsage,
     createAgent: (histories) =>
       new AutoBeAgent({
-        model: TestGlobal.schemaModel,
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
