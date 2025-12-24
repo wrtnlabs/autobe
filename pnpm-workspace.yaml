@@ -44,10 +44,13 @@ catalogs:
     '@prisma/internals': ^7.0.0
     prisma: ^7.0.0
   ui:
-    react: ^19.1.1
-    react-dom: ^19.1.1
+    '@emotion/cache': ^11.14.0
+    '@emotion/react': ^11.11.1
+    '@emotion/styled': ^11.14.0
     '@types/react': ^19.1.10
     '@types/react-dom': ^19.1.5
+    react: ^19.1.1
+    react-dom: ^19.1.1
     vite: ^6.3.5
   libs:
     openai: ^6.15.0
