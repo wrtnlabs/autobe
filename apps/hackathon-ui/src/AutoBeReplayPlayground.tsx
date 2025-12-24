@@ -2,6 +2,7 @@ import hApi from "@autobe/hackathon-api";
 import {
   AutoBeListener,
   IAutoBeConfig,
+  IAutoBeServiceData,
   SearchParamsProvider,
 } from "@autobe/ui";
 import { useRef } from "react";
@@ -24,9 +25,9 @@ export function AutoBeReplayPlayground() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Playground service factory
-  const serviceFactory = async (config: IAutoBeConfig) => {
+  const serviceFactory = async (config: IAutoBeConfig): Promise<IAutoBeServiceData> => {
     const listener = new AutoBeListener();
-    const { service, sessionId } = await (async () => {
+    const { service, sessionId, connector } = await (async () => {
       const connection = {
         host: import.meta.env.VITE_API_BASE_URL,
         headers: {
@@ -37,30 +38,31 @@ export function AutoBeReplayPlayground() {
       };
 
       if (config.sessionId != null && typeof config.sessionId === "string") {
-        return {
-          service: await hApi.functional.autobe.hackathon.participants.sessions
+        const result= await hApi.functional.autobe.hackathon.participants.sessions
             .replay(
               connection,
               HACKATHON_CODE,
               config.sessionId,
               listener.getListener(),
-            )
-            .then((v) => v.driver),
+            );
+        return {
+          service: result.driver,
+          connector: result.connector,
           sessionId: config.sessionId,
         };
       }
-
       throw new Error("Session ID is required");
     })();
-
     return {
       service,
       sessionId,
       listener,
-      uploadConfig: {
-        supportAudio: config.supportAudioEnable ?? false,
-      },
-    };
+      // uploadConfig: {
+      //   supportAudio: config.supportAudioEnable ?? false,
+      // },
+      connector,
+      close: () => connector.close(),
+    } satisfies IAutoBeServiceData;
   };
 
   return (
