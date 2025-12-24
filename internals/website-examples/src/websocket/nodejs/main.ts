@@ -8,15 +8,14 @@ import { WebSocketServer } from "tgrid";
 const server: WebSocketServer<null, IAutoBeRpcService, IAutoBeRpcListener> =
   new WebSocketServer();
 await server.open(3_001, async (acceptor) => {
-  const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-    model: "chatgpt",
+  const agent: AutoBeAgent = new AutoBeAgent({
     vendor: {
       api: new OpenAI({ apiKey: "********" }),
       model: "gpt-4.1",
     },
-    compiler: new AutoBeCompiler(),
+    compiler: async (listener) => new AutoBeCompiler(listener),
   });
-  const service: AutoBeRpcService<"chatgpt"> = new AutoBeRpcService({
+  const service: AutoBeRpcService = new AutoBeRpcService({
     agent,
     listener: acceptor.getDriver(),
   });

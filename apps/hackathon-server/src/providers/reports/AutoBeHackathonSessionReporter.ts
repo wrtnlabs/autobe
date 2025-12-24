@@ -73,8 +73,7 @@ export namespace AutoBeHackathonSessionReporter {
             },
           ),
         );
-      const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-        model: "chatgpt",
+      const agent: AutoBeAgent = new AutoBeAgent({
         vendor: {
           api: new OpenAI({ apiKey: "********" }),
           model: s.model,

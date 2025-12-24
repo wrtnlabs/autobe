@@ -99,12 +99,11 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
         session: props.session,
       });
     const isOpenAi: boolean = props.session.model.startsWith("openai/");
-    const agent: AutoBeAgent<"chatgpt"> = await startCommunication({
+    const agent: AutoBeAgent = await startCommunication({
       ...props,
       histories,
       factory: async () =>
         new AutoBeAgent({
-          model: "chatgpt",
           vendor: {
             api: new OpenAI({
               apiKey: isOpenAi
@@ -148,7 +147,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
   };
 
   const startCommunication = async <
-    Agent extends IAutoBeAgent = AutoBeAgent<"chatgpt">,
+    Agent extends IAutoBeAgent = AutoBeAgent,
   >(props: {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;

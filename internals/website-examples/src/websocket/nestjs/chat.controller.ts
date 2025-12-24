@@ -19,15 +19,14 @@ export class ChatController {
       IAutoBeRpcListener // controller of remote
     >,
   ): Promise<void> {
-    const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-      model: "chatgpt",
+    const agent: AutoBeAgent = new AutoBeAgent({
       vendor: {
         api: new OpenAI({ apiKey: "********" }),
         model: "gpt-4.1",
       },
-      compiler: new AutoBeCompiler(),
+      compiler: async (listener) => new AutoBeCompiler(listener),
     });
-    const service: AutoBeRpcService<"chatgpt"> = new AutoBeRpcService({
+    const service: AutoBeRpcService = new AutoBeRpcService({
       agent,
       listener: acceptor.getDriver(),
     });
