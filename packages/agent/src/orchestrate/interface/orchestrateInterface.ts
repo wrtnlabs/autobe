@@ -201,7 +201,9 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
-    while (missedOpenApiSchemas(document).length !== 0) {
+    for (let ci: number = 0; ci < ctx.retry; ++ci) {
+      if (missedOpenApiSchemas(document).length === 0) break;
+      
       // COMPLEMENT OMITTED
       const oldbie: Set<string> = new Set(
         Object.keys(document.components.schemas),

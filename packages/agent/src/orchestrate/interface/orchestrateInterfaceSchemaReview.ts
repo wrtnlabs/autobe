@@ -212,7 +212,7 @@ function createController(
     // If content is null, schema is perfect and doesn't need validation
     if (result.data.request.content !== null) {
       const errors: IValidation.IError[] = [];
-      JsonSchemaValidator.validateSchemas({
+      JsonSchemaValidator.validateSchema({
         errors,
         prismaSchemas: new Set(
           ctx
@@ -221,9 +221,8 @@ function createController(
             .flat(),
         ),
         operations: props.preliminary.getAll().interfaceOperations,
-        schemas: {
-          [props.typeName]: result.data.request.content,
-        },
+        typeName: props.typeName,
+        schema: result.data.request.content,
         path: "$input.request.content",
       });
       if (errors.length !== 0)

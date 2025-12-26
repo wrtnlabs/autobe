@@ -15,7 +15,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -30,7 +29,7 @@ export const orchestrateInterfaceComplement = (
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
   step(ctx, props, {
     wasEmpty: false,
-    life: 10,
+    life: ctx.retry,
   });
 
 async function step(
@@ -204,16 +203,6 @@ function createController(
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    if (
-      typia.is<{
-        request: {
-          type: "complete";
-          schema: object;
-        };
-      }>(next)
-    )
-      JsonSchemaFactory.fixPage("schema", next.request);
-
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
     if (result.success === false) {
@@ -226,7 +215,7 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validateSchemas({
+    JsonSchemaValidator.validateSchema({
       errors,
       prismaSchemas: new Set(
         ctx
@@ -235,9 +224,8 @@ function createController(
           .flat(),
       ),
       operations: props.operations,
-      schemas: {
-        [props.typeName]: result.data.request.schema,
-      },
+      typeName: props.typeName,
+      schema: result.data.request.schema,
       path: "$input.request.schema",
     });
     if (errors.length !== 0)

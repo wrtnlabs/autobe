@@ -189,7 +189,7 @@ function createController(
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validateSchemas({
+    JsonSchemaValidator.validateSchema({
       errors,
       prismaSchemas: new Set(
         ctx
@@ -198,21 +198,14 @@ function createController(
           .flat(),
       ),
       operations: props.operations,
-      schemas: {
-        [props.typeName]: result.data.request.schema,
-      },
-      path: "$input.request.schemas",
+      typeName: props.typeName,
+      schema: result.data.request.schema,
+      path: "$input.request.schema",
     });
     if (errors.length !== 0)
       return {
         success: false,
-        errors: errors.map((e) => ({
-          ...e,
-          path: e.path.replace(
-            `$input.request.schemas[${JSON.stringify(props.typeName)}]`,
-            "$input.schema",
-          ),
-        })),
+        errors,
         data: next,
       };
     return result;
