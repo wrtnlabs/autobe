@@ -287,15 +287,14 @@ export namespace AutoBeExampleArchiver {
           | AutoBeUserConversateContent[],
       ) => Promise<boolean>,
     ): Promise<boolean> =>
-      (await conversate(
-        await AutoBeExampleStorage.getUserMessage(props).then((r) => r),
-      )) ||
-      (await conversate(
-        "Don't ask me to do that, and just do it right now.",
-      )) ||
-      (await conversate(
-        `I already told you to do ${props.phase} process. Never ask me anything, and just do it right now. Go go go!`,
-      ));
+      await conversate(await AutoBeExampleStorage.getUserMessage(props));
+  //  ||
+  // (await conversate(
+  //   "Don't ask me to do that, and just do it right now.",
+  // )) ||
+  // (await conversate(
+  //   `I already told you to do ${props.phase} process. Never ask me anything, and just do it right now. Go go go!`,
+  // ));
 
   const getAsset = async (props: {
     vendor: string;

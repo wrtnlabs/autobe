@@ -1,4 +1,5 @@
 import { IAutoBeVendor } from "@autobe/agent";
+import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 import OpenAI from "openai";
@@ -35,7 +36,10 @@ export class TestGlobal {
         baseURL: "https://openrouter.ai/api/v1",
       }),
       model: vendor,
-      semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
+      semaphore: Number(
+        TestGlobal.getArguments("semaphore")?.[0] ??
+          AutoBeConfigConstant.SEMAPHORE,
+      ),
     };
   }
 

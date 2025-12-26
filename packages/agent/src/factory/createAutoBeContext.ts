@@ -1,4 +1,8 @@
-import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
+import {
+  IMicroAgenticaConfig,
+  MicroAgentica,
+  MicroAgenticaHistory,
+} from "@agentica/core";
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeHistory,
@@ -91,10 +95,16 @@ export const createAutoBeContext = (props: {
       });
       return message;
     },
-    conversate: async (next, closure) => {
+    conversate: async (next, closure): Promise<AutoBeContext.IResult> => {
       const aggregate: AutoBeProcessAggregate =
         AutoBeProcessAggregateFactory.createAggregate();
-      const metric = (key: keyof AutoBeFunctionCallingMetric) => {
+      const progress: IProgress = {
+        request: 0,
+        response: 0,
+        timeout: 0,
+      };
+
+      const metric = (key: keyof AutoBeFunctionCallingMetric): void => {
         const accumulate = (collection: AutoBeProcessAggregateCollection) => {
           ++collection.total.metric[key];
           collection[next.source as "analyzeWrite"] ??=
@@ -104,8 +114,11 @@ export const createAutoBeContext = (props: {
         ++aggregate.metric[key];
         accumulate(props.aggregates);
       };
-      const consume = (tokenUsage: IAutoBeTokenUsageJson.IComponent) => {
-        const accumulate = (collection: AutoBeProcessAggregateCollection) => {
+
+      const consume = (tokenUsage: IAutoBeTokenUsageJson.IComponent): void => {
+        const accumulate = (
+          collection: AutoBeProcessAggregateCollection,
+        ): void => {
           TokenUsageComputer.increment(collection.total.tokenUsage, tokenUsage);
           collection[next.source as "analyzeWrite"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
@@ -122,11 +135,7 @@ export const createAutoBeContext = (props: {
             STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
           ]);
       };
-      const progress = {
-        request: 0,
-        response: 0,
-        timeout: 0,
-      };
+
       const execute = async (): Promise<AutoBeContext.IResult> => {
         // CREATE AGENT
         const agent: MicroAgentica = new MicroAgentica({
@@ -140,15 +149,15 @@ export const createAutoBeContext = (props: {
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
             },
-          },
+          } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
         });
         supportMistral(agent, props.vendor);
 
         // ADD EVENT LISTENERS
-        agent.on("request", async (event) => {
-          if (next.enforceFunctionCall === true && event.body.tools)
+        agent.on("request", async (event): Promise<void> => {
+          if (next.enforceFunctionCall === true && !!event.body.tools?.length)
             event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
             delete event.body.parallel_tool_calls;
@@ -161,7 +170,7 @@ export const createAutoBeContext = (props: {
             retry: progress.request++,
           });
         });
-        agent.on("response", async (event) => {
+        agent.on("response", (event) => {
           void props
             .dispatch({
               ...event,
@@ -204,22 +213,22 @@ export const createAutoBeContext = (props: {
         const message: string =
           next.enforceFunctionCall === true
             ? StringUtil.trim`
-                  ${next.userMessage}
+                ${next.userMessage}
 
-                  > You have to call function(s) of below to accomplish my request.
-                  >
-                  > Never hesitate the function calling. Never ask for me permission 
-                  > to execute the function. Never explain me your plan with waiting
-                  > for my approval.
-                  >
-                  > I gave you every information for the function calling, so just 
-                  > call it. I repeat that, never hesitate the function calling. 
-                  > Just do it without any explanation.
-                  >
-                  ${next.controller.application.functions
-                    .map((f) => `> - ${f.name}`)
-                    .join("\n")}
-                `
+                > You have to call function(s) of below to accomplish my request.
+                >
+                > Never hesitate the function calling. Never ask for me permission 
+                > to execute the function. Never explain me your plan with waiting
+                > for my approval.
+                >
+                > I gave you every information for the function calling, so just 
+                > call it. I repeat that, never hesitate the function calling. 
+                > Just do it without any explanation.
+                >
+                ${next.controller.application.functions
+                  .map((f) => `> - ${f.name}`)
+                  .join("\n")}
+              `
             : next.userMessage;
         const result: TimedConversation.IResult =
           await TimedConversation.process({
@@ -499,3 +508,9 @@ const STAGES =
   typia.misc.literals<
     keyof Pick<IAutoBeTokenUsageJson, "facade" | AutoBePhase>
   >();
+
+interface IProgress {
+  request: number;
+  response: number;
+  timeout: number;
+}

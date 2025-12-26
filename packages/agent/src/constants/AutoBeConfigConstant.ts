@@ -40,7 +40,7 @@ export const enum AutoBeConfigConstant {
    * large enough for effective prompt caching. Higher values increase
    * parallelism but reduce cache hit rates.
    */
-  INTERFACE_CAPACITY = 2,
+  INTERFACE_CAPACITY = 1,
 
   /**
    * Maximum iterations for RAG (Retrieval-Augmented Generation) loops.
@@ -71,5 +71,5 @@ export const enum AutoBeConfigConstant {
    * limits and memory usage. Too high causes rate limit errors and resource
    * exhaustion; too low wastes potential parallelism.
    */
-  SEMAPHORE = 16,
+  SEMAPHORE = 8,
 }
