@@ -3558,7 +3558,16 @@ export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
   export interface IComplete {
     type: "complete";
     think: IThink;
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    /**
+     * Relation-reviewed schema result.
+     *
+     * - If the schema has relationship issues and needs fixes: return the corrected schema
+     * - If the schema is perfect and compliant: return null
+     *
+     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
+     * accidental overwrites. Use null to explicitly indicate "no relation fixes needed".
+     */
+    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
 
   /**

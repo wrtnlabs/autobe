@@ -8,10 +8,7 @@ export const prepare_agent_describe = (props: {
   factory: TestFactory;
   vendor: string;
 }) => {
-  if (
-    TestGlobal.env.OPENAI_API_KEY === undefined ||
-    TestGlobal.env.OPENROUTER_API_KEY === undefined
-  )
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   const agent: AutoBeAgent = props.factory.createAgent([]);

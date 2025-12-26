@@ -20,73 +20,100 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   >;
+  typeName: string;
   reviewOperations: AutoBeOpenApi.IOperation[];
-  reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-}): IAutoBeOrchestrateHistory => {
-  return {
-    histories: [
-      {
-        type: "systemMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: props.systemPrompt,
-      },
-      ...props.preliminary.getHistories(),
-      {
-        type: "assistantMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: StringUtil.trim`
-          ## API Design Instructions
+  reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive;
+}): IAutoBeOrchestrateHistory => ({
+  histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: props.systemPrompt,
+    },
+    ...props.preliminary.getHistories(),
+    {
+      type: "assistantMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
+        ## API Design Instructions
 
-          The following API-specific instructions were extracted from
-          the user's requirements. These focus on API interface design aspects
-          relevant to the review task.
+        The following API-specific instructions were extracted from
+        the user's requirements. These focus on API interface design aspects
+        relevant to the review task.
 
-          Follow these instructions when reviewing and fixing schemas.
-          Carefully distinguish between:
-          - Suggestions or recommendations (consider these as guidance)
-          - Direct specifications or explicit commands (these must be followed exactly)
+        Follow these instructions when reviewing and fixing schemas.
+        Carefully distinguish between:
 
-          When instructions contain direct specifications or explicit design decisions,
-          follow them precisely even if you believe you have better alternatives.
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
 
-          ${props.instruction}
-        `,
-      },
-      {
-        id: v7(),
-        type: "assistantMessage",
-        created_at: new Date().toISOString(),
-        text: StringUtil.trim`
-          ## Schemas Needing Review
+        When instructions contain direct specifications or explicit design decisions,
+        follow them precisely even if you believe you have better alternatives.
 
-          From the complete schema set above, here are the SPECIFIC schemas that need review:
+        ${props.instruction}
+      `,
+    },
+    {
+      id: v7(),
+      type: "assistantMessage",
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
+        ## API Design Instructions
 
-          \`\`\`json
-          ${JSON.stringify(props.reviewSchemas)}
-          \`\`\`
+        The following API-specific instructions were extracted from
+        the user's requirements. These focus on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
 
-          IMPORTANT: Only these ${Object.keys(props.reviewSchemas).length} schemas
-          need review and potential modification. The other schemas in
-          the full set are provided for reference only.
+        Follow these instructions when creating JSON schema.
 
-          ## Operations (Filtered for Target Schemas)
+        Carefully distinguish between:
+        
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
 
-          Here are the API operations that directly use the schemas under review.
-          These operations reference at least one of the target schemas via
-          requestBody.typeName or responseBody.typeName.
+        When instructions contain direct specifications or explicit design decisions,
+        follow them precisely even if you believe you have better alternatives.
 
-          This FILTERED list helps you understand the exact usage context for
-          the schemas you're reviewing:
+        ${props.instruction}
 
-          \`\`\`json
-          ${JSON.stringify(props.reviewOperations)}
-          \`\`\`
-        `,
-      },
-    ],
-    userMessage: "Review and fix the schemas please",
-    // "Review DTO content completeness and consistency."
-  };
-};
+        ## Operations (Filtered for Target Schema)
+
+        Here are the API operations that directly use the schema under review.
+        These operations reference the target schema "${props.typeName}" via
+        requestBody.typeName or responseBody.typeName.
+
+        This FILTERED list helps you understand the exact usage context for
+        the schema you're reviewing:
+
+        \`\`\`json
+        ${JSON.stringify(props.reviewOperations)}
+        \`\`\`
+
+        ## DTO type to review
+
+        Here is the SPECIFIC schema that needs review for type "${props.typeName}":
+
+        \`\`\`json
+        ${JSON.stringify(props.reviewSchema)}
+        \`\`\`
+
+        IMPORTANT: Only this schema needs review and potential modification.
+        Other schemas in the complete schema set are provided for reference 
+        only.
+      `,
+    },
+  ],
+  userMessage: StringUtil.trim`
+    Review ${JSON.stringify(props.typeName)} type named JSON schema 
+    component based on the provided API design instructions and 
+    relevant operations.
+
+    Note that, when making changes, what you make is not
+    "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>" type,
+    but "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for
+    the ${JSON.stringify(props.typeName)} type.
+  `,
+});

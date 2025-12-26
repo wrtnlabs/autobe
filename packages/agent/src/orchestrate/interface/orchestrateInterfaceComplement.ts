@@ -11,13 +11,10 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { divideArray } from "../../utils/divideArray";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -32,7 +29,7 @@ export const orchestrateInterfaceComplement = (
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
   step(ctx, props, {
     wasEmpty: false,
-    life: 10,
+    life: ctx.retry,
   });
 
 async function step(
@@ -47,18 +44,28 @@ async function step(
     life: number;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missed: string[] = missedOpenApiSchemas(props.document);
-  if (missed.length === 0) return props.document.components.schemas;
+  const missedTypes: string[] = missedOpenApiSchemas(props.document);
+  if (missedTypes.length === 0) return props.document.components.schemas;
   else if (state.life === 0) return props.document.components.schemas;
 
-  props.progress.total += missed.length;
-  const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    await divideAndConquer(ctx, {
-      instruction: props.instruction,
-      document: props.document,
-      progress: props.progress,
-      missed,
-    });
+  props.progress.total += missedTypes.length;
+  const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+
+  for (const missed of missedTypes) {
+    try {
+      const schema: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
+        instruction: props.instruction,
+        document: props.document,
+        progress: props.progress,
+        missed,
+      });
+      newbie[missed] = schema;
+    } catch (error) {
+      // Skip failed schema
+      ++props.progress.completed;
+    }
+  }
+
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     ...newbie,
     ...props.document.components.schemas,
@@ -84,42 +91,15 @@ async function step(
   );
 }
 
-async function divideAndConquer(
-  ctx: AutoBeContext,
-  props: {
-    instruction: string;
-    document: AutoBeOpenApi.IDocument;
-    missed: string[];
-    progress: AutoBeProgressEventBase;
-  },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const matrix: string[][] = divideArray({
-    array: props.missed,
-    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
-  });
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-  for (const missed of matrix) {
-    const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(ctx, {
-        instruction: props.instruction,
-        document: props.document,
-        progress: props.progress,
-        missed,
-      });
-    Object.assign(x, row);
-  }
-  return x;
-}
-
 async function process(
   ctx: AutoBeContext,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
-    missed: string[];
+    missed: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -150,27 +130,27 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    > | null> = {
+    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
       value: null,
     };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
+        typeName: props.missed,
         operations: props.document.operations,
         build: (next) => {
-          pointer.value ??= {};
-          Object.assign(
-            pointer.value,
-            (OpenApiV3_1Emender.convertComponents({
-              schemas: next,
-            }).schemas ?? {}) as Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            >,
-          );
+          const container: Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          > = (OpenApiV3_1Emender.convertComponents({
+            schemas: {
+              [props.missed]: next,
+            },
+          }).schemas ?? {}) as Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          >;
+          pointer.value = container[props.missed];
         },
         preliminary,
       }),
@@ -182,16 +162,15 @@ async function process(
         missed: props.missed,
       }),
     });
-    if (pointer.value === null) return out(result)(null);
+    if (pointer.value === null) throw new Error("Complement failed");
 
-    props.progress.completed += Object.keys(pointer.value).length;
-    props.progress.total +=
-      Object.keys(pointer.value).length - props.missed.length;
+    ++props.progress.completed;
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
       missed: props.missed,
-      schemas: pointer.value,
+      typeName: props.missed,
+      schema: pointer.value,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
@@ -206,6 +185,7 @@ async function process(
 function createController(
   ctx: AutoBeContext,
   props: {
+    typeName: string;
     operations: AutoBeOpenApi.IOperation[];
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
@@ -217,24 +197,12 @@ function createController(
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
-    build: (
-      schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    ) => void;
+    build: (schema: AutoBeOpenApi.IJsonSchemaDescriptive) => void;
   },
 ): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    if (
-      typia.is<{
-        request: {
-          type: "complete";
-          schemas: object;
-        };
-      }>(next)
-    )
-      JsonSchemaFactory.fixPage("schemas", next.request);
-
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
     if (result.success === false) {
@@ -247,7 +215,7 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validateSchemas({
+    JsonSchemaValidator.validateSchema({
       errors,
       prismaSchemas: new Set(
         ctx
@@ -256,8 +224,9 @@ function createController(
           .flat(),
       ),
       operations: props.operations,
-      schemas: result.data.request.schemas,
-      path: "$input.request.schemas",
+      typeName: props.typeName,
+      schema: result.data.request.schema,
+      path: "$input.request.schema",
     });
     if (errors.length !== 0)
       return {
@@ -281,7 +250,7 @@ function createController(
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request.schemas);
+        if (next.request.type === "complete") props.build(next.request.schema);
       },
     } satisfies IAutoBeInterfaceComplementApplication,
   };

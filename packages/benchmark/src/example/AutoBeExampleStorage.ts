@@ -34,6 +34,19 @@ export namespace AutoBeExampleStorage {
     });
   };
 
+  export const load = async <T>(props: {
+    vendor: string;
+    project: AutoBeExampleProject;
+    file: string;
+  }): Promise<T | null> => {
+    const location: string = `${getDirectory(props)}/${props.file}.gz`;
+    if (fs.existsSync(location) === false) return null;
+    const content: string = await CompressUtil.gunzip(
+      await fs.promises.readFile(location),
+    );
+    return JSON.parse(content) as T;
+  };
+
   export const getUserMessage = async (props: {
     project: AutoBeExampleProject;
     phase: AutoBePhase;

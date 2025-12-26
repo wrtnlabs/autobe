@@ -21,9 +21,12 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaEvent
-  extends AutoBeEventBase<"interfaceSchema">,
+  extends
+    AutoBeEventBase<"interfaceSchema">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
+  typeName: string;
+
   /**
    * Schema definitions being defined for the API specification.
    *
@@ -37,7 +40,7 @@ export interface AutoBeInterfaceSchemaEvent
    * proper validation rules, descriptive documentation, and type safety
    * throughout the application stack.
    */
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 
   /**
    * Iteration number of the requirements analysis this schema creation was

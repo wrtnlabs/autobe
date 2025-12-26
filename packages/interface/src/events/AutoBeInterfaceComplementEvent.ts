@@ -20,39 +20,32 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceComplementEvent
-  extends AutoBeEventBase<"interfaceComplement">,
+  extends
+    AutoBeEventBase<"interfaceComplement">,
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase {
   /**
-   * Array of missing schema names that were identified and need to be defined.
+   * Type name of the schema being created.
    *
-   * Contains the list of type or schema names that were referenced in API
-   * operations but were not previously defined in the components section. These
-   * missing definitions could include nested data transfer objects, utility
-   * types, enumeration definitions, or supporting data structures that are
-   * required for complete API functionality.
-   *
-   * Identifying and tracking these missing schemas ensures that the final
-   * OpenAPI specification is complete and self-contained, preventing
-   * compilation errors in the generated code.
+   * Specifies the specific DTO type name that is being generated to fill the
+   * gap. This will be the same as the `missed` field.
    */
-  missed: string[];
+  typeName: string;
 
   /**
-   * Additional schema definitions being added to complement the API
+   * Additional schema definition being added to complement the API
    * specification.
    *
-   * Contains the newly created schema definitions that fill the gaps identified
-   * in the missed array. Each key represents the schema name and each value
-   * contains the complete {@link AutoBeOpenApi.IJsonSchemaDescriptive}
-   * definition with proper typing, validation rules, and descriptive
-   * documentation.
+   * Contains the newly created schema definition that fills the gap identified
+   * as the missing type. The schema contains the complete
+   * {@link AutoBeOpenApi.IJsonSchemaDescriptive} definition with proper typing,
+   * validation rules, and descriptive documentation.
    *
-   * These complementary schemas ensure that all types referenced throughout the
-   * API specification are properly defined, enabling successful code generation
+   * This complementary schema ensures that the type referenced throughout the
+   * API specification is properly defined, enabling successful code generation
    * and maintaining type safety across the entire application.
    */
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 
   /**
    * Iteration number of the requirements analysis this API complement was

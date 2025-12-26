@@ -9,11 +9,12 @@ export namespace JsonSchemaValidator {
     errors: IValidation.IError[];
     prismaSchemas: Set<string>;
     operations: AutoBeOpenApi.IOperation[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
     path: string;
   }
 
-  export const validateSchemas = (props: IProps): void => {
+  export const validateSchema = (props: IProps): void => {
     const vo = validateObjectType({
       errors: props.errors,
       operations: props.operations,
@@ -22,32 +23,30 @@ export namespace JsonSchemaValidator {
     validateAuthorization(props);
     validatePrismaSchema(props);
     validateRecursive(props);
-    for (const key of Object.keys(props.schemas)) {
+    
+      const key: string = props.typeName;
+      const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
       validateKey({
         errors: props.errors,
         path: `${props.path}[${JSON.stringify(key)}]`,
         key,
       });
-      vo(key, props.schemas[key]);
+      vo(key, value);
       OpenApiTypeChecker.visit({
-        components: { schemas: props.schemas },
-        schema: props.schemas[key],
+        components: { schemas: { [key]: value } },
+        schema: value,
         closure: (next, accessor) => {
           if (OpenApiTypeChecker.isReference(next) === false) return;
           const key: string = next.$ref.split("/").pop()!;
-          const schema: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
-            props.schemas[key];
           validateKey({
             errors: props.errors,
             path: `${accessor}.$ref`,
             key,
             transform: (typeName) => `#/components/schemas/${typeName}`,
           });
-          if (schema) vo(key, schema);
         },
         accessor: `${props.path}[${JSON.stringify(key)}]`,
       });
-    }
   };
 
   export const validateKey = (props: {
@@ -162,29 +161,29 @@ export namespace JsonSchemaValidator {
   };
 
   const validateAuthorization = (props: IProps): void => {
-    for (const [key, value] of Object.entries(props.schemas)) {
-      if (!key.endsWith(".IAuthorized")) continue;
-      else if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
-        props.errors.push({
-          path: `${props.path}.${key}`,
-          expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
-          value: value,
-          description: `${key} must be an object type for authorization responses`,
-        });
-        continue;
-      }
-
-      // Check if token property exists
-      value.properties ??= {};
-      value.properties["token"] = {
-        $ref: "#/components/schemas/IAuthorizationToken",
-        description: "JWT token information for authentication",
-      } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
-
-      value.required ??= [];
-      if (value.required.includes("token") === false)
-        value.required.push("token");
+    const key: string = props.typeName;
+    const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
+    if (!key.endsWith(".IAuthorized")) return;
+    else if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
+      props.errors.push({
+        path: `${props.path}.${key}`,
+        expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
+        value: value,
+        description: `${key} must be an object type for authorization responses`,
+      });
+      return;
     }
+
+    // Check if token property exists
+    value.properties ??= {};
+    value.properties["token"] = {
+      $ref: "#/components/schemas/IAuthorizationToken",
+      description: "JWT token information for authentication",
+    } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
+
+    value.required ??= [];
+    if (value.required.includes("token") === false)
+      value.required.push("token");
   };
 
   const validatePrismaSchema = (props: IProps): void => {
@@ -214,146 +213,147 @@ export namespace JsonSchemaValidator {
       `;
     }
     // check prisma schema existence
-    for (const [key, value] of Object.entries(props.schemas))
-      AutoBeOpenApiTypeChecker.skim({
-        schema: value,
-        accessor: `${props.path}[${JSON.stringify(key)}]`,
-        closure: (schema, accessor) => {
-          if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
-          else if (
-            schema["x-autobe-prisma-schema"] !== null &&
-            schema["x-autobe-prisma-schema"] !== undefined &&
-            props.prismaSchemas.has(schema["x-autobe-prisma-schema"]) === false
-          )
-            props.errors.push({
-              path: accessor,
-              expected: Array.from(props.prismaSchemas)
-                .map((s) => JSON.stringify(s))
-                .join(" | "),
-              value: schema["x-autobe-prisma-schema"],
-              description: StringUtil.trim`
-                You've referenced a non-existing Prisma schema name
-                ${JSON.stringify(schema["x-autobe-prisma-schema"])} in
-                "x-autobe-prisma-schema" property.
+    const key: string = props.typeName;
+    const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
+    AutoBeOpenApiTypeChecker.skim({
+      schema: value,
+      accessor: `${props.path}[${JSON.stringify(key)}]`,
+      closure: (schema, accessor) => {
+        if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
+        else if (
+          schema["x-autobe-prisma-schema"] !== null &&
+          schema["x-autobe-prisma-schema"] !== undefined &&
+          props.prismaSchemas.has(schema["x-autobe-prisma-schema"]) === false
+        )
+          props.errors.push({
+            path: accessor,
+            expected: Array.from(props.prismaSchemas)
+              .map((s) => JSON.stringify(s))
+              .join(" | "),
+            value: schema["x-autobe-prisma-schema"],
+            description: StringUtil.trim`
+              You've referenced a non-existing Prisma schema name
+              ${JSON.stringify(schema["x-autobe-prisma-schema"])} in
+              "x-autobe-prisma-schema" property.
 
-                Make sure that the referenced Prisma schema name exists
-                in your Prisma schema files.
+              Make sure that the referenced Prisma schema name exists
+              in your Prisma schema files.
 
-                Existing Prisma schema names are:
-                - ${Array.from(props.prismaSchemas).join("\n- ")}
-              `,
-            });
-        },
-      });
+              Existing Prisma schema names are:
+              - ${Array.from(props.prismaSchemas).join("\n- ")}
+            `,
+          });
+      },
+    });
   };
 
   const validateRecursive = (props: IProps): void => {
-    for (const [key, value] of Object.entries(props.schemas)) {
-      const report = (description: string) =>
-        props.errors.push({
-          path: `${props.path}[${JSON.stringify(key)}]`,
-          expected: "Non-infinite recursive schema definition",
-          value,
-          description,
-        });
-      if (
-        AutoBeOpenApiTypeChecker.isReference(value) &&
-        value.$ref === `#/components/schemas/${key}`
+    const key: string = props.typeName;
+    const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
+    const report = (description: string) =>
+      props.errors.push({
+        path: props.path,
+        expected: "Non-infinite recursive schema definition",
+        value,
+        description,
+      });
+    if (
+      AutoBeOpenApiTypeChecker.isReference(value) &&
+      value.$ref === `#/components/schemas/${key}`
+    )
+      report(StringUtil.trim`
+        You have defined a nonsensible type like below:
+
+        \`\`\`typescript
+        type ${key} = ${key};
+        \`\`\`
+
+        This is an infinite recursive type definition that cannot exist in any
+        programming language. A type cannot be defined as itself - this creates
+        a circular definition with no base case, making the type impossible to
+        instantiate or validate.
+
+        If you need tree or graph structures, use explicit relationships with
+        ID references (e.g., parentId: string) instead of recursive type definitions.
+        Remove the self-reference and redesign the schema at the next time.
+      `);
+    else if (
+      AutoBeOpenApiTypeChecker.isArray(value) &&
+      AutoBeOpenApiTypeChecker.isReference(value.items) &&
+      value.items.$ref === `#/components/schemas/${key}`
+    )
+      report(StringUtil.trim`
+        You have defined a nonsensible type like below:
+
+        \`\`\`typescript
+        type ${key} = Array<${key}>;
+        \`\`\`
+
+        This is an infinite recursive array type that cannot exist in any
+        programming language. An array of itself creates a circular definition
+        with no base case, making the type impossible to instantiate or validate.
+
+        If you need nested structures, define explicit depth levels with separate
+        types, or use parent-child relationships with ID references.
+        Remove the self-reference and redesign the schema at the next time.
+      `);
+    else if (
+      AutoBeOpenApiTypeChecker.isOneOf(value) &&
+      value.oneOf.some(
+        (v) =>
+          AutoBeOpenApiTypeChecker.isReference(v) &&
+          v.$ref === `#/components/schemas/${key}`,
+      ) === true
+    )
+      report(StringUtil.trim`
+        You have defined a nonsensible type like below:
+
+        \`\`\`typescript
+        type ${key} = ${key} | ...;
+        \`\`\`
+
+        This is an infinite recursive union type that cannot exist in any
+        programming language. A union that includes itself as a variant creates
+        a circular definition with no base case, making the type impossible to
+        instantiate or validate.
+
+        If you need polymorphic hierarchies, define separate concrete types for
+        each variant without including the union type itself as a variant.
+        Remove the self-reference and redesign the schema at the next time.
+      `);
+    else if (
+      AutoBeOpenApiTypeChecker.isObject(value) &&
+      value.properties &&
+      value.required &&
+      Object.entries(value.properties).some(
+        ([k, v]) =>
+          AutoBeOpenApiTypeChecker.isReference(v) &&
+          v.$ref === `#/components/schemas/${key}` &&
+          value.required.includes(k),
       )
-        report(StringUtil.trim`
-          You have defined a nonsensible type like below:
+    )
+      report(StringUtil.trim`
+        You have defined a nonsensible type like below:
 
-          \`\`\`typescript
-          type ${key} = ${key};
-          \`\`\`
+        \`\`\`typescript
+        interface ${key} {
+          someProperty: ${key}; // required, non-nullable
+        }
+        \`\`\`
 
-          This is an infinite recursive type definition that cannot exist in any
-          programming language. A type cannot be defined as itself - this creates
-          a circular definition with no base case, making the type impossible to
-          instantiate or validate.
+        This is an infinite recursive object type that cannot exist in any
+        programming language. A required non-nullable property referencing its
+        own type creates a circular definition with no base case, making the
+        type impossible to instantiate.
 
-          If you need tree or graph structures, use explicit relationships with
-          ID references (e.g., parentId: string) instead of recursive type definitions.
-          Remove the self-reference and redesign the schema at the next time.
-        `);
-      else if (
-        AutoBeOpenApiTypeChecker.isArray(value) &&
-        AutoBeOpenApiTypeChecker.isReference(value.items) &&
-        value.items.$ref === `#/components/schemas/${key}`
-      )
-        report(StringUtil.trim`
-          You have defined a nonsensible type like below:
+        To create an instance of ${key}, you would need an instance of ${key},
+        which requires another instance of ${key}, infinitely. This is logically
+        impossible.
 
-          \`\`\`typescript
-          type ${key} = Array<${key}>;
-          \`\`\`
-
-          This is an infinite recursive array type that cannot exist in any
-          programming language. An array of itself creates a circular definition
-          with no base case, making the type impossible to instantiate or validate.
-
-          If you need nested structures, define explicit depth levels with separate
-          types, or use parent-child relationships with ID references.
-          Remove the self-reference and redesign the schema at the next time.
-        `);
-      else if (
-        AutoBeOpenApiTypeChecker.isOneOf(value) &&
-        value.oneOf.some(
-          (v) =>
-            AutoBeOpenApiTypeChecker.isReference(v) &&
-            v.$ref === `#/components/schemas/${key}`,
-        ) === true
-      )
-        report(StringUtil.trim`
-          You have defined a nonsensible type like below:
-
-          \`\`\`typescript
-          type ${key} = ${key} | ...;
-          \`\`\`
-
-          This is an infinite recursive union type that cannot exist in any
-          programming language. A union that includes itself as a variant creates
-          a circular definition with no base case, making the type impossible to
-          instantiate or validate.
-
-          If you need polymorphic hierarchies, define separate concrete types for
-          each variant without including the union type itself as a variant.
-          Remove the self-reference and redesign the schema at the next time.
-        `);
-      else if (
-        AutoBeOpenApiTypeChecker.isObject(value) &&
-        value.properties &&
-        value.required &&
-        Object.entries(value.properties).some(
-          ([k, v]) =>
-            AutoBeOpenApiTypeChecker.isReference(v) &&
-            v.$ref === `#/components/schemas/${key}` &&
-            value.required.includes(k),
-        )
-      )
-        report(StringUtil.trim`
-          You have defined a nonsensible type like below:
-
-          \`\`\`typescript
-          interface ${key} {
-            someProperty: ${key}; // required, non-nullable
-          }
-          \`\`\`
-
-          This is an infinite recursive object type that cannot exist in any
-          programming language. A required non-nullable property referencing its
-          own type creates a circular definition with no base case, making the
-          type impossible to instantiate.
-
-          To create an instance of ${key}, you would need an instance of ${key},
-          which requires another instance of ${key}, infinitely. This is logically
-          impossible.
-
-          If you need parent-child or graph relationships, make the self-referencing
-          property either nullable or optional, or use ID references (e.g., parentId: string).
-          Remove the required self-reference and redesign the schema at the next time.
-        `);
-    }
+        If you need parent-child or graph relationships, make the self-referencing
+        property either nullable or optional, or use ID references (e.g., parentId: string).
+        Remove the required self-reference and redesign the schema at the next time.
+      `);
   };
 
   const validateObjectType = (props: {
@@ -373,22 +373,22 @@ export namespace JsonSchemaValidator {
       if (AutoBeOpenApiTypeChecker.isObject(schema) === true) return;
       if (root.has(key))
         props.errors.push({
-          path: `${props.path}[${JSON.stringify(key)}]`,
+          path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject`,
           value: schema,
           description: StringUtil.trim`
-              Root schema types (used in requestBody or responseBody of operations)
-              must be defined as object types.
+            Root schema types (used in requestBody or responseBody of operations)
+            must be defined as object types.
 
-              If current type is hard to be defined as an object type,
-              just wrap it in an object type like below:
+            If current type is hard to be defined as an object type,
+            just wrap it in an object type like below:
 
-              \`\`\`typescript
-              {
-                value: T;
-              }
-              \`\`\`
-            `,
+            \`\`\`typescript
+            {
+              value: T;
+            }
+            \`\`\`
+          `,
         });
       else if (
         key.endsWith(".IAuthorized") ||
@@ -402,7 +402,7 @@ export namespace JsonSchemaValidator {
         key.endsWith(".IAuthorized")
       )
         props.errors.push({
-          path: `${props.path}[${JSON.stringify(key)}]`,
+          path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject`,
           value: schema,
           description: StringUtil.trim`

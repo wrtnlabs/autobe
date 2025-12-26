@@ -83,10 +83,7 @@ export namespace ArchiveLogger {
       );
       console.log(event.result.diagnostics);
     } else if (event.type === "interfaceComplement")
-      content.push(
-        `  - missed: ${event.missed.join(", ")}`,
-        `  - filled: ${Object.keys(event.schemas).join(", ")}`,
-      );
+      content.push(`  - typeName: ${event.typeName}`);
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,
@@ -113,7 +110,7 @@ export namespace ArchiveLogger {
         `  - operations: ${event.operations.map((o) => `${o.method.toUpperCase()} ${o.path}`)}`,
       );
     else if (event.type === "interfaceSchema")
-      content.push(`  - schemas: ${Object.keys(event.schemas).join(", ")}`);
+      content.push(`  - typeName: ${event.typeName}`);
     else if (event.type === "realizePlan")
       content.push(`  - plan: ${event.plans[0]?.type}`);
     else if (event.type === "realizeWrite")

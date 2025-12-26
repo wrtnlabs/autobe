@@ -1228,15 +1228,15 @@ export namespace IAutoBeInterfaceSchemaContentReviewApplication {
     think: IThink;
 
     /**
-     * Modified schemas resulting from review fixes.
+     * Schema resulting from review fixes.
      *
-     * Contains ONLY the schemas that were modified during the review process.
-     * This includes both modified existing schemas and newly created schemas.
+     * - If the schema has content issues and needs fixes: return the corrected schema
+     * - If the schema is perfect and valid: return null
      *
-     * Return empty object {} when all schemas are already correct and no
-     * modifications were needed.
+     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
+     * accidental overwrites. Use null to explicitly indicate "no content fixes needed".
      */
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
 
   /**
