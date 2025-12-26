@@ -64,6 +64,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Endpoints",
           description: "Collecting API endpoints",
         };
+      case "interfaceEndpointReview":
+        return {
+          title: "Interface Endpoints Review",
+          description: "Reviewing API endpoints",
+        };
       case "interfaceOperation":
         return {
           title: "Interface Operations",
