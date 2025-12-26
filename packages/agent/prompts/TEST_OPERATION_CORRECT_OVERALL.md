@@ -377,20 +377,16 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 The `connection` parameter is a BASE connection only. Test code MUST:
 1. **NEVER use `connection` directly for API calls**
-2. **Use actor-specific connections** created from authorization function results (e.g., `userConnection`, `adminConnection`)
+2. **Create actor-specific connections** with `{ host: connection.host }` and pass to authorization functions
 
 **If you find code using `connection` directly in API calls, this is a BUG - fix it!**
 
 **Correct Pattern:**
 ```typescript
-const userAuth = await authorize_user_login(connection, { body: creds });
-const userConnection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${userAuth.token.access}`,
-  },
-};
+// Create a new connection with host only, then authorize
+const userConnection: api.IConnection = { host: connection.host };
+await authorize_user_login(userConnection, { body: creds });
+// userConnection.headers is now updated internally by authorize function
 
 // ✅ Use userConnection for API calls
 await api.functional.orders.create(userConnection, {...});

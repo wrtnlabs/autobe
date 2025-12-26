@@ -49,24 +49,14 @@ The `connection` parameter passed to your test function is a **BASE connection o
 **MANDATORY Pattern:**
 ```typescript
 export async function test_api_example(connection: api.IConnection) {
-  // Step 1: Create actor-specific connections FIRST
-  const adminAuth = await authorize_admin_login(connection, { body: adminCreds });
-  const adminConnection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${adminAuth.token.access}`,
-    },
-  };
+  // Step 1: Create actor-specific connections and authorize them
+  const adminConnection: api.IConnection = { host: connection.host };
+  await authorize_admin_login(adminConnection, { body: adminCreds });
+  // adminConnection.headers is now updated internally by authorize function
 
-  const userAuth = await authorize_user_login(connection, { body: userCreds });
-  const userConnection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${userAuth.token.access}`,
-    },
-  };
+  const userConnection: api.IConnection = { host: connection.host };
+  await authorize_user_login(userConnection, { body: userCreds });
+  // userConnection.headers is now updated internally by authorize function
 
   // Step 2: Use ONLY actor-specific connections for ALL API calls
   // ✅ CORRECT
@@ -553,30 +543,20 @@ The `connection` parameter passed to your test function is a **BASE connection o
 **Example usage in test**:
 ```typescript
 export async function test_api_admin_creates_product(connection: api.IConnection) {
-  // Step 1: Authenticate and CREATE NEW CONNECTION for admin
-  const adminAuth = await authorize_admin_login(
-    connection,
-    {
-      body: {
-        email: "admin@example.com",
-        password: "password123",
-      },
+  // Step 1: Create a new connection and authenticate
+  const adminConnection: api.IConnection = { host: connection.host };
+  await authorize_admin_login(adminConnection, {
+    body: {
+      email: "admin@example.com",
+      password: "password123",
     },
-  );
-
-  // ✅ CORRECT: Create a new connection object with the auth token
-  const adminConnection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${adminAuth.token.access}`,
-    },
-  };
+  });
+  // adminConnection.headers is now updated internally by authorize function
 
   // ❌ WRONG: Using SDK directly when authorization function exists
   // const admin = await api.functional.auth.admin.login(connection, {...});
 
-  // Step 2: Use the NEW adminConnection for all admin API calls
+  // Step 2: Use the adminConnection for all admin API calls
   // ✅ CORRECT: Using adminConnection (NOT connection!)
   const product = await api.functional.admin.products.create(adminConnection, {
     body: { name: "Test Product", price: 1000 },
@@ -591,32 +571,14 @@ export async function test_api_admin_creates_product(connection: api.IConnection
 ```typescript
 export async function test_api_multi_actor_workflow(connection: api.IConnection) {
   // Create separate connections for each actor
-  const adminAuth = await authorize_admin_login(connection, { body: adminCreds });
-  const adminConnection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${adminAuth.token.access}`,
-    },
-  };
+  const adminConnection: api.IConnection = { host: connection.host };
+  await authorize_admin_login(adminConnection, { body: adminCreds });
 
-  const user1Auth = await authorize_user_login(connection, { body: user1Creds });
-  const user1Connection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${user1Auth.token.access}`,
-    },
-  };
+  const user1Connection: api.IConnection = { host: connection.host };
+  await authorize_user_login(user1Connection, { body: user1Creds });
 
-  const user2Auth = await authorize_user_login(connection, { body: user2Creds });
-  const user2Connection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${user2Auth.token.access}`,
-    },
-  };
+  const user2Connection: api.IConnection = { host: connection.host };
+  await authorize_user_login(user2Connection, { body: user2Creds });
 
   // Now each actor has their own isolated connection
   // ✅ Admin creates a product
@@ -680,20 +642,10 @@ const resource = await generate_random_resourceName(
 **Example usage in test**:
 ```typescript
 export async function test_api_user_updates_article(connection: api.IConnection) {
-  // Step 1: Authenticate and CREATE USER CONNECTION
-  const userAuth = await authorize_user_login(
-    connection,
-    {
-      body: credentials,
-    }
-  );
-  const userConnection = {
-    ...connection,
-    headers: {
-      ...connection.headers,
-      Authorization: `Bearer ${userAuth.token.access}`,
-    },
-  };
+  // Step 1: Create a new connection and authenticate
+  const userConnection: api.IConnection = { host: connection.host };
+  await authorize_user_login(userConnection, { body: credentials });
+  // userConnection.headers is now updated internally by authorize function
 
   // Step 2: Create a test article using generation function
   // ✅ CORRECT: Using generation function with userConnection
@@ -1103,12 +1055,9 @@ export async function {{FUNCTION_NAME}}(
 export async function test_api_shopping_sale_review_update(
   connection: api.IConnection,
 ) {
-  // Step 1: Create actor-specific connection first
-  const customerAuth = await authorize_customer_login(connection, { body: credentials });
-  const customerConnection = {
-    ...connection,
-    headers: { ...connection.headers, Authorization: `Bearer ${customerAuth.token.access}` },
-  };
+  // Step 1: Create actor-specific connection and authorize
+  const customerConnection: api.IConnection = { host: connection.host };
+  await authorize_customer_login(customerConnection, { body: credentials });
 
   // ✅ CORRECT: ALWAYS use await with API calls, using actor-specific connection
   const article: IBbsArticle = await api.functional.bbs.articles.create(
@@ -2397,48 +2346,29 @@ export async function test_api_shopping_sale_review_update(
 **Each actor requires their OWN connection object with authentication token.**
 
 The `connection` parameter is a BASE connection only. You MUST:
-1. Call authorization function to get auth result with token
-2. Create a NEW connection object with the token in headers
+1. Create a new connection object with `{ host: connection.host }`
+2. Pass it to the authorization function (which updates the connection internally)
 3. Use ONLY this actor-specific connection for all API calls by that actor
 
 **MANDATORY Pattern:**
 ```typescript
-// Step 1: Get auth result from authorization function
-const adminAuth = await authorize_admin_login(connection, { body: adminCreds });
+// Step 1: Create a new connection and authorize
+const adminConnection: api.IConnection = { host: connection.host };
+await authorize_admin_login(adminConnection, { body: adminCreds });
+// adminConnection.headers is now updated internally by authorize function
 
-// Step 2: Create NEW connection with the token
-const adminConnection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${adminAuth.token.access}`,
-  },
-};
-
-// Step 3: Use actor-specific connection for ALL API calls
+// Step 2: Use actor-specific connection for ALL API calls
 await api.functional.admin.products.create(adminConnection, {...});
 ```
 
 **Multi-Actor Pattern:**
 ```typescript
 // Each actor gets their own connection
-const user1Auth = await authorize_user_login(connection, { body: user1Creds });
-const user1Connection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${user1Auth.token.access}`,
-  },
-};
+const user1Connection: api.IConnection = { host: connection.host };
+await authorize_user_login(user1Connection, { body: user1Creds });
 
-const user2Auth = await authorize_user_login(connection, { body: user2Creds });
-const user2Connection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${user2Auth.token.access}`,
-  },
-};
+const user2Connection: api.IConnection = { host: connection.host };
+await authorize_user_login(user2Connection, { body: user2Creds });
 
 // User1 and User2 can now act independently
 await api.functional.orders.create(user1Connection, {...});
@@ -2458,7 +2388,7 @@ await api.functional.anything(adminConnection, {...});
 **Creating Unauthenticated Connection:**
 ```typescript
 // ✅ CORRECT: Create connection with empty headers for unauthenticated calls
-const guestConnection = { ...connection, headers: {} };
+const guestConnection: api.IConnection = { host: connection.host };
 await api.functional.public.info(guestConnection);
 ```
 
@@ -3290,13 +3220,10 @@ export async function test_api_user_creates_order_with_multiple_items(
 export async function test_api_admin_updates_user_status(
   connection: api.IConnection,
 ) {
-  const adminAuth = await authorize_admin_login(connection, {
+  const adminConnection: api.IConnection = { host: connection.host };
+  await authorize_admin_login(adminConnection, {
     body: { email: "admin@example.com", password: "admin123" }
   });
-  const adminConnection = {
-    ...connection,
-    headers: { ...connection.headers, Authorization: `Bearer ${adminAuth.token.access}` },
-  };
 
   const user = await generate_random_user(adminConnection, {});
 
@@ -3319,11 +3246,8 @@ export async function test_api_admin_updates_user_status(
 export async function test_api_calculate_shipping_cost(
   connection: api.IConnection,
 ) {
-  const customerAuth = await authorize_user_login(connection, { body: credentials });
-  const customerConnection = {
-    ...connection,
-    headers: { ...connection.headers, Authorization: `Bearer ${customerAuth.token.access}` },
-  };
+  const customerConnection: api.IConnection = { host: connection.host };
+  await authorize_user_login(customerConnection, { body: credentials });
 
   const order = await generate_random_order(customerConnection, {});
 
@@ -3348,11 +3272,8 @@ export async function test_api_calculate_shipping_cost(
 export async function test_api_process_payment_by_method(
   connection: api.IConnection,
 ) {
-  const customerAuth = await authorize_user_login(connection, { body: credentials });
-  const customerConnection = {
-    ...connection,
-    headers: { ...connection.headers, Authorization: `Bearer ${customerAuth.token.access}` },
-  };
+  const customerConnection: api.IConnection = { host: connection.host };
+  await authorize_user_login(customerConnection, { body: credentials });
 
   const order = await generate_random_order(customerConnection, {});
 
@@ -3408,10 +3329,14 @@ for (const id of ids) {
 **Correct Alternatives for Common Patterns:**
 
 ```typescript
-// ✅ CORRECT: Use ternary for conditional assignment
-const userAuth = isAdmin
-  ? await authorize_admin_login(connection, adminCreds)
-  : await authorize_user_login(connection, userCreds);
+// ✅ CORRECT: Create connection first, then authorize conditionally
+const actorConnection: api.IConnection = { host: connection.host };
+if (isAdmin) {
+  await authorize_admin_login(actorConnection, adminCreds);
+} else {
+  await authorize_user_login(actorConnection, userCreds);
+}
+// actorConnection.headers is now set by the authorize function
 
 // ✅ CORRECT: Use reduce without mutation
 const products = await getProducts();
@@ -3782,14 +3707,15 @@ const admin = await api.functional.customers.authenticate.join(customerConnectio
   } satisfies ICustomer.IJoin,
 });
 
-// ✅ LOGICAL: Use proper admin authentication endpoint
-const adminAuth = await api.functional.admins.authenticate.join(connection, {
+// ✅ LOGICAL: Use proper admin authentication with utility function
+const adminConnection: api.IConnection = { host: connection.host };
+await authorize_admin_join(adminConnection, {
   body: {
     email: adminEmail,
     password: "admin123"
   } satisfies IAdmin.IJoin,
 });
-const adminConnection = { ...connection, headers: { Authorization: `Bearer ${adminAuth.token.access}` } };
+// adminConnection.headers is now updated internally
 ```
 
 **2. Creating Resources with Invalid Relationships**
@@ -3876,8 +3802,8 @@ const newUser = { name: "John", age: 30 };
 newUser.name = "John";  // Already set to "John"!
 
 // ✅ LOGICAL: Only perform necessary modifications
-// For unauthenticated connections, just create empty headers
-const unauthConn: api.IConnection = { ...connection, headers: {} };
+// For unauthenticated connections, just create with host only
+const unauthConn: api.IConnection = { host: connection.host };
 // STOP - DO NOT manipulate headers after creation
 ```
 
@@ -3906,16 +3832,10 @@ const updatedProfile = await api.functional.users.update(userConnection, {
 ```typescript
 // ✅ CORRECT: User can only modify their own resources
 // Create connection for user A
-const userAAuth = await authorize_user_login(connection, {
+const userAConnection: api.IConnection = { host: connection.host };
+await authorize_user_login(userAConnection, {
   body: { email: userA.email, password: "password" } satisfies IUser.ILogin,
 });
-const userAConnection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${userAAuth.token.access}`,
-  },
-};
 
 // User A creates a post using their own connection
 const postA = await api.functional.posts.create(userAConnection, {
@@ -3923,16 +3843,10 @@ const postA = await api.functional.posts.create(userAConnection, {
 });
 
 // Create connection for user B
-const userBAuth = await authorize_user_login(connection, {
+const userBConnection: api.IConnection = { host: connection.host };
+await authorize_user_login(userBConnection, {
   body: { email: userB.email, password: "password" } satisfies IUser.ILogin,
 });
-const userBConnection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${userBAuth.token.access}`,
-  },
-};
 
 // User B should NOT be able to update User A's post
 await TestValidator.error(
@@ -4061,16 +3975,10 @@ await TestValidator.error(
 ```typescript
 // ✅ CORRECT: Test access control
 // Regular user cannot access admin endpoints
-const regularUserAuth = await authorize_user_login(connection, {
+const regularUserConnection: api.IConnection = { host: connection.host };
+await authorize_user_login(regularUserConnection, {
   body: { email: regularUser.email, password: "password" } satisfies IUser.ILogin,
 });
-const regularUserConnection = {
-  ...connection,
-  headers: {
-    ...connection.headers,
-    Authorization: `Bearer ${regularUserAuth.token.access}`,
-  },
-};
 
 await TestValidator.error(
   "regular user cannot access admin data",

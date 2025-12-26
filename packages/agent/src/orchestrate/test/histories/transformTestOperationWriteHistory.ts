@@ -124,19 +124,14 @@ export async function transformTestOperationWriteHistory<
           Using \`api.functional.*\` directly for an endpoint that has a utility function is **FORBIDDEN**.
 
           ### Authorization Functions
-          Use these to authenticate users. They return auth result containing token.
-          **You MUST create a NEW connection object** with the token from the result.
+          Use these to authenticate users. They update the connection's headers internally.
+          **You MUST create a NEW connection object** with \`{ host: connection.host }\` and pass it to the authorize function.
 
           **MANDATORY Pattern:**
           \`\`\`typescript
-          const adminAuth = await authorize_admin_login(connection, { body: {...} });
-          const adminConnection = {
-            ...connection,
-            headers: {
-              ...connection.headers,
-              Authorization: \`Bearer \${adminAuth.token.access}\`,
-            },
-          };
+          const adminConnection: api.IConnection = { host: connection.host };
+          await authorize_admin_login(adminConnection, { body: {...} });
+          // adminConnection.headers is now updated internally by authorize function
           // Use adminConnection for all subsequent API calls
           \`\`\`
 
