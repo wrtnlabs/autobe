@@ -8,7 +8,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformInterfaceSchemaHistory = (props: {
   operations: AutoBeOpenApi.IOperation[];
-  typeNames: string[];
+  typeName: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -19,14 +19,7 @@ export const transformInterfaceSchemaHistory = (props: {
     | "previousInterfaceSchemas"
   >;
   instruction: string;
-  already: string[];
-  remained: Set<string>;
 }): IAutoBeOrchestrateHistory => {
-  const schemas: Set<string> = new Set();
-  for (const op of props.operations) {
-    if (op.requestBody) schemas.add(op.requestBody.typeName);
-    if (op.responseBody) schemas.add(op.responseBody.typeName);
-  }
   return {
     histories: [
       {
@@ -70,42 +63,21 @@ export const transformInterfaceSchemaHistory = (props: {
         ${JSON.stringify(props.operations)}
         \`\`\`
 
-        ## Schemas
-
-        Here is the list of request/response bodies' type names from
-        OpenAPI operations.
-
-        Reference them when creating DTO schema components, especially
-        considering the DTO relationships.
-
-        ${Array.from(schemas)
-          .map((k) => `- \`${k}\``)
-          .join("\n")}
-
+        ## DTO type to create
+        
+        Here is the specific type you need to create a JSON schema component for.
+        
+        - ${JSON.stringify(props.typeName)}
       `,
       },
     ],
     userMessage: StringUtil.trim`
-      Make type components please.
+      Make ${JSON.stringify(props.typeName)} type named JSON schema component 
+      based on the provided API design instructions and relevant operations.
 
-      Here is the list of request/response bodies' type names from
-      OpenAPI operations. Make type components of them. If more object
-      types are required during making the components, please make them
-      too.
-
-      ${Array.from(props.remained)
-        .map((k) => `- \`${k}\``)
-        .join("\n")}${
-        props.already.length !== 0
-          ? StringUtil.trim`
-
-            > By the way, here is the list of components schemas what you've
-            > already made. So, you don't need to make them again.
-            >
-            ${props.already.map((k) => `> - \`${k}\``).join("\n")}
-          `
-          : ""
-      }
+      Note that, not making "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>" type,
+      but making "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for the
+      ${JSON.stringify(props.typeName)} type.
     `,
   };
 };

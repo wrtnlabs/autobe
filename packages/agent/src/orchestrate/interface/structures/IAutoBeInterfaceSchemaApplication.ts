@@ -69,11 +69,11 @@ export namespace IAutoBeInterfaceSchemaApplication {
   }
 
   /**
-   * Request to generate OpenAPI schema components.
+   * Request to generate a single OpenAPI schema component.
    *
-   * Executes schema generation to create comprehensive type definitions for all
-   * entities in the system. Ensures complete type coverage for all operations
-   * in the OpenAPI specification.
+   * Executes schema generation to create a type definition for a specific
+   * DTO type. Each invocation handles one schema component to ensure accuracy
+   * and clear responsibility.
    */
   export interface IComplete {
     /**
@@ -86,16 +86,17 @@ export namespace IAutoBeInterfaceSchemaApplication {
     type: "complete";
 
     /**
-     * Complete set of schema components for the OpenAPI specification.
+     * JSON schema component for the specified type.
      *
-     * This property contains comprehensive type definitions for all entities in
-     * the system. It is the central repository of all named schema types that
-     * will be used throughout the API specification.
+     * This property contains the type definition for a single DTO type that
+     * will be used in the OpenAPI specification's components.schemas section.
+     * The type name is already provided in the input context, so only the
+     * schema definition itself needs to be returned.
      *
-     * DO: Define all object types as named types in the components.schemas
+     * DO: Define object types as named types in the components.schemas
      * section. DO NOT: Use inline anonymous object definitions.
      *
-     * This components object includes:
+     * This schema represents:
      *
      * - Main entity types (IEntityName)
      * - Operation-specific variants (.ICreate, .IUpdate, .ISummary, etc.)
@@ -110,27 +111,21 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * This applies to all objects in request bodies, response bodies, and
      * properties that are objects or arrays of objects.
      *
-     * Example structure:
+     * Example structure for typeName "IUser":
      *
      * ```typescript
      * {
-     *   schemas: {
-     *     IUser: {
-     *       type: "object",
-     *       properties: {
-     *         id: { type: "string", format: "uuid" },
-     *         email: { type: "string", format: "email" },
-     *         profile: { "$ref": "#/components/schemas/IUserProfile" }
-     *       },
-     *       required: ["id", "email"],
-     *       description: "User entity representing system account holders..."
-     *     },
-     *     "IUser.ICreate": { ... },
-     *     // Additional schemas
-     *   }
+     *   type: "object",
+     *   properties: {
+     *     id: { type: "string", format: "uuid" },
+     *     email: { type: "string", format: "email" },
+     *     profile: { "$ref": "#/components/schemas/IUserProfile" }
+     *   },
+     *   required: ["id", "email"],
+     *   description: "User entity representing system account holders..."
      * }
      * ```
      */
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
   }
 }

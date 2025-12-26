@@ -11,9 +11,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
@@ -34,92 +32,56 @@ export async function orchestrateInterfaceSchema(
   JsonSchemaNamingConvention.operations(props.operations);
 
   // gather type names
-  const typeNames: Set<string> = new Set();
+  const gathered: Set<string> = new Set();
   for (const op of props.operations) {
-    if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
-    if (op.responseBody !== null) typeNames.add(op.responseBody.typeName);
+    if (op.requestBody !== null) gathered.add(op.requestBody.typeName);
+    if (op.responseBody !== null) gathered.add(op.responseBody.typeName);
   }
   const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    JsonSchemaFactory.presets(typeNames);
+    JsonSchemaFactory.presets(gathered);
 
   // divide and conquer
-  const matrix: string[][] = divideArray({
-    array: Array.from(typeNames),
-    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
-  });
+  const typeNames: string[] = Array.from(gathered).filter(
+    (t) => presets[t] === undefined,
+  );
   const progress: AutoBeProgressEventBase = {
-    total: typeNames.size,
+    total: typeNames.length,
     completed: 0,
   };
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     ...presets,
   };
-  for (const y of await executeCachedBatch(
+  await executeCachedBatch(
     ctx,
-    matrix.map((it) => async (promptCacheKey) => {
+    typeNames.map((it) => async (promptCacheKey) => {
       const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
         (op) =>
-          (op.requestBody && it.includes(op.requestBody.typeName)) ||
-          (op.responseBody && it.includes(op.responseBody.typeName)),
+          (op.requestBody && op.requestBody.typeName === it) ||
+          (op.responseBody && op.responseBody.typeName === it),
       );
-      const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, {
-          operations,
-          progress,
-          promptCacheKey,
-          typeNames: it,
-          instruction: props.instruction,
-        });
-      return row;
-    }),
-  ))
-    Object.assign(x, y);
-  return x;
-}
-
-async function divideAndConquer(
-  ctx: AutoBeContext,
-  props: {
-    operations: AutoBeOpenApi.IOperation[];
-    typeNames: string[];
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-    instruction: string;
-  },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const remained: Set<string> = new Set(props.typeNames);
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-  for (let i: number = 0; i < ctx.retry; ++i) {
-    if (remained.size === 0) break;
-    const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(ctx, {
+      const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
+        operations,
+        progress,
+        promptCacheKey,
+        typeName: it,
         instruction: props.instruction,
-        operations: props.operations,
-        promptCacheKey: props.promptCacheKey,
-        progress: props.progress,
-        oldbie: schemas,
-        remained,
       });
-    for (const key of Object.keys(newbie)) {
-      schemas[key] = newbie[key];
-      remained.delete(key);
-    }
-  }
-  return schemas;
+      x[it] = row;
+    }),
+  );
+  return x;
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
     operations: AutoBeOpenApi.IOperation[];
-    oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-    remained: Set<string>;
+    typeName: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const already: string[] = Object.keys(props.oldbie);
+): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -143,56 +105,52 @@ async function process(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    > | null> = {
+    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
       value: null,
     };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
-        operations: props.operations,
         build: async (next) => {
-          pointer.value ??= {};
-          Object.assign(pointer.value, next);
+          pointer.value = next;
         },
-        pointer,
         preliminary,
+        typeName: props.typeName,
+        operations: props.operations,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceSchemaHistory({
         preliminary,
-        typeNames: Array.from(
-          new Set([...props.remained, ...Object.keys(props.oldbie)]),
-        ),
+        typeName: props.typeName,
         operations: props.operations,
         instruction: props.instruction,
-        remained: props.remained,
-        already,
       }),
     });
     if (pointer.value !== null) {
-      const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+      const container: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
         OpenApiV3_1Emender.convertComponents({
-          schemas: pointer.value,
+          schemas: {
+            [props.typeName]: pointer.value,
+          },
         }) as AutoBeOpenApi.IComponents
       ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+      const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
+        container[props.typeName];
+
       ctx.dispatch({
         type: SOURCE,
         id: v7(),
-        schemas,
+        typeName: props.typeName,
+        schema,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: (props.progress.completed += Object.keys(schemas).length),
-        total: (props.progress.total += Object.keys(schemas).filter(
-          (k) => props.remained.has(k) === false,
-        ).length),
+        completed: ++props.progress.completed,
+        total: props.progress.total,
         step: ctx.state().prisma?.step ?? 0,
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaEvent);
-      return out(result)(schemas);
+      return out(result)(schema);
     }
     return out(result)(null);
   });
@@ -201,14 +159,7 @@ async function process(
 function createController(
   ctx: AutoBeContext,
   props: {
-    operations: AutoBeOpenApi.IOperation[];
-    build: (
-      next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    ) => Promise<void>;
-    pointer: IPointer<Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    > | null>;
+    build: (next: AutoBeOpenApi.IJsonSchemaDescriptive) => Promise<void>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
       | "prismaSchemas"
@@ -218,21 +169,13 @@ function createController(
       | "previousInterfaceOperations"
       | "previousInterfaceSchemas"
     >;
+    operations: AutoBeOpenApi.IOperation[];
+    typeName: string;
   },
 ): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
-    if (
-      typia.is<{
-        request: {
-          type: "complete";
-          schemas: object;
-        };
-      }>(next)
-    )
-      JsonSchemaFactory.fixPage("schemas", next.request);
-
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
     if (result.success === false) {
@@ -255,13 +198,21 @@ function createController(
           .flat(),
       ),
       operations: props.operations,
-      schemas: result.data.request.schemas,
+      schemas: {
+        [props.typeName]: result.data.request.schema,
+      },
       path: "$input.request.schemas",
     });
     if (errors.length !== 0)
       return {
         success: false,
-        errors,
+        errors: errors.map((e) => ({
+          ...e,
+          path: e.path.replace(
+            `$input.request.schemas[${JSON.stringify(props.typeName)}]`,
+            "$input.schema",
+          ),
+        })),
         data: next,
       };
     return result;
@@ -281,7 +232,7 @@ function createController(
     execute: {
       process: async (next) => {
         if (next.request.type === "complete")
-          await props.build(next.request.schemas);
+          await props.build(next.request.schema);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
   };
