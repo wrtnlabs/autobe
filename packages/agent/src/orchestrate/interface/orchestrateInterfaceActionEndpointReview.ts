@@ -1,6 +1,11 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeEventSource, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBeInterfaceEndpointReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceEndpointReviewEvent";
+import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
@@ -19,6 +24,8 @@ export async function orchestrateInterfaceActionEndpointReview(
     endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
     baseEndpoints: AutoBeOpenApi.IEndpoint[];
     authorizations: AutoBeOpenApi.IOperation[];
+    group: AutoBeInterfaceGroup;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   // Initialize endpoint set with current action endpoints
@@ -65,6 +72,8 @@ export async function orchestrateInterfaceActionEndpointReview(
       authorizations: props.authorizations,
       preliminary,
       endpointSet,
+      group: props.group,
+      progress: props.progress,
     },
     ctx.retry,
   );
@@ -84,6 +93,8 @@ async function predicate(
       | "previousInterfaceOperations"
     >;
     endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;
+    group: AutoBeInterfaceGroup;
+    progress: AutoBeProgressEventBase;
   },
   life: number,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
@@ -100,6 +111,8 @@ async function predicate(
     preliminary: props.preliminary,
     endpointSet: props.endpointSet,
     pointer,
+    group: props.group,
+    progress: props.progress,
   });
 
   if (pointer.value !== null && pointer.value.actions.length === 0)
@@ -121,6 +134,8 @@ async function process(
     >;
     endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;
     pointer: IPointer<IAutoBeInterfaceActionEndpointReviewApplication.IComplete | null>;
+    group: AutoBeInterfaceGroup;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<void> {
   const start: Date = new Date();
@@ -141,6 +156,7 @@ async function process(
         endpoints: props.endpointSet.toJSON(),
         baseEndpoints: props.baseEndpoints,
         authorizations: props.authorizations,
+        group: props.group,
       }),
     });
 
@@ -158,6 +174,8 @@ async function process(
         review: props.pointer.value.review,
         created_at: start.toISOString(),
         step: ctx.state().analyze?.step ?? 0,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
       };

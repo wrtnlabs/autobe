@@ -27,13 +27,14 @@ export async function orchestrateInterfaceBaseEndpoint(
     groups: AutoBeInterfaceGroup[];
     authorizations: AutoBeOpenApi.IOperation[];
     progress: AutoBeProgressEventBase;
+    reviewProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const endpoints: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] = (
+  const endpoints: AutoBeOpenApi.IEndpoint[] = (
     await executeCachedBatch(
       ctx,
       props.groups.map((group) => async (promptCacheKey) => {
-        const event: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] =
+        const generated: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] =
           await process(ctx, {
             group,
             progress: props.progress,
@@ -41,27 +42,28 @@ export async function orchestrateInterfaceBaseEndpoint(
             instruction: props.instruction,
             authorizations: props.authorizations,
           });
-        return event;
+
+        const reviewed: AutoBeOpenApi.IEndpoint[] =
+          await orchestrateInterfaceBaseEndpointReview(ctx, {
+            endpoints: generated,
+            authorizations: props.authorizations,
+            group,
+            progress: props.reviewProgress,
+          });
+
+        return reviewed;
       }),
     )
   ).flat();
 
-  const deduplicated: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[] =
-    new HashSet(
-      endpoints,
-      (key) => AutoBeOpenApiEndpointComparator.hashCode(key.endpoint),
-      (a, b) =>
-        a.endpoint.path === b.endpoint.path &&
-        a.endpoint.method === b.endpoint.method,
-    ).toJSON();
+  // Final deduplication across all groups
+  const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
+    endpoints,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
+  ).toJSON();
 
-  // Review the endpoints
-  const reviewed: AutoBeOpenApi.IEndpoint[] =
-    await orchestrateInterfaceBaseEndpointReview(ctx, {
-      endpoints: deduplicated,
-      authorizations: props.authorizations,
-    });
-  return reviewed;
+  return deduplicated;
 }
 
 async function process(

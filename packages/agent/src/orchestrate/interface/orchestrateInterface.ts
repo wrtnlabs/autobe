@@ -88,6 +88,10 @@ export const orchestrateInterface =
       completed: 0,
       total: init.groups.length * endpointSteps.length,
     };
+    const endpointReviewProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: init.groups.length * endpointSteps.length,
+    };
     // BASE ENDPOINTS
     const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
       await orchestrateInterfaceBaseEndpoint(ctx, {
@@ -95,6 +99,7 @@ export const orchestrateInterface =
         groups: init.groups,
         authorizations: authOperations,
         progress: endpointProgress,
+        reviewProgress: endpointReviewProgress,
       });
     // ACTION ENDPOINTS
     const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
@@ -104,6 +109,7 @@ export const orchestrateInterface =
         authorizations: authOperations,
         excluded: baseEndpoints,
         progress: endpointProgress,
+        reviewProgress: endpointReviewProgress,
       });
     const endpoints: AutoBeOpenApi.IEndpoint[] = [
       ...baseEndpoints,

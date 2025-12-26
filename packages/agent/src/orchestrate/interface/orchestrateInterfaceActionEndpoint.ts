@@ -28,13 +28,14 @@ export async function orchestrateInterfaceActionEndpoint(
     authorizations: AutoBeOpenApi.IOperation[];
     excluded: AutoBeOpenApi.IEndpoint[];
     progress: AutoBeProgressEventBase;
+    reviewProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] = (
+  const endpoints: AutoBeOpenApi.IEndpoint[] = (
     await executeCachedBatch(
       ctx,
       props.groups.map((group) => async (promptCacheKey) => {
-        const event: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] =
+        const generated: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] =
           await process(ctx, {
             group,
             progress: props.progress,
@@ -43,28 +44,29 @@ export async function orchestrateInterfaceActionEndpoint(
             authorizations: props.authorizations,
             excluded: props.excluded,
           });
-        return event;
+
+        const reviewed: AutoBeOpenApi.IEndpoint[] =
+          await orchestrateInterfaceActionEndpointReview(ctx, {
+            endpoints: generated,
+            baseEndpoints: props.excluded,
+            authorizations: props.authorizations,
+            group,
+            progress: props.reviewProgress,
+          });
+
+        return reviewed;
       }),
     )
   ).flat();
 
-  const deduplicated: IAutoBeInterfaceActionEndpointApplication.IEndpoint[] =
-    new HashSet(
-      endpoints,
-      (key) => AutoBeOpenApiEndpointComparator.hashCode(key.endpoint),
-      (a, b) =>
-        a.endpoint.path === b.endpoint.path &&
-        a.endpoint.method === b.endpoint.method,
-    ).toJSON();
+  // Final deduplication across all groups
+  const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
+    endpoints,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
+  ).toJSON();
 
-  // Review the endpoints
-  const reviewed: AutoBeOpenApi.IEndpoint[] =
-    await orchestrateInterfaceActionEndpointReview(ctx, {
-      endpoints: deduplicated,
-      baseEndpoints: props.excluded,
-      authorizations: props.authorizations,
-    });
-  return reviewed;
+  return deduplicated;
 }
 
 async function process(
