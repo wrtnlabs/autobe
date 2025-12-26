@@ -47,7 +47,7 @@ export async function orchestrateInterfaceSchemaReview(
             (op.responseBody && op.responseBody.typeName === typeName),
         );
       try {
-        const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(
+        const reviewed: AutoBeOpenApi.IJsonSchemaDescriptive = await process(
           ctx,
           config,
           {
@@ -60,7 +60,7 @@ export async function orchestrateInterfaceSchemaReview(
             promptCacheKey,
           },
         );
-        x[typeName] = row;
+        x[typeName] = reviewed;
       } catch {
         ++props.progress.completed;
       }
@@ -140,43 +140,40 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      // If content is null, the schema is perfect - use original
-      // If content is not null, the schema has fixes - use corrected version
-      const content: AutoBeOpenApi.IJsonSchemaDescriptive =
-        pointer.value.content === null
-          ? props.reviewSchema
-          : (
-              ((
-                OpenApiV3_1Emender.convertComponents({
-                  schemas: {
-                    [props.typeName]: pointer.value.content,
-                  },
-                }) as AutoBeOpenApi.IComponents
-              ).schemas ?? {}) as Record<
-                string,
-                AutoBeOpenApi.IJsonSchemaDescriptive
-              >
-            )[props.typeName];
-      ctx.dispatch({
-        type: SOURCE,
-        kind: config.kind,
-        id: v7(),
-        typeName: props.typeName,
-        schema: props.reviewSchema,
-        review: pointer.value.think.review,
-        plan: pointer.value.think.plan,
-        content,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        step: ctx.state().analyze?.step ?? 0,
-        total: props.progress.total,
-        completed: ++props.progress.completed,
-        created_at: new Date().toISOString(),
-      });
-      return out(result)(content);
-    }
-    throw new Error("Schema review failed");
+    if (pointer.value === null) throw new Error("Schema review failed");
+
+    const content: AutoBeOpenApi.IJsonSchemaDescriptive =
+      pointer.value.content === null
+        ? props.reviewSchema
+        : (
+            ((
+              OpenApiV3_1Emender.convertComponents({
+                schemas: {
+                  [props.typeName]: pointer.value.content,
+                },
+              }) as AutoBeOpenApi.IComponents
+            ).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >
+          )[props.typeName];
+    ctx.dispatch({
+      type: SOURCE,
+      kind: config.kind,
+      id: v7(),
+      typeName: props.typeName,
+      schema: props.reviewSchema,
+      review: pointer.value.think.review,
+      plan: pointer.value.think.plan,
+      content,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      total: props.progress.total,
+      completed: ++props.progress.completed,
+      created_at: new Date().toISOString(),
+    });
+    return out(result)(content);
   });
 }
 
@@ -200,17 +197,6 @@ function createController(
   },
 ): IAgenticaController.IClass {
   const validate: Validator = (next) => {
-    // // Only apply IPage fix if content is not null
-    // if (
-    //   typia.is<{
-    //     request: {
-    //       type: "complete";
-    //       content: object;
-    //     };
-    //   }>(next)
-    // )
-    //   JsonSchemaFactory.fixPage("content", next.request);
-
     const result: IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaReviewApplication.IProps>(next);
     if (result.success === false) {

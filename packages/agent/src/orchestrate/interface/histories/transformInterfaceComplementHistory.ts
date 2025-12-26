@@ -74,5 +74,12 @@ export const transformInterfaceComplementHistory = (props: {
       `,
     },
   ],
-  userMessage: "Complete the missing schema type please",
+  userMessage: StringUtil.trim`
+    Complete the missing schema type ${JSON.stringify(props.missed)} 
+    based on the provided API design instructions.
+
+    Note that, not making "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>"
+    type, but making "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for
+    the ${JSON.stringify(props.missed)} type.
+  `,
 });

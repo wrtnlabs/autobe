@@ -45,22 +45,22 @@ async function step(
     life: number;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missed: string[] = missedOpenApiSchemas(props.document);
-  if (missed.length === 0) return props.document.components.schemas;
+  const missedTypes: string[] = missedOpenApiSchemas(props.document);
+  if (missedTypes.length === 0) return props.document.components.schemas;
   else if (state.life === 0) return props.document.components.schemas;
 
-  props.progress.total += missed.length;
+  props.progress.total += missedTypes.length;
   const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
 
-  for (const missedType of missed) {
+  for (const missed of missedTypes) {
     try {
       const schema: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
         instruction: props.instruction,
         document: props.document,
         progress: props.progress,
-        missed: missedType,
+        missed,
       });
-      newbie[missedType] = schema;
+      newbie[missed] = schema;
     } catch (error) {
       // Skip failed schema
       ++props.progress.completed;
