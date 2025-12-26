@@ -1,6 +1,7 @@
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired during the review and validation phase of API endpoint
@@ -22,6 +23,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  */
 export interface AutoBeInterfaceEndpointReviewEvent
   extends AutoBeEventBase<"interfaceEndpointReview">,
+    AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
    * Type discriminator for the endpoint review event.
