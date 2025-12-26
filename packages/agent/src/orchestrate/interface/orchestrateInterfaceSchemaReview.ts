@@ -129,27 +129,25 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const previousAnalyzeFiles = ctx.state().previousAnalyze?.files ?? [];
-  const allAnalyzeFiles = [...analyzeFiles, ...previousAnalyzeFiles];
 
-  const schemaNames = [props.typeName];
+  const schemaNames = Object.keys(props.reviewSchema);
   const opSummaries = props.reviewOperations
     .map((op) => `${op.method} ${op.path}: ${op.name}`)
     .join("\n");
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
-  const allRagResults = await retrieveRelevantAnalysisFiles(
-    getEmbedder(),
-    allAnalyzeFiles,
-    queryText,
-  );
-
-  const currentFilenames = new Set(analyzeFiles.map((f) => f.filename));
-  const ragAnalysisFiles = allRagResults.filter((f) =>
-    currentFilenames.has(f.filename as `${string}.md`),
-  );
-  const ragPreviousAnalysisFiles = allRagResults.filter(
-    (f) => !currentFilenames.has(f.filename as `${string}.md`),
-  );
+  // K/2 + K/2
+  const [ragAnalysisFiles, ragPreviousAnalysisFiles] = await Promise.all([
+    retrieveRelevantAnalysisFiles(getEmbedder(), analyzeFiles, queryText, {
+      splitCount: 2,
+    }),
+    retrieveRelevantAnalysisFiles(
+      getEmbedder(),
+      previousAnalyzeFiles,
+      queryText,
+      { splitCount: 2 },
+    ),
+  ]);
 
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"

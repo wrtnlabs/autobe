@@ -401,6 +401,7 @@ export async function retrieveRelevantAnalysisFiles(
     kMin?: number;
     kMax?: number;
     h3MaxLength?: number;
+    splitCount?: number;
   }
 ): Promise<RagAnalysisFile[]> {
   if (files.length === 0 || !query.trim()) {
@@ -418,13 +419,17 @@ export async function retrieveRelevantAnalysisFiles(
       return [];
     }
 
+    const split = options?.splitCount ?? 1;
+    const kMin = options?.kMin ? Math.ceil(options.kMin / split) : undefined;
+    const kMax = options?.kMax ? Math.ceil(options.kMax / split) : undefined;
+
     const hits = await retrieveTopKAdaptiveHybrid(
       embedder,
       query,
       index,
       bm25,
-      options?.kMin,
-      options?.kMax
+      kMin,
+      kMax
     );
 
     return hitsToAnalysisFiles(hits);
