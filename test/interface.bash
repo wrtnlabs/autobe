@@ -12,3 +12,9 @@ code results/qwen-qwen3-next-80b-a3b-instruct/todo/interface
 code results/qwen-qwen3-next-80b-a3b-instruct/bbs/interface
 code results/qwen-qwen3-next-80b-a3b-instruct/reddit/interface
 code results/qwen-qwen3-next-80b-a3b-instruct/shopping/interface
+
+# individual testings
+pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.complement.todo.log
+pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.complement.bbs.log
+pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.complement.reddit.log
+pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.complement.shopping.log

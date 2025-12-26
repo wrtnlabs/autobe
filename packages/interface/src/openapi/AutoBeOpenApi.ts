@@ -1212,7 +1212,7 @@ export namespace AutoBeOpenApi {
        * the type schema info of the `T` in the TypeScript array type
        * `Array<T>`.
        */
-      items: IJsonSchema;
+      items: Exclude<IJsonSchema, IJsonSchema.IObject>;
 
       /**
        * Unique items restriction.
@@ -1269,7 +1269,10 @@ export namespace AutoBeOpenApi {
        * If you need additional properties that is represented by dynamic key,
        * you can use the {@link additionalProperties} instead.
        */
-      properties: Record<string, IJsonSchemaDescriptive>;
+      properties: Record<
+        string,
+        Exclude<IJsonSchemaDescriptive, IJsonSchemaDescriptive.IObject>
+      >;
 
       /**
        * Additional properties' info.
@@ -1284,7 +1287,7 @@ export namespace AutoBeOpenApi {
        * - `false`: No additional properties
        * - `IJsonSchema`: `Record<string, T>`
        */
-      additionalProperties?: false | IJsonSchema;
+      additionalProperties?: false | Exclude<IJsonSchema, IJsonSchema.IObject>;
 
       /**
        * List of key values of the required properties.
@@ -1350,7 +1353,7 @@ export namespace AutoBeOpenApi {
      */
     export interface IOneOf {
       /** List of the union types. */
-      oneOf: Exclude<IJsonSchema, IJsonSchema.IOneOf>[];
+      oneOf: Exclude<IJsonSchema, IJsonSchema.IOneOf | IJsonSchema.IObject>[];
 
       /** Discriminator info of the union type. */
       discriminator?: IOneOf.IDiscriminator;
