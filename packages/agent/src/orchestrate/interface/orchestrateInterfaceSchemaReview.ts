@@ -44,10 +44,8 @@ function getEmbedder(): LocalEmbeddingProvider {
   return _embedder;
 }
 
-export async function orchestrateInterfaceSchemaReview<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
+export async function orchestrateInterfaceSchemaReview(
+  ctx: AutoBeContext,
   config: IConfig,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -127,7 +125,6 @@ async function process(
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const previousAnalyzeFiles = ctx.state().previousAnalyze?.files ?? [];
-  const allAnalyzeFiles = [...analyzeFiles, ...previousAnalyzeFiles];
 
   const schemaNames = Object.keys(props.reviewSchemas);
   const opSummaries = props.reviewOperations
@@ -135,15 +132,11 @@ async function process(
     .join("\n");
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
-  const allRagResults = await retrieveRelevantAnalysisFiles(
-    getEmbedder(),
-    allAnalyzeFiles,
-    queryText,
-  );
-
-  const currentFilenames = new Set(analyzeFiles.map((f) => f.filename));
-  const ragAnalysisFiles = allRagResults.filter((f) => currentFilenames.has(f.filename as `${string}.md`));
-  const ragPreviousAnalysisFiles = allRagResults.filter((f) => !currentFilenames.has(f.filename as `${string}.md`));
+  // K/2 + K/2
+  const [ragAnalysisFiles, ragPreviousAnalysisFiles] = await Promise.all([
+    retrieveRelevantAnalysisFiles(getEmbedder(), analyzeFiles, queryText, { splitCount: 2 }),
+    retrieveRelevantAnalysisFiles(getEmbedder(), previousAnalyzeFiles, queryText, { splitCount: 2 }),
+  ]);
 
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
