@@ -371,7 +371,35 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 3. Critical Error Analysis and Correction Strategy
 
-### 3.0. 🔔 IMPORTANT: Cooperation with TEST_CORRECT_INVALID_REQUEST Agent
+### 3.0. 🚨 CRITICAL: Connection Isolation Pattern - MUST PRESERVE
+
+**When correcting test code, ensure the Connection Isolation Pattern is maintained:**
+
+The `connection` parameter is a BASE connection only. Test code MUST:
+1. **NEVER use `connection` directly for API calls**
+2. **Use actor-specific connections** created from authorization function results (e.g., `userConnection`, `adminConnection`)
+
+**If you find code using `connection` directly in API calls, this is a BUG - fix it!**
+
+**Correct Pattern:**
+```typescript
+const userAuth = await authorize_user_login(connection, { body: creds });
+const userConnection = {
+  ...connection,
+  headers: {
+    ...connection.headers,
+    Authorization: `Bearer ${userAuth.token.access}`,
+  },
+};
+
+// ✅ Use userConnection for API calls
+await api.functional.orders.create(userConnection, {...});
+
+// ❌ WRONG - Never use base connection directly
+// await api.functional.orders.create(connection, {...});
+```
+
+### 3.1. 🔔 IMPORTANT: Cooperation with TEST_CORRECT_INVALID_REQUEST Agent
 
 **CRITICAL ORCHESTRATION NOTE:**
 - The **TEST_CORRECT_INVALID_REQUEST** agent runs BEFORE this agent
@@ -545,13 +573,13 @@ When TypeScript reports type mismatches between expected and actual API types:
 **1. Response Type Namespace Errors**
 ```typescript
 // COMPILATION ERROR: Type mismatch
-const user: IUser = await api.functional.user.authenticate.login(connection, {
+const user: IUser = await api.functional.user.authenticate.login(customerConnection, {
   body: { email: "test@example.com", password: "1234" }
 });
 // Error: Type 'IUser.IAuthorized' is not assignable to type 'IUser'
 
 // FIX: Use the fully qualified namespace type
-const user: IUser.IAuthorized = await api.functional.user.authenticate.login(connection, {
+const user: IUser.IAuthorized = await api.functional.user.authenticate.login(customerConnection, {
   body: { email: "test@example.com", password: "1234" }
 });
 ```
@@ -559,12 +587,12 @@ const user: IUser.IAuthorized = await api.functional.user.authenticate.login(con
 **2. Request Body Type Namespace Omission**
 ```typescript
 // COMPILATION ERROR: Missing namespace in request body type
-await api.functional.products.create(connection, {
+await api.functional.products.create(sellerConnection, {
   body: productData satisfies ICreate  // Error: Cannot find name 'ICreate'
 });
 
 // FIX: Use fully qualified namespace type
-await api.functional.products.create(connection, {
+await api.functional.products.create(sellerConnection, {
   body: productData satisfies IProduct.ICreate
 });
 ```
@@ -583,9 +611,9 @@ When you see error messages containing "Promises must be awaited", apply this ru
 // → ADD await
 
 // Error: "Promises must be awaited..." at line 42
-api.functional.users.create(connection, userData);  // ← Line 42
+api.functional.users.create(adminConnection, userData);  // ← Line 42
 // FIX: Just add await
-await api.functional.users.create(connection, userData);  // ← FIXED!
+await api.functional.users.create(adminConnection, userData);  // ← FIXED!
 ```
 
 **CRITICAL RULES:**
@@ -605,7 +633,7 @@ await api.functional.users.create(connection, userData);  // ← FIXED!
 TestValidator.error(  // ← NO AWAIT = TEST WILL FALSELY PASS!
   "should fail on duplicate email",
   async () => {  // ← This is async!
-    await api.functional.users.create(connection, {
+    await api.functional.users.create(adminConnection, {
       body: { email: existingEmail } satisfies IUser.ICreate
     });
   }
@@ -615,7 +643,7 @@ TestValidator.error(  // ← NO AWAIT = TEST WILL FALSELY PASS!
 await TestValidator.error(  // ← MUST have await!
   "should fail on duplicate email",
   async () => {  // ← This is async!
-    await api.functional.users.create(connection, {
+    await api.functional.users.create(adminConnection, {
       body: { email: existingEmail } satisfies IUser.ICreate
     });
   }
@@ -838,7 +866,7 @@ When TypeScript reports that a property does not exist on a type, it means you'r
 
 ```typescript
 // COMPILATION ERROR: Property does not exist
-const user = await api.functional.users.getProfile(connection, { id });
+const user = await api.functional.users.getProfile(customerConnection, { id });
 console.log(user.last_login_date); // Error: Property 'last_login_date' does not exist
 
 // FIX: Check the exact property name in DTO definitions
@@ -974,16 +1002,16 @@ When you encounter errors like:
    **Case A: Property genuinely doesn't exist**
    ```typescript
    // ERROR: "Property 'socialMedia' does not exist on type 'IProfile'"
-   
+
    // After investigation: IProfile has no social media related fields at all
    interface IProfile {
      name: string;
      bio: string;
      avatar?: string;
    }
-   
+
    // ✅ CORRECT: Simply remove the non-existent property
-   const profile = await api.functional.profiles.create(connection, {
+   const profile = await api.functional.profiles.create(customerConnection, {
      body: {
        name: "John Doe",
        bio: "Developer"
@@ -1064,7 +1092,7 @@ When you encounter errors like:
 // ERROR: "Object literal may only specify known properties, and 'password' does not exist in type 'IAdministrator.ILogin'."
 
 // ❌ NAIVE APPROACH (just removing):
-const adminLoginResponse = await api.functional.auth.admin.login(connection, {
+const adminLoginResponse = await api.functional.auth.admin.login(adminConnection, {
   body: {
     email: adminJoinResponse.email
     // Removed password - WRONG! Login needs authentication!
@@ -1081,7 +1109,7 @@ namespace IAdministrator {
 }
 
 // Correct implementation:
-const adminLoginResponse = await api.functional.auth.admin.login(connection, {
+const adminLoginResponse = await api.functional.auth.admin.login(adminConnection, {
   body: {
     email: adminJoinResponse.email,
     password_hash: hashPassword(adminPassword)  // Use correct property!
@@ -1138,7 +1166,7 @@ const orderData = {
 } satisfies IOrder.ICreate;
 
 // SOLUTION 1: Create a user first (modify scenario)
-const user = await api.functional.users.create(connection, {
+const user = await api.functional.users.create(adminConnection, {
   body: { email: "test@example.com", password: "1234" } satisfies IUser.ICreate
 });
 const orderData = {
@@ -1164,9 +1192,11 @@ const orderData = {
 
 **Array Assignment Pattern:**
 ```typescript
+// ⚠️ NOTE: Use actor-specific connection (e.g., userConnection), NOT base connection
+
 // ERROR: Type 'IBasicProduct[]' is not assignable to 'IDetailedProduct[]'
 //        Property 'description' is missing in type 'IBasicProduct'
-const basicProducts: IBasicProduct[] = await api.functional.products.list(connection);
+const basicProducts: IBasicProduct[] = await api.functional.products.list(userConnection);
 const detailedProducts: IDetailedProduct[] = basicProducts; // ERROR!
 
 // SOLUTION: Transform the array by adding missing properties
@@ -1178,7 +1208,7 @@ const detailedProducts: IDetailedProduct[] = basicProducts.map(basic => ({
 }));
 
 // OR: Fetch detailed products from different endpoint
-const detailedProducts: IDetailedProduct[] = await api.functional.products.detailed.list(connection);
+const detailedProducts: IDetailedProduct[] = await api.functional.products.detailed.list(userConnection);
 ```
 
 **YOUR MODIFICATION TOOLKIT:**
@@ -1199,11 +1229,11 @@ const detailedProducts: IDetailedProduct[] = await api.functional.products.detai
 // PROBLEM: IOrder.ICreate requires customerId, shippingAddressId, paymentMethodId
 
 // REWRITTEN SCENARIO: "Create customer with address and payment, then order"
-const customer = await api.functional.customers.create(connection, {
+const customer = await api.functional.customers.create(adminConnection, {
   body: { name: "Test User", email: "test@example.com" } satisfies ICustomer.ICreate
 });
 
-const address = await api.functional.addresses.create(connection, {
+const address = await api.functional.addresses.create(customerConnection, {
   body: {
     customerId: customer.id,
     line1: "123 Main St",
@@ -1212,7 +1242,7 @@ const address = await api.functional.addresses.create(connection, {
   } satisfies IAddress.ICreate
 });
 
-const paymentMethod = await api.functional.payments.methods.create(connection, {
+const paymentMethod = await api.functional.payments.methods.create(customerConnection, {
   body: {
     customerId: customer.id,
     type: "card",
@@ -1221,7 +1251,7 @@ const paymentMethod = await api.functional.payments.methods.create(connection, {
 });
 
 // NOW we can create the order with all required properties!
-const order = await api.functional.orders.create(connection, {
+const order = await api.functional.orders.create(customerConnection, {
   body: {
     customerId: customer.id,
     shippingAddressId: address.id,
@@ -1530,7 +1560,7 @@ For best type compatibility, use the actual value (from API responses or variabl
 
 ```typescript
 // CORRECT: actual value first, expected value second
-const member: IMember = await api.functional.membership.join(connection, ...);
+const member: IMember = await api.functional.membership.join(customerConnection, ...);
 TestValidator.equals("no recommender", member.recommender, null); // member.recommender is IRecommender | null, can accept null ✓
 
 // WRONG: expected value first, actual value second - may cause type errors
@@ -1695,7 +1725,7 @@ export async function test_api_admin_or_user_access(connection: api.IConnection)
 export async function test_api_process_multiple_orders(connection: api.IConnection) {
   let processedCount = 0;  // WRONG! Mutation pattern
   for (const order of orders) {
-    await api.functional.orders.process(connection, { id: order.id });
+    await api.functional.orders.process(sellerConnection, { id: order.id });
     processedCount = processedCount + 1;  // Reassignment!
   }
 }
@@ -1734,7 +1764,7 @@ export async function test_api_admin_or_user_access(connection: api.IConnection)
 // ✅ CORRECT: Use array index instead of counter
 export async function test_api_process_multiple_orders(connection: api.IConnection) {
   for (const [index, order] of orders.entries()) {
-    await api.functional.orders.process(connection, { id: order.id });
+    await api.functional.orders.process(sellerConnection, { id: order.id });
     const processedCount = index + 1;
     TestValidator.equals("processed count", processedCount, index + 1);
   }
@@ -1808,7 +1838,7 @@ export async function test_api_order_with_shipping_and_tax(connection: api.IConn
   const shippingCost = 5000;
   const total = subtotal + taxAmount + shippingCost;
 
-  const order = await api.functional.orders.create(connection, {
+  const order = await api.functional.orders.create(customerConnection, {
     body: {
       product_id: product.id,
       quantity,
@@ -1909,7 +1939,7 @@ When encountering persistent compilation errors that cannot be resolved through 
 await TestValidator.error(
   "should fail",
   async () => {
-    api.functional.users.delete(connection, { id }); // NO AWAIT = WON'T CATCH ERROR!
+    api.functional.users.delete(adminConnection, { id }); // NO AWAIT = WON'T CATCH ERROR!
   }
 );
 
@@ -1922,35 +1952,35 @@ await TestValidator.error(  // ← WRONG! No await needed for sync callback
 );
 
 // ❌ CRITICAL ERROR: Chained calls without await
-const user = api.functional.users.create(connection, userData); // NO AWAIT!
+const user = api.functional.users.create(adminConnection, userData); // NO AWAIT!
 typia.assert(user); // This will fail - user is a Promise, not the actual data!
 
 // ❌ CRITICAL ERROR: In conditional statements
 if (someCondition) {
-  api.functional.posts.delete(connection, { id }); // NO AWAIT!
+  api.functional.posts.delete(customerConnection, { id }); // NO AWAIT!
 }
 
 // ❌ CRITICAL ERROR: In loops
 for (const item of items) {
-  api.functional.items.process(connection, { id: item.id }); // NO AWAIT!
+  api.functional.items.process(sellerConnection, { id: item.id }); // NO AWAIT!
 }
 
 // ❌ CRITICAL ERROR: Return statements
-return api.functional.users.get(connection, { id }); // NO AWAIT!
+return api.functional.users.get(customerConnection, { id }); // NO AWAIT!
 
 // ✅ CORRECT VERSIONS:
-const user = await api.functional.users.create(connection, userData);
+const user = await api.functional.users.create(adminConnection, userData);
 typia.assert(user);
 
 if (someCondition) {
-  await api.functional.posts.delete(connection, { id });
+  await api.functional.posts.delete(customerConnection, { id });
 }
 
 for (const item of items) {
-  await api.functional.items.process(connection, { id: item.id });
+  await api.functional.items.process(sellerConnection, { id: item.id });
 }
 
-return await api.functional.users.get(connection, { id });
+return await api.functional.users.get(customerConnection, { id });
 ```
 
 **MOST COMMON AI MISTAKE:** Forgetting `await` on `TestValidator.error` when the callback is `async`. This makes the test USELESS because it will pass even when it should fail!
