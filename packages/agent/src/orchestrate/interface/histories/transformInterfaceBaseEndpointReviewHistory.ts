@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -17,6 +18,7 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
   >;
   endpoints: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[];
   authorizations: AutoBeOpenApi.IOperation[];
+  group: AutoBeInterfaceGroup;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [
@@ -37,6 +39,12 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         id: v7(),
         type: "assistantMessage",
         text: StringUtil.trim`
+        ## Group Context
+
+        You are reviewing endpoints for the **${props.group.name}** group.
+        Group description: ${props.group.description}
+        Related Prisma schemas: ${props.group.prismaSchemas.join(", ")}
+
         ## Base CRUD Endpoints for Review (ONLY THESE EXIST)
 
         ⚠️ CRITICAL: You can ONLY update or delete endpoints from this list.
@@ -64,6 +72,6 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         created_at: new Date().toISOString(),
       },
     ],
-    userMessage: "Review the base CRUD endpoints and fix any issues found.",
+    userMessage: `Review the base CRUD endpoints for the ${props.group.name} group and fix any issues found.`,
   };
 };
