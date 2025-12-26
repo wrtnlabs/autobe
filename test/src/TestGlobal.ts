@@ -29,19 +29,12 @@ export class TestGlobal {
   public static getVendorConfig(
     vendor: string = TestGlobal.vendorModel,
   ): IAutoBeVendor {
-    const isOpenAi: boolean =
-      TestGlobal.env.OPENAI_API_KEY !== undefined &&
-      vendor.startsWith("openai/") &&
-      vendor.startsWith("openai/gpt-oss-") === false;
     return {
       api: new OpenAI({
-        apiKey:
-          (isOpenAi
-            ? TestGlobal.env.OPENAI_API_KEY
-            : TestGlobal.env.OPENROUTER_API_KEY) ?? "********",
-        baseURL: isOpenAi ? undefined : "https://openrouter.ai/api/v1",
+        apiKey: TestGlobal.env.OPENROUTER_API_KEY ?? "********",
+        baseURL: "https://openrouter.ai/api/v1",
       }),
-      model: isOpenAi ? vendor.replace("openai/", "") : vendor,
+      model: vendor,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
     };
   }
@@ -55,11 +48,10 @@ export class TestGlobal {
 
   public static archive: boolean = process.argv.includes("--archive");
   public static vendorModel: string =
-    this.getArguments("vendor")?.[0] ?? "openai/gpt-4.1";
+    this.getArguments("vendor")?.[0] ?? "qwen/qwen3-next-80b-a3b-instruct";
 }
 
 interface IEnvironments {
-  OPENAI_API_KEY?: string;
   OPENROUTER_API_KEY?: string;
   SEMAPHORE?: string;
   TIMEOUT?: string;

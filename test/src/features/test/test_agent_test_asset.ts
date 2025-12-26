@@ -5,7 +5,7 @@ import { TestGlobal } from "../../TestGlobal";
 import { prepare_agent_test } from "./internal/prepare_agent_test";
 
 export const test_agent_test_asset = async (factory: TestFactory) => {
-  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined) return false;
 
   const state = await prepare_agent_test({
     factory,

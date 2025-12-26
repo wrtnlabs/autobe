@@ -18,7 +18,7 @@ export const validate_agent_realize_authorization = async (props: {
   vendor: string;
   project: AutoBeExampleProject;
 }) => {
-  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(props);

@@ -13,7 +13,7 @@ export const validate_agent_interface_groups = async (props: {
   vendor: string;
   project: AutoBeExampleProject;
 }) => {
-  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(props);
   const result: AutoBeInterfaceGroupEvent = await orchestrateInterfaceGroup(

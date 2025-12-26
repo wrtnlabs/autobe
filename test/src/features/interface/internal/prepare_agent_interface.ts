@@ -12,7 +12,7 @@ export const prepare_agent_interface = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }) => {
-  if (TestGlobal.env.OPENAI_API_KEY === undefined)
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await AutoBeExampleStorage.getHistories({

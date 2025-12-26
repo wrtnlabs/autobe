@@ -18,11 +18,7 @@ export const validate_agent_describe_image = async (props: {
   vendor: string;
   project: AutoBeExampleProject;
 }) => {
-  if (
-    TestGlobal.env.OPENAI_API_KEY === undefined ||
-    TestGlobal.env.OPENROUTER_API_KEY === undefined
-  )
-    return false;
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined) return false;
 
   const { agent } = prepare_agent_describe(props);
 

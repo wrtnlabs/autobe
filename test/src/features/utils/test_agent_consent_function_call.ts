@@ -4,7 +4,7 @@ import { TestValidator } from "@nestia/e2e";
 import { TestGlobal } from "../../TestGlobal";
 
 export const test_agent_consent_function_call = async () => {
-  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENROUTER_API_KEY === undefined) return false;
 
   const consent = (message: string) =>
     consentFunctionCall({
