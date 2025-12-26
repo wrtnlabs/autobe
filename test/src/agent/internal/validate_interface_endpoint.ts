@@ -35,12 +35,17 @@ export const validate_interface_endpoint = async (props: {
     completed: 0,
     total: group.groups.length * 2,
   };
+  const reviewProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: group.groups.length * 2,
+  };
   const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
     await orchestrateInterfaceBaseEndpoint(props.agent.getContext(), {
       instruction: "",
       groups: group.groups,
       authorizations: authorizations.map((a) => a.operations).flat(),
       progress,
+      reviewProgress,
     });
   const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
     await orchestrateInterfaceActionEndpoint(props.agent.getContext(), {
@@ -49,6 +54,7 @@ export const validate_interface_endpoint = async (props: {
       authorizations: authorizations.map((a) => a.operations).flat(),
       excluded: baseEndpoints,
       progress,
+      reviewProgress,
     });
   const endpoints: AutoBeOpenApi.IEndpoint[] = [
     ...baseEndpoints,
