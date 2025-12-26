@@ -69,6 +69,7 @@ export async function orchestrateInterfaceBaseEndpointReview(
       endpoints: props.endpoints,
       authorizations: props.authorizations,
       preliminary,
+      originalEndpoints: props.endpoints.map((e) => e.endpoint),
       endpointSet,
       group: props.group,
       progress: props.progress,
@@ -89,31 +90,38 @@ async function predicate(
       | "previousPrismaSchemas"
       | "previousInterfaceOperations"
     >;
+    originalEndpoints: AutoBeOpenApi.IEndpoint[];
     endpointSet: HashSet<IAutoBeInterfaceBaseEndpointApplication.IEndpoint>;
     group: AutoBeInterfaceGroup;
     progress: AutoBeProgressEventBase;
   },
   life: number,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  if (life < 0) return props.endpointSet.toJSON().map((e) => e.endpoint);
-
   const pointer: IPointer<IAutoBeInterfaceBaseEndpointReviewApplication.IComplete | null> =
-    {
-      value: null,
-    };
+    { value: null };
 
-  await process(ctx, {
+  const processed: AutoBeInterfaceEndpointReviewEvent = await process(ctx, {
     authorizations: props.authorizations,
     preliminary: props.preliminary,
+    originalEndpoints: props.originalEndpoints,
     endpointSet: props.endpointSet,
     pointer,
     group: props.group,
     progress: props.progress,
   });
 
-  if (pointer.value !== null && pointer.value.actions.length === 0)
-    return props.endpointSet.toJSON().map((e) => e.endpoint);
-  return await predicate(ctx, props, life - 1);
+  if (life > 0) {
+    if (pointer.value === null || pointer.value.actions.length > 0)
+      return await predicate(ctx, props, life - 1);
+  }
+  ctx.dispatch({
+    ...processed,
+    type: SOURCE,
+    kind: "base",
+    completed: ++props.progress.completed,
+    content: props.endpointSet.toJSON().map((e) => e.endpoint),
+  });
+  return props.endpointSet.toJSON().map((e) => e.endpoint);
 }
 
 async function process(
@@ -127,14 +135,16 @@ async function process(
       | "previousPrismaSchemas"
       | "previousInterfaceOperations"
     >;
+    originalEndpoints: AutoBeOpenApi.IEndpoint[];
     endpointSet: HashSet<IAutoBeInterfaceBaseEndpointApplication.IEndpoint>;
     pointer: IPointer<IAutoBeInterfaceBaseEndpointReviewApplication.IComplete | null>;
     group: AutoBeInterfaceGroup;
     progress: AutoBeProgressEventBase;
   },
-): Promise<void> {
+): Promise<AutoBeInterfaceEndpointReviewEvent> {
   const start: Date = new Date();
-  await props.preliminary.orchestrate(ctx, async (out) => {
+
+  return await props.preliminary.orchestrate(ctx, async (out) => {
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -162,18 +172,17 @@ async function process(
         id: v7(),
         type: SOURCE,
         kind: "base",
-        endpoints: finalEndpoints,
+        endpoints: props.originalEndpoints,
         content: finalEndpoints,
         review: props.pointer.value.review,
         created_at: start.toISOString(),
         step: ctx.state().analyze?.step ?? 0,
-        completed: ++props.progress.completed,
+        completed: props.progress.completed,
         total: props.progress.total,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
       };
-      ctx.dispatch(event);
-      return out(result)(finalEndpoints);
+      return out(result)(event);
     }
     return out(result)(null);
   });
