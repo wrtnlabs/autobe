@@ -1540,7 +1540,16 @@ export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
   export interface IComplete {
     type: "complete";
     think: IThink;
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    /**
+     * Security-reviewed schema result.
+     *
+     * - If the schema has security issues and needs fixes: return the corrected schema
+     * - If the schema is perfect and secure: return null
+     *
+     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
+     * accidental overwrites. Use null to explicitly indicate "no security fixes needed".
+     */
+    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
 
   /**
@@ -1604,20 +1613,20 @@ If no fixes: "No security issues require fixes. All schemas are secure."
 
 #### content - CRITICAL RULES
 
-**ABSOLUTE REQUIREMENT**: Return ONLY schemas that you actively MODIFIED for security reasons.
+**ABSOLUTE REQUIREMENT**: You are reviewing ONE specific schema. Return the corrected schema or null.
 
-**Decision Tree for Each Schema**:
-1. Did I DELETE any security-violating property? → Include in content
-2. Did I ADD any security property? → Include in content  
-3. Did I MODIFY for security? → Include in content
-4. Is the schema unchanged? → DO NOT include
+**Decision Tree**:
+1. Did I DELETE any security-violating property? → Return corrected schema
+2. Did I ADD any security property? → Return corrected schema
+3. Did I MODIFY for security? → Return corrected schema
+4. Is the schema already secure and unchanged? → Return null
 
 **Examples**:
-- IBbsArticle.ICreate had `bbs_member_id` removed → INCLUDE
-- IUser had `hashed_password` removed from response → INCLUDE
-- IProduct was already secure → DO NOT INCLUDE
+- IBbsArticle.ICreate had `bbs_member_id` removed → Return corrected schema
+- IUser had `hashed_password` removed from response → Return corrected schema
+- IProduct was already secure → Return null
 
-**If ALL schemas are secure**: Return empty object `{}`
+**CRITICAL**: If the schema is perfect and secure, return `null` (NOT the original schema)
 
 ---
 
@@ -1710,6 +1719,58 @@ interface IUser.ICreate {
 
 **RULE**: Prisma column name ≠ DTO field name. Use `password` in DTOs ALWAYS.
 
+### 10.3. Complete Function Call Examples
+
+#### Example 1: Schema with Security Issues (Return Corrected Schema)
+
+```typescript
+// Reviewing: IBbsArticle.ICreate with violations
+process({
+  thinking: "Removed auth context fields, corrected security violations",
+  request: {
+    type: "complete",
+    think: {
+      review: `## Security Violations Found
+
+### CRITICAL - Authentication Context in Requests
+- bbs_member_id: auth context from JWT
+- bbs_member_session_id: session from server`,
+      plan: `## Security Fixes Applied
+
+### Authentication Context Removed
+- DELETED bbs_member_id from IBbsArticle.ICreate
+- DELETED bbs_member_session_id from IBbsArticle.ICreate`
+    },
+    content: {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        content: { type: "string" },
+        category_id: { type: "string" }
+      },
+      required: ["title", "content", "category_id"]
+    }
+  }
+})
+```
+
+#### Example 2: Schema Already Perfect (Return null)
+
+```typescript
+// Reviewing: IProduct.ICreate with no violations
+process({
+  thinking: "No security violations found, schema is already secure",
+  request: {
+    type: "complete",
+    think: {
+      review: "No security violations found.",
+      plan: "No security issues require fixes. All schemas are secure."
+    },
+    content: null  // ✅ Schema is perfect - return null
+  }
+})
+```
+
 ---
 
 ## 10. Your Security Mantras
@@ -1742,7 +1803,7 @@ Before submitting your security review:
 ### Documentation Complete
 - [ ] think.review lists ALL violations with severity
 - [ ] think.plan describes ALL fixes applied
-- [ ] content contains ONLY modified schemas
+- [ ] content is the corrected schema (if fixes applied) or null (if schema is perfect)
 
 ### Quality Assurance
 - [ ] No authentication bypass vulnerabilities remain
@@ -1799,5 +1860,5 @@ Before submitting your security review:
 ### 12.3. Function Calling Verification
 - [ ] All security violations documented in think.review
 - [ ] All fixes applied and documented in think.plan
-- [ ] content contains ONLY modified schemas
-- [ ] Ready to call `process({ request: { type: "complete", think: {...}, content: {...} } })` with complete security review results
+- [ ] content is the corrected schema (if fixes applied) or null (if schema is perfect and secure)
+- [ ] Ready to call `process({ request: { type: "complete", think: {...}, content: {...} | null } })` with complete security review results

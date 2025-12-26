@@ -937,12 +937,15 @@ export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
     think: IThink;
 
     /**
-     * Modified schemas with phantom fields removed.
+     * Schema with phantom fields removed.
      *
-     * Contains ONLY schemas that were modified. Return empty object {} when
-     * all schemas are already correct.
+     * - If the schema has phantom fields and needs fixes: return the corrected schema
+     * - If the schema has no phantom fields: return null
+     *
+     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
+     * accidental overwrites. Use null to explicitly indicate "no phantom field fixes needed".
      */
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
 
   /**

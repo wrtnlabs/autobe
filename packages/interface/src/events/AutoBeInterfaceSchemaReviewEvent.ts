@@ -51,13 +51,21 @@ export interface AutoBeInterfaceSchemaReviewEvent
   kind: "security" | "relation" | "content" | "phantom";
 
   /**
-   * Original schemas submitted for review.
+   * Type name of the schema being reviewed.
    *
-   * Contains the OpenAPI schemas requiring validation according to the review
-   * kind. Each entry is keyed by schema name and contains the full descriptive
-   * JSON schema structure with AutoBE-specific metadata.
+   * Specifies the specific DTO type name that is being validated in this review.
+   * Examples: "IUser.ICreate", "IProduct.ISummary", "IBbsArticle"
    */
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  typeName: string;
+
+  /**
+   * Original schema submitted for review.
+   *
+   * Contains the OpenAPI schema requiring validation according to the review
+   * kind. The schema is the full descriptive JSON schema structure with
+   * AutoBE-specific metadata.
+   */
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 
   /**
    * Violation findings from the review.
@@ -81,23 +89,22 @@ export interface AutoBeInterfaceSchemaReviewEvent
    * Details vary by review kind but always include concrete changes made to
    * ensure compliance.
    *
-   * If schemas were already compliant, explicitly states that no fixes were
+   * If the schema was already compliant, explicitly states that no fixes were
    * required.
    */
   plan: string;
 
   /**
-   * Schemas modified for compliance.
+   * Schema modified for compliance.
    *
-   * Contains ONLY the schemas that were actively modified to fix violations.
-   * Schemas that passed validation without changes are not included.
+   * Contains the schema that was actively modified to fix violations.
+   * If the schema passed validation without changes, this will be identical
+   * to the input schema.
    *
-   * For relation reviews, may also include newly created schemas (extracted
-   * types, IInvert types).
-   *
-   * An empty object {} indicates all schemas were already compliant.
+   * For relation reviews, may reference newly created schemas (extracted
+   * types, IInvert types) via $ref.
    */
-  content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  content: AutoBeOpenApi.IJsonSchemaDescriptive;
 
   /**
    * Current iteration number of the schema generation being reviewed.

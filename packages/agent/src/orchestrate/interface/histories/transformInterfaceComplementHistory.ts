@@ -9,7 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceComplementHistory = (props: {
   state: AutoBeState;
   instruction: string;
-  missed: string[];
+  missed: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -63,13 +63,16 @@ export const transformInterfaceComplementHistory = (props: {
 
         ${props.instruction}
 
-        ## Missed Types
+        ## Missed Type
 
-        You AI have missed below schema types:
+        You need to create a schema definition for this missing type:
 
-        ${props.missed.map((s) => `- ${s}`).join("\n")}
+        **${props.missed}**
+
+        This type is referenced in API operations but not yet defined in
+        components.schemas. Create a complete JSON schema definition for it.
       `,
     },
   ],
-  userMessage: "Complete the missing schema types please",
+  userMessage: "Complete the missing schema type please",
 });

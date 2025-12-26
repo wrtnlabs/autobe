@@ -20,8 +20,9 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   >;
+  typeName: string;
   reviewOperations: AutoBeOpenApi.IOperation[];
-  reviewSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [
@@ -59,26 +60,25 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         type: "assistantMessage",
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          ## Schemas Needing Review
+          ## Schema Needing Review
 
-          From the complete schema set above, here are the SPECIFIC schemas that need review:
+          Here is the SPECIFIC schema that needs review for type "${props.typeName}":
 
           \`\`\`json
-          ${JSON.stringify(props.reviewSchemas)}
+          ${JSON.stringify(props.reviewSchema)}
           \`\`\`
 
-          IMPORTANT: Only these ${Object.keys(props.reviewSchemas).length} schemas
-          need review and potential modification. The other schemas in
-          the full set are provided for reference only.
+          IMPORTANT: Only this schema needs review and potential modification.
+          Other schemas in the complete schema set are provided for reference only.
 
-          ## Operations (Filtered for Target Schemas)
+          ## Operations (Filtered for Target Schema)
 
-          Here are the API operations that directly use the schemas under review.
-          These operations reference at least one of the target schemas via
+          Here are the API operations that directly use the schema under review.
+          These operations reference the target schema "${props.typeName}" via
           requestBody.typeName or responseBody.typeName.
 
           This FILTERED list helps you understand the exact usage context for
-          the schemas you're reviewing:
+          the schema you're reviewing:
 
           \`\`\`json
           ${JSON.stringify(props.reviewOperations)}
@@ -86,7 +86,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         `,
       },
     ],
-    userMessage: "Review and fix the schemas please",
+    userMessage: "Review and fix the schema please",
     // "Review DTO content completeness and consistency."
   };
 };

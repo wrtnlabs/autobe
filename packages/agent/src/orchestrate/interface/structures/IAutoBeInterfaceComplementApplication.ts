@@ -70,11 +70,11 @@ export namespace IAutoBeInterfaceComplementApplication {
   }
 
   /**
-   * Request to add missing schema definitions.
+   * Request to add a missing schema definition.
    *
-   * Executes schema complementation to fill in referenced but undefined schema
-   * types in the OpenAPI document's components.schemas section. Ensures all
-   * $ref references resolve to valid schema definitions.
+   * Executes schema complementation to fill in a referenced but undefined schema
+   * type in the OpenAPI document's components.schemas section. Ensures the
+   * $ref reference resolves to a valid schema definition.
    */
   export interface IComplete {
     /**
@@ -87,38 +87,32 @@ export namespace IAutoBeInterfaceComplementApplication {
     type: "complete";
 
     /**
-     * A collection of missing schema definitions that need to be added to the
+     * The missing schema definition that needs to be added to the
      * OpenAPI document's `components.schemas` section.
      *
-     * This object contains schema definitions for types that are referenced but
-     * not yet defined:
-     *
-     * - Key: Schema name (`string`): The name of the schema type that will be
-     *   referenced in $ref statements
-     * - Value: `AutoBeOpenApi.IJsonSchema` - The complete JSON Schema definition
-     *   for that type
+     * This schema definition is for a type that is referenced but
+     * not yet defined. The type name for this schema is provided in the
+     * input context.
      *
      * Example structure:
      *
      * ```typescript
      * {
-     *   "UserProfile": {
-     *     "type": "object",
-     *     "properties": {
-     *       "id": { "type": "string" },
-     *       "name": { "type": "string" },
-     *       "email": { "type": "string", "format": "email" }
-     *     },
-     *     "required": ["id", "name", "email"]
-     *   }
+     *   "type": "object",
+     *   "properties": {
+     *     "id": { "type": "string" },
+     *     "name": { "type": "string" },
+     *     "email": { "type": "string", "format": "email" }
+     *   },
+     *   "required": ["id", "name", "email"]
      * }
      * ```
      *
-     * Each schema definition follows the JSON Schema specification and will be
+     * The schema definition follows the JSON Schema specification and will be
      * directly inserted into the OpenAPI document's components.schemas section,
-     * making them available for $ref references throughout the API
+     * making it available for $ref references throughout the API
      * specification.
      */
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
   }
 }

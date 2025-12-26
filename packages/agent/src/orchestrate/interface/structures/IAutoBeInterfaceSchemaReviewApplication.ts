@@ -89,15 +89,15 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     think: IThink;
 
     /**
-     * Modified schemas resulting from review fixes.
+     * Modified schema resulting from review fixes.
      *
-     * Contains ONLY the schemas that were modified during the review process.
-     * This includes both modified existing schemas and newly created schemas.
+     * - If the schema has issues and needs modifications: return the corrected schema
+     * - If the schema is perfect and requires no changes: return null
      *
-     * Return empty object {} when all schemas are already correct and no
-     * modifications were needed.
+     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
+     * accidental overwrites. Use null to explicitly indicate "no changes needed".
      */
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
 
   /**
@@ -111,10 +111,10 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Findings from the review process.
      *
      * Documents all issues discovered during validation, categorized by type
-     * and severity. Each issue includes the affected schema and specific
-     * problem identified.
+     * and severity. Each issue includes the specific problem identified in
+     * the schema.
      *
-     * Should state "No issues found." when all schemas pass validation.
+     * Should state "No issues found." when the schema passes validation.
      */
     review: string;
 
@@ -122,9 +122,9 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Corrections and fixes applied during review.
      *
      * Lists all modifications implemented during the review process, organized
-     * by fix type. Documents both schemas modified and new schemas created.
+     * by fix type. Documents the changes made to the schema.
      *
-     * Should state "No issues require fixes. All schemas are correct." when no
+     * Should state "No issues require fixes. The schema is correct." when no
      * modifications were necessary.
      */
     plan: string;

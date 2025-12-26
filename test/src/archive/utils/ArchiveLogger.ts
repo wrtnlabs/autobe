@@ -83,10 +83,7 @@ export namespace ArchiveLogger {
       );
       console.log(event.result.diagnostics);
     } else if (event.type === "interfaceComplement")
-      content.push(
-        `  - missed: ${event.missed.join(", ")}`,
-        `  - filled: ${Object.keys(event.schemas).join(", ")}`,
-      );
+      content.push(`  - typeName: ${event.typeName}`);
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,
