@@ -49,23 +49,28 @@ export const orchestrateImageDescribeDrafts = async (
   };
 
   // Process each image individually
-  return await executeCachedBatch(
+  const drafts: (AutoBeImageDescribeDraft | null)[] = await executeCachedBatch(
     ctx,
     imageContents.map((imageContent) => async (promptCacheKey) => {
-      const event: AutoBeImageDescribeDraftEvent = await process(ctx, {
-        imageContents: [imageContent], // Single image
-        userContents: otherContents,
-        progress,
-        promptCacheKey,
-      });
-      ctx.dispatch(event);
-      return {
-        ...event,
-        image: imageContent,
-        description: event.draft,
-      };
+      try {
+        const event: AutoBeImageDescribeDraftEvent = await process(ctx, {
+          imageContents: [imageContent], // Single image
+          userContents: otherContents,
+          progress,
+          promptCacheKey,
+        });
+        ctx.dispatch(event);
+        return {
+          ...event,
+          image: imageContent,
+          description: event.draft,
+        };
+      } catch (err) {
+        return null;
+      }
     }),
   );
+  return drafts.filter((d) => d !== null);
 };
 
 async function process(
@@ -111,6 +116,11 @@ async function process(
       typeof ctx.vendor.semaphore === "number"
         ? ctx.vendor.semaphore
         : ctx.vendor.semaphore?.max(),
+  });
+  agent.on("request", (e) => {
+    if (e.body.tools) {
+      e.body.tool_choice = "required";
+    }
   });
   await agent.conversate(
     content.map((c) => createAutoBeUserMessageContent({ content: c })),
