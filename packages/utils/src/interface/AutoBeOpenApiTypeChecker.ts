@@ -4,43 +4,37 @@ import { OpenApiTypeChecker } from "@samchon/openapi";
 export namespace AutoBeOpenApiTypeChecker {
   export const isArray = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.IArray =>
-    (schema as AutoBeOpenApi.IJsonSchema.IArray).type === "array";
+  ): schema is AutoBeOpenApi.IJsonSchema.IArray => schema.type === "array";
 
   export const isObject = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.IObject =>
-    (schema as AutoBeOpenApi.IJsonSchema.IObject).type === "object";
+  ): schema is AutoBeOpenApi.IJsonSchema.IObject => schema.type === "object";
 
   export const isOneOf = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.IOneOf =>
-    (schema as AutoBeOpenApi.IJsonSchema.IOneOf).oneOf !== undefined;
+  ): schema is AutoBeOpenApi.IJsonSchema.IOneOf => schema.type === "oneOf";
 
   export const isReference = (
     schema: AutoBeOpenApi.IJsonSchema,
   ): schema is AutoBeOpenApi.IJsonSchema.IReference =>
-    (schema as AutoBeOpenApi.IJsonSchema.IReference).$ref !== undefined;
+    schema.type === "reference";
 
-  export const isConstant = (
+  export const isConst = (
     schema: AutoBeOpenApi.IJsonSchema,
   ): schema is AutoBeOpenApi.IJsonSchema.IConstant =>
-    (schema as AutoBeOpenApi.IJsonSchema.IConstant).const !== undefined;
+    schema.type === "constant";
 
   export const isInteger = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.IInteger =>
-    (schema as AutoBeOpenApi.IJsonSchema.IInteger).type === "integer";
+  ): schema is AutoBeOpenApi.IJsonSchema.IInteger => schema.type === "integer";
 
   export const isNumber = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.INumber =>
-    (schema as AutoBeOpenApi.IJsonSchema.INumber).type === "number";
+  ): schema is AutoBeOpenApi.IJsonSchema.INumber => schema.type === "number";
 
   export const isString = (
     schema: AutoBeOpenApi.IJsonSchema,
-  ): schema is AutoBeOpenApi.IJsonSchema.IString =>
-    (schema as AutoBeOpenApi.IJsonSchema.IString).type === "string";
+  ): schema is AutoBeOpenApi.IJsonSchema.IString => schema.type === "string";
 
   export const visit = (props: {
     components: AutoBeOpenApi.IComponents;

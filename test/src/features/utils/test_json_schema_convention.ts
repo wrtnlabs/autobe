@@ -13,10 +13,12 @@ export const test_json_schema_convention = () => {
       description: "Test description",
     },
     Reference1: {
+      type: "reference",
       $ref: "#/components/schemas/ShoppingOrderGoodRevert",
       description: "Test description",
     },
     Reference2: {
+      type: "reference",
       $ref: "#/components/schemas/ShoppingOrderGoodrevert",
       description: "Test description",
     },
@@ -28,10 +30,12 @@ export const test_json_schema_convention = () => {
       description: "Test description",
     },
     Reference1: {
+      type: "reference",
       $ref: "#/components/schemas/ShoppingOrderGoodRevert",
       description: "Test description",
     },
     Reference2: {
+      type: "reference",
       $ref: "#/components/schemas/ShoppingOrderGoodRevert",
       description: "Test description",
     },

@@ -74,10 +74,12 @@ export namespace JsonSchemaFactory {
       for (const op of document.operations) {
         if (op.requestBody !== null)
           visit({
+            type: "reference",
             $ref: `#/components/schemas/${op.requestBody.typeName}`,
           });
         if (op.responseBody !== null)
           visit({
+            type: "reference",
             $ref: `#/components/schemas/${op.responseBody.typeName}`,
           });
       }
@@ -175,12 +177,14 @@ export namespace JsonSchemaFactory {
     type: "object",
     properties: {
       pagination: {
+        type: "reference",
         $ref: "#/components/schemas/IPage.IPagination",
         description: "Page information.",
       },
       data: {
         type: "array",
         items: {
+          type: "reference",
           $ref: `#/components/schemas/${key}`,
         },
         description: "List of records.",

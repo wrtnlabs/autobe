@@ -6,7 +6,6 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -128,16 +127,7 @@ async function process(
       }),
     });
     if (pointer.value !== null) {
-      const container: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
-        OpenApiV3_1Emender.convertComponents({
-          schemas: {
-            [props.typeName]: pointer.value,
-          },
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-      const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-        container[props.typeName];
-
+      const schema: AutoBeOpenApi.IJsonSchemaDescriptive = pointer.value;
       ctx.dispatch({
         type: SOURCE,
         id: v7(),

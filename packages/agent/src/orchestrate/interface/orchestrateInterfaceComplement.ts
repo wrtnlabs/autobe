@@ -6,7 +6,6 @@ import {
 } from "@autobe/interface";
 import { missedOpenApiSchemas } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -139,18 +138,7 @@ async function process(
         typeName: props.missed,
         operations: props.document.operations,
         build: (next) => {
-          const container: Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          > = (OpenApiV3_1Emender.convertComponents({
-            schemas: {
-              [props.missed]: next,
-            },
-          }).schemas ?? {}) as Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          >;
-          pointer.value = container[props.missed];
+          pointer.value = next;
         },
         preliminary,
       }),

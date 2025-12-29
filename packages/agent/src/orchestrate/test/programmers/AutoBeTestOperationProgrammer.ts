@@ -82,10 +82,12 @@ export namespace AutoBeTestOperationProgrammer {
     for (const op of operations) {
       if (op.requestBody)
         visit({
+          type: "reference",
           $ref: `#/$defs/${op.requestBody.typeName}`,
         } satisfies AutoBeOpenApi.IJsonSchema.IReference);
       if (op.responseBody)
         visit({
+          type: "reference",
           $ref: `#/$defs/${op.responseBody.typeName}`,
         } satisfies AutoBeOpenApi.IJsonSchema.IReference);
     }

@@ -23,30 +23,31 @@ export namespace JsonSchemaValidator {
     validateAuthorization(props);
     validatePrismaSchema(props);
     validateRecursive(props);
-    
-      const key: string = props.typeName;
-      const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
-      validateKey({
-        errors: props.errors,
-        path: `${props.path}[${JSON.stringify(key)}]`,
-        key,
-      });
-      vo(key, value);
-      OpenApiTypeChecker.visit({
-        components: { schemas: { [key]: value } },
-        schema: value,
-        closure: (next, accessor) => {
-          if (OpenApiTypeChecker.isReference(next) === false) return;
-          const key: string = next.$ref.split("/").pop()!;
-          validateKey({
-            errors: props.errors,
-            path: `${accessor}.$ref`,
-            key,
-            transform: (typeName) => `#/components/schemas/${typeName}`,
-          });
-        },
-        accessor: `${props.path}[${JSON.stringify(key)}]`,
-      });
+    validateNullable(props.errors);
+
+    const key: string = props.typeName;
+    const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
+    validateKey({
+      errors: props.errors,
+      path: `${props.path}[${JSON.stringify(key)}]`,
+      key,
+    });
+    vo(key, value);
+    OpenApiTypeChecker.visit({
+      components: { schemas: { [key]: value } },
+      schema: value,
+      closure: (next, accessor) => {
+        if (OpenApiTypeChecker.isReference(next) === false) return;
+        const key: string = next.$ref.split("/").pop()!;
+        validateKey({
+          errors: props.errors,
+          path: `${accessor}.$ref`,
+          key,
+          transform: (typeName) => `#/components/schemas/${typeName}`,
+        });
+      },
+      accessor: `${props.path}[${JSON.stringify(key)}]`,
+    });
   };
 
   export const validateKey = (props: {
@@ -419,5 +420,15 @@ export namespace JsonSchemaValidator {
           `,
         });
     };
+  };
+
+  const validateNullable = (errors: IValidation.IError[]): void => {
+    for (const e of errors)
+      if (e.path.endsWith(".nullable") && e.expected === "undefined")
+        e.description = StringUtil.trim`
+          The nullable property is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with "null" type.
+        `;
   };
 }

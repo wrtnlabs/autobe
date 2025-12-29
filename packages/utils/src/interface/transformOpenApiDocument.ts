@@ -9,6 +9,7 @@ import { HashMap } from "tstl";
 
 import { StringUtil } from "../StringUtil";
 import { AutoBeOpenApiEndpointComparator } from "./AutoBeOpenApiEndpointComparator";
+import { AutoBeOpenApiTypeChecker } from "./AutoBeOpenApiTypeChecker";
 
 export function transformOpenApiDocument(
   document: AutoBeOpenApi.IDocument,
@@ -33,7 +34,7 @@ export function transformOpenApiDocument(
       parameters: op.parameters.map((p) => ({
         name: p.name,
         in: "path",
-        schema: p.schema,
+        schema: transformSchema(p.schema),
         description: p.description,
         required: true,
       })),
@@ -74,7 +75,14 @@ export function transformOpenApiDocument(
   const result: OpenApi.IDocument = OpenApi.convert({
     openapi: "3.1.0",
     paths,
-    components: document.components,
+    components: {
+      schemas: Object.fromEntries(
+        Object.entries(document.components.schemas).map(([key, schema]) => [
+          key,
+          transformSchema(schema),
+        ]),
+      ),
+    },
   } as OpenApiV3_1.IDocument);
   const migrate: IHttpMigrateApplication = HttpMigration.application(result);
   migrate.routes.forEach((r) => {
@@ -89,3 +97,43 @@ export function transformOpenApiDocument(
   });
   return result;
 }
+
+const transformSchema = (
+  schema: AutoBeOpenApi.IJsonSchema,
+): OpenApi.IJsonSchema => {
+  if (
+    AutoBeOpenApiTypeChecker.isConst(schema) ||
+    AutoBeOpenApiTypeChecker.isReference(schema)
+  )
+    return {
+      ...schema,
+      type: undefined,
+    };
+  else if (AutoBeOpenApiTypeChecker.isOneOf(schema))
+    return {
+      ...schema,
+      oneOf: schema.oneOf.map((sub) => transformSchema(sub)),
+      type: undefined,
+    };
+  else if (AutoBeOpenApiTypeChecker.isArray(schema))
+    return {
+      ...schema,
+      items: transformSchema(schema.items),
+    };
+  else if (AutoBeOpenApiTypeChecker.isObject(schema))
+    return {
+      ...schema,
+      properties: Object.fromEntries(
+        Object.entries(schema.properties).map(([key, value]) => [
+          key,
+          transformSchema(value),
+        ]),
+      ),
+      additionalProperties:
+        typeof schema.additionalProperties === "object" &&
+        schema.additionalProperties !== null
+          ? transformSchema(schema.additionalProperties)
+          : schema.additionalProperties,
+    };
+  return schema;
+};

@@ -29,6 +29,7 @@ export const test_compiler_interface_preset = (): void => {
     {
       type: "array",
       items: {
+        type: "reference",
         $ref: "#/components/schemas/IShoppingSale.ISummary",
       },
     } satisfies AutoBeOpenApi.IJsonSchema.IArray,

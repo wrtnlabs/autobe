@@ -6,7 +6,6 @@ import {
 } from "@autobe/interface";
 import { AutoBeInterfaceSchemaReviewEvent } from "@autobe/interface/src/events/AutoBeInterfaceSchemaReviewEvent";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -143,20 +142,7 @@ async function process(
     if (pointer.value === null) throw new Error("Schema review failed");
 
     const content: AutoBeOpenApi.IJsonSchemaDescriptive =
-      pointer.value.content === null
-        ? props.reviewSchema
-        : (
-            ((
-              OpenApiV3_1Emender.convertComponents({
-                schemas: {
-                  [props.typeName]: pointer.value.content,
-                },
-              }) as AutoBeOpenApi.IComponents
-            ).schemas ?? {}) as Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            >
-          )[props.typeName];
+      pointer.value.content ?? props.reviewSchema;
     ctx.dispatch({
       type: SOURCE,
       kind: config.kind,

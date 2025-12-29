@@ -31,7 +31,10 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
     const visited: Set<string> = new Set();
     AutoBeOpenApiTypeChecker.visit({
       components: document.components,
-      schema: { $ref: `#/components/schemas/${func.plan.dtoTypeName}` },
+      schema: {
+        type: "reference",
+        $ref: `#/components/schemas/${func.plan.dtoTypeName}`,
+      },
       closure: (next) => {
         if (AutoBeOpenApiTypeChecker.isReference(next)) {
           const key: string = next.$ref.split("/").pop()!;

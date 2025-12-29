@@ -1095,7 +1095,7 @@ export namespace AutoBeOpenApi {
     | IJsonSchema.INull;
   export namespace IJsonSchema {
     /** Constant value type. */
-    export interface IConstant {
+    export interface IConstant extends ISignificant<"constant"> {
       /** The constant value. */
       const: boolean | number | string;
     }
@@ -1327,7 +1327,7 @@ export namespace AutoBeOpenApi {
     }
 
     /** Reference type directing named schema. */
-    export interface IReference {
+    export interface IReference extends ISignificant<"reference"> {
       /**
        * Reference to the named schema.
        *
@@ -1351,7 +1351,7 @@ export namespace AutoBeOpenApi {
      * `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly converts it
      * to `oneOf` type.
      */
-    export interface IOneOf {
+    export interface IOneOf extends ISignificant<"oneOf"> {
       /** List of the union types. */
       oneOf: Exclude<IJsonSchema, IJsonSchema.IOneOf | IJsonSchema.IObject>[];
 
@@ -1404,6 +1404,9 @@ export namespace AutoBeOpenApi {
        * discriminator that accepts only a single string value.
        */
       type: Type;
+
+      /** Never define nullable property. Instead, use `IOneOf` for union types. */
+      nullable?: undefined;
     }
   }
 
