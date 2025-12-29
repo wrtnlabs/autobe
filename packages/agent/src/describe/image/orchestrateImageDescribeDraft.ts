@@ -65,7 +65,7 @@ export const orchestrateImageDescribeDrafts = async (
           image: imageContent,
           description: event.draft,
         };
-      } catch (err) {
+      } catch {
         return null;
       }
     }),
@@ -118,7 +118,7 @@ async function process(
         : ctx.vendor.semaphore?.max(),
   });
   agent.on("request", (e) => {
-    if (e.body.tools) {
+    if (!!e.body.tools?.length) {
       e.body.tool_choice = "required";
     }
   });
