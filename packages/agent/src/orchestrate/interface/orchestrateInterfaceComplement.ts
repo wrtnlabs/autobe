@@ -15,7 +15,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -45,14 +44,9 @@ async function step(
     life: number;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missedTypes: string[] = (() => {
-    const typeNames: Set<string> = new Set(
-      missedOpenApiSchemas(props.document),
-    );
-    const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      JsonSchemaFactory.presets(typeNames);
-    return Array.from(typeNames).filter((t) => presets[t] === undefined);
-  })();
+  const missedTypes: string[] = missedOpenApiSchemas(props.document).filter(
+    (k) => JsonSchemaValidator.isPreset(k) === false,
+  );
   if (missedTypes.length === 0) return props.document.components.schemas;
   else if (state.life === 0) return props.document.components.schemas;
 
@@ -253,7 +247,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.mustBeObjectType({
+    JsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true

@@ -16,7 +16,6 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -36,12 +35,9 @@ export async function orchestrateInterfaceSchemaReview(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const typeNames: string[] = (() => {
-    const typeNames: Set<string> = new Set(Object.keys(props.schemas));
-    const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      JsonSchemaFactory.presets(typeNames);
-    return Array.from(typeNames).filter((t) => presets[t] === undefined);
-  })();
+  const typeNames: string[] = Object.keys(props.schemas).filter(
+    (k) => JsonSchemaValidator.isPreset(k) === false,
+  );
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
     ctx,
@@ -251,7 +247,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.mustBeObjectType({
+    JsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true

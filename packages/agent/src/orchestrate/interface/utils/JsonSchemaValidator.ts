@@ -4,8 +4,10 @@ import { OpenApiTypeChecker } from "@samchon/openapi";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
+import { JsonSchemaFactory } from "./JsonSchemaFactory";
+
 export namespace JsonSchemaValidator {
-  export const mustBeObjectType = (props: {
+  export const isObjectType = (props: {
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
   }): boolean =>
@@ -23,6 +25,16 @@ export namespace JsonSchemaValidator {
         op.requestBody?.typeName === props.typeName ||
         op.responseBody?.typeName === props.typeName,
     );
+
+  export const isPage = (key: string): boolean =>
+    key.startsWith("IPage") === true &&
+    key.startsWith("IPage.") === false &&
+    key !== "IPage";
+
+  export const isPreset = (typeName: string): boolean =>
+    JsonSchemaFactory.DEFAULT_SCHEMAS[typeName] !== undefined ||
+    JsonSchemaValidator.isPage(typeName) === true ||
+    typeName.endsWith(".IAuthorized") === true;
 
   export interface IProps {
     errors: IValidation.IError[];

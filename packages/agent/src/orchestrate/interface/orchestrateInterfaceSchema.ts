@@ -42,7 +42,7 @@ export async function orchestrateInterfaceSchema(
 
   // divide and conquer
   const typeNames: string[] = Array.from(gathered).filter(
-    (t) => presets[t] === undefined,
+    (k) => JsonSchemaValidator.isPreset(k) === false,
   );
   const progress: AutoBeProgressEventBase = {
     total: typeNames.length,
@@ -219,7 +219,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.mustBeObjectType({
+    JsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true

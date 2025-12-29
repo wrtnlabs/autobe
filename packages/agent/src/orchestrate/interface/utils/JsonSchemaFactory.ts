@@ -3,6 +3,8 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
 
+import { JsonSchemaValidator } from "./JsonSchemaValidator";
+
 export namespace JsonSchemaFactory {
   /* -----------------------------------------------------------
     ASSIGNMENTS
@@ -16,7 +18,7 @@ export namespace JsonSchemaFactory {
       typeNames.delete(key);
     }
     for (const key of typeNames)
-      if (isPage(key)) {
+      if (JsonSchemaValidator.isPage(key)) {
         const data: string = getPageName(key);
         schemas[key] = page(data);
         typeNames.delete(key);
@@ -197,53 +199,47 @@ export namespace JsonSchemaFactory {
 
   export const fixPage = (path: string, input: unknown): void => {
     if (isRecord(input) === false || isRecord(input[path]) === false) return;
-
     if (input[path].description) delete input[path].description;
     if (input[path].required) delete input[path].required;
 
     for (const key of Object.keys(input[path]))
       if (DEFAULT_SCHEMAS[key] !== undefined)
         input[path][key] = DEFAULT_SCHEMAS[key];
-      else if (isPage(key) === true) {
+      else if (JsonSchemaValidator.isPage(key) === true) {
         const data: string = key.substring("IPage".length);
         input[path][key] = page(data);
       }
   };
-
-  export const isPage = (key: string): boolean =>
-    key.startsWith("IPage") === true &&
-    key.startsWith("IPage.") === false &&
-    key !== "IPage";
 
   export const getPageName = (key: string): string =>
     key.substring("IPage".length);
 
   const isRecord = (input: unknown): input is Record<string, unknown> =>
     typeof input === "object" && input !== null;
-}
 
-const DEFAULT_SCHEMAS = (() => {
-  const init: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    (typia.json.schemas<
-      [IPage.IPagination, IPage.IRequest, IAuthorizationToken, IEntity]
-    >().components?.schemas ?? {}) as Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    >;
-  for (const value of Object.values(init))
-    AutoBeOpenApiTypeChecker.visit({
-      components: {
-        schemas: init,
-        authorizations: [],
-      },
-      schema: value,
-      closure: (next) => {
-        if (AutoBeOpenApiTypeChecker.isObject(next))
-          next["x-autobe-prisma-schema"] = null;
-      },
-    });
-  return init;
-})();
+  export const DEFAULT_SCHEMAS = (() => {
+    const init: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      (typia.json.schemas<
+        [IPage.IPagination, IPage.IRequest, IAuthorizationToken, IEntity]
+      >().components?.schemas ?? {}) as Record<
+        string,
+        AutoBeOpenApi.IJsonSchemaDescriptive
+      >;
+    for (const value of Object.values(init))
+      AutoBeOpenApiTypeChecker.visit({
+        components: {
+          schemas: init,
+          authorizations: [],
+        },
+        schema: value,
+        closure: (next) => {
+          if (AutoBeOpenApiTypeChecker.isObject(next))
+            next["x-autobe-prisma-schema"] = null;
+        },
+      });
+    return init;
+  })();
+}
 
 namespace IPage {
   /** Page information. */
