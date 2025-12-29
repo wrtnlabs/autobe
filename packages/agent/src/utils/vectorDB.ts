@@ -269,7 +269,7 @@ export async function retrieveTopKAdaptiveHybrid(
 ): Promise<RetrievalHit[]> {
   const N = index.length;
   const effectiveKMax =
-    kMax ?? Math.min(200, Math.max(60, Math.ceil(0.15 * N)));
+    kMax ?? Math.min(50, Math.max(30, Math.ceil(0.15 * N)));
 
   const qVecs = await embedder.embed([queryText]);
   const qVec = qVecs[0];
