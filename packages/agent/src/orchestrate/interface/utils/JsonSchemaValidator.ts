@@ -24,6 +24,7 @@ export namespace JsonSchemaValidator {
     validatePrismaSchema(props);
     validateRecursive(props);
     validateNullable(props.errors);
+    validateTypeArray(props.errors);
 
     const key: string = props.typeName;
     const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
@@ -379,10 +380,15 @@ export namespace JsonSchemaValidator {
           value: schema,
           description: StringUtil.trim`
             Root schema types (used in requestBody or responseBody of operations)
-            must be defined as object types.
+            must be defined as object types. 
+            
+            This is the rule enforced to ensure consistent API design and to facilitate easier data handling.
+            Even though you think that defining a non-object type is more convenient for your specific use case,
+            just follow the rule without any resistance.
 
-            If current type is hard to be defined as an object type,
-            just wrap it in an object type like below:
+            Note that, this is not a recommendation, but an instruction you must follow.
+
+            If current type is hard to be defined as an object type, just wrap it in an object type like below:
 
             \`\`\`typescript
             {
@@ -409,8 +415,13 @@ export namespace JsonSchemaValidator {
           description: StringUtil.trim`
             DTO type of .${key.split(".").pop()} suffix must be defined as an object type.
 
-            If current type is hard to be defined as an object type,
-            just wrap it in an object type like below:
+            This is the rule enforced to ensure consistent API design and to facilitate easier data handling.
+            Even though you think that defining a non-object type is more convenient for your specific use case,
+            just follow the rule without any resistance.
+
+            Note that, this is not a recommendation, but an instruction you must follow.
+
+            If current type is hard to be defined as an object type, just wrap it in an object type like below:
 
             \`\`\`typescript
             {
@@ -429,6 +440,16 @@ export namespace JsonSchemaValidator {
           The nullable property is not allowed in JSON Schema definitions.
 
           Instead, use "oneOf" with "null" type.
+        `;
+  };
+
+  const validateTypeArray = (errors: IValidation.IError[]): void => {
+    for (const e of errors)
+      if (e.path.endsWith(".type") && e.value instanceof Array)
+        e.description = StringUtil.trim`
+          The "type" property as an array is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with multiple types.
         `;
   };
 }
