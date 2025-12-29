@@ -8,10 +8,10 @@ pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit -
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping --from interface --to interface > archive.qwen-qwen3-next-80b-a3b-instruct.shopping.log
 
 # opening projects
-code results/qwen-qwen3-next-80b-a3b-instruct/todo/interface
-code results/qwen-qwen3-next-80b-a3b-instruct/bbs/interface
-code results/qwen-qwen3-next-80b-a3b-instruct/reddit/interface
-code results/qwen-qwen3-next-80b-a3b-instruct/shopping/interface
+code results/qwen/qwen3-next-80b-a3b-instruct/todo/interface
+code results/qwen/qwen3-next-80b-a3b-instruct/bbs/interface
+code results/qwen/qwen3-next-80b-a3b-instruct/reddit/interface
+code results/qwen/qwen3-next-80b-a3b-instruct/shopping/interface
 
 # individual testings
 pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.complement.todo.log

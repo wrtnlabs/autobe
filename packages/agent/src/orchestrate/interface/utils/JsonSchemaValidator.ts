@@ -33,8 +33,7 @@ export namespace JsonSchemaValidator {
 
   export const isPreset = (typeName: string): boolean =>
     JsonSchemaFactory.DEFAULT_SCHEMAS[typeName] !== undefined ||
-    JsonSchemaValidator.isPage(typeName) === true ||
-    typeName.endsWith(".IAuthorized") === true;
+    JsonSchemaValidator.isPage(typeName) === true;
 
   export interface IProps {
     errors: IValidation.IError[];
