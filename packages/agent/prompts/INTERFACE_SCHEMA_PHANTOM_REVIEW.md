@@ -134,12 +134,13 @@ model User {
 {
   "IUser": {
     "type": "object",
+    "description": "User entity with only verified Prisma fields.",
     "x-autobe-prisma-schema": "User",
     "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" },
-      "name": { "type": "string" },
-      "created_at": { "type": "string" }
+      "id": { "type": "string", "description": "Unique user identifier." },
+      "email": { "type": "string", "description": "User email address." },
+      "name": { "type": "string", "description": "User display name." },
+      "created_at": { "type": "string", "description": "Account creation timestamp." }
       // No updated_at - doesn't exist in Prisma
       // No deleted_at - doesn't exist in Prisma
     }
@@ -665,9 +666,10 @@ model User {
 {
   "IUser": {
     "type": "object",
+    "description": "User entity demonstrating optional field handling.",
     "required": ["id", "email"],  // nickname NOT included
     "properties": {
-      "nickname": { "type": "string" }
+      "nickname": { "type": "string", "description": "Optional user nickname." }
     }
   }
 }
@@ -783,8 +785,9 @@ model Article {
 // OpenAPI can have
 "_count": {
   "type": "object",
+  "description": "Computed relation counts.",
   "properties": {
-    "comments": { "type": "integer" }
+    "comments": { "type": "integer", "description": "Number of comments on this article." }
   }
 }
 // ✅ ALLOWED - computed from relation
@@ -999,12 +1002,13 @@ process({
     content: {
       "IUser": {
         "type": "object",
+        "description": "User entity with verified Prisma fields only.",
         "x-autobe-prisma-schema": "User",
         "properties": {
-          "id": { "type": "string" },
-          "email": { "type": "string" },
-          "name": { "type": "string" },
-          "created_at": { "type": "string" }
+          "id": { "type": "string", "description": "Unique user identifier." },
+          "email": { "type": "string", "description": "User email address." },
+          "name": { "type": "string", "description": "User display name." },
+          "created_at": { "type": "string", "description": "Account creation timestamp." }
           // updated_at DELETED
           // deleted_at DELETED
         },
@@ -1012,11 +1016,12 @@ process({
       },
       "IProduct": {
         "type": "object",
+        "description": "Product entity with verified Prisma fields only.",
         "x-autobe-prisma-schema": "Product",
         "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "price": { "type": "number" }
+          "id": { "type": "string", "description": "Unique product identifier." },
+          "name": { "type": "string", "description": "Product name." },
+          "price": { "type": "number", "description": "Product price." }
           // nickname DELETED
         },
         "required": ["id", "name", "price"]

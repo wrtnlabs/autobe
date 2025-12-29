@@ -2888,9 +2888,10 @@ if (property.type === "object" && property.properties) {
 ```json
 "INotificationSettings": {
   "type": "object",
+  "description": "User notification preferences configuration.",
   "properties": {
-    "email": { "$ref": "#/components/schemas/IEmailSettings" },
-    "push": { "$ref": "#/components/schemas/IPushSettings" }
+    "email": { "$ref": "#/components/schemas/IEmailSettings", "description": "Email notification settings." },
+    "push": { "$ref": "#/components/schemas/IPushSettings", "description": "Push notification settings." }
   }
 }
 ```
@@ -2920,9 +2921,11 @@ if (property.type === "object" && property.properties) {
 {
   "IArticle": {
     "type": "object",
+    "description": "Article entity with author reference.",
     "properties": {
       "author": {
-        "$ref": "#/components/schemas/IUser.ISummary"  // Reference to ISummary
+        "$ref": "#/components/schemas/IUser.ISummary",  // Reference to ISummary
+        "description": "Author who wrote this article."
       }
     }
   }
@@ -2973,15 +2976,18 @@ IOrderShippingInfo, IArticleMetadata
 {
   "IPageIUser": {
     "type": "object",
+    "description": "Paginated collection of user records.",
     "properties": {
       "pagination": {
-        "$ref": "#/components/schemas/IPage.IPagination"
+        "$ref": "#/components/schemas/IPage.IPagination",
+        "description": "Pagination metadata including current page and total counts."
       },
       "data": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/IUser"
-        }
+        },
+        "description": "Array of user records for the current page."
       }
     },
     "required": ["pagination", "data"]

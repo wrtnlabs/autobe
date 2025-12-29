@@ -584,15 +584,16 @@ export namespace IShoppingSale {
 {
   "IPageIEntityName": {
     "type": "object",
+    "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
     "properties": {
       "pagination": {
         "$ref": "#/components/schemas/IPage.IPagination",
-        "description": "<FILL DESCRIPTION HERE>"
+        "description": "Pagination metadata including current page, total pages, and item counts."
       },
       "data": {
         "type": "array",
         "items": { "$ref": "#/components/schemas/IEntityName" },
-        "description": "<FILL DESCRIPTION HERE>"
+        "description": "Array of records for the current page."
       }
     },
     "required": ["pagination", "data"]
@@ -643,11 +644,12 @@ model Article {
 {
   "IArticle": {
     "type": "object",
+    "description": "Article entity with nullable and non-nullable fields.",
     "properties": {
-      "title": { "type": "string" },
-      "subtitle": { "type": "string" },     // Property exists
-      "content": { "type": "string" },
-      "summary": { "type": "string" }       // Property exists
+      "title": { "type": "string", "description": "Article title. Required field." },
+      "subtitle": { "type": "string", "description": "Optional subtitle." },
+      "content": { "type": "string", "description": "Article content. Required field." },
+      "summary": { "type": "string", "description": "Optional summary." }
     },
     "required": ["title", "content"]        // Only non-nullable fields
   }

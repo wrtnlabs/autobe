@@ -85,10 +85,7 @@ export namespace ArchiveLogger {
     } else if (event.type === "interfaceComplement")
       content.push(`  - typeName: ${event.typeName}`);
     else if (event.type === "interfaceSchemaReview")
-      content.push(
-        `  - kind: ${event.kind}`,
-        `  - fixed: ${Object.keys(event.content).length}`,
-      );
+      content.push(`  - kind: ${event.kind}`, `  - fixed: ${!!event.content}`);
     else if (event.type === "interfaceSchemaRename")
       content.push(
         `  - refactors:`,

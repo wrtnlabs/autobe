@@ -920,41 +920,48 @@ An **inline object type** occurs when you define an object's complete structure 
 {
   "IBbsArticle.ICreate": {
     "type": "object",
+    "description": "Request DTO for creating a new BBS article. Contains title, content, attachments, and metadata.",
     "properties": {
-      "title": { "type": "string" },
-      "content": { "type": "string" },
+      "title": { "type": "string", "description": "Article title. Must be concise and descriptive." },
+      "content": { "type": "string", "description": "Article content in markdown format." },
       "attachments": {
         "type": "array",
+        "description": "List of file attachments for the article.",
         "items": {
           "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
         }
       },
       "metadata": {
-        "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
+        "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
+        "description": "Additional metadata for the article including tags and priority."
       }
     }
   },
 
   "IBbsArticleAttachment.ICreate": {  // ✅ PROPERLY NAMED TYPE
     "type": "object",
+    "description": "Request DTO for creating article attachment. References pre-uploaded file URL.",
     "properties": {
-      "url": { "type": "string", "format": "uri" },
-      "name": { "type": "string", "minLength": 1, "maxLength": 255 },
-      "size": { "type": "integer", "minimum": 0 }
+      "url": { "type": "string", "format": "uri", "description": "Pre-uploaded file URL from storage service." },
+      "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "Original file name with extension." },
+      "size": { "type": "integer", "minimum": 0, "description": "File size in bytes." }
     },
     "required": ["url", "name", "size"]
   },
 
   "IBbsArticleMetadata": {  // ✅ PROPERLY NAMED TYPE
     "type": "object",
+    "description": "Article metadata containing classification and priority information.",
     "properties": {
       "tags": {
         "type": "array",
-        "items": { "type": "string" }
+        "description": "List of tags for article categorization.",
+        "items": { "type": "string", "description": "Individual tag value." }
       },
       "priority": {
         "type": "string",
-        "enum": ["low", "medium", "high"]
+        "enum": ["low", "medium", "high"],
+        "description": "Article priority level for display ordering."
       }
     }
   }
@@ -1065,9 +1072,11 @@ Before ANY schema is accepted:
 // Your single schema should reference other types via $ref
 {
   "type": "object",
+  "description": "Article entity with author information.",
   "properties": {
     "author": {
-      "$ref": "#/components/schemas/IAuthor.ISummary"  // ✅ CORRECT: Use $ref
+      "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
+      "description": "Author who wrote this article."
     }
   }
 }
@@ -1278,17 +1287,18 @@ All IPage types MUST follow this exact structure:
 ```json
 {
   "type": "object",
+  "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
   "properties": {
     "pagination": {
       "$ref": "#/components/schemas/IPage.IPagination",
-      "description": "<FILL DESCRIPTION HERE>"
+      "description": "Pagination metadata including current page, total pages, and item counts."
     },
     "data": {
       "type": "array",
       "items": {
         "$ref": "#/components/schemas/<EntityType>"
       },
-      "description": "<FILL DESCRIPTION HERE>"
+      "description": "Array of records for the current page."
     }
   },
   "required": ["pagination", "data"]
@@ -1318,15 +1328,16 @@ For authentication operations (login, join, refresh), the response type MUST fol
 {
   "IUser.IAuthorized": {
     "type": "object",
+    "description": "Authenticated user response returned after successful login or registration.\n\nContains user identifier and JWT token for subsequent API authentication.",
     "properties": {
       "id": {
         "type": "string",
         "format": "uuid",
-        "description": "Unique identifier of the authenticated user"
+        "description": "Unique identifier of the authenticated user."
       },
       "token": {
         "$ref": "#/components/schemas/IAuthorizationToken",
-        "description": "JWT token information for authentication"
+        "description": "JWT token information for API authentication."
       }
     },
     "required": ["id", "token"]
@@ -1431,68 +1442,37 @@ interface IUser.ICreate {
 
 ```json
 {
-  "IUser.ILogin": {
-    "type": "object",
-    "properties": {
-      "email": {
-        "type": "string",
-        "format": "email",
-        "description": "User email address"
-      },
-      "password": {
-        "type": "string",
-        "description": "User password (plain text for verification)"
-      },
-      "ip": {
-        "type": ["string", "null"],
-        "description": "Client IP address for session tracking (OPTIONAL - server can extract, but client may provide for SSR)"
-      },
-      "href": {
-        "type": "string",
-        "format": "uri",
-        "description": "Connection URL (current page URL) - MANDATORY"
-      },
-      "referrer": {
-        "type": "string",
-        "format": "uri",
-        "description": "Referrer URL (previous page URL) - MANDATORY"
-      }
+  "type": "object",
+  "description": "Login request DTO with session context fields.\n\nContains user credentials and connection metadata for session tracking and security audit.",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User email address for authentication."
     },
-    "required": ["email", "password", "href", "referrer"]
+    "password": {
+      "type": "string",
+      "description": "User password in plain text for verification."
+    },
+    "ip": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ],
+      "description": "Client IP address for session tracking. Optional - server can extract from request headers, but client may provide for SSR scenarios."
+    },
+    "href": {
+      "type": "string",
+      "format": "uri",
+      "description": "Current page URL where login was initiated. Required for session tracking."
+    },
+    "referrer": {
+      "type": "string",
+      "format": "uri",
+      "description": "Previous page URL before login page. Required for session tracking."
+    }
   },
-  "ICustomer.IJoin": {
-    "type": "object",
-    "properties": {
-      "email": {
-        "type": "string",
-        "format": "email",
-        "description": "Customer email address"
-      },
-      "password": {
-        "type": "string",
-        "description": "Customer password"
-      },
-      "name": {
-        "type": "string",
-        "description": "Customer name"
-      },
-      "ip": {
-        "type": ["string", "null"],
-        "description": "Client IP address for session tracking (OPTIONAL - server can extract, but client may provide for SSR)"
-      },
-      "href": {
-        "type": "string",
-        "format": "uri",
-        "description": "Connection URL (current page URL) - MANDATORY"
-      },
-      "referrer": {
-        "type": "string",
-        "format": "uri",
-        "description": "Referrer URL (previous page URL) - MANDATORY"
-      }
-    },
-    "required": ["email", "password", "name", "href", "referrer"]
-  }
+  "required": ["email", "password", "href", "referrer"]
 }
 ```
 
@@ -3561,21 +3541,22 @@ interface IBbsArticleAttachment.ICreate {
 {
   "IBbsArticleAttachment.ICreate": {
     "type": "object",
+    "description": "Request DTO for creating article file attachment. Contains file metadata and pre-uploaded URL.",
     "properties": {
       "name": {
         "type": "string",
         "minLength": 1,
         "maxLength": 255,
-        "description": "File name"
+        "description": "Original file name without extension."
       },
       "extension": {
         "type": "string",
-        "description": "File extension (e.g., jpg, pdf, png)"
+        "description": "File extension without dot (e.g., jpg, pdf, png)."
       },
       "url": {
         "type": "string",
         "format": "uri",
-        "description": "Pre-uploaded file URL from storage service"
+        "description": "Pre-uploaded file URL from storage service. Must be a valid URI."
       }
     },
     "required": ["name", "extension", "url"]
@@ -4483,6 +4464,40 @@ interface IBbsArticle.IUpdate {
 
 ### 6.6. Documentation Requirements
 
+#### ABSOLUTE REQUIREMENT: `description` Field is MANDATORY
+
+**⚠️ THIS IS NOT OPTIONAL - IT IS AN ABSOLUTE TYPE SYSTEM REQUIREMENT ⚠️**
+
+The `AutoBeOpenApi.IJsonSchemaDescriptive` type **REQUIRES** the `description` field. This is enforced by the TypeScript type system - schemas without descriptions will fail compilation.
+
+**TWO MANDATORY DESCRIPTION LOCATIONS:**
+
+1. **Root Schema Level** - The schema you generate MUST have a `description` field
+2. **Every Object Property** - When defining `properties` in an object type, EACH property MUST have a `description` field
+
+This is NOT a recommendation or best practice - it is an **ABSOLUTE REQUIREMENT** enforced by the type system:
+
+```typescript
+// The type definition REQUIRES description
+export namespace IJsonSchemaDescriptive {
+  interface IDescriptive {
+    description: string;  // ← REQUIRED, not optional!
+  }
+}
+
+// IObject.properties requires IJsonSchemaDescriptive for each property
+export interface IObject {
+  properties: Record<string, IJsonSchemaDescriptive>;  // ← Each value MUST have description
+}
+```
+
+**ZERO TOLERANCE POLICY:**
+- ❌ Schema without root `description` → **COMPILATION FAILURE**
+- ❌ Property without `description` → **COMPILATION FAILURE**
+- ❌ Empty string `description: ""` → **UNACCEPTABLE**
+- ✅ Every schema MUST have meaningful `description`
+- ✅ Every property MUST have meaningful `description`
+
 #### Schema Type Description Requirements
 
 **CRITICAL**: Every schema type MUST have a clear, comprehensive `description` field.
@@ -4528,9 +4543,14 @@ Summary variant excludes large text fields for list performance.`,
 
 #### Property Description Requirements
 
+**⚠️ MANDATORY: Every single property MUST have a `description` field ⚠️**
+
+This is NOT optional. The type system requires `IJsonSchemaDescriptive` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
+
 Write clear, detailed property descriptions explaining the purpose, constraints, and business context of each field.
 
 **Writing Guidelines**:
+- **EVERY property MUST have `description`** - no exceptions
 - Keep sentences reasonably short (avoid overly long single lines)
 - If needed for clarity, break into multiple sentences or short paragraphs
 - Explain field purpose, constraints, validation rules, and business context
@@ -4561,6 +4581,15 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
   "email": {
     "type": "string",
     "description": "Email"
+  }
+}
+
+// ❌ FATAL ERROR: Missing description - COMPILATION WILL FAIL
+{
+  "email": {
+    "type": "string",
+    "format": "email"
+    // Missing description! This violates IJsonSchemaDescriptive type requirement
   }
 }
 
@@ -4654,7 +4683,8 @@ const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
     },
     // Weak relation (different scope - reference)
     author: {
-      $ref: "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref!
+      $ref: "#/components/schemas/IBbsMember.ISummary",  // ✅ USE $ref!
+      description: "Author who wrote this article. Reference to member summary."
     },
     // Count for different scope entities
     comments_count: {

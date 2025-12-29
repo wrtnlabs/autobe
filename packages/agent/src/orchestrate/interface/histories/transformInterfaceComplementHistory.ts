@@ -26,13 +26,6 @@ export const transformInterfaceComplementHistory = (props: {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
-    },
-    ...props.preliminary.getHistories(),
-    {
-      type: "systemMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
     },
     {
@@ -41,6 +34,7 @@ export const transformInterfaceComplementHistory = (props: {
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
     },
+    ...props.preliminary.getHistories(),
     {
       type: "assistantMessage",
       id: v7(),
