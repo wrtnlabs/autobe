@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { missedOpenApiSchemas } from "@autobe/utils";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -244,6 +244,20 @@ function createController(
       },
     }),
   );
+  if (
+    JsonSchemaValidator.mustBeObjectType({
+      operations: props.operations,
+      typeName: props.typeName,
+    }) === true
+  )
+    (
+      (
+        application.functions[0].parameters.$defs[
+          "IAutoBeInterfaceComplementApplication.IComplete"
+        ] as ILlmSchema.IObject
+      ).properties.schema as ILlmSchema.IReference
+    ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
+
   return {
     protocol: "class",
     name: SOURCE,

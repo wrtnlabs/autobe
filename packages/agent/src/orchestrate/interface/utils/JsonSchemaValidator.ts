@@ -5,6 +5,25 @@ import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
 export namespace JsonSchemaValidator {
+  export const mustBeObjectType = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    typeName: string;
+  }): boolean =>
+    props.typeName.endsWith(".IAuthorized") ||
+    props.typeName.endsWith(".IRequest") ||
+    props.typeName.endsWith(".ISummary") ||
+    props.typeName.endsWith(".IInvert") ||
+    props.typeName.endsWith(".ICreate") ||
+    props.typeName.endsWith(".IUpdate") ||
+    props.typeName.endsWith(".IJoin") ||
+    props.typeName.endsWith(".ILogin") ||
+    props.typeName.endsWith(".IAuthorized") ||
+    props.operations.some(
+      (op) =>
+        op.requestBody?.typeName === props.typeName ||
+        op.responseBody?.typeName === props.typeName,
+    );
+
   export interface IProps {
     errors: IValidation.IError[];
     prismaSchemas: Set<string>;
@@ -23,30 +42,32 @@ export namespace JsonSchemaValidator {
     validateAuthorization(props);
     validatePrismaSchema(props);
     validateRecursive(props);
-    
-      const key: string = props.typeName;
-      const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
-      validateKey({
-        errors: props.errors,
-        path: `${props.path}[${JSON.stringify(key)}]`,
-        key,
-      });
-      vo(key, value);
-      OpenApiTypeChecker.visit({
-        components: { schemas: { [key]: value } },
-        schema: value,
-        closure: (next, accessor) => {
-          if (OpenApiTypeChecker.isReference(next) === false) return;
-          const key: string = next.$ref.split("/").pop()!;
-          validateKey({
-            errors: props.errors,
-            path: `${accessor}.$ref`,
-            key,
-            transform: (typeName) => `#/components/schemas/${typeName}`,
-          });
-        },
-        accessor: `${props.path}[${JSON.stringify(key)}]`,
-      });
+    validateNullable(props.errors);
+    validateTypeArray(props.errors);
+
+    const key: string = props.typeName;
+    const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
+    validateKey({
+      errors: props.errors,
+      path: `${props.path}[${JSON.stringify(key)}]`,
+      key,
+    });
+    vo(key, value);
+    OpenApiTypeChecker.visit({
+      components: { schemas: { [key]: value } },
+      schema: value,
+      closure: (next, accessor) => {
+        if (OpenApiTypeChecker.isReference(next) === false) return;
+        const key: string = next.$ref.split("/").pop()!;
+        validateKey({
+          errors: props.errors,
+          path: `${accessor}.$ref`,
+          key,
+          transform: (typeName) => `#/components/schemas/${typeName}`,
+        });
+      },
+      accessor: `${props.path}[${JSON.stringify(key)}]`,
+    });
   };
 
   export const validateKey = (props: {
@@ -378,10 +399,15 @@ export namespace JsonSchemaValidator {
           value: schema,
           description: StringUtil.trim`
             Root schema types (used in requestBody or responseBody of operations)
-            must be defined as object types.
+            must be defined as object types. 
+            
+            This is the rule enforced to ensure consistent API design and to facilitate easier data handling.
+            Even though you think that defining a non-object type is more convenient for your specific use case,
+            just follow the rule without any resistance.
 
-            If current type is hard to be defined as an object type,
-            just wrap it in an object type like below:
+            Note that, this is not a recommendation, but an instruction you must follow.
+
+            If current type is hard to be defined as an object type, just wrap it in an object type like below:
 
             \`\`\`typescript
             {
@@ -408,8 +434,13 @@ export namespace JsonSchemaValidator {
           description: StringUtil.trim`
             DTO type of .${key.split(".").pop()} suffix must be defined as an object type.
 
-            If current type is hard to be defined as an object type,
-            just wrap it in an object type like below:
+            This is the rule enforced to ensure consistent API design and to facilitate easier data handling.
+            Even though you think that defining a non-object type is more convenient for your specific use case,
+            just follow the rule without any resistance.
+
+            Note that, this is not a recommendation, but an instruction you must follow.
+
+            If current type is hard to be defined as an object type, just wrap it in an object type like below:
 
             \`\`\`typescript
             {
@@ -419,5 +450,38 @@ export namespace JsonSchemaValidator {
           `,
         });
     };
+  };
+
+  const validateNullable = (errors: IValidation.IError[]): void => {
+    for (const e of errors)
+      if (e.path.endsWith(".nullable") && e.expected === "undefined")
+        e.description = StringUtil.trim`
+          The nullable property is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with "null" type.
+        `;
+  };
+
+  const validateTypeArray = (errors: IValidation.IError[]): void => {
+    for (const e of errors) {
+      if (e.path.endsWith(".type") && e.value instanceof Array)
+        e.description = StringUtil.trim`
+          The "type" property as an array is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with multiple types.
+        `;
+      else if (
+        e.expected.includes("AutoBeOpenApi.IJsonSchema") &&
+        e.expected.includes("|") &&
+        typeof e.value === "object" &&
+        e.value !== null &&
+        Array.isArray((e.value as any).type)
+      )
+        e.description = StringUtil.trim`
+          The "type" property as an array is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with multiple types.
+        `;
+    }
   };
 }
