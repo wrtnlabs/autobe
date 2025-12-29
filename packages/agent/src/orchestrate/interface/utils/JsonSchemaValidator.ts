@@ -444,12 +444,25 @@ export namespace JsonSchemaValidator {
   };
 
   const validateTypeArray = (errors: IValidation.IError[]): void => {
-    for (const e of errors)
+    for (const e of errors) {
       if (e.path.endsWith(".type") && e.value instanceof Array)
         e.description = StringUtil.trim`
           The "type" property as an array is not allowed in JSON Schema definitions.
 
           Instead, use "oneOf" with multiple types.
         `;
+      else if (
+        e.expected.includes("AutoBeOpenApi.IJsonSchema") &&
+        e.expected.includes("|") &&
+        typeof e.value === "object" &&
+        e.value !== null &&
+        Array.isArray((e.value as any).type)
+      )
+        e.description = StringUtil.trim`
+          The "type" property as an array is not allowed in JSON Schema definitions.
+
+          Instead, use "oneOf" with multiple types.
+        `;
+    }
   };
 }
