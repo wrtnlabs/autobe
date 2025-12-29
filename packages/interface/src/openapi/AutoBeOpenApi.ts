@@ -1185,7 +1185,28 @@ export namespace AutoBeOpenApi {
       /** Pattern restriction. */
       pattern?: string;
 
-      /** Content media type restriction. */
+      /**
+       * Content media type restriction.
+       *
+       * If you want to accept multiple contentMediaType values simultaneously
+       * (e.g., `text/plain` and `text/html`), you MUST NOT violate the type by
+       * using an array. Instead, use `oneOf` to define multiple `string`
+       * schemas with different `contentMediaType` values.
+       *
+       * Example for accepting both text/plain and text/html:
+       *
+       * ```typescript
+       * {
+       *   "oneOf": [
+       *     { "type": "string", "contentMediaType": "text/plain" },
+       *     { "type": "string", "contentMediaType": "text/html" }
+       *   ]
+       * }
+       * ```
+       *
+       * This is the CORRECT approach. Never use array notation or modify the
+       * single string type to accept arrays.
+       */
       contentMediaType?: string;
 
       /**
