@@ -926,10 +926,12 @@ An **inline object type** occurs when you define an object's complete structure 
       "attachments": {
         "type": "array",
         "items": {
+          "type": "reference",
           "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
         }
       },
       "metadata": {
+        "type": "reference",
         "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
       }
     }
@@ -1067,6 +1069,7 @@ Before ANY schema is accepted:
   "type": "object",
   "properties": {
     "author": {
+      "type": "reference",
       "$ref": "#/components/schemas/IAuthor.ISummary"  // ✅ CORRECT: Use $ref
     }
   }
@@ -1259,6 +1262,7 @@ The `type` field in any JSON Schema object MUST contain exactly one string value
 ✅ **CORRECT - Using oneOf for nullable string**:
 ```json
 {
+  "type": "oneOf",
   "oneOf": [
     { "type": "string" },
     { "type": "null" }
@@ -1280,12 +1284,14 @@ All IPage types MUST follow this exact structure:
   "type": "object",
   "properties": {
     "pagination": {
+      "type": "reference",
       "$ref": "#/components/schemas/IPage.IPagination",
       "description": "<FILL DESCRIPTION HERE>"
     },
     "data": {
       "type": "array",
       "items": {
+        "type": "reference",
         "$ref": "#/components/schemas/<EntityType>"
       },
       "description": "<FILL DESCRIPTION HERE>"
@@ -1325,6 +1331,7 @@ For authentication operations (login, join, refresh), the response type MUST fol
         "description": "Unique identifier of the authenticated user"
       },
       "token": {
+        "type": "reference",
         "$ref": "#/components/schemas/IAuthorizationToken",
         "description": "JWT token information for authentication"
       }

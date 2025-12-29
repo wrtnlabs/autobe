@@ -586,12 +586,16 @@ export namespace IShoppingSale {
     "type": "object",
     "properties": {
       "pagination": {
+        "type": "reference",
         "$ref": "#/components/schemas/IPage.IPagination",
         "description": "<FILL DESCRIPTION HERE>"
       },
       "data": {
         "type": "array",
-        "items": { "$ref": "#/components/schemas/IEntityName" },
+        "items": {
+          "type": "reference", 
+          "$ref": "#/components/schemas/IEntityName" 
+        },
         "description": "<FILL DESCRIPTION HERE>"
       }
     },
@@ -1089,7 +1093,10 @@ model Product {
       "name": { "type": "string" },
       "description": { "type": "string" },
       "price": { "type": "number" },
-      "category": { "$ref": "#/components/schemas/ICategory" }
+      "category": {
+        "type": "reference", 
+        "$ref": "#/components/schemas/ICategory" 
+      }
     }
   }
 }
@@ -1103,7 +1110,7 @@ model Product {
       "description": { "type": "string" },
       "price": { "type": "number" },
       "stock": { "type": "integer" },          // Added missing field
-      "category": { "$ref": "#/components/schemas/ICategory" },
+      "category": { "type": "reference", "$ref": "#/components/schemas/ICategory" },
       "featured": { "type": "boolean" },      // Added missing field
       "discount": { "type": "number" },       // Added missing optional field
       "createdAt": { "type": "string", "format": "date-time" }  // Added timestamp

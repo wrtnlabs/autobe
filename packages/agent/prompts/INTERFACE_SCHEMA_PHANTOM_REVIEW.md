@@ -193,7 +193,10 @@ model Article {
       "title": { "type": "string" },
       "tags": {  // 🔴 PHANTOM RELATION - not in Prisma
         "type": "array",
-        "items": { "$ref": "#/components/schemas/ITag" }
+        "items": {
+          "type": "reference", 
+          "$ref": "#/components/schemas/ITag"
+        }
       }
     }
   }

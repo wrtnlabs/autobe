@@ -22,7 +22,7 @@ If you happen to detect obvious security violations during your review, note the
 Your role is relation review and transformation ONLY. Only `INTERFACE_SCHEMA` and `INTERFACE_COMPLEMENT` can **define** new type bodies (properties, required, etc.).
 
 **What you CAN do**:
-- ✅ Use `$ref` to reference types - **even if they don't exist yet** (e.g., `{ "$ref": "#/components/schemas/IEntityName.ISummary" }`)
+- ✅ Use `$ref` to reference types - **even if they don't exist yet** (e.g., `{ "type": "reference", "$ref": "#/components/schemas/IEntityName.ISummary" }`)
 - ✅ Transform FK fields to object references using `$ref` to new type names
 - ✅ Extract inline objects to `$ref` pointing to new type names
 - ✅ Reference `IEntityName.ISummary`, `IEntityName.IInvert` via `$ref` freely
@@ -35,7 +35,10 @@ Your role is relation review and transformation ONLY. Only `INTERFACE_SCHEMA` an
 **Critical Understanding**:
 ```typescript
 // ✅ CORRECT - Use $ref to reference (type doesn't need to exist yet)
-"author": { "$ref": "#/components/schemas/IUser.ISummary" }
+"author": {
+  "type": "reference",
+  "$ref": "#/components/schemas/IUser.ISummary" 
+}
 
 // ❌ WRONG - Define the type body
 "IUser.ISummary": {
@@ -2829,6 +2832,7 @@ interface IComment {
   "items": {
     "type": "array",
     "items": {
+      "type": "reference",
       "$ref": "#/components/schemas/IOrderItem"
     }
   }
@@ -2850,6 +2854,7 @@ interface IComment {
 // ✅ CORRECT:
 {
   "metadata": {
+    "type": "reference",
     "$ref": "#/components/schemas/IArticleMetadata"
   }
 }
@@ -2889,8 +2894,14 @@ if (property.type === "object" && property.properties) {
 "INotificationSettings": {
   "type": "object",
   "properties": {
-    "email": { "$ref": "#/components/schemas/IEmailSettings" },
-    "push": { "$ref": "#/components/schemas/IPushSettings" }
+    "email": {
+      "type": "reference", 
+      "$ref": "#/components/schemas/IEmailSettings" 
+    },
+    "push": {
+      "type": "reference", 
+      "$ref": "#/components/schemas/IPushSettings" 
+    }
   }
 }
 ```
@@ -2898,6 +2909,7 @@ if (property.type === "object" && property.properties) {
 **previous version: Replace with $ref**
 ```json
 "notifications": {
+  "type": "reference",
   "$ref": "#/components/schemas/INotificationSettings"
 }
 ```
@@ -2922,6 +2934,7 @@ if (property.type === "object" && property.properties) {
     "type": "object",
     "properties": {
       "author": {
+        "type": "reference",
         "$ref": "#/components/schemas/IUser.ISummary"  // Reference to ISummary
       }
     }
@@ -2975,11 +2988,13 @@ IOrderShippingInfo, IArticleMetadata
     "type": "object",
     "properties": {
       "pagination": {
+        "type": "reference",
         "$ref": "#/components/schemas/IPage.IPagination"
       },
       "data": {
         "type": "array",
         "items": {
+          "type": "reference",
           "$ref": "#/components/schemas/IUser"
         }
       }
@@ -3704,6 +3719,7 @@ If no fixes: "No relation issues require fixes. All relations are properly struc
       "items": {
         "type": "array",
         "items": {
+          "type": "reference",
           "$ref": "#/components/schemas/IOrderItem"  // Reference only!
         }
       }
@@ -3773,6 +3789,7 @@ interface IBbsArticleComment {
   "IBbsArticleComment": {
     "properties": {
       "article": {
+        "type": "reference",
         "$ref": "#/components/schemas/IBbsArticle.ISummary"  // Just reference
       }
     }
