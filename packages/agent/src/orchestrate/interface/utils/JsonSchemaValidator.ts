@@ -550,7 +550,7 @@ const isExcludedObjectType = (error: IValidation.IError): boolean =>
       "AutoBeOpenApi.IJsonSchemaDescriptive.IConstant",
     ) &&
       error.expected.includes(
-        "AutoBeOpenApi.IJsonSchemaDescriptive.IEnumeration",
+        "AutoBeOpenApi.IJsonSchemaDescriptive.IArray",
       ))) &&
   typia.is<{
     type: "object";

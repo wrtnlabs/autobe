@@ -48,8 +48,8 @@ import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
-import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
 import { TimedConversation } from "../utils/TimedConversation";
+import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
@@ -494,21 +494,6 @@ const transformAndDispatch = <
   props.state()[props.history.type] = props.history as any;
   void props.dispatch(props.event).catch(() => {});
   return props.history;
-};
-
-const forceRetry = async <T>(
-  task: () => Promise<T>,
-  count: number,
-): Promise<T> => {
-  let error: unknown = undefined;
-  for (let i: number = 0; i < count; ++i)
-    try {
-      return await task();
-    } catch (e) {
-      if (e instanceof AutoBeTimeoutError) throw e;
-      error = e;
-    }
-  throw error;
 };
 
 const STAGES =
