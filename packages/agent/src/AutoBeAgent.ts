@@ -294,6 +294,11 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         : Array.isArray(content)
           ? content
           : [content];
+    for (const c of userContent) {
+      if (c.type === "text" && c.text.trim().length === 0) {
+        throw new Error("User message cannot be empty");
+      }
+    }
     this.dispatch({
       type: "userMessage",
       id: v7(),
