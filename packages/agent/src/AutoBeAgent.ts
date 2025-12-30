@@ -32,6 +32,7 @@ import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { supportMistral } from "./factory/supportMistral";
+import { throwExecuteFailure } from "./factory/throwExecuteFailure";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
 import { transformFacadeStateMessage } from "./orchestrate/facade/structures/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
@@ -313,15 +314,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         (h): h is AgenticaExecuteHistory =>
           h.type === "execute" && h.success === false,
       );
-    if (errorHistory !== undefined) {
-      if (errorHistory.value instanceof Error) throw errorHistory.value;
-      else {
-        const v = new Error();
-        Object.assign(v, errorHistory.value);
-        throw v;
-      }
-    }
-
+    if (errorHistory !== undefined) throwExecuteFailure(errorHistory);
     return this.histories_.slice(index);
   }
 

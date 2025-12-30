@@ -1,4 +1,5 @@
 import {
+  AgenticaExecuteHistory,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -53,6 +54,7 @@ import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { supportMistral } from "./supportMistral";
+import { throwExecuteFailure } from "./throwExecuteFailure";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -268,12 +270,16 @@ export const createAutoBeContext = (props: {
             })
             .catch(() => {});
           throw result.error;
-        } else if (
+        }
+
+        const executeFailure: AgenticaExecuteHistory | undefined =
+          result.histories
+            .filter((h) => h.type === "execute")
+            .find((h) => h.success === false);
+        if (executeFailure !== undefined) throwExecuteFailure(executeFailure);
+        else if (
           true === next.enforceFunctionCall &&
-          false ===
-            result.histories.some(
-              (h) => h.type === "execute" && h.success === true,
-            )
+          false === result.histories.some((h) => h.type === "execute")
         ) {
           const failure = () => {
             throw new Error(
@@ -323,6 +329,7 @@ export const createAutoBeContext = (props: {
         }
         return success(result.histories);
       };
+
       if (next.enforceFunctionCall === true)
         return await forceRetry(execute, config.retry);
       else return await execute();
