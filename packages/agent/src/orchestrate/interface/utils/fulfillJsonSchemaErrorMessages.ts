@@ -1,5 +1,5 @@
 import { StringUtil } from "@autobe/utils";
-import { IValidation } from "typia";
+import typia, { IValidation } from "typia";
 
 export const fulfillJsonSchemaErrorMessages = (
   errors: IValidation.IError[],
@@ -8,10 +8,7 @@ export const fulfillJsonSchemaErrorMessages = (
     if (
       // type := ["number", "string", ...] case
       isInvalidJsonSchema(e) &&
-      typeof e.value === "object" &&
-      e.value !== null &&
-      "type" in e.value &&
-      Array.isArray(e.value.type)
+      typia.is<{ type: string[] }>(e.value) === true
     )
       e.description = StringUtil.trim`
         You have defined the JSON schema's type property value as an 
@@ -34,10 +31,7 @@ export const fulfillJsonSchemaErrorMessages = (
       `;
     else if (
       isInvalidJsonSchema(e) &&
-      typeof e.value === "object" &&
-      e.value !== null &&
-      "enum" in e.value &&
-      Array.isArray(e.value.enum)
+      typia.is<{ enum: any[] }>(e.value) === true
     )
       e.description = StringUtil.trim`
         You have defined only enum property, but it is not allowed in the 
@@ -74,7 +68,61 @@ export const fulfillJsonSchemaErrorMessages = (
         not any required fields at all, you still have to fill the 
         "required" property even though it becomes an empty array.
       `;
+    else if (isExcludedObjectType(e) === true)
+      e.description = StringUtil.trim`
+        Nested inline object type definitions are not allowed in AutoBE.
+
+        All object types must be defined as named schemas in the components section
+        and referenced using $ref. This enforces the DRY principle, improves reusability,
+        and maintains AutoBE's simplified AST structure for AI generation clarity.
+
+        Instead of defining an inline object, create a new named type in components.schemas
+        with an interface-style name (starting with 'I'), then reference it with $ref.
+
+        For example, instead of:
+
+        \`\`\`typescript
+        {
+          "type": "array",
+          "items": { "type": "object", "properties": {...} }  // ❌ Wrong
+        }
+        \`\`\`
+
+        Define a named type and reference it:
+
+        \`\`\`typescript
+        // In components.schemas
+        "IUserSummary": { 
+          "type": "object", 
+          "properties": {...} 
+        }
+
+        // Then reference it
+        {
+          "type": "array",
+          "items": { "$ref": "#/components/schemas/IUserSummary" }  // ✅ Correct
+        }
+        \`\`\`
+
+        This applies to array items, object properties, additionalProperties, 
+        and oneOf variants. Change the inline object definition to a named schema 
+        reference at the next time.
+      `;
 };
+
+const isExcludedObjectType = (error: IValidation.IError): boolean =>
+  error.expected.includes("|") &&
+  ((error.expected.includes("AutoBeOpenApi.IJsonSchema.IConstant") &&
+    error.expected.includes("AutoBeOpenApi.IJsonSchema.IArray")) ||
+    (error.expected.includes(
+      "AutoBeOpenApi.IJsonSchemaDescriptive.IConstant",
+    ) &&
+      error.expected.includes(
+        "AutoBeOpenApi.IJsonSchemaDescriptive.IArray",
+      ))) &&
+  typia.is<{
+    type: "object";
+  }>(error.value) === true;
 
 const isInvalidJsonSchema = (e: IValidation.IError): boolean =>
   e.expected.startsWith("(") &&
