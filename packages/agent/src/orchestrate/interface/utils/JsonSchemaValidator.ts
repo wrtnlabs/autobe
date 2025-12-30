@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@samchon/openapi";
-import { IValidation } from "typia";
+import typia, { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
 import { JsonSchemaFactory } from "./JsonSchemaFactory";
@@ -55,6 +55,7 @@ export namespace JsonSchemaValidator {
     validateRecursive(props);
     validateNullable(props.errors);
     validateTypeArray(props.errors);
+    validateNestedObject(props.errors);
 
     const key: string = props.typeName;
     const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
@@ -495,4 +496,63 @@ export namespace JsonSchemaValidator {
         `;
     }
   };
+
+  const validateNestedObject = (errors: IValidation.IError[]): void => {
+    for (const e of errors)
+      if (isExcludedObjectType(e) === true)
+        e.description = StringUtil.trim`
+          Nested inline object type definitions are not allowed in AutoBE.
+
+          All object types must be defined as named schemas in the components section
+          and referenced using $ref. This enforces the DRY principle, improves reusability,
+          and maintains AutoBE's simplified AST structure for AI generation clarity.
+
+          Instead of defining an inline object, create a new named type in components.schemas
+          with an interface-style name (starting with 'I'), then reference it with $ref.
+
+          For example, instead of:
+
+          \`\`\`typescript
+          {
+            "type": "array",
+            "items": { "type": "object", "properties": {...} }  // ❌ Wrong
+          }
+          \`\`\`
+
+          Define a named type and reference it:
+
+          \`\`\`typescript
+          // In components.schemas
+          "IUserSummary": { 
+            "type": "object", 
+            "properties": {...} 
+          }
+
+          // Then reference it
+          {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/IUserSummary" }  // ✅ Correct
+          }
+          \`\`\`
+
+          This applies to array items, object properties, additionalProperties, 
+          and oneOf variants. Change the inline object definition to a named schema 
+          reference at the next time.
+        `;
+  };
 }
+
+const isExcludedObjectType = (error: IValidation.IError): boolean =>
+  error.expected.includes("|") &&
+  ((error.expected.includes("AutoBeOpenApi.IJsonSchema.IConstant") &&
+    error.expected.includes("AutoBeOpenApi.IJsonSchema.IArray")) ||
+    (error.expected.includes(
+      "AutoBeOpenApi.IJsonSchemaDescriptive.IConstant",
+    ) &&
+      error.expected.includes(
+        "AutoBeOpenApi.IJsonSchemaDescriptive.IEnumeration",
+      ))) &&
+  typia.is<{
+    type: "object";
+    properties: object;
+  }>(error.value) === true;
