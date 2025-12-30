@@ -554,5 +554,4 @@ const isExcludedObjectType = (error: IValidation.IError): boolean =>
       ))) &&
   typia.is<{
     type: "object";
-    properties: object;
   }>(error.value) === true;
