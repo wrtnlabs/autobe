@@ -207,9 +207,9 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
-    for (let ci: number = 0; ci < ctx.retry; ++ci) {
+    while (true) {
       if (missedOpenApiSchemas(document).length === 0) break;
-      
+
       // COMPLEMENT OMITTED
       const oldbie: Set<string> = new Set(
         Object.keys(document.components.schemas),
@@ -226,6 +226,7 @@ export const orchestrateInterface =
             .filter((key) => oldbie.has(key) === false)
             .map((key) => [key, complemented[key]]),
         );
+      if (Object.keys(complemented).length === 0) break;
       assign(complemented);
 
       // REVIEW COMPLEMENTED
