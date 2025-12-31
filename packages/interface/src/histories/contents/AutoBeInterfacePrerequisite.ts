@@ -1,8 +1,8 @@
-import { AutoBeOpenApi } from "../../openapi";
+import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 
 /**
- * Interface representing the prerequisite dependency analysis result for an
- * API operation.
+ * Interface representing the prerequisite dependency analysis result for an API
+ * operation.
  *
  * This interface maps an API endpoint to its required prerequisite operations,
  * which are POST operations that must be executed first to create the necessary
@@ -15,8 +15,8 @@ import { AutoBeOpenApi } from "../../openapi";
  * dependency graph simple and predictable.
  *
  * All prerequisites are restricted to POST method operations only, as they
- * represent resource creation endpoints that establish the necessary data
- * for subsequent operations to succeed.
+ * represent resource creation endpoints that establish the necessary data for
+ * subsequent operations to succeed.
  *
  * @author Samchon
  */
@@ -40,8 +40,8 @@ export interface AutoBeInterfacePrerequisite {
    * dependencies, request body schema references, and entity relationships.
    *
    * For example, a `DELETE /orders/{orderId}/items/{itemId}` operation would
-   * have prerequisites including `POST /orders` to create the order and
-   * `POST /orders/{orderId}/items` to create the item being deleted.
+   * have prerequisites including `POST /orders` to create the order and `POST
+   * /orders/{orderId}/items` to create the item being deleted.
    *
    * Prerequisites are ordered logically with parent resources before child
    * resources to ensure proper creation sequence.

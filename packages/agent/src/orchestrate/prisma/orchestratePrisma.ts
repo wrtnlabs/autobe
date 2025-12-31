@@ -5,10 +5,10 @@ import {
   AutoBePrismaComponentEvent,
   AutoBePrismaHistory,
   AutoBePrismaReviewEvent,
+  AutoBePrismaSchemaEvent,
   IAutoBeCompiler,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
-import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
 import { writePrismaApplication } from "@autobe/utils";
 import { v7 } from "uuid";
 

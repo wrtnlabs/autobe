@@ -1,5 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
+import { AutoBeInterfaceGroup, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 

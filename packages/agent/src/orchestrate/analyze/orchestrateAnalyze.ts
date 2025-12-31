@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
@@ -6,7 +7,6 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

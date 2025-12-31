@@ -1,17 +1,17 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeOpenApi,
   AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
 /**
  * Complete data collection for preliminary RAG system.
  *
- * Used in both `all` (globally available) and `local` (currently loaded) contexts
- * of `AutoBePreliminaryController`. Contains current iteration data and optional
- * previous iteration data for complement cycles.
+ * Used in both `all` (globally available) and `local` (currently loaded)
+ * contexts of `AutoBePreliminaryController`. Contains current iteration data
+ * and optional previous iteration data for complement cycles.
  *
  * @author Samchon
  */

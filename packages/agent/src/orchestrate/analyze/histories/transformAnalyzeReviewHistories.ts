@@ -1,5 +1,7 @@
-import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import {
+  AutoBeAnalyzeFile,
+  AutoBeAnalyzeScenarioEvent,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 

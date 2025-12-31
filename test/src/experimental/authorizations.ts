@@ -1,6 +1,8 @@
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import { AutoBeEventSnapshot } from "@autobe/interface";
-import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
+import {
+  AutoBeEventSnapshot,
+  AutoBeInterfaceAuthorizationEvent,
+} from "@autobe/interface";
 
 const main = async (): Promise<void> => {
   const snapshots: AutoBeEventSnapshot[] =

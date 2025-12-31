@@ -1,5 +1,6 @@
 import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
@@ -7,7 +8,6 @@ import {
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { OpenApiTypeChecker } from "@samchon/openapi";
 import typia from "typia";
 import { v7 } from "uuid";

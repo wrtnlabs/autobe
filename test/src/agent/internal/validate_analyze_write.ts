@@ -3,12 +3,12 @@ import { orchestrateAnalyzeWrite } from "@autobe/agent/src/orchestrate/analyze/o
 import { executeCachedBatch } from "@autobe/agent/src/utils/executeCachedBatch";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
+  AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
 import { validate_analyze_scenario } from "./validate_analyze_scenario";
 

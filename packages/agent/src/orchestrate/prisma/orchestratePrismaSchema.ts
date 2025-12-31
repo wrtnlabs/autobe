@@ -1,6 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeEventSource, AutoBePrisma } from "@autobe/interface";
-import { AutoBePrismaSchemaEvent } from "@autobe/interface/src/events/AutoBePrismaSchemaEvent";
+import {
+  AutoBeEventSource,
+  AutoBePrisma,
+  AutoBePrismaSchemaEvent,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";

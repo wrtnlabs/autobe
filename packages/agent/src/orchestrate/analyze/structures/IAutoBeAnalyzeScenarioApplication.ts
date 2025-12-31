@@ -1,5 +1,8 @@
-import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import {
+  AutoBeAnalyzeActor,
+  AutoBeAnalyzeFile,
+  CamelCasePattern,
+} from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";

@@ -7,8 +7,11 @@ export * from "./AutoBeUserMessageTextContent";
 export * from "./AutoBeImageDescribeDraft";
 
 export * from "./AutoBeAnalyzeActor";
+export * from "./AutoBeAnalyzeFile";
 
 export * from "./AutoBeInterfaceAuthorization";
+export * from "./AutoBeInterfaceGroup";
+export * from "./AutoBeInterfacePrerequisite";
 export * from "./AutoBeInterfaceSchemaRefactor";
 
 export * from "./AutoBeTestFile";

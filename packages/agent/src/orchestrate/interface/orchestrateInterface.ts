@@ -5,10 +5,10 @@ import {
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
+  AutoBeInterfacePrerequisite,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import {
   AutoBeOpenApiEndpointComparator,
   missedOpenApiSchemas,

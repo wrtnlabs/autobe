@@ -3,10 +3,10 @@ import {
   AutoBeAnalyzeActor,
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
+  AutoBeInterfaceAuthorizationEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";

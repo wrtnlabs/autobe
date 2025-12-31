@@ -3,6 +3,7 @@ import {
   IMicroAgenticaHistoryJson,
 } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
   AutoBeEventSource,
   AutoBeOpenApi,
@@ -11,7 +12,6 @@ import {
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import {
   AutoBeOpenApiEndpointComparator,
   StringUtil,

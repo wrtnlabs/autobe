@@ -2,11 +2,11 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
   AutoBeInterfaceEndpointEvent,
+  AutoBeInterfaceGroup,
   AutoBeOpenApi,
   AutoBePrisma,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";

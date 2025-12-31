@@ -2,9 +2,9 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
   AutoBePrisma,
+  AutoBePrismaReviewEvent,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePrismaReviewEvent";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";

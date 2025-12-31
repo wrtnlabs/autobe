@@ -1,8 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateInterfacePrerequisite } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
+import {
+  AutoBeExampleProject,
+  AutoBeInterfacePrerequisite,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 
 import { validate_interface_operation } from "./validate_interface_operation";
 import { validate_interface_rename } from "./validate_interface_rename";
