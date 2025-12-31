@@ -14,12 +14,12 @@ Your role is review and enhancement ONLY. Only `INTERFACE_SCHEMA` and `INTERFACE
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately without asking for confirmation or permission.
 
 **EXECUTION STRATEGY**:
-1. **Assess Initial Materials**: Review the provided schemas, requirements, and Prisma models
+1. **Assess Initial Materials**: Review the provided schemas, requirements, and database models
 2. **Identify Gaps**: Determine if additional context is needed for comprehensive content review
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas strategically
+   - Request additional requirements files, database schemas strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
@@ -46,7 +46,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes schema content review requirements and generated schemas
-- Additional materials (analysis files, Prisma schemas) can be requested via function calling when needed
+- Additional materials (analysis files, database schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 
@@ -153,7 +153,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: content review
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -224,11 +224,11 @@ process({
 
 **Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need previous version of Prisma schemas to validate field mapping changes.",
+  thinking: "Need previous version of database schemas to validate field mapping changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "orders", "products"]
@@ -877,18 +877,18 @@ For EVERY schema and property:
 
 ### 7.1. The Prisma-DTO Mapping Principle
 
-**ABSOLUTE RULE**: Every DTO must accurately reflect its corresponding Prisma model, with appropriate filtering based on DTO type.
+**ABSOLUTE RULE**: Every DTO must accurately reflect its corresponding database model, with appropriate filtering based on DTO type.
 
 #### 7.1.1. Complete Field Mapping
 
 **For Main Entity DTOs (IEntity)**:
-- Include ALL fields from Prisma model (that aren't security-filtered or phantom - those are handled by other agents)
+- Include ALL fields from database model (that aren't security-filtered or phantom - those are handled by other agents)
 - Every appropriate database column should be represented
 - Computed fields can be included (COUNT, AVG, SUM aggregates)
 
 **Common Completeness Violations**:
 ```prisma
-// Prisma model:
+// database model:
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -974,7 +974,7 @@ interface IUser.ISummary {
 
 **previous version: Inventory ALL Prisma Fields**
 ```typescript
-// For each Prisma model, list:
+// For each database model, list:
 - id fields (usually uuid)
 - data fields (strings, numbers, booleans)
 - optional fields (marked with ?)
@@ -1002,7 +1002,7 @@ interface IUser.ISummary {
 
 For EVERY entity:
 
-1. **List all Prisma fields** (from loaded Prisma models)
+1. **List all Prisma fields** (from loaded database models)
 2. **Check each field appears in appropriate DTOs**
 3. **Flag missing fields**
 4. **Add missing fields with correct types**
@@ -1049,7 +1049,7 @@ For EVERY schema and property:
 2. **Verify description is meaningful (not redundant)**
 3. **Enhance with business context** (multi-paragraph if needed)
 4. **Ensure proper formatting** (short sentences, clear structure)
-5. **Add Prisma schema comments if available**
+5. **Add database schema comments if available**
 6. **Verify English language only**
 
 ### 8.5. Phase 5: Variant Consistency
@@ -1067,7 +1067,7 @@ Across all variants of an entity:
 ### 9.1. Field Completeness Fix
 
 ```prisma
-// Prisma model:
+// database model:
 model Product {
   id          String   @id @default(uuid())
   name        String
@@ -1310,11 +1310,11 @@ thinking: "Enhanced IUser description, added bio field, enhanced IPost descripti
 Can be one of:
 - `IComplete` - Final review completion with results
 - `IAutoBePreliminaryGetAnalysisFiles` - Load requirement analysis files
-- `IAutoBePreliminaryGetDatabaseSchemas` - Load Prisma model definitions
+- `IAutoBePreliminaryGetDatabaseSchemas` - Load database model definitions
 - `IAutoBePreliminaryGetInterfaceOperations` - Load Interface operations
 - `IAutoBePreliminaryGetInterfaceSchemas` - Load Interface schemas
 - `IAutoBePreliminaryGetPreviousAnalysisFiles` - Load previous version analysis files
-- `IAutoBePreliminaryGetPreviousDatabaseSchemas` - Load previous version Prisma schemas
+- `IAutoBePreliminaryGetPreviousDatabaseSchemas` - Load previous version database schemas
 - `IAutoBePreliminaryGetPreviousInterfaceOperations` - Load previous version operations
 - `IAutoBePreliminaryGetPreviousInterfaceSchemas` - Load previous version schemas
 

@@ -79,7 +79,7 @@ thinking: "Fixed JWT error in join, password error in login, session error in re
 ```
 
 **IMPORTANT: Strategic Schema Retrieval**:
-- NOT every compilation error needs Prisma schema information
+- NOT every compilation error needs database schema information
 - ONLY request schemas when errors specifically indicate authorization schema issues:
   - Role table field errors
   - User table relationship errors
@@ -509,10 +509,10 @@ import { jwtAuthorize } from "./jwtAuthorize";
 
 **Symptom**: `Property 'user_id' does not exist on type`
 
-**Root Cause**: Using wrong query field or Prisma schema doesn't have expected field
+**Root Cause**: Using wrong query field or Prisma schema doesn''t have expected field
 
 **Fix Strategy**:
-1. Check Prisma schema for role table structure
+1. Check database schema for role table structure
 2. Identify if role table has foreign key to user table
 3. Use correct field (`user_id` vs `id`)
 4. Or remove the non-existent field if it shouldn't be there

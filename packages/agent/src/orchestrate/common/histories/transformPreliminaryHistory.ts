@@ -433,7 +433,7 @@ namespace PreliminaryTransformer {
           .map((c) =>
             [
               c.plan.dtoTypeName,
-              c.plan.prismaSchemaName,
+              c.plan.databaseSchemaName,
               c.plan.references.length > 0
                 ? `(${c.plan.references.map((r) => r.source).join(", ")})`
                 : "-",
@@ -502,7 +502,7 @@ namespace PreliminaryTransformer {
           .map((t) =>
             [
               t.plan.dtoTypeName,
-              t.plan.prismaSchemaName,
+              t.plan.databaseSchemaName,
               `(${t.neighbors.join(", ")})`,
             ].join(" | "),
           )

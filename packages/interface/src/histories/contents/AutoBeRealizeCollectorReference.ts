@@ -23,7 +23,7 @@ export interface AutoBeRealizeCollectorReference {
    *
    * Examples: "shopping_sales", "shopping_customers", "bbs_members"
    */
-  prismaSchemaName: string;
+  databaseSchemaName: string;
 
   /**
    * Source of this reference, describing where it originates.

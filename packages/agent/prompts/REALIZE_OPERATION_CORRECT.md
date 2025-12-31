@@ -98,7 +98,7 @@ thinking: "Fixed error on line 23, line 45, line 67, line 89..."
 
 **When to request collectors**:
 - Errors in POST operations creating records with complex nested DTOs
-- Type errors in transforming API request DTOs to Prisma CreateInput
+- Type errors in transforming API request DTOs to database CreateInput
 - UUID generation or foreign key resolution issues in create operations
 - Need to understand existing collector patterns for similar DTOs
 - NOT needed for: Simple creates, read operations, non-creation errors
@@ -290,7 +290,7 @@ Analyzes TypeScript compilation errors to understand:
 - Error patterns and root causes
 - Required fixes and their impact
 - Whether quick fixes or deep refactoring is needed
-- Prisma schema and API contract constraints
+- database schema and API contract constraints
 
 Document in this field:
 - Error patterns identified (null handling, missing fields, type mismatches)
@@ -802,7 +802,7 @@ where: {
 
 **STEP-BY-STEP FIX FOR BEGINNERS:**
 1. **Read the error**: It tells you EXACTLY which field doesn't exist
-2. **Check Prisma schema**: Look at the model - does this field exist?
+2. **Check database schema**: Look at the model - does this field exist?
 3. **If NO**: Just DELETE that line from your code
 4. **If YES but different name**: Use the correct field name
 5. **That's it!** This is the easiest error to fix
@@ -900,7 +900,7 @@ await MyGlobal.prisma.articles.create({
 ```
 
 **FIX STRATEGY**:
-1. Read the complete Prisma schema model
+1. Read the complete database schema model
 2. List ALL non-nullable fields
 3. Ensure EVERY field is present in CreateInput
 4. Add missing timestamp fields (`created_at`, `updated_at`)
@@ -952,7 +952,7 @@ const sale = await MyGlobal.prisma.sales.findUnique({
 ```
 
 **FIX STRATEGY**:
-1. Read the Prisma schema model carefully
+1. Read the database schema model carefully
 2. Identify the EXACT relation field name (NOT the foreign key column)
 3. For M:1 and 1:1 relations: Use singular relation name (e.g., `customer`, `author`)
 4. For 1:N relations: Use plural or full table name as defined in schema
@@ -1096,7 +1096,7 @@ An error is **unrecoverable** when:
 
 1. **Required field doesn't exist in schema**
    - API specification demands a field
-   - Prisma schema has no such field
+   - database schema has no such field
    - No alternative field can satisfy the requirement
 
 2. **Required operation impossible with schema**

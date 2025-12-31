@@ -123,7 +123,7 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * - Missing required field (transform() uses it but select() doesn't fetch
      *   it)
      * - Wrong selection syntax (true for relation, or nested select for scalar)
-     * - Selecting field that doesn't exist in Prisma model
+     * - Selecting field that doesn't exist in database model
      * - Missing aggregation (_count, _sum) when transform() needs it
      *
      * This structured verification:
@@ -172,7 +172,7 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * **Common correction scenarios in transform()**:
      *
      * - Missing type conversion (Decimal → Number, DateTime → ISO)
-     * - Wrong property name (DTO vs Prisma mismatch)
+     * - Wrong property name (DTO vs database mismatch)
      * - Inline transformation when neighbor transformer exists
      * - Missing computed property
      * - Wrong nullable handling (DateTime? → string | null)

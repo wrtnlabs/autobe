@@ -36,10 +36,10 @@ export const transformRealizeCollectorPlanHistories = (props: {
           3. Request Interface schemas to understand Create DTO shapes
           4. Request Interface operations to understand how Create DTOs are used
           5. Analyze each Create DTO to determine if it's collectable or not
-          6. Generate complete plan including ALL DTOs with appropriate prismaSchemaName
+          6. Generate complete plan including ALL DTOs with appropriate databaseSchemaName
 
-          **For collectable DTOs**: Set prismaSchemaName to actual database table name
-          **For non-collectable DTOs**: Set prismaSchemaName to null
+          **For collectable DTOs**: Set databaseSchemaName to actual database table name
+          **For non-collectable DTOs**: Set databaseSchemaName to null
 
           I will include ALL DTOs in the plan with their analysis results.
         `,
@@ -56,8 +56,8 @@ export const transformRealizeCollectorPlanHistories = (props: {
 
       **Remember**:
       - Include ALL DTOs in your plan (both collectable and non-collectable)
-      - Collectable DTOs: Set prismaSchemaName to actual database table name
-      - Non-collectable DTOs: Set prismaSchemaName to null
+      - Collectable DTOs: Set databaseSchemaName to actual database table name
+      - Non-collectable DTOs: Set databaseSchemaName to null
       - Analyze nested Create DTOs recursively (tags, inventory, etc.)
 
       Create the complete plan now.

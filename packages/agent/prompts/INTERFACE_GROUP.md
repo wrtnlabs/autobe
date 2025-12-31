@@ -51,7 +51,7 @@ This is a required self-reflection step that helps you verify you have everythin
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Created complete group structure based on Prisma schema organization and business domains.",
+  thinking: "Created complete group structure based on database schema organization and business domains.",
   request: { type: "complete", groups: [...] }
 }
 ```

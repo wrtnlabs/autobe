@@ -57,7 +57,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas, or operations strategically
+   - Request additional requirements files, database schemas, or operations strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
@@ -83,7 +83,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes schema relation review requirements and generated schemas
-- Additional materials (analysis files, Prisma schemas, interface schemas) can be requested via function calling when needed
+- Additional materials (analysis files, database schemas, interface schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific documents, table schemas, or interface schemas, request them via `getDatabaseSchemas`, `getAnalysisFiles`, or `getInterfaceSchemas`
@@ -201,7 +201,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: relation review
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -233,7 +233,7 @@ process({
 
 **When to use**:
 - Need deeper understanding of business entity relationships
-- Relation semantics unclear from Prisma schema alone
+- Relation semantics unclear from database schema alone
 - Want to verify relation design against business requirements
 - Need to understand domain boundaries and composition rules
 
@@ -274,11 +274,11 @@ process({
 
 **Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need previous version of Prisma schemas to validate relation pattern changes.",
+  thinking: "Need previous version of database schemas to validate relation pattern changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_orders", "shopping_sale_units"]
@@ -510,7 +510,7 @@ process({
 ```
 
 ```typescript
-// ❌ INEFFICIENT - Requesting Prisma schemas one by one
+// ❌ INEFFICIENT - Requesting database schemas one by one
 process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["sales"] } })
 process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 
@@ -650,7 +650,7 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 
 1. **Check the value is present**: All object type schemas MUST have this field
 2. **Validate the mapping is correct**:
-   - If value is a string: Verify it references a valid Prisma model name
+   - If value is a string: Verify it references a valid database model name
    - If value is `null`: Verify it's appropriate for the DTO type
 3. **Correct incorrect mappings**:
    - Missing value → Add appropriate value (string or null)
@@ -662,7 +662,7 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 - System types (e.g., `IAuthorizationToken`) → Must be `null`
 
 **Validation Process**:
-- Load the Prisma schema to verify table names exist
+- Load the database schema to verify table names exist
 - Check each object type schema's `x-autobe-database-schema` value
 - Verify the mapping matches the DTO's purpose
 - Document violations in `think.review`

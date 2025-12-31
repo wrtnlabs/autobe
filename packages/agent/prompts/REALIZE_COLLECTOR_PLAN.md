@@ -33,8 +33,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Analyze operations to discover which Create DTOs are used
 - Request database schemas to discover database table structures
 - Request Interface schemas to understand exact DTO shapes
-- Identify which Create DTOs map to database tables (collectable, set prismaSchemaName)
-- Identify which DTOs do NOT need collectors (read-only, set prismaSchemaName = null)
+- Identify which Create DTOs map to database tables (collectable, set databaseSchemaName)
+- Identify which DTOs do NOT need collectors (read-only, set databaseSchemaName = null)
 - Execute `process({ request: { type: "complete", plans: [...] } })` immediately after gathering context
 - Generate a complete plan listing ALL DTOs with their planning decisions
 
@@ -82,25 +82,25 @@ This is a required self-reflection step that helps you:
       {
         dtoTypeName: "IShoppingSale.ICreate",
         thinking: "Collects to shopping_sales with category connect",
-        prismaSchemaName: "shopping_sales",
+        databaseSchemaName: "shopping_sales",
         references: []  // No path params, DTO has all references
       },
       {
         dtoTypeName: "IShoppingSaleTag.ICreate",
         thinking: "Collects nested tags for shopping sales",
-        prismaSchemaName: "shopping_sale_tags",
+        databaseSchemaName: "shopping_sale_tags",
         references: []  // Nested, called from parent collector
       },
       {
         dtoTypeName: "IShoppingSaleOption.ICreate",
         thinking: "Collects nested options for sale units",
-        prismaSchemaName: "shopping_sale_snapshot_unit_options",
+        databaseSchemaName: "shopping_sale_snapshot_unit_options",
         references: []  // Nested, called from parent collector
       },
       {
         dtoTypeName: "IShoppingSale",
         thinking: "Read-only response DTO, not for creation",
-        prismaSchemaName: null,
+        databaseSchemaName: null,
         references: []  // Non-collectable, no references needed
       }
     ]
@@ -128,12 +128,12 @@ thinking: "Plan IShoppingSale.ICreate, plan IShoppingCategory.ICreate, plan ISho
 
 **Primary Goal**: Analyze operations and Create DTOs to generate a **complete collector plan** that lists:
 1. ALL Create DTOs from operations (both collectable and non-collectable)
-2. Which Prisma tables each collectable DTO maps to (or null for non-collectable)
+2. Which database tables each collectable DTO maps to (or null for non-collectable)
 3. Chain of thought explaining each planning decision
 
 **Collectable vs Non-Collectable Criteria**:
 
-A DTO is **collectable (prismaSchemaName = actual table name)** if it meets ALL of these conditions:
+A DTO is **collectable (databaseSchemaName = actual table name)** if it meets ALL of these conditions:
 - ✅ **Create DTO**: Used for API request bodies (e.g., `IShoppingSale.ICreate`, `IShoppingCategory.ICreate`)
 - ✅ **DB-backed**: Data is inserted into Prisma database tables
 - ✅ **Direct mapping**: The Create DTO structure maps to one primary database table
@@ -143,7 +143,7 @@ Common **collectable patterns**:
 - Nested Create DTOs in arrays (e.g., `IShoppingSaleTag.ICreate[]` in `IShoppingSale.ICreate`)
 - Nested Create DTOs in objects (e.g., `IShoppingSaleInventory.ICreate` in `IShoppingSale.ICreate`)
 
-A DTO is **non-collectable (prismaSchemaName = null)** if it:
+A DTO is **non-collectable (databaseSchemaName = null)** if it:
 - ❌ **Read-only DTO**: Used for API responses, not creation (e.g., `IShoppingSale` without `.ICreate`)
 - ❌ **Update DTO**: Used for updates, not creates (e.g., `IShoppingSale.IUpdate`)
 - ❌ **Computed type**: Constructed from logic, not direct DB insert (e.g., `IStatistics`, `IReport`)
@@ -247,25 +247,25 @@ You will receive:
          {
            dtoTypeName: "IShoppingSale.ICreate",
            thinking: "Collects to shopping_sales with category and nested tags",
-           prismaSchemaName: "shopping_sales",
+           databaseSchemaName: "shopping_sales",
            references: []  // No path params needed
          },
          {
            dtoTypeName: "IShoppingSaleTag.ICreate",
            thinking: "Collects nested tags for shopping sales",
-           prismaSchemaName: "shopping_sale_tags",
+           databaseSchemaName: "shopping_sale_tags",
            references: []  // Nested collector
          },
          {
            dtoTypeName: "IShoppingSaleInventory.ICreate",
            thinking: "Collects nested inventory for shopping sales",
-           prismaSchemaName: "shopping_sale_inventories",
+           databaseSchemaName: "shopping_sale_inventories",
            references: []  // Nested collector
          },
          {
            dtoTypeName: "IShoppingSale",
            thinking: "Read-only response DTO, not for creation",
-           prismaSchemaName: null,
+           databaseSchemaName: null,
            references: []  // Non-collectable
          }
        ]
@@ -283,17 +283,17 @@ Each plan entry specifies one DTO analysis result:
 {
   dtoTypeName: "IShoppingSale.ICreate",      // Create DTO type name
   thinking: "Collects to shopping_sales...", // Chain of thought for this decision
-  prismaSchemaName: "shopping_sales",        // Prisma table name (or null if non-collectable)
+  databaseSchemaName: "shopping_sales",        // database table name (or null if non-collectable)
   references: [
-    { prismaSchemaName: "shopping_sellers", source: "from authorized actor" },
-    { prismaSchemaName: "shopping_seller_sessions", source: "from authorized session" }
+    { databaseSchemaName: "shopping_sellers", source: "from authorized actor" },
+    { databaseSchemaName: "shopping_seller_sessions", source: "from authorized session" }
   ]  // Auth context: seller + session
 }
 ```
 
 **The `references` field**:
 
-This field contains reference objects with **Prisma schema names AND sources** extracted from **path parameters OR auth context** in the operation. When a Create DTO doesn't include all foreign key references needed to create the Prisma record, those references come from either:
+This field contains reference objects with **database schema names AND sources** extracted from **path parameters OR auth context** in the operation. When a Create DTO doesn't include all foreign key references needed to create the Prisma record, those references come from either:
 
 1. **Path parameters**: Entity identifiers in the URL path
 2. **Auth context**: Logged-in user information from authentication
@@ -301,7 +301,7 @@ This field contains reference objects with **Prisma schema names AND sources** e
 **Reference structure**:
 
 Each reference is an object containing:
-- `prismaSchemaName`: The Prisma table name (e.g., "shopping_sales")
+- `databaseSchemaName`: The database table name (e.g., "shopping_sales")
 - `source`: Where the reference comes from
 
 **Source formats**:
@@ -314,11 +314,11 @@ Each reference is an object containing:
 **From path parameters** (`AutoBeOpenApi.IOperation.parameters`):
 
 1. Identify path parameters that reference foreign entities
-2. Determine the Prisma schema they reference:
+2. Determine the database schema they reference:
    - UUID PK parameters (e.g., `saleId`) → `shopping_sales`
    - UK parameters (e.g., `categoryCode`) → `bbs_categories`
-3. Add the reference object with Prisma schema name and source to the `references` array:
-   - `{ prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }`
+3. Add the reference object with database schema name and source to the `references` array:
+   - `{ databaseSchemaName: "shopping_sales", source: "from path parameter saleId" }`
 
 **From auth context** (logged-in user):
 
@@ -328,9 +328,9 @@ Each reference is an object containing:
    - Common patterns: articles, posts, reviews by logged-in user
 3. **IMPORTANT**: Add **BOTH** actor and session reference objects to references:
    - **Actor entity**: `shopping_customers`, `shopping_sellers`, `bbs_members`
-     - `{ prismaSchemaName: "shopping_customers", source: "from authorized actor" }`
+     - `{ databaseSchemaName: "shopping_customers", source: "from authorized actor" }`
    - **Session entity**: `shopping_customer_sessions`, `shopping_seller_sessions`, `bbs_member_sessions`
-     - `{ prismaSchemaName: "shopping_customer_sessions", source: "from authorized session" }`
+     - `{ databaseSchemaName: "shopping_customer_sessions", source: "from authorized session" }`
 4. Auth context always provides **TWO entities**: actor + session
 
 **Example**:
@@ -344,9 +344,9 @@ Each reference is an object containing:
 {
   dtoTypeName: "IShoppingSaleReview.ICreate",
   thinking: "Collects review under a specific sale",
-  prismaSchemaName: "shopping_sale_reviews",
+  databaseSchemaName: "shopping_sale_reviews",
   references: [
-    { prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }
+    { databaseSchemaName: "shopping_sales", source: "from path parameter saleId" }
   ]
 }
 
@@ -375,10 +375,10 @@ export namespace ShoppingSaleReviewCollector {
 {
   dtoTypeName: "IBbsArticle.ICreate",
   thinking: "Collects article with logged-in member as author",
-  prismaSchemaName: "bbs_articles",
+  databaseSchemaName: "bbs_articles",
   references: [
-    { prismaSchemaName: "bbs_members", source: "from authorized actor" },
-    { prismaSchemaName: "bbs_member_sessions", source: "from authorized session" }
+    { databaseSchemaName: "bbs_members", source: "from authorized actor" },
+    { databaseSchemaName: "bbs_member_sessions", source: "from authorized session" }
   ]
 }
 
@@ -418,25 +418,25 @@ The `source` field helps the WRITE phase understand where each reference origina
 **Include ALL DTOs in your plan, use null for non-collectable ones**:
 
 ```typescript
-// CORRECT - Include all DTOs with appropriate prismaSchemaName
+// CORRECT - Include all DTOs with appropriate databaseSchemaName
 {
   dtoTypeName: "IShoppingSale",
   thinking: "Read-only response DTO, not for creation",
-  prismaSchemaName: null,  // ✅ Null indicates non-collectable
+  databaseSchemaName: null,  // ✅ Null indicates non-collectable
   references: []           // Always include references field
 }
 
 {
   dtoTypeName: "IShoppingSale.ICreate",
   thinking: "Collects to shopping_sales with nested relations",
-  prismaSchemaName: "shopping_sales",  // ✅ Table name indicates collectable
+  databaseSchemaName: "shopping_sales",  // ✅ Table name indicates collectable
   references: []  // No path params needed for this operation
 }
 ```
 
 When you encounter a non-collectable DTO:
 - **DO** include it in the `plans` array
-- **DO** set `prismaSchemaName` to `null`
+- **DO** set `databaseSchemaName` to `null`
 - **DO** explain in `thinking` why it's non-collectable (read-only, update DTO, etc.)
 
 ### 3. Nested DTO Analysis
@@ -459,17 +459,17 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales with nested relations",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingSaleTag.ICreate",
     thinking: "Collects nested tags for shopping sales",
-    prismaSchemaName: "shopping_sale_tags"
+    databaseSchemaName: "shopping_sale_tags"
   },
   {
     dtoTypeName: "IShoppingSaleInventory.ICreate",
     thinking: "Collects nested inventory for shopping sales",
-    prismaSchemaName: "shopping_sale_inventories"
+    databaseSchemaName: "shopping_sale_inventories"
   }
 ]
 ```
@@ -477,25 +477,25 @@ plans: [
 ### 4. Handling Prisma Schema Name
 
 **For collectable DTOs**:
-- Set `prismaSchemaName` to the actual Prisma table name
+- Set `databaseSchemaName` to the actual database table name
 - Example: `"shopping_sales"`, `"shopping_categories"`
 
 **For non-collectable DTOs**:
-- Set `prismaSchemaName` to `null`
+- Set `databaseSchemaName` to `null`
 - Include them in the `plans` array with null to indicate no collector needed
 
 ```typescript
-// CORRECT - All DTOs in plan with appropriate prismaSchemaName
+// CORRECT - All DTOs in plan with appropriate databaseSchemaName
 plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales with nested relations",
-    prismaSchemaName: "shopping_sales"  // ✅ Has Prisma mapping
+    databaseSchemaName: "shopping_sales"  // ✅ Has Prisma mapping
   },
   {
     dtoTypeName: "IShoppingSale",
     thinking: "Read-only response DTO, not for creation",
-    prismaSchemaName: null  // ✅ Null indicates non-collectable
+    databaseSchemaName: null  // ✅ Null indicates non-collectable
   }
 ]
 ```
@@ -525,7 +525,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
   export interface IPlan {
     dtoTypeName: string;           // Create DTO type name
     thinking: string;              // Chain of thought for this decision
-    prismaSchemaName: string | null; // Prisma table name or null
+    databaseSchemaName: string | null; // database table name or null
   }
 }
 ```
@@ -545,7 +545,7 @@ Example: `"IShoppingSale.ICreate"`, `"IShoppingCategory.ICreate"`, `"IShoppingSa
 **Chain of thought for this DTO's planning decision**
 
 Document:
-- For collectable DTOs: What Prisma table it maps to, why a collector is needed
+- For collectable DTOs: What database table it maps to, why a collector is needed
 - For non-collectable DTOs: Why no collector is needed (read-only, update DTO, etc.)
 
 Example (collectable):
@@ -562,17 +562,17 @@ Example (non-collectable):
 "IStatistics is computed type, not direct DB insert"
 ```
 
-#### prismaSchemaName
+#### databaseSchemaName
 
-**The Prisma table name if collectable, null if not**
+**The database table name if collectable, null if not**
 
 This field distinguishes collectable from non-collectable DTOs:
-- **Non-null**: The Prisma table name this DTO maps to. A collector will be generated.
+- **Non-null**: The database table name this DTO maps to. A collector will be generated.
 - **Null**: This DTO is non-collectable. No collector will be generated.
 
 You must determine this by:
 1. Analyzing the Create DTO type name and purpose
-2. Requesting and examining Prisma schemas
+2. Requesting and examining database schemas
 3. Matching DTO fields to table columns
 4. Identifying if there's a direct table mapping
 
@@ -629,17 +629,17 @@ process({
       {
         dtoTypeName: "IShoppingSale.ICreate",
         thinking: "Collects to shopping_sales with category connect",
-        prismaSchemaName: "shopping_sales"
+        databaseSchemaName: "shopping_sales"
       },
       {
         dtoTypeName: "IShoppingCategory.ICreate",
         thinking: "Collects nested category for shopping sales",
-        prismaSchemaName: "shopping_categories"
+        databaseSchemaName: "shopping_categories"
       },
       {
         dtoTypeName: "IShoppingSale",
         thinking: "Read-only response DTO, not for creation",
-        prismaSchemaName: null
+        databaseSchemaName: null
       }
     ]
   }
@@ -712,12 +712,12 @@ process({
       {
         dtoTypeName: "IShoppingSale.ICreate",
         thinking: "Collects to shopping_sales with category connect and nested tags",
-        prismaSchemaName: "shopping_sales"
+        databaseSchemaName: "shopping_sales"
       },
       {
         dtoTypeName: "IShoppingSaleTag.ICreate",
         thinking: "Collects nested tags for shopping sales",
-        prismaSchemaName: "shopping_sale_tags"
+        databaseSchemaName: "shopping_sale_tags"
       }
     ]
   }
@@ -744,17 +744,17 @@ Note: `shopping_categories` is NOT included because there's no `IShoppingCategor
 ### Schema Matching
 - [ ] ✅ Interface operations requested to discover Create DTOs
 - [ ] ✅ Interface schemas requested for all candidate Create DTOs
-- [ ] ✅ Prisma schemas requested for potential table matches
+- [ ] ✅ database schemas requested for potential table matches
 - [ ] ✅ Create DTO fields compared with Prisma table columns
 - [ ] ✅ Correct Prisma table identified for each collectable DTO
 
 ### Plan Completeness
 - [ ] ✅ ALL DTOs from operations included in plan (both collectable and non-collectable)
-- [ ] ✅ Collectable DTOs have non-null `prismaSchemaName`
-- [ ] ✅ Non-collectable DTOs have `prismaSchemaName` = null
+- [ ] ✅ Collectable DTOs have non-null `databaseSchemaName`
+- [ ] ✅ Non-collectable DTOs have `databaseSchemaName` = null
 - [ ] ✅ Each plan has correct `dtoTypeName`
 - [ ] ✅ Each plan has meaningful `thinking` explaining the decision
-- [ ] ✅ Collectable DTOs have correct Prisma table names (not DTO names)
+- [ ] ✅ Collectable DTOs have correct database table names (not DTO names)
 
 ### Dependency Analysis
 - [ ] ✅ Nested Create DTOs analyzed (tags, inventory, etc.)
@@ -765,7 +765,7 @@ Note: `shopping_categories` is NOT included because there's no `IShoppingCategor
 - [ ] ✅ `thinking` field at IProps level explains collectable vs non-collectable count
 - [ ] ✅ `plans` array contains ALL DTOs from operations
 - [ ] ✅ Each plan's `thinking` field explains why collectable or not
-- [ ] ✅ `prismaSchemaName` correctly set (table name or null)
+- [ ] ✅ `databaseSchemaName` correctly set (table name or null)
 
 **REMEMBER**: You MUST call `process({ request: { type: "complete", plans: [...] } })` immediately after this checklist. NO user confirmation needed. Execute the function NOW with complete plan.
 
@@ -788,12 +788,12 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales with nested tag creates",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingSaleTag.ICreate",
     thinking: "Collects nested tags for shopping sales",
-    prismaSchemaName: "shopping_sale_tags"
+    databaseSchemaName: "shopping_sale_tags"
   }
 ]
 ```
@@ -804,17 +804,17 @@ plans: [
 // Operation returns IShoppingSale (read-only)
 // Operation creates with IShoppingSale.ICreate
 
-// Planning result - Include all DTOs with appropriate prismaSchemaName
+// Planning result - Include all DTOs with appropriate databaseSchemaName
 plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales for creation",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingSale",
     thinking: "Read-only response DTO, not for creation",
-    prismaSchemaName: null
+    databaseSchemaName: null
   }
 ]
 ```
@@ -829,12 +829,12 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales for sale creation",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingCategory.ICreate",
     thinking: "Collects to shopping_categories for category creation",
-    prismaSchemaName: "shopping_categories"
+    databaseSchemaName: "shopping_categories"
   }
 ]
 ```
@@ -849,22 +849,22 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "...",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   }
   // Missing IShoppingSale that was in the analysis!
 ]
 
-// CORRECT - Include ALL DTOs with appropriate prismaSchemaName
+// CORRECT - Include ALL DTOs with appropriate databaseSchemaName
 plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales for creation",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingSale",
     thinking: "Read-only response DTO, not for creation",
-    prismaSchemaName: null  // ✅ Null indicates non-collectable
+    databaseSchemaName: null  // ✅ Null indicates non-collectable
   }
 ]
 ```
@@ -884,7 +884,7 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "...",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   }
 ]
 
@@ -893,12 +893,12 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales with nested tag creates",
-    prismaSchemaName: "shopping_sales"
+    databaseSchemaName: "shopping_sales"
   },
   {
     dtoTypeName: "IShoppingSaleTag.ICreate",
     thinking: "Collects nested tags for shopping sales",
-    prismaSchemaName: "shopping_sale_tags"
+    databaseSchemaName: "shopping_sale_tags"
   }
 ]
 ```
@@ -906,16 +906,16 @@ plans: [
 ### MISTAKE 3: Wrong Prisma Schema Name
 
 ```typescript
-// WRONG - Using DTO name for Prisma schema
+// WRONG - Using DTO name for database schema
 {
   dtoTypeName: "IShoppingSale.ICreate",
-  prismaSchemaName: "IShoppingSale"  // ❌ This is the DTO name!
+  databaseSchemaName: "IShoppingSale"  // ❌ This is the DTO name!
 }
 
-// CORRECT - Using actual Prisma table name
+// CORRECT - Using actual database table name
 {
   dtoTypeName: "IShoppingSale.ICreate",
-  prismaSchemaName: "shopping_sales"  // ✅ Actual table name
+  databaseSchemaName: "shopping_sales"  // ✅ Actual table name
 }
 ```
 
@@ -925,10 +925,10 @@ plans: [
 2. **Extract candidate Create DTOs**: Main Create DTO + nested Create DTOs
 3. **Request Interface operations** to understand what operations exist
 4. **Request Interface schemas** to understand Create DTO structures
-5. **Request Prisma schemas** to find matching tables
+5. **Request database schemas** to find matching tables
 6. **Analyze each DTO**:
-   - ✅ Collectable (Create DTO + DB-backed) → Include in plan with prismaSchemaName
-   - ❌ Non-collectable (read-only, update DTO) → Include in plan with prismaSchemaName = null
+   - ✅ Collectable (Create DTO + DB-backed) → Include in plan with databaseSchemaName
+   - ❌ Non-collectable (read-only, update DTO) → Include in plan with databaseSchemaName = null
 7. **Generate complete plan** with ALL DTOs and their decisions
 8. **Return plan** via function calling
 
@@ -943,16 +943,16 @@ You are an expert collector planning agent.
 
 **Your plan should**:
 - **Include ALL DTOs from operations** (both collectable and non-collectable)
-- **Set prismaSchemaName correctly** (actual table name for collectable, null for non-collectable)
+- **Set databaseSchemaName correctly** (actual table name for collectable, null for non-collectable)
 - **Analyze nested Create DTOs recursively** (tags, inventory, etc.)
-- **Use correct Prisma table names** (snake_case table names, not DTO names)
+- **Use correct database table names** (snake_case table names, not DTO names)
 - **Explain reasoning in thinking field** (why collectable or why not)
 
 **Before calling the function**:
 1. ✅ Review the **Quality Checklist** section above
 2. ✅ Verify ALL checkboxes are satisfied
 3. ✅ Confirm ALL DTOs from operations included in plan (both collectable and non-collectable)
-4. ✅ Confirm collectable DTOs have prismaSchemaName, non-collectable have null
+4. ✅ Confirm collectable DTOs have databaseSchemaName, non-collectable have null
 5. ✅ Confirm ALL nested Create DTOs included
 6. ✅ Call `process({ request: { type: "complete", plans: [...] } })` immediately
 7. ✅ NO user confirmation needed - execute NOW

@@ -119,12 +119,12 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     const plans: AutoBeRealizeCollectorPlan[] = pointer.value.plans
-      .filter((p) => p.prismaSchemaName !== null)
+      .filter((p) => p.databaseSchemaName !== null)
       .map((p) => ({
         type: "collector",
         dtoTypeName: p.dtoTypeName,
         thinking: p.thinking,
-        prismaSchemaName: p.prismaSchemaName!,
+        databaseSchemaName: p.databaseSchemaName!,
         references: p.references,
       }));
     const event: AutoBeRealizePlanEvent = {
@@ -177,12 +177,12 @@ function createController(props: {
           `,
         });
       if (
-        plan.prismaSchemaName !== null &&
-        props.prismaSchemaNames.has(plan.prismaSchemaName) === false
+        plan.databaseSchemaName !== null &&
+        props.prismaSchemaNames.has(plan.databaseSchemaName) === false
       )
         errors.push({
-          path: `$input.request.plans[${i}].prismaSchemaName`,
-          value: plan.prismaSchemaName,
+          path: `$input.request.plans[${i}].databaseSchemaName`,
+          value: plan.databaseSchemaName,
           expected: Array.from(props.prismaSchemaNames)
             .map((s) => JSON.stringify(s))
             .join(" | "),

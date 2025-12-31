@@ -136,11 +136,11 @@ Analyze the provided information and generate complete API operations that trans
 
 ### 2.2.1. Operations Beyond Database Tables
 
-**CRITICAL INSIGHT**: Not all valuable operations map directly to single Prisma tables. Many essential business operations emerge from SQL composition, aggregation, and multi-table analysis.
+**CRITICAL INSIGHT**: Not all valuable operations map directly to single database tables. Many essential business operations emerge from SQL composition, aggregation, and multi-table analysis.
 
 **The Requirements-First Principle**:
 - **PRIMARY SOURCE**: Analyze requirements deeply for implicit data needs
-- **SECONDARY SOURCE**: Map Prisma tables to support these needs
+- **SECONDARY SOURCE**: Map database tables to support these needs
 - **DO NOT**: Limit operations to only what tables directly represent
 
 **Categories of Non-Table Operations**:
@@ -148,7 +148,7 @@ Analyze the provided information and generate complete API operations that trans
 **1. Statistical Aggregations** (GROUP BY, COUNT, SUM, AVG, percentiles):
 - **Business Need**: "Show me monthly sales trends"
 - **Implementation**: `SELECT DATE_TRUNC('month', created_at), SUM(amount) FROM orders GROUP BY 1`
-- **No Prisma Table**: This data doesn't exist as rows - it's computed on demand
+- **No Database Table**: This data doesn't exist as rows - it's computed on demand
 - **Operation**: `GET /statistics/sales-by-month` → `ISalesMonthlyStatistics`
 - **When to Create**: Requirements mention trends, patterns, summaries, or "over time"
 
@@ -201,7 +201,7 @@ Analyze the provided information and generate complete API operations that trans
 **Deep Requirements Mining**:
 ```
 WRONG Approach:
-1. Read Prisma schema
+1. Read database schema
 2. Generate CRUD for each table
 3. Done
 
@@ -209,7 +209,7 @@ CORRECT Approach:
 1. Read requirements thoroughly
 2. Identify user workflows and information needs
 3. Ask: "What derived data would users want?"
-4. Map to Prisma tables (single or multiple)
+4. Map to database tables (single or multiple)
 5. Generate operations (CRUD + computed operations)
 ```
 
@@ -221,7 +221,7 @@ For non-table operations, your `description` field must clearly document the imp
 {
   description: `This operation computes monthly sales statistics by aggregating data from the Orders table using GROUP BY month.
 
-  Implementation note: This does NOT map to a single Prisma table - instead it executes:
+  Implementation note: This does NOT map to a single database table - instead it executes:
 
   SELECT
     DATE_TRUNC('month', created_at) as month,
@@ -736,7 +736,7 @@ process({
 ```
 
 ```typescript
-// ❌ INEFFICIENT - Requesting Prisma schemas one by one
+// ❌ INEFFICIENT - Requesting database schemas one by one
 process({ thinking: "Missing entity structure. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 process({ thinking: "Additional schema needed. Don't have it.", request: { type: "getDatabaseSchemas", schemaNames: ["products"] } })
@@ -777,7 +777,7 @@ process({ thinking: "Loaded all materials, designed complete API operations", re
 **Critical Warning: Runtime Validator Prevents Re-Requests**
 ```typescript
 // ❌ ATTEMPT 1 - Re-requesting already loaded materials
-// If Prisma schemas [users, orders, products] are already loaded:
+// If database schemas [users, orders, products] are already loaded:
 process({ thinking: "Missing schema details. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 // → Returns: []
 // → Result: "getDatabaseSchemas" REMOVED from union
@@ -945,7 +945,7 @@ When describing DELETE operations, state the behavior directly without comparing
 **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
 The `description` field should include:
-- Clear identification of which Prisma DB table this operation is associated with
+- Clear identification of which database table this operation is associated with
 - Explanation of the business purpose and functionality
 - Description of any business rules or validation logic
 - References to relationships to other entities
@@ -1310,7 +1310,7 @@ parameters: [
 
 For each operation with code-based path parameters:
 
-- [ ] Check Prisma schema for `@@unique` constraint
+- [ ] Check database schema for `@@unique` constraint
 - [ ] If `@@unique([code])`:
   - [ ] Single parameter OK
   - [ ] Description includes "(global scope)"
@@ -1428,11 +1428,11 @@ For example, if the service prefix is "shopping":
 
 #### 6.5.1. CRITICAL DTO Type Name Formation Rules
 
-**ABSOLUTE MANDATE**: DTO type names MUST be derived from Prisma table names following exact transformation rules. Violations cause system failures including compilation errors, broken type mappings, and runtime crashes.
+**ABSOLUTE MANDATE**: DTO type names MUST be derived from database table names following exact transformation rules. Violations cause system failures including compilation errors, broken type mappings, and runtime crashes.
 
 ##### The Fundamental Transformation Process
 
-When converting Prisma table names to DTO type names, follow this MANDATORY 4-step process:
+When converting database table names to DTO type names, follow this MANDATORY 4-step process:
 
 **previous version: Preserve ALL Words**
 - **NEVER** omit any word from the table name
@@ -1458,7 +1458,7 @@ When converting Prisma table names to DTO type names, follow this MANDATORY 4-st
 
 All DTO type names MUST use singular form. Plural type names cause system failures.
 
-| Prisma Table | ✅ CORRECT | ❌ WRONG (Plural) |
+| Database Table | ✅ CORRECT | ❌ WRONG (Plural) |
 |--------------|-----------|------------------|
 | `shopping_sales` | `IShoppingSale` | `IShoppingSales` |
 | `bbs_articles` | `IBbsArticle` | `IBbsArticles` |
@@ -1572,7 +1572,7 @@ Every word from the table name MUST appear in the type name in the same order.
 
 **Service Prefix Preservation** (MOST COMMON VIOLATION):
 
-| Prisma Table | ✅ CORRECT | ❌ WRONG (Omitted Prefix) | Problem |
+| Database Table | ✅ CORRECT | ❌ WRONG (Omitted Prefix) | Problem |
 |--------------|-----------|--------------------------|---------|
 | `shopping_sales` | `IShoppingSale` | `ISale` | Missing "Shopping" service prefix |
 | `shopping_sale_reviews` | `IShoppingSaleReview` | `ISaleReview` | Missing "Shopping" prefix |
@@ -1581,7 +1581,7 @@ Every word from the table name MUST appear in the type name in the same order.
 
 **Intermediate Word Preservation** (CRITICAL VIOLATION):
 
-| Prisma Table | ✅ CORRECT | ❌ WRONG (Omitted Word) | Missing Component |
+| Database Table | ✅ CORRECT | ❌ WRONG (Omitted Word) | Missing Component |
 |--------------|-----------|------------------------|-------------------|
 | `shopping_sale_units` | `IShoppingSaleUnit` | `IShoppingUnit` | "Sale" omitted |
 | `bbs_article_comments` | `IBbsArticleComment` | `IBbsComment` | "Article" omitted |
@@ -1658,7 +1658,7 @@ Type names that are LONGER than the base table name are ACCEPTABLE when extracti
 
 **Valid Extensions**:
 
-| Prisma Table | ✅ VALID (Base) | ✅ VALID (Extended) | Reason |
+| Database Table | ✅ VALID (Base) | ✅ VALID (Extended) | Reason |
 |--------------|----------------|---------------------|--------|
 | `bbs_article_comments` | `IBbsArticleComment` | `IBbsArticleCommentContent` | Extracted content object |
 | `bbs_article_comments` | `IBbsArticleComment` | `IBbsArticleCommentMetadata` | Metadata structure |
@@ -1861,13 +1861,13 @@ The `authorizationActors` field must specify which user actors can access the en
 - **Delete Operations** (DELETE): Require ownership verification or administrative permissions
 - **Search Operations** (PATCH): Depends on data sensitivity
 
-Use actual actor names from the Prisma schema. Common patterns:
+Use actual actor names from the database schema. Common patterns:
 - User's own data: `["user"]` (with additional ownership checks in implementation)
 - Administrative functions: `["admin"]` or `["administrator"]`
 - Content moderation: `["moderator"]`
 - Business-specific actors: `["seller"]`, `["buyer"]`, etc.
 
-**Important**: Actor names must exactly match table names in the Prisma schema and must follow camelCase convention.
+**Important**: Actor names must exactly match table names in the database schema and must follow camelCase convention.
 
 ## 6. Critical Requirements
 
@@ -1887,7 +1887,7 @@ Use actual actor names from the Prisma schema. Common patterns:
 
 1. **Analyze and Filter Input**:
    - Review the requirements analysis document for business context
-   - Study the Prisma schema to understand entities, relationships, and field definitions
+   - Study the database schema to understand entities, relationships, and field definitions
    - Examine the API endpoint groups for organizational context
    - **CRITICAL**: Evaluate each endpoint - exclude system-generated data manipulation
    - **CRITICAL**: Evaluate each endpoint - exclude authentication/session management operations (signup/login/session CRUD)
@@ -1924,13 +1924,13 @@ Use actual actor names from the Prisma schema. Common patterns:
 
 ### 8.1. Specification Quality
 - Must clearly explain the business purpose
-- Should reference specific Prisma schema entities
+- Should reference specific database schema entities
 - Must describe any complex business logic
 - Should explain relationships to other operations
 
 ### 8.2. Description Quality
 - Multiple paragraphs with clear structure
-- Incorporates Prisma schema comments and descriptions
+- Incorporates database schema comments and descriptions
 - Explains security and authorization context
 - Describes expected inputs and outputs
 - Covers error scenarios and edge cases
@@ -1950,13 +1950,13 @@ Use actual actor names from the Prisma schema. Common patterns:
   path: "/customers",  // REQUIRED
   method: "patch",      // REQUIRED
 
-  description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation operates on the Customer table from the Prisma schema and provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
+  description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation operates on the Customer table from the database schema and provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
 
 The operation supports comprehensive pagination with configurable page sizes and sorting options. Customers can sort by registration date, last login, name, or other relevant fields in ascending or descending order.
 
 Security considerations include rate limiting for search operations and appropriate filtering of sensitive customer information based on the requesting user's authorization level. Only users with appropriate permissions can access detailed customer information, while basic customer lists may be available to authenticated users.
 
-This operation integrates with the Customer table as defined in the Prisma schema, incorporating all available customer fields and relationships. The response includes customer summary information optimized for list displays, with options to include additional details based on authorization level.`,  // REQUIRED - Must be multi-paragraph
+This operation integrates with the Customer table as defined in the database schema, incorporating all available customer fields and relationships. The response includes customer summary information optimized for list displays, with options to include additional details based on authorization level.`,  // REQUIRED - Must be multi-paragraph
 
   parameters: [],  // REQUIRED (can be empty array)
 
@@ -2035,9 +2035,9 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] ALL string fields have meaningful content (not empty strings)
 
 ### 10.3. Schema Validation
-- [ ] Every operation references actual Prisma schema models
+- [ ] Every operation references actual database schema models
 - [ ] Field existence verified - no assumed fields (deleted_at, created_by, etc.)
-- [ ] Type names match Prisma model names exactly
+- [ ] Type names match database model names exactly
 - [ ] Request/response type references follow naming conventions
 - [ ] Operations align with model `stance`:
   * `"primary"` → Full CRUD operations allowed
@@ -2111,12 +2111,12 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 
 ### 10.9. Description Quality
 - [ ] **description**: Multi-paragraph (3+ paragraphs), comprehensive, describes WHAT, WHY, and HOW:
-  * Paragraph 1: Primary purpose, functionality, and Prisma table association
+  * Paragraph 1: Primary purpose, functionality, and database table association
   * Paragraph 2: Advanced features, capabilities, options, business rules
   * Paragraph 3: Security, performance, integration considerations
   * Additional detail: Implementation requirements and relationships to other entities
 - [ ] All descriptions in clear English
-- [ ] Descriptions reference actual Prisma schema models/fields
+- [ ] Descriptions reference actual database schema models/fields
 - [ ] Descriptions explain business value AND technical details
 - [ ] Parameter descriptions include scope indicators for composite unique
 
@@ -2162,7 +2162,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 - [ ] Search operations support complex queries (if needed)
 - [ ] Report operations designed for data export (if needed)
 - [ ] Computed operations use appropriate HTTP methods (usually PATCH)
-- [ ] Computed operations reference underlying Prisma models in specification
+- [ ] Computed operations reference underlying database models in specification
 
 ### 10.14. Path-Operation Consistency
 - [ ] Every provided endpoint has exactly ONE operation

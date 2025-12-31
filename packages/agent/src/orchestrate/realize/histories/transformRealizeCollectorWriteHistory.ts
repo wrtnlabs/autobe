@@ -25,7 +25,7 @@ export const transformRealizeCollectorWriteHistory = async (
   const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
-    .find((m) => m.name === props.plan.prismaSchemaName)!;
+    .find((m) => m.name === props.plan.databaseSchemaName)!;
   const dto: Record<string, string> =
     await AutoBeRealizeCollectorProgrammer.writeStructures(
       ctx,
@@ -75,7 +75,7 @@ export const transformRealizeCollectorWriteHistory = async (
             props.neighbors.map((n) => ({
               function: `${AutoBeRealizeCollectorProgrammer.getName(n.dtoTypeName)}.collect()`,
               dtoTypeName: n.dtoTypeName,
-              prismaSchemaName: n.prismaSchemaName,
+              databaseSchemaName: n.databaseSchemaName,
               references: n.references,
             })),
           )}
@@ -99,12 +99,12 @@ export const transformRealizeCollectorWriteHistory = async (
 
       **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
 
-      - **Database Schema Name**: ${props.plan.prismaSchemaName}
+      - **Database Schema Name**: ${props.plan.databaseSchemaName}
       - **Planning Reasoning**: ${props.plan.thinking}
 
       **Your task**:
 
-      1. Use the provided database schema name: \`${props.plan.prismaSchemaName}\`
+      1. Use the provided database schema name: \`${props.plan.databaseSchemaName}\`
       2. Request database schemas to understand the table structure
       3. Request Interface schemas to understand the DTO structure
       4. Analyze field mappings between DTO properties and database columns
@@ -129,14 +129,14 @@ function getDeclaration(props: {
   return StringUtil.trim`
     Here is the declaration of the collector function for
     the DTO type ${props.plan.dtoTypeName} and its corresponding
-    database schema ${props.plan.prismaSchemaName}.
+    database schema ${props.plan.databaseSchemaName}.
 
     ${
       props.plan.references.length === 0
         ? ""
         : StringUtil.trim`
           Also, as create DTO ${props.plan.dtoTypeName} does not include
-          every references required for the creation of the ${props.plan.prismaSchemaName}
+          every references required for the creation of the ${props.plan.databaseSchemaName}
           record, you have to accept some references as function
           parameters like below:
         `

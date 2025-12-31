@@ -5,11 +5,11 @@ export interface IAutoBeInterfaceSchemaRenameApplication {
    * Analyze DTO type names and identify naming violations.
    *
    * This method examines existing DTO type names to detect violations of the
-   * CRITICAL naming rule: ALL words from the Prisma table name MUST be
+   * CRITICAL naming rule: ALL words from the database table name MUST be
    * preserved in the DTO type name. Omitting intermediate words breaks
    * type-to-table traceability and causes system failures.
    *
-   * The method receives a list of Prisma table names and current DTO type
+   * The method receives a list of database table names and current DTO type
    * names, then identifies which type names incorrectly omit service prefixes
    * or intermediate components from their corresponding table names.
    *

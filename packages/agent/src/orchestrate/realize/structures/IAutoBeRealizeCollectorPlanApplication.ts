@@ -19,7 +19,7 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
  * **Key Decisions**: Not all DTOs require collectors. The agent must
  * distinguish collectable DTOs (Create DTO + DB-backed + Direct mapping) from
  * non-collectable DTOs (read-only DTOs, computed types) and include ALL DTOs
- * with prismaSchemaName set to null for non-collectable ones.
+ * with databaseSchemaName set to null for non-collectable ones.
  */
 export interface IAutoBeRealizeCollectorPlanApplication {
   /**
@@ -27,7 +27,7 @@ export interface IAutoBeRealizeCollectorPlanApplication {
    *
    * Analyzes operation request DTOs and generates complete plan listing which
    * collectors to generate. Ensures nested DTOs are analyzed recursively and
-   * ALL DTOs are included with appropriate prismaSchemaName values.
+   * ALL DTOs are included with appropriate databaseSchemaName values.
    *
    * @param props Request containing either preliminary data request or complete
    *   plan
@@ -84,8 +84,8 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
    * Request to complete collector planning.
    *
    * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * collectable and non-collectable DTOs. Collectable DTOs have a database schema
-   * name, while non-collectable DTOs have null.
+   * collectable and non-collectable DTOs. Collectable DTOs have a database
+   * schema name, while non-collectable DTOs have null.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
@@ -101,7 +101,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * - Database schema name if collectable, or null if not
      *
      * Include ALL DTOs from the operation request, both collectable and
-     * non-collectable. Use prismaSchemaName to distinguish:
+     * non-collectable. Use databaseSchemaName to distinguish:
      *
      * - Non-null: Collectable DTO, collector will be generated
      * - Null: Non-collectable DTO, no collector needed
@@ -145,8 +145,8 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     /**
      * Database schema name if collectable, null if not.
      *
-     * - **Non-null**: The Prisma table name this DTO maps to. A collector will be
-     *   generated for this DTO.
+     * - **Non-null**: The database table name this DTO maps to. A collector will
+     *   be generated for this DTO.
      * - **Null**: This DTO is non-collectable (read-only DTO, computed type). No
      *   collector will be generated.
      *
@@ -155,14 +155,14 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * - (collectable): "shopping_sales", "shopping_categories"
      * - (non-collectable): null
      */
-    prismaSchemaName: string | null;
+    databaseSchemaName: string | null;
 
     /**
      * Referenced entities from path parameters or auth context.
      *
      * Each reference contains:
      *
-     * - `prismaSchemaName`: Prisma table name (e.g., "shopping_sales")
+     * - `databaseSchemaName`: Database table name (e.g., "shopping_sales")
      * - `source`: Origin of reference
      *
      *   - "from path parameter {paramName}"

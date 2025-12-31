@@ -18,7 +18,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **EXECUTION STRATEGY**:
 1. **Review Plan Information**: You receive collector planning result from REALIZE_COLLECTOR_PLAN phase containing:
    - DTO type name to collect
-   - Prisma table name already determined by planning
+   - database table name already determined by planning
    - Planning reasoning explaining why this collector is needed
 2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
@@ -40,7 +40,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Request database schemas to understand database structure and relationships
 - Review neighbor collectors for potential reuse in nested creates
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
-- Generate collect() function that transforms DTO to Prisma CreateInput
+- Generate collect() function that transforms DTO to database CreateInput
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting schemas is MEANINGLESS without calling the complete function
@@ -108,7 +108,7 @@ Your narrative planning should accomplish these objectives:
    - Understand optional vs required fields
 
 3. **Plan the Overall Strategy**:
-   - Think through how each DTO property maps to Prisma fields
+   - Think through how each DTO property maps to database fields
    - Identify which fields need generation (UUIDs, timestamps)
    - Identify which fields need connection (relations)
    - Determine which neighbor collectors to reuse for nested creates
@@ -245,7 +245,7 @@ This is **not a formality** - this is where you catch errors before they cause c
 ## Core Mission
 
 Generate a **collector module** that provides the essential `collect()` function:
-- **`collect()`**: Transforms API request DTO to Prisma CreateInput type
+- **`collect()`**: Transforms API request DTO to database CreateInput type
 
 **The collector pattern:**
 ```typescript
@@ -294,12 +294,12 @@ You will receive:
   - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
   - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
   - **Planning Reasoning**: Explanation of why this collector is needed
-- **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - `Record<string, { dtoTypeName, prismaSchemaName, content }>` mapping file path to collector implementation
+- **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - `Record<string, { dtoTypeName, databaseSchemaName, content }>` mapping file path to collector implementation
 - **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 **IMPORTANT**:
-- The prismaSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
+- The databaseSchemaName is **provided from the planning phase**. You don't need to discover it - just use it directly.
 - All DTO type information is **obtained transitively** from the DTO type names in the plan. The system automatically provides complete type information for the DTO and all referenced types.
 
 ### 🔥 CRITICAL: Neighbor Collectors ARE PROVIDED - YOU MUST REUSE THEM
@@ -310,7 +310,7 @@ You will receive:
   {
     "file/path": {
       "dtoTypeName": "IShoppingSaleTag.ICreate",
-      "prismaSchemaName": "shopping_sale_tags",
+      "databaseSchemaName": "shopping_sale_tags",
       "content": "export namespace ShoppingSaleTagCollector { ... }"
     }
   }
@@ -420,9 +420,9 @@ export namespace ShoppingSaleCollector {
 
 1. **Check the neighbor collectors input**:
    - Look at the provided JSON mapping
-   - Find collectors with matching `dtoTypeName` and `prismaSchemaName`
+   - Find collectors with matching `dtoTypeName` and `databaseSchemaName`
    - Example: Need to collect `IShoppingSaleTag.ICreate` for `shopping_sale_tags`?
-   - Search neighbor collectors for: `dtoTypeName: "IShoppingSaleTag.ICreate"` AND `prismaSchemaName: "shopping_sale_tags"`
+   - Search neighbor collectors for: `dtoTypeName: "IShoppingSaleTag.ICreate"` AND `databaseSchemaName: "shopping_sale_tags"`
 
 2. **If you find a match**:
    - Extract the collector name from the content (e.g., `ShoppingSaleTagCollector`)
@@ -442,7 +442,7 @@ export namespace ShoppingSaleCollector {
 
 **Remember**:
 - Neighbor collectors are **INPUT MATERIAL** - provided automatically
-- If a collector exists for a DTO + Prisma schema → **MUST USE IT**
+- If a collector exists for a DTO + database schema → **MUST USE IT**
 - AI judgment to ignore existing collectors → **ABSOLUTELY FORBIDDEN**
 - Inline implementation when collector exists → **COMPILATION ERROR IN CODE REVIEW**
 
@@ -473,7 +473,7 @@ src/
 
 ```typescript
 export namespace {TypeName}Collector {
-  // Collect function: DTO to Prisma CreateInput (async for safety)
+  // Collect function: DTO to database CreateInput (async for safety)
   export async function collect(props: {
     body: {ITypeName}.ICreate;
     // Optional additional props for context
@@ -510,12 +510,12 @@ export interface IEntity {
 
 **Where do IEntity parameters come from?**
 
-The REALIZE_COLLECTOR_PLAN phase analyzes operations and extracts references from **path parameters OR auth context**. These are stored in the `AutoBeRealizeCollectorPlan.references` field as reference objects containing Prisma schema names AND source information.
+The REALIZE_COLLECTOR_PLAN phase analyzes operations and extracts references from **path parameters OR auth context**. These are stored in the `AutoBeRealizeCollectorPlan.references` field as reference objects containing database schema names AND source information.
 
 **Reference structure**:
 ```typescript
 interface AutoBeRealizeCollectorReference {
-  prismaSchemaName: string;  // e.g., "shopping_sales"
+  databaseSchemaName: string;  // e.g., "shopping_sales"
   source: string;            // e.g., "from path parameter saleId"
 }
 ```
@@ -523,17 +523,17 @@ interface AutoBeRealizeCollectorReference {
 **Source 1 - Path parameters**:
 - Operation path: `/sales/{saleId}/reviews`
 - Path parameter: `saleId` (references `shopping_sales` table)
-- Plan result: `references: [{ prismaSchemaName: "shopping_sales", source: "from path parameter saleId" }]`
+- Plan result: `references: [{ databaseSchemaName: "shopping_sales", source: "from path parameter saleId" }]`
 - Generated collector: `collect(props: { body: ..., sale: IEntity })`
 
 **Source 2 - Auth context**:
 - Operation path: `/articles` (no path parameters)
 - Auth: Logged-in member (references `bbs_members` + `bbs_member_sessions`)
-- Plan result: `references: [{ prismaSchemaName: "bbs_members", source: "from authorized actor" }, { prismaSchemaName: "bbs_member_sessions", source: "from authorized session" }]`
+- Plan result: `references: [{ databaseSchemaName: "bbs_members", source: "from authorized actor" }, { databaseSchemaName: "bbs_member_sessions", source: "from authorized session" }]`
 - Generated collector: `collect(props: { body: ..., member: IEntity, session: IEntity })`
 - **IMPORTANT**: Auth context provides **TWO entities**: actor + session
 
-The parameter name is derived from the Prisma schema name in camelCase (e.g., `shopping_sales` → `sale`, `bbs_members` → `member`, `shopping_customer_sessions` → `session`).
+The parameter name is derived from the database schema name in camelCase (e.g., `shopping_sales` → `sale`, `bbs_members` → `member`, `shopping_customer_sessions` → `session`).
 
 **The `source` field** helps you understand where each reference originates:
 - "from path parameter X" - Resolved from URL path parameter
@@ -920,7 +920,7 @@ export namespace BbsArticleCommentCollector {
       //----
       // SCALAR FIELDS
       //----
-      // All scalar columns from Prisma schema
+      // All scalar columns from database schema
       id,
       content: props.body.content,
       created_at: new Date(),
@@ -1022,7 +1022,7 @@ This example demonstrates all the key patterns you'll use in collector generatio
 
 **What is Prisma CreateInput?**
 
-Prisma CreateInput is a TypeScript type that defines the exact structure of data needed to create a new record in the database. It's automatically generated from your Prisma schema and ensures type-safe database insertions.
+Prisma CreateInput is a TypeScript type that defines the exact structure of data needed to create a new record in the database. It's automatically generated from your database schema and ensures type-safe database insertions.
 
 **Field Types in Prisma CreateInput:**
 
@@ -1051,7 +1051,7 @@ Relation fields are MORE COMPLEX and require special Prisma syntax. You **NEVER*
 
 **🚨 CRITICAL RULE: Use Relation Names, NOT Foreign Key Column Names**
 
-When you define a relationship in Prisma schema:
+When you define a relationship in database schema:
 
 ```prisma
 model shopping_sale_reviews {
@@ -1174,12 +1174,12 @@ export async function collect(props: {
 **The Pattern:**
 
 ```typescript
-// For optional FK relations (nullable in Prisma schema):
+// For optional FK relations (nullable in database schema):
 relationField: dtoValue
   ? { connect: { id: dtoValue } }
   : undefined  // ← MUST be undefined, NOT null!
 
-// For required FK relations (non-nullable in Prisma schema):
+// For required FK relations (non-nullable in database schema):
 relationField: { connect: { id: dtoValue } }  // Always connect
 ```
 
@@ -1209,7 +1209,7 @@ category: props.body.category_id
 **Decision Rule:**
 
 ```
-Is the FK nullable in Prisma schema?
+Is the FK nullable in database schema?
 │
 ├─ NO (required FK) → Always use { connect: { id: value } }
 │
@@ -1340,7 +1340,7 @@ shopping_sale_categories: {
 - **HasMany relations**: `relationName: { create: [...array] }`
 - **HasOne relations**: `relationName: { create: {...object} }`
 - **Always use snake_case** for Prisma field names (matches database column names)
-- **Always use relation field names** from Prisma schema, NOT `_id` suffixed column names
+- **Always use relation field names** from database schema, NOT `_id` suffixed column names
 
 **Complete Example:**
 
@@ -1387,25 +1387,25 @@ return {
 } satisfies Prisma.shopping_salesCreateInput;  // ← This will FAIL compilation!
 ```
 
-**If unsure about relation field names, RE-READ the Prisma schema. Never guess.**
+**If unsure about relation field names, RE-READ the database schema. Never guess.**
 
 #### Prisma Schema Verification
 
 **Prisma Schema is Your Reference - The mappings Field Ensures Accuracy**
 
-The structured `mappings` field you create during planning serves as your primary safeguard against field errors. When you create complete and accurate mappings, the system validates them against the Prisma schema BEFORE you write any code.
+The structured `mappings` field you create during planning serves as your primary safeguard against field errors. When you create complete and accurate mappings, the system validates them against the database schema BEFORE you write any code.
 
 **Your workflow:**
-1. **Read the Prisma schema** to understand structure
+1. **Read the database schema** to understand structure
 2. **Create complete mappings** covering every field/relation with correct `kind` and `nullable`
 3. **System validates mappings** - catches missing fields, fabricated fields, wrong classification
 4. **Write draft based on validated mappings** - if mappings are correct, draft will be correct
 
 **The mappings validation catches:**
 - Missing fields (you didn't include all Prisma members)
-- Fabricated fields (member doesn't exist in Prisma schema)
+- Fabricated fields (member doesn't exist in database schema)
 - Wrong kind classification (marked as scalar when it's a relation)
-- Wrong nullability (doesn't match Prisma schema)
+- Wrong nullability (doesn't match database schema)
 
 **Key reminders when reading the schema:**
 - **Relation field names** vs FK column names: Use `customer` (relation), NOT `customer_id` (column)
@@ -1649,7 +1649,7 @@ Use `findFirstOrThrow` to query intermediate tables and extract parent FKs safel
 
 ### 2. The collect() Function - Data Collection
 
-**Purpose**: Transform API request DTO to Prisma CreateInput with proper field mapping, UUID generation, and relationship handling. The `collect()` function prepares data for database insertion.
+**Purpose**: Transform API request DTO to database CreateInput with proper field mapping, UUID generation, and relationship handling. The `collect()` function prepares data for database insertion.
 
 **🚨 CRITICAL RULE: ALWAYS Use `connect` for Relationships, NEVER Direct Foreign Key Assignment**
 
@@ -2212,7 +2212,7 @@ description: null,
 
 **Computed/Read-only fields (IGNORE - Do NOT store)**:
 
-**🚨 CRITICAL RULE: If DTO field doesn't exist in Prisma schema, IGNORE it (don't store it)**
+**🚨 CRITICAL RULE: If DTO field doesn't exist in database schema, IGNORE it (don't store it)**
 
 This is the **OPPOSITE** of Transformers:
 - **Transformer (DB→API)**: DTO field not in DB? → Calculate and return it
@@ -2270,7 +2270,7 @@ export async function collect(props: { body: IShoppingSale.ICreate }) {
 
 **How to Identify Computed/Read-only Fields**:
 
-If DTO field doesn't exist in Prisma schema, it's likely one of these types:
+If DTO field doesn't exist in database schema, it's likely one of these types:
 
 ```typescript
 // 1. Aggregation fields (from relations)
@@ -2311,7 +2311,7 @@ fullAddress: string;       // street + city + state + zip
 **Decision Tree: DTO Field Not in Prisma Schema**:
 
 ```
-DTO has field X, but Prisma schema doesn't have column X?
+DTO has field X, but database schema doesn''t have column X?
 │
 ├─ Is it an aggregation? (count, sum, avg, min, max from relations)
 │  └─ YES → IGNORE (Transformer will calculate it at read time)
@@ -2363,15 +2363,15 @@ This is **ALREADY COVERED** by "Nested object flattening" pattern above. This is
 
 **Summary - Critical Rules**:
 
-1. **ONLY map DTO fields that have corresponding DB columns** (verify in Prisma schema)
+1. **ONLY map DTO fields that have corresponding DB columns** (verify in database schema)
 2. **IGNORE all computed/aggregated/derived/formatted fields** (they're read-only)
 3. **Computed fields are calculated by Transformers**, NOT stored by Collectors
-4. **When in doubt**: Check Prisma schema. Not there? Don't store it.
+4. **When in doubt**: Check database schema. Not there? Don't store it.
 
 **Remember**:
 - ❌ DTO field not in schema → DO NOT try to store it
 - ✅ DTO field not in schema → IGNORE it (Transformer handles it at read time)
-- ✅ Only collect fields that ACTUALLY EXIST in Prisma schema
+- ✅ Only collect fields that ACTUALLY EXIST in database schema
 
 ### 6. Relationship Types and Handling
 
@@ -2521,7 +2521,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
 This is your narrative planning where you think through the overall approach and strategy. Document your thinking about:
 
 - **Props structure**: What parameters will the collector accept? (body, IEntity references, nested context)
-- **DTO to Prisma mapping**: Which DTO type maps to which Prisma table
+- **DTO to database mapping**: Which DTO type maps to which database table
 - **Overall strategy**: High-level approach to field mappings and relationships
 - **Nested relationships**: Which neighbor collectors to reuse, which to inline
 - **UUID generation points**: Which fields need v4() generation
@@ -2554,7 +2554,7 @@ Strategy:
 
 This is your structured CoT output - a complete mapping of EVERY Prisma field/relation to your collection strategy. This field is **MANDATORY** and **VALIDATED** by the system.
 
-**You MUST create one mapping entry for EVERY member in the Prisma schema - no exceptions.**
+**You MUST create one mapping entry for EVERY member in the database schema - no exceptions.**
 
 Each mapping specifies:
 ```typescript
@@ -2570,12 +2570,12 @@ Each mapping specifies:
 
 1. **Prevents Field Omissions**: Validator checks you included ALL Prisma members
 2. **Forces Classification**: You must identify `kind` (scalar vs relation) and `nullable` BEFORE coding
-3. **Enables Early Validation**: System validates against Prisma schema BEFORE you write draft
+3. **Enables Early Validation**: System validates against database schema BEFORE you write draft
 4. **Catches Errors Early**: Missing fields, fabricated fields, wrong classification caught immediately
 5. **Documents Decisions**: Clear record of how you're handling each field
 
 **The validation process:**
-- System reads the actual Prisma schema
+- System reads the actual database schema
 - Checks EVERY member in your mappings exists in schema
 - Verifies no fabricated fields (member exists but not in schema)
 - Confirms kind matches schema (scalar vs relation)
@@ -2629,7 +2629,7 @@ For hasMany relations:
 
 **If validation fails**, you'll receive feedback on:
 - Which fields are missing from your mappings
-- Which fields don't exist in Prisma schema (fabricated)
+- Which fields don't exist in database schema (fabricated)
 - Which fields have wrong `kind` or `nullable` values
 
 **Focus on creating complete and accurate mappings** - this is the foundation of correct collector generation.
@@ -2653,10 +2653,10 @@ Your first complete code including:
 
 **Code review and quality check**
 
-**🚨 MOST CRITICAL: Re-verify EVERY field and relation against Prisma schema**
+**🚨 MOST CRITICAL: Re-verify EVERY field and relation against database schema**
 
 Before analyzing anything else, you MUST:
-1. **RE-READ the Prisma schema AGAIN** (yes, again!)
+1. **RE-READ the database schema AGAIN** (yes, again!)
 2. **Check EVERY field in collect()** - Does it exist in schema? Exact spelling?
 3. **Check EVERY relation in collect()** - Is it the RELATION NAME (not `_id` column)?
 4. **Check for foreign key direct assignment** - Any `_id` suffixed fields? Replace with `connect`!
@@ -2688,10 +2688,10 @@ Returns `null` if draft is already perfect and needs no changes.
 
 You MUST call the `process()` function with your structured output:
 
-**Phase 1: Request Prisma schemas**:
+**Phase 1: Request database schemas**:
 ```typescript
 process({
-  thinking: "Need Prisma schema to understand table structure and relationships.",
+  thinking: "Need database schema to understand table structure and relationships.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["shopping_sale_snapshot_unit_stocks"]
@@ -2699,7 +2699,7 @@ process({
 });
 ```
 
-**Phase 2: Generate collector** (after receiving Prisma schemas - DTO type information is already available transitively):
+**Phase 2: Generate collector** (after receiving database schemas - DTO type information is already available transitively):
 ```typescript
 process({
   thinking: "Understood DTO structure and Prisma relationships, ready to implement collector.",
@@ -2824,7 +2824,7 @@ model bbs_article_attachments {
 ```typescript
 export namespace BbsArticleCollector {
   /**
-   * Collect BBS article creation data from DTO to Prisma CreateInput.
+   * Collect BBS article creation data from DTO to database CreateInput.
    *
    * Generates UUIDs, handles nested relationships, and prepares database input:
    * - Generates primary key UUID
@@ -3076,7 +3076,7 @@ return {
 return {
   id: v4(),
   title: props.body.title,
-  // Use relation name (from Prisma schema), not foreign key field name
+  // Use relation name (from database schema), not foreign key field name
   sale: { connect: { id: props.sale.id } },           // ✅ Correct!
   customer: { connect: { id: props.customer.id } },   // ✅ Correct!
   session: { connect: { id: props.session.id } },     // ✅ Correct!
@@ -3117,7 +3117,7 @@ Prisma's CreateInput type expects you to use the **relation field names** (`sale
   parent_id: props.body.parentId,                 // ❌ Wrong!
 }
 
-// ✅ CORRECT - Use relation names from Prisma schema
+// ✅ CORRECT - Use relation names from database schema
 {
   article: { connect: { id: props.article.id } },          // ✅ Correct!
   writer: { connect: { id: props.member.id } },            // ✅ Correct!
@@ -3159,20 +3159,20 @@ tags: {
 
 ## Work Process Summary
 
-1. **Receive DTO type and Prisma schema name** (both provided)
-2. **Request Prisma schemas** to understand table structure and relationships
+1. **Receive DTO type and database schema name** (both provided)
+2. **Request database schemas** to understand table structure and relationships
 3. **🚨 READ PRISMA SCHEMA THOROUGHLY** (MOST CRITICAL STEP):
-   - **READ the entire Prisma schema word by word** - this is THE ONLY source of truth
+   - **READ the entire database schema word by word** - this is THE ONLY source of truth
    - **MEMORIZE every field name** - exact spelling, case-sensitive
    - **MEMORIZE every relation name** - these are what you use in CreateInput (NOT `_id` columns!)
    - **NEVER assume or fabricate** - only use what you SEE in the schema
 4. **Analyze DTO structure**: Understand the Create DTO fields and nesting
 5. **Analyze Operation specification**: Determine what props the collector needs (auth, body, params, etc.)
 6. **Analyze relationships**: Identify BelongsTo (connect), HasMany (create array), HasOne (create object) patterns
-7. **Verify relation names**: For each relationship, confirm the RELATION FIELD NAME from Prisma schema (not column name!)
+7. **Verify relation names**: For each relationship, confirm the RELATION FIELD NAME from database schema (not column name!)
 8. **Plan collection**: Document props structure, field mappings, UUID points, nested handling, relation connections
 9. **Generate collect()**: Implement transformation with function declaration and satisfies
-10. **🚨 RE-VERIFY AGAINST SCHEMA**: Before finalizing, RE-READ Prisma schema and check every field and relation name
+10. **🚨 RE-VERIFY AGAINST SCHEMA**: Before finalizing, RE-READ database schema and check every field and relation name
 11. **Review against Quality Checklist**: Verify all checkboxes satisfied (especially schema verification!)
 12. **Return complete collector** via function calling
 
@@ -3186,13 +3186,13 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ### ✅ Section 1: Prisma Schema Field Verification
 
-**Purpose**: Ensure EVERY field in your collect() return value ACTUALLY EXISTS in the Prisma schema.
+**Purpose**: Ensure EVERY field in your collect() return value ACTUALLY EXISTS in the database schema.
 
 **🚨 MOST CRITICAL SECTION - AI HALLUCINATION HAPPENS HERE! 🚨**
 
 ```
-□ Re-read the ACTUAL Prisma schema (don't rely on memory from plan phase)
-□ EVERY field name in collect() EXISTS in the Prisma schema
+□ Re-read the ACTUAL database schema (don't rely on memory from plan phase)
+□ EVERY field name in collect() EXISTS in the database schema
 □ EVERY field name matches EXACTLY (character-by-character, case-sensitive)
 □ NO fabricated/hallucinated fields (verify each field in actual schema)
 □ NO fields copied from DTO without verification (DTO ≠ Database!)
@@ -3203,14 +3203,14 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **Timestamp Verification** (🚨 #1 Most Common Mistake):
 ```
-□ Does Prisma schema have `created_at`? If YES → Included as `created_at: new Date()`
-□ Does Prisma schema have `updated_at`? If YES → Included as `updated_at: new Date()`
+□ Does database schema have `created_at`? If YES → Included as `created_at: new Date()`
+□ Does database schema have `updated_at`? If YES → Included as `updated_at: new Date()`
 □ BOTH timestamps present if schema has both
 □ NEVER forgot these - check schema RIGHT NOW
 ```
 
 **How to verify**:
-1. Open the Prisma schema you received
+1. Open the database schema you received
 2. Read it line by line
 3. For EVERY field in your collect() return value, find it in the schema
 4. If you can't find it → DELETE IT from your code (you fabricated it)
@@ -3231,7 +3231,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **Relation Name Verification**:
 ```
-□ EVERY relation uses RELATION NAME from Prisma schema
+□ EVERY relation uses RELATION NAME from database schema
 □ NO direct foreign key assignment (no `customer_id:`, `sale_id:`, `session_id:`)
 □ ALL relations use connect syntax: `relationName: { connect: { id: ... } }`
 □ Relation names verified against actual schema (not guessed)
@@ -3255,7 +3255,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 **How to verify**:
 1. Find ALL `_id` suffixed names in your code
 2. If ANY exist → YOU MADE A MISTAKE (should be relation names)
-3. Check Prisma schema for the RELATION NAME (e.g., `sale`, not `shopping_sale_id`)
+3. Check database schema for the RELATION NAME (e.g., `sale`, not `shopping_sale_id`)
 4. Replace with `relationName: { connect: { id: ... } }`
 
 **Common mistakes to catch**:
@@ -3428,7 +3428,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 ```
 
 **Common mistakes to catch**:
-- ❌ Skipped Prisma schema inventory in plan (led to fabricated fields)
+- ❌ Skipped database schema inventory in plan (led to fabricated fields)
 - ❌ Didn't create mapping table (led to missed fields)
 - ❌ review phase just said "looks good" without actual verification
 - ❌ final is null but review found issues
@@ -3442,7 +3442,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 **Ask yourself honestly**:
 ```
 ❓ Would this code actually compile if I ran TypeScript compiler?
-❓ Did I verify EVERY field against the actual Prisma schema?
+❓ Did I verify EVERY field against the actual database schema?
 ❓ Did I use relation names (NOT FK columns) for ALL relationships?
 ❓ Are there ANY assumptions I made without verifying?
 ❓ Did I use ANY "should work" or "probably correct" code?
@@ -3451,7 +3451,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **If you answered "no" or "unsure" to ANY question**:
 - ⚠️ STOP and go back to that section
-- ⚠️ Re-read the relevant Prisma schema
+- ⚠️ Re-read the relevant database schema
 - ⚠️ Verify against actual source material (not memory)
 - ⚠️ Fix before proceeding
 
@@ -3466,7 +3466,7 @@ Before calling the function, verify:
 
 1. ✅ **All 9 sections above checked** - Every checkbox verified
 2. ✅ **No skipped items** - Didn't skip any verification step
-3. ✅ **Schema re-read** - Verified against ACTUAL Prisma schema (not memory)
+3. ✅ **Schema re-read** - Verified against ACTUAL database schema (not memory)
 4. ✅ **All fields verified** - Every field EXISTS in schema
 5. ✅ **All relations verified** - Relation names (NOT FK columns) used
 6. ✅ **No fabricated fields** - No fields invented or hallucinated

@@ -139,7 +139,7 @@ src/
 - Verify that the user actually exists in the database
 - Function return type should be `{Role.name(PascalCase)}Payload` interface
 - Return the `payload` variable whenever feasible in provider functions.
-- **Always check the Prisma schema for validation columns (e.g., `deleted_at`, status fields) within the authorization model and include them in the `where` clause to ensure the user is valid and active.**
+- **Always check the database schema for validation columns (e.g., `deleted_at`, status fields) within the authorization model and include them in the `where` clause to ensure the user is valid and active.**
 - **Database Query Strategy - CRITICAL for JWT Token Structure:**
   - **Analyze the Prisma Schema to determine table relationships**
   - **payload.id ALWAYS contains the top-level user table ID** (most fundamental user entity in your schema)

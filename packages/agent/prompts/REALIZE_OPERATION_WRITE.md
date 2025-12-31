@@ -249,7 +249,7 @@ The `request` property is a **discriminated union** that can be one of four type
 - **dtoTypeNames**: Array of Create DTO type names (e.g., `["IShoppingSale.ICreate", "IBbsArticle.ICreate"]`)
 - **Purpose**: Request collector functions that transform API request DTOs into Prisma CreateInput structures
 - **When to use**: When implementing POST operations that create new records using complex nested DTOs
-- **Strategy**: Request collectors for DTOs you need to convert to Prisma input format
+- **Strategy**: Request collectors for DTOs you need to convert to database input format
 
 **3. IAutoBePreliminaryGetRealizeTransformers** - Retrieve transformer function information:
 - **type**: `"getRealizeTransformers"` - Discriminator indicating preliminary data request
@@ -591,7 +591,7 @@ Collectors take care of complex transformations that you would otherwise have to
    - Handles optional nested objects
 
 5. **Field Mapping and Validation**
-   - Maps API field names to Prisma field names
+   - Maps API field names to database field names
    - Applies business logic transformations
    - Ensures type compatibility
 
@@ -1099,7 +1099,7 @@ Use Pattern B when:
 **CRITICAL**: Pattern B requires you to manually implement ALL the data transformation logic.
 
 **⚠️ CRITICAL RESPONSIBILITY**: When manually constructing Prisma queries and transformations:
-- You MUST ensure EVERY required field from the Prisma schema is handled
+- You MUST ensure EVERY required field from the database schema is handled
 - You MUST verify relation names match the schema EXACTLY
 - Field omissions WILL cause compilation errors or runtime failures
 - Wrong relation names WILL cause TypeScript compilation errors
@@ -1134,7 +1134,7 @@ When using Pattern B, **YOU become the collector and transformer**. All the auto
 
 **CRITICAL**: Before writing ANY Prisma query or CreateInput, you MUST:
 
-1. **READ the Prisma schema thoroughly** - Every model, every field, every relation
+1. **READ the database schema thoroughly** - Every model, every field, every relation
 2. **VERIFY field names** - Exact spelling, case-sensitive
 3. **VERIFY relation names** - Use relation names (e.g., `customer`), NOT foreign key columns (e.g., `customer_id`)
 4. **VERIFY field types** - Scalar field (direct assignment) vs Relation field (connect/create syntax)
@@ -1147,7 +1147,7 @@ When using Pattern B, **YOU become the collector and transformer**. All the auto
 - Which fields are required vs optional
 - Which fields are unique or indexed
 
-**You MUST consult the Prisma schema before**:
+**You MUST consult the database schema before**:
 - Writing any `select` statement (READ operations)
 - Writing any CreateInput data (CREATE operations)
 - Referencing any field or relation name
@@ -1258,8 +1258,8 @@ const sale = await MyGlobal.prisma.shopping_sales.findUnique({
 ```
 
 **CRITICAL**:
-- Scalar field names: Exact column names from Prisma schema (e.g., `title`, `price`, `customer_id`)
-- Relation field names: Relation names from Prisma schema (e.g., `customer`, NOT `customer_id`)
+- Scalar field names: Exact column names from database schema (e.g., `title`, `price`, `customer_id`)
+- Relation field names: Relation names from database schema (e.g., `customer`, NOT `customer_id`)
 - Foreign key columns ARE scalar fields: You can select `customer_id` as a scalar field
 - But to load the related customer object, use the `customer` relation field
 
@@ -1417,7 +1417,7 @@ const article = await MyGlobal.prisma.bbs_articles.findUnique({
 
 **Before writing ANY select statement**:
 
-1. **READ the Prisma schema** - Find the exact model definition
+1. **READ the database schema** - Find the exact model definition
 2. **VERIFY each field name** - Character-by-character, case-sensitive
 3. **VERIFY relation names** - Use relation name (e.g., `author`), NOT foreign key column (e.g., `author_id`)
 4. **VERIFY field types** - Scalar vs Relation
@@ -1578,7 +1578,7 @@ return {
 
 **Before writing ANY select or field transformation:**
 
-1. **READ the Prisma schema thoroughly** - Every line, every field, every relation
+1. **READ the database schema thoroughly** - Every line, every field, every relation
 2. **VERIFY each field EXISTS** in the exact model with EXACT spelling (case-sensitive)
 3. **VERIFY field type** - Scalar field vs Relation field
 4. **For relations, VERIFY the RELATION NAME** - NOT the foreign key column name
@@ -1589,7 +1589,7 @@ return {
 **Example Verification Process**:
 
 ```typescript
-// previous version: READ the Prisma schema
+// previous version: READ the database schema
 model shopping_sales {
   id          String   @id @db.Uuid
   title       String   @db.VarChar
@@ -1635,7 +1635,7 @@ const sale = await MyGlobal.prisma.shopping_sales.findUnique({
 ```
 
 **CRITICAL Rules**:
-1. **Every field in select MUST exist** in the Prisma schema
+1. **Every field in select MUST exist** in the database schema
 2. **Every relation name MUST match** the schema definition exactly
 3. **NO typos, NO guesses, NO assumptions** - verify character-by-character
 4. **When unsure** - READ the schema again
@@ -2052,7 +2052,7 @@ password: await PasswordUtil.hash(props.body.password)
 
 #### 4. Field Mapping
 
-**What**: Map from API DTO field names to Prisma schema field names.
+**What**: Map from API DTO field names to database schema field names.
 
 **Why**: API and database schemas may have different field names or structures.
 
@@ -2069,7 +2069,7 @@ data: {
 ```
 
 **Critical Points**:
-- Check actual Prisma schema for field names
+- Check actual database schema for field names
 - Handle case conversion (camelCase ↔ snake_case)
 - Map nested structures correctly
 - Validate required vs optional fields
@@ -2080,7 +2080,7 @@ data: {
 
 **Before writing ANY CreateInput data object:**
 
-1. **READ the Prisma schema thoroughly** - Every model, every field, every relation
+1. **READ the database schema thoroughly** - Every model, every field, every relation
 2. **VERIFY each field EXISTS** in the exact table with EXACT spelling (case-sensitive)
 3. **VERIFY field type** - Scalar field (direct assignment) vs Relation field (connect/create)
 4. **For relations, VERIFY the RELATION NAME** - NOT the foreign key column name
@@ -2091,7 +2091,7 @@ data: {
 **Example Verification Process**:
 
 ```typescript
-// previous version: READ the Prisma schema
+// previous version: READ the database schema
 model shopping_sale_reviews {
   id                   String   @id @db.Uuid
   content              String   @db.Text
@@ -2132,7 +2132,7 @@ await MyGlobal.prisma.shopping_sale_reviews.create({
 ```
 
 **CRITICAL Rules for CreateInput**:
-1. **Every scalar field MUST exist** in the Prisma schema as a database column
+1. **Every scalar field MUST exist** in the database schema as a database column
 2. **Every relation MUST use the relation name** from the schema, NOT the foreign key column
 3. **All relations MUST use `connect` or `create` syntax** - NEVER direct foreign key assignment
 4. **NO typos, NO guesses, NO assumptions** - verify character-by-character
@@ -3286,7 +3286,7 @@ Before finalizing implementation, verify:
 ### Pattern B: WITHOUT Collector/Transformer (Manual Construction)
 
 #### 🚨 Prisma Schema Verification (MOST CRITICAL!)
-- [ ] ✅ **READ the Prisma schema thoroughly** before writing ANY code
+- [ ] ✅ **READ the database schema thoroughly** before writing ANY code
 - [ ] ✅ **VERIFY every field name** exists in schema (character-by-character, case-sensitive)
 - [ ] ✅ **VERIFY every relation name** exists in schema (NOT foreign key column names!)
 - [ ] ✅ **NEVER fabricate, imagine, or guess** field or relation names
@@ -3314,11 +3314,11 @@ Before finalizing implementation, verify:
 - [ ] ✅ **NEVER used direct foreign key assignment** (e.g., `customer_id: props.customerId` ❌)
 - [ ] ✅ **ALWAYS used connect syntax** (e.g., `customer: { connect: { id: props.customerId } }` ✅)
 - [ ] ✅ Handled optional relations with conditional spread (`...(condition && { relation: { connect: {...} } })`)
-- [ ] ✅ Mapped API DTO field names to Prisma schema field names correctly
+- [ ] ✅ Mapped API DTO field names to database schema field names correctly
 
 #### Pattern B: Critical Verification Points
 - [ ] ✅ **Re-verified Prisma schema one more time** before completing
-- [ ] ✅ **Every field in select/CreateInput EXISTS** in Prisma schema (no fabricated fields!)
+- [ ] ✅ **Every field in select/CreateInput EXISTS** in database schema (no fabricated fields!)
 - [ ] ✅ **Every relation uses RELATION NAME** from schema (not `_id` suffixed column names!)
 - [ ] ✅ **No direct foreign key assignment** anywhere in CreateInput
 - [ ] ✅ **All relationships use `connect` or `create` syntax**

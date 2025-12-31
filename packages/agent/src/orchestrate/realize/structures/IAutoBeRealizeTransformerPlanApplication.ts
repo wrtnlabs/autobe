@@ -15,7 +15,7 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
  * **Key Decisions**: Not all DTOs require transformers. The agent must
  * distinguish transformable DTOs (Read DTO + DB-backed + Direct mapping) from
  * non-transformable DTOs (request params, pagination wrappers, business logic
- * types) and include ALL DTOs with prismaSchemaName set to null for
+ * types) and include ALL DTOs with databaseSchemaName set to null for
  * non-transformable ones.
  */
 export interface IAutoBeRealizeTransformerPlanApplication {
@@ -24,7 +24,7 @@ export interface IAutoBeRealizeTransformerPlanApplication {
    *
    * Analyzes operation response DTOs and generates complete plan listing which
    * transformers to generate. Ensures nested DTOs are analyzed recursively and
-   * ALL DTOs are included with appropriate prismaSchemaName values.
+   * ALL DTOs are included with appropriate databaseSchemaName values.
    *
    * @param props Request containing either preliminary data request or complete
    *   plan
@@ -80,8 +80,8 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
    * Request to complete transformer planning.
    *
    * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * transformable and non-transformable DTOs. Transformable DTOs have a Prisma
-   * schema name, while non-transformable DTOs have null.
+   * transformable and non-transformable DTOs. Transformable DTOs have a
+   * database schema name, while non-transformable DTOs have null.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
@@ -97,7 +97,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      * - Database schema name if transformable, or null if not
      *
      * Include ALL DTOs from the operation response, both transformable and
-     * non-transformable. Use prismaSchemaName to distinguish:
+     * non-transformable. Use databaseSchemaName to distinguish:
      *
      * - Non-null: Transformable DTO, transformer will be generated
      * - Null: Non-transformable DTO, no transformer needed
@@ -141,14 +141,14 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
     /**
      * Database schema name if transformable, null if not.
      *
-     * - **Non-null**: The Prisma table name this DTO maps to. A transformer will
-     *   be generated for this DTO.
+     * - **Non-null**: The database table name this DTO maps to. A transformer
+     *   will be generated for this DTO.
      * - **Null**: This DTO is non-transformable (request param, pagination
      *   wrapper, business logic type). No transformer will be generated.
      *
      * Example (transformable): "shopping_sales", "shopping_categories" Example
      * (non-transformable): null
      */
-    prismaSchemaName: string | null;
+    databaseSchemaName: string | null;
   }
 }

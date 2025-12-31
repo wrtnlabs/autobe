@@ -25,7 +25,7 @@ export const transformRealizeTransformerWriteHistory = async (
   const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
-    .find((m) => m.name === props.plan.prismaSchemaName)!;
+    .find((m) => m.name === props.plan.databaseSchemaName)!;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dto: Record<string, string> =
     await AutoBeRealizeTransformerProgrammer.writeStructures(
@@ -60,7 +60,7 @@ export const transformRealizeTransformerWriteHistory = async (
         text: StringUtil.trim`
           Here is the declaration of the transformer function for
           the DTO type ${props.plan.dtoTypeName} and its corresponding
-          database schema ${props.plan.prismaSchemaName}:
+          database schema ${props.plan.databaseSchemaName}:
 
           \`\`\`typescript
           ${AutoBeRealizeTransformerProgrammer.writeTemplate({
@@ -80,7 +80,7 @@ export const transformRealizeTransformerWriteHistory = async (
               [
                 AutoBeRealizeTransformerProgrammer.getName(n.dtoTypeName),
                 n.dtoTypeName,
-                n.prismaSchemaName,
+                n.databaseSchemaName,
               ].join(" | "),
             )
             .join("\n")}
@@ -114,12 +114,12 @@ export const transformRealizeTransformerWriteHistory = async (
 
       **Plan Information from REALIZE_TRANSFORMER_PLAN phase**:
 
-      - **Database Schema Name**: ${props.plan.prismaSchemaName}
+      - **Database Schema Name**: ${props.plan.databaseSchemaName}
       - **Planning Reasoning**: ${props.plan.thinking}
 
       **Your task**:
 
-      1. Use the provided database schema name: \`${props.plan.prismaSchemaName}\`
+      1. Use the provided database schema name: \`${props.plan.databaseSchemaName}\`
       2. Request database schemas to understand the table structure
       3. Request Interface schemas to understand the DTO structure
       4. Analyze field mappings between database columns and DTO properties

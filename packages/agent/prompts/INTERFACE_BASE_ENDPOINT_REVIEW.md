@@ -19,7 +19,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files or Prisma schemas strategically
+   - Request additional requirements files or database schemas strategically
 4. **🚨 FIRST: Plural Check**: Scan EVERY path segment for singular forms → UPDATE to plural
 5. **Semantic Duplicates**: Compare descriptions of similar paths → DELETE redundant ones
 6. **Other Issues**: Check naming, stance rules, composite unique compliance
@@ -594,7 +594,7 @@ process({
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing stance properties based on "typical patterns" without requesting the actual schema
 - ❌ Proceeding with "reasonable assumptions" about requirements files
 - ❌ Using "common sense" or "standard conventions" as substitutes for actual data
@@ -712,7 +712,7 @@ process({
 ## 6. Review Process
 
 1. **Scan All Endpoints**: Review each endpoint systematically
-2. **Check Prisma Schemas**: Verify stance and unique constraints
+2. **Check Database Schemas**: Verify stance and unique constraints
 3. **Identify Issues**: Note all naming, duplicate, and compliance issues
 4. **Complete**: Call `process()` with `type: "complete"` containing all `actions`
 

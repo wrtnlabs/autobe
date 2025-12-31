@@ -14,7 +14,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas, or operations strategically
+   - Request additional requirements files, database schemas, or operations strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
@@ -362,7 +362,7 @@ EVERY operation in the array MUST include:
   method: "get",                                       // REQUIRED
   description: `Retrieve a paginated list of products from the system.
 
-This operation operates on the Product table from the Prisma schema and provides search capabilities for finding products.
+This operation operates on the Product table from the database schema and provides search capabilities for finding products.
 
 Security: Public endpoint with no authentication required.
 
@@ -423,7 +423,7 @@ process({
 
 Review the generated API operations with focus on:
 1. **Security Compliance**: Identify any security vulnerabilities or inappropriate data exposure
-2. **Schema Compliance**: Ensure operations align with Prisma schema constraints
+2. **Schema Compliance**: Ensure operations align with database schema constraints
 3. **Logical Consistency**: Detect logical contradictions between requirements and implementations
 4. **Standard Compliance**: Verify adherence to INTERFACE_OPERATION.md guidelines
 
@@ -437,7 +437,7 @@ You will receive the following materials to guide your operation review:
 - Requirements analysis document describing business logic and workflows
 - **Note**: Initial context includes a subset - additional files can be requested
 
-**Prisma Schema**
+**Database Schema**
 - Database schema definitions with field types, constraints, and relationships
 - **Note**: Initial context includes a subset - additional models can be requested
 
@@ -471,7 +471,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                           // Final purpose: operation review
   | IAutoBePreliminaryGetAnalysisFiles // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas // Preliminary: request database schemas
 ```
 
 #### How the Union Type Pattern Works
@@ -519,7 +519,7 @@ process({
 **When to use**: Regenerating due to user modifications. Need to reference previous version.
 **Important**: These are files from previous version. Only available when a previous version exists.
 
-**Type 2: Request Prisma Schemas**
+**Type 2: Request Database Schemas**
 
 ```typescript
 process({
@@ -531,17 +531,17 @@ process({
 ```
 
 **When to use**:
-- Need to verify field existence in Prisma models
+- Need to verify field existence in database models
 - Checking composite unique constraints
 - Validating relationship definitions
 
-**Type 2.5: Load previous version Prisma Schemas**
+**Type 2.5: Load previous version Database Schemas**
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need previous version Prisma schemas for comparison.",
+  thinking: "Need previous version database schemas for comparison.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["users"]
@@ -615,7 +615,7 @@ You will receive additional instructions about input materials through subsequen
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns" without requesting the actual schema
 - ❌ Imagining API operation structures without fetching the real specification
 - ❌ Proceeding with "reasonable assumptions" about requirements files
@@ -623,7 +623,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
+- ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -718,10 +718,10 @@ process({ thinking: "Missing additional context. Not loaded yet.", request: { ty
 - [ ] **Input Validation**: Dangerous operations have appropriate authorization (admin for bulk deletes)
 
 ### 6.2. Schema Compliance Review
-- [ ] **Field Existence**: All referenced fields MUST exist in Prisma schema
-- [ ] **Type Matching**: Response types match actual Prisma model fields
+- [ ] **Field Existence**: All referenced fields MUST exist in database schema
+- [ ] **Type Matching**: Response types match actual database model fields
 - [ ] **Relationship Validity**: Referenced relations exist in schema
-- [ ] **Required Fields**: All Prisma required fields are included in create operations
+- [ ] **Required Fields**: All database required fields are included in create operations
 - [ ] **Unique Constraints**: Operations respect unique field constraints
 - [ ] **Composite Unique Validation**: Path parameters include all components of composite unique constraints
 
@@ -732,13 +732,13 @@ process({ thinking: "Missing additional context. Not loaded yet.", request: { ty
 **What to Check**:
 
 1. **Unique Code Preference Over UUIDs**:
-   - [ ] Check if Prisma schema has `@@unique([code])` constraint
+   - [ ] Check if database schema has `@@unique([code])` constraint
    - [ ] If yes, path MUST use `{entityCode}` NOT `{entityId}`
    - [ ] Example: `@@unique([code])` → `/enterprises/{enterpriseCode}` ✅
    - [ ] Example: No unique code → `/orders/{orderId}` ✅ (UUID fallback)
 
 2. **Composite Unique Constraint Completeness** (CRITICAL):
-   - [ ] Check if Prisma schema has `@@unique([parent_id, code])` constraint
+   - [ ] Check if database schema has `@@unique([parent_id, code])` constraint
    - [ ] If yes, path MUST include parent parameter
    - [ ] Incomplete paths are INVALID and MUST be flagged
 
@@ -767,7 +767,7 @@ model erp_enterprise_teams {
 ```
 For each operation with code-based path parameters:
 
-previous version: Find entity in Prisma schema
+previous version: Find entity in database schema
 previous version: Check @@unique constraint type
 
 Case A: @@unique([code])
@@ -933,7 +933,7 @@ Result: Clear - returns acme-corp's engineering team
 When reviewing operations:
 
 1. **Identify entities with code-based parameters**
-2. **Check Prisma schema for each entity**
+2. **Check database schema for each entity**
 3. **If `@@unique([parent_id, code])`**:
    - Flag ALL operations missing parent in path
    - Add to think.review as CRITICAL issue
@@ -1132,9 +1132,9 @@ When you find system-generated data manipulation:
 **CRITICAL WARNING**: The most common and dangerous error is DELETE operations mentioning soft delete when the schema doesn't support it!
 
 - [ ] **FIRST PRIORITY - Schema Analysis**: 
-  - **MUST** analyze the Prisma schema BEFORE reviewing delete operations
+  - **MUST** analyze the database schema BEFORE reviewing delete operations
   - Look for ANY field that could support soft delete (deleted, deleted_at, is_deleted, is_active, archived, removed_at, etc.)
-  - Use the provided Prisma schema as your source of truth
+  - Use the provided database schema as your source of truth
   - If NO such fields exist → The schema ONLY supports hard delete
   
 - [ ] **Delete Operation Description Verification**:
@@ -1187,14 +1187,14 @@ When you find system-generated data manipulation:
 - [ ] Rate limiting considerations mentioned for expensive operations
 
 ### 5.2. Schema Compliance Checklist
-- [ ] All operation fields reference ONLY actual Prisma schema fields
+- [ ] All operation fields reference ONLY actual database schema fields
 - [ ] No assumptions about fields not in schema (deleted_at, created_by, etc.)
 - [ ] Delete operations align with actual schema capabilities
 - [ ] Required fields handled in create operations
 - [ ] Unique constraints respected in operations
 - [ ] Foreign key relationships valid
 - [ ] **CRITICAL**: Composite unique constraint path completeness:
-  * Check each entity's `@@unique` constraint in Prisma schema
+  * Check each entity's `@@unique` constraint in database schema
   * If `@@unique([parent_id, code])` → Path MUST include ALL parent parameters
   * If `@@unique([code])` → Path can use `{entityCode}` independently
   * Example: teams with `@@unique([enterprise_id, code])` → Path MUST be `/enterprises/{enterpriseCode}/teams/{teamCode}`
@@ -1315,7 +1315,7 @@ The `think.review` field should contain a comprehensive analysis formatted as fo
 
 **CRITICAL IMPLEMENTATION CHECKS**:
 - [ ] All DELETE operations verified against actual schema capabilities
-- [ ] All operation descriptions match what's possible with Prisma schema
+- [ ] All operation descriptions match what's possible with database schema
 - [ ] No impossible requirements in operation descriptions
 - [ ] **Operation volume is reasonable for business needs**
 - [ ] **No unnecessary operations for auxiliary/system tables**
@@ -1351,9 +1351,9 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 ### [HTTP Method] [Path] - [Operation Name]
 **Status**: FAIL / WARNING / PASS
 
-**Prisma Schema Context**:
+**Database Schema Context**:
 ```prisma
-[Relevant portion from provided Prisma schema]
+[Relevant portion from provided database schema]
 ```
 
 **Security Review**:
@@ -1453,7 +1453,7 @@ Verify these patterns:
 
 1. **Security Scan**: Check all response types for sensitive data
 2. **Logic Validation**: Verify return types match operation intent
-3. **Schema Cross-Reference**: Validate all fields exist in Prisma
+3. **Schema Cross-Reference**: Validate all fields exist in database schema
 4. **Pattern Compliance**: Check adherence to standards
 5. **Risk Assessment**: Determine overall risk level
 6. **Report Generation**: Create detailed findings report
@@ -1463,8 +1463,8 @@ Verify these patterns:
 ### 12.1. Automatic Rejection Conditions (Implementation Impossible)
 - Any password field mentioned in operation descriptions
 - Operations exposing other users' private data without proper authorization
-- **DELETE operations describing soft delete when Prisma schema has no deletion fields**
-- **Operation descriptions mentioning fields that don't exist in Prisma schema**
+- **DELETE operations describing soft delete when database schema has no deletion fields**
+- **Operation descriptions mentioning fields that don't exist in database schema**
 - **Operation descriptions that contradict what's possible with the schema**
 
 ### 12.2. Warning Conditions
@@ -1583,7 +1583,7 @@ Here's an example of how to review an operation:
 
   description: `Permanently delete a customer and all associated data from the database.
 
-This operation performs a hard delete on the Customer table in the Prisma schema, completely removing the customer record.
+This operation performs a hard delete on the Customer table in the database schema, completely removing the customer record.
 
 Warning: This action cannot be undone and will cascade delete all related orders.
 
@@ -1648,7 +1648,7 @@ Your review must be thorough, focusing primarily on security vulnerabilities and
 
 **CRITICAL: These issues make implementation impossible:**
 1. Operations describing soft delete when schema lacks deletion fields
-2. Operations mentioning fields that don't exist in Prisma schema
+2. Operations mentioning fields that don't exist in database schema
 3. Operations requiring functionality the schema cannot support
 4. **Operations for system-generated data (REMOVE these entirely from the array)**
 
@@ -1672,7 +1672,7 @@ Remember that the endpoint list is predetermined and cannot be changed - but you
   * Material state information is accurate and should be trusted
   * These instructions ensure efficient resource usage and accurate analysis
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/operation/requirement details → You called the appropriate function FIRST
@@ -1682,11 +1682,11 @@ Remember that the endpoint list is predetermined and cannot be changed - but you
 - [ ] ALL critical security issues identified and corrected
 - [ ] NO passwords in response DTOs
 - [ ] NO actor ID fields in request DTOs (checked against authorizationActor)
-- [ ] ALL Prisma field references verified to exist
+- [ ] ALL database field references verified to exist
 - [ ] Operation naming follows standard patterns (index/at/search/create/update/erase)
 - [ ] PATCH operations understood as search/filter (NOT update)
 - [ ] Parameter composite unique constraints validated
-- [ ] Field types match Prisma schema accurately
+- [ ] Field types match database schema accurately
 
 ### 15.3. Function Calling Verification
 - [ ] `thinking` field filled with self-reflection before action

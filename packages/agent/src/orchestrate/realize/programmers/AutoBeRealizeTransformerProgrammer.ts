@@ -83,12 +83,12 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }): string {
     return StringUtil.trim`
       export namespace ${getName(props.plan.dtoTypeName)} {
-        export type Payload = Prisma.${props.plan.prismaSchemaName}GetPayload<ReturnType<typeof select>>;
+        export type Payload = Prisma.${props.plan.databaseSchemaName}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
           return {
             ...
-          } satisfies Prisma.${props.plan.prismaSchemaName}FindManyArgs;
+          } satisfies Prisma.${props.plan.databaseSchemaName}FindManyArgs;
         }
 
         export async function transform(input: Payload): Promise<${props.plan.dtoTypeName}> {
@@ -196,7 +196,7 @@ ${Object.keys(props.schema.properties)
     const model: AutoBeDatabase.IModel = props.application.files
       .map((f) => f.models)
       .flat()
-      .find((m) => m.name === props.plan.prismaSchemaName)!;
+      .find((m) => m.name === props.plan.databaseSchemaName)!;
     const required: AutoBeRealizeTransformerSelectMapping.Metadata[] =
       getSelectMappingMetadata({
         application: props.application,

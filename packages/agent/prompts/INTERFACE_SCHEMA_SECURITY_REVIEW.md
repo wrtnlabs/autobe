@@ -18,7 +18,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas, or operations strategically
+   - Request additional requirements files, database schemas, or operations strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
@@ -44,7 +44,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes schema security review requirements and generated schemas
-- Additional materials (analysis files, Prisma schemas, interface schemas) can be requested via function calling when needed
+- Additional materials (analysis files, database schemas, interface schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific documents, table schemas, or interface schemas, request them via `getDatabaseSchemas`, `getAnalysisFiles`, or `getInterfaceSchemas`
@@ -176,7 +176,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: security review
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -237,11 +237,11 @@ process({
 
 **Type 2.5: Load previous version Prisma Schemas**
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need previous version of Prisma schemas to validate security pattern changes.",
+  thinking: "Need previous version of database schemas to validate security pattern changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "sessions", "tokens"]
@@ -692,7 +692,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 ### 4.1. Authentication Field Identification
 
-**Scan the Prisma schema for ALL authentication-related fields:**
+**Scan the database schema for ALL authentication-related fields:**
 
 - [ ] **User Identity Fields**: `user_id`, `author_id`, `creator_id`, `owner_id`, `member_id`
 - [ ] **BBS Pattern Fields**: `bbs_member_id`, `bbs_member_session_id`, `bbs_*_author_id`
@@ -702,7 +702,7 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 - [ ] **Organization Context**: `organization_id`, `company_id`, `enterprise_id`, `tenant_id`, `workspace_id`
 - [ ] **Audit Fields**: `created_by`, `updated_by`, `deleted_by`, `approved_by`, `rejected_by`, `modified_by`
 
-**Document which of these exist in the Prisma schema - they will ALL need security validation.**
+**Document which of these exist in the database schema - they will ALL need security validation.**
 
 ### 4.2. Sensitive Data Inventory
 
@@ -1000,7 +1000,7 @@ interface IShoppingProduct.IUpdate {
 "password_salt"    // Salt with prefix - NEVER expose
 ```
 
-**CRITICAL RULE**: Even if Prisma model has `password_hashed` field → **DELETE from ALL response DTOs**
+**CRITICAL RULE**: Even if database model has `password_hashed` field → **DELETE from ALL response DTOs**
 
 **Response Types that MUST EXCLUDE passwords**:
 - ❌ `IEntity` (main response)
@@ -1463,7 +1463,7 @@ interface ICreateProject {
 
 1. **Request DTOs**: Check EVERY property against forbidden patterns
 2. **Response DTOs**: Check for sensitive data exposure
-3. **All DTOs**: Validate against Prisma schema with x-autobe-database-schema
+3. **All DTOs**: Validate against database schema with x-autobe-database-schema
 
 **Use Pattern Matching**:
 ```typescript

@@ -96,7 +96,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
             props.plan.references
               .map(
                 (r) =>
-                  `${NamingConvention.camel(r.prismaSchemaName)}: IEntity; // ${r.source}`,
+                  `${NamingConvention.camel(r.databaseSchemaName)}: IEntity; // ${r.source}`,
               )
               .join("\n")
           }
@@ -122,7 +122,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
         }) {
           return {
 ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
-          } satisfies Prisma.${props.plan.prismaSchemaName}CreateInput;
+          } satisfies Prisma.${props.plan.databaseSchemaName}CreateInput;
         }
       }
     `;
@@ -278,7 +278,7 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
     const model: AutoBeDatabase.IModel = props.application.files
       .map((f) => f.models)
       .flat()
-      .find((m) => m.name === props.plan.prismaSchemaName)!;
+      .find((m) => m.name === props.plan.databaseSchemaName)!;
     const required: AutoBeRealizeCollectorMapping.Metadata[] =
       getMappingMetadata({
         application: props.application,

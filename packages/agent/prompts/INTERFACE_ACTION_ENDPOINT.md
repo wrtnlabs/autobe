@@ -327,7 +327,7 @@ Endpoints Created:
 
 ### 4.1. Initially Provided Materials
 
-**Prisma Schema Information** (in `.prisma` text format):
+**Database Schema Information** (in `.prisma` text format):
 - Database models with fields, data types, and relationships
 - Already loaded for all tables listed in the group's `databaseSchemas` array
 - Use this to understand what data is available for aggregation

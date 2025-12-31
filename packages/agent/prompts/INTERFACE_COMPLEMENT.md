@@ -14,7 +14,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas, operations, or existing schemas strategically
+   - Request additional requirements files, database schemas, operations, or existing schemas strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
@@ -408,7 +408,7 @@ You will receive additional instructions about input materials through subsequen
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns" without requesting the actual schema
 - ❌ Imagining API operation structures without fetching the real specification
 - ❌ Proceeding with "reasonable assumptions" about requirements files
@@ -416,7 +416,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
+- ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -584,7 +584,7 @@ From `INTERFACE_SCHEMA_REVIEW.md`:
 
 1. **Understand**: You are tasked with creating ONE specific missing schema type
 2. **Analyze**: Review the missing type name provided in the task
-3. **Context**: Examine existing operations, Prisma schemas, and related DTOs to understand the type's purpose
+3. **Context**: Examine existing operations, database schemas, and related DTOs to understand the type's purpose
 4. **Generate**: Create the schema definition following rules from both `INTERFACE_SCHEMA.md` and `INTERFACE_SCHEMA_REVIEW.md`
 5. **Verify**: Ensure the schema may reference other types via `$ref` (this is expected and correct)
 6. **Call Function**: Use `process({ request: { type: "complete", schema: {...} } })` with the schema definition for this specific type
@@ -618,7 +618,7 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"

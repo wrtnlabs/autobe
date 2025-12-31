@@ -157,7 +157,7 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - Must be implementation-ready for subsequent pipeline phases
      *
      * The enhanced document serves as the authoritative requirements
-     * specification that will guide all downstream generation phases (Prisma,
+     * specification that will guide all downstream generation phases (Database,
      * Interface, Test, Realize).
      */
     content: string;

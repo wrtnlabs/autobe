@@ -35,10 +35,10 @@ export const transformRealizeTransformerPlanHistory = (props: {
           2. Request database schemas to understand database structure
           3. Request Interface schemas to understand DTO shapes
           4. Analyze each DTO to determine if it's transformable or not
-          5. Generate complete plan including ALL DTOs with appropriate prismaSchemaName
+          5. Generate complete plan including ALL DTOs with appropriate databaseSchemaName
 
-          **For transformable DTOs**: Set prismaSchemaName to actual database table name
-          **For non-transformable DTOs**: Set prismaSchemaName to null
+          **For transformable DTOs**: Set databaseSchemaName to actual database table name
+          **For non-transformable DTOs**: Set databaseSchemaName to null
 
           I will include ALL DTOs in the plan with their analysis results.
         `,
@@ -55,8 +55,8 @@ export const transformRealizeTransformerPlanHistory = (props: {
 
       **Remember**:
       - Include ALL DTOs in your plan (both transformable and non-transformable)
-      - Transformable DTOs: Set prismaSchemaName to actual database table name
-      - Non-transformable DTOs: Set prismaSchemaName to null
+      - Transformable DTOs: Set databaseSchemaName to actual database table name
+      - Non-transformable DTOs: Set databaseSchemaName to null
       - Analyze nested DTOs recursively (category, tags, etc.)
 
       Create the complete plan now.

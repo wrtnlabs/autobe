@@ -77,7 +77,7 @@ You will receive:
   {
     "file/path": {
       "dtoTypeName": "IShoppingSaleTag.ICreate",
-      "prismaSchemaName": "shopping_sale_tags",
+      "databaseSchemaName": "shopping_sale_tags",
       "content": "export namespace ShoppingSaleTagCollector { ... }"
     }
   }
@@ -317,11 +317,11 @@ This is NOT about "fixing only errors" - this is about **reviewing and correctin
 5. **Fix ALL potential runtime bugs** - null handling, edge cases, type conversions
 6. **Improve ALL suboptimal code** - apply best practices throughout
 7. **No Band-Aid solutions** - avoid `as any`, type assertions as workarounds
-8. **Use actual Prisma schema field names** - verify EVERY field against the schema
+8. **Use actual database schema field names** - verify EVERY field against the schema
 9. **Use proper syntax everywhere**: `{ connect: { id: ... } }` for relations, `satisfies Prisma.{table}CreateInput`, etc.
 
 **Comprehensive Review Checklist While Drafting**:
-- ✅ Every field in return value exists in Prisma schema
+- ✅ Every field in return value exists in database schema
 - ✅ Every required field (id, timestamps, etc.) is included
 - ✅ Every DTO field is correctly mapped (none lost or ignored)
 - ✅ Every relation uses correct syntax and relation name
@@ -361,7 +361,7 @@ This is **not a formality** - this is where you verify your code is **absolutely
    - Are there any remaining compilation issues?
 
 2. **100% Schema Compliance Verification**:
-   - **Re-verify EVERY field against the actual Prisma schema**
+   - **Re-verify EVERY field against the actual database schema**
    - Does EVERY field name match exactly (character-by-character)?
    - Are ALL required fields present (id, created_at, updated_at, etc.)?
    - Are you using ONLY fields that exist in the schema (no fabricated fields)?
@@ -481,9 +481,9 @@ export interface IAutoBePreliminaryGetDatabaseSchemas {
 
 #### 4.2.1. request (Discriminated Union)
 
-**1. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"`
-- **schemaNames**: Array of Prisma table names (e.g., `["users", "posts"]`)
+- **schemaNames**: Array of database table names (e.g., `["users", "posts"]`)
 - **Purpose**: Request database schema definitions for fixing CreateInput errors
 - **When to use**: Missing fields, type mismatches, foreign key errors
 - **Note**: DTO schema information already provided - don't request it
@@ -502,7 +502,7 @@ This is your narrative analysis where you diagnose the errors and plan the fixes
 
 - **Compilation Error Analysis**: Categorize and understand all errors
 - **Root Cause Identification**: Why errors occurred (not just what they say)
-- **Schema Verification Findings**: Results of checking fields against Prisma schema
+- **Schema Verification Findings**: Results of checking fields against database schema
 - **DTO Mapping Verification**: Results of checking DTO usage
 - **Architectural Issues**: Inline code vs collectors, wrong syntax, etc.
 - **Overall Correction Strategy**: High-level plan to fix everything
@@ -548,7 +548,7 @@ CORRECTION STRATEGY:
 
 This is your structured verification output - a complete review of EVERY Prisma field with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
 
-**You MUST create one mapping entry for EVERY member in the Prisma schema - even fields that are already correct.**
+**You MUST create one mapping entry for EVERY member in the database schema - even fields that are already correct.**
 
 Each mapping documents current state and needed fixes:
 ```typescript
@@ -620,7 +620,7 @@ For fields needing fixes:
 **What the validator checks:**
 - All Prisma fields are in your mappings (complete coverage)
 - No fabricated fields (all members exist in schema)
-- Correct kind/nullable values (match Prisma schema)
+- Correct kind/nullable values (match database schema)
 - Your correction strategies are valid
 
 **If validation fails**, you'll receive feedback on missing fields, fabricated fields, or invalid corrections.
@@ -678,7 +678,7 @@ The draft phase is where you implement corrections. The review phase is where yo
 - [ ] **No new compilation errors introduced** - Verify all changes
 
 **2. 100% Prisma Schema Compliance:**
-- [ ] **Re-read the ENTIRE Prisma schema** - Don't rely on memory
+- [ ] **Re-read the ENTIRE database schema** - Don't rely on memory
 - [ ] **EVERY field in draft verified against schema** - Character-by-character
 - [ ] **ALL required fields present** - id, created_at, updated_at, etc.
 - [ ] **NO fabricated fields** - Every field EXISTS in actual schema
@@ -727,7 +727,7 @@ COMPILATION ERROR RESOLUTION:
 ✓ No new errors introduced
 
 100% SCHEMA COMPLIANCE VERIFICATION:
-✓ Re-verified all 15 fields against Prisma schema
+✓ Re-verified all 15 fields against database schema
 ✓ All field names match exactly (character-by-character)
 ✓ All required fields present (id, created_at, updated_at, etc.)
 ✓ No fabricated fields
@@ -1192,11 +1192,11 @@ See **REALIZE_COLLECTOR_WRITE.md Section 4** for nested creation patterns.
 
 **Error Pattern**: `Property 'totalPrice' does not exist on type 'CreateInput'`
 
-**🚨 AI HALLUCINATION ERROR**: Trying to store DTO fields that don't exist in Prisma schema.
+**🚨 AI HALLUCINATION ERROR**: Trying to store DTO fields that don't exist in database schema.
 
 **ABSOLUTE RULE**:
-- **Collector (API→DB)**: DTO field not in Prisma schema? → **IGNORE it**
-- **Transformer (DB→API)**: DTO field not in Prisma schema? → Calculate it
+- **Collector (API→DB)**: DTO field not in database schema? → **IGNORE it**
+- **Transformer (DB→API)**: DTO field not in database schema? → Calculate it
 
 ```typescript
 // DTO has computed fields
@@ -1238,7 +1238,7 @@ return {
 - `display*`, `formatted*`, `full*` - Formatted strings
 
 **Quick Fix**:
-1. Check Prisma schema - field exists as column? No?
+1. Check database schema - field exists as column? No?
 2. DELETE it from Collector
 3. Add comment: "Transformer calculates this at read time"
 
@@ -1335,13 +1335,13 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ### ✅ Section 2: Prisma Schema Compliance
 
-**Purpose**: Verify EVERY field and relation matches the ACTUAL Prisma schema exactly.
+**Purpose**: Verify EVERY field and relation matches the ACTUAL database schema exactly.
 
 **🚨 MOST CRITICAL SECTION - AI Mistakes Happen Here! 🚨**
 
 ```
-□ Re-read the ACTUAL Prisma schema (don't rely on memory)
-□ EVERY field name in collect() return value EXISTS in Prisma schema
+□ Re-read the ACTUAL database schema (don't rely on memory)
+□ EVERY field name in collect() return value EXISTS in database schema
 □ EVERY field name matches EXACTLY (character-by-character, case-sensitive)
 □ NO fabricated/hallucinated fields (verify each field in actual schema)
 □ NO fields copied from DTO without verification
@@ -1350,7 +1350,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **Relation Verification**:
 ```
-□ EVERY relation uses RELATION NAME from Prisma schema
+□ EVERY relation uses RELATION NAME from database schema
 □ NO direct foreign key assignment (no `customer_id:`, `sale_id:`, etc.)
 □ ALL relations use connect syntax: `relationName: { connect: { id: ... } }`
 □ Relation names verified against actual schema (not guessed)
@@ -1358,13 +1358,13 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **Timestamp Verification** (🚨 #1 Most Common Mistake):
 ```
-□ Does Prisma schema have `created_at`? If YES → Included in collect()
-□ Does Prisma schema have `updated_at`? If YES → Included in collect()
+□ Does database schema have `created_at`? If YES → Included in collect()
+□ Does database schema have `updated_at`? If YES → Included in collect()
 □ BOTH timestamps present if schema has both
 ```
 
 **How to verify**:
-- Open the Prisma schema you received
+- Open the database schema you received
 - Read it line by line
 - For EVERY field in your collect() return value, find it in the schema
 - If you can't find it → DELETE IT from your code (you fabricated it)
@@ -1379,7 +1379,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ### ✅ Section 3: DTO-to-Prisma Field Mapping
 
-**Purpose**: Verify correct transformation from DTO structure to Prisma CreateInput.
+**Purpose**: Verify correct transformation from DTO structure to database CreateInput.
 
 ```
 □ ALL DTO properties accessed correctly (props.body.field paths)
@@ -1454,7 +1454,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 **Computed/Read-only Fields**:
 ```
-□ Identified all DTO fields that DON'T exist in Prisma schema
+□ Identified all DTO fields that DON'T exist in database schema
 □ Verified these are computed/aggregated/derived fields
 □ IGNORED them completely (not included in collect())
 □ Added comment explaining why ignored (optional but helpful)
@@ -1541,7 +1541,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 **Think Phase - Comprehensive Analysis**:
 ```
 □ Analyzed ALL compilation errors (categorized, root causes)
-□ Performed COMPLETE Prisma schema verification (all fields)
+□ Performed COMPLETE database schema verification (all fields)
 □ Performed COMPLETE DTO mapping verification (all fields)
 □ Identified ALL architectural violations
 □ Identified ALL potential bugs
@@ -1582,7 +1582,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 **Ask yourself with brutal honesty**:
 ```
 ❓ Would this code DEFINITELY compile with zero errors?
-❓ Did I verify EVERY SINGLE field against actual Prisma schema?
+❓ Did I verify EVERY SINGLE field against actual database schema?
 ❓ Did I verify EVERY SINGLE DTO field is correctly handled?
 ❓ Did I fix EVERY error AND improve code beyond error fixes?
 ❓ Are there ANY assumptions I made without verification?
@@ -1600,7 +1600,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 - ⚠️ Fix before proceeding
 
 **The Golden Rule**:
-> **When in doubt, RE-READ the Prisma schema. NEVER guess. NEVER assume. Only use what you SEE.**
+> **When in doubt, RE-READ the database schema. NEVER guess. NEVER assume. Only use what you SEE.**
 
 ---
 
@@ -1610,7 +1610,7 @@ Before calling the function, verify with **absolute certainty**:
 
 1. ✅ **All 9 sections exhaustively verified** - EVERY checkbox checked with thoroughness
 2. ✅ **Comprehensive analysis completed** - Not just errors, but ENTIRE code reviewed
-3. ✅ **Complete schema compliance** - EVERY field verified against actual Prisma schema
+3. ✅ **Complete schema compliance** - EVERY field verified against actual database schema
 4. ✅ **Complete DTO compliance** - EVERY DTO field correctly handled
 5. ✅ **Complete architectural compliance** - ALL patterns correctly applied
 6. ✅ **Absolute code quality** - Production-ready, exemplary implementation

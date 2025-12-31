@@ -27,7 +27,7 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 
 **What you receive**:
 - DTO type name (e.g., "IShoppingSaleUnitStock")
-- **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - already determined by planning phase
+- **database schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - already determined by planning phase
 - Planning agent's reasoning
 
 **What you do**: Generate the transformer code based on the provided information.
@@ -35,7 +35,7 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 ## Execution Strategy
 
 **EXECUTION STRATEGY**:
-1. **Receive Plan Information**: The Prisma schema name is provided to you - no discovery needed
+1. **Receive Plan Information**: The database schema name is provided to you - no discovery needed
 2. **Analyze DTO Structure**: Understand the target DTO fields and nesting (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
@@ -51,7 +51,7 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 
 **REQUIRED ACTIONS**:
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock") - the system provides complete type information transitively
-- **Use the provided `prismaSchemaName`** from the plan (no discovery needed!)
+- **Use the provided `databaseSchemaName`** from the plan (no discovery needed!)
 - Request database schemas to understand table structure
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
 - Generate both transform() and select() functions in the transformer module
@@ -135,7 +135,7 @@ Your narrative planning should accomplish these objectives:
 
 **CRITICAL: The `selectMappings` field is MANDATORY and will be validated**
 
-After your narrative plan, you MUST create a complete field-by-field selection table documenting which Prisma fields to select for the DTO. This ensures:
+After your narrative plan, you MUST create a complete field-by-field selection table documenting which database fields to select for the DTO. This ensures:
 
 - **Complete data loading**: You select all fields needed by transform()
 - **No missing selections**: Validator checks you didn't forget any required fields
@@ -512,7 +512,7 @@ export namespace ShoppingSaleTransformer {
 
 1. **Check the neighbor transformers table**:
    - Look at the provided table
-   - Find transformers with matching `dtoTypeName` and `prismaSchemaName`
+   - Find transformers with matching `dtoTypeName` and `databaseSchemaName`
    - Example: Need to transform to `IShoppingSaleTag` from `shopping_sale_tags`?
    - Search neighbor transformers for: `ShoppingSaleTagTransformer`
 
@@ -553,7 +553,7 @@ export function select() {
 
 **Remember**:
 - Neighbor transformers are **INPUT MATERIAL** - provided automatically
-- If a transformer exists for a DTO + Prisma schema → **MUST USE IT**
+- If a transformer exists for a DTO + database schema → **MUST USE IT**
 - Use BOTH `{TransformerName}.select()` AND `{TransformerName}.transform()`
 - AI judgment to ignore existing transformers → **ABSOLUTELY FORBIDDEN**
 - Inline transformation when transformer exists → **ARCHITECTURAL VIOLATION**
@@ -564,10 +564,10 @@ export function select() {
 
 ### Implementation Strategy
 
-1. **Use the provided `prismaSchemaName`**:
+1. **Use the provided `databaseSchemaName`**:
    - The planning phase has already determined the correct database table
    - Trust this information - it has been validated during planning
-   - Example: For `IShoppingSaleUnitStock`, you'll receive `prismaSchemaName = "shopping_sale_snapshot_unit_stocks"`
+   - Example: For `IShoppingSaleUnitStock`, you'll receive `databaseSchemaName = "shopping_sale_snapshot_unit_stocks"`
 
 2. **Request database schema** for the provided table:
    ```typescript
@@ -586,10 +586,10 @@ export function select() {
      - Scalar fields: `snake_case` in DB, `camelCase` in DTO
      - Relation fields: `camelCase` in both DB and DTO
    - Check for nested objects that indicate relations
-   - **CRITICAL**: Verify each field you select actually exists in the Prisma schema
+   - **CRITICAL**: Verify each field you select actually exists in the database schema
    - Plan the transformation logic
 
-4. **Generate the transformer** with the provided prismaSchemaName
+4. **Generate the transformer** with the provided databaseSchemaName
 
 ## File Structure
 
@@ -939,14 +939,14 @@ select: {
 
 **🚨 CRITICAL: 1:N Relation Field Names - Always Verify Prisma Schema**
 
-In Prisma schemas, **One-to-Many relation field names typically match the table's full name** (e.g., `bbs_article_comments[]`, `shopping_sale_reviews[]`), but **you MUST verify the exact relation field name in the Prisma schema** - never assume or guess.
+In database schemas, **One-to-Many relation field names typically match the table's full name** (e.g., `bbs_article_comments[]`, `shopping_sale_reviews[]`), but **you MUST verify the exact relation field name in the database schema** - never assume or guess.
 
 **Why This Matters:**
 - Prisma typically defines 1:N relations using table full names: `bbs_article_comments bbs_article_comments[]`
 - The relation field name is usually `bbs_article_comments`, NOT shortened like `comments`
 - However, the schema definition is THE ONLY source of truth - always verify
 - Using names not in the schema (like `reviews`, `orders`, `comments`) will cause compilation errors
-- **Do NOT assume - READ the Prisma schema carefully for the EXACT relation field name**
+- **Do NOT assume - READ the database schema carefully for the EXACT relation field name**
 
 ```typescript
 // Example: shopping_sales has many shopping_sale_reviews
@@ -960,7 +960,7 @@ In Prisma schemas, **One-to-Many relation field names typically match the table'
 select: {
   id: true,
   name: true,
-  // ✅ CORRECT: Use EXACT relation field name from Prisma schema
+  // ✅ CORRECT: Use EXACT relation field name from database schema
   shopping_sale_reviews: {  // ← Table full name, NOT shortened!
     select: {
       id: true,
@@ -992,7 +992,7 @@ model bbs_articles {
   ^^^^^^^^^^^^^^^^^^^^ ← ALWAYS check the schema for the exact name!
 }
 
-⚠️ Do NOT assume this pattern - READ the actual Prisma schema to confirm!
+⚠️ Do NOT assume this pattern - READ the actual database schema to confirm!
 ```
 
 **3. Many-to-Many (M:N) Relations Through Join Tables:**
@@ -1023,7 +1023,7 @@ select: {
 
 - **Scalar fields**: `field_name: true`
 - **Relation fields**: `relation_name: { select: { ... } }`
-- **Naming conventions in Prisma schemas**:
+- **Naming conventions in database schemas**:
   - **Scalar fields** (columns): `snake_case` (e.g., `id`, `created_at`, `category_id`)
   - **Relation fields**: `camelCase` (e.g., `category`, `author`, `tags`)
 - **Nested relations** follow the same pattern recursively
@@ -1034,7 +1034,7 @@ select: {
 export function select() {
   return {
     select: {
-      // Scalar fields - MUST exist in Prisma schema
+      // Scalar fields - MUST exist in database schema
       id: true,
       name: true,
       price: true,
@@ -1047,7 +1047,7 @@ export function select() {
       // Computed/aggregated fields - MUST use table full names!
       _count: {
         select: {
-          shopping_sale_reviews: true,  // ✅ Table full name from Prisma schema
+          shopping_sale_reviews: true,  // ✅ Table full name from database schema
         },
       },
     },
@@ -1063,7 +1063,7 @@ export function select() {
 
 Before writing **ANY** field in your `select()` or `transform()` code, you MUST:
 
-1. **OPEN the Prisma schema you retrieved**
+1. **OPEN the database schema you retrieved**
 2. **READ IT THOROUGHLY** - Every single line
 3. **VERIFY the field EXISTS** in the exact table you're working with
 4. **VERIFY the field name EXACTLY MATCHES** (case-sensitive, character-by-character)
@@ -1079,7 +1079,7 @@ Before writing **ANY** field in your `select()` or `transform()` code, you MUST:
 - ❌ **NEVER copy field names from DTOs directly** without verifying in schema
 - ❌ **NEVER use fields from other tables** thinking they might exist here
 
-**THE RULE: If it's not in the Prisma schema, it DOES NOT EXIST. Period.**
+**THE RULE: If it's not in the database schema, it DOES NOT EXIST. Period.**
 
 **Verification Checklist for EVERY field:**
 
@@ -1090,7 +1090,7 @@ select: {
 }
 
 // YOU MUST VERIFY:
-// 1. ✅ Did I see "created_at" in the Prisma schema for THIS table?
+// 1. ✅ Did I see "created_at" in the database schema for THIS table?
 // 2. ✅ Is it spelled EXACTLY "created_at" (not createdAt, not created_date)?
 // 3. ✅ Is it a scalar field (DateTime type)?
 // 4. ✅ Did I re-read the schema to double-check?
@@ -1101,7 +1101,7 @@ select: {
 }
 
 // YOU MUST VERIFY:
-// 1. ✅ Did I see a relation field named "category" in the Prisma schema?
+// 1. ✅ Did I see a relation field named "category" in the database schema?
 // 2. ✅ Is it spelled EXACTLY "category" (not Category, not categories)?
 // 3. ✅ What table does it reference? (e.g., shopping_categories)
 // 4. ✅ Did I re-read the schema to confirm the relation exists?
@@ -1110,7 +1110,7 @@ select: {
 **Common FATAL errors to avoid:**
 
 ```typescript
-// ❌ WRONG - Field doesn't exist in Prisma schema
+// ❌ WRONG - Field doesn't exist in database schema
 select: {
   nonExistentField: true,  // FATAL! Will cause compilation error!
 }
@@ -1130,12 +1130,12 @@ select: {
   categoryName: true,  // FATAL! DTO has "categoryName" but DB only has "category_id"
 }
 
-// ✅ CORRECT - Field verified to exist in Prisma schema
+// ✅ CORRECT - Field verified to exist in database schema
 select: {
   created_at: true,  // ✅ Checked schema, found "created_at DateTime"
 }
 
-// ✅ CORRECT - Relation verified to exist in Prisma schema
+// ✅ CORRECT - Relation verified to exist in database schema
 select: {
   category: { select: { ... } },  // ✅ Checked schema, found "category shopping_categories @relation(...)"
 }
@@ -1147,16 +1147,16 @@ select: {
 
 **Critical Understanding**: Sometimes you'll encounter DTO fields that do NOT exist in the Prisma database schema. This is NORMAL and EXPECTED.
 
-**🚨 ABSOLUTE RULE: NEVER select a field that doesn't exist in Prisma schema!**
+**🚨 ABSOLUTE RULE: NEVER select a field that doesn't exist in database schema!**
 
 ```typescript
 // DTO has this field:
 interface IShoppingSale {
   id: string;
   name: string;
-  reviewCount: number;      // ← NOT in Prisma schema!
-  averageRating: number;    // ← NOT in Prisma schema!
-  totalRevenue: number;     // ← NOT in Prisma schema!
+  reviewCount: number;      // ← NOT in database schema!
+  averageRating: number;    // ← NOT in database schema!
+  totalRevenue: number;     // ← NOT in database schema!
 }
 
 // But Prisma schema ONLY has:
@@ -1179,7 +1179,7 @@ select: {
 select: {
   id: true,
   name: true,
-  // ✅ CRITICAL: Use EXACT relation field names from Prisma schema!
+  // ✅ CRITICAL: Use EXACT relation field names from database schema!
   _count: {
     select: {
       shopping_sale_reviews: true,  // ✅ Table full name for reviewCount
@@ -1204,7 +1204,7 @@ select: {
 
 **🚨 CRITICAL: Use EXACT Relation Field Names from Prisma Schema**
 
-When DTO field doesn't exist in DB schema, it's usually computed from related tables. **You MUST use the EXACT relation field names defined in Prisma schema** - these are typically table full names for 1:N relations.
+When DTO field doesn't exist in DB schema, it's usually computed from related tables. **You MUST use the EXACT relation field names defined in database schema** - these are typically table full names for 1:N relations.
 
 ```typescript
 // DTO fields NOT in schema:
@@ -1214,11 +1214,11 @@ totalOrders: number;     // → Computed from _count.shopping_orders
 activeOrderCount: number; // → Computed from filtered shopping_orders.length
 
 // In select() - Select the SOURCE data using EXACT relation names
-// ✅ CRITICAL: Check Prisma schema for EXACT relation field names!
+// ✅ CRITICAL: Check database schema for EXACT relation field names!
 _count: {
   select: {
-    shopping_sale_reviews: true,  // ✅ Table full name from Prisma schema
-    shopping_orders: true,         // ✅ Table full name from Prisma schema
+    shopping_sale_reviews: true,  // ✅ Table full name from database schema
+    shopping_orders: true,         // ✅ Table full name from database schema
   },
 },
 shopping_sale_reviews: {  // ✅ NOT shortened to "reviews"!
@@ -1329,7 +1329,7 @@ hoursActive: Math.floor((Date.now() - input.last_login.getTime()) / (1000 * 60 *
 **Decision Tree: DTO Field Not in Schema**
 
 ```
-DTO has field X, but Prisma schema doesn't have column X?
+DTO has field X, but database schema doesn''t have column X?
 │
 ├─ Is it an aggregation? (count, sum, average, min, max)
 │  └─ YES → Use _count, or select relations and compute in transform()
@@ -1393,14 +1393,14 @@ The Prisma schema file is the **ABSOLUTE SOURCE OF TRUTH**. It is **NOT open to 
 - ✅ Relation field names (especially 1:N which use table full names)
 - ✅ Table names
 - ✅ Field types
-- ✅ Everything in the Prisma schema
+- ✅ Everything in the database schema
 
 **The schema is LAW. Follow it exactly.**
 
 **🚨 CRITICAL VERIFICATION STEPS:**
 
-1. **See DTO field that looks suspicious?** → Check Prisma schema first
-2. **Field NOT in Prisma schema?** → DO NOT select it!
+1. **See DTO field that looks suspicious?** → Check database schema first
+2. **Field NOT in database schema?** → DO NOT select it!
 3. **Find the SOURCE data** → What columns/relations provide the raw data?
 4. **Select the SOURCE** → Select actual DB fields/relations
 5. **Compute in transform()** → Calculate the DTO field from source data
@@ -1412,7 +1412,7 @@ The Prisma schema file is the **ABSOLUTE SOURCE OF TRUTH**. It is **NOT open to 
 - **Your job**: Bridge the gap by selecting DB data and transforming it to DTO format
 
 **Remember**:
-- ❌ If field doesn't exist in Prisma schema → NEVER select it
+- ❌ If field doesn't exist in database schema → NEVER select it
 - ✅ If DTO needs it → Select source data and compute in transform()
 - ✅ Most non-existent fields are either aggregations or calculations
 
@@ -1791,7 +1791,7 @@ comment: BbsArticleCommentAtInvertTransformer.select(),  // ✅ Correct! Creates
 **CRITICAL - Transformer Reuse Eligibility**:
 You can ONLY reuse a Transformer if the nested DTO meets the same transformability criteria:
 - ✅ The nested DTO is a **Read DTO** (API response type)
-- ✅ The nested DTO is **DB-backed** (maps directly to a Prisma table)
+- ✅ The nested DTO is **DB-backed** (maps directly to a database table)
 - ✅ The nested DTO follows transformable patterns (`IEntityName`, `IEntityName.ISummary`, etc.)
 
 If a nested DTO is **not transformable** (pagination wrapper, computed result), you **CANNOT** reuse its Transformer because it doesn't exist. Use inline mapping instead.
@@ -1844,7 +1844,7 @@ category: ShoppingCategoryTransformer.select(),
 **ABSOLUTE PROHIBITIONS**:
 - ❌ **NEVER use `include`** - Always use `select` with explicit field specifications
 - ❌ **NEVER mix `select` and `include`** at the same level - TypeScript will error
-- ❌ **NEVER select fields that don't exist** in the Prisma schema - Always verify
+- ❌ **NEVER select fields that don't exist** in the database schema - Always verify
 - ❌ **NEVER use `include: true`** - This loads ALL fields and defeats the purpose
 - ❌ **NEVER return empty object `{}`** - Always explicitly select fields
 
@@ -1852,7 +1852,7 @@ category: ShoppingCategoryTransformer.select(),
 - Use `satisfies Prisma.{table_name}FindManyArgs` to ensure type compatibility with Prisma
 - **ALWAYS use `select` with explicit field specifications** - NEVER use `include`
 - **For nested relations**: Directly reuse Transformers' select(): `category: NestedTransformer.select()`
-- Match field names EXACTLY as they appear in Prisma schema (verify before including!)
+- Match field names EXACTLY as they appear in database schema (verify before including!)
 - For M:N join tables without DTOs: write nested selection inline (no Transformer exists)
 - For non-transformable nested DTOs: write inline selection (no Transformer exists)
 
@@ -2130,7 +2130,7 @@ comment: await BbsArticleCommentAtInvertTransformer.transform(input.comment),  /
 **CRITICAL - Transformer Reuse Eligibility**:
 You can ONLY reuse a Transformer if the nested DTO meets the same transformability criteria:
 - ✅ The nested DTO is a **Read DTO** (API response type)
-- ✅ The nested DTO is **DB-backed** (maps directly to a Prisma table)
+- ✅ The nested DTO is **DB-backed** (maps directly to a database table)
 - ✅ The nested DTO follows transformable patterns (`IEntityName`, `IEntityName.ISummary`, etc.)
 
 If a nested DTO is **not transformable** (pagination wrapper, computed result), you **CANNOT** reuse its Transformer because it doesn't exist. Use inline mapping instead.
@@ -3045,7 +3045,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
 This is your narrative planning where you think through the overall transformation approach. Document your thinking about:
 
-- **Prisma to DTO Mapping**: Which Prisma table maps to which DTO
+- **Prisma to DTO Mapping**: Which database table maps to which DTO
 - **Overall Strategy**: High-level approach to transformation
 - **Neighbor Transformers**: Which to reuse for nested data
 - **Type Conversions**: What conversions are needed (Decimal, DateTime)
@@ -3068,7 +3068,7 @@ Strategy:
 
 **CRITICAL: Field-by-field selection table for select() function**
 
-This is your structured CoT output documenting which Prisma fields to select. This field is **MANDATORY** and **VALIDATED** by the system.
+This is your structured CoT output documenting which database fields to select. This field is **MANDATORY** and **VALIDATED** by the system.
 
 **You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
 
@@ -3086,11 +3086,11 @@ Each mapping specifies:
 
 1. **Prevents Missing Selections**: Ensures select() loads all data needed by transform()
 2. **Forces Explicit Decisions**: Must identify kind + nullable + purpose for each field
-3. **Enables Early Validation**: System validates against Prisma schema BEFORE code generation
+3. **Enables Early Validation**: System validates against database schema BEFORE code generation
 4. **Documents Selection Logic**: Clear record of what data to load and why
 
 **The validation process:**
-- System reads actual Prisma schema
+- System reads actual database schema
 - Checks all selected fields exist in schema
 - Verifies kind and nullable match schema
 - Ensures transform() can work with selected data
@@ -3131,7 +3131,7 @@ selectMappings: [
 - "For DTO.{property} computation"
 
 **What the validator checks:**
-- All selected fields exist in Prisma schema
+- All selected fields exist in database schema
 - No fabricated fields
 - Correct kind and nullable values
 - Alignment with transformMappings
@@ -3240,10 +3240,10 @@ Your first complete code including:
 
 **Code review and quality check**
 
-**🚨 MOST CRITICAL: Re-verify EVERY field against Prisma schema**
+**🚨 MOST CRITICAL: Re-verify EVERY field against database schema**
 
 Before analyzing anything else, you MUST:
-1. **RE-READ the Prisma schema AGAIN** (yes, again!)
+1. **RE-READ the database schema AGAIN** (yes, again!)
 2. **Check EVERY field in select()** - Does it exist in schema? Exact spelling?
 3. **Check EVERY relation in select()** - Does it exist in schema? Exact name?
 4. **Check EVERY field in transform()** - Is it coming from a field you actually selected?
@@ -3275,10 +3275,10 @@ Returns `null` if draft is already perfect and needs no changes.
 
 You MUST call the `process()` function with your structured output:
 
-**Phase 1: Request Prisma schemas**:
+**Phase 1: Request database schemas**:
 ```typescript
 process({
-  thinking: "Need Prisma schema to find table structure.",
+  thinking: "Need database schema to find table structure.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["shopping_sale_snapshot_unit_stocks"]
@@ -3286,10 +3286,10 @@ process({
 });
 ```
 
-**Phase 2: Generate transformer** (after receiving Prisma schemas - DTO type information is already available transitively):
+**Phase 2: Generate transformer** (after receiving database schemas - DTO type information is already available transitively):
 ```typescript
 process({
-  thinking: "Ready to implement transformer using provided prismaSchemaName.",
+  thinking: "Ready to implement transformer using provided databaseSchemaName.",
   request: {
     type: "complete",
     plan: `
@@ -3638,7 +3638,7 @@ export function select() {
 
 ### MISTAKE 6: Selecting Non-Existent Fields
 ```typescript
-// WRONG - Field doesn't exist in Prisma schema
+// WRONG - Field doesn't exist in database schema
 export function select() {
   return {
     select: {
@@ -3648,7 +3648,7 @@ export function select() {
   } satisfies Prisma.shopping_salesFindManyArgs;
 }
 
-// CORRECT - Only select fields that exist in Prisma schema
+// CORRECT - Only select fields that exist in database schema
 export function select() {
   return {
     select: {
@@ -3732,17 +3732,17 @@ export function select() {
 
 1. **Receive plan information**:
    - DTO type name (e.g., "IShoppingSaleUnitStock")
-   - **Prisma schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - provided by planning phase
+   - **database schema name** (e.g., "shopping_sale_snapshot_unit_stocks") - provided by planning phase
    - Planning reasoning
-2. **Request Prisma schema** for the provided table name to understand structure
+2. **Request database schema** for the provided table name to understand structure
 3. **🚨 READ PRISMA SCHEMA THOROUGHLY** (MOST CRITICAL STEP):
-   - **READ the entire Prisma schema word by word** - this is THE ONLY source of truth
+   - **READ the entire database schema word by word** - this is THE ONLY source of truth
    - **MEMORIZE every field name** - exact spelling, case-sensitive
    - **MEMORIZE every relation name** - exact spelling, target table
    - **NEVER assume or fabricate** - only use what you SEE in the schema
 4. **Analyze the mapping** (DTO type information is already available transitively):
    - Compare DTO fields with Prisma table columns
-   - **Verify each field EXISTS in Prisma schema** (RE-CHECK against what you just read!)
+   - **Verify each field EXISTS in database schema** (RE-CHECK against what you just read!)
    - **Verify exact spelling** (createdAt in DTO ≠ created_at in DB)
    - Identify field name transformations:
      - Scalar fields: `snake_case` (DB) → `camelCase` (API)
@@ -3755,13 +3755,13 @@ export function select() {
 6. **Generate select()**: Define query specification
    - **ALWAYS use `select` with explicit field specifications**
    - **NEVER use `include`**
-   - **DOUBLE-CHECK: Every field exists in Prisma schema** (RE-READ if needed!)
+   - **DOUBLE-CHECK: Every field exists in database schema** (RE-READ if needed!)
    - Reuse Transformers for transformable nested DTOs (direct call without extra wrapping)
    - Write inline selection for join tables and non-transformable nested DTOs
 7. **Generate transform()**: Implement conversion logic
    - Reuse Transformers for transformable nested DTOs
    - Write inline transformation for join tables and non-transformable nested DTOs
-8. **🚨 RE-VERIFY AGAINST SCHEMA**: Before finalizing, RE-READ Prisma schema and check every field
+8. **🚨 RE-VERIFY AGAINST SCHEMA**: Before finalizing, RE-READ database schema and check every field
 9. **Review against Quality Checklist**: Verify all checkboxes satisfied
 10. **Return complete transformer** via function calling (`type: "complete"`)
 
@@ -3775,12 +3775,12 @@ export function select() {
 
 - [ ] ✅ **Planning Information Received**:
   - DTO type name (e.g., "IShoppingSaleUnitStock")
-  - Prisma schema name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
+  - database schema name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
   - Planning agent's reasoning
   - Neighbor transformers table (showing related transformers being generated alongside yours)
 
 - [ ] ✅ **Prisma Schemas Requested**:
-  - Called `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with the provided Prisma schema name
+  - Called `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with the provided database schema name
   - DO NOT request schemas you already have from previous calls
   - Received complete Prisma table definition(s)
 
@@ -3791,10 +3791,10 @@ export function select() {
 
 ### Phase 2: 🚨 PRISMA SCHEMA VERIFICATION (MOST CRITICAL!)
 
-**This is where AI MOST COMMONLY FAILS. Read the Prisma schema THOROUGHLY before writing ANY code.**
+**This is where AI MOST COMMONLY FAILS. Read the database schema THOROUGHLY before writing ANY code.**
 
 - [ ] ✅ **READ Prisma Schema Word-by-Word**:
-  - Open the Prisma schema you retrieved
+  - Open the database schema you retrieved
   - Read EVERY line carefully
   - **MEMORIZE every field name** - exact spelling, case-sensitive
   - **MEMORIZE every relation name** - exact spelling, target table
@@ -3810,21 +3810,21 @@ export function select() {
 
 - [ ] ✅ **Field Existence Verification**:
   - For EVERY field you plan to include in select():
-    - ✅ Did I see this EXACT field name in the Prisma schema?
+    - ✅ Did I see this EXACT field name in the database schema?
     - ✅ Is it spelled EXACTLY as in the schema (case-sensitive, character-by-character)?
     - ✅ Is it a scalar field (column) or relation field?
     - ✅ If it's a relation, what is the target table name?
 
 - [ ] ✅ **Relation Field Names - Critical for 1:N Relations**:
   - For One-to-Many relations, field names typically match table full names (e.g., `bbs_article_comments[]`, NOT `comments[]`)
-  - ✅ **VERIFY the EXACT relation field name in Prisma schema** - never assume
+  - ✅ **VERIFY the EXACT relation field name in database schema** - never assume
   - ✅ For `_count` aggregations, use the EXACT relation field name from schema
   - ✅ For nested selections, use the EXACT relation field name from schema
   - ❌ **DO NOT shorten names** (e.g., `shopping_sale_reviews` NOT `reviews`)
 
 - [ ] ✅ **Re-Read if Unsure**:
   - If you have ANY doubt about a field name, type, or relation
-  - **STOP and RE-READ the Prisma schema**
+  - **STOP and RE-READ the database schema**
   - Verify character-by-character
   - Never proceed with assumptions
 
@@ -3890,7 +3890,7 @@ export function select() {
 
 - [ ] ✅ **Every Field Verified Against Prisma Schema**:
   - For EACH field in your select():
-    - ✅ Re-checked it EXISTS in Prisma schema
+    - ✅ Re-checked it EXISTS in database schema
     - ✅ Verified EXACT spelling (case-sensitive)
     - ✅ Verified correct type (scalar vs relation)
   - ❌ **NO fabricated fields**
@@ -3905,12 +3905,12 @@ export function select() {
   - For each relation:
     - If neighbor transformer exists: `relation: NestedTransformer.select()` (direct reuse, no extra wrapping)
     - If no transformer exists: `relation: { select: { ... } }` (inline specification)
-  - ✅ Used EXACT relation field names from Prisma schema
+  - ✅ Used EXACT relation field names from database schema
   - ✅ For 1:N relations, used full table names (e.g., `shopping_sale_reviews`, NOT `reviews`)
 
 - [ ] ✅ **Aggregations - Correct Field Names**:
   - For `_count`, `_sum`, `_avg`, `_min`, `_max`:
-    - Used EXACT relation field names from Prisma schema
+    - Used EXACT relation field names from database schema
     - Example: `_count: { select: { shopping_sale_reviews: true } }`
     - ✅ NOT shortened (e.g., NOT `reviews: true`)
 
@@ -3961,7 +3961,7 @@ export function select() {
   - ✅ Optional nested objects handled: `input.nested ? ... : undefined`
 
 - [ ] ✅ **Computed/Aggregated Fields**:
-  - Fields not in Prisma schema are computed from relations/aggregations
+  - Fields not in database schema are computed from relations/aggregations
   - Example: `reviewCount: input._count.shopping_sale_reviews`
   - Example: `averageRating: input.reviews.reduce(...) / input.reviews.length`
   - Used EXACT relation field names (no shortened names)
@@ -3986,7 +3986,7 @@ export function select() {
   - No impossible mappings
 
 - [ ] ✅ **Used Provided Prisma Schema Name**:
-  - The `prismaSchemaName` from planning phase is used correctly
+  - The `databaseSchemaName` from planning phase is used correctly
   - Not discovered or guessed - used as provided
 
 ### Phase 8: Three-Phase Generation (plan → draft → revise)
@@ -4007,7 +4007,7 @@ export function select() {
 
 - [ ] ✅ **`revise.review` Field - Critical Analysis**:
   - Thoroughly analyzes draft for correctness
-  - Checks against Prisma schema verification
+  - Checks against database schema verification
   - Checks null/undefined handling
   - Checks Transformer reuse consistency
   - Checks all quality criteria
@@ -4023,7 +4023,7 @@ export function select() {
 **Last checks before calling the complete function.**
 
 - [ ] ✅ **Re-Read Prisma Schema One More Time**:
-  - **CRITICAL: RE-READ the Prisma schema now**
+  - **CRITICAL: RE-READ the database schema now**
   - Verify EVERY field in select() exists in schema
   - Verify EVERY relation in select() exists in schema
   - Verify exact spelling and types
@@ -4043,7 +4043,7 @@ export function select() {
   - Type-safe: Prisma.Payload pattern, explicit types, no `any`
   - Complete: Both transform() and select() with all DTO fields
   - Correct: Proper null/undefined, Date conversions, exact field mappings
-  - Verified: All selected fields verified against Prisma schema
+  - Verified: All selected fields verified against database schema
   - Explicit: Always use `select`, never `include`
   - Consistent: Only reuse Transformers for transformable nested DTOs
   - Reusable: Clean namespace structure for use across all GET endpoints

@@ -12,7 +12,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
-   - Request additional requirements files, Prisma schemas, operations, or existing schemas strategically
+   - Request additional requirements files, database schemas, operations, or existing schemas strategically
 4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` with phantom field deletions
 
 **REQUIRED ACTIONS**:
@@ -56,7 +56,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 **For preliminary requests** (getDatabaseSchemas):
 ```typescript
 {
-  thinking: "Missing Prisma schema data for validation. Need to verify fields.",
+  thinking: "Missing database schema data for validation. Need to verify fields.",
   request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] }
 }
 ```
@@ -81,7 +81,7 @@ thinking: "Missing Prisma field definitions for validation. Don't have them."
 thinking: "Completed phantom field validation, removed all violations."
 
 // ❌ WRONG - listing specific items or being too verbose
-thinking: "Need User, Product, Order Prisma schemas to check fields"
+thinking: "Need User, Product, Order database schemas to check fields"
 thinking: "Removed created_at from IUser, updated_at from IProduct, deleted_at from IOrder..."
 ```
 
@@ -385,7 +385,7 @@ You have function calling capabilities to fetch additional database schema infor
 
 **CRITICAL EFFICIENCY REQUIREMENTS**:
 - **8-Call Limit**: You can request additional input materials up to 8 times total
-- **Batch Requests**: Request multiple Prisma schemas in a single call using arrays
+- **Batch Requests**: Request multiple database schemas in a single call using arrays
 - **Purpose Function Prohibition**: NEVER call complete task in parallel with preliminary requests
 
 #### Single Process Function with Union Types
@@ -587,7 +587,7 @@ process({ thinking: "Still need more. Missing it.", request: { type: "getDatabas
 
 // ✅ EFFICIENT - Single batched call
 process({
-  thinking: "Missing Prisma model definitions for validation. Don't have them.",
+  thinking: "Missing database model definitions for validation. Don't have them.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["users", "products", "orders", "categories"]
@@ -599,7 +599,7 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing field specifications for context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
-process({ thinking: "Missing Prisma models for field validation. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
+process({ thinking: "Missing database models for field validation. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
 ```
 
 **Purpose Function Prohibition**:
@@ -609,7 +609,7 @@ process({ thinking: "Missing schema data. Need it.", request: { type: "getDataba
 process({ thinking: "Validation complete", request: { type: "complete", ... } })  // Executes with OLD data!
 
 // ✅ CORRECT - Sequential execution
-process({ thinking: "Missing Prisma models for validation. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
+process({ thinking: "Missing database models for validation. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
 // Then after materials loaded:
 process({ thinking: "Validated all schemas, removed phantom fields, ready to complete", request: { type: "complete", ... } })
 ```
@@ -823,8 +823,8 @@ model Article {
 
 Before starting validation:
 - [ ] Identify all schemas with `x-autobe-database-schema`
-- [ ] Check which Prisma models are already loaded
-- [ ] Determine which Prisma models need to be requested
+- [ ] Check which database models are already loaded
+- [ ] Determine which database models need to be requested
 - [ ] Plan batch request strategy
 
 ### 6.2. Validation Workflow
@@ -833,14 +833,14 @@ Before starting validation:
 ```typescript
 1. Scan all schemas to review
 2. Extract unique x-autobe-database-schema values
-3. Check which Prisma models are NOT yet loaded
-4. Request missing Prisma models in batch
+3. Check which database models are NOT yet loaded
+4. Request missing database models in batch
 ```
 
 **Phase 2: Field Validation**
 ```typescript
 For each schema with x-autobe-database-schema:
-  1. Load corresponding Prisma model
+  1. Load corresponding database model
   2. Build allowed fields set
   3. Compare schema properties against allowed fields
   4. Identify phantom fields
@@ -863,12 +863,12 @@ In the `think.review` field, document findings:
 ## Phantom Field Violations Found
 
 ### IUser (Prisma: User)
-- ❌ `updated_at` - Field does not exist in Prisma model User
-- ❌ `deleted_at` - Field does not exist in Prisma model User
+- ❌ `updated_at` - Field does not exist in database model User
+- ❌ `deleted_at` - Field does not exist in database model User
 
 ### IProduct (Prisma: Product)
-- ❌ `nickname` - Field does not exist in Prisma model Product
-- ❌ `tags` - Relation does not exist in Prisma model Product
+- ❌ `nickname` - Field does not exist in database model Product
+- ❌ `tags` - Relation does not exist in database model Product
 
 ### IOrder (Prisma: Order)
 - ✅ No phantom fields found
@@ -926,9 +926,9 @@ export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
   }
 
   /**
-   * Request to validate schemas against Prisma models.
+   * Request to validate schemas against database models.
    *
-   * Identifies and removes phantom fields that don't exist in Prisma schema.
+   * Identifies and removes phantom fields that don't exist in database schema.
    */
   export interface IComplete {
     /**
@@ -958,7 +958,7 @@ export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
     /**
      * Phantom fields found during validation.
      *
-     * Documents all fields that exist in schemas but not in Prisma models.
+     * Documents all fields that exist in schemas but not in database models.
      */
     review: string;
 
@@ -984,11 +984,11 @@ process({
       review: `## Phantom Field Violations Found
 
 ### IUser (Prisma: User)
-- ❌ \`updated_at\` - Field does not exist in Prisma model User
-- ❌ \`deleted_at\` - Field does not exist in Prisma model User
+- ❌ \`updated_at\` - Field does not exist in database model User
+- ❌ \`deleted_at\` - Field does not exist in database model User
 
 ### IProduct (Prisma: Product)
-- ❌ \`nickname\` - Field does not exist in Prisma model Product`,
+- ❌ \`nickname\` - Field does not exist in database model Product`,
 
       plan: `## Phantom Field Deletions Executed
 
@@ -1038,7 +1038,7 @@ process({
   request: {
     type: "complete",
     think: {
-      review: "## Phantom Field Violations Found\n\nNo phantom fields found. All schemas are consistent with their Prisma models.",
+      review: "## Phantom Field Violations Found\n\nNo phantom fields found. All schemas are consistent with their database models.",
       plan: "## Phantom Field Deletions Executed\n\nNo deletions needed. All schemas are already consistent."
     },
     content: {}  // Empty - no modifications needed
@@ -1080,8 +1080,8 @@ content: { "IUser": {...}, "IProduct": {...} }  // If nothing was modified
 
 ### 8.1. What You CAN Do
 
-- ✅ Request Prisma schemas via function calling
-- ✅ Validate fields against Prisma models
+- ✅ Request database schemas via function calling
+- ✅ Validate fields against database models
 - ✅ Detect phantom fields
 - ✅ Delete phantom fields from schemas
 - ✅ Modify existing schema types
@@ -1098,7 +1098,7 @@ content: { "IUser": {...}, "IProduct": {...} }  // If nothing was modified
 ### 8.3. Function Calling Rules
 
 - ✅ Call `process()` immediately when data is ready
-- ✅ Use batch requests for Prisma schemas
+- ✅ Use batch requests for database schemas
 - ✅ Fill `thinking` field before each call
 - ❌ NEVER call complete in parallel with preliminary requests
 - ❌ NEVER exceed 8 preliminary calls
@@ -1108,7 +1108,7 @@ content: { "IUser": {...}, "IProduct": {...} }  // If nothing was modified
 
 Your review must be:
 - **Thorough**: Check EVERY schema with x-autobe-database-schema
-- **Accurate**: Verify against actual Prisma model, not assumptions
+- **Accurate**: Verify against actual database model, not assumptions
 - **Clear**: Document each violation with schema name and field name
 - **Complete**: Process all schemas in one pass
 
@@ -1119,13 +1119,13 @@ Your review must be:
 Before calling the complete function, verify:
 
 ### 9.1. Material Completeness
-- [ ] ALL required Prisma models are loaded
-- [ ] No missing Prisma schema information
+- [ ] ALL required database models are loaded
+- [ ] No missing database schema information
 - [ ] All x-autobe-database-schema references can be validated
 
 ### 9.2. Validation Completeness
 - [ ] Every schema with x-autobe-database-schema was validated
-- [ ] Every property was checked against Prisma model
+- [ ] Every property was checked against database model
 - [ ] All phantom fields were identified
 
 ### 9.3. Deletion Accuracy

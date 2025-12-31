@@ -28,7 +28,7 @@ export const transformRealizeTransformerCorrectHistory = async (
   const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
-    .find((m) => m.name === props.function.plan.prismaSchemaName)!;
+    .find((m) => m.name === props.function.plan.databaseSchemaName)!;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dto: Record<string, string> =
     await AutoBeRealizeTransformerProgrammer.writeStructures(
@@ -76,7 +76,7 @@ export const transformRealizeTransformerCorrectHistory = async (
                 n.location,
                 {
                   dtoTypeName: n.plan.dtoTypeName,
-                  prismaSchemaName: n.plan.prismaSchemaName,
+                  databaseSchemaName: n.plan.databaseSchemaName,
                   content: n.content,
                 },
               ]),
@@ -136,7 +136,7 @@ export const transformRealizeTransformerCorrectHistory = async (
       \`\`\`
 
       Remember: Transformers transform Database Payload → DTO. Focus on:
-      - Field mapping between Prisma.${props.function.plan.prismaSchemaName}GetPayload and ${props.function.plan.dtoTypeName}
+      - Field mapping between Prisma.${props.function.plan.databaseSchemaName}GetPayload and ${props.function.plan.dtoTypeName}
       - Date to ISO string conversion (.toISOString())
       - Nested object transformation using neighbor transformers
       - select() query completeness (all fields used in transform must be selected)

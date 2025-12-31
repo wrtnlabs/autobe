@@ -77,7 +77,7 @@ You will receive:
   {
     "file/path": {
       "dtoTypeName": "IShoppingSaleTag",
-      "prismaSchemaName": "shopping_sale_tags",
+      "databaseSchemaName": "shopping_sale_tags",
       "content": "export namespace ShoppingSaleTagTransformer { ... }"
     }
   }
@@ -418,7 +418,7 @@ This is NOT about "fixing only errors" - this is about **reviewing and correctin
 10. **Maintain perfect alignment**: select() ↔ Payload ↔ transform() must work together flawlessly
 
 **Comprehensive Review Checklist While Drafting**:
-- ✅ Every field in select() exists in Prisma schema
+- ✅ Every field in select() exists in database schema
 - ✅ Every field needed by transform() is included in select()
 - ✅ Every DTO field is correctly transformed (none lost or wrong)
 - ✅ Every relation uses correct syntax and relation name
@@ -610,7 +610,7 @@ This is your narrative analysis where you diagnose the errors and plan the fixes
 
 - **Compilation Error Analysis**: Categorize and understand all errors (in both functions)
 - **Root Cause Identification**: Why errors occurred in select() and/or transform()
-- **Select() Verification Findings**: Results of checking fields against Prisma schema
+- **Select() Verification Findings**: Results of checking fields against database schema
 - **Transform() Verification Findings**: Results of checking transformations against DTO
 - **Architectural Issues**: Inline code vs transformers, wrong syntax, misalignment
 - **Overall Correction Strategy**: High-level plan to fix everything
@@ -655,7 +655,7 @@ CORRECTION STRATEGY:
 
 **CRITICAL: Field-by-field verification and correction plan for select()**
 
-This is your structured verification for select() - a complete review of which Prisma fields to select with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+This is your structured verification for select() - a complete review of which database fields to select with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
 
 **You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
 
@@ -674,7 +674,7 @@ Each mapping documents current state and needed fixes:
 1. **Systematic Coverage**: Forces review of EVERY Prisma field needed
 2. **Catches Silent Errors**: Issues compiler didn't report in select()
 3. **Documents Corrections**: Clear record of select() fixes
-4. **Enables Validation**: System validates corrections against Prisma schema
+4. **Enables Validation**: System validates corrections against database schema
 5. **Ensures Alignment**: Ensures select() provides all data for transform()
 
 **Example selectMappings:**
@@ -826,7 +826,7 @@ The draft phase is where you make your first attempt. The review phase is where 
 - [ ] **Every field name EXACTLY matches database schema** - Character-by-character comparison
 - [ ] **snake_case vs camelCase correct** - Payload is snake_case, DTO is camelCase
 - [ ] **Nested relations have nested select** - `relation: { select: RelationTransformer.select() }`
-- [ ] **No hallucinated fields** - Every field accessed actually exists in Prisma schema
+- [ ] **No hallucinated fields** - Every field accessed actually exists in database schema
 
 **2. DTO Type Verification** (DTO types are already provided):
 - [ ] **Re-read the ACTUAL DTO type definition** - Don't assume structure
@@ -1622,7 +1622,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 - [ ] ✅ **Received Compilation Diagnostics**:
   - TypeScript compilation errors with line numbers and error codes
   - Original transformer implementation that failed
-  - Plan information (DTO type name, Prisma schema name)
+  - Plan information (DTO type name, database schema name)
 
 - [ ] ✅ **Read Each Error Message Carefully**:
   - Identify error types (Property doesn't exist, Type mismatch, Missing field, etc.)
@@ -1704,7 +1704,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 - [ ] ✅ **For Each Error, Determine Fix**:
   - Missing field in select()? → Add it to select()
   - Missing type conversion? → Add toISOString(), Number(), etc.
-  - Wrong relation name? → Use EXACT name from Prisma schema
+  - Wrong relation name? → Use EXACT name from database schema
   - Non-existent column? → Remove from select(), compute in transform()
   - Mismatched Transformer usage? → Make select() and transform() consistent
   - Wrong Transformer name? → Apply naming algorithm for nested interfaces

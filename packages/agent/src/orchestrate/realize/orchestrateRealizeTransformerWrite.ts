@@ -91,7 +91,7 @@ async function process(
       kinds: ["databaseSchemas"],
       local: {
         databaseSchemas: models.filter(
-          (m) => m.name === props.plan.prismaSchemaName,
+          (m) => m.name === props.plan.databaseSchemaName,
         ),
       },
     });

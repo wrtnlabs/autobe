@@ -54,7 +54,7 @@ export interface AutoBeRealizeCollectorPlan {
    *
    * Example: "shopping_sales", "bbs_articles", "shopping_sale_tags"
    */
-  prismaSchemaName: string;
+  databaseSchemaName: string;
 
   /**
    * Foreign key references from path parameters or auth context.
@@ -69,7 +69,7 @@ export interface AutoBeRealizeCollectorPlan {
    *
    * Empty array means the Create DTO contains all necessary references.
    *
-   * Example: [{ prismaSchemaName: "shopping_sales", source: "from path
+   * Example: [{ databaseSchemaName: "shopping_sales", source: "from path
    * parameter saleId" }]
    */
   references: AutoBeRealizeCollectorReference[];

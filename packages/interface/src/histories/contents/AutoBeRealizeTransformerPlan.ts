@@ -52,5 +52,5 @@ export interface AutoBeRealizeTransformerPlan {
    *
    * Example: "shopping_sales", "bbs_articles", "shopping_categories"
    */
-  prismaSchemaName: string;
+  databaseSchemaName: string;
 }

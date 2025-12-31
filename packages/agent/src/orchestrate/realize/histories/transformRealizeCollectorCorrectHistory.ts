@@ -27,7 +27,7 @@ export const transformRealizeCollectorCorrectHistory = async (
   const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
-    .find((m) => m.name === props.function.plan.prismaSchemaName)!;
+    .find((m) => m.name === props.function.plan.databaseSchemaName)!;
   const dto: Record<string, string> =
     await AutoBeRealizeCollectorProgrammer.writeStructures(
       ctx,
@@ -74,7 +74,7 @@ export const transformRealizeCollectorCorrectHistory = async (
                 n.location,
                 {
                   dtoTypeName: n.plan.dtoTypeName,
-                  prismaSchemaName: n.plan.prismaSchemaName,
+                  databaseSchemaName: n.plan.databaseSchemaName,
                   content: n.content,
                 },
               ]),
@@ -126,7 +126,7 @@ export const transformRealizeCollectorCorrectHistory = async (
       \`\`\`
 
       Remember: Collectors transform DTO → Database CreateInput. Focus on:
-      - Field mapping between ${props.function.plan.dtoTypeName} and Prisma.${props.function.plan.prismaSchemaName}CreateInput
+      - Field mapping between ${props.function.plan.dtoTypeName} and Prisma.${props.function.plan.databaseSchemaName}CreateInput
       - UUID generation for primary keys
       - Foreign key connections using { connect: { id: ... } }
       - Timestamp fields (created_at, updated_at)

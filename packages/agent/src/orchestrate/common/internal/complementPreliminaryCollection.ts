@@ -72,7 +72,9 @@ const complementRealizeModularizations = (
   for (const { plan } of metadata) {
     if (props.kinds.includes("databaseSchemas")) {
       const model: AutoBeDatabase.IModel | undefined =
-        props.all.databaseSchemas.find((m) => m.name === plan.prismaSchemaName);
+        props.all.databaseSchemas.find(
+          (m) => m.name === plan.databaseSchemaName,
+        );
       if (
         model !== undefined &&
         props.local.databaseSchemas.find((m) => m.name === model.name) ===

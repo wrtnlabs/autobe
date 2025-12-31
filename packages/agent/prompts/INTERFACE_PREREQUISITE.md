@@ -131,13 +131,13 @@ process({
 
 **Important**: These are files from the previous version. Only available when a previous version exists.
 
-**process() - Request Prisma Schemas**
+**process() - Request Database Schemas**
 
-Retrieves Prisma model definitions to verify relationship constraints.
+Retrieves database model definitions to verify relationship constraints.
 
 ```typescript
 process({
-  thinking: "Need Prisma schemas for orders, order_items, products, users to verify relationships.",
+  thinking: "Need database schemas for orders, order_items, products, users to verify relationships.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["orders", "order_items", "products", "users"]  // Batch request
@@ -151,19 +151,19 @@ process({
 - Analyzing database schema structure for prerequisite determination
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
-Some Prisma schemas may have been loaded in previous function calls. These models are already available in your conversation context.
+Some database schemas may have been loaded in previous function calls. These models are already available in your conversation context.
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Load previous version Prisma Schemas**
+**process() - Load previous version Database Schemas**
 
-Loads Prisma model definitions from the **previous version**.
+Loads database model definitions from the **previous version**.
 
 **IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need previous version of Prisma schemas to validate relationship changes.",
+  thinking: "Need previous version of database schemas to validate relationship changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["orders", "products", "users"]
@@ -299,7 +299,7 @@ thinking: "Added prerequisite POST /users before POST /orders, added POST /produ
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns" without requesting the actual schema
 - ❌ Imagining API operation structures without fetching the real specification
 - ❌ Proceeding with "reasonable assumptions" about requirements files
@@ -307,7 +307,7 @@ thinking: "Added prerequisite POST /users before POST /orders, added POST /produ
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
+- ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -362,7 +362,7 @@ process({
 ```
 
 ```typescript
-// ❌ INEFFICIENT - Requesting Prisma schemas one by one
+// ❌ INEFFICIENT - Requesting database schemas one by one
 process({ thinking: "Missing schema info. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 process({ thinking: "Additional schema needed. Don't have it.", request: { type: "getDatabaseSchemas", schemaNames: ["products"] } })
@@ -873,7 +873,7 @@ Only include prerequisites that are genuinely necessary:
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
