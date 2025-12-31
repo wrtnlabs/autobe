@@ -132,7 +132,7 @@ export namespace IAutoBeRealizeCorrectApplication {
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
       | IAutoBePreliminaryGetRealizeTransformers;
   }
@@ -191,7 +191,7 @@ export namespace IAutoBeRealizeCorrectApplication {
 /**
  * Request to retrieve database schema definitions for context.
  */
-export interface IAutoBePreliminaryGetPrismaSchemas {
+export interface IAutoBePreliminaryGetDatabaseSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
@@ -255,7 +255,7 @@ export interface IAutoBePreliminaryGetRealizeTransformers {
 
 The `request` property is a **discriminated union** that can be one of four types:
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
+**1. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of database table names to retrieve (e.g., `["users", "posts", "comments"]`)
 - **Purpose**: Request specific database schema definitions needed for fixing schema-related errors

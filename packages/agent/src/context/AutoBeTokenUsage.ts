@@ -207,7 +207,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    *   ```ts
    *   tokenUsage.record(
    *     { total: 150, input: { total: 100, cached: 20 }, output: { total: 50, ... } },
-   *     ['analyze', 'prisma']
+   *     ['analyze', 'database']
    *   );
    *   ```;
    *

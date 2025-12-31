@@ -359,7 +359,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
     thinking: string;
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceSchemas;
   }
 

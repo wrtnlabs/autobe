@@ -153,7 +153,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: content review
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetPrismaSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request Prisma schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -1200,11 +1200,11 @@ export namespace IAutoBeInterfaceSchemaContentReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
@@ -1310,11 +1310,11 @@ thinking: "Enhanced IUser description, added bio field, enhanced IPost descripti
 Can be one of:
 - `IComplete` - Final review completion with results
 - `IAutoBePreliminaryGetAnalysisFiles` - Load requirement analysis files
-- `IAutoBePreliminaryGetPrismaSchemas` - Load Prisma model definitions
+- `IAutoBePreliminaryGetDatabaseSchemas` - Load Prisma model definitions
 - `IAutoBePreliminaryGetInterfaceOperations` - Load Interface operations
 - `IAutoBePreliminaryGetInterfaceSchemas` - Load Interface schemas
 - `IAutoBePreliminaryGetPreviousAnalysisFiles` - Load previous version analysis files
-- `IAutoBePreliminaryGetPreviousPrismaSchemas` - Load previous version Prisma schemas
+- `IAutoBePreliminaryGetPreviousDatabaseSchemas` - Load previous version Prisma schemas
 - `IAutoBePreliminaryGetPreviousInterfaceOperations` - Load previous version operations
 - `IAutoBePreliminaryGetPreviousInterfaceSchemas` - Load previous version schemas
 

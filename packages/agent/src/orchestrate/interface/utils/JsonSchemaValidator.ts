@@ -239,10 +239,10 @@ export namespace JsonSchemaValidator {
         - Must be (object root): ${e.path.replace(
           `.properties["x-autobe-database-schema"]`,
           `["x-autobe-database-schema"]`,
-        )} 
+        )}
       `;
     }
-    // check prisma schema existence
+    // check database schema existence
     const key: string = props.typeName;
     const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schema;
     AutoBeOpenApiTypeChecker.skim({

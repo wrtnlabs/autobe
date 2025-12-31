@@ -512,7 +512,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     thinking: string;
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas;
   }

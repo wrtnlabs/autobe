@@ -27,7 +27,7 @@ export const predicateStateMessage = (
   future: AutoBePhase,
 ): string | null => {
   if (future === "analyze") return null;
-  if (future === "database") return predicatePrisma(state);
+  if (future === "database") return predicateDatabase(state);
 
   const futureIndex: number = STEP_ORDER.indexOf(future);
   for (const key of STEP_ORDER.slice(0, futureIndex))
@@ -87,8 +87,8 @@ const buildOutdatedMessage = (
   `;
 };
 
-/** Special validation for Prisma phase requiring only analyze completion. */
-const predicatePrisma = (state: AutoBeState): string | null => {
+/** Special validation for Database phase requiring only analyze completion. */
+const predicateDatabase = (state: AutoBeState): string | null => {
   if (state.analyze !== null) return null;
   return StringUtil.trim`
     Requirements analysis not started.

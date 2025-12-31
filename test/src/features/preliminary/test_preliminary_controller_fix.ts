@@ -73,7 +73,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     [
       "IAutoBeInterfaceSchemaReviewApplication.IComplete",
       "IAutoBePreliminaryGetAnalysisFiles",
-      "IAutoBePreliminaryGetPrismaSchemas",
+      "IAutoBePreliminaryGetDatabaseSchemas",
       "IAutoBePreliminaryGetInterfaceOperations",
       "IAutoBePreliminaryGetInterfaceSchemas",
     ].sort(),

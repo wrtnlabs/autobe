@@ -471,7 +471,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                           // Final purpose: operation review
   | IAutoBePreliminaryGetAnalysisFiles // Preliminary: request analysis files
-  | IAutoBePreliminaryGetPrismaSchemas // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas // Preliminary: request Prisma schemas
 ```
 
 #### How the Union Type Pattern Works

@@ -455,7 +455,7 @@ You must return a structured output following the `IAutoBeRealizeCollectorCorrec
 export namespace IAutoBeRealizeCollectorCorrectApplication {
   export interface IProps {
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   export interface IComplete {
@@ -471,7 +471,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
   }
 }
 
-export interface IAutoBePreliminaryGetPrismaSchemas {
+export interface IAutoBePreliminaryGetDatabaseSchemas {
   type: "getDatabaseSchemas";
   schemaNames: string[] & tags.MinItems<1>;
 }
@@ -481,7 +481,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.1. request (Discriminated Union)
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve Prisma schema information:
 - **type**: `"getDatabaseSchemas"`
 - **schemaNames**: Array of Prisma table names (e.g., `["users", "posts"]`)
 - **Purpose**: Request database schema definitions for fixing CreateInput errors

@@ -3020,7 +3020,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     thinking: string;
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas;
+      | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   export interface IComplete {

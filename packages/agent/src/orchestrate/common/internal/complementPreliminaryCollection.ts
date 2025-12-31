@@ -203,7 +203,7 @@ const complementInterfaceSchemas = (props: INextProps) => {
     )
       props.local[kind][key] = props.all[kind][key];
 
-  // load related prisma schemas
+  // load related database schemas
   if (props.kinds.includes(prismaKind) === true) {
     const prisma: Set<string> = new Set();
     for (const [key, value] of Object.entries(props.local[kind])) {

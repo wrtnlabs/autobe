@@ -176,7 +176,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: security review
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetPrismaSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request Prisma schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -1525,11 +1525,11 @@ export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }

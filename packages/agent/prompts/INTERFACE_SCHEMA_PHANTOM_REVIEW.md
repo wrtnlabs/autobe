@@ -916,11 +916,11 @@ export namespace IAutoBeInterfaceSchemaPhantomReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }

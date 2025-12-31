@@ -2495,7 +2495,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     thinking: string;
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas;
+      | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   export interface IComplete {

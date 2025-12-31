@@ -108,7 +108,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * Determines which action to perform: preliminary data retrieval
      * (getDatabaseSchemas) or final error correction (complete).
      */
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
@@ -144,7 +144,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
 /**
  * Request to retrieve database schema definitions for context.
  */
-export interface IAutoBePreliminaryGetPrismaSchemas {
+export interface IAutoBePreliminaryGetDatabaseSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
@@ -166,7 +166,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 The `request` property is a **discriminated union** that can be one of two types:
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
+**1. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of database table names to retrieve (e.g., `["admins", "users", "user_sessions"]`)
 - **Purpose**: Request specific database schema definitions needed for fixing authorization-related errors
