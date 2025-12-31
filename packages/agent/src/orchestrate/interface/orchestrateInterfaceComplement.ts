@@ -4,7 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { missedOpenApiSchemas } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, missedOpenApiSchemas } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
@@ -86,6 +86,30 @@ async function process(
     all: {
       interfaceOperations: props.document.operations,
       interfaceSchemas: props.document.components.schemas,
+    },
+    local: {
+      interfaceOperations: props.document.operations.filter(
+        (o) =>
+          o.requestBody?.typeName === props.missed ||
+          o.responseBody?.typeName === props.missed,
+      ),
+      interfaceSchemas: Object.fromEntries(
+        Object.entries(props.document.components.schemas).filter(([_k, v]) => {
+          let found: boolean = false;
+          AutoBeOpenApiTypeChecker.visit({
+            components: props.document.components,
+            schema: v,
+            closure: (next) => {
+              if (
+                AutoBeOpenApiTypeChecker.isReference(next) &&
+                next.$ref.split("/").pop() === props.missed
+              )
+                found = true;
+            },
+          });
+          return found;
+        }),
+      ),
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
