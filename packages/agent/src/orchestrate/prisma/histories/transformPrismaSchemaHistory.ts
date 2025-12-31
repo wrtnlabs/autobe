@@ -20,7 +20,7 @@ export const transformPrismaSchemaHistory = (props: {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+      text: AutoBeSystemPromptConstant.DATABASE_SCHEMA,
     },
     ...props.preliminary.getHistories(),
     {

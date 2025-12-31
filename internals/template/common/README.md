@@ -18,7 +18,7 @@ subgraph "Backend Coding Agent"
 end
 subgraph "Functional Agents"
   coder --"Requirements Analysis"--> analyze("{{ANALYSIS_EMOJI}} Analyze")
-  coder --"ERD"--> prisma("{{PRISMA_EMOJI}} Prisma")
+  coder --"ERD"--> prisma("{{DATABASE_EMOJI}} Prisma")
   coder --"API Design"--> interface("{{INTERFACE_EMOJI}} Interface")
   coder --"Test Codes" --> test("{{TEST_EMOJI}} Test")
   coder --"Main Program" --> realize("{{REALIZE_EMOJI}} Realize")
@@ -42,7 +42,7 @@ Waterfall Model | AutoBe Agent | Result
 ----------------|--------------|----------------------------------------------
 Requirements    | ✅ Facade       | Conversation History
 Analysis        | {{ANALYSIS_EMOJI}} Analyze      | [Requirement Analysis Report](docs/analysis)
-Design          | {{PRISMA_EMOJI}} Prisma       | [Entity Relationship Diagram](docs/ERD.md) / [Prisma Schema](prisma/schema)
+Design          | {{DATABASE_EMOJI}} Prisma       | [Entity Relationship Diagram](docs/ERD.md) / [Prisma Schema](prisma/schema)
 Design          | {{INTERFACE_EMOJI}} Interface    | [API Controllers](src/controllers) / [DTO Structures](src/api/structures)
 Development     | {{REALIZE_EMOJI}} Realize      | [API Provider Functions](src/providers)
 Testing         | {{TEST_EMOJI}} Test         | [E2E Test Functions](test/features/api)

@@ -27,7 +27,7 @@ export const transformPrismaComponentsHistory = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
+        text: AutoBeSystemPromptConstant.DATABASE_COMPONENT,
       },
       ...props.preliminary.getHistories(),
       {

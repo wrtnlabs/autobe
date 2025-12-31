@@ -168,7 +168,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
   ): string => (history ? (success(history) ? "✅" : "❌") : "⬜");
   return readme
     .replaceAll("{{ANALYSIS_EMOJI}}", emoji(state.analyze))
-    .replaceAll("{{PRISMA_EMOJI}}", emoji(state.database))
+    .replaceAll("{{DATABASE_EMOJI}}", emoji(state.database))
     .replaceAll("{{INTERFACE_EMOJI}}", emoji(state.interface))
     .replaceAll("{{TEST_EMOJI}}", emoji(state.test))
     .replaceAll("{{REALIZE_EMOJI}}", emoji(state.realize))

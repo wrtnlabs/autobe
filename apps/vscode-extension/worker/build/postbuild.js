@@ -7,8 +7,8 @@ const {
 const { join } = require("path");
 
 // 상수 정의
-const PRISMA_SCHEMA_BUILD_WASM = "prisma_schema_build_bg.wasm";
-const PRISMA_SCHEMA_WASM_PACKAGE = "prisma-schema-wasm";
+const DATABASE_SCHEMA_BUILD_WASM = "prisma_schema_build_bg.wasm";
+const DATABASE_SCHEMA_WASM_PACKAGE = "prisma-schema-wasm";
 const PNPM_DIRECTORY = ".pnpm";
 const NODE_MODULES_PATH = "../../../../node_modules";
 const DIST_CHUNKS_PATH = "../dist";
@@ -20,7 +20,7 @@ function findPrismaSchemaWasmInPnpm(pnpmPath) {
 
     // prisma-schema-wasm이 포함된 디렉토리 찾기
     const prismaSchemaDir = items.find((item) =>
-      item.includes(PRISMA_SCHEMA_WASM_PACKAGE),
+      item.includes(DATABASE_SCHEMA_WASM_PACKAGE),
     );
 
     if (!prismaSchemaDir) {
@@ -28,7 +28,7 @@ function findPrismaSchemaWasmInPnpm(pnpmPath) {
     }
 
     const packagePath = join(pnpmPath, prismaSchemaDir);
-    const wasmPath = join(packagePath, "./node_modules/@prisma",PRISMA_SCHEMA_WASM_PACKAGE, "src", PRISMA_SCHEMA_BUILD_WASM);
+    const wasmPath = join(packagePath, "./node_modules/@prisma",DATABASE_SCHEMA_WASM_PACKAGE, "src", DATABASE_SCHEMA_BUILD_WASM);
     
     return existsSync(wasmPath) ? wasmPath : null;
   } catch (error) {
@@ -39,7 +39,7 @@ function findPrismaSchemaWasmInPnpm(pnpmPath) {
 
 // 대상 디렉토리 경로
 const targetDir = join(__dirname, DIST_CHUNKS_PATH);
-const targetPath = join(targetDir, PRISMA_SCHEMA_BUILD_WASM);
+const targetPath = join(targetDir, DATABASE_SCHEMA_BUILD_WASM);
 
 try {
   // .pnpm 디렉토리 경로
@@ -55,7 +55,7 @@ try {
 
   if (!sourcePath) {
     console.error(
-      `❌ ${PRISMA_SCHEMA_BUILD_WASM} 파일을 .pnpm 디렉토리에서 찾을 수 없습니다.`,
+      `❌ ${DATABASE_SCHEMA_BUILD_WASM} 파일을 .pnpm 디렉토리에서 찾을 수 없습니다.`,
     );
     console.error(`   검색 경로: ${pnpmPath}`);
     return;
@@ -70,7 +70,7 @@ try {
   }
 
   // 파일 복사
-  console.log(`📋 파일 복사 중: ${PRISMA_SCHEMA_BUILD_WASM}`);
+  console.log(`📋 파일 복사 중: ${DATABASE_SCHEMA_BUILD_WASM}`);
   copyFileSync(sourcePath, targetPath);
 
   console.log(`✅ 성공적으로 복사되었습니다: ${targetPath}`);

@@ -1228,7 +1228,7 @@ interface IUser.IAuthorized {
 
 **Why Session Context Fields Are Important**:
 - Session records in the database store `ip`, `href`, and `referrer` fields
-- These fields are part of the session table schema (as defined in PRISMA_SCHEMA.md)
+- These fields are part of the session table schema (as defined in DATABASE_SCHEMA.md)
 - These enable audit trails, security monitoring, and compliance requirements
 - `href` and `referrer` are MANDATORY (client must provide)
 - `ip` is OPTIONAL (server can extract from request, but client may provide for SSR cases)

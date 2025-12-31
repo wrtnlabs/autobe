@@ -40,7 +40,7 @@ const DIRECTORY = path.resolve(__dirname, "../prompts");
 //       diagrams: prisma.diagrams,
 //       document: prisma.document,
 //     }),
-//     [`EXAMPLE_${title.toUpperCase()}_PRISMA_SCHEMAS`]: JSON.stringify(
+//     [`EXAMPLE_${title.toUpperCase()}_DATABASE_SCHEMAS`]: JSON.stringify(
 //       prisma.schemas,
 //     ),
 //     [`EXAMPLE_${title.toUpperCase()}_INTERFACE_ENDPOINTS`]: JSON.stringify({

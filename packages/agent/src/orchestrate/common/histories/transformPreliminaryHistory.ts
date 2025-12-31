@@ -159,8 +159,9 @@ namespace PreliminaryTransformer {
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
-        prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_LOADED,
-        previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
+        prompt: AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_LOADED,
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_PREVIOUS,
         content:
           props.config.prisma === "ast"
             ? StringUtil.trim`
@@ -194,8 +195,8 @@ namespace PreliminaryTransformer {
           : null,
       });
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
-      prompt: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA,
-      previous: AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_PREVIOUS,
+      prompt: AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA,
+      previous: AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
         Name | Stance | Summary
         -----|--------|---------
@@ -208,7 +209,7 @@ namespace PreliminaryTransformer {
       loaded: props.local[kind].map((s) => `- ${s.name}`).join("\n"),
       exhausted:
         newbie.length === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED
+          ? AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_EXHAUSTED
           : "",
       replace: props.previous
         ? {

@@ -353,7 +353,7 @@ export const transformPrismaSchemaHistories = (
   return [
     {
       role: "system",
-      content: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+      content: AutoBeSystemPromptConstant.DATABASE_SCHEMA,
     },
     {
       role: "user",

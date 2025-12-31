@@ -168,7 +168,7 @@ namespace PreliminaryApplicationValidator {
 
       ${
         newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED.replace(
+          ? AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_EXHAUSTED.replace(
               "getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"],
               previous
                 ? ("getPreviousDatabaseSchemas" satisfies IAutoBePreliminaryGetPreviousDatabaseSchemas["type"])

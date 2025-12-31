@@ -37,7 +37,7 @@ The Common Prompt handles **multilingualization**. Messages are localized accord
 
 ### Stage-Specific Prompts
 
-Each pipeline stage has specialized prompts: `ANALYZE_WRITE.md`, `PRISMA_SCHEMA.md`, `INTERFACE_OPERATION.md`, `TEST_WRITE.md`, `REALIZE_WRITE.md`, etc.
+Each pipeline stage has specialized prompts: `ANALYZE_WRITE.md`, `DATABASE_SCHEMA.md`, `INTERFACE_OPERATION.md`, `TEST_WRITE.md`, `REALIZE_WRITE.md`, etc.
 
 Stage-Specific Prompts build upon the Common Prompt. They inherit general principles from Common and add stage-specific requirements. For example, `REALIZE_WRITE.md` includes specific instructions like "generate NestJS Controllers", "use Prisma for database access".
 
@@ -47,7 +47,7 @@ Stage-Specific Prompts codify **conventions**. They precisely specify naming rul
 
 ### Review and Correction Prompts
 
-Review and Correction tasks use special prompts: `ANALYZE_REVIEW.md`, `PRISMA_CORRECT.md`, `REALIZE_CORRECT.md`, etc.
+Review and Correction tasks use special prompts: `ANALYZE_REVIEW.md`, `DATABASE_CORRECT.md`, `REALIZE_CORRECT.md`, etc.
 
 Review Prompts demand **critical thinking**. They include instructions like "don't just approve - actually find problems", "verify that requirements match implementation". This prevents Review Agents from becoming rubber stamps.
 
