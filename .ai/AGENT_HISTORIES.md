@@ -238,9 +238,9 @@ Analyze agents receive user requirements as primary input. History is minimal:
 
 No prior artifacts exist yet, so history is short. Cache benefit is small since requirements vary per project.
 
-### Prisma Stage
+### Database Stage
 
-Prisma agents receive requirements analysis. History includes:
+Database agents receive requirements analysis. History includes:
 - Requirements analysis (cached)
 - Data modeling principles and examples (cached)
 - Specific generation task (not cached)

@@ -155,11 +155,11 @@ Encode domain knowledge. Include best practices for common web application patte
 
 ### Database Schema Design
 
-Prisma agents design data models. They define table structure, relationships, indexes, and constraints, considering normalization and performance.
+Database agents design data models. They define table structure, relationships, indexes, and constraints, considering normalization and performance.
 
 Prompts emphasize data modeling principles. Explain normalization rules, relationship types (1:1, 1:N, N:M), and index strategies. Agents generate optimized schemas based on these.
 
-Provide Prisma-specific knowledge. Guide in detail on using `@relation` attributes, `@@unique` constraints, and `@@index` definitions. Ensure compliance with formats expected by Prisma Compiler.
+Provide Prisma-specific knowledge. Guide in detail on using `@relation` attributes, `@@unique` constraints, and `@@index` definitions. Ensure compliance with formats expected by Database Compiler.
 
 Handle edge cases. Provide guidance for complex scenarios like self-referential relationships, circular references, and composite foreign keys. Enable agents to handle difficult cases correctly.
 
@@ -245,7 +245,7 @@ Excessively detailed instructions are also problematic. They limit LLM creativit
 
 ### Inconsistency
 
-Inconsistency between prompts creates conflicts between agents. Problems arise if Prisma Agent uses snake_case while Realize Agent uses camelCase. Maintain consistency across all prompts.
+Inconsistency between prompts creates conflicts between agents. Problems arise if Database Agent uses snake_case while Realize Agent uses camelCase. Maintain consistency across all prompts.
 
 Define common conventions in `COMMON.md` and have all Stage-Specific Prompts reference it. Changes in one place reflect across all agents.
 

@@ -46,7 +46,7 @@ Validates Prisma schema files for correctness. Checks table definitions, field t
 
 On success, generates ERD diagrams (Mermaid format) and Prisma Client types for type-safe database access.
 
-On failure, returns structured diagnostics indicating which model or field has errors and how to fix them. The Prisma agent uses this feedback to regenerate corrected schemas.
+On failure, returns structured diagnostics indicating which model or field has errors and how to fix them. The Database agent uses this feedback to regenerate corrected schemas.
 
 **Tier 2: AutoBE OpenAPI Compiler**
 

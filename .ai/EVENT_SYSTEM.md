@@ -25,7 +25,7 @@ export type AutoBeEvent =
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
 
-  // Prisma phase (9 events)
+  // Database phase (9 events)
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseComponentEvent
   | AutoBeDatabaseSchemaEvent

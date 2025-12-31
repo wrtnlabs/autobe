@@ -159,7 +159,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   /**
-   * Returns configuration (e.g., Prisma format: `"ast"` | `"text"`).
+   * Returns configuration (e.g., database schema format: `"ast"` | `"text"`).
    *
    * @returns Controller configuration object.
    */
