@@ -1,6 +1,6 @@
-import { AutoBePrismaCompiler } from "@autobe/compiler";
+import { AutoBeDatabaseCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBePrisma, IAutoBePrismaCompileResult } from "@autobe/interface";
+import { AutoBeDatabase, IAutoBePrismaCompileResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -8,11 +8,11 @@ import { TestGlobal } from "../../TestGlobal";
 import json from "./examples/prisma.recursive.json";
 
 export const test_compiler_prisma_recursive = async (): Promise<void> => {
-  const compiler: AutoBePrismaCompiler = new AutoBePrismaCompiler();
-  const application: AutoBePrisma.IApplication =
-    typia.assert<AutoBePrisma.IApplication>(json);
+  const compiler: AutoBeDatabaseCompiler = new AutoBeDatabaseCompiler();
+  const application: AutoBeDatabase.IApplication =
+    typia.assert<AutoBeDatabase.IApplication>(json);
 
-  const files: Record<string, string> = await compiler.write(
+  const files: Record<string, string> = await compiler.writePrismaSchemas(
     application,
     "postgres",
   );
@@ -23,8 +23,9 @@ export const test_compiler_prisma_recursive = async (): Promise<void> => {
     ),
   });
 
-  const compiled: IAutoBePrismaCompileResult = await compiler.compile({
-    files,
-  });
+  const compiled: IAutoBePrismaCompileResult =
+    await compiler.compilePrismaSchemas({
+      files,
+    });
   TestValidator.equals("compile result", compiled.type, "success");
 };

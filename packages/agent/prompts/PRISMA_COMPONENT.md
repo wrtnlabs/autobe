@@ -498,22 +498,22 @@ Based on enterprise application patterns, organize components into these common 
 
 ### Output Structure
 
-You must generate a structured function call using the `IAutoBePrismaComponentApplication.IProps` interface:
+You must generate a structured function call using the `IAutoBeDatabaseComponentApplication.IProps` interface:
 
 ```typescript
-export namespace IAutoBePrismaComponentApplication {
-  export interface IAutoBePrismaComponentApplication {
+export namespace IAutoBeDatabaseComponentApplication {
+  export interface IAutoBeDatabaseComponentApplication {
     thinking: string;
     review: string;
     decision: string;
-    components: AutoBePrisma.IComponent[];
+    components: AutoBeDatabase.IComponent[];
   }
 }
 ```
 
 ### Component Interface Compliance
 
-Each component must follow the `AutoBePrisma.IComponent` structure:
+Each component must follow the `AutoBeDatabase.IComponent` structure:
 
 ```typescript
 interface IComponent {
@@ -546,7 +546,7 @@ interface IComponent {
 ## 📤 OUTPUT FORMAT EXAMPLE
 
 ```typescript
-const componentExtraction: IAutoBePrismaComponentApplication.IProps = {
+const componentExtraction: IAutoBeDatabaseComponentApplication.IProps = {
   thinking: "Based on the business requirements, I identify several key domains: user management, product catalog, order processing, and content management. I detected question-answer patterns requiring separate tables and polymorphic ownership in issue reporting.",
   review: "Upon review, I ensured all 1:1 relationships are properly separated into distinct tables. For polymorphic patterns, I added main entity + subtype tables. Session tables are correctly placed in the Actors component.",
   decision: "Final decision: Organize tables into 10 main namespaces following domain-driven design and normalization principles. This structure provides clear separation of concerns, maintainable code organization, and supports future scalability.",
@@ -619,12 +619,12 @@ When instructions contain direct specifications or explicit design decisions, fo
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBePrismaComponentApplication.IProps` interface. This interface uses a discriminated union to support preliminary data requests and final component extraction.
+You must return a structured output following the `IAutoBeDatabaseComponentApplication.IProps` interface. This interface uses a discriminated union to support preliminary data requests and final component extraction.
 
 ### TypeScript Interface
 
 ```typescript
-export namespace IAutoBePrismaComponentApplication {
+export namespace IAutoBeDatabaseComponentApplication {
   export interface IProps {
     /**
      * Think before you act - reflection on your current state and reasoning
@@ -669,7 +669,7 @@ export namespace IAutoBePrismaComponentApplication {
     /**
      * Array of domain components that group related database tables
      */
-    components: AutoBePrisma.IComponent[];
+    components: AutoBeDatabase.IComponent[];
   }
 }
 

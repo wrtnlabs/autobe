@@ -1,5 +1,5 @@
 import {
-  AutoBePrisma,
+  AutoBeDatabase,
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -22,9 +22,9 @@ export const transformRealizeCollectorCorrectHistory = async (
     preliminary: AutoBePreliminaryController<"prismaSchemas">;
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
-  const application: AutoBePrisma.IApplication =
-    ctx.state().prisma!.result.data;
-  const model: AutoBePrisma.IModel = application.files
+  const application: AutoBeDatabase.IApplication =
+    ctx.state().database!.result.data;
+  const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
     .find((m) => m.name === props.function.plan.prismaSchemaName)!;

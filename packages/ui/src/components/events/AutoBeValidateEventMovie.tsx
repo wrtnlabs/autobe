@@ -1,7 +1,7 @@
 import {
+  AutoBeDatabaseInsufficientEvent,
+  AutoBeDatabaseValidateEvent,
   AutoBeInterfaceOperationReviewEvent,
-  AutoBePrismaInsufficientEvent,
-  AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
@@ -12,8 +12,8 @@ import { EventCard, EventContent, EventHeader } from "./common";
 
 export interface IAutoBeValidateEventMovieProps {
   event:
-    | AutoBePrismaInsufficientEvent
-    | AutoBePrismaValidateEvent
+    | AutoBeDatabaseInsufficientEvent
+    | AutoBeDatabaseValidateEvent
     | AutoBeInterfaceOperationReviewEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent

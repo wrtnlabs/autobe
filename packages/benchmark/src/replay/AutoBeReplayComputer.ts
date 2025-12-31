@@ -49,7 +49,7 @@ export namespace AutoBeReplayComputer {
           : 0;
       return (
         add(summary.analyze, 10) +
-        add(summary.prisma, 20) +
+        add(summary.database, 20) +
         add(summary.interface, 30) +
         add(summary.test, 20) +
         add(summary.realize, 20)
@@ -110,8 +110,8 @@ export namespace AutoBeReplayComputer {
           documents: h.files.length,
         }),
       ),
-      prisma: predicate(
-        "prisma",
+      database: predicate(
+        "database",
         (h) => h.compiled.type === "success",
         (h) => ({
           namespaces: h.result.data.files.length,
@@ -154,7 +154,7 @@ export namespace AutoBeReplayComputer {
       ),
     };
     const phase: AutoBePhase | null =
-      (["realize", "test", "interface", "prisma", "analyze"] as const).find(
+      (["realize", "test", "interface", "database", "analyze"] as const).find(
         (key) => phaseStates[key] !== null,
       ) ?? null;
     return {
@@ -165,7 +165,7 @@ export namespace AutoBeReplayComputer {
           .filter(
             (h) =>
               h.type === "analyze" ||
-              h.type === "prisma" ||
+              h.type === "database" ||
               h.type === "interface" ||
               h.type === "test" ||
               h.type === "realize",

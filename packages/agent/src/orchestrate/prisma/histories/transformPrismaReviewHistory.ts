@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -13,7 +13,7 @@ export const transformPrismaReviewHistory = (props: {
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   >;
-  component: AutoBePrisma.IComponent;
+  component: AutoBeDatabase.IComponent;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {

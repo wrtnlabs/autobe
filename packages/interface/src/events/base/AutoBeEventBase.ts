@@ -27,7 +27,7 @@ export interface AutoBeEventBase<Type extends string> {
    * allowing type-safe event handling through switch statements or conditional
    * checks.
    *
-   * Examples: "analyzeWrite", "prismaSchema", "interfaceOperation",
+   * Examples: "analyzeWrite", "databaseSchema", "interfaceOperation",
    * "testScenario"
    */
   type: Type;

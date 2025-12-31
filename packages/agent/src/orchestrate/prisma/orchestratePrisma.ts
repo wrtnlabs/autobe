@@ -1,13 +1,13 @@
 import {
   AutoBeAssistantMessageHistory,
-  AutoBePrisma,
-  AutoBePrismaCompleteEvent,
-  AutoBePrismaComponentEvent,
-  AutoBePrismaHistory,
-  AutoBePrismaReviewEvent,
-  AutoBePrismaSchemaEvent,
+  AutoBeDatabase,
+  AutoBeDatabaseCompleteEvent,
+  AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseHistory,
+  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseSchemaEvent,
   IAutoBeCompiler,
-  IAutoBePrismaValidation,
+  IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { writePrismaApplication } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -23,10 +23,13 @@ import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 export const orchestratePrisma = async (
   ctx: AutoBeContext,
   props: IAutoBeFacadeApplicationProps,
-): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
+): Promise<AutoBeDatabaseHistory | AutoBeAssistantMessageHistory> => {
   // PREDICATION
   const start: Date = new Date();
-  const predicate: string | null = predicateStateMessage(ctx.state(), "prisma");
+  const predicate: string | null = predicateStateMessage(
+    ctx.state(),
+    "database",
+  );
   if (predicate !== null)
     return ctx.assistantMessage({
       type: "assistantMessage",
@@ -36,7 +39,7 @@ export const orchestratePrisma = async (
       completed_at: new Date().toISOString(),
     });
   ctx.dispatch({
-    type: "prismaStart",
+    type: "databaseStart",
     id: v7(),
     created_at: start.toISOString(),
     reason: props.instruction,
@@ -44,28 +47,26 @@ export const orchestratePrisma = async (
   });
 
   // COMPONENTS
-  const componentEvent: AutoBePrismaComponentEvent =
+  const componentEvent: AutoBeDatabaseComponentEvent =
     await orchestratePrismaComponents(ctx, props.instruction);
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
-  const schemaEvents: AutoBePrismaSchemaEvent[] = await orchestratePrismaSchema(
-    ctx,
-    props.instruction,
-    componentEvent.components,
-  );
-  const application: AutoBePrisma.IApplication = {
+  const schemaEvents: AutoBeDatabaseSchemaEvent[] =
+    await orchestratePrismaSchema(
+      ctx,
+      props.instruction,
+      componentEvent.components,
+    );
+  const application: AutoBeDatabase.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };
 
   // REVIEW
-  const reviewEvents: AutoBePrismaReviewEvent[] = await orchestratePrismaReview(
-    ctx,
-    application,
-    componentEvent.components,
-  );
+  const reviewEvents: AutoBeDatabaseReviewEvent[] =
+    await orchestratePrismaReview(ctx, application, componentEvent.components);
   for (const event of reviewEvents) {
-    const file: AutoBePrisma.IFile | undefined = application.files.find(
+    const file: AutoBeDatabase.IFile | undefined = application.files.find(
       (f) => f.filename === event.filename,
     );
     if (file === undefined) continue;
@@ -79,7 +80,7 @@ export const orchestratePrisma = async (
   }
 
   // VALIDATE
-  const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(
+  const result: IAutoBeDatabaseValidation = await orchestratePrismaCorrect(
     ctx,
     application,
   );
@@ -91,16 +92,16 @@ export const orchestratePrisma = async (
   // PROPAGATE
   const compiler: IAutoBeCompiler = await ctx.compiler();
   return ctx.dispatch({
-    type: "prismaComplete",
+    type: "databaseComplete",
     id: v7(),
     result,
     schemas: finalSchemas,
-    compiled: await compiler.prisma.compile({
+    compiled: await compiler.database.compilePrismaSchemas({
       files: finalSchemas,
     }),
-    aggregates: ctx.getCurrentAggregates("prisma"),
+    aggregates: ctx.getCurrentAggregates("database"),
     step: ctx.state().analyze?.step ?? 0,
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
-  } satisfies AutoBePrismaCompleteEvent);
+  } satisfies AutoBeDatabaseCompleteEvent);
 };

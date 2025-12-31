@@ -1,5 +1,5 @@
 import {
-  AutoBePrismaCorrectEvent,
+  AutoBeDatabaseCorrectEvent,
   AutoBeRealizeAuthorizationCorrectEvent,
   AutoBeRealizeCorrectEvent,
   AutoBeTestCorrectEvent,
@@ -9,7 +9,7 @@ import { AutoBeCorrectEventMovie } from "../AutoBeCorrectEventMovie";
 import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 
 type CorrectEvent =
-  | AutoBePrismaCorrectEvent
+  | AutoBeDatabaseCorrectEvent
   | AutoBeTestCorrectEvent
   | AutoBeRealizeCorrectEvent
   | AutoBeRealizeAuthorizationCorrectEvent;

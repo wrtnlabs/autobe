@@ -8,12 +8,12 @@ export const test_predicate_state_message = (): void => {
   typia.misc.literals<AutoBePhase>().forEach((y) => {
     const state: AutoBeState = {
       analyze: null,
-      prisma: null,
+      database: null,
       interface: null,
       test: null,
       realize: null,
       previousAnalyze: null,
-      previousPrisma: null,
+      previousDatabase: null,
       previousInterface: null,
       previousTest: null,
       previousRealize: null,
@@ -28,12 +28,12 @@ export const test_predicate_state_message = (): void => {
     typia.misc.literals<AutoBePhase>().forEach((y, j) => {
       const state: AutoBeState = {
         analyze: null,
-        prisma: null,
+        database: null,
         interface: null,
         test: null,
         realize: null,
         previousAnalyze: null,
-        previousPrisma: null,
+        previousDatabase: null,
         previousInterface: null,
         previousTest: null,
         previousRealize: null,

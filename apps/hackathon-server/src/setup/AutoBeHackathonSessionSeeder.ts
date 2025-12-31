@@ -122,7 +122,7 @@ interface IAsset {
 
 const sequence = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

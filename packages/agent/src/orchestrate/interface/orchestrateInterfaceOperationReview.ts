@@ -1,9 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceOperationReviewEvent,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -35,7 +35,8 @@ async function process(
   operations: AutoBeOpenApi.IOperation[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  const files: AutoBePrisma.IFile[] = ctx.state().prisma?.result.data.files!;
+  const files: AutoBeDatabase.IFile[] =
+    ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -110,7 +111,7 @@ function createReviewController(props: {
     | "previousPrismaSchemas"
     | "previousInterfaceOperations"
   >;
-  prismaSchemas: AutoBePrisma.IFile[];
+  prismaSchemas: AutoBeDatabase.IFile[];
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
   ) => void;

@@ -15,7 +15,7 @@ import { AutoBeProcessAggregate } from "./AutoBeProcessAggregate";
  * The collection structure provides two levels of metric visibility:
  *
  * 1. **Operation-Level Metrics** - Individual entries for each operation type
- *    (e.g., `analyzeScenario`, `prismaSchema`, `realizeWrite`) containing
+ *    (e.g., `analyzeScenario`, `databaseSchema`, `realizeWrite`) containing
  *    isolated metrics for that specific operation across all executions.
  * 2. **Total Aggregate** - The mandatory `all` property that combines metrics from
  *    all operations into a single unified view, providing phase-level or
@@ -26,7 +26,7 @@ import { AutoBeProcessAggregate } from "./AutoBeProcessAggregate";
  * (understanding overall phase or pipeline costs).
  *
  * @author Samchon
- * @template Phase - The pipeline phase to aggregate ("analyze", "prisma",
+ * @template Phase - The pipeline phase to aggregate ("analyze", "database",
  *   "interface", "test", "realize") or "all" for cross-phase aggregation
  */
 export type AutoBeProcessAggregateCollection<

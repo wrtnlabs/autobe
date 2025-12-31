@@ -207,7 +207,7 @@ function createController(
       prismaSchemas: new Set(
         ctx
           .state()
-          .prisma!.result.data.files.map((f) => f.models.map((m) => m.name))
+          .database!.result.data.files.map((f) => f.models.map((m) => m.name))
           .flat(),
       ),
       operations: props.operations,

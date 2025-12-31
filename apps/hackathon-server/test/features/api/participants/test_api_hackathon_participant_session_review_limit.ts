@@ -73,7 +73,7 @@ const process = async (connection: HackathonApi.IConnection) => {
   };
   await go(null, false);
   await go("analyze", false);
-  await go("prisma", false);
+  await go("database", false);
   await go("interface", true);
   await go("test", true);
   await go("realize", true);

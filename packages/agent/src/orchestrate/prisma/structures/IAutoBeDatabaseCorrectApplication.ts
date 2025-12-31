@@ -1,11 +1,11 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBePrismaCorrectApplication {
+export interface IAutoBeDatabaseCorrectApplication {
   /**
    * Process schema correction task or preliminary data requests.
    *
@@ -15,9 +15,9 @@ export interface IAutoBePrismaCorrectApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBePrismaCorrectApplication.IProps): void;
+  process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
-export namespace IAutoBePrismaCorrectApplication {
+export namespace IAutoBeDatabaseCorrectApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -87,7 +87,7 @@ export namespace IAutoBePrismaCorrectApplication {
      *
      * 1. Error scope analysis:
      *
-     *    - List all validation errors from IAutoBePrismaValidation.IError[]
+     *    - List all validation errors from IAutoBeDatabaseValidation.IError[]
      *    - Extract unique table names to identify affected models
      *    - Categorize errors by type (field duplications, references, types,
      *         indexes)
@@ -122,9 +122,9 @@ export namespace IAutoBePrismaCorrectApplication {
     /**
      * Models with validation errors that need correction.
      *
-     * Contains ONLY models mentioned in IAutoBePrismaValidation.IError[] array.
-     * Each model has specific validation errors requiring targeted correction.
-     * Models not mentioned in errors are excluded from this input.
+     * Contains ONLY models mentioned in IAutoBeDatabaseValidation.IError[]
+     * array. Each model has specific validation errors requiring targeted
+     * correction. Models not mentioned in errors are excluded from this input.
      *
      * Expected validation issues:
      *
@@ -152,6 +152,6 @@ export namespace IAutoBePrismaCorrectApplication {
      * - All business logic and descriptions within these models must be preserved
      * - Corrections must not break references from unchanged models
      */
-    models: AutoBePrisma.IModel[];
+    models: AutoBeDatabase.IModel[];
   }
 }

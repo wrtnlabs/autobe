@@ -50,7 +50,7 @@ export const fixPreliminaryApplication = <
         eraseKind(kind);
       }
     } else if (kind === "previousPrismaSchemas") {
-      if (props.state.previousPrisma === null) {
+      if (props.state.previousDatabase === null) {
         eraseMetadata("getPreviousPrismaSchemas");
         eraseKind(kind);
       }

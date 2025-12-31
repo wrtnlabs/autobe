@@ -61,5 +61,5 @@ export interface IAutoBeGetFilesOptions {
    * "interface"` will generate files only up to the interface development
    * stage, omitting any code of the "test" or "realize" steps.
    */
-  phase?: "analyze" | "prisma" | "interface" | "test" | "realize";
+  phase?: "analyze" | "database" | "interface" | "test" | "realize";
 }

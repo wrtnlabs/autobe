@@ -83,7 +83,7 @@ Your output must achieve:
 - Tables follow strict 3NF normalization (may differ from suggested list if necessary)
 - 1:1 relationships use separate tables, not nullable fields
 - Polymorphic ownership uses main entity + subtype entities pattern
-- Complete IAutoBePrismaSchemaApplication.IProps structure with 2 fields (plan, models)
+- Complete IAutoBeDatabaseSchemaApplication.IProps structure with 2 fields (plan, models)
 - AST models include proper field classification and type normalization
 - All models have correct `stance` classification
 - Any modifications to suggested table list are documented in `plan` with rationale
@@ -409,13 +409,13 @@ The following naming conventions are used throughout the system:
 
 All database-related names in Prisma schemas MUST use **snake_case** notation:
 
-- **AutoBePrisma.IComponent.tables**: snake_case (e.g., `shopping_customers`, `bbs_articles`)
+- **AutoBeDatabase.IComponent.tables**: snake_case (e.g., `shopping_customers`, `bbs_articles`)
   - **CRITICAL**: NEVER duplicate domain prefixes (e.g., avoid `wrtn_wrtn_members` when prefix is `wrtn`, avoid `bbs_bbs_articles` when prefix is `bbs`)
-- **AutoBePrisma.IModel.name**: snake_case (e.g., `shopping_sales`, `mv_shopping_sale_last_snapshots`)
-- **AutoBePrisma.IPrimaryField.name**: snake_case (e.g., `id`)
-- **AutoBePrisma.IForeignField.name**: snake_case (e.g., `shopping_customer_id`, `parent_id`)
-- **AutoBePrisma.IPlainField.name**: snake_case (e.g., `created_at`, `updated_at`, `deleted_at`)
-- **AutoBePrisma.IRelation.name**: camelCase (e.g., `customer`, `parent`)
+- **AutoBeDatabase.IModel.name**: snake_case (e.g., `shopping_sales`, `mv_shopping_sale_last_snapshots`)
+- **AutoBeDatabase.IPrimaryField.name**: snake_case (e.g., `id`)
+- **AutoBeDatabase.IForeignField.name**: snake_case (e.g., `shopping_customer_id`, `parent_id`)
+- **AutoBeDatabase.IPlainField.name**: snake_case (e.g., `created_at`, `updated_at`, `deleted_at`)
+- **AutoBeDatabase.IRelation.name**: camelCase (e.g., `customer`, `parent`)
 
 ## 7. Normalization Patterns
 
@@ -1004,7 +1004,7 @@ FINAL DESIGN PLANNING:
 
 ### Model Generation (models)
 
-Generate AutoBePrisma.IModel[] array based on the strategic plan:
+Generate AutoBeDatabase.IModel[] array based on the strategic plan:
 - Create model objects for each table with exact names from targetComponent.tables (or adjusted list)
 - **CRITICAL: Write clear, comprehensive `description` for EVERY model following the style guide:**
   - Start with a one-line summary
@@ -1030,7 +1030,7 @@ Generate AutoBePrisma.IModel[] array based on the strategic plan:
 
 ## 12. Output Format
 
-Your response must be a valid IAutoBePrismaSchemaApplication.IProps object:
+Your response must be a valid IAutoBeDatabaseSchemaApplication.IProps object:
 
 ```typescript
 {

@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 import crypto from "crypto";
 
 import { ArrayUtil } from "../ArrayUtil";
@@ -7,7 +7,7 @@ import { StringUtil } from "../StringUtil";
 
 export function writePrismaApplication(props: {
   dbms: "postgres" | "sqlite";
-  application: AutoBePrisma.IApplication;
+  application: AutoBeDatabase.IApplication;
 }): Record<string, string> {
   for (const file of props.application.files)
     for (const model of file.models) fillMappingName(model);
@@ -30,8 +30,8 @@ export function writePrismaApplication(props: {
 
 function writeFile(props: {
   dbms: "postgres" | "sqlite";
-  application: AutoBePrisma.IApplication;
-  file: AutoBePrisma.IFile;
+  application: AutoBeDatabase.IApplication;
+  file: AutoBeDatabase.IFile;
 }): string {
   return props.file.models
     .map((model) =>
@@ -45,9 +45,9 @@ function writeFile(props: {
 
 function writeModel(props: {
   dbms: "postgres" | "sqlite";
-  application: AutoBePrisma.IApplication;
-  file: AutoBePrisma.IFile;
-  model: AutoBePrisma.IModel;
+  application: AutoBeDatabase.IApplication;
+  file: AutoBeDatabase.IFile;
+  model: AutoBeDatabase.IModel;
 }): string {
   return [
     writeComment(
@@ -67,8 +67,8 @@ function writeModel(props: {
   ].join("\n");
 }
 
-function fillMappingName(model: AutoBePrisma.IModel): void {
-  const group: Map<string, AutoBePrisma.IForeignField[]> = new Map();
+function fillMappingName(model: AutoBeDatabase.IModel): void {
+  const group: Map<string, AutoBeDatabase.IForeignField[]> = new Map();
   for (const ff of model.foreignFields) {
     MapUtil.take(group, ff.relation.targetModel, () => []).push(ff);
     if (ff.relation.targetModel == model.name)
@@ -85,7 +85,7 @@ function fillMappingName(model: AutoBePrisma.IModel): void {
 ----------------------------------------------------------- */
 function writeColumns(props: {
   dbms: "postgres" | "sqlite";
-  model: AutoBePrisma.IModel;
+  model: AutoBeDatabase.IModel;
 }): string[] {
   return [
     "//----",
@@ -119,8 +119,8 @@ function writeColumns(props: {
 
 function writePrimary(props: {
   dbms: "postgres" | "sqlite";
-  model: AutoBePrisma.IModel;
-  field: AutoBePrisma.IPrimaryField;
+  model: AutoBeDatabase.IModel;
+  field: AutoBeDatabase.IPrimaryField;
 }): string {
   const type: string | undefined =
     props.dbms === "postgres" ? POSTGRES_PHYSICAL_TYPES.uuid : undefined;
@@ -137,7 +137,7 @@ function writePrimary(props: {
 
 function writeField(props: {
   dbms: "postgres" | "sqlite";
-  field: AutoBePrisma.IPlainField;
+  field: AutoBeDatabase.IPlainField;
 }): string {
   const logical: string = LOGICAL_TYPES[props.field.type];
   const physical: string | undefined =
@@ -161,8 +161,8 @@ function writeField(props: {
 ----------------------------------------------------------- */
 function writeRelations(props: {
   dbms: "postgres" | "sqlite";
-  application: AutoBePrisma.IApplication;
-  model: AutoBePrisma.IModel;
+  application: AutoBeDatabase.IApplication;
+  model: AutoBeDatabase.IModel;
 }): string[] {
   interface IHasRelationship {
     modelName: string;
@@ -185,7 +185,7 @@ function writeRelations(props: {
       ),
     )
     .flat(2);
-  const foreignIndexes: AutoBePrisma.IForeignField[] =
+  const foreignIndexes: AutoBeDatabase.IForeignField[] =
     props.model.foreignFields.filter((f) => {
       if (f.unique === true)
         return props.model.uniqueIndexes.every(
@@ -252,8 +252,8 @@ function writeRelations(props: {
 
 function writeConstraint(props: {
   dbms: "postgres" | "sqlite";
-  model: AutoBePrisma.IModel;
-  foreign: AutoBePrisma.IForeignField;
+  model: AutoBeDatabase.IModel;
+  foreign: AutoBeDatabase.IForeignField;
 }): string {
   // spellchecker:ignore-next-line
   const name: string = `${props.model.name}_${props.foreign.name}_rela`;
@@ -281,8 +281,8 @@ function writeConstraint(props: {
 }
 
 function writeForeignIndex(props: {
-  model: AutoBePrisma.IModel;
-  field: AutoBePrisma.IForeignField;
+  model: AutoBeDatabase.IModel;
+  field: AutoBeDatabase.IForeignField;
 }): string {
   const name: string = `${props.model.name}_${props.field.name}_fkey`;
   const prefix: string = `@@${props.field.unique === true ? "unique" : "index"}([${props.field.name}]`;
@@ -294,8 +294,8 @@ function writeForeignIndex(props: {
 }
 
 function writeUniqueIndex(props: {
-  model: AutoBePrisma.IModel;
-  unique: AutoBePrisma.IUniqueIndex;
+  model: AutoBeDatabase.IModel;
+  unique: AutoBeDatabase.IUniqueIndex;
 }): string {
   const name: string = `${props.model.name}_${props.unique.fieldNames.join("_")}_key`;
   const prefix: string = `@@unique([${props.unique.fieldNames.join(", ")}]`;
@@ -307,8 +307,8 @@ function writeUniqueIndex(props: {
 }
 
 function writePlainIndex(props: {
-  model: AutoBePrisma.IModel;
-  plain: AutoBePrisma.IPlainIndex;
+  model: AutoBeDatabase.IModel;
+  plain: AutoBeDatabase.IPlainIndex;
 }): string {
   const name: string = `${props.model.name}_${props.plain.fieldNames.join("_")}_idx`;
   const prefix: string = `@@index([${props.plain.fieldNames.join(", ")}]`;
@@ -320,8 +320,8 @@ function writePlainIndex(props: {
 }
 
 function writeGinIndex(props: {
-  model: AutoBePrisma.IModel;
-  gin: AutoBePrisma.IGinIndex;
+  model: AutoBeDatabase.IModel;
+  gin: AutoBeDatabase.IGinIndex;
 }): string {
   const name: string = `${props.model.name}_${props.gin.fieldName}_idx`;
   const prefix: string = `@@index([${props.gin.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin`;

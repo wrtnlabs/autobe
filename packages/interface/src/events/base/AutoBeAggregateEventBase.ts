@@ -10,7 +10,7 @@ import { AutoBeProcessAggregate } from "../../histories/contents/AutoBeProcessAg
  *
  * By aliasing `AutoBeProcessAggregate`, this type ensures consistent metric
  * tracking across all aggregate events (e.g., `AutoBeAnalyzeScenarioEvent`,
- * `AutoBePrismaSchemaEvent`, `AutoBeRealizeWriteEvent`) while maintaining a
+ * `AutoBeDatabaseSchemaEvent`, `AutoBeRealizeWriteEvent`) while maintaining a
  * clear semantic distinction between the general-purpose aggregate structure
  * and its specific usage as an event base type.
  *

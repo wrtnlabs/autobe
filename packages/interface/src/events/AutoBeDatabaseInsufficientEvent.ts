@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "../prisma/AutoBePrisma";
+import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -19,30 +19,29 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaInsufficientEvent
-  extends AutoBeEventBase<"prismaInsufficient"> {
+export interface AutoBeDatabaseInsufficientEvent extends AutoBeEventBase<"databaseInsufficient"> {
   /**
    * The target component specification that was assigned to the AI for schema
    * generation.
    *
-   * Contains the {@link AutoBePrisma.IComponent} structure representing the
+   * Contains the {@link AutoBeDatabase.IComponent} structure representing the
    * complete component definition that the AI was supposed to implement. Most
-   * importantly, this includes the {@link AutoBePrisma.IComponent.tables} array
-   * containing all table names that should have been generated as models for
-   * this business domain.
+   * importantly, this includes the {@link AutoBeDatabase.IComponent.tables}
+   * array containing all table names that should have been generated as models
+   * for this business domain.
    *
    * This component specification serves as the reference point for determining
    * which models are missing by comparing the expected tables list against the
    * actual models created. The component also provides the business namespace
    * and target filename context for the schema generation task.
    */
-  component: AutoBePrisma.IComponent;
+  component: AutoBeDatabase.IComponent;
 
   /**
    * Array of models that were actually created by the AI function calling
    * process.
    *
-   * Contains the {@link AutoBePrisma.IModel} objects representing the database
+   * Contains the {@link AutoBeDatabase.IModel} objects representing the database
    * tables that were successfully generated during the schema creation process.
    * Each model includes complete field definitions, relationships, indexes, and
    * other schema elements that were properly implemented by the AI.
@@ -51,7 +50,7 @@ export interface AutoBePrismaInsufficientEvent
    * before the insufficient model generation was detected, providing the actual
    * state of what was accomplished versus what was expected.
    */
-  actual: AutoBePrisma.IModel[];
+  actual: AutoBeDatabase.IModel[];
 
   /**
    * Array of model names that were not created by the AI function calling.

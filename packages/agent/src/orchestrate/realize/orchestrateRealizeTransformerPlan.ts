@@ -7,11 +7,7 @@ import {
   AutoBeRealizeTransformerPlan,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmController,
-  IValidation,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
@@ -47,7 +43,7 @@ export async function orchestrateRealizeTransformerPlan(
   const prismaSchemaNames: Set<string> = new Set(
     ctx
       .state()
-      .prisma!.result.data.files.map((f) => f.models)
+      .database!.result.data.files.map((f) => f.models)
       .flat()
       .map((m) => m.name),
   );
@@ -154,7 +150,6 @@ function createController(props: {
     "prismaSchemas" | "interfaceSchemas"
   >;
 }): ILlmController {
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);

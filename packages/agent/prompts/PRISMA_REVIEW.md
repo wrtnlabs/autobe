@@ -91,7 +91,7 @@ You will receive the following materials for your review:
   - Foreign key fields with relation configurations
   - Plain data fields (business data)
   - Indexes (unique, regular, GIN for full-text search)
-- Follows AutoBePrisma namespace structure
+- Follows AutoBeDatabase namespace structure
 
 **Generated Prisma Schema Code**
 - AST definition converted to actual Prisma Schema Language (PSL) code
@@ -393,7 +393,7 @@ Modification: Add administrator_roles and administrator_permissions tables with 
 
 ## 8. Output Format
 
-Your response must follow the IAutoBePrismaReviewApplication.IProps structure:
+Your response must follow the IAutoBeDatabaseReviewApplication.IProps structure:
 
 ### Field Descriptions
 
@@ -419,7 +419,7 @@ Your response must follow the IAutoBePrismaReviewApplication.IProps structure:
 Your function calling must conform to this TypeScript interface:
 
 ```typescript
-export interface IAutoBePrismaReviewApplication {
+export interface IAutoBeDatabaseReviewApplication {
   /**
    * Process schema review task or preliminary data requests.
    *
@@ -428,10 +428,10 @@ export interface IAutoBePrismaReviewApplication {
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBePrismaReviewApplication.IProps): void;
+  process(props: IAutoBeDatabaseReviewApplication.IProps): void;
 }
 
-export namespace IAutoBePrismaReviewApplication {
+export namespace IAutoBeDatabaseReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -533,7 +533,7 @@ export namespace IAutoBePrismaReviewApplication {
      * Model requirements:
      * - Complete models: Each entry must be a complete model definition
      * - Targeted changes: Only includes models that need modifications
-     * - AST compliance: Follows AutoBePrisma.IModel interface structure
+     * - AST compliance: Follows AutoBeDatabase.IModel interface structure
      * - Relationship integrity: All foreign keys reference valid models
      * - Index optimization: Strategic indexes without redundancy
      * - Documentation: Comprehensive English descriptions
@@ -541,7 +541,7 @@ export namespace IAutoBePrismaReviewApplication {
      * Models not included remain unchanged from the original schema. All modifications
      * must resolve issues identified in the review.
      */
-    modifications: AutoBePrisma.IModel[];
+    modifications: AutoBeDatabase.IModel[];
   }
 }
 ```
@@ -620,7 +620,7 @@ export interface IAutoBePreliminaryGetPreviousPrismaSchemas {
 - Preserved without modification
 - Used as reference for validation
 
-**modifications** (AutoBePrisma.IModel[])
+**modifications** (AutoBeDatabase.IModel[])
 - Array of complete model definitions requiring changes
 - ONLY includes models that need modifications
 - Each model must be complete with all fields, indexes, and relationships
@@ -709,7 +709,7 @@ Provide complete model definitions for any tables requiring changes.
 
 **MANDATORY**: You MUST call the `process()` function with `type: "complete"`, your review, plan, and modifications array.
 
-The TypeScript interface is defined in section 9 above. Your function call must conform to `IAutoBePrismaReviewApplication.IProps`.
+The TypeScript interface is defined in section 9 above. Your function call must conform to `IAutoBeDatabaseReviewApplication.IProps`.
 
 **Critical Requirements**:
 1. Always include the `thinking` field with your reasoning
@@ -772,7 +772,7 @@ Before finalizing your review, ensure:
 - [ ] `request.plan` contains original plan text unmodified
 - [ ] `request.modifications` contains only models requiring changes (or empty array)
 - [ ] Each modification is a complete model definition with all fields and indexes
-- [ ] Function call conforms to `IAutoBePrismaReviewApplication.IProps` interface (see section 9)
+- [ ] Function call conforms to `IAutoBeDatabaseReviewApplication.IProps` interface (see section 9)
 
 ## 13. Success Indicators
 

@@ -17,7 +17,7 @@ export async function compileRealizeFiles(
   },
 ): Promise<AutoBeRealizeValidateEvent> {
   const prisma: IAutoBePrismaCompileResult | undefined =
-    ctx.state().prisma?.compiled;
+    ctx.state().database?.compiled;
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const templateFiles: Record<string, string> = await compiler.getTemplate({
     phase: "realize",

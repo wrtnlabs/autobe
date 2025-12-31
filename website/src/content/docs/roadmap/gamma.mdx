@@ -24,7 +24,7 @@ Participants successfully generated complete backend applications using only nat
 Therefore, while this hackathon demonstrated AutoBE's code generation capabilities, we recognized the need for more in-depth critical evaluation in realistic development environments.
 
 ### 1.2. Open Source Contest
-We hosted an Agentica open-source contest in partnership with the Korean government. Agentica is an agentic AI framework specialized in function calling that serves as AutoBE's core engine. It particularly handles critical functions such as generating compiler AST structures like [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts), [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), and [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) through function calling, and automatically correcting type errors.
+We hosted an Agentica open-source contest in partnership with the Korean government. Agentica is an agentic AI framework specialized in function calling that serves as AutoBE's core engine. It particularly handles critical functions such as generating compiler AST structures like [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts), [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), and [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) through function calling, and automatically correcting type errors.
 
 The contest was conducted as a competition for developing AI chatbots and agent applications utilizing Agentica, with numerous teams participating and a total of 10 teams advancing to the finals. While collecting real-world use cases and feedback to explore Agentica's development direction, we plan to recommend participants who demonstrated exceptional capabilities in schema design for function calling and agent utilization to the Wrtn Technologies AX development team.
 
@@ -130,7 +130,7 @@ Gamma introduces an iterative, retrieval-augmented generation workflow where age
 ```typescript showLineNumbers
 interface IAutoBeInterfaceOperationApplication {
   getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[];
+  getModels(names: string[]): AutoBeDatabase.IModel[];
   complete(operations: AutoBeOpenApi.IOperation[]): void;
   halt(reason: string): void;
 }
@@ -140,7 +140,7 @@ interface IAutoBeInterfaceOperationApplication {
 ```typescript showLineNumbers
 interface IAutoBeTestScenarioApplication {
   getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[];
+  getModels(names: string[]): AutoBeDatabase.IModel[];
   getOperation(endpoints: AutoBeOpenApi.IEndpoint[]): {
     operations: AutoBeOpenApi.IOperation[];
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;

@@ -139,7 +139,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
             .filter(
               (h) =>
                 h.type === "analyze" ||
-                h.type === "prisma" ||
+                h.type === "database" ||
                 h.type === "interface" ||
                 h.type === "test" ||
                 h.type === "realize",
@@ -349,7 +349,13 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
     if (latest === false) return this.aggregates_;
     const state: AutoBeState = this.context_.state();
     return AutoBeProcessAggregateFactory.reduce(
-      [state.analyze, state.prisma, state.interface, state.test, state.realize]
+      [
+        state.analyze,
+        state.database,
+        state.interface,
+        state.test,
+        state.realize,
+      ]
         .filter((x) => x !== null)
         .map((x) => x.aggregates),
     );
@@ -362,8 +368,8 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
     else if (this.state_.test?.step === this.state_.analyze.step) return "test";
     else if (this.state_.interface?.step === this.state_.analyze.step)
       return "interface";
-    else if (this.state_.prisma?.step === this.state_.analyze.step)
-      return "prisma";
+    else if (this.state_.database?.step === this.state_.analyze.step)
+      return "database";
     return "analyze";
   }
 

@@ -21,11 +21,11 @@ import { AutoBeFunctionCallingMetric } from "./AutoBeFunctionCallingMetric";
  * 1. **Active Operation Events** - Individual agent operations emit events
  *    extending `AutoBeAggregateEventBase`, which includes these metrics for
  *    real-time tracking of ongoing work (e.g., `AutoBeAnalyzeScenarioEvent`,
- *    `AutoBePrismaSchemaEvent`, `AutoBeRealizeWriteEvent`).
+ *    `AutoBeDatabaseSchemaEvent`, `AutoBeRealizeWriteEvent`).
  * 2. **Phase Completion Events** - When phases complete, events extending
  *    `AutoBeCompleteEventBase` aggregate these metrics by operation type in the
  *    `aggregates` field, providing phase-level resource consumption analysis
- *    (e.g., `AutoBeAnalyzeCompleteEvent`, `AutoBePrismaCompleteEvent`).
+ *    (e.g., `AutoBeAnalyzeCompleteEvent`, `AutoBeDatabaseCompleteEvent`).
  * 3. **History Records** - Aggregates are preserved in history records for
  *    post-execution analysis, cost reporting, and optimization decisions across
  *    multiple generation sessions.

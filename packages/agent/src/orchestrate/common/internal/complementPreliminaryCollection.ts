@@ -1,7 +1,7 @@
 import {
+  AutoBeDatabase,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
-  AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -71,7 +71,7 @@ const complementRealizeModularizations = (
 ): void => {
   for (const { plan } of metadata) {
     if (props.kinds.includes("prismaSchemas")) {
-      const model: AutoBePrisma.IModel | undefined =
+      const model: AutoBeDatabase.IModel | undefined =
         props.all.prismaSchemas.find((m) => m.name === plan.prismaSchemaName);
       if (
         model !== undefined &&

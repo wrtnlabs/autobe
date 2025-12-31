@@ -11,7 +11,7 @@ AutoBE implements a sophisticated state machine where phase transitions are vali
 ```typescript
 export interface AutoBeState {
   analyze: AutoBeAnalyzeHistory | null;
-  prisma: AutoBePrismaHistory | null;
+  prisma: AutoBeDatabaseHistory | null;
   interface: AutoBeInterfaceHistory | null;
   test: AutoBeTestHistory | null;
   realize: AutoBeRealizeHistory | null;
@@ -34,7 +34,7 @@ export interface AutoBeAnalyzeHistory {
   // ... other fields
 }
 
-export interface AutoBePrismaHistory {
+export interface AutoBeDatabaseHistory {
   step: number;           // This phase's step
   analyzeStep: number;    // The Analyze step this was built against
   // ... other fields
@@ -164,7 +164,7 @@ AutoBE uses event sourcing to persist state. The state is not stored directly; i
 
 **Key Events for State**:
 - `AutoBeAnalyzeCompleteEvent` - Contains complete Analyze history
-- `AutoBePrismaCompleteEvent` - Contains complete Prisma history
+- `AutoBeDatabaseCompleteEvent` - Contains complete Prisma history
 - `AutoBeInterfaceCompleteEvent` - Contains complete Interface history
 - `AutoBeTestCompleteEvent` - Contains complete Test history
 - `AutoBeRealizeCompleteEvent` - Contains complete Realize history

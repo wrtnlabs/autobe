@@ -1,21 +1,21 @@
 import {
   AutoBeAnalyzeCompleteEvent,
+  AutoBeDatabaseCompleteEvent,
   AutoBeInterfaceCompleteEvent,
-  AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
   AutoBeTestCompleteEvent,
 } from "@autobe/interface";
 
 export class AutoBeListenerState {
   public analyze: AutoBeAnalyzeCompleteEvent | null;
-  public prisma: AutoBePrismaCompleteEvent | null;
+  public database: AutoBeDatabaseCompleteEvent | null;
   public interface: AutoBeInterfaceCompleteEvent | null;
   public test: AutoBeTestCompleteEvent | null;
   public realize: AutoBeRealizeCompleteEvent | null;
 
   public constructor() {
     this.analyze = null;
-    this.prisma = null;
+    this.database = null;
     this.interface = null;
     this.test = null;
     this.realize = null;
@@ -23,14 +23,14 @@ export class AutoBeListenerState {
 
   public setAnalyze(event: AutoBeAnalyzeCompleteEvent): void {
     this.analyze = event;
-    this.prisma = null;
+    this.database = null;
     this.interface = null;
     this.test = null;
     this.realize = null;
   }
 
-  public setPrisma(event: AutoBePrismaCompleteEvent): void {
-    this.prisma = event;
+  public setDatabase(event: AutoBeDatabaseCompleteEvent): void {
+    this.database = event;
     this.interface = null;
     this.test = null;
     this.realize = null;

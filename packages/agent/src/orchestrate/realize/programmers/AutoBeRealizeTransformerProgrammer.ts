@@ -1,6 +1,6 @@
 import {
+  AutoBeDatabase,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeRealizeTransformerPlan,
   AutoBeRealizeTransformerSelectMapping,
   AutoBeRealizeTransformerTransformMapping,
@@ -58,8 +58,8 @@ export namespace AutoBeRealizeTransformerProgrammer {
   }
 
   export function getSelectMappingMetadata(props: {
-    application: AutoBePrisma.IApplication;
-    model: AutoBePrisma.IModel;
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
   }): AutoBeRealizeTransformerSelectMapping.Metadata[] {
     return AutoBeRealizeCollectorProgrammer.getMappingMetadata(props);
   }
@@ -133,7 +133,7 @@ ${Object.keys(props.schema.properties)
   }
 
   export function validate(props: {
-    application: AutoBePrisma.IApplication;
+    application: AutoBeDatabase.IApplication;
     document: AutoBeOpenApi.IDocument;
     plan: AutoBeRealizeTransformerPlan;
     neighbors: AutoBeRealizeTransformerPlan[];
@@ -188,12 +188,12 @@ ${Object.keys(props.schema.properties)
   }
 
   function validateSelectMappings(props: {
-    application: AutoBePrisma.IApplication;
+    application: AutoBeDatabase.IApplication;
     errors: IValidation.IError[];
     plan: AutoBeRealizeTransformerPlan;
     selectMappings: AutoBeRealizeTransformerSelectMapping[];
   }): void {
-    const model: AutoBePrisma.IModel = props.application.files
+    const model: AutoBeDatabase.IModel = props.application.files
       .map((f) => f.models)
       .flat()
       .find((m) => m.name === props.plan.prismaSchemaName)!;

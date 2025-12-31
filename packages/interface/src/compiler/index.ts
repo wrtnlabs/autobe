@@ -9,8 +9,8 @@ export * from "./IAutoBeTypeScriptCompileResult";
 export * from "./IAutoBeInterfaceCompiler";
 
 // PRISMA
-export * from "./IAutoBePrismaCompiler";
-export * from "./IAutoBePrismaCompileProps";
+export * from "./IAutoBeDatabaseCompiler";
+export * from "./IAutoBePrismaCompilerProps";
 export * from "./IAutoBePrismaCompileResult";
 
 // TEST

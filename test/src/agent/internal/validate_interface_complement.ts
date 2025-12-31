@@ -83,7 +83,7 @@ export const validate_interface_complement = async (props: {
     );
     JsonSchemaFactory.finalize({
       document,
-      application: props.agent.getContext().state().prisma!.result.data,
+      application: props.agent.getContext().state().database!.result.data,
     });
   };
 

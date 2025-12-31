@@ -92,11 +92,11 @@ export namespace ArchiveLogger {
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
     // GENERATIONS
-    else if (event.type === "prismaComponent")
+    else if (event.type === "databaseComponent")
       content.push(
         `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
       );
-    else if (event.type === "prismaSchema")
+    else if (event.type === "databaseSchema")
       content.push(
         `  - schemas: ${event.models.map((m) => m.name).join(", ")}`,
       );

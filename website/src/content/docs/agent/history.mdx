@@ -37,7 +37,7 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
 - [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html)
 - [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html)
 - [`AutoBeAnalyzeHistory`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html)
-- [`AutoBePrismaHistory`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html)
+- [`AutoBeDatabaseHistory`](/api/interfaces/_autobe_interface.AutoBeDatabaseHistory.html)
 - [`AutoBeInterfaceHistory`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html)
 - [`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html)
 - [`AutoBeRealizeHistory`](/api/interfaces/_autobe_interface.AutoBeRealizeHistory.html)
@@ -93,46 +93,46 @@ For users, multimodal capabilities are supported, allowing not only text but als
 
 The `step` property indicates which iteration of the requirements analysis report this represents. If this value is not 0, it means the requirements analysis report has been revised that many times. If the `step` value of other histories is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means those histories have not been reflected in the latest requirements analysis report.
 
-### `AutoBePrismaHistory`
+### `AutoBeDatabaseHistory`
 <Tabs items={[
-  <code>AutoBePrismaHistory</code>,
-  <code>AutoBePrisma</code>,
-  <code>IAutoBePrismaValidation</code>,
-  <code>IAutoBePrismaCompileResult</code>,
+  <code>AutoBeDatabaseHistory</code>,
+  <code>AutoBeDatabase</code>,
+  <code>IAutoBeDatabaseValidation</code>,
+  <code>IAutoBeDatabaseCompileResult</code>,
 ]}>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/histories/AutoBePrismaHistory.ts"
+      path="packages/interface/src/histories/AutoBeDatabaseHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/prisma/AutoBePrisma.ts"
+      path="packages/interface/src/prisma/AutoBeDatabase.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts"
+      path="packages/interface/src/prisma/IAutoBeDatabaseValidation.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/compiler/IAutoBePrismaCompileResult.ts"
+      path="packages/interface/src/compiler/IAutoBeDatabaseCompileResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 
-[`AutoBePrismaHistory`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html) is a history generated when `@autobe` analyzes the requirements specification and completes the database design.
+[`AutoBeDatabaseHistory`](/api/interfaces/_autobe_interface.AutoBeDatabaseHistory.html) is a history generated when `@autobe` analyzes the requirements specification and completes the database design.
 
-`@autobe` constructs data of type [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
+`@autobe` constructs data of type [`AutoBeDatabase.IApplication`](/api/interfaces/_autobe_interface.AutoBeDatabase.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBeDatabaseValidation`](/api/types/_autobe_interface.IAutoBeDatabaseValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
 
-Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBePrismaCompileResult`](/api/types/_autobe_interface.IAutoBePrismaCompileResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
+Note that `@autobe` generally creates valid [`AutoBeDatabase.IApplication`](/api/interfaces/_autobe_interface.AutoBeDatabase.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBeDatabaseValidation`](/api/types/_autobe_interface.IAutoBeDatabaseValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBeDatabaseCompileResult`](/api/types/_autobe_interface.IAutoBeDatabaseCompileResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
 
-The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaHistory.step`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the database design has not yet been updated to reflect the latest requirements.
+The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBeDatabaseHistory.step`](/api/interfaces/_autobe_interface.AutoBeDatabaseHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the database design has not yet been updated to reflect the latest requirements.
 
 ### `AutoBeInterfaceHistory`
 

@@ -14,9 +14,10 @@ export const test_compiler_facade_shopping = async (
   factory: TestFactory,
 ): Promise<void> => {
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
-    files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
-  });
+  const prisma: IAutoBePrismaCompileResult =
+    await compiler.database.compilePrismaSchemas({
+      files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
+    });
   if (prisma.type !== "success") {
     console.log(prisma);
     throw new Error("Failed to pass prisma generate");

@@ -1,10 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
+  AutoBeDatabaseCorrectEvent,
   AutoBeEventSource,
-  AutoBePrisma,
-  AutoBePrismaCorrectEvent,
   IAutoBeCompiler,
-  IAutoBePrismaValidation,
+  IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -14,12 +14,12 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
-import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
+import { IAutoBeDatabaseCorrectApplication } from "./structures/IAutoBeDatabaseCorrectApplication";
 
 export function orchestratePrismaCorrect(
   ctx: AutoBeContext,
-  application: AutoBePrisma.IApplication,
-): Promise<IAutoBePrismaValidation> {
+  application: AutoBeDatabase.IApplication,
+): Promise<IAutoBeDatabaseValidation> {
   const unique: Set<string> = new Set();
   for (const file of application.files)
     file.models = file.models.filter((model) => {
@@ -33,27 +33,25 @@ export function orchestratePrismaCorrect(
 
 async function iterate(
   ctx: AutoBeContext,
-  application: AutoBePrisma.IApplication,
+  application: AutoBeDatabase.IApplication,
   life: number,
-): Promise<IAutoBePrismaValidation> {
+): Promise<IAutoBeDatabaseValidation> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  const result: IAutoBePrismaValidation =
-    await compiler.prisma.validate(application);
+  const result: IAutoBeDatabaseValidation =
+    await compiler.database.validate(application);
   if (result.success)
     return result; // SUCCESS
   else if (life < 0) return result; // FAILURE
 
   // VALIDATION FAILED
-  const schemas: Record<string, string> = await compiler.prisma.write(
-    application,
-    "postgres",
-  );
+  const schemas: Record<string, string> =
+    await compiler.database.writePrismaSchemas(application, "postgres");
   ctx.dispatch({
-    type: "prismaValidate",
+    type: "databaseValidate",
     id: v7(),
     result,
     schemas,
-    compiled: await compiler.prisma.compile({
+    compiled: await compiler.database.compilePrismaSchemas({
       files: schemas,
     }),
     step: ctx.state().analyze?.step ?? 0,
@@ -65,16 +63,16 @@ async function iterate(
 
 async function process(
   ctx: AutoBeContext,
-  failure: IAutoBePrismaValidation.IFailure,
+  failure: IAutoBeDatabaseValidation.IFailure,
   capacity: number = 8,
 ): Promise<IExecutionResult> {
   const count: number = getTableCount(failure);
   if (count <= capacity) return execute(ctx, failure);
 
-  let correction: AutoBePrisma.IApplication = failure.data;
+  let correction: AutoBeDatabase.IApplication = failure.data;
   const volume: number = Math.ceil(count / capacity);
   const plannings: string[] = [];
-  const models: Record<string, AutoBePrisma.IModel> = {};
+  const models: Record<string, AutoBeDatabase.IModel> = {};
   let i: number = 0;
 
   while (i++ < volume && failure.errors.length !== 0) {
@@ -82,7 +80,7 @@ async function process(
       ...failure,
       errors: (() => {
         const unique: Set<string | null> = new Set();
-        const errors: IAutoBePrismaValidation.IError[] = [];
+        const errors: IAutoBeDatabaseValidation.IError[] = [];
         for (const err of failure.errors) {
           unique.add(err.table ?? null);
           if (unique.size > capacity) break;
@@ -95,7 +93,7 @@ async function process(
     for (const m of next.models) models[m.name] = m;
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
-    const result: IAutoBePrismaValidation = await compiler.prisma.validate(
+    const result: IAutoBeDatabaseValidation = await compiler.database.validate(
       next.correction,
     );
     correction = next.correction;
@@ -112,7 +110,7 @@ async function process(
 
 async function execute(
   ctx: AutoBeContext,
-  failure: IAutoBePrismaValidation.IFailure,
+  failure: IAutoBeDatabaseValidation.IFailure,
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -120,7 +118,7 @@ async function execute(
     | "previousAnalysisFiles"
     | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBePrismaCorrectApplication>(),
+    application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -136,7 +134,7 @@ async function execute(
       prismaSchemas: Array.from(
         new Set(failure.errors.map((e) => e.table).filter((t) => t !== null)),
       )
-        .map((table: string): AutoBePrisma.IModel | undefined =>
+        .map((table: string): AutoBeDatabase.IModel | undefined =>
           failure.data.files
             .map((f) => f.models)
             .flat()
@@ -149,7 +147,7 @@ async function execute(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBePrismaCorrectApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseCorrectApplication.IComplete | null> =
       {
         value: null,
       };
@@ -168,7 +166,7 @@ async function execute(
       }),
     });
     if (pointer.value !== null) {
-      const correction: AutoBePrisma.IApplication = {
+      const correction: AutoBeDatabase.IApplication = {
         files: failure.data.files.map((file) => ({
           filename: file.filename,
           namespace: file.namespace,
@@ -190,7 +188,7 @@ async function execute(
         tokenUsage: result.tokenUsage,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
-      } satisfies AutoBePrismaCorrectEvent);
+      } satisfies AutoBeDatabaseCorrectEvent);
       return out(result)({
         ...pointer.value,
         correction,
@@ -200,11 +198,11 @@ async function execute(
   });
 }
 
-interface IExecutionResult extends IAutoBePrismaCorrectApplication.IComplete {
-  correction: AutoBePrisma.IApplication;
+interface IExecutionResult extends IAutoBeDatabaseCorrectApplication.IComplete {
+  correction: AutoBeDatabase.IApplication;
 }
 
-const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
+const getTableCount = (failure: IAutoBeDatabaseValidation.IFailure): number => {
   const unique: Set<string | null> = new Set(
     failure.errors.map((error) => error.table ?? null),
   );
@@ -218,11 +216,11 @@ function createController(props: {
     | "prismaSchemas"
     | "previousPrismaSchemas"
   >;
-  build: (next: IAutoBePrismaCorrectApplication.IComplete) => void;
+  build: (next: IAutoBeDatabaseCorrectApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result =
-      typia.validate<IAutoBePrismaCorrectApplication.IProps>(input);
+      typia.validate<IAutoBeDatabaseCorrectApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -231,7 +229,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBePrismaCorrectApplication>({
+    typia.llm.application<IAutoBeDatabaseCorrectApplication>({
       validate: {
         process: validate,
       },
@@ -245,12 +243,12 @@ function createController(props: {
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBePrismaCorrectApplication,
+    } satisfies IAutoBeDatabaseCorrectApplication,
   };
 }
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBePrismaCorrectApplication.IProps>;
+) => IValidation<IAutoBeDatabaseCorrectApplication.IProps>;
 
-const SOURCE = "prismaCorrect" satisfies AutoBeEventSource;
+const SOURCE = "databaseCorrect" satisfies AutoBeEventSource;

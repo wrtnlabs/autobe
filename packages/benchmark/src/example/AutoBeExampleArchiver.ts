@@ -1,12 +1,12 @@
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAggregateEventBase,
+  AutoBeDatabaseHistory,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
-  AutoBePrismaHistory,
   AutoBeProcessAggregateCollection,
   AutoBeUserConversateContent,
   IAutoBeAgent,
@@ -58,14 +58,14 @@ export namespace AutoBeExampleArchiver {
 
   export const archivePrisma = (ctx: IContext): Promise<boolean> =>
     archive(ctx, {
-      phase: "prisma",
+      phase: "database",
       trial: getTrial({
         project: ctx.project,
-        phase: "prisma",
+        phase: "database",
       }),
       predicate: (histories): boolean => {
-        const prisma: AutoBePrismaHistory | undefined = histories.find(
-          (h) => h.type === "prisma",
+        const prisma: AutoBeDatabaseHistory | undefined = histories.find(
+          (h) => h.type === "database",
         );
         return prisma !== undefined && prisma.compiled.type === "success";
       },
@@ -166,7 +166,7 @@ export namespace AutoBeExampleArchiver {
         project: ctx.project,
         histories,
         analyze: null,
-        prisma: null,
+        database: null,
         interface: null,
         test: null,
         realize: null,
@@ -235,7 +235,7 @@ export namespace AutoBeExampleArchiver {
               histories
                 .filter(
                   (h) =>
-                    h.type === "prisma" ||
+                    h.type === "database" ||
                     h.type === "interface" ||
                     h.type === "test" ||
                     h.type === "realize",
@@ -311,7 +311,7 @@ export namespace AutoBeExampleArchiver {
           aggregate: TokenUsageComputer.zero(),
           facade: TokenUsageComputer.zero(),
           analyze: TokenUsageComputer.zero(),
-          prisma: TokenUsageComputer.zero(),
+          database: TokenUsageComputer.zero(),
           interface: TokenUsageComputer.zero(),
           test: TokenUsageComputer.zero(),
           realize: TokenUsageComputer.zero(),
@@ -338,7 +338,7 @@ export namespace AutoBeExampleArchiver {
 
 const PHASES: AutoBePhase[] = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

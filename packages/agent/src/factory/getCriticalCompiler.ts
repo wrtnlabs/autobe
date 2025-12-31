@@ -14,10 +14,12 @@ export const getCriticalCompiler = (
     }
   };
   return {
-    prisma: {
-      compile: (props) => lock(() => compiler.prisma.compile(props)),
-      validate: (app) => lock(() => compiler.prisma.validate(app)),
-      write: (app, dmbs) => lock(() => compiler.prisma.write(app, dmbs)),
+    database: {
+      compilePrismaSchemas: (props) =>
+        lock(() => compiler.database.compilePrismaSchemas(props)),
+      writePrismaSchemas: (app, dmbs) =>
+        lock(() => compiler.database.writePrismaSchemas(app, dmbs)),
+      validate: (app) => lock(() => compiler.database.validate(app)),
     },
     interface: {
       write: (doc, exclude) =>

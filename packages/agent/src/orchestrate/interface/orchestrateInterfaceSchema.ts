@@ -150,7 +150,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         completed: ++props.progress.completed,
         total: props.progress.total,
-        step: ctx.state().prisma?.step ?? 0,
+        step: ctx.state().database?.step ?? 0,
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaEvent);
       return out(result)(schema);
@@ -197,7 +197,7 @@ function createController(
       prismaSchemas: new Set(
         ctx
           .state()
-          .prisma!.result.data.files.map((f) => f.models.map((m) => m.name))
+          .database!.result.data.files.map((f) => f.models.map((m) => m.name))
           .flat(),
       ),
       operations: props.operations,

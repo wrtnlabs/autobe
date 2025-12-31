@@ -1,8 +1,8 @@
 import {
   AutoBeAnalyzeHistory,
+  AutoBeDatabaseHistory,
   AutoBeHistory,
   AutoBeInterfaceHistory,
-  AutoBePrismaHistory,
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
@@ -67,10 +67,10 @@ export async function getAutoBeGenerated(props: {
   if (props.options?.phase === "analyze") return ret;
 
   // PRISMA
-  if (props.state.prisma?.step === props.state.analyze.step) {
+  if (props.state.database?.step === props.state.analyze.step) {
     const schemaFiles: Record<string, string> =
-      await props.compiler.prisma.write(
-        props.state.prisma.result.data,
+      await props.compiler.database.writePrismaSchemas(
+        props.state.database.result.data,
         options!.dbms!,
       );
     Object.assign<
@@ -86,16 +86,16 @@ export async function getAutoBeGenerated(props: {
         ]),
       ),
       {
-        "autobe/prisma.json": JSON.stringify(props.state.prisma.result.data),
+        "autobe/prisma.json": JSON.stringify(props.state.database.result.data),
       },
     );
-    if (props.state.prisma.compiled.type === "success")
-      ret["docs/ERD.md"] = props.state.prisma.compiled.document;
-    else if (props.state.prisma.compiled.type === "failure")
+    if (props.state.database.compiled.type === "success")
+      ret["docs/ERD.md"] = props.state.database.compiled.document;
+    else if (props.state.database.compiled.type === "failure")
       ret["prisma/compile-error-reason.log"] =
-        props.state.prisma.compiled.reason;
+        props.state.database.compiled.reason;
   }
-  if (props.options?.phase === "prisma") return ret;
+  if (props.options?.phase === "database") return ret;
 
   // INTERFACE
   if (props.state.interface?.step === props.state.analyze.step) {
@@ -160,7 +160,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
   const emoji = (
     history:
       | AutoBeAnalyzeHistory
-      | AutoBePrismaHistory
+      | AutoBeDatabaseHistory
       | AutoBeInterfaceHistory
       | AutoBeTestHistory
       | AutoBeRealizeHistory
@@ -168,7 +168,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
   ): string => (history ? (success(history) ? "✅" : "❌") : "⬜");
   return readme
     .replaceAll("{{ANALYSIS_EMOJI}}", emoji(state.analyze))
-    .replaceAll("{{PRISMA_EMOJI}}", emoji(state.prisma))
+    .replaceAll("{{PRISMA_EMOJI}}", emoji(state.database))
     .replaceAll("{{INTERFACE_EMOJI}}", emoji(state.interface))
     .replaceAll("{{TEST_EMOJI}}", emoji(state.test))
     .replaceAll("{{REALIZE_EMOJI}}", emoji(state.realize))
@@ -180,7 +180,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
 }
 
 function writeBenchmarkAggregate(state: AutoBeState): string {
-  return (["analyze", "prisma", "interface", "test", "realize"] as const)
+  return (["analyze", "database", "interface", "test", "realize"] as const)
     .map((key) => {
       const h = state[key];
       if (h === null) return `⬜ ${key} | | | | `;
@@ -208,7 +208,13 @@ function writeBenchmarkAggregate(state: AutoBeState): string {
 function writeBenchmarkFunctionCalling(state: AutoBeState): string {
   const aggregates: AutoBeProcessAggregateCollection =
     AutoBeProcessAggregateFactory.reduce(
-      [state.analyze, state.prisma, state.interface, state.test, state.realize]
+      [
+        state.analyze,
+        state.database,
+        state.interface,
+        state.test,
+        state.realize,
+      ]
         .filter((h) => h !== null)
         .map((h) => h.aggregates),
     );
@@ -229,7 +235,7 @@ function writeBenchmarkFunctionCalling(state: AutoBeState): string {
 function success(
   history:
     | AutoBeAnalyzeHistory
-    | AutoBePrismaHistory
+    | AutoBeDatabaseHistory
     | AutoBeInterfaceHistory
     | AutoBeTestHistory
     | AutoBeRealizeHistory,
@@ -237,7 +243,7 @@ function success(
   if (history.type === "analyze") return true;
   else if (history.type === "interface") return history.missed.length === 0;
   else if (
-    history.type === "prisma" ||
+    history.type === "database" ||
     history.type === "test" ||
     history.type === "realize"
   )
@@ -249,7 +255,7 @@ function success(
 function label(
   history:
     | AutoBeAnalyzeHistory
-    | AutoBePrismaHistory
+    | AutoBeDatabaseHistory
     | AutoBeInterfaceHistory
     | AutoBeTestHistory
     | AutoBeRealizeHistory,
@@ -259,7 +265,7 @@ function label(
       actors: history.actors.length,
       documents: history.files.length,
     };
-  else if (history.type === "prisma")
+  else if (history.type === "database")
     return {
       namespaces: history.result.data.files.length,
       models: history.result.data.files.map((f) => f.models).flat().length,

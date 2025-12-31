@@ -170,7 +170,7 @@ export const orchestrateInterface =
       );
       JsonSchemaFactory.finalize({
         document,
-        application: ctx.state().prisma!.result.data,
+        application: ctx.state().database!.result.data,
       });
     };
 

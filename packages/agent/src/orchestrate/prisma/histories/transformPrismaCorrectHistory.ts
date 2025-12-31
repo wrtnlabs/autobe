@@ -1,4 +1,4 @@
-import { IAutoBePrismaValidation } from "@autobe/interface";
+import { IAutoBeDatabaseValidation } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -7,7 +7,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformPrismaCorrectHistory = (props: {
-  result: IAutoBePrismaValidation.IFailure;
+  result: IAutoBeDatabaseValidation.IFailure;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"

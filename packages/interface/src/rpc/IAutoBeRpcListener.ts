@@ -5,6 +5,14 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
+  AutoBeDatabaseCompleteEvent,
+  AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseCorrectEvent,
+  AutoBeDatabaseInsufficientEvent,
+  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseSchemaEvent,
+  AutoBeDatabaseStartEvent,
+  AutoBeDatabaseValidateEvent,
   AutoBeImageDescribeCompleteEvent,
   AutoBeImageDescribeDraftEvent,
   AutoBeImageDescribeStartEvent,
@@ -16,14 +24,6 @@ import {
   AutoBeInterfaceSchemaEvent,
   AutoBeInterfaceSchemaRenameEvent,
   AutoBeInterfaceStartEvent,
-  AutoBePrismaCompleteEvent,
-  AutoBePrismaComponentEvent,
-  AutoBePrismaCorrectEvent,
-  AutoBePrismaInsufficientEvent,
-  AutoBePrismaReviewEvent,
-  AutoBePrismaSchemaEvent,
-  AutoBePrismaStartEvent,
-  AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationCorrectEvent,
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeAuthorizationWriteEvent,
@@ -196,7 +196,7 @@ export interface IAutoBeRpcListener {
    * applications to indicate the start of data architecture development and
    * prepare progress tracking for the database design phase.
    */
-  prismaStart?(event: AutoBePrismaStartEvent): Promise<void>;
+  databaseStart?(event: AutoBeDatabaseStartEvent): Promise<void>;
 
   /**
    * Optional handler for database component organization events.
@@ -205,7 +205,7 @@ export interface IAutoBeRpcListener {
    * domain, allowing client applications to display the structural planning of
    * the database architecture and show progress scope.
    */
-  prismaComponent?(event: AutoBePrismaComponentEvent): Promise<void>;
+  databaseComponent?(event: AutoBeDatabaseComponentEvent): Promise<void>;
 
   /**
    * Optional handler for database schema creation progress events.
@@ -214,7 +214,7 @@ export interface IAutoBeRpcListener {
    * client applications to track incremental progress and show which business
    * areas have been fully designed.
    */
-  prismaSchema?(event: AutoBePrismaSchemaEvent): Promise<void>;
+  databaseSchema?(event: AutoBeDatabaseSchemaEvent): Promise<void>;
 
   /**
    * Optional handler for database schema insufficient model creation events.
@@ -234,7 +234,7 @@ export interface IAutoBeRpcListener {
    * model names, enabling targeted recovery strategies to address the
    * insufficient generation and ensure comprehensive database schema coverage.
    */
-  prismaInsufficient?(event: AutoBePrismaInsufficientEvent): Promise<void>;
+  databaseInsufficient?(event: AutoBeDatabaseInsufficientEvent): Promise<void>;
 
   /**
    * Optional handler for database schema review events.
@@ -252,7 +252,7 @@ export interface IAutoBeRpcListener {
    * data integrity, and aligns with the overall project goals and
    * requirements.
    */
-  prismaReview?(event: AutoBePrismaReviewEvent): Promise<void>;
+  databaseReview?(event: AutoBeDatabaseReviewEvent): Promise<void>;
 
   /**
    * Optional handler for database schema validation events.
@@ -261,7 +261,7 @@ export interface IAutoBeRpcListener {
    * client applications to inform users about quality assurance processes and
    * potential correction activities.
    */
-  prismaValidate?(event: AutoBePrismaValidateEvent): Promise<void>;
+  databaseValidate?(event: AutoBeDatabaseValidateEvent): Promise<void>;
 
   /**
    * Optional handler for database schema correction events.
@@ -270,7 +270,7 @@ export interface IAutoBeRpcListener {
    * enabling client applications to show that issues are being resolved
    * automatically through the feedback loop mechanism.
    */
-  prismaCorrect?(event: AutoBePrismaCorrectEvent): Promise<void>;
+  databaseCorrect?(event: AutoBeDatabaseCorrectEvent): Promise<void>;
 
   /**
    * Mandatory handler for database design completion events.
@@ -279,7 +279,7 @@ export interface IAutoBeRpcListener {
    * validated database schemas and compilation results. Client applications
    * must handle this event to receive the completed database artifacts.
    */
-  prismaComplete?(event: AutoBePrismaCompleteEvent): Promise<void>;
+  databaseComplete?(event: AutoBeDatabaseCompleteEvent): Promise<void>;
 
   /* -----------------------------------------------------------
     INTERFACE PHASE EVENTS

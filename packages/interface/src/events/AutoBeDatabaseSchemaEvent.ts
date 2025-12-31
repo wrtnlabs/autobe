@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "../prisma";
+import { AutoBeDatabase } from "../database";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -22,8 +22,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaSchemaEvent
-  extends AutoBeEventBase<"prismaSchema">,
+export interface AutoBeDatabaseSchemaEvent
+  extends
+    AutoBeEventBase<"databaseSchema">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -47,14 +48,14 @@ export interface AutoBePrismaSchemaEvent
    *
    * Contains the production-ready AST representation of Prisma schema models
    * generated following the strategic plan. These models implement all planned
-   * tables, relationships, and constraints using the AutoBePrisma.IModel
+   * tables, relationships, and constraints using the AutoBeDatabase.IModel
    * interface. The models are designed to be production-ready from the start.
    *
    * The models include exact table names from requirements, proper UUID primary
    * fields, foreign key relationships, business fields with appropriate types,
    * strategic indexes, and comprehensive English-only descriptions.
    */
-  models: AutoBePrisma.IModel[];
+  models: AutoBeDatabase.IModel[];
 
   /**
    * Generated Prisma schema file information for a specific business domain.
@@ -75,7 +76,7 @@ export interface AutoBePrismaSchemaEvent
    * documentation, designed to ensure production readiness from the initial
    * generation.
    */
-  file: AutoBePrisma.IFile;
+  file: AutoBeDatabase.IFile;
 
   /**
    * Iteration number of the requirements analysis this schema was generated

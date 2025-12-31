@@ -59,7 +59,7 @@ export interface IAutoBeTokenUsageJson {
    * including entity relationships, field definitions, and database-specific
    * optimizations.
    */
-  prisma: IAutoBeTokenUsageJson.IComponent;
+  database: IAutoBeTokenUsageJson.IComponent;
 
   /**
    * Token usage for the API interface specification agent.

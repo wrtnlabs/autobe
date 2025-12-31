@@ -4,7 +4,7 @@
  * This interface defines the input parameters required for compiling Prisma
  * schema files into complete database artifacts including documentation, ERD
  * diagrams, and dependency files. The properties specify the schema files that
- * have been generated from validated {@link AutoBePrisma.IApplication} AST
+ * have been generated from validated {@link AutoBeDatabase.IApplication} AST
  * structures and are ready for final compilation processing.
  *
  * The compilation process transforms these schema files into production-ready

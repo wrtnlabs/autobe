@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -8,7 +8,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformPrismaSchemaHistory = (props: {
   analysis: Record<string, string>;
-  targetComponent: AutoBePrisma.IComponent;
+  targetComponent: AutoBeDatabase.IComponent;
   otherTables: string[];
   instruction: string;
   preliminary: AutoBePreliminaryController<

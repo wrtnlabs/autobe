@@ -22,13 +22,13 @@ This approach creates a comprehensive development story that ensures both type s
 
 <Tabs items={[
   "Schema Generation",
-  <code>AutoBePrisma.IApplication</code>,
+  <code>AutoBeDatabase.IApplication</code>,
   <code>AutoBeOpenApi.IDocument</code>,
   <code>AutoBeTest.IFunction</code>,
 ]}>
   <Tabs.Tab>
 ```typescript
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/prisma";
+import { AutoBeOpenApi, AutoBeDatabase } from "@autobe/prisma";
 import { ILlmApplication } from "@samchon/openapi";
 import typia from "typia";
 
@@ -43,7 +43,7 @@ interface ICodeGenerator {
   /**
    * Generate Prisma AST application for database schema design. 
    */
-  generatePrismaSchema(app: AutoBePrisma.IApplication): void;
+  generatePrismaSchema(app: AutoBeDatabase.IApplication): void;
 
   /**
    * Generate OpenAPI document for RESTful API design.
@@ -56,7 +56,7 @@ interface ICodeGenerator {
   </Tabs.Tab>
   <Tabs.Tab>
      <LocalSource
-        path="packages/interface/src/prisma/AutoBePrisma.ts"
+        path="packages/interface/src/prisma/AutoBeDatabase.ts"
         filename="@autobe/interface"
         showLineNumbers />
   </Tabs.Tab>
@@ -85,7 +85,7 @@ The function supports multiple AI models through its generic parameters, allowin
 ## Comments over Prompts
 
 ```typescript filename="@autobe/interface" showLineNumbers
-export namespace AutoBePrisma {
+export namespace AutoBeDatabase {
   /**
    * Interface representing a single Prisma schema file within the application.
    *
@@ -237,7 +237,7 @@ export namespace AutoBePrisma {
 
 This approach stems from a critical observation: AI models often fail to consistently follow system prompt rules, and these rules are frequently ignored entirely when context grows large. In contrast, description information written in function calling schemas is reliably followed by AI models. When AI generates information for a type specified through function calling, it references the type's description information again, making type-level comments far more effective than system prompts in coding agents.
 
-The [`AutoBePrisma.IFile`](/api/interfaces/_autobe_interface.AutoBePrisma.IFile.html) and [`AutoBePrisma.IModel`](/api/interfaces/_autobe_interface.AutoBePrisma.IModel.html) types exemplify this approach by meticulously documenting the rules that must be followed for each interface and property type. For example, the `filename` property must follow the `schema-{number}-{domain}.prisma` format, and when defining database models, the name property must use snake_case convention with domain prefixes like `shopping_customers` or `bbs_articles`. Each comment provides concrete examples and specific constraints that guide the AI toward generating compliant code structures.
+The [`AutoBeDatabase.IFile`](/api/interfaces/_autobe_interface.AutoBeDatabase.IFile.html) and [`AutoBeDatabase.IModel`](/api/interfaces/_autobe_interface.AutoBeDatabase.IModel.html) types exemplify this approach by meticulously documenting the rules that must be followed for each interface and property type. For example, the `filename` property must follow the `schema-{number}-{domain}.prisma` format, and when defining database models, the name property must use snake_case convention with domain prefixes like `shopping_customers` or `bbs_articles`. Each comment provides concrete examples and specific constraints that guide the AI toward generating compliant code structures.
 
 This comment-driven approach ensures that coding rules are embedded directly where the AI encounters them during code generation, creating a more reliable and maintainable system than traditional prompt-based instruction methods.
 

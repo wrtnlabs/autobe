@@ -439,7 +439,7 @@ AutoBE state can become large (100MB+ for complex projects). Load selectively:
 ```typescript
 interface AutoBeState {
   analyze: AutoBeAnalyzeHistory | null;
-  prisma: AutoBePrismaHistory | null;
+  prisma: AutoBeDatabaseHistory | null;
   interface: AutoBeInterfaceHistory | null;
   test: AutoBeTestHistory | null;
   realize: AutoBeRealizeHistory | null;

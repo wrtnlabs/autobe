@@ -22,7 +22,7 @@ export namespace AutoBePlaygroundAcceptor {
       save(`${ROOT}/${props.prefix}`, await agent.getFiles());
 
     agent.on("analyzeComplete", archive);
-    agent.on("prismaComplete", archive);
+    agent.on("databaseComplete", archive);
     agent.on("interfaceComplete", archive);
     agent.on("testComplete", archive);
     agent.on("realizeComplete", archive);

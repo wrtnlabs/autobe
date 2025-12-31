@@ -48,7 +48,7 @@ export const validate_api_hackathon_session_replay = async (
     TestValidator.equals("enabled", enabled.value, false);
     for (const type of [
       "analyze",
-      "prisma",
+      "database",
       "interface",
       "test",
       "realize",

@@ -2,17 +2,17 @@ import {
   AutoBePhase,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
+  IAutoBeDatabaseCompiler,
   IAutoBeGetFilesOptions,
   IAutoBeInterfaceCompiler,
-  IAutoBePrismaCompiler,
   IAutoBeRealizeCompiler,
   IAutoBeTestCompiler,
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 
 import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
+import { AutoBeDatabaseCompiler } from "./database/AutoBeDatabaseCompiler";
 import { AutoBeInterfaceCompiler } from "./interface/AutoBeInterfaceCompiler";
-import { AutoBePrismaCompiler } from "./prisma/AutoBePrismaCompiler";
 import { AutoBeCompilerCommonTemplate } from "./raw/AutoBeCompilerCommonTemplate";
 import { AutoBeCompilerInterfaceTemplate } from "./raw/AutoBeCompilerInterfaceTemplate";
 import { AutoBeCompilerRealizeTemplate } from "./raw/AutoBeCompilerRealizeTemplate";
@@ -45,14 +45,14 @@ import { AutoBeTestCompiler } from "./test/AutoBeTestCompiler";
  * @author Samchon
  */
 export class AutoBeCompiler implements IAutoBeCompiler {
-  public prisma: IAutoBePrismaCompiler;
+  public database: IAutoBeDatabaseCompiler;
   public interface: IAutoBeInterfaceCompiler;
   public typescript: IAutoBeTypeScriptCompiler;
   public test: IAutoBeTestCompiler;
   public realize: IAutoBeRealizeCompiler;
 
   public constructor(private readonly listener: IAutoBeCompilerListener) {
-    this.prisma = new AutoBePrismaCompiler();
+    this.database = new AutoBeDatabaseCompiler();
     this.interface = new AutoBeInterfaceCompiler();
     this.typescript = new AutoBeTypeScriptCompiler();
     this.test = new AutoBeTestCompiler();
@@ -83,7 +83,7 @@ export class AutoBeCompiler implements IAutoBeCompiler {
 
 const PHASES: AutoBePhase[] = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

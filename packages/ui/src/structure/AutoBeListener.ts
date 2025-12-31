@@ -70,33 +70,33 @@ export class AutoBeListener {
       },
 
       // PRISMA
-      prismaStart: async (event) => {
-        this.dict_.delete("prismaSchema");
-        this.dict_.delete("prismaReview");
+      databaseStart: async (event) => {
+        this.dict_.delete("databaseSchema");
+        this.dict_.delete("databaseReview");
         this.insert(event);
       },
-      prismaComponent: async (event) => {
+      databaseComponent: async (event) => {
         this.insert(event);
       },
-      prismaSchema: async (event) => {
+      databaseSchema: async (event) => {
         this.accumulate(event);
       },
-      prismaInsufficient: async (event) => {
+      databaseInsufficient: async (event) => {
         this.insert(event);
       },
-      prismaReview: async (event) => {
+      databaseReview: async (event) => {
         this.accumulate(event);
       },
-      prismaValidate: async (event) => {
+      databaseValidate: async (event) => {
         this.insert(event);
       },
-      prismaCorrect: async (event) => {
+      databaseCorrect: async (event) => {
         this.insert(event);
       },
-      prismaComplete: async (event) => {
-        this.dict_.delete("prismaSchema");
-        this.dict_.delete("prismaReview");
-        this.state_.setPrisma(event);
+      databaseComplete: async (event) => {
+        this.dict_.delete("databaseSchema");
+        this.dict_.delete("databaseReview");
+        this.state_.setDatabase(event);
         this.insert(event);
       },
 

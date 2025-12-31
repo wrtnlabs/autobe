@@ -9,6 +9,9 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeStartEvent,
   AutoBeAssistantMessageEvent,
+  AutoBeDatabaseCompleteEvent,
+  AutoBeDatabaseHistory,
+  AutoBeDatabaseStartEvent,
   AutoBeEvent,
   AutoBeFunctionCallingMetric,
   AutoBeHistory,
@@ -16,9 +19,6 @@ import {
   AutoBeInterfaceHistory,
   AutoBeInterfaceStartEvent,
   AutoBePhase,
-  AutoBePrismaCompleteEvent,
-  AutoBePrismaHistory,
-  AutoBePrismaStartEvent,
   AutoBeProcessAggregate,
   AutoBeProcessAggregateCollection,
   AutoBeRealizeCompleteEvent,
@@ -342,7 +342,7 @@ export const createAutoBeContext = (props: {
             .filter(
               (h) =>
                 h.type === "analyze" ||
-                h.type === "prisma" ||
+                h.type === "database" ||
                 h.type === "interface" ||
                 h.type === "test" ||
                 h.type === "realize",
@@ -363,7 +363,7 @@ const createDispatch = (props: {
   dispatch: (event: AutoBeEvent) => Promise<void>;
 }) => {
   let analyzeStart: AutoBeAnalyzeStartEvent | null = null;
-  let prismaStart: AutoBePrismaStartEvent | null = null;
+  let databaseStart: AutoBeDatabaseStartEvent | null = null;
   let interfaceStart: AutoBeInterfaceStartEvent | null = null;
   let testStart: AutoBeTestStartEvent | null = null;
   let realizeStart: AutoBeRealizeStartEvent | null = null;
@@ -372,7 +372,7 @@ const createDispatch = (props: {
   ): AutoBeContext.DispatchHistory<Event> => {
     // starts
     if (event.type === "analyzeStart") analyzeStart = event;
-    else if (event.type === "prismaStart") prismaStart = event;
+    else if (event.type === "databaseStart") databaseStart = event;
     else if (event.type === "interfaceStart") interfaceStart = event;
     else if (event.type === "testStart") testStart = event;
     else if (event.type === "realizeStart") realizeStart = event;
@@ -395,24 +395,24 @@ const createDispatch = (props: {
           completed_at: event.created_at,
         } satisfies AutoBeAnalyzeHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
-    else if (event.type === "prismaComplete")
-      return transformAndDispatch<AutoBePrismaCompleteEvent>({
+    else if (event.type === "databaseComplete")
+      return transformAndDispatch<AutoBeDatabaseCompleteEvent>({
         dispatch: props.dispatch,
         histories: props.histories,
         state: props.state,
         event,
         history: {
-          type: "prisma",
+          type: "database",
           id: v7(),
-          instruction: prismaStart?.reason ?? "",
+          instruction: databaseStart?.reason ?? "",
           schemas: event.schemas,
           result: event.result,
           compiled: event.compiled,
           aggregates: event.aggregates,
           step: event.step,
-          created_at: prismaStart?.created_at ?? new Date().toISOString(),
+          created_at: databaseStart?.created_at ?? new Date().toISOString(),
           completed_at: event.created_at,
-        } satisfies AutoBePrismaHistory,
+        } satisfies AutoBeDatabaseHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
     else if (event.type === "interfaceComplete")
       return transformAndDispatch({
@@ -479,7 +479,7 @@ const createDispatch = (props: {
 const transformAndDispatch = <
   Event extends
     | AutoBeAnalyzeCompleteEvent
-    | AutoBePrismaCompleteEvent
+    | AutoBeDatabaseCompleteEvent
     | AutoBeInterfaceCompleteEvent
     | AutoBeTestCompleteEvent
     | AutoBeRealizeCompleteEvent,

@@ -22,10 +22,10 @@ export const test_compiler_removeImportStatements = async () => {
 const SCRIPT = StringUtil.trim`
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBePrisma,
+  AutoBeDatabase,
   IAutoBeCompiler,
   IAutoBePrismaCompileResult,
-  IAutoBePrismaValidation,
+  IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
@@ -37,10 +37,10 @@ import json from "./examples/prisma.254.json";
 export const test_compiler_prisma_254 = async (
   factory: TestFactory,
 ): Promise<void> => {
-  const app: AutoBePrisma.IApplication =
-    typia.assert<AutoBePrisma.IApplication>(json);
+  const app: AutoBeDatabase.IApplication =
+    typia.assert<AutoBeDatabase.IApplication>(json);
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const valid: IAutoBePrismaValidation = await compiler.prisma.validate(app);
+  const valid: IAutoBeDatabaseValidation = await compiler.prisma.validate(app);
   if (valid.success === false) throw new Error("Prisma validation failed");
 
   const write = async (dbms: "postgres" | "sqlite"): Promise<void> => {

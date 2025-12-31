@@ -65,7 +65,7 @@ const process = async (connection: HackathonApi.IConnection): Promise<void> => {
         "https://example.com/review-article",
       );
     };
-    if (phase === "analyze" || phase === "prisma")
+    if (phase === "analyze" || phase === "database")
       await TestValidator.error(phase, review);
     else await review();
   }

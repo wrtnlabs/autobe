@@ -68,7 +68,7 @@ Supports incremental compilation for performance - only changed files are recomp
 
 ```typescript
 export class AutoBeCompiler implements IAutoBeCompiler {
-  public prisma: IAutoBePrismaCompiler;
+  public prisma: IAutoBeDatabaseCompiler;
   public interface: IAutoBeInterfaceCompiler;
   public typescript: IAutoBeTypeScriptCompiler;
   public test: IAutoBeTestCompiler;
@@ -209,7 +209,7 @@ export type AutoBeEvent =
   | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
-  | AutoBePrismaStartEvent
+  | AutoBeDatabaseStartEvent
   // ... 60+ more event types
 ```
 
@@ -238,7 +238,7 @@ AutoBE implements a state machine where transitions are validated and state inva
 ```typescript
 export interface AutoBeState {
   analyze: AutoBeAnalyzeHistory | null;
-  prisma: AutoBePrismaHistory | null;
+  prisma: AutoBeDatabaseHistory | null;
   interface: AutoBeInterfaceHistory | null;
   test: AutoBeTestHistory | null;
   realize: AutoBeRealizeHistory | null;

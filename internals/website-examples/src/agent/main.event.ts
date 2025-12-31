@@ -20,7 +20,7 @@ agent.on("assistantMessage", (event) => {
 agent.on("analyzeComplete", (event) => {
   console.log("Analyze complete:", event.files);
 });
-agent.on("prismaComplete", (event) => {
+agent.on("databaseComplete", (event) => {
   console.log(
     "Prisma complete:",
     event.schemas,

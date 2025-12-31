@@ -150,7 +150,7 @@ export namespace AutoBeExampleBenchmark {
 
 const getArchiver = (phase: AutoBePhase) => {
   if (phase === "analyze") return AutoBeExampleArchiver.archiveAnalyze;
-  else if (phase === "prisma") return AutoBeExampleArchiver.archivePrisma;
+  else if (phase === "database") return AutoBeExampleArchiver.archivePrisma;
   else if (phase === "interface") return AutoBeExampleArchiver.archiveInterface;
   else if (phase === "test") return AutoBeExampleArchiver.archiveTest;
   else if (phase === "realize") return AutoBeExampleArchiver.archiveRealize;
@@ -167,7 +167,7 @@ const PROJECT_SEQUENCE = [
 ] as const;
 const PHASE_SEQUENCE = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

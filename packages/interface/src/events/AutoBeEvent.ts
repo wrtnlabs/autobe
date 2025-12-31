@@ -5,6 +5,14 @@ import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
+import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
+import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
+import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
+import { AutoBeDatabaseInsufficientEvent } from "./AutoBeDatabaseInsufficientEvent";
+import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
+import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
+import { AutoBeDatabaseStartEvent } from "./AutoBeDatabaseStartEvent";
+import { AutoBeDatabaseValidateEvent } from "./AutoBeDatabaseValidateEvent";
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
 import { AutoBeImageDescribeStartEvent } from "./AutoBeImageDescribeStartEvent";
@@ -24,14 +32,6 @@ import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
 import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
-import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
-import { AutoBePrismaComponentEvent } from "./AutoBePrismaComponentEvent";
-import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
-import { AutoBePrismaInsufficientEvent } from "./AutoBePrismaInsufficientEvent";
-import { AutoBePrismaReviewEvent } from "./AutoBePrismaReviewEvent";
-import { AutoBePrismaSchemaEvent } from "./AutoBePrismaSchemaEvent";
-import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
-import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizationStartEvent";
@@ -117,14 +117,14 @@ export type AutoBeEvent =
   | AutoBeInterfaceCompleteEvent
   | AutoBeInterfacePrerequisiteEvent
   // PRISMA
-  | AutoBePrismaStartEvent
-  | AutoBePrismaComponentEvent
-  | AutoBePrismaSchemaEvent
-  | AutoBePrismaInsufficientEvent
-  | AutoBePrismaReviewEvent
-  | AutoBePrismaValidateEvent
-  | AutoBePrismaCorrectEvent
-  | AutoBePrismaCompleteEvent
+  | AutoBeDatabaseStartEvent
+  | AutoBeDatabaseComponentEvent
+  | AutoBeDatabaseSchemaEvent
+  | AutoBeDatabaseInsufficientEvent
+  | AutoBeDatabaseReviewEvent
+  | AutoBeDatabaseValidateEvent
+  | AutoBeDatabaseCorrectEvent
+  | AutoBeDatabaseCompleteEvent
   // TEST
   | AutoBeTestStartEvent
   | AutoBeTestScenarioEvent

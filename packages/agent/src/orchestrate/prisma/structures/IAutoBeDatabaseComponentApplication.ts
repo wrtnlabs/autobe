@@ -1,11 +1,11 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 
-export interface IAutoBePrismaComponentApplication {
+export interface IAutoBeDatabaseComponentApplication {
   /**
    * Process component extraction task or preliminary data requests.
    *
@@ -16,10 +16,10 @@ export interface IAutoBePrismaComponentApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBePrismaComponentApplication.IProps): void;
+  process(props: IAutoBeDatabaseComponentApplication.IProps): void;
 }
 
-export namespace IAutoBePrismaComponentApplication {
+export namespace IAutoBeDatabaseComponentApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -182,6 +182,6 @@ export namespace IAutoBePrismaComponentApplication {
      * - Filename numbering indicates dependency order for schema generation
      * - Namespace is used for documentation organization and domain grouping
      */
-    components: AutoBePrisma.IComponent[] & tags.MinItems<1>;
+    components: AutoBeDatabase.IComponent[] & tags.MinItems<1>;
   }
 }

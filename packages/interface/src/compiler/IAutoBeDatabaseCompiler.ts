@@ -1,7 +1,7 @@
-import { AutoBePrisma } from "../prisma/AutoBePrisma";
-import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
-import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompileProps";
+import { AutoBeDatabase } from "../database/AutoBeDatabase";
+import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
 import { IAutoBePrismaCompileResult } from "./IAutoBePrismaCompileResult";
+import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
 
 /**
  * Interface for the custom Prisma compiler that handles database schema
@@ -10,7 +10,7 @@ import { IAutoBePrismaCompileResult } from "./IAutoBePrismaCompileResult";
  * This compiler provides the foundational compilation layer that transforms
  * business requirements into validated database architectures through
  * sophisticated AST manipulation. The Prisma compiler operates exclusively on
- * {@link AutoBePrisma.IApplication} structures, eliminating error-prone
+ * {@link AutoBeDatabase.IApplication} structures, eliminating error-prone
  * text-based schema authoring while ensuring perfect consistency between
  * business logic and data storage design.
  *
@@ -22,12 +22,12 @@ import { IAutoBePrismaCompileResult } from "./IAutoBePrismaCompileResult";
  *
  * @author Samchon
  */
-export interface IAutoBePrismaCompiler {
+export interface IAutoBeDatabaseCompiler {
   /**
    * Compiles validated Prisma application into complete database artifacts.
    *
    * Performs the complete compilation pipeline from validated
-   * {@link AutoBePrisma.IApplication} through schema generation, documentation
+   * {@link AutoBeDatabase.IApplication} through schema generation, documentation
    * creation, ERD diagram generation, and dependency file creation. This
    * comprehensive process produces all artifacts necessary for database
    * deployment and integration.
@@ -43,36 +43,14 @@ export interface IAutoBePrismaCompiler {
    * @returns Promise resolving to complete compilation results including
    *   success status, generated artifacts, or detailed error information
    */
-  compile(
+  compilePrismaSchemas(
     props: IAutoBePrismaCompilerProps,
   ): Promise<IAutoBePrismaCompileResult>;
 
   /**
-   * Validates Prisma application AST structure for correctness and best
-   * practices.
-   *
-   * Performs comprehensive validation of the {@link AutoBePrisma.IApplication}
-   * structure including relationship graph analysis to detect circular
-   * dependencies, business logic validation for constraint compliance,
-   * performance optimization analysis for query patterns, and security
-   * constraint enforcement for data access patterns.
-   *
-   * The validation process ensures that the database design is semantically
-   * correct, follows established best practices, and will function correctly in
-   * production environments. When validation errors occur, detailed feedback is
-   * provided to enable AI self-correction through the iterative improvement
-   * feedback loop.
-   *
-   * @param app Prisma application AST structure to validate
-   * @returns Promise resolving to validation results including success status
-   *   and detailed error information for correction guidance
-   */
-  validate(app: AutoBePrisma.IApplication): Promise<IAutoBePrismaValidation>;
-
-  /**
    * Generates Prisma schema files from validated application AST structure.
    *
-   * Transforms the validated {@link AutoBePrisma.IApplication} AST into
+   * Transforms the validated {@link AutoBeDatabase.IApplication} AST into
    * production-ready Prisma schema files through deterministic code generation.
    * The generated schemas include comprehensive documentation for each entity
    * and attribute, optimal index configurations, proper constraint definitions,
@@ -88,8 +66,32 @@ export interface IAutoBePrismaCompiler {
    * @returns Promise resolving to key-value pairs mapping schema filenames to
    *   generated Prisma schema content
    */
-  write(
-    app: AutoBePrisma.IApplication,
+  writePrismaSchemas(
+    app: AutoBeDatabase.IApplication,
     dbms?: "postgres" | "sqlite",
   ): Promise<Record<string, string>>;
+
+  /**
+   * Validates Prisma application AST structure for correctness and best
+   * practices.
+   *
+   * Performs comprehensive validation of the {@link AutoBeDatabase.IApplication}
+   * structure including relationship graph analysis to detect circular
+   * dependencies, business logic validation for constraint compliance,
+   * performance optimization analysis for query patterns, and security
+   * constraint enforcement for data access patterns.
+   *
+   * The validation process ensures that the database design is semantically
+   * correct, follows established best practices, and will function correctly in
+   * production environments. When validation errors occur, detailed feedback is
+   * provided to enable AI self-correction through the iterative improvement
+   * feedback loop.
+   *
+   * @param app Prisma application AST structure to validate
+   * @returns Promise resolving to validation results including success status
+   *   and detailed error information for correction guidance
+   */
+  validate(
+    app: AutoBeDatabase.IApplication,
+  ): Promise<IAutoBeDatabaseValidation>;
 }

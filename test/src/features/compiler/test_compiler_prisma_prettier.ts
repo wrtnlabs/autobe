@@ -1,5 +1,5 @@
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBePrisma, IAutoBeCompiler } from "@autobe/interface";
+import { AutoBeDatabase, IAutoBeCompiler } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -10,10 +10,11 @@ import json from "./examples/prisma.application.json";
 export const test_compiler_prisma_prettier = async (
   factory: TestFactory,
 ): Promise<void> => {
-  const app: AutoBePrisma.IApplication =
-    typia.assert<AutoBePrisma.IApplication>(json);
+  const app: AutoBeDatabase.IApplication =
+    typia.assert<AutoBeDatabase.IApplication>(json);
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const schemas: Record<string, string> = await compiler.prisma.write(app);
+  const schemas: Record<string, string> =
+    await compiler.database.writePrismaSchemas(app);
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/compiler/prisma/prettier`,
     files: schemas,

@@ -1,6 +1,6 @@
 export type AutoBePhase =
   | "analyze"
-  | "prisma"
+  | "database"
   | "interface"
   | "test"
   | "realize";

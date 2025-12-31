@@ -26,14 +26,14 @@ export type AutoBeEvent =
   | AutoBeAnalyzeCompleteEvent
 
   // Prisma phase (9 events)
-  | AutoBePrismaStartEvent
-  | AutoBePrismaComponentEvent
-  | AutoBePrismaSchemaEvent
-  | AutoBePrismaInsufficientEvent
-  | AutoBePrismaReviewEvent
-  | AutoBePrismaValidateEvent
-  | AutoBePrismaCorrectEvent
-  | AutoBePrismaCompleteEvent
+  | AutoBeDatabaseStartEvent
+  | AutoBeDatabaseComponentEvent
+  | AutoBeDatabaseSchemaEvent
+  | AutoBeDatabaseInsufficientEvent
+  | AutoBeDatabaseReviewEvent
+  | AutoBeDatabaseValidateEvent
+  | AutoBeDatabaseCorrectEvent
+  | AutoBeDatabaseCompleteEvent
 
   // Interface phase (15+ events)
   | AutoBeInterfaceStartEvent

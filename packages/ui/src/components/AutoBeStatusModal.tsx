@@ -126,11 +126,11 @@ const PROGRESS_STEPS = [
     },
   },
   {
-    name: "prisma",
+    name: "database",
     title: "Database Design",
     getResults: (state: AutoBeListenerState) => {
-      if (!state.prisma) return null;
-      const schemaCount = Object.keys(state.prisma.schemas).length;
+      if (!state.database) return null;
+      const schemaCount = Object.keys(state.database.schemas).length;
       return `${schemaCount} schema files`;
     },
   },

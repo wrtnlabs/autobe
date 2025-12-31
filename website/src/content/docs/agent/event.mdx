@@ -123,39 +123,39 @@ The `step` property indicates which iteration of the requirements analysis repor
 ### Prisma Events
 <Tabs items={[
   "Prisma Events",
-  <code>AutoBePrisma</code>,
-  <code>IAutoBePrismaValidation</code>,
-  <code>IAutoBePrismaCompileResult</code>,
+  <code>AutoBeDatabase</code>,
+  <code>IAutoBeDatabaseValidation</code>,
+  <code>IAutoBeDatabaseCompileResult</code>,
 ]}>
   <Tabs.Tab>
     <LocalSourceGroup 
       filename="@autobe/interface"
       showLineNumbers
       paths={[
-        "packages/interface/src/events/AutoBePrismaStartEvent.ts",
-        "packages/interface/src/events/AutoBePrismaComponentEvent.ts",
-        "packages/interface/src/events/AutoBePrismaSchemaEvent.ts",
-        "packages/interface/src/events/AutoBePrismaValidateEvent.ts",
-        "packages/interface/src/events/AutoBePrismaCorrectEvent.ts",
-        "packages/interface/src/events/AutoBePrismaCompleteEvent.ts"
+        "packages/interface/src/events/AutoBeDatabaseStartEvent.ts",
+        "packages/interface/src/events/AutoBeDatabaseComponentEvent.ts",
+        "packages/interface/src/events/AutoBeDatabaseSchemaEvent.ts",
+        "packages/interface/src/events/AutoBeDatabaseValidateEvent.ts",
+        "packages/interface/src/events/AutoBeDatabaseCorrectEvent.ts",
+        "packages/interface/src/events/AutoBeDatabaseCompleteEvent.ts"
       ]} 
     />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/prisma/AutoBePrisma.ts"
+      path="packages/interface/src/prisma/AutoBeDatabase.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts"
+      path="packages/interface/src/prisma/IAutoBeDatabaseValidation.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/compiler/IAutoBePrismaCompileResult.ts"
+      path="packages/interface/src/compiler/IAutoBeDatabaseCompileResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -163,25 +163,25 @@ The `step` property indicates which iteration of the requirements analysis repor
 
 ```mermaid
 flowchart LR
-  start[<a href="/api/interfaces/_autobe_interface.AutoBePrismaStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> components[<a href="/api/interfaces/_autobe_interface.AutoBePrismaComponentEvent.html" target="_blank"><u>Components</u></a>]
-  components --"designs"--> schemas[<a href="/api/interfaces/_autobe_interface.AutoBePrismaSchemaEvent.html" target="_blank"><u>Schemas</u></a>]
-  components --"compiles"--> validate[<a href="/api/interfaces/_autobe_interface.AutoBePrismaValidateEvent.html" target="_blank"><u>Validate</u></a>]
-  validate --"failure"--> correct[<a href="/api/interfaces/_autobe_interface.AutoBePrismaCorrectEvent.html" target="_blank"><u>Correct</u></a>]
-  validate --"success" --> complete[<a href="/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  start[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> components[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseComponentEvent.html" target="_blank"><u>Components</u></a>]
+  components --"designs"--> schemas[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseSchemaEvent.html" target="_blank"><u>Schemas</u></a>]
+  components --"compiles"--> validate[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseValidateEvent.html" target="_blank"><u>Validate</u></a>]
+  validate --"failure"--> correct[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseCorrectEvent.html" target="_blank"><u>Correct</u></a>]
+  validate --"success" --> complete[<a href="/api/interfaces/_autobe_interface.AutoBeDatabaseCompleteEvent.html" target="_blank"><u>Complete</u></a>]
   complete --"generates"--> prisma(Prisma Schema)
 ```
 
-Prisma events monitor the database design process. Database design in `@autobe` begins with the [`AutoBePrismaStartEvent`](/api/interfaces/_autobe_interface.AutoBePrismaStartEvent.html), followed by [`AutoBePrismaComponentEvent`](/api/interfaces/_autobe_interface.AutoBePrismaComponentEvent.html) which lists all tables that `@autobe` will design and their categorized groups. The [`AutoBePrismaSchemaEvent`](/api/interfaces/_autobe_interface.AutoBePrismaSchemaEvent.html) event is fired each time tables within a category group are completed.
+Prisma events monitor the database design process. Database design in `@autobe` begins with the [`AutoBeDatabaseStartEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseStartEvent.html), followed by [`AutoBeDatabaseComponentEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseComponentEvent.html) which lists all tables that `@autobe` will design and their categorized groups. The [`AutoBeDatabaseSchemaEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseSchemaEvent.html) event is fired each time tables within a category group are completed.
 
-Once all schema designs are completed, the [`AutoBePrismaValidateEvent`](/api/interfaces/_autobe_interface.AutoBePrismaValidateEvent.html) event is triggered, and `@autobe`'s built-in Prisma compiler validates the table designs. If validation succeeds, `@autobe` fires the [`AutoBePrismaCompleteEvent`](/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html) event. Conversely, if validation fails, the [`AutoBePrismaCorrectEvent`](/api/interfaces/_autobe_interface.AutoBePrismaCorrectEvent.html) event is triggered, requesting the AI to fix the compilation errors. The [`AutoBePrismaValidateEvent`](/api/interfaces/_autobe_interface.AutoBePrismaValidateEvent.html) event is then fired again, repeating this cycle.
+Once all schema designs are completed, the [`AutoBeDatabaseValidateEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseValidateEvent.html) event is triggered, and `@autobe`'s built-in Prisma compiler validates the table designs. If validation succeeds, `@autobe` fires the [`AutoBeDatabaseCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseCompleteEvent.html) event. Conversely, if validation fails, the [`AutoBeDatabaseCorrectEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseCorrectEvent.html) event is triggered, requesting the AI to fix the compilation errors. The [`AutoBeDatabaseValidateEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseValidateEvent.html) event is then fired again, repeating this cycle.
 
-[`AutoBePrismaCompleteEvent`](/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html) is generated when `@autobe` analyzes the requirements specification and completes the database design.
+[`AutoBeDatabaseCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseCompleteEvent.html) is generated when `@autobe` analyzes the requirements specification and completes the database design.
 
-`@autobe` constructs data of type [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
+`@autobe` constructs data of type [`AutoBeDatabase.IApplication`](/api/interfaces/_autobe_interface.AutoBeDatabase.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBeDatabaseValidation`](/api/types/_autobe_interface.IAutoBeDatabaseValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
 
-Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBePrismaCompileResult`](/api/types/_autobe_interface.IAutoBePrismaCompileResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
+Note that `@autobe` generally creates valid [`AutoBeDatabase.IApplication`](/api/interfaces/_autobe_interface.AutoBeDatabase.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBeDatabaseValidation`](/api/types/_autobe_interface.IAutoBeDatabaseValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBeDatabaseCompileResult`](/api/types/_autobe_interface.IAutoBeDatabaseCompileResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
 
-The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html#step) value is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means the database design has not yet been updated to reflect the latest requirements.
+The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBeDatabaseCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeDatabaseCompleteEvent.html#step) value is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means the database design has not yet been updated to reflect the latest requirements.
 
 ### Interface Events
 <Tabs items={[

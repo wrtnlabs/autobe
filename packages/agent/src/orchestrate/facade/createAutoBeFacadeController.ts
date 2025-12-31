@@ -3,8 +3,8 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageEvent,
   AutoBeAssistantMessageHistory,
+  AutoBeDatabaseHistory,
   AutoBeInterfaceHistory,
-  AutoBePrismaHistory,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
 } from "@autobe/interface";
@@ -48,7 +48,7 @@ export const createAutoBeFacadeController = (props: {
         };
       },
       prisma: async (next) => {
-        const history: AutoBeAssistantMessageHistory | AutoBePrismaHistory =
+        const history: AutoBeAssistantMessageHistory | AutoBeDatabaseHistory =
           await orchestratePrisma(props.context, next);
         if (history.type === "assistantMessage")
           return {

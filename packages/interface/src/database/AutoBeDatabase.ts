@@ -67,7 +67,7 @@ import { SnakeCasePattern } from "../typings/SnakeCasePattern";
  *
  * @author Samchon
  */
-export namespace AutoBePrisma {
+export namespace AutoBeDatabase {
   /**
    * Root interface representing the entire Prisma application schema.
    *
@@ -133,7 +133,7 @@ export namespace AutoBePrisma {
    * - **Favorites**: User preference and wishlist management
    * - **Articles**: Content management and BBS systems
    *
-   * ## Relationship to {@link AutoBePrisma.IFile}
+   * ## Relationship to {@link AutoBeDatabase.IFile}
    *
    * Each IComponent serves as a blueprint for generating one IFile during the
    * schema generation process. The component's metadata (filename, namespace,
@@ -141,7 +141,7 @@ export namespace AutoBePrisma {
    * models, relationships, and indexes.
    *
    * @see IFile For the actual schema file structure generated from components
-   * @see AutoBePrismaComponentEvent For the event that delivers component
+   * @see AutoBeDatabaseComponentEvent For the event that delivers component
    * organization results
    */
   export interface IComponent {

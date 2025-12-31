@@ -1,5 +1,5 @@
 import { IAutoBePrismaCompileResult } from "../compiler/IAutoBePrismaCompileResult";
-import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
+import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
@@ -19,12 +19,11 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaValidateEvent
-  extends AutoBeEventBase<"prismaValidate"> {
+export interface AutoBeDatabaseValidateEvent extends AutoBeEventBase<"databaseValidate"> {
   /**
    * The validation failure details describing what errors were detected.
    *
-   * Contains the specific {@link IAutoBePrismaValidation.IFailure} information
+   * Contains the specific {@link IAutoBeDatabaseValidation.IFailure} information
    * that describes the validation errors found in the database design. This
    * includes details about relationship issues, constraint violations, naming
    * problems, performance concerns, or other semantic errors that prevent the
@@ -34,7 +33,7 @@ export interface AutoBePrismaValidateEvent
    * for the AI to understand the validation problems and formulate appropriate
    * corrections to resolve the identified issues.
    */
-  result: IAutoBePrismaValidation.IFailure;
+  result: IAutoBeDatabaseValidation.IFailure;
 
   /**
    * Results of attempting to compile the current database design.

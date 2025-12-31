@@ -1,9 +1,7 @@
+import { AutoBePhase } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 
 import { AutoBeState } from "../context/AutoBeState";
-
-/** Pipeline phase names in waterfall order. */
-type StepName = "analyze" | "prisma" | "interface" | "test" | "realize";
 
 /**
  * Validates pipeline state before executing a phase, returning user-friendly
@@ -26,16 +24,16 @@ type StepName = "analyze" | "prisma" | "interface" | "test" | "realize";
  */
 export const predicateStateMessage = (
   state: AutoBeState,
-  future: StepName,
+  future: AutoBePhase,
 ): string | null => {
   if (future === "analyze") return null;
-  if (future === "prisma") return predicatePrisma(state);
+  if (future === "database") return predicatePrisma(state);
 
   const futureIndex: number = STEP_ORDER.indexOf(future);
   for (const key of STEP_ORDER.slice(0, futureIndex))
     if (state[key] === null) return buildMissingStepsMessage(future, key);
 
-  const prevStepName: StepName = STEP_ORDER[futureIndex - 1];
+  const prevStepName: AutoBePhase = STEP_ORDER[futureIndex - 1];
   if (state.analyze!.step !== state[prevStepName]!.step)
     return buildOutdatedMessage(prevStepName, "analyze", state);
   return null;
@@ -43,8 +41,8 @@ export const predicateStateMessage = (
 
 /** Generates error message listing steps needed to reach current phase. */
 const buildMissingStepsMessage = (
-  current: StepName,
-  missing: StepName,
+  current: AutoBePhase,
+  missing: AutoBePhase,
 ): string => {
   const currentIndex: number = STEP_ORDER.indexOf(current);
   const missingIndex: number = STEP_ORDER.indexOf(missing);
@@ -73,8 +71,8 @@ const buildMissingStepsMessage = (
  * change.
  */
 const buildOutdatedMessage = (
-  outdatedStep: StepName,
-  currentStep: StepName,
+  outdatedStep: AutoBePhase,
+  currentStep: AutoBePhase,
   state: AutoBeState,
 ): string => {
   const outdatedVersion = state[outdatedStep]?.step;
@@ -100,33 +98,33 @@ const predicatePrisma = (state: AutoBeState): string | null => {
   `;
 };
 
-const STEP_DESCRIPTIONS: Record<StepName, string> = {
+const STEP_DESCRIPTIONS: Record<AutoBePhase, string> = {
   analyze: "Requirements analysis",
-  prisma: "Database design",
+  database: "Database design",
   interface: "API interface design",
   test: "E2E test creation",
   realize: "Implementation",
 };
 
-const STEP_NAMES: Record<StepName, string> = {
+const STEP_NAMES: Record<AutoBePhase, string> = {
   analyze: "Requirements analysis",
-  prisma: "Database schema",
+  database: "Database schema",
   interface: "API interface",
   test: "Test functions",
   realize: "Implementation",
 };
 
-const ACTION_NAMES: Record<StepName, string> = {
+const ACTION_NAMES: Record<AutoBePhase, string> = {
   analyze: "analyze requirements",
-  prisma: "design database",
+  database: "design database",
   interface: "design API interface",
   test: "create tests",
   realize: "implement the program",
 };
 
-const STEP_ORDER: StepName[] = [
+const STEP_ORDER: AutoBePhase[] = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

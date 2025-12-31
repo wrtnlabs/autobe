@@ -93,9 +93,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       this.histories_.push(userMessage, assistantMessage);
       return this.histories_;
     }
-    const take = async (
-      type: "analyze" | "prisma" | "interface" | "test" | "realize",
-    ): Promise<void> => {
+    const take = async (type: AutoBePhase): Promise<void> => {
       const snapshots: AutoBeEventSnapshot[] | null =
         this.getEventSnapshots(type);
       if (snapshots === null) {
@@ -125,7 +123,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       );
     };
     if (state.analyze === null) await take("analyze");
-    else if (state.prisma === null) await take("prisma");
+    else if (state.database === null) await take("database");
     else if (state.interface === null) await take("interface");
     else if (state.test === null) await take("test");
     else if (state.realize === null) await take("realize");
@@ -158,7 +156,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     else if (state.realize?.step === state.analyze.step) return "realize";
     else if (state.test?.step === state.analyze.step) return "test";
     else if (state.interface?.step === state.analyze.step) return "interface";
-    else if (state.prisma?.step === state.analyze.step) return "prisma";
+    else if (state.database?.step === state.analyze.step) return "database";
     return "analyze";
   }
 
@@ -196,14 +194,14 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   analyzeReview: 300,
   analyzeComplete: 1_000,
   // PRISMA
-  prismaStart: 1_000,
-  prismaComponent: 1_000,
-  prismaSchema: 500,
-  prismaInsufficient: 1_000,
-  prismaReview: 500,
-  prismaValidate: 2_000,
-  prismaCorrect: 500,
-  prismaComplete: 1_000,
+  databaseStart: 1_000,
+  databaseComponent: 1_000,
+  databaseSchema: 500,
+  databaseInsufficient: 1_000,
+  databaseReview: 500,
+  databaseValidate: 2_000,
+  databaseCorrect: 500,
+  databaseComplete: 1_000,
   // INTERFACE
   interfaceStart: 1_000,
   interfaceGroup: 1_000,

@@ -1,5 +1,5 @@
-import { AutoBePrisma } from "../prisma/AutoBePrisma";
-import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
+import { AutoBeDatabase } from "../database/AutoBeDatabase";
+import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -21,13 +21,12 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaCorrectEvent
-  extends AutoBeEventBase<"prismaCorrect">,
-    AutoBeAggregateEventBase {
+export interface AutoBeDatabaseCorrectEvent
+  extends AutoBeEventBase<"databaseCorrect">, AutoBeAggregateEventBase {
   /**
    * The validation failure details that triggered the correction process.
    *
-   * Contains the specific {@link IAutoBePrismaValidation.IFailure} information
+   * Contains the specific {@link IAutoBeDatabaseValidation.IFailure} information
    * that describes what validation errors were detected in the database design.
    * This includes details about relationship issues, constraint violations,
    * naming problems, or other semantic errors that prevented successful
@@ -37,12 +36,12 @@ export interface AutoBePrismaCorrectEvent
    * AI to understand what went wrong and make appropriate corrections to the
    * database design.
    */
-  failure: IAutoBePrismaValidation.IFailure;
+  failure: IAutoBeDatabaseValidation.IFailure;
 
   /**
    * The corrected AST application structure addressing the validation failures.
    *
-   * Contains the revised {@link AutoBePrisma.IApplication} structure that
+   * Contains the revised {@link AutoBeDatabase.IApplication} structure that
    * attempts to resolve the validation issues identified in the failure. The
    * correction incorporates the feedback from the validation process to address
    * relationship problems, fix constraint violations, resolve naming conflicts,
@@ -52,7 +51,7 @@ export interface AutoBePrismaCorrectEvent
    * modifications successfully resolve the identified problems while
    * maintaining the integrity of the overall database design.
    */
-  correction: AutoBePrisma.IApplication;
+  correction: AutoBeDatabase.IApplication;
 
   /**
    * Explanation of the correction strategy and changes being made.

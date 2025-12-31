@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
 import { IAutoBePrismaCompileResult } from "../compiler";
-import { IAutoBePrismaValidation } from "../prisma";
+import { IAutoBeDatabaseValidation } from "../database";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
@@ -9,7 +9,7 @@ import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggreg
  * History record generated when the Prisma agent analyzes the requirements
  * specification and completes the database design.
  *
- * The Prisma agent constructs data of type {@link AutoBePrisma.IApplication}
+ * The Prisma agent constructs data of type {@link AutoBeDatabase.IApplication}
  * through AI function calling, validates it, and then generates prisma schema
  * files. This history captures the complete database design process including
  * validation results, generated schema files, and compilation outcomes.
@@ -21,14 +21,14 @@ import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggreg
  *
  * @author Samchon
  */
-export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
+export interface AutoBeDatabaseHistory extends AutoBeAgentHistoryBase<"database"> {
   /**
-   * Validation results of the constructed {@link AutoBePrisma.IApplication}
+   * Validation results of the constructed {@link AutoBeDatabase.IApplication}
    * data.
    *
    * Contains the outcome of validating the AST structures generated through AI
    * function calling. The Prisma agent generally creates valid
-   * {@link AutoBePrisma.IApplication} data through a validation feedback
+   * {@link AutoBeDatabase.IApplication} data through a validation feedback
    * process, but when using very small AI models, this result might have
    * `success := false`.
    *
@@ -39,7 +39,7 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
    * - Performance optimization analysis for query patterns
    * - Security constraint enforcement for data access patterns
    */
-  result: IAutoBePrismaValidation;
+  result: IAutoBeDatabaseValidation;
 
   /**
    * Generated Prisma schema files as key-value pairs.
@@ -81,7 +81,7 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
    */
   instruction: string;
 
-  aggregates: AutoBeProcessAggregateCollection<"prisma">;
+  aggregates: AutoBeProcessAggregateCollection<"database">;
 
   /**
    * Iteration number of the requirements analysis report this database design

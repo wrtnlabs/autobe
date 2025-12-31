@@ -1,7 +1,7 @@
 import { AutoBeAnalyzeHistory } from "./AutoBeAnalyzeHistory";
 import { AutoBeAssistantMessageHistory } from "./AutoBeAssistantMessageHistory";
+import { AutoBeDatabaseHistory } from "./AutoBeDatabaseHistory";
 import { AutoBeInterfaceHistory } from "./AutoBeInterfaceHistory";
-import { AutoBePrismaHistory } from "./AutoBePrismaHistory";
 import { AutoBeRealizeHistory } from "./AutoBeRealizeHistory";
 import { AutoBeTestHistory } from "./AutoBeTestHistory";
 import { AutoBeUserMessageHistory } from "./AutoBeUserMessageHistory";
@@ -27,7 +27,7 @@ export type AutoBeHistory =
   | AutoBeUserMessageHistory
   | AutoBeAssistantMessageHistory
   | AutoBeAnalyzeHistory
-  | AutoBePrismaHistory
+  | AutoBeDatabaseHistory
   | AutoBeInterfaceHistory
   | AutoBeTestHistory
   | AutoBeRealizeHistory;
@@ -37,7 +37,7 @@ export namespace AutoBeHistory {
    * Type alias for extracting the discriminator union from history records.
    *
    * Provides a convenient way to reference all possible history type values
-   * including "userMessage", "assistantMessage", "analyze", "prisma",
+   * including "userMessage", "assistantMessage", "analyze", "database",
    * "interface", "test", and "realize". This type is useful for type guards,
    * switch statements, and other type-safe operations that need to handle
    * different history categories.
@@ -57,13 +57,7 @@ export namespace AutoBeHistory {
    * and their corresponding TypeScript interfaces, facilitating robust history
    * management and processing throughout the system.
    */
-  export interface Mapper {
-    userMessage: AutoBeUserMessageHistory;
-    assistantMessage: AutoBeAssistantMessageHistory;
-    analyze: AutoBeAnalyzeHistory;
-    prisma: AutoBePrismaHistory;
-    interface: AutoBeInterfaceHistory;
-    test: AutoBeTestHistory;
-    realize: AutoBeRealizeHistory;
-  }
+  export type Mapper = {
+    [E in AutoBeHistory as E["type"]]: E;
+  };
 }

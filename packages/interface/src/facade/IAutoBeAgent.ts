@@ -161,7 +161,7 @@ export interface IAutoBeAgent {
    * for the same event type to support complex notification requirements.
    *
    * @param type Event type to listen for (e.g., "analyzeComplete",
-   *   "prismaStart")
+   *   "databaseStart")
    * @param listener Callback function that receives the typed event when fired
    * @returns The agent instance for method chaining
    */

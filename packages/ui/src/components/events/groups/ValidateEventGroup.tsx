@@ -1,7 +1,7 @@
 import {
+  AutoBeDatabaseInsufficientEvent,
+  AutoBeDatabaseValidateEvent,
   AutoBeInterfaceOperationReviewEvent,
-  AutoBePrismaInsufficientEvent,
-  AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
@@ -11,8 +11,8 @@ import { AutoBeValidateEventMovie } from "../AutoBeValidateEventMovie";
 import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 
 export type ValidateEvent =
-  | AutoBePrismaInsufficientEvent
-  | AutoBePrismaValidateEvent
+  | AutoBeDatabaseInsufficientEvent
+  | AutoBeDatabaseValidateEvent
   | AutoBeInterfaceOperationReviewEvent
   | AutoBeTestValidateEvent
   | AutoBeRealizeValidateEvent

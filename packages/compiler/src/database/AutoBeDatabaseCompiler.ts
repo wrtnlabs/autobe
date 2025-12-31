@@ -1,17 +1,17 @@
 import {
-  AutoBePrisma,
+  AutoBeDatabase,
+  IAutoBeDatabaseCompiler,
+  IAutoBeDatabaseValidation,
   IAutoBePrismaCompileResult,
-  IAutoBePrismaCompiler,
   IAutoBePrismaCompilerProps,
-  IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { writePrismaApplication } from "@autobe/utils";
 import { EmbedPrisma } from "embed-prisma";
 
-import { validatePrismaApplication } from "./validatePrismaApplication";
+import { validateDatabaseApplication } from "./validateDatabaseApplication";
 
-export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
-  public async compile(
+export class AutoBeDatabaseCompiler implements IAutoBeDatabaseCompiler {
+  public async compilePrismaSchemas(
     props: IAutoBePrismaCompilerProps,
   ): Promise<IAutoBePrismaCompileResult> {
     const compiler: EmbedPrisma = new EmbedPrisma();
@@ -30,19 +30,19 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
     };
   }
 
-  public async validate(
-    application: AutoBePrisma.IApplication,
-  ): Promise<IAutoBePrismaValidation> {
-    return validatePrismaApplication(application);
-  }
-
-  public async write(
-    application: AutoBePrisma.IApplication,
+  public async writePrismaSchemas(
+    application: AutoBeDatabase.IApplication,
     dbms: "postgres" | "sqlite" = "postgres",
   ): Promise<Record<string, string>> {
     return writePrismaApplication({
       application,
       dbms,
     });
+  }
+
+  public async validate(
+    application: AutoBeDatabase.IApplication,
+  ): Promise<IAutoBeDatabaseValidation> {
+    return validateDatabaseApplication(application);
   }
 }

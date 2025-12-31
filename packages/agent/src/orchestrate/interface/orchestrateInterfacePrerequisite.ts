@@ -189,7 +189,7 @@ async function process(
         operations: pointer.value,
         total: props.progress.total,
         completed: props.progress.completed,
-        step: ctx.state().prisma?.step ?? 0,
+        step: ctx.state().database?.step ?? 0,
       });
       return out(result)(pointer.value);
     }

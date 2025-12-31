@@ -1,11 +1,11 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
-export interface IAutoBePrismaReviewApplication {
+export interface IAutoBeDatabaseReviewApplication {
   /**
    * Process schema review task or preliminary data requests.
    *
@@ -15,9 +15,9 @@ export interface IAutoBePrismaReviewApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBePrismaReviewApplication.IProps): void;
+  process(props: IAutoBeDatabaseReviewApplication.IProps): void;
 }
-export namespace IAutoBePrismaReviewApplication {
+export namespace IAutoBeDatabaseReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -128,7 +128,7 @@ export namespace IAutoBePrismaReviewApplication {
      *
      * - Complete models: Each entry must be a complete model definition
      * - Targeted changes: Only includes models that need modifications
-     * - AST compliance: Follows AutoBePrisma.IModel interface structure
+     * - AST compliance: Follows AutoBeDatabase.IModel interface structure
      * - Relationship integrity: All foreign keys reference valid models
      * - Index optimization: Strategic indexes without redundancy
      * - Documentation: Comprehensive English descriptions
@@ -136,6 +136,6 @@ export namespace IAutoBePrismaReviewApplication {
      * Models not included remain unchanged from the original schema. All
      * modifications must resolve issues identified in the review.
      */
-    modifications: AutoBePrisma.IModel[];
+    modifications: AutoBeDatabase.IModel[];
   }
 }

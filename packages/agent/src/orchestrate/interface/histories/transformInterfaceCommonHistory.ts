@@ -21,7 +21,7 @@ export const transformInterfaceCommonHistory = (
         ].join(" "),
       },
     ];
-  else if (state.prisma === null)
+  else if (state.database === null)
     return [
       {
         id: v7(),
@@ -34,7 +34,7 @@ export const transformInterfaceCommonHistory = (
         ].join(" "),
       },
     ];
-  else if (state.analyze.step !== state.prisma.step)
+  else if (state.analyze.step !== state.database.step)
     return [
       {
         id: v7(),
@@ -48,7 +48,7 @@ export const transformInterfaceCommonHistory = (
         ].join(" "),
       },
     ];
-  else if (state.prisma.compiled.type !== "success")
+  else if (state.database.compiled.type !== "success")
     return [
       {
         id: v7(),

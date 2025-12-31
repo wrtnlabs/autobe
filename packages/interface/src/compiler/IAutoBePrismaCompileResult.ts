@@ -3,7 +3,7 @@
  * Prisma Compiler.
  *
  * This union type represents all possible outcomes when the Prisma Compiler
- * transforms validated {@link AutoBePrisma.IApplication} AST structures into
+ * transforms validated {@link AutoBeDatabase.IApplication} AST structures into
  * production-ready artifacts. The compilation process includes schema
  * validation, documentation generation, ERD diagram creation, and dependency
  * resolution.

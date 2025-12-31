@@ -135,7 +135,7 @@ async function main(): Promise<void> {
     Output: tokenUsage.aggregate.output.total.toLocaleString("en-US"),
     Facade: tokenUsage.facade.total.toLocaleString("en-US"),
     Analyze: tokenUsage.analyze.total.toLocaleString("en-US"),
-    Prisma: tokenUsage.prisma.total.toLocaleString("en-US"),
+    Database: tokenUsage.database.total.toLocaleString("en-US"),
     Interface: tokenUsage.interface.total.toLocaleString("en-US"),
     Test: tokenUsage.test.total.toLocaleString("en-US"),
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),

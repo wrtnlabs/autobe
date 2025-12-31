@@ -55,7 +55,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
   const getPhaseColor = (p: AutoBePhase | null) => {
     const colors = {
       analyze: theme.palette.info.main,
-      prisma: theme.palette.secondary.main,
+      database: theme.palette.secondary.main,
       interface: theme.palette.primary.main,
       test: theme.palette.warning.main,
       realize: theme.palette.success.main,
@@ -72,7 +72,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
     return colors[vendor as keyof typeof colors] || theme.palette.grey[500];
   };
 
-  const phases = ["analyze", "prisma", "interface", "test", "realize"];
+  const phases = ["analyze", "database", "interface", "test", "realize"];
   const getPhaseIndex = (p: AutoBePhase | null) => phases.indexOf(p ?? "null");
   const phaseColor = getPhaseColor(replay.phase);
   const vendorColor = getVendorColor(replay.vendor);
@@ -179,7 +179,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                   replay[
                     label as keyof Pick<
                       IAutoBePlaygroundReplay.ISummary,
-                      "analyze" | "prisma" | "interface" | "test" | "realize"
+                      "analyze" | "database" | "interface" | "test" | "realize"
                     >
                   ];
                 const isCurrentStep = label === replay.phase;

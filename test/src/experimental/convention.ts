@@ -11,7 +11,7 @@ const main = async (): Promise<void> => {
   const { document } = histories.find((h) => h.type === "interface")!;
   const {
     result: { data: application },
-  } = histories.find((h) => h.type === "prisma")!;
+  } = histories.find((h) => h.type === "database")!;
 
   const trace = (title: string) =>
     console.log(

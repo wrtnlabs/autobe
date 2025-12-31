@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeScenarioEvent,
+  AutoBeDatabaseComponentEvent,
   AutoBeInterfaceGroupEvent,
-  AutoBePrismaComponentEvent,
   AutoBeRealizeTestResetEvent,
 } from "@autobe/interface";
 import { JSX } from "react";
@@ -11,7 +11,7 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
-    | AutoBePrismaComponentEvent
+    | AutoBeDatabaseComponentEvent
     | AutoBeInterfaceGroupEvent
     | AutoBeRealizeTestResetEvent;
 }

@@ -59,7 +59,7 @@ export async function orchestrateInterfaceActionEndpointReview(
       prismaSchemas:
         ctx
           .state()
-          .prisma?.result.data.files.map((f) => f.models)
+          .database?.result.data.files.map((f) => f.models)
           .flat() ?? [],
     },
   });

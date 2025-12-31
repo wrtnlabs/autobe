@@ -5,10 +5,10 @@ import {
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
-  AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -150,10 +150,10 @@ namespace PreliminaryTransformer {
     const kind: "prismaSchemas" | "previousPrismaSchemas" = props.previous
       ? "previousPrismaSchemas"
       : "prismaSchemas";
-    const oldbie: Record<string, AutoBePrisma.IModel> = Object.fromEntries(
+    const oldbie: Record<string, AutoBeDatabase.IModel> = Object.fromEntries(
       props.local[kind].map((s) => [s.name, s]),
     );
-    const newbie: AutoBePrisma.IModel[] = props.all[kind].filter(
+    const newbie: AutoBeDatabase.IModel[] = props.all[kind].filter(
       (s) => oldbie[s.name] === undefined,
     );
 

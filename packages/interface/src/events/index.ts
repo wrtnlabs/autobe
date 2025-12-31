@@ -32,14 +32,14 @@ export * from "./AutoBeAnalyzeStartEvent";
 export * from "./AutoBeAnalyzeWriteEvent";
 
 // PRISMA
-export * from "./AutoBePrismaCompleteEvent";
-export * from "./AutoBePrismaComponentEvent";
-export * from "./AutoBePrismaCorrectEvent";
-export * from "./AutoBePrismaInsufficientEvent";
-export * from "./AutoBePrismaReviewEvent";
-export * from "./AutoBePrismaSchemaEvent";
-export * from "./AutoBePrismaStartEvent";
-export * from "./AutoBePrismaValidateEvent";
+export * from "./AutoBeDatabaseCompleteEvent";
+export * from "./AutoBeDatabaseComponentEvent";
+export * from "./AutoBeDatabaseCorrectEvent";
+export * from "./AutoBeDatabaseInsufficientEvent";
+export * from "./AutoBeDatabaseReviewEvent";
+export * from "./AutoBeDatabaseSchemaEvent";
+export * from "./AutoBeDatabaseStartEvent";
+export * from "./AutoBeDatabaseValidateEvent";
 
 // INTERFACE
 export * from "./AutoBeInterfaceAuthorizationEvent";

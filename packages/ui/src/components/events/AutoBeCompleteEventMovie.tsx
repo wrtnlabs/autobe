@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeCompleteEvent,
+  AutoBeDatabaseCompleteEvent,
   AutoBeInterfaceCompleteEvent,
-  AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
   AutoBeTestCompleteEvent,
   IAutoBeGetFilesOptions,
@@ -19,7 +19,7 @@ export interface IAutoBeCompleteEventMovieProps {
   ) => Promise<Record<string, string>>;
   event:
     | AutoBeAnalyzeCompleteEvent
-    | AutoBePrismaCompleteEvent
+    | AutoBeDatabaseCompleteEvent
     | AutoBeInterfaceCompleteEvent
     | AutoBeTestCompleteEvent
     | AutoBeRealizeCompleteEvent;
@@ -307,7 +307,7 @@ function getTitle(
   switch (event.type) {
     case "analyzeComplete":
       return "Analyze";
-    case "prismaComplete":
+    case "databaseComplete":
       if (event.compiled.type !== "success") return "Prisma (Error)";
       return "Prisma";
     case "interfaceComplete":
@@ -326,12 +326,12 @@ const getMessage = (
   openStackBlitz: () => void,
   event: IAutoBeCompleteEventMovieProps["event"],
 ) => {
-  if (event.type === "prismaComplete" && event.compiled.type === "failure")
+  if (event.type === "databaseComplete" && event.compiled.type === "failure")
     return (
       <>
         <br />
         <br />
-        Succeeded to compose <code>AutoBePrisma.IApplication</code> typed AST
+        Succeeded to compose <code>AutoBeDatabase.IApplication</code> typed AST
         (Abstract Syntax Tree) data, but failed to generate Prisma schema files
         from it. This is a bug of <code>@autobe</code>. Please{" "}
         <a
@@ -387,7 +387,7 @@ const getMessage = (
 
 const getPhase = (event: IAutoBeCompleteEventMovieProps["event"]) => {
   if (event.type === "analyzeComplete") return "analyze";
-  else if (event.type === "prismaComplete") return "prisma";
+  else if (event.type === "databaseComplete") return "prisma";
   else if (event.type === "interfaceComplete") return "interface";
   else if (event.type === "testComplete") return "test";
   else if (event.type === "realizeComplete") return "realize";

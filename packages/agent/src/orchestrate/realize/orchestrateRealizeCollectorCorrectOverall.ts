@@ -72,7 +72,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
           local: {
             prismaSchemas: ctx
               .state()
-              .prisma!.result.data.files.map((f) => f.models)
+              .database!.result.data.files.map((f) => f.models)
               .flat()
               .filter((m) => m.name === next.function.plan.prismaSchemaName),
           },
@@ -109,7 +109,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
               neighbors: props.functions.map((f) => f.plan),
               draft: result.data.request.draft,
               revise: result.data.request.revise,
-              application: ctx.state().prisma!.result.data,
+              application: ctx.state().database!.result.data,
             });
           return errors.length
             ? {

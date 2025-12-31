@@ -32,7 +32,7 @@ This rich diagnostic information enables the Correct orchestrators to generate t
 
 ## Tier 1: AutoBE Prisma Compiler
 
-**Location**: `packages/compiler/src/prisma/AutoBePrismaCompiler.ts`
+**Location**: `packages/compiler/src/prisma/AutoBeDatabaseCompiler.ts`
 
 The Prisma Compiler validates database schema definitions for:
 
@@ -45,10 +45,10 @@ The Prisma Compiler validates database schema definitions for:
 ### Validation Process
 
 ```typescript
-export class AutoBePrismaCompiler {
+export class AutoBeDatabaseCompiler {
   public async compile(
-    props: IAutoBePrismaCompileProps
-  ): Promise<IAutoBePrismaCompileResult> {
+    props: IAutoBeDatabaseCompileProps
+  ): Promise<IAutoBeDatabaseCompileResult> {
     // 1. Write schema to temporary file
     const schemaPath = await this.writeSchema(props.schema);
 

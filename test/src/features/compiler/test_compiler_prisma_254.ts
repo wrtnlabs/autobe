@@ -1,9 +1,9 @@
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBePrisma,
+  AutoBeDatabase,
   IAutoBeCompiler,
+  IAutoBeDatabaseValidation,
   IAutoBePrismaCompileResult,
-  IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
@@ -15,20 +15,20 @@ import json from "./examples/prisma.254.json";
 export const test_compiler_prisma_254 = async (
   factory: TestFactory,
 ): Promise<void> => {
-  const app: AutoBePrisma.IApplication =
-    typia.assert<AutoBePrisma.IApplication>(json);
+  const app: AutoBeDatabase.IApplication =
+    typia.assert<AutoBeDatabase.IApplication>(json);
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const valid: IAutoBePrismaValidation = await compiler.prisma.validate(app);
+  const valid: IAutoBeDatabaseValidation =
+    await compiler.database.validate(app);
   if (valid.success === false) throw new Error("Prisma validation failed");
 
   const write = async (dbms: "postgres" | "sqlite"): Promise<void> => {
-    const files: Record<string, string> = await compiler.prisma.write(
-      app,
-      dbms,
-    );
-    const result: IAutoBePrismaCompileResult = await compiler.prisma.compile({
-      files,
-    });
+    const files: Record<string, string> =
+      await compiler.database.writePrismaSchemas(app, dbms);
+    const result: IAutoBePrismaCompileResult =
+      await compiler.database.compilePrismaSchemas({
+        files,
+      });
     if (result.type !== "success") {
       console.log(result.type === "exception" ? result.error : result.reason);
       await FileSystemIterator.save({

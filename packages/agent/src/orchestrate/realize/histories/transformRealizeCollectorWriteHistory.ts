@@ -1,6 +1,6 @@
 import {
+  AutoBeDatabase,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeRealizeCollectorPlan,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -20,9 +20,9 @@ export const transformRealizeCollectorWriteHistory = async (
     neighbors: AutoBeRealizeCollectorPlan[];
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
-  const application: AutoBePrisma.IApplication =
-    ctx.state().prisma!.result.data;
-  const model: AutoBePrisma.IModel = application.files
+  const application: AutoBeDatabase.IApplication =
+    ctx.state().database!.result.data;
+  const model: AutoBeDatabase.IModel = application.files
     .map((f) => f.models)
     .flat()
     .find((m) => m.name === props.plan.prismaSchemaName)!;
@@ -123,8 +123,8 @@ export const transformRealizeCollectorWriteHistory = async (
 function getDeclaration(props: {
   plan: AutoBeRealizeCollectorPlan;
   body: AutoBeOpenApi.IJsonSchema;
-  model: AutoBePrisma.IModel;
-  application: AutoBePrisma.IApplication;
+  model: AutoBeDatabase.IModel;
+  application: AutoBeDatabase.IApplication;
 }): string {
   return StringUtil.trim`
     Here is the declaration of the collector function for 

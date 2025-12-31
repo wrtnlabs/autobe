@@ -37,7 +37,7 @@ export type AutoBeHistory =
   | AutoBeUserMessageHistory
   | AutoBeAssistantMessageHistory
   | AutoBeAnalyzeHistory
-  | AutoBePrismaHistory
+  | AutoBeDatabaseHistory
   | AutoBeInterfaceHistory
   | AutoBeTestHistory
   | AutoBeRealizeHistory;
@@ -51,7 +51,7 @@ export namespace AutoBeHistory {
     userMessage: AutoBeUserMessageHistory;
     assistantMessage: AutoBeAssistantMessageHistory;
     analyze: AutoBeAnalyzeHistory;
-    prisma: AutoBePrismaHistory;
+    prisma: AutoBeDatabaseHistory;
     interface: AutoBeInterfaceHistory;
     test: AutoBeTestHistory;
     realize: AutoBeRealizeHistory;
@@ -79,7 +79,7 @@ function getHistory<T extends AutoBeHistory.Type>(
 
 // TypeScript infers exact return type
 const analyze: AutoBeAnalyzeHistory | undefined = getHistory(histories, "analyze");
-const prisma: AutoBePrismaHistory | undefined = getHistory(histories, "prisma");
+const prisma: AutoBeDatabaseHistory | undefined = getHistory(histories, "prisma");
 ```
 
 ### Event Type System
@@ -464,7 +464,7 @@ Compiler interfaces define contracts for validation and code generation:
 
 ```typescript
 export interface IAutoBeCompiler {
-  prisma: IAutoBePrismaCompiler;
+  prisma: IAutoBeDatabaseCompiler;
   interface: IAutoBeInterfaceCompiler;
   test: IAutoBeTestCompiler;
   typescript: IAutoBeTypeScriptCompiler;
@@ -474,11 +474,11 @@ export interface IAutoBeCompiler {
   };
 }
 
-export interface IAutoBePrismaCompiler {
-  compile(props: IAutoBePrismaCompileProps): Promise<IAutoBePrismaCompileResult>;
+export interface IAutoBeDatabaseCompiler {
+  compile(props: IAutoBeDatabaseCompileProps): Promise<IAutoBeDatabaseCompileResult>;
 }
 
-export interface IAutoBePrismaCompileResult {
+export interface IAutoBeDatabaseCompileResult {
   type: "success" | "failure";
   schemas?: PrismaSchema[];  // If success
   diagnostics?: IDiagnostic[];  // If failure

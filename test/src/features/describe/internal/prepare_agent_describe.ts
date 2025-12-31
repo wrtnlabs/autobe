@@ -13,11 +13,10 @@ export const prepare_agent_describe = (props: {
 
   const agent: AutoBeAgent = props.factory.createAgent([]);
   const state: AutoBeState = agent.getContext().state();
-
   return {
     agent,
     analyze: state.analyze!,
-    prisma: state.prisma!,
+    database: state.database!,
     interface: state.interface!,
     test: state.test!,
   };

@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
@@ -52,7 +52,7 @@ export namespace JsonSchemaFactory {
 
   export const finalize = (props: {
     document: AutoBeOpenApi.IDocument;
-    application: AutoBePrisma.IApplication;
+    application: AutoBeDatabase.IApplication;
   }): void => {
     removeUnused(props.document);
     removeDuplicated(props.document);
@@ -138,15 +138,15 @@ export namespace JsonSchemaFactory {
 
   const fixTimestamps = (props: {
     document: AutoBeOpenApi.IDocument;
-    application: AutoBePrisma.IApplication;
+    application: AutoBeDatabase.IApplication;
   }): void => {
-    const entireModels: AutoBePrisma.IModel[] = props.application.files
+    const entireModels: AutoBeDatabase.IModel[] = props.application.files
       .map((f) => f.models)
       .flat();
     for (const value of Object.values(props.document.components.schemas)) {
       if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
-      const model: AutoBePrisma.IModel | undefined = value[
+      const model: AutoBeDatabase.IModel | undefined = value[
         "x-autobe-prisma-schema"
       ]
         ? entireModels.find((m) => m.name === value["x-autobe-prisma-schema"])
@@ -161,7 +161,7 @@ export namespace JsonSchemaFactory {
           key !== "deleted_at"
         )
           continue;
-        const column: AutoBePrisma.IPlainField | undefined =
+        const column: AutoBeDatabase.IPlainField | undefined =
           model.plainFields.find((c) => c.name === key);
         if (column === undefined) delete value.properties[key];
       }

@@ -11,7 +11,7 @@ import { ArchiveLogger } from "./utils/ArchiveLogger";
 
 const PHASES: AutoBePhase[] = [
   "analyze",
-  "prisma",
+  "database",
   "interface",
   "test",
   "realize",

@@ -1,6 +1,6 @@
 import { IAutoBeGetFilesOptions } from "../facade/IAutoBeGetFilesOptions";
+import { IAutoBeDatabaseCompiler } from "./IAutoBeDatabaseCompiler";
 import { IAutoBeInterfaceCompiler } from "./IAutoBeInterfaceCompiler";
-import { IAutoBePrismaCompiler } from "./IAutoBePrismaCompiler";
 import { IAutoBeRealizeCompiler } from "./IAutoBeRealizeCompiler";
 import { IAutoBeTestCompiler } from "./IAutoBeTestCompiler";
 import { IAutoBeTypeScriptCompiler } from "./IAutoBeTypeScriptCompiler";
@@ -34,7 +34,7 @@ export interface IAutoBeCompiler {
    * Provides the foundational compilation layer that transforms business
    * requirements into validated database architectures through sophisticated
    * AST manipulation. The Prisma compiler operates exclusively on
-   * {@link AutoBePrisma.IApplication} structures, eliminating error-prone
+   * {@link AutoBeDatabase.IApplication} structures, eliminating error-prone
    * text-based schema authoring while ensuring perfect consistency between
    * business logic and data storage design.
    *
@@ -43,7 +43,7 @@ export interface IAutoBeCompiler {
    * deterministic code generation that produces comprehensive documentation,
    * optimal indexes, and proper constraints ready for production deployment.
    */
-  prisma: IAutoBePrismaCompiler;
+  database: IAutoBeDatabaseCompiler;
 
   /**
    * Custom Interface compiler for API specification and NestJS application

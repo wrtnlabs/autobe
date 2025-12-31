@@ -1,6 +1,6 @@
 // import {
 //   AutoBeInterfaceCompiler,
-//   AutoBePrismaCompiler,
+//   AutoBeDatabaseCompiler,
 // } from "@autobe/compiler";
 // import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 // import { AutoBeOpenApi } from "@autobe/interface";
@@ -22,7 +22,7 @@
 //   account: string,
 //   project: string,
 // ): Promise<IProjectExample> => {
-//   const prisma = await new AutoBePrismaCompiler().compile({
+//   const prisma = await new AutoBeDatabaseCompiler().compile({
 //     files: await RepositoryFileSystem.prisma(account, project),
 //   });
 //   if (prisma.type !== "success") throw new Error("Prisma compilation failed.");

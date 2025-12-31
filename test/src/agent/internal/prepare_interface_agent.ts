@@ -22,7 +22,7 @@ export const prepare_interface_agent = async (props: {
     histories: await AutoBeExampleStorage.getHistories({
       vendor: props.vendor,
       project: props.project,
-      phase: "prisma",
+      phase: "database",
     }),
   });
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())

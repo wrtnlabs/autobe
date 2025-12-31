@@ -174,7 +174,7 @@ export namespace AutoBeExampleStorage {
           aggregate: component(),
           facade: component(),
           analyze: component(),
-          prisma: component(),
+          database: component(),
           interface: component(),
           test: component(),
           realize: component(),
@@ -200,7 +200,7 @@ export namespace AutoBeExampleStorage {
   };
 
   const PROMPT_TEMPLATE = {
-    prisma: "Design the database schema.",
+    database: "Design the database schema.",
     interface: "Create the API interface specification.",
     test: "Make the e2e test functions.",
     realize: "Implement API functions.",

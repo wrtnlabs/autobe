@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeHistory,
+  AutoBeDatabaseHistory,
   AutoBeInterfaceHistory,
-  AutoBePrismaHistory,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
 } from "@autobe/interface";
@@ -23,7 +23,7 @@ export interface AutoBeState {
   analyze: AutoBeAnalyzeHistory | null;
 
   /** Latest database schema history. `null` if not completed. */
-  prisma: AutoBePrismaHistory | null;
+  database: AutoBeDatabaseHistory | null;
 
   /** Latest API specification history. `null` if not completed. */
   interface: AutoBeInterfaceHistory | null;
@@ -44,7 +44,7 @@ export interface AutoBeState {
    * Previous database schema history for comparison. `null` if executed 0-1
    * times.
    */
-  previousPrisma: AutoBePrismaHistory | null;
+  previousDatabase: AutoBeDatabaseHistory | null;
 
   /**
    * Previous API specification history for comparison. `null` if executed 0-1

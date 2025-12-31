@@ -1,5 +1,5 @@
 import {
-  AutoBePrismaCorrectEvent,
+  AutoBeDatabaseCorrectEvent,
   AutoBeRealizeAuthorizationCorrectEvent,
   AutoBeRealizeCorrectEvent,
   AutoBeTestCorrectEvent,
@@ -12,7 +12,7 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeCorrectEventMovieProps {
   /** Correct event to display */
   event:
-    | AutoBePrismaCorrectEvent
+    | AutoBeDatabaseCorrectEvent
     | AutoBeTestCorrectEvent
     | AutoBeRealizeCorrectEvent
     | AutoBeRealizeAuthorizationCorrectEvent;

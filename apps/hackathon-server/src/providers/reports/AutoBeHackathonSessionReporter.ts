@@ -181,7 +181,7 @@ export namespace AutoBeHackathonSessionReporter {
 
           ${h.files.map((f) => `- [\`docs/analysis/${f.filename}\`](./docs/analysis/${f.filename})`).join("\n")}
         `;
-      else if (h.type === "prisma") {
+      else if (h.type === "database") {
         let value: string = StringUtil.trim`
           ${title("Prisma")}
 

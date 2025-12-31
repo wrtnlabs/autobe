@@ -205,7 +205,7 @@ System prompt editing is the most critical and sensitive task in AutoBE developm
 - **History Transformers**: `packages/agent/src/orchestrate/*/histories/`
 
 ### Compiler System
-- **Prisma Compiler**: `packages/compiler/src/prisma/AutoBePrismaCompiler.ts`
+- **Prisma Compiler**: `packages/compiler/src/prisma/AutoBeDatabaseCompiler.ts`
 - **OpenAPI Compiler**: `packages/compiler/src/interface/AutoBeInterfaceCompiler.ts`
 - **TypeScript Compiler**: `packages/compiler/src/AutoBeTypeScriptCompiler.ts`
 

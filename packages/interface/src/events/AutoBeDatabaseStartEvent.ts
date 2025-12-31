@@ -17,7 +17,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaStartEvent extends AutoBeEventBase<"prismaStart"> {
+export interface AutoBeDatabaseStartEvent extends AutoBeEventBase<"databaseStart"> {
   /**
    * Reason why the Prisma agent was activated through function calling.
    *

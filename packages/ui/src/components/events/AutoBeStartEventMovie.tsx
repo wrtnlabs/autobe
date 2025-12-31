@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeStartEvent,
+  AutoBeDatabaseStartEvent,
   AutoBeInterfaceStartEvent,
-  AutoBePrismaStartEvent,
   AutoBeRealizeAuthorizationStartEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestStartEvent,
@@ -11,7 +11,7 @@ import {
 interface IAutoBeStartEventProps {
   event:
     | AutoBeAnalyzeStartEvent
-    | AutoBePrismaStartEvent
+    | AutoBeDatabaseStartEvent
     | AutoBeInterfaceStartEvent
     | AutoBeTestStartEvent
     | AutoBeRealizeStartEvent
@@ -61,8 +61,8 @@ function getTitle(event: IAutoBeStartEventProps["event"]): string {
   switch (event.type) {
     case "analyzeStart":
       return "Analyze";
-    case "prismaStart":
-      return "Prisma";
+    case "databaseStart":
+      return "Database";
     case "interfaceStart":
       return "Interface";
     case "testStart":

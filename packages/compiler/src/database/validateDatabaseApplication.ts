@@ -1,10 +1,10 @@
-import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
+import { AutoBeDatabase, IAutoBeDatabaseValidation } from "@autobe/interface";
 import { MapUtil, StringUtil } from "@autobe/utils";
 import { HashMap, hash } from "tstl";
 
-export function validatePrismaApplication(
-  application: AutoBePrisma.IApplication,
-): IAutoBePrismaValidation {
+export function validateDatabaseApplication(
+  application: AutoBeDatabase.IApplication,
+): IAutoBeDatabaseValidation {
   const dict: Map<string, IModelContainer> = new Map(
     application.files
       .map((file, fi) =>
@@ -23,7 +23,7 @@ export function validatePrismaApplication(
       )
       .flat(),
   );
-  const errors: IAutoBePrismaValidation.IError[] = [
+  const errors: IAutoBeDatabaseValidation.IError[] = [
     ...validateDuplicatedFiles(application),
     ...validateDuplicatedModels(application),
     ...application.files
@@ -53,8 +53,8 @@ export function validatePrismaApplication(
 }
 
 interface IModelContainer {
-  file: AutoBePrisma.IFile;
-  model: AutoBePrisma.IModel;
+  file: AutoBeDatabase.IFile;
+  model: AutoBeDatabase.IModel;
   fileIndex: number;
   modelIndex: number;
 }
@@ -63,10 +63,10 @@ interface IModelContainer {
   DUPLICATES
 ----------------------------------------------------------- */
 function validateDuplicatedFiles(
-  app: AutoBePrisma.IApplication,
-): IAutoBePrismaValidation.IError[] {
+  app: AutoBeDatabase.IApplication,
+): IAutoBeDatabaseValidation.IError[] {
   interface IFileContainer {
-    file: AutoBePrisma.IFile;
+    file: AutoBeDatabase.IFile;
     index: number;
   }
   const group: Map<string, IFileContainer[]> = new Map();
@@ -75,7 +75,7 @@ function validateDuplicatedFiles(
     MapUtil.take(group, file.filename, () => []).push(container);
   });
 
-  const errors: IAutoBePrismaValidation.IError[] = [];
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
   for (const array of group.values())
     if (array.length !== 1)
       array.forEach((container, i) => {
@@ -99,8 +99,8 @@ function validateDuplicatedFiles(
 }
 
 function validateDuplicatedModels(
-  app: AutoBePrisma.IApplication,
-): IAutoBePrismaValidation.IError[] {
+  app: AutoBeDatabase.IApplication,
+): IAutoBeDatabaseValidation.IError[] {
   const modelContainers: Map<string, IModelContainer[]> = new Map();
   app.files.forEach((file, fileIndex) => {
     file.models.forEach((model, modelIndex) => {
@@ -114,7 +114,7 @@ function validateDuplicatedModels(
     });
   });
 
-  const errors: IAutoBePrismaValidation.IError[] = [];
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
   for (const array of modelContainers.values())
     if (array.length !== 1)
       array.forEach((container, i) => {
@@ -142,10 +142,10 @@ function validateDuplicatedModels(
 
 function validateDuplicatedFields(
   dict: Map<string, IModelContainer>,
-  model: AutoBePrisma.IModel,
+  model: AutoBeDatabase.IModel,
   accessor: string,
-): IAutoBePrismaValidation.IError[] {
-  const errors: IAutoBePrismaValidation.IError[] = [];
+): IAutoBeDatabaseValidation.IError[] {
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
 
   // FIND DUPLICATED FIELDS
   const group: Map<string, string[]> = new Map();
@@ -231,10 +231,10 @@ function validateDuplicatedFields(
 }
 
 function validateDuplicatedIndexes(
-  model: AutoBePrisma.IModel,
+  model: AutoBeDatabase.IModel,
   accessor: string,
-): IAutoBePrismaValidation.IError[] {
-  const errors: IAutoBePrismaValidation.IError[] = [];
+): IAutoBeDatabaseValidation.IError[] {
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
 
   // FIND DUPLICATED INDEXES
   const group: HashMap<string[], string[]> = new HashMap(
@@ -434,9 +434,9 @@ function validateDuplicatedIndexes(
   VALIDATIONS
 ----------------------------------------------------------- */
 function validateIndexes(
-  model: AutoBePrisma.IModel,
+  model: AutoBeDatabase.IModel,
   accessor: string,
-): IAutoBePrismaValidation.IError[] {
+): IAutoBeDatabaseValidation.IError[] {
   // EMENSION
   model.uniqueIndexes = model.uniqueIndexes.filter(
     (unique) =>
@@ -449,7 +449,7 @@ function validateIndexes(
       plain.fieldNames[0] !== model.primaryField.name,
   );
 
-  const errors: IAutoBePrismaValidation.IError[] = [];
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
   const columnNames: Set<string> = new Set([
     model.primaryField.name,
     ...model.foreignFields.map((field) => field.name),
@@ -589,11 +589,11 @@ function validateIndexes(
 }
 
 function validateReferences(
-  model: AutoBePrisma.IModel,
+  model: AutoBeDatabase.IModel,
   accessor: string,
   dict: Map<string, IModelContainer>,
-): IAutoBePrismaValidation.IError[] {
-  const errors: IAutoBePrismaValidation.IError[] = [];
+): IAutoBeDatabaseValidation.IError[] {
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
 
   model.foreignFields.forEach((field, i) => {
     // DUPLICATED NAME

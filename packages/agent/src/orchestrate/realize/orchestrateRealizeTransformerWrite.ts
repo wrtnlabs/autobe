@@ -1,8 +1,8 @@
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeProgressEventBase,
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeTransformerPlan,
@@ -76,9 +76,9 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerFunction> {
-  const models: AutoBePrisma.IModel[] = ctx
+  const models: AutoBeDatabase.IModel[] = ctx
     .state()
-    .prisma!.result.data.files.map((f) => f.models)
+    .database!.result.data.files.map((f) => f.models)
     .flat();
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
@@ -103,7 +103,7 @@ async function process(
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: "realizeWrite",
       controller: createController({
-        application: ctx.state().prisma!.result.data,
+        application: ctx.state().database!.result.data,
         document,
         plan: props.plan,
         neighbors: props.neighbors,
@@ -154,7 +154,7 @@ async function process(
 }
 
 function createController(props: {
-  application: AutoBePrisma.IApplication;
+  application: AutoBeDatabase.IApplication;
   document: AutoBeOpenApi.IDocument;
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];

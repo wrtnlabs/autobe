@@ -43,7 +43,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     // START EVENTS
     case "analyzeStart":
-    case "prismaStart":
+    case "databaseStart":
     case "interfaceStart":
     case "testStart":
     case "realizeStart":
@@ -52,7 +52,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       return <AutoBeStartEventMovie event={back} />;
     // SCENARIO EVENTS
     case "analyzeScenario":
-    case "prismaComponent":
+    case "databaseComponent":
     case "interfaceGroup":
     case "realizeTestReset":
       return <AutoBeScenarioEventMovie event={back} />;
@@ -60,8 +60,8 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "analyzeWrite":
     case "analyzeReview":
     case "interfaceEndpoint":
-    case "prismaSchema":
-    case "prismaReview":
+    case "databaseSchema":
+    case "databaseReview":
     case "interfaceOperation":
     case "interfaceOperationReview":
     case "interfaceAuthorization":
@@ -79,8 +79,8 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "realizeTestOperation":
       return <AutoBeProgressEventMovie event={back} />;
     // VALIDATE EVENTS
-    case "prismaInsufficient":
-    case "prismaValidate":
+    case "databaseInsufficient":
+    case "databaseValidate":
     case "testValidate":
     case "realizeValidate":
     case "realizeAuthorizationValidate":
@@ -96,7 +96,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     // COMPLETE EVENTS
     case "analyzeComplete":
-    case "prismaComplete":
+    case "databaseComplete":
     case "interfaceComplete":
     case "testComplete":
     case "realizeComplete":
@@ -104,7 +104,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
         <AutoBeCompleteEventMovie getFiles={service.getFiles} event={back} />
       );
     // CORRECT EVENTS
-    case "prismaCorrect":
+    case "databaseCorrect":
     case "testCorrect":
     case "realizeCorrect":
     case "realizeAuthorizationCorrect": {

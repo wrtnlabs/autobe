@@ -12,7 +12,7 @@ const connector: WebSocketConnector<
   analyzeComplete: async (evt) => {
     console.log("analyze completed", evt.files);
   },
-  prismaComplete: async (evt) => {
+  databaseComplete: async (evt) => {
     console.log("prisma completed", evt.schemas);
   },
   interfaceComplete: async (evt) => {

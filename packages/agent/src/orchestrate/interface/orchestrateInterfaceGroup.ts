@@ -1,8 +1,8 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabaseHistory,
   AutoBeEventSource,
   AutoBeInterfaceGroupEvent,
-  AutoBePrismaHistory,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -22,7 +22,7 @@ export async function orchestrateInterfaceGroup(
   },
 ): Promise<AutoBeInterfaceGroupEvent> {
   const start: Date = new Date();
-  const prisma: AutoBePrismaHistory | null = ctx.state().prisma;
+  const prisma: AutoBeDatabaseHistory | null = ctx.state().database;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"

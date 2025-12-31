@@ -22,28 +22,28 @@ The vibe coding approach transforms the entire software development lifecycle. C
 ## Prisma Compiler
 
 <Tabs items={[
-  <code>IAutoBePrismaValidation</code>,
-  <code>AutoBePrisma.IApplication</code>,
+  <code>IAutoBeDatabaseValidation</code>,
+  <code>AutoBeDatabase.IApplication</code>,
 ]}>
   <Tabs.Tab>
     <LocalSource 
-      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts" 
+      path="packages/interface/src/prisma/IAutoBeDatabaseValidation.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource 
-      path="packages/interface/src/prisma/AutoBePrisma.ts" 
+      path="packages/interface/src/prisma/AutoBeDatabase.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 
-`@autobe`'s custom Prisma Compiler represents the foundational layer of the vibe coding infrastructure, transforming business requirements into validated database architectures through sophisticated AST (Abstract Syntax Tree) manipulation. This compiler operates exclusively on [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) structures, eliminating the error-prone nature of text-based schema authoring while ensuring perfect consistency between business logic and data storage design.
+`@autobe`'s custom Prisma Compiler represents the foundational layer of the vibe coding infrastructure, transforming business requirements into validated database architectures through sophisticated AST (Abstract Syntax Tree) manipulation. This compiler operates exclusively on [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts) structures, eliminating the error-prone nature of text-based schema authoring while ensuring perfect consistency between business logic and data storage design.
 
 ### Vibe Coding Database Architecture
 
-The Prisma Compiler processes structured data through comprehensive [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) interfaces that capture every aspect of database design as typed, validated structures. AI agents construct these ASTs through function calling, ensuring that database schemas are semantically correct and business-aligned before any code generation occurs.
+The Prisma Compiler processes structured data through comprehensive [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts) interfaces that capture every aspect of database design as typed, validated structures. AI agents construct these ASTs through function calling, ensuring that database schemas are semantically correct and business-aligned before any code generation occurs.
 
 This structured approach fundamentally eliminates the possibility of syntactic errors in database design. Every property is typed, constrained, and validated to ensure that only valid database architectures can be constructed. The function calling interface prevents invalid combinations at the source, creating a development environment where database design errors simply cannot occur.
 

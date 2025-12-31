@@ -30,10 +30,10 @@ export interface AutoBeAgentHistoryBase<Type extends string> {
    * Type discriminator indicating the specific kind of history record.
    *
    * Provides type-safe discrimination between different history record types
-   * such as "analyze", "prisma", "interface", "test", "realize", "userMessage",
-   * and "assistantMessage". This enables proper type narrowing and ensures that
-   * history records are processed according to their specific characteristics
-   * and requirements.
+   * such as "analyze", "database", "interface", "test", "realize",
+   * "userMessage", and "assistantMessage". This enables proper type narrowing
+   * and ensures that history records are processed according to their specific
+   * characteristics and requirements.
    */
   type: Type;
 

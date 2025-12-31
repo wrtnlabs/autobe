@@ -4,8 +4,8 @@ export * from "./compiler";
 export * from "./histories";
 export * from "./json";
 
+export * from "./database";
 export * from "./openapi";
-export * from "./prisma";
 export * from "./test";
 export * from "./typings";
 

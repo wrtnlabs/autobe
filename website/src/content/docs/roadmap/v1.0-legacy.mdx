@@ -157,7 +157,7 @@ In v1.0, we're transitioning to an intelligent cyclic structure where each agent
 ```typescript showLineNumbers
 interface IAutoBeInterfaceOperationApplication {
   getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[]; 
+  getModels(names: string[]): AutoBeDatabase.IModel[]; 
   complete(operations: AutoBeOpenApi.IOperation[]): void;
   halt(reason: string): void;
 }
@@ -167,7 +167,7 @@ interface IAutoBeInterfaceOperationApplication {
 ```typescript showLineNumbers
 interface IAutoBeTestScenarioApplication {
   getDocuments(filenames: string[]): Record<string, string>;
-  getModels(names: string[]): AutoBePrisma.IModel[]; 
+  getModels(names: string[]): AutoBeDatabase.IModel[]; 
   getOperation(endpoints: AutoBeOpenApi.IEndpoint[]): {
     operations: AutoBeOpenApi.IOperation[];
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;

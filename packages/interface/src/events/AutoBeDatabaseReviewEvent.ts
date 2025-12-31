@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "../prisma/AutoBePrisma";
+import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -21,8 +21,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaReviewEvent
-  extends AutoBeEventBase<"prismaReview">,
+export interface AutoBeDatabaseReviewEvent
+  extends
+    AutoBeEventBase<"databaseReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /** Name of the Prisma schema file being reviewed. */
@@ -104,7 +105,7 @@ export interface AutoBePrismaReviewEvent
    *
    * - **Complete Models**: Each entry must be a complete model definition
    * - **Targeted Changes**: Only includes models that need modifications
-   * - **AST Compliance**: Follows AutoBePrisma.IModel interface structure
+   * - **AST Compliance**: Follows AutoBeDatabase.IModel interface structure
    * - **Relationship Integrity**: All foreign keys reference valid models
    * - **Index Optimization**: Strategic indexes without redundancy
    * - **Documentation**: Comprehensive English descriptions
@@ -115,7 +116,7 @@ export interface AutoBePrismaReviewEvent
    * - The final schema merges these modifications with the original draft
    * - All modifications must resolve issues identified in the review
    */
-  modifications: AutoBePrisma.IModel[];
+  modifications: AutoBeDatabase.IModel[];
 
   /**
    * Iteration number of the requirements analysis this review was performed

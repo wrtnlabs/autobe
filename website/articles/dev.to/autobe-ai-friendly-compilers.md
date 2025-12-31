@@ -50,8 +50,8 @@ The output of each agent is validated through corresponding dedicated compilers.
 A compiler for database design.
 
 - Compiler Structures
-  - [`AutoBePrisma.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts)
-  - [`IAutoBePrismaValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts)
+  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts)
+  - [`IAutoBeDatabaseValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/IAutoBeDatabaseValidation.ts)
   - [`IValidation`](https://github.com/samchon/openapi/blob/master/src/structures/IValidation.ts)
 - Generation Result
   - Prisma Schema Files: https://github.com/wrtnlabs/autobe-example-bbs/tree/main/prisma/schema
@@ -59,9 +59,9 @@ A compiler for database design.
 
 [`AutoBE`](https://github.com/wrtnlabs/autobe) utilizes a self-developed DB compiler when designing databases.
 
-First, it creates an AST (Abstract Syntax Tree) structure called `AutoBePrisma.IFile` through AI function calling (or structured output). Then it analyzes the data created by the AI to check for logical or type errors.
+First, it creates an AST (Abstract Syntax Tree) structure called `AutoBeDatabase.IFile` through AI function calling (or structured output). Then it analyzes the data created by the AI to check for logical or type errors.
 
-If logical errors are found, these are returned to the AI in the form of `IAutoBePrismaValidation` with detailed reasons, guiding the AI to generate correct `AutoBePrisma.IFile` data in the next function calling. Major logical error cases include:
+If logical errors are found, these are returned to the AI in the form of `IAutoBeDatabaseValidation` with detailed reasons, guiding the AI to generate correct `AutoBeDatabase.IFile` data in the next function calling. Major logical error cases include:
 
 - **Duplication errors**: Duplicate definitions of filenames, model names, field names
 - **Circular references**: Cross-dependencies where two models reference each other as foreign keys
@@ -72,7 +72,7 @@ If logical errors are found, these are returned to the AI in the form of `IAutoB
 
 If type errors are found, these are also returned to the AI in the form of `IValidation`, guiding the AI to generate data with correct types.
 
-Finally, when `AutoBePrisma.IFile` is correctly generated without any logical or type errors, it is converted to Prisma DB schema (code generation). Simultaneously, ERD (Entity Relationship Diagram) and documentation are also generated ([`prisma-markdown`](https://github.com/samchon/prisma-markdown)), helping users understand their DB design.
+Finally, when `AutoBeDatabase.IFile` is correctly generated without any logical or type errors, it is converted to Prisma DB schema (code generation). Simultaneously, ERD (Entity Relationship Diagram) and documentation are also generated ([`prisma-markdown`](https://github.com/samchon/prisma-markdown)), helping users understand their DB design.
 
 The generated Prisma schema files include detailed descriptive comments for each table and field. These comments go beyond simple code documentation - they are directly utilized by `prisma-markdown` when generating ERDs and documentation, becoming core content of the database design documents. Therefore, developers can clearly understand the role of each table and field not only at the code level but also through visual ERD diagrams.
 
@@ -154,7 +154,7 @@ A compiler for AI function calling and validation feedback.
   - [`typia.llm.application<App, Model>()`](https://typia.io/docs/llm/application/): AI function calling
   - [`typia.llm.parameters<Params, Model>()`](https://typia.io/docs/llm/parameters/): AI structured output
 - AST Structures
-  - [`AutoBePrisma.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts)
+  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts)
   - [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts)
   - [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)
 

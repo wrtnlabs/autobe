@@ -69,7 +69,7 @@ export interface IAutoBePlaygroundReplay {
    * if the session didn't reach the prisma phase or if snapshot data wasn't
    * captured for this phase.
    */
-  prisma: AutoBeEventSnapshot[] | null;
+  database: AutoBeEventSnapshot[] | null;
 
   /**
    * Event snapshots from the API interface design phase.
@@ -172,7 +172,7 @@ export namespace IAutoBePlaygroundReplay {
      * generation success, timing, and iteration counts. Null if this phase
      * wasn't reached.
      */
-    prisma: IPhaseState | null;
+    database: IPhaseState | null;
 
     /**
      * Summary state for the API interface design phase.

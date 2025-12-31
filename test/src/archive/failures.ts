@@ -26,7 +26,7 @@ const main = async (): Promise<void> => {
     | "qwen/qwen3-next-80b-a3b-instruct";
   const phaseSequence = [
     "analyze",
-    "prisma",
+    "database",
     "interface",
     "test",
     "realize",
@@ -54,7 +54,7 @@ const main = async (): Promise<void> => {
         if (last === undefined) continue;
         else if (
           !(
-            (last.type === "prisma" && last.compiled.type === "failure") ||
+            (last.type === "database" && last.compiled.type === "failure") ||
             (last.type === "interface" && last.missed.length !== 0) ||
             (last.type === "test" && last.compiled.type === "failure") ||
             (last.type === "realize" && last.compiled.type === "failure")
@@ -72,7 +72,7 @@ const main = async (): Promise<void> => {
           \`\`\`
         `);
         console.log("\n");
-        if (last.type === "prisma") {
+        if (last.type === "database") {
           if (last.compiled.type === "failure")
             console.log(last.compiled.reason);
         } else if (last.type === "interface") console.log(last.missed);

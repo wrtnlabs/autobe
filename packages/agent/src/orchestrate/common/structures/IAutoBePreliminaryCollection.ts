@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeFile,
+  AutoBeDatabase,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -20,7 +20,7 @@ export interface IAutoBePreliminaryCollection {
   analysisFiles: AutoBeAnalyzeFile[];
 
   /** Prisma database models from PRISMA phase. */
-  prismaSchemas: AutoBePrisma.IModel[];
+  prismaSchemas: AutoBeDatabase.IModel[];
 
   /** OpenAPI operations from INTERFACE phase. */
   interfaceOperations: AutoBeOpenApi.IOperation[];
@@ -38,7 +38,7 @@ export interface IAutoBePreliminaryCollection {
   previousAnalysisFiles: AutoBeAnalyzeFile[];
 
   /** Prisma schemas from previous iteration (for complement). */
-  previousPrismaSchemas: AutoBePrisma.IModel[];
+  previousPrismaSchemas: AutoBeDatabase.IModel[];
 
   /** Interface operations from previous iteration (for complement). */
   previousInterfaceOperations: AutoBeOpenApi.IOperation[];

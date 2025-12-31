@@ -13,9 +13,10 @@ export const test_compiler_facade_bbs = async (
   factory: TestFactory,
 ): Promise<void> => {
   const compiler: IAutoBeCompiler = factory.createCompiler();
-  const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
-    files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
-  });
+  const prisma: IAutoBePrismaCompileResult =
+    await compiler.database.compilePrismaSchemas({
+      files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
+    });
   if (prisma.type !== "success") {
     console.log(prisma.type === "failure" ? prisma.reason : prisma.error);
     throw new Error("Failed to pass prisma generate");

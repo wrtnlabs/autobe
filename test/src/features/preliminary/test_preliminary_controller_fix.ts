@@ -15,7 +15,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
-      phase: "prisma",
+      phase: "database",
     })) === false
   )
     return false;
@@ -29,7 +29,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     histories: await AutoBeExampleStorage.getHistories({
       vendor: TestGlobal.vendorModel,
       project: "todo",
-      phase: "prisma",
+      phase: "database",
     }),
   });
 

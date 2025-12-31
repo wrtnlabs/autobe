@@ -1,5 +1,5 @@
 import { IAutoBePrismaCompileResult } from "../compiler/IAutoBePrismaCompileResult";
-import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
+import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
@@ -18,13 +18,12 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaCompleteEvent
-  extends AutoBeCompleteEventBase<"prismaComplete"> {
+export interface AutoBeDatabaseCompleteEvent extends AutoBeCompleteEventBase<"databaseComplete"> {
   /**
    * The validated AST application structure containing the complete database
    * design.
    *
-   * Contains the finalized {@link AutoBePrisma.IApplication} structure that
+   * Contains the finalized {@link AutoBeDatabase.IApplication} structure that
    * represents the complete database architecture as validated AST data. This
    * application includes all models, relationships, constraints, and business
    * rules that have passed through the comprehensive validation process
@@ -35,7 +34,7 @@ export interface AutoBePrismaCompleteEvent
    * design that has been verified for semantic correctness and business
    * alignment before code generation.
    */
-  result: IAutoBePrismaValidation;
+  result: IAutoBeDatabaseValidation;
 
   /**
    * Generated Prisma schema files as key-value pairs.

@@ -1,11 +1,11 @@
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBeDatabase } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
 
-export interface IAutoBePrismaSchemaApplication {
+export interface IAutoBeDatabaseSchemaApplication {
   /**
    * Process schema generation task or preliminary data requests.
    *
@@ -15,9 +15,9 @@ export interface IAutoBePrismaSchemaApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBePrismaSchemaApplication.IProps): void;
+  process(props: IAutoBeDatabaseSchemaApplication.IProps): void;
 }
-export namespace IAutoBePrismaSchemaApplication {
+export namespace IAutoBeDatabaseSchemaApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -133,6 +133,6 @@ export namespace IAutoBePrismaSchemaApplication {
      * - Proper historical data preservation where needed
      * - Optimized index strategy for expected query patterns
      */
-    models: AutoBePrisma.IModel[] & tags.MinItems<1>;
+    models: AutoBeDatabase.IModel[] & tags.MinItems<1>;
   }
 }

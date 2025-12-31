@@ -28,7 +28,7 @@ export function createPreliminaryCollection(
     analysisFiles: defined?.analysisFiles ?? state.analyze?.files ?? [],
     prismaSchemas:
       defined?.prismaSchemas ??
-      state.prisma?.result.data.files.map((f) => f.models).flat() ??
+      state.database?.result.data.files.map((f) => f.models).flat() ??
       [],
     interfaceOperations:
       defined?.interfaceOperations ??
@@ -48,7 +48,8 @@ export function createPreliminaryCollection(
       [],
     previousAnalysisFiles: state.previousAnalyze?.files ?? [],
     previousPrismaSchemas:
-      state.previousPrisma?.result.data.files.map((f) => f.models).flat() ?? [],
+      state.previousDatabase?.result.data.files.map((f) => f.models).flat() ??
+      [],
     previousInterfaceSchemas:
       state.previousInterface?.document.components.schemas ?? {},
     previousInterfaceOperations:

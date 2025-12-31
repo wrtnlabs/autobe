@@ -1,10 +1,10 @@
 import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
-  AutoBePrisma,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
@@ -346,8 +346,8 @@ const orchestratePrismaSchemas = (
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     source_id: string;
     trial: number;
-    all: AutoBePrisma.IModel[];
-    local: AutoBePrisma.IModel[];
+    all: AutoBeDatabase.IModel[];
+    local: AutoBeDatabase.IModel[];
     arguments: unknown;
     previous: boolean;
   },
@@ -368,7 +368,7 @@ const orchestratePrismaSchemas = (
 
   const existing: string[] = props.local.map((m) => m.name);
   for (const name of props.arguments.request.schemaNames) {
-    const model: AutoBePrisma.IModel | undefined = props.all.find(
+    const model: AutoBeDatabase.IModel | undefined = props.all.find(
       (m) => m.name === name,
     );
     if (model === undefined) continue;

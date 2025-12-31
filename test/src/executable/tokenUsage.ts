@@ -12,7 +12,7 @@ const main = async (): Promise<void> => {
     console.log("-------------------------------------------------");
     for (const phase of [
       "analyze",
-      "prisma",
+      "database",
       "interface",
       "test",
       "realize",

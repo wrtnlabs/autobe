@@ -25,7 +25,7 @@ export namespace RepositoryFileSystem {
     await vs.get(account, project);
     const result: Record<string, string> = await FileSystemIterator.read({
       root: `${ROOT}/internals/repositories/${account}/${project}/prisma/schema`,
-      extension: "prisma",
+      extension: "database",
     });
     for (const [key, value] of Object.entries(result))
       result[key] = value.split("@author Samchon").join("@author AutoBE");

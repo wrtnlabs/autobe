@@ -43,7 +43,7 @@ function getCurrentState(state: AutoBeState): ICurrentState {
   };
   return {
     analyze: state.analyze === null ? "none" : "up-to-date",
-    prisma: value(state.prisma),
+    prisma: value(state.database),
     interface: value(state.interface),
     test: value(state.test),
     realize: value(state.realize),

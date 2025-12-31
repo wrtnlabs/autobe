@@ -1,7 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabaseComponentEvent,
   AutoBeEventSource,
-  AutoBePrismaComponentEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -11,18 +11,18 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
-import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
+import { IAutoBeDatabaseComponentApplication } from "./structures/IAutoBeDatabaseComponentApplication";
 
 export async function orchestratePrismaComponents(
   ctx: AutoBeContext,
   instruction: string,
-): Promise<AutoBePrismaComponentEvent> {
+): Promise<AutoBeDatabaseComponentEvent> {
   const start: Date = new Date();
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
   > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBePrismaComponentApplication>(),
+    application: typia.json.application<IAutoBeDatabaseComponentApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
     state: ctx.state(),
@@ -34,7 +34,7 @@ export async function orchestratePrismaComponents(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBePrismaComponentApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null> =
       {
         value: null,
       };
@@ -53,7 +53,7 @@ export async function orchestratePrismaComponents(
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBePrismaComponentEvent = {
+    const event: AutoBeDatabaseComponentEvent = {
       type: SOURCE,
       id: v7(),
       created_at: start.toISOString(),
@@ -70,14 +70,14 @@ export async function orchestratePrismaComponents(
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBePrismaComponentApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
   >;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBePrismaComponentApplication.IProps> =
-      typia.validate<IAutoBePrismaComponentApplication.IProps>(input);
+    const result: IValidation<IAutoBeDatabaseComponentApplication.IProps> =
+      typia.validate<IAutoBeDatabaseComponentApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -86,7 +86,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBePrismaComponentApplication>({
+    typia.llm.application<IAutoBeDatabaseComponentApplication>({
       validate: {
         process: validate,
       },
@@ -101,12 +101,12 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBePrismaComponentApplication,
+    } satisfies IAutoBeDatabaseComponentApplication,
   };
 }
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBePrismaComponentApplication.IProps>;
+) => IValidation<IAutoBeDatabaseComponentApplication.IProps>;
 
-const SOURCE = "prismaComponent" satisfies AutoBeEventSource;
+const SOURCE = "databaseComponent" satisfies AutoBeEventSource;

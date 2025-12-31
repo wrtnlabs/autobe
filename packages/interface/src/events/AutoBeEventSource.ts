@@ -1,6 +1,10 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
+import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
+import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
+import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
@@ -15,10 +19,6 @@ import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
-import { AutoBePrismaComponentEvent } from "./AutoBePrismaComponentEvent";
-import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
-import { AutoBePrismaReviewEvent } from "./AutoBePrismaReviewEvent";
-import { AutoBePrismaSchemaEvent } from "./AutoBePrismaSchemaEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
@@ -69,11 +69,11 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeScenarioEvent["type"]
   | AutoBeAnalyzeWriteEvent["type"]
   | AutoBeAnalyzeReviewEvent["type"]
-  // prisma
-  | AutoBePrismaComponentEvent["type"]
-  | AutoBePrismaSchemaEvent["type"]
-  | AutoBePrismaReviewEvent["type"]
-  | AutoBePrismaCorrectEvent["type"]
+  // database
+  | AutoBeDatabaseComponentEvent["type"]
+  | AutoBeDatabaseSchemaEvent["type"]
+  | AutoBeDatabaseReviewEvent["type"]
+  | AutoBeDatabaseCorrectEvent["type"]
   // interface
   | AutoBeInterfaceAuthorizationEvent["type"]
   | AutoBeInterfaceGroupEvent["type"]

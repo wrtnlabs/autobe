@@ -38,7 +38,7 @@ export async function orchestrateRealizeCollectorPlan(
   const prismaSchemaNames: Set<string> = new Set(
     ctx
       .state()
-      .prisma!.result.data.files.map((f) => f.models)
+      .database!.result.data.files.map((f) => f.models)
       .flat()
       .map((m) => m.name),
   );

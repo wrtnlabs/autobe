@@ -151,7 +151,7 @@ async function process(
     } satisfies AutoBeRealizeAuthorizationWriteEvent);
 
     const prismaCompiled: IAutoBePrismaCompileResult | undefined =
-      ctx.state().prisma?.compiled;
+      ctx.state().database?.compiled;
     const prismaClient: Record<string, string> =
       prismaCompiled?.type === "success" ? prismaCompiled.client : {};
     return out(result)(

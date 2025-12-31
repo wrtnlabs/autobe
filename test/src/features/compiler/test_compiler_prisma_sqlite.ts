@@ -1,9 +1,9 @@
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import { AutoBePrismaCompiler } from "@autobe/compiler";
+import { AutoBeDatabaseCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
+  AutoBeDatabaseHistory,
   AutoBeHistory,
-  AutoBePrismaHistory,
   IAutoBePrismaCompileResult,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -15,7 +15,7 @@ export const test_compiler_prisma_sqlite = async () => {
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
       project: "todo",
-      phase: "prisma",
+      phase: "database",
     })) === false
   )
     return false;
@@ -23,15 +23,15 @@ export const test_compiler_prisma_sqlite = async () => {
   const histories: AutoBeHistory[] = await AutoBeExampleStorage.getHistories({
     vendor: TestGlobal.vendorModel,
     project: "todo",
-    phase: "prisma",
+    phase: "database",
   });
-  const prisma: AutoBePrismaHistory | undefined = histories.find(
-    (h) => h.type === "prisma",
+  const prisma: AutoBeDatabaseHistory | undefined = histories.find(
+    (h) => h.type === "database",
   );
   if (prisma === undefined) throw new Error("Prisma history not found");
 
-  const compiler: AutoBePrismaCompiler = new AutoBePrismaCompiler();
-  const files: Record<string, string> = await compiler.write(
+  const compiler: AutoBeDatabaseCompiler = new AutoBeDatabaseCompiler();
+  const files: Record<string, string> = await compiler.writePrismaSchemas(
     prisma.result.data,
     "sqlite",
   );
@@ -42,8 +42,9 @@ export const test_compiler_prisma_sqlite = async () => {
     ),
   });
 
-  const result: IAutoBePrismaCompileResult = await compiler.compile({
-    files,
-  });
+  const result: IAutoBePrismaCompileResult =
+    await compiler.compilePrismaSchemas({
+      files,
+    });
   TestValidator.equals("result", result.type, "success");
 };

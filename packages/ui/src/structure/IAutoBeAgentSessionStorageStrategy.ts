@@ -46,7 +46,7 @@ export const AutoBeAgentSession_INIT = {
     "aggregate",
     "facade",
     "analyze",
-    "prisma",
+    "database",
     "interface",
     "test",
     "realize",

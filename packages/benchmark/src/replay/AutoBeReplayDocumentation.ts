@@ -66,7 +66,7 @@ export namespace AutoBeReplayDocumentation {
         `[\`${found.project}\`](./${exp.vendor}/${found.project}/)`,
         (exp.score as any)[project],
         phase(found.analyze),
-        phase(found.prisma),
+        phase(found.database),
         phase(found.interface),
         phase(found.test),
         phase(found.realize),
@@ -139,7 +139,7 @@ export namespace AutoBeReplayDocumentation {
 
       Phase | Generated | Token Usage | Elapsed Time | FCSR
       :-----|:----------|------------:|-------------:|------:
-      ${(["analyze", "prisma", "interface", "test", "realize"] as const)
+      ${(["analyze", "database", "interface", "test", "realize"] as const)
         .map((key) => phase(key))
         .join("\n")}
     `;

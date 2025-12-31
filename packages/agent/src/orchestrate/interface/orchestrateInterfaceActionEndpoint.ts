@@ -1,10 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroup,
   AutoBeOpenApi,
-  AutoBePrisma,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
@@ -81,10 +81,10 @@ async function process(
   },
 ): Promise<IAutoBeInterfaceActionEndpointApplication.IEndpoint[]> {
   const start: Date = new Date();
-  const prismaSchemas: Map<string, AutoBePrisma.IModel> = new Map(
+  const prismaSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
     ctx
       .state()
-      .prisma!.result.data.files.flatMap((f) => f.models)
+      .database!.result.data.files.flatMap((f) => f.models)
       .map((m) => [m.name, m]),
   );
 

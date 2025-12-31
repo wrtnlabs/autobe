@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "../prisma";
+import { AutoBeDatabase } from "../database";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -18,9 +18,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePrismaComponentEvent
-  extends AutoBeEventBase<"prismaComponent">,
-    AutoBeAggregateEventBase {
+export interface AutoBeDatabaseComponentEvent
+  extends AutoBeEventBase<"databaseComponent">, AutoBeAggregateEventBase {
   /**
    * Initial thoughts on namespace classification criteria.
    *
@@ -82,7 +81,7 @@ export interface AutoBePrismaComponentEvent
    * maintainable, with clear separation of concerns across different business
    * areas.
    */
-  components: AutoBePrisma.IComponent[];
+  components: AutoBeDatabase.IComponent[];
 
   /**
    * Iteration number of the requirements analysis this component organization
