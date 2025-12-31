@@ -24,7 +24,7 @@ import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
  */
 export interface IAutoBeDatabaseCompiler {
   /**
-   * Compiles validated Prisma application into complete database artifacts.
+   * Compiles validated database application into complete database artifacts.
    *
    * Performs the complete compilation pipeline from validated
    * {@link AutoBeDatabase.IApplication} through schema generation, documentation
@@ -61,7 +61,7 @@ export interface IAutoBeDatabaseCompiler {
    * same functional area. The generated schemas are immediately ready for
    * Prisma deployment and database migration processes.
    *
-   * @param app Validated Prisma application AST structure
+   * @param app Validated database application AST structure
    * @param dbms Target database management system
    * @returns Promise resolving to key-value pairs mapping schema filenames to
    *   generated Prisma schema content
@@ -72,7 +72,7 @@ export interface IAutoBeDatabaseCompiler {
   ): Promise<Record<string, string>>;
 
   /**
-   * Validates Prisma application AST structure for correctness and best
+   * Validates database application AST structure for correctness and best
    * practices.
    *
    * Performs comprehensive validation of the {@link AutoBeDatabase.IApplication}
@@ -87,7 +87,7 @@ export interface IAutoBeDatabaseCompiler {
    * provided to enable AI self-correction through the iterative improvement
    * feedback loop.
    *
-   * @param app Prisma application AST structure to validate
+   * @param app Database application AST structure to validate
    * @returns Promise resolving to validation results including success status
    *   and detailed error information for correction guidance
    */

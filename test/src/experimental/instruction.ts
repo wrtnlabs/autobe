@@ -62,7 +62,7 @@ const main = async (): Promise<void> => {
           description: "Analysis completed successfully.",
         };
       },
-      prisma: async (props) => {
+      database: async (props) => {
         currentPhase.value = "database";
         instructions.prisma = props.instruction;
         return {

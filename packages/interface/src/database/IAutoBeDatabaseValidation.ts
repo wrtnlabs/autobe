@@ -1,10 +1,10 @@
 import { AutoBeDatabase } from "./AutoBeDatabase";
 
 /**
- * Union type representing the result of Prisma schema validation.
+ * Union type representing the result of database schema validation.
  *
  * This type encapsulates the outcome of validating an
- * AutoBeDatabase.IApplication structure against Prisma schema rules and
+ * AutoBeDatabase.IApplication structure against database schema rules and
  * business constraints. The validation process checks for structural integrity,
  * referential consistency, naming conventions, and compliance with the
  * established schema generation rules.
@@ -19,7 +19,7 @@ export type IAutoBeDatabaseValidation =
   | IAutoBeDatabaseValidation.IFailure;
 
 /**
- * Namespace containing all interfaces for Prisma schema validation results.
+ * Namespace containing all interfaces for database schema validation results.
  *
  * This namespace defines the structure for validation responses from the schema
  * validation system, providing detailed feedback about schema correctness and
