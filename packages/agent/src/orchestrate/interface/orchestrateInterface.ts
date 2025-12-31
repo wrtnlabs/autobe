@@ -218,8 +218,7 @@ export const orchestrateInterface =
           progress: complementProgress,
           document,
         });
-      if (Object.keys(complemented).length === 0) break;
-      else assign(complemented);
+      assign(complemented);
 
       // REVIEW COMPLEMENTED
       for (const config of REVIEWERS) {
