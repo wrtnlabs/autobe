@@ -45,6 +45,8 @@ export namespace JsonSchemaValidator {
   }
 
   export const validateSchema = (props: IProps): void => {
+    fixConstraint(props.schema);
+
     const vo = validateObjectType({
       errors: props.errors,
       operations: props.operations,
@@ -459,5 +461,36 @@ export namespace JsonSchemaValidator {
           `,
         });
     };
+  };
+
+  const fixConstraint = (schema: AutoBeOpenApi.IJsonSchema): void => {
+    AutoBeOpenApiTypeChecker.visit({
+      components: {
+        authorizations: [],
+        schemas: {},
+      },
+      schema,
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
+      },
+    });
+  };
+
+  const fixStringSchema = (schema: AutoBeOpenApi.IJsonSchema.IString): void => {
+    if (schema.format !== undefined) {
+      delete schema.pattern;
+      if (
+        schema.format === "uuid" ||
+        schema.format === "ipv4" ||
+        schema.format === "ipv6" ||
+        schema.format === "date" ||
+        schema.format === "date-time" ||
+        schema.format === "time"
+      ) {
+        delete schema.minLength;
+        delete schema.maxLength;
+      }
+    }
+    if (schema.contentMediaType === "") delete schema.contentMediaType;
   };
 }
