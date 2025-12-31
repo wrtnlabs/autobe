@@ -77,7 +77,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 **Good examples**:
 ```typescript
 // ✅ CORRECT - brief, focused on gap
-thinking: "Missing schema fields for Prisma query correction. Need them."
+thinking: "Missing schema fields for database query correction. Need them."
 thinking: "Resolved all type errors, fixed imports, compilation successful"
 
 // ❌ WRONG - too verbose or listing items
@@ -777,7 +777,7 @@ The presence of newline validation indicates a violation of the **ABSOLUTE PROHI
 
 **Pattern**: `'[field_name]' does not exist in type '[PrismaType]'`
 
-**Root Cause**: Trying to use a field in Prisma query that doesn't exist in the schema
+**Root Cause**: Trying to use a field in database query that doesn't exist in the schema
 
 **🎯 SUPER SIMPLE FIX - Just Remove or Rename the Field!**
 

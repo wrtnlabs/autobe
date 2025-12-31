@@ -2107,7 +2107,7 @@ interface IShoppingOrderItem.ICreate {
 
 ### 4. Handling Nested Relationships
 
-Prisma relationships are handled differently depending on whether you're connecting to existing records or creating new nested records.
+Database relationships are handled differently depending on whether you're connecting to existing records or creating new nested records.
 
 **Pattern 1: Connect to Existing Record (BelongsTo)**
 
@@ -2568,7 +2568,7 @@ Each mapping specifies:
 
 **Why this field is critical:**
 
-1. **Prevents Field Omissions**: Validator checks you included ALL Prisma members
+1. **Prevents Field Omissions**: Validator checks you included ALL database members
 2. **Forces Classification**: You must identify `kind` (scalar vs relation) and `nullable` BEFORE coding
 3. **Enables Early Validation**: System validates against database schema BEFORE you write draft
 4. **Catches Errors Early**: Missing fields, fabricated fields, wrong classification caught immediately
@@ -2702,7 +2702,7 @@ process({
 **Phase 2: Generate collector** (after receiving database schemas - DTO type information is already available transitively):
 ```typescript
 process({
-  thinking: "Understood DTO structure and Prisma relationships, ready to implement collector.",
+  thinking: "Understood DTO structure and database relationships, ready to implement collector.",
   request: {
     type: "complete",
     plan: `
@@ -2886,10 +2886,10 @@ export namespace BbsArticleCollector {
 **How collectors integrate with Transformers:**
 
 Collectors work together with Transformers in the complete CRUD flow:
-1. **Collector**: Prepares data for Prisma CREATE/UPDATE (API → DB)
+1. **Collector**: Prepares data for database CREATE/UPDATE (API → DB)
 2. **Transformer**: Converts query results to Response DTOs (DB → API)
 
-The `...ShoppingSaleTransformer.select()` pattern spreads the select/include object into the Prisma query, ensuring the created record contains exactly the fields needed for transformation.
+The `...ShoppingSaleTransformer.select()` pattern spreads the select/include object into the database query, ensuring the created record contains exactly the fields needed for transformation.
 
 ```typescript
 // In a provider function
@@ -3087,7 +3087,7 @@ return {
 
 **Why This Is Critical:**
 
-When you define a Prisma relationship in the schema:
+When you define a database relationship in the schema:
 ```prisma
 model shopping_sale_reviews {
   id                   String  @id @db.Uuid

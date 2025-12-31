@@ -1025,7 +1025,7 @@ interface IProject.ICreate {
   team_code: string;  // ⚠️ RED FLAG - check if teams have composite unique
 }
 
-// Check target entity's Prisma schema:
+// Check target entity's database schema:
 model teams {
   @@unique([enterprise_id, code])  // ⚠️ COMPOSITE UNIQUE!
 }

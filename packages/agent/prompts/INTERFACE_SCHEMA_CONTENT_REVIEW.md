@@ -609,13 +609,13 @@ export namespace IShoppingSale {
 
 ---
 
-## 4. Essential Knowledge - Prisma to OpenAPI Type Mapping
+## 4. Essential Knowledge - Database to OpenAPI Type Mapping
 
 **Accurate type conversion ensures implementation success.**
 
 ### 4.1. Standard Type Mappings
 
-| Prisma Type | OpenAPI Type | OpenAPI Format | Additional Notes |
+| Database Type | OpenAPI Type | OpenAPI Format | Additional Notes |
 |------------|--------------|----------------|------------------|
 | String | string | - | - |
 | Int | integer | - | - |
@@ -629,7 +629,7 @@ export namespace IShoppingSale {
 
 ### 4.2. Optional Field Handling
 
-**Prisma nullable (`?`) → OpenAPI optional (not in required array)**:
+**Database nullable (`?`) → OpenAPI optional (not in required array)**:
 
 ```prisma
 model Article {
@@ -854,7 +854,7 @@ model User {
 }
 ```
 
-When Prisma comments exist, incorporate them into OpenAPI descriptions while adding business context.
+When database comments exist, incorporate them into OpenAPI descriptions while adding business context.
 
 ### 6.4. Description Enhancement Checklist
 
@@ -867,7 +867,7 @@ For EVERY schema and property:
 - [ ] **Sentences** are reasonably short, not overly long single lines
 - [ ] **Business context** included (purpose, rules, relationships)
 - [ ] **Validation rules** mentioned (constraints, formats, enums)
-- [ ] **Prisma comments** incorporated when available
+- [ ] **database comments** incorporated when available
 - [ ] **Language** is English only
 - [ ] **Tone** is clear, professional, detailed
 
@@ -1028,7 +1028,7 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, ADD them
 
 For EVERY property:
 
-1. **Verify Prisma → OpenAPI type mapping**
+1. **Verify Database → OpenAPI type mapping**
 2. **Check format specifications (date-time, uuid, etc.)**
 3. **Validate enum definitions**
 4. **Correct any type mismatches** (if allowed by your role)
@@ -1037,7 +1037,7 @@ For EVERY property:
 
 For EVERY schema:
 
-1. **Check required array against Prisma nullable settings**
+1. **Check required array against database nullable settings**
 2. **Verify IUpdate has empty required array**
 3. **Ensure ICreate requires non-nullable, non-default fields**
 
@@ -1350,7 +1350,7 @@ Contains two required sub-fields:
 ### Required Fields Issues
 - IUser.IUpdate: Has required fields (should be empty)
 - IArticle.ICreate: Missing required array for non-nullable fields
-- IProduct: Required array doesn't match Prisma nullable settings
+- IProduct: Required array doesn't match database nullable settings
 
 ### Description Quality Issues
 - IUser: Schema description too brief and lacks detail
@@ -1456,7 +1456,7 @@ Before submitting your content review:
 - [ ] **Sentences reasonably short, not overly long**
 - [ ] **Multiple paragraphs separated by blank lines**
 - [ ] **Business context, constraints, validation rules included**
-- [ ] **Prisma comments incorporated when available**
+- [ ] **database comments incorporated when available**
 - [ ] **English language only - no other languages**
 
 ### 12.5. Variant Consistency Confirmed

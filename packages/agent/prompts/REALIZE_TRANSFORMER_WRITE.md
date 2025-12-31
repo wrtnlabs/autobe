@@ -558,7 +558,7 @@ export function select() {
 - AI judgment to ignore existing transformers → **ABSOLUTELY FORBIDDEN**
 - Inline transformation when transformer exists → **ARCHITECTURAL VIOLATION**
 
-## Implementation Focus: Using the Provided Prisma Table
+## Implementation Focus: Using the Provided Database Table
 
 **IMPORTANT**: The database schema name is **already provided** from the planning phase. You don't need to discover it.
 
@@ -869,7 +869,7 @@ export namespace {TypeName}Transformer {
 
 **Why this order?**
 - **Payload first**: Declares upfront what data structure we're working with - makes it clear that select() must produce this exact type
-- **select() second**: When writing select(), you know it must produce the Payload type - forces careful analysis of Prisma DB schema to match Payload requirements
+- **select() second**: When writing select(), you know it must produce the Payload type - forces careful analysis of database schema to match Payload requirements
 - **transform() last**: Converts the Payload to DTO - at this point both the data structure (Payload) and how to fetch it (select) are established
 - **CRITICAL**: This order forces you to think about the DB schema (Payload from database) BEFORE writing transformation logic, preventing DTO-name-based assumptions that don't match actual DB column/relation names
 
@@ -1145,7 +1145,7 @@ select: {
 
 #### What If DTO Has Fields NOT in Database Schema?
 
-**Critical Understanding**: Sometimes you'll encounter DTO fields that do NOT exist in the Prisma database schema. This is NORMAL and EXPECTED.
+**Critical Understanding**: Sometimes you'll encounter DTO fields that do NOT exist in the database schema. This is NORMAL and EXPECTED.
 
 **🚨 ABSOLUTE RULE: NEVER select a field that doesn't exist in database schema!**
 
@@ -3045,7 +3045,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
 This is your narrative planning where you think through the overall transformation approach. Document your thinking about:
 
-- **Prisma to DTO Mapping**: Which database table maps to which DTO
+- **Database to DTO Mapping**: Which database table maps to which DTO
 - **Overall Strategy**: High-level approach to transformation
 - **Neighbor Transformers**: Which to reuse for nested data
 - **Type Conversions**: What conversions are needed (Decimal, DateTime)
@@ -3888,7 +3888,7 @@ export function select() {
   - ✅ **MANDATORY**: `select: { ... }` with explicit field specifications
   - ✅ Why: Prevents over-fetching, ensures type safety, explicit control
 
-- [ ] ✅ **Every Field Verified Against Prisma Schema**:
+- [ ] ✅ **Every Field Verified Against Database Schema**:
   - For EACH field in your select():
     - ✅ Re-checked it EXISTS in database schema
     - ✅ Verified EXACT spelling (case-sensitive)
@@ -3980,7 +3980,7 @@ export function select() {
   - Using inline mapping for M:N join tables (no corresponding DTO exists)
   - Never attempting to reuse a Transformer that doesn't exist
 
-- [ ] ✅ **DTO-to-Prisma Mapping Consistency**:
+- [ ] ✅ **DTO-to-Database Mapping Consistency**:
   - Verified that DTO structure can be built from Prisma query result
   - All DTO fields have a source (DB field, relation, or computation)
   - No impossible mappings
@@ -4022,7 +4022,7 @@ export function select() {
 
 **Last checks before calling the complete function.**
 
-- [ ] ✅ **Re-Read Prisma Schema One More Time**:
+- [ ] ✅ **Re-Read Database Schema One More Time**:
   - **CRITICAL: RE-READ the database schema now**
   - Verify EVERY field in select() exists in schema
   - Verify EVERY relation in select() exists in schema

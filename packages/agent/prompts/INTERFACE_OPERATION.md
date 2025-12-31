@@ -1010,7 +1010,7 @@ For each path parameter in the endpoint path:
 
 **CRITICAL: Prefer Unique Code Identifiers Over UUID IDs**
 
-When defining path parameters, **CHECK THE PRISMA SCHEMA FIRST**:
+When defining path parameters, **CHECK THE DATABASE SCHEMA FIRST**:
 
 1. **If the entity has a unique `code` field** (or similar: `username`, `slug`, `sku`), use it as the parameter instead of UUID `id`
 2. **Only use UUID `id` when no human-readable unique identifier exists**

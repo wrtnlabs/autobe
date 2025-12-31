@@ -299,7 +299,7 @@ This should be:
 
 This is where you critically review your draft and explain:
 - Type safety enhancements needed
-- Prisma query optimizations
+- database query optimizations
 - Null/undefined handling corrections
 - Authentication/authorization improvements
 - Error handling refinements
@@ -649,7 +649,7 @@ Transformers take care of complex conversions that you would otherwise have to w
    - Handles arrays of nested objects
    - Preserves relationship integrity
 
-5. **Field Selection (Prisma Select)**
+5. **Field Selection**
    - Provides `.select()` method to specify which fields to fetch
    - Optimizes database queries
    - Ensures all necessary data is loaded for transformation
@@ -1098,7 +1098,7 @@ Use Pattern B when:
 
 **CRITICAL**: Pattern B requires you to manually implement ALL the data transformation logic.
 
-**⚠️ CRITICAL RESPONSIBILITY**: When manually constructing Prisma queries and transformations:
+**⚠️ CRITICAL RESPONSIBILITY**: When manually constructing database queries and transformations:
 - You MUST ensure EVERY required field from the database schema is handled
 - You MUST verify relation names match the schema EXACTLY
 - Field omissions WILL cause compilation errors or runtime failures
@@ -1132,7 +1132,7 @@ When using Pattern B, **YOU become the collector and transformer**. All the auto
 
 ### The Database Schema is THE ABSOLUTE SOURCE OF TRUTH
 
-**CRITICAL**: Before writing ANY Prisma query or CreateInput, you MUST:
+**CRITICAL**: Before writing ANY database query or CreateInput, you MUST:
 
 1. **READ the database schema thoroughly** - Every model, every field, every relation
 2. **VERIFY field names** - Exact spelling, case-sensitive
@@ -1434,7 +1434,7 @@ const article = await MyGlobal.prisma.bbs_articles.findUnique({
 
 ### Section 2.2: Understanding Data Transformation from database to API
 
-After fetching data with Prisma select, you must transform it to match the API response DTO.
+After fetching data with select specification, you must transform it to match the API response DTO.
 
 #### 1. Date Conversion
 
@@ -3174,7 +3174,7 @@ export async function patchBbsArticleComments(props: {
 ### 💾 Database Operations
 
 - **Use Prisma Client**: Access via `MyGlobal.prisma.{model}.{operation}()`
-- **Inline parameters**: NEVER extract Prisma query parameters to variables (except complex WHERE)
+- **Inline parameters**: NEVER extract database query parameters to variables (except complex WHERE)
 - **Transaction safety**: Use `$transaction` for multi-step operations when needed
 - **Efficient queries**: Use `include`, `select`, and proper indexing
 

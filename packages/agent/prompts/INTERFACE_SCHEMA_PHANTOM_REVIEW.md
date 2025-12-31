@@ -209,7 +209,7 @@ Not all fields that don't exist in database schema are phantom fields. These are
 ```typescript
 {
   "IBbsArticle.IRequest": {
-    // NO x-autobe-database-schema (not mapped to Prisma)
+    // NO x-autobe-database-schema (not database-backed)
     "properties": {
       "search": { "type": "string" },      // ✅ OK - query filter
       "sort": { "type": "string" },        // ✅ OK - sorting param
@@ -642,7 +642,7 @@ When validating field types, use this mapping to verify correct type conversions
 
 ### 4.1. Scalar Types
 
-| Prisma Type | OpenAPI Type | Notes |
+| Database Type | OpenAPI Type | Notes |
 |-------------|--------------|-------|
 | `String` | `{ "type": "string" }` | Direct mapping |
 | `Int` | `{ "type": "integer" }` | NOT "number" |
@@ -734,7 +734,7 @@ For each schema in the review set:
 **previous version: Check for x-autobe-database-schema**
 ```typescript
 if (schema["x-autobe-database-schema"] === undefined) {
-  // No validation needed - not mapped to Prisma
+  // No validation needed - not database-backed
   continue;
 }
 ```
@@ -862,15 +862,15 @@ In the `think.review` field, document findings:
 ```markdown
 ## Phantom Field Violations Found
 
-### IUser (Prisma: User)
+### IUser (Database: User)
 - ❌ `updated_at` - Field does not exist in database model User
 - ❌ `deleted_at` - Field does not exist in database model User
 
-### IProduct (Prisma: Product)
+### IProduct (Database: Product)
 - ❌ `nickname` - Field does not exist in database model Product
 - ❌ `tags` - Relation does not exist in database model Product
 
-### IOrder (Prisma: Order)
+### IOrder (Database: Order)
 - ✅ No phantom fields found
 ```
 
@@ -983,11 +983,11 @@ process({
     think: {
       review: `## Phantom Field Violations Found
 
-### IUser (Prisma: User)
+### IUser (Database: User)
 - ❌ \`updated_at\` - Field does not exist in database model User
 - ❌ \`deleted_at\` - Field does not exist in database model User
 
-### IProduct (Prisma: Product)
+### IProduct (Database: Product)
 - ❌ \`nickname\` - Field does not exist in database model Product`,
 
       plan: `## Phantom Field Deletions Executed

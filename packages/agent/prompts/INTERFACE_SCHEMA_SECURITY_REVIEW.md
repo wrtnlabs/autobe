@@ -105,7 +105,7 @@ thinking: "Removed password from IUser.IEntity, removed secret from ISession, re
 1. Clients sending pre-hashed passwords = security vulnerability
 2. Backend MUST control hashing algorithm and salt generation
 3. DTO field names should be user-friendly, NOT database column names
-4. This is a **field name mapping** scenario: `DTO.password` → hash → `Prisma.password_hashed`
+4. This is a **field name mapping** scenario: `DTO.password` → hash → `database's password_hashed`
 
 **Response DTOs**: NEVER expose ANY password-related fields (`password`, `password_hashed`, `salt`, etc.)
 
@@ -1021,19 +1021,19 @@ interface IShoppingProduct.IUpdate {
 
 // ✅ CORRECT in IUser.ICreate (registration/login):
 interface IUser.ICreate {
-  password: string;  // Plain text - maps to Prisma's password_hashed column
+  password: string;  // Plain text - maps to database's password_hashed column
 }
 
 // ❌ WRONG in IUser.ICreate:
 interface IUser.ICreate {
-  password_hashed: string;  // NEVER use Prisma's hashed field name
+  password_hashed: string;  // NEVER use database's hashed field name
   hashed_password: string;  // Client should NEVER hash
   password_hash: string;    // Hashing is backend job
 }
 ```
 
 **Field Mapping Rule**:
-- **Prisma Column**: `password_hashed`, `hashed_password`, or `password_hash`
+- **Database Column**: `password_hashed`, `hashed_password`, or `password_hash`
 - **DTO Field**: ALWAYS `password: string` (plain text)
 - **Backend's Job**: Receive plain password → hash it → store in `password_hashed` column
 
