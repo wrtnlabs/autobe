@@ -6,7 +6,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * Function calling interface for generating DTO collector functions.
  *
  * Guides the AI agent through creating reusable collector modules that prepare
- * Prisma input data from API request DTOs (API → DB). Each collector handles
+ * database input data from API request DTOs (API → DB). Each collector handles
  * complex nested relationships, UUID generation, and proper Prisma
  * connect/create syntax.
  *
@@ -21,7 +21,7 @@ export interface IAutoBeRealizeCollectorWriteApplication {
    * Process collector generation task or preliminary data requests.
    *
    * Generates complete collector module through three-phase workflow (plan →
-   * draft → revise). Ensures type safety, proper Prisma input types, and
+   * draft → revise). Ensures type safety, proper database input types, and
    * correct relationship handling.
    *
    * @param props Request containing either preliminary data request or complete
@@ -84,7 +84,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
    *
    * Executes three-phase generation to create complete collector with:
    *
-   * - Collect() function: Converts DTO to Prisma input
+   * - Collect() function: Converts DTO to database input
    * - Proper handling of nested relationships
    * - UUID generation for new records
    * - Type-safe Prisma create/connect syntax

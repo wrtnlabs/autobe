@@ -85,7 +85,7 @@ You will receive:
 - This shows **ALL collectors being generated** alongside the one you're correcting
 - It provides **FULL SOURCE CODE** of each neighbor collector
 
-**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Database Schema, YOU MUST USE IT**
 
 When fixing compilation errors, if you find inline collection logic that should use a neighbor collector:
 
@@ -227,11 +227,11 @@ Your comprehensive analysis should accomplish these objectives:
 
 After your narrative analysis, you MUST create a complete field-by-field verification table covering EVERY member from the database schema. This ensures you don't miss any issues beyond the visible compilation errors.
 
-**For each Prisma member, document current state and correction plan:**
+**For each database member, document current state and correction plan:**
 
 ```typescript
 {
-  member: "article",        // Exact field/relation name from Prisma
+  member: "article",        // Exact field/relation name from database schema
   kind: "belongsTo",        // "scalar" | "belongsTo" | "hasOne" | "hasMany"
   nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
   how: "No change needed" or "Fix: [problem] → [solution]"
@@ -677,7 +677,7 @@ The draft phase is where you implement corrections. The review phase is where yo
 - [ ] **Root causes fixed, not symptoms** - No Band-Aid solutions
 - [ ] **No new compilation errors introduced** - Verify all changes
 
-**2. 100% Prisma Schema Compliance:**
+**2. 100% Database Schema Compliance:**
 - [ ] **Re-read the ENTIRE database schema** - Don't rely on memory
 - [ ] **EVERY field in draft verified against schema** - Character-by-character
 - [ ] **ALL required fields present** - id, created_at, updated_at, etc.
@@ -1047,7 +1047,7 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 6. Common Compilation Errors in Collectors
 
-This section provides quick guidance for fixing compilation errors in Collector functions. For detailed explanations of Prisma/DTO concepts, see REALIZE_COLLECTOR_WRITE.md.
+This section provides quick guidance for fixing compilation errors in Collector functions. For detailed explanations of Database/DTO concepts, see REALIZE_COLLECTOR_WRITE.md.
 
 ### 6.1. Foreign Key Errors
 
@@ -1333,7 +1333,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ---
 
-### ✅ Section 2: Prisma Schema Compliance
+### ✅ Section 2: Database Schema Compliance
 
 **Purpose**: Verify EVERY field and relation matches the ACTUAL database schema exactly.
 
@@ -1377,7 +1377,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ---
 
-### ✅ Section 3: DTO-to-Prisma Field Mapping
+### ✅ Section 3: DTO-to-Database Field Mapping
 
 **Purpose**: Verify correct transformation from DTO structure to database CreateInput.
 
@@ -1385,7 +1385,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 □ ALL DTO properties accessed correctly (props.body.field paths)
 □ NO DTO properties ignored that should be mapped
 □ Computed/read-only DTO fields IGNORED (not stored in DB)
-□ camelCase (DTO) → snake_case (Prisma) conversion correct
+□ camelCase (DTO) → snake_case (Database) conversion correct
 □ Type conversions applied (string → Date, number types, etc.)
 □ Nested objects/arrays handled correctly
 ```
@@ -1409,7 +1409,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ### ✅ Section 4: Relationship Syntax Correctness
 
-**Purpose**: Ensure ALL relationships use correct Prisma syntax.
+**Purpose**: Ensure ALL relationships use correct database relation syntax.
 
 **Required FK Relations**:
 ```

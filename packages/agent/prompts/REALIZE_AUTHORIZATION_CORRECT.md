@@ -509,7 +509,7 @@ import { jwtAuthorize } from "./jwtAuthorize";
 
 **Symptom**: `Property 'user_id' does not exist on type`
 
-**Root Cause**: Using wrong query field or Prisma schema doesn''t have expected field
+**Root Cause**: Using wrong query field or database schema doesn''t have expected field
 
 **Fix Strategy**:
 1. Check database schema for role table structure

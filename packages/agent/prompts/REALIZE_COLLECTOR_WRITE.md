@@ -97,7 +97,7 @@ Your planning phase must produce:
 
 Your narrative planning should accomplish these objectives:
 
-1. **Understand the Prisma Schema**:
+1. **Understand the Database Schema**:
    - Read through the actual schema carefully - every field, every relation
    - Note the exact field names (especially relation names, NOT foreign key column names)
    - Understand nullability, types, and relationship structures
@@ -127,11 +127,11 @@ After your narrative plan, you MUST create a complete field-by-field mapping tab
 - **Enables early validation**: System validates mappings before you write code
 - **Documents your thinking**: Clear record of your field handling strategy
 
-**For each Prisma member, specify:**
+**For each database member, specify:**
 
 ```typescript
 {
-  member: "article",        // Exact field/relation name from Prisma
+  member: "article",        // Exact field/relation name from database schema
   kind: "belongsTo",        // "scalar" | "belongsTo" | "hasOne" | "hasMany"
   nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
   how: "Connect using props.bbsArticle.id"  // Brief strategy
@@ -292,10 +292,10 @@ export async function createShoppingSale(props: {
 You will receive:
 - **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
   - **DTO Type Name**: The source API request type (e.g., "IShoppingSaleUnitStock.ICreate")
-  - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
+  - **Database Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
   - **Planning Reasoning**: Explanation of why this collector is needed
 - **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - `Record<string, { dtoTypeName, databaseSchemaName, content }>` mapping file path to collector implementation
-- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
+- **Database Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 **IMPORTANT**:
@@ -319,7 +319,7 @@ You will receive:
 - It shows **ALL collectors being generated** alongside yours
 - It provides **FULL SOURCE CODE** of each neighbor collector
 
-**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+**🚨 ABSOLUTE MANDATORY RULE: If a Collector Exists for a DTO + Database Schema, YOU MUST USE IT**
 
 **The Rule**:
 ```
@@ -820,7 +820,7 @@ Before writing collectors, you must understand how Prisma's CreateInput system w
 
 Let's start with a real collector implementation to understand the patterns, then explain the concepts.
 
-**Given Prisma Schema:**
+**Given Database Schema:**
 
 ```prisma
 model bbs_article_comments {
@@ -1091,7 +1091,7 @@ model shopping_sale_reviews {
 
 **MOST COMMON MISTAKE: Using `null` for optional foreign keys when you should use `undefined`**
 
-When a foreign key is **optional** (nullable in Prisma), Prisma ORM requires:
+When a foreign key is **optional** (nullable in database schema), Prisma ORM requires:
 - **If FK value exists** → Use `{ connect: { id: value } }`
 - **If FK value is null/undefined** → Use `undefined` (NOT `null`!)
 
@@ -1389,9 +1389,9 @@ return {
 
 **If unsure about relation field names, RE-READ the database schema. Never guess.**
 
-#### Prisma Schema Verification
+#### Database Schema Verification
 
-**Prisma Schema is Your Reference - The mappings Field Ensures Accuracy**
+**Database Schema is Your Reference - The mappings Field Ensures Accuracy**
 
 The structured `mappings` field you create during planning serves as your primary safeguard against field errors. When you create complete and accurate mappings, the system validates them against the database schema BEFORE you write any code.
 
@@ -1402,7 +1402,7 @@ The structured `mappings` field you create during planning serves as your primar
 4. **Write draft based on validated mappings** - if mappings are correct, draft will be correct
 
 **The mappings validation catches:**
-- Missing fields (you didn't include all Prisma members)
+- Missing fields (you didn't include all database members)
 - Fabricated fields (member doesn't exist in database schema)
 - Wrong kind classification (marked as scalar when it's a relation)
 - Wrong nullability (doesn't match database schema)
@@ -1476,7 +1476,7 @@ return {
 - `props.body` only contains `comment_id`
 - `article_id` must be obtained by querying the comment
 
-**Prisma Schema:**
+**Database Schema:**
 
 ```prisma
 model bbs_article_comment_likes {
@@ -2308,7 +2308,7 @@ fullAddress: string;       // street + city + state + zip
 → IGNORE in Collector (formatted by Transformer)
 ```
 
-**Decision Tree: DTO Field Not in Prisma Schema**:
+**Decision Tree: DTO Field Not in Database Schema**:
 
 ```
 DTO has field X, but database schema doesn''t have column X?
@@ -2663,7 +2663,7 @@ Before analyzing anything else, you MUST:
 5. **IF YOU FIND ANY FABRICATED/GUESSED FIELDS OR WRONG RELATION NAMES** - Fix immediately in `final`
 
 **Then analyze your draft for:**
-- **Prisma schema verification** (RE-CHECK: all fields/relations exist and correctly named?)
+- **Database schema verification** (RE-CHECK: all fields/relations exist and correctly named?)
 - **No foreign key direct assignment** (RE-CHECK: using `connect`, not `_id` columns?)
 - Type safety (satisfies annotation correct?)
 - Field completeness (all DTO fields collected?)
@@ -2781,7 +2781,7 @@ export namespace IBbsArticle {
 }
 ```
 
-### Given Prisma Schema
+### Given Database Schema
 
 ```prisma
 model bbs_articles {
@@ -2912,7 +2912,7 @@ export async function createShoppingSale(props: {
 
 ```typescript
 // DTO has: categoryId: string
-// Prisma has: category_id field with category relation
+// Database has: category_id field with category relation
 
 // In collect()
 category: {
@@ -3184,7 +3184,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ---
 
-### ✅ Section 1: Prisma Schema Field Verification
+### ✅ Section 1: Database Schema Field Verification
 
 **Purpose**: Ensure EVERY field in your collect() return value ACTUALLY EXISTS in the database schema.
 
@@ -3265,7 +3265,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ---
 
-### ✅ Section 3: DTO-to-Prisma Field Mapping
+### ✅ Section 3: DTO-to-Database Field Mapping
 
 **Purpose**: Verify correct transformation from API DTO to Database CreateInput.
 
@@ -3274,7 +3274,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 □ ALL DTO properties correctly accessed (props.body.field)
 □ NO DTO properties ignored that should be mapped
 □ Computed/read-only DTO fields IGNORED (totalPrice, reviewCount, etc.)
-□ camelCase (DTO) → snake_case (Prisma) conversion correct
+□ camelCase (DTO) → snake_case (Database) conversion correct
 □ Type conversions applied (string → Date, number types)
 □ Nested objects/arrays handled correctly
 ```
@@ -3418,7 +3418,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 
 ```
 □ plan phase completed all 4 sections:
-  □ Section 1: Prisma Schema Field Inventory
+  □ Section 1: Database Schema Field Inventory
   □ Section 2: DTO Type Property Inventory
   □ Section 3: Field-by-Field Mapping Strategy
   □ Section 4: Edge Cases and Special Handling
@@ -3456,7 +3456,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 - ⚠️ Fix before proceeding
 
 **The Golden Rule**:
-> **The Prisma Schema is THE ONLY SOURCE OF TRUTH. When in doubt, RE-READ the schema. NEVER guess. NEVER assume. Only use what you SEE.**
+> **The Database Schema is THE ONLY SOURCE OF TRUTH. When in doubt, RE-READ the schema. NEVER guess. NEVER assume. Only use what you SEE.**
 
 ---
 

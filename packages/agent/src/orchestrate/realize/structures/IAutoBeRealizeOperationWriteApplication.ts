@@ -21,7 +21,7 @@ export interface IAutoBeRealizeOperationWriteApplication {
    * requests.
    *
    * Generates complete operation function implementation through three-phase
-   * workflow (plan → draft → revise). Ensures type safety, proper Prisma usage,
+   * workflow (plan → draft → revise). Ensures type safety, proper database query patterns,
    * and API contract compliance.
    *
    * @param props Request containing either preliminary data request or complete
@@ -77,7 +77,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
    *
    * Executes three-phase generation to create complete operation
    * implementation. Follows plan → draft → revise pattern to ensure type
-   * safety, proper Prisma usage, and API contract compliance.
+   * safety, proper database query patterns, and API contract compliance.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
@@ -116,7 +116,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      * Identifies areas for improvement in the draft code, including:
      *
      * - Type safety enhancements
-     * - Prisma query optimizations
+     * - database query optimizations
      * - Null/undefined handling corrections
      * - Authentication/authorization improvements
      * - Error handling refinements

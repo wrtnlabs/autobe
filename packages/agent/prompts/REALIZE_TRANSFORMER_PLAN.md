@@ -24,7 +24,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 4. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
-   - Request schemas strategically - you need BOTH to understand DTO-to-Prisma mappings
+   - Request schemas strategically - you need BOTH to understand DTO-to-Database mappings
    - DO NOT request schemas you already have from previous calls
 5. **Execute Planning Function**: Call `process({ request: { type: "complete", plans: [...] } })` after gathering context
 
@@ -130,7 +130,7 @@ thinking: "Plan IShoppingSale, plan IShoppingCategory, plan IShoppingBrand..."
 
 A DTO is **transformable (databaseSchemaName = actual table name)** if it meets ALL of these conditions:
 - ✅ **Read DTO**: Used for API responses (not request parameters)
-- ✅ **DB-backed**: Data comes directly from Prisma database queries
+- ✅ **DB-backed**: Data comes directly from database queries
 - ✅ **Direct mapping**: The DTO structure maps to one primary database table
 
 Common **transformable patterns**:
@@ -321,7 +321,7 @@ plans: [
 ]
 ```
 
-### 4. Handling Prisma Schema Name
+### 4. Handling Database Schema Name
 
 **For transformable DTOs**:
 - Set `databaseSchemaName` to the actual database table name
@@ -337,7 +337,7 @@ plans: [
   {
     dtoTypeName: "IShoppingSale",
     thinking: "Transforms shopping_sales with nested relations",
-    databaseSchemaName: "shopping_sales"  // ✅ Has Prisma mapping
+    databaseSchemaName: "shopping_sales"  // ✅ Has database mapping
   },
   {
     dtoTypeName: "IPage.IRequest",
@@ -510,7 +510,7 @@ interface IShoppingTag {
 }
 ```
 
-### Given Prisma Schemas
+### Given Database Schemas
 
 ```prisma
 model shopping_sales {
@@ -767,7 +767,7 @@ plans: [
 ### MISTAKE 3: Including Join Tables
 
 ```typescript
-// Prisma has shopping_sale_tags join table
+// Database has shopping_sale_tags join table
 // DTO has tags: IShoppingTag[] (no IShoppingSaleTag!)
 
 // WRONG - Planning join table
@@ -789,7 +789,7 @@ plans: [
 ]
 ```
 
-### MISTAKE 4: Wrong Prisma Schema Name
+### MISTAKE 4: Wrong Database Schema Name
 
 ```typescript
 // WRONG - Using DTO name for database schema

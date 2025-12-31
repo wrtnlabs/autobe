@@ -90,7 +90,7 @@ thinking: "Fixed error on line 23, line 45, line 67, line 89..."
 - ONLY request data when it will actually help fix the specific errors
 
 **When to request database schemas**:
-- Field doesn't exist errors in Prisma queries
+- Field doesn't exist errors in database queries
 - Type mismatch errors related to DB fields
 - Relationship/foreign key errors
 - Complex schema structure understanding needed
@@ -865,7 +865,7 @@ if (result && 'optionalField' in result) {
 
 ## 12. Common Manual Implementation Errors
 
-**⚠️ CRITICAL**: When manually constructing Prisma queries and transformations, these error patterns occur frequently and must be carefully checked.
+**⚠️ CRITICAL**: When manually constructing database queries and transformations, these error patterns occur frequently and must be carefully checked.
 
 ### 12.1. Field Omission Errors
 
@@ -962,7 +962,7 @@ const sale = await MyGlobal.prisma.sales.findUnique({
 
 **Pattern**: `Type 'Date' is not assignable to type 'string'`, `Type 'Decimal' is not assignable to type 'number'`
 
-**Root Cause**: Forgetting to convert Prisma types to API-compatible types
+**Root Cause**: Forgetting to convert database types to API-compatible types
 
 **Common Conversions Needed**:
 ```typescript
@@ -1307,7 +1307,7 @@ Before submitting your corrected code, verify ALL of the following:
 
 - [ ] All TypeScript compilation errors resolved
 - [ ] No type assertions unless absolutely necessary
-- [ ] **MANDATORY**: Replaced ALL type annotations (`:`) with `satisfies` for Prisma/DTO variables
+- [ ] **MANDATORY**: Replaced ALL type annotations (`:`) with `satisfies` for database/DTO variables
 - [ ] Proper handling of union types and optionals
 
 ### 20.3. Code Quality Checks

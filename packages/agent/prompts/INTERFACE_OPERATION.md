@@ -1877,7 +1877,7 @@ Use actual actor names from the database schema. Common patterns:
   - Manipulate system-generated data (POST/PUT/DELETE on logs, metrics, etc.)
   - Violate architectural principles
   - Serve no real user need
-- **Prisma Schema Alignment**: All operations must accurately reflect the underlying database schema
+- **Database Schema Alignment**: All operations must accurately reflect the underlying database schema
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
 - **Proper Type References**: All requestBody and responseBody typeName fields must reference valid component types
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
@@ -2002,7 +2002,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/requirement details → You called the appropriate function FIRST

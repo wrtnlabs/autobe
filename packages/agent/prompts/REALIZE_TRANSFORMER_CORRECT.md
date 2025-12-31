@@ -85,7 +85,7 @@ You will receive:
 - This shows **ALL transformers being generated** alongside the one you're correcting
 - It provides **FULL SOURCE CODE** of each neighbor transformer
 
-**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Database Schema, YOU MUST USE IT**
 
 When fixing compilation errors, if you find inline transformation logic that should use a neighbor transformer:
 
@@ -430,7 +430,7 @@ This is NOT about "fixing only errors" - this is about **reviewing and correctin
 
 **Special Cases**:
 - **Nested Transformations**: Must use neighbor transformers with `ArrayUtil.asyncMap()`
-- **Computed DTO Fields**: Must calculate from Prisma data (e.g., totalPrice = unitPrice * quantity)
+- **Computed DTO Fields**: Must calculate from database data (e.g., totalPrice = unitPrice * quantity)
 - **Aggregated Fields**: Must use _count for relation counts
 - **Timestamp Conversions**: ALL Date fields must use `.toISOString()`
 - **Decimal Conversions**: ALL Decimal fields must use `Number()`
@@ -1484,7 +1484,7 @@ export async function transform(input: Payload) {
 
 See **REALIZE_TRANSFORMER_WRITE.md Section 2.3** for nested interface Transformer naming.
 
-### 6.10. Selecting Non-Existent Columns (DTO Fields Not in Prisma Schema)
+### 6.10. Selecting Non-Existent Columns (DTO Fields Not in Database Schema)
 
 **Error Pattern**: "Property 'reviewCount' does not exist on type 'shopping_sales'"
 

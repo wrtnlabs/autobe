@@ -1130,7 +1130,7 @@ When using Pattern B, **YOU become the collector and transformer**. All the auto
 
 ## 📖 PART 1: Fundamental Principles
 
-### The Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH
+### The Database Schema is THE ABSOLUTE SOURCE OF TRUTH
 
 **CRITICAL**: Before writing ANY Prisma query or CreateInput, you MUST:
 
@@ -1413,7 +1413,7 @@ const article = await MyGlobal.prisma.bbs_articles.findUnique({
 });
 ```
 
-#### 🚨 CRITICAL: Prisma Schema Verification for SELECT
+#### 🚨 CRITICAL: Database Schema Verification for SELECT
 
 **Before writing ANY select statement**:
 
@@ -1432,7 +1432,7 @@ const article = await MyGlobal.prisma.bbs_articles.findUnique({
 - ❌ Forgetting timestamp fields: Omitting `created_at` or `updated_at` from select
 - ❌ Fabricating fields: Using fields that don't exist in the schema at all
 
-### Section 2.2: Understanding Data Transformation from Prisma to API
+### Section 2.2: Understanding Data Transformation from database to API
 
 After fetching data with Prisma select, you must transform it to match the API response DTO.
 
@@ -1517,7 +1517,7 @@ website: record.website as string & tags.Format<"url">
 
 #### 4. Nested Object Transformation
 
-**What**: Recursively transform nested relations from Prisma results to API DTOs.
+**What**: Recursively transform nested relations from database results to API DTOs.
 
 **Why**: API responses often include nested objects (author, comments, etc.).
 
@@ -1572,7 +1572,7 @@ return {
 - `BigInt` → `.toString()` for large counters
 - `null` → `undefined` for optional fields vs `null` for nullable fields
 
-### Section 2.3: Prisma Schema Verification for READ Operations
+### Section 2.3: Database Schema Verification for READ Operations
 
 **🚨 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
 
@@ -3317,7 +3317,7 @@ Before finalizing implementation, verify:
 - [ ] ✅ Mapped API DTO field names to database schema field names correctly
 
 #### Pattern B: Critical Verification Points
-- [ ] ✅ **Re-verified Prisma schema one more time** before completing
+- [ ] ✅ **Re-verified database schema one more time** before completing
 - [ ] ✅ **Every field in select/CreateInput EXISTS** in database schema (no fabricated fields!)
 - [ ] ✅ **Every relation uses RELATION NAME** from schema (not `_id` suffixed column names!)
 - [ ] ✅ **No direct foreign key assignment** anywhere in CreateInput

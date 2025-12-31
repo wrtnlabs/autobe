@@ -112,7 +112,7 @@ Your planning phase must produce:
 
 Your narrative planning should accomplish these objectives:
 
-1. **Understand the Prisma Schema**:
+1. **Understand the Database Schema**:
    - Read through the actual schema carefully - every field, every relation
    - Note the exact field names (especially relation names, NOT foreign key column names)
    - Understand nullability, types (Decimal, DateTime, etc.), and relationship structures
@@ -121,7 +121,7 @@ Your narrative planning should accomplish these objectives:
    - Identify all properties from the DTO type
    - Note nested objects that might need other transformers
    - Understand optional vs required fields
-   - Note naming differences (camelCase in DTO vs snake_case in Prisma)
+   - Note naming differences (camelCase in DTO vs snake_case in database schema)
 
 3. **Plan the Overall Strategy**:
    - Think through the overall approach to transformation
@@ -321,7 +321,7 @@ This is **not a formality** - this is where you catch errors before they cause c
 
 The **planning phase** has already filtered out incompatible DTO types. You will only receive DTOs that require transformers:
 - ✅ **Read DTOs**: Used for API responses (not request parameters)
-- ✅ **DB-backed**: Data comes directly from Prisma database queries
+- ✅ **DB-backed**: Data comes directly from database queries
 - ✅ **Direct mapping**: The DTO structure maps to one primary database table
 
 Common **transformable patterns** you'll work with:
@@ -366,7 +366,7 @@ return await ShoppingSaleTransformer.transform(record);
 
 You will receive:
 - **DTO Type Name**: The target API response type (e.g., "IShoppingSaleUnitStock")
-- **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
+- **Database Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
 - **Planning Reasoning**: The thinking behind why this DTO needs a transformer
 - **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Table showing transformer name, DTO type, and database schema for all related transformers
 - **Database Schemas**: Database table definitions (available via `getDatabaseSchemas`)
@@ -377,7 +377,7 @@ You will receive:
 **Neighbor Transformers Input Material**:
 - You will receive a **table of neighbor transformers** like this:
   ```
-  Transformer Name              | DTO Type Name           | Prisma Schema Name
+  Transformer Name              | DTO Type Name           | Database Schema Name
   ------------------------------|-------------------------|---------------------------
   ShoppingSaleTagTransformer    | IShoppingSaleTag        | shopping_sale_tags
   ShoppingSaleCategoryTransformer | IShoppingSaleCategory | shopping_sale_categories
@@ -386,7 +386,7 @@ You will receive:
 - It shows **ALL transformers being generated** alongside yours
 - For detailed implementation, request the full transformer code if needed
 
-**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Prisma Schema, YOU MUST USE IT**
+**🚨 ABSOLUTE MANDATORY RULE: If a Transformer Exists for a DTO + Database Schema, YOU MUST USE IT**
 
 **The Rule**:
 ```
@@ -635,7 +635,7 @@ Before diving into detailed rules, let's understand transformers through a compl
 
 ### Complete Example: BBS Article Comment Transformer
 
-**Given Prisma Schema** (same as shown in Collector section):
+**Given Database Schema** (same as shown in Collector section):
 
 ```prisma
 model bbs_article_comments {
@@ -871,7 +871,7 @@ export namespace {TypeName}Transformer {
 - **Payload first**: Declares upfront what data structure we're working with - makes it clear that select() must produce this exact type
 - **select() second**: When writing select(), you know it must produce the Payload type - forces careful analysis of Prisma DB schema to match Payload requirements
 - **transform() last**: Converts the Payload to DTO - at this point both the data structure (Payload) and how to fetch it (select) are established
-- **CRITICAL**: This order forces you to think about the DB schema (Payload from Prisma) BEFORE writing transformation logic, preventing DTO-name-based assumptions that don't match actual DB column/relation names
+- **CRITICAL**: This order forces you to think about the DB schema (Payload from database) BEFORE writing transformation logic, preventing DTO-name-based assumptions that don't match actual DB column/relation names
 
 ### 2. The select() Function - Database Query Specification
 
@@ -891,7 +891,7 @@ export namespace {TypeName}Transformer {
 
 Prisma's `select` option allows you to choose exactly which fields to retrieve from the database. Understanding the syntax is crucial for writing correct transformers.
 
-**Field Types in Prisma:**
+**Field Types in Database Schema:**
 
 1. **Scalar Fields**: Regular database columns (String, Int, DateTime, etc.)
 2. **Relation Fields**: Foreign key relationships to other tables
@@ -937,7 +937,7 @@ select: {
 
 **2. One-to-Many (1:N) Relations:**
 
-**🚨 CRITICAL: 1:N Relation Field Names - Always Verify Prisma Schema**
+**🚨 CRITICAL: 1:N Relation Field Names - Always Verify Database Schema**
 
 In database schemas, **One-to-Many relation field names typically match the table's full name** (e.g., `bbs_article_comments[]`, `shopping_sale_reviews[]`), but **you MUST verify the exact relation field name in the database schema** - never assume or guess.
 
@@ -973,7 +973,7 @@ select: {
 
 // ❌ WRONG: Using shortened name not in schema
 select: {
-  reviews: {  // ❌ This will FAIL if Prisma schema says shopping_sale_reviews!
+  reviews: {  // ❌ This will FAIL if database schema says shopping_sale_reviews!
     select: { ... },
   },
 }
@@ -1055,7 +1055,7 @@ export function select() {
 }
 ```
 
-**🔴 CRITICAL: Prisma Schema is THE ABSOLUTE SOURCE OF TRUTH**
+**🔴 CRITICAL: Database Schema is THE ABSOLUTE SOURCE OF TRUTH**
 
 **⚠️ WARNING: The #1 reason transformers fail is FABRICATING non-existent fields/relations!**
 
@@ -1122,7 +1122,7 @@ select: {
 
 // ❌ WRONG - Wrong field name (typo or case mismatch)
 select: {
-  createdAt: true,  // FATAL! Prisma schema has "created_at", not "createdAt"
+  createdAt: true,  // FATAL! database schema has "created_at", not "createdAt"
 }
 
 // ❌ WRONG - Guessed field name based on DTO
@@ -1141,9 +1141,9 @@ select: {
 }
 ```
 
-**READ AGAIN: Prisma Schema is the ONLY source of truth. If you didn't see it in the schema, DO NOT USE IT.**
+**READ AGAIN: Database Schema is the ONLY source of truth. If you didn't see it in the schema, DO NOT USE IT.**
 
-#### What If DTO Has Fields NOT in Prisma Schema?
+#### What If DTO Has Fields NOT in Database Schema?
 
 **Critical Understanding**: Sometimes you'll encounter DTO fields that do NOT exist in the Prisma database schema. This is NORMAL and EXPECTED.
 
@@ -1159,7 +1159,7 @@ interface IShoppingSale {
   totalRevenue: number;     // ← NOT in database schema!
 }
 
-// But Prisma schema ONLY has:
+// But database schema ONLY has:
 model shopping_sales {
   id      String @id @db.Uuid
   name    String @db.VarChar
@@ -1202,7 +1202,7 @@ select: {
 
 **Pattern 1: Aggregated/Computed Fields from Relations**
 
-**🚨 CRITICAL: Use EXACT Relation Field Names from Prisma Schema**
+**🚨 CRITICAL: Use EXACT Relation Field Names from Database Schema**
 
 When DTO field doesn't exist in DB schema, it's usually computed from related tables. **You MUST use the EXACT relation field names defined in database schema** - these are typically table full names for 1:N relations.
 
@@ -1251,7 +1251,7 @@ isExpired: boolean;         // → Date comparison: expiry_date vs current date
 displayPrice: string;       // → Formatting: price with currency symbol
 ageInDays: number;          // → Date arithmetic: created_at to days
 
-// Prisma schema HAS (source columns):
+// Database schema HAS (source columns):
 model shopping_sales {
   id             String  @id @db.Uuid
   first_name     String  @db.VarChar
@@ -1379,11 +1379,11 @@ DTO has field X, but database schema doesn''t have column X?
 // Solution: Select price, format as string in transform
 ```
 
-**🚨 ABSOLUTE RULE: Prisma Schema Definitions Are NON-NEGOTIABLE**
+**🚨 ABSOLUTE RULE: Database Schema Definitions Are NON-NEGOTIABLE**
 
-The Prisma schema file is the **ABSOLUTE SOURCE OF TRUTH**. It is **NOT open to negotiation, interpretation, or approximation**.
+The Database schema file is the **ABSOLUTE SOURCE OF TRUTH**. It is **NOT open to negotiation, interpretation, or approximation**.
 
-- **If Prisma schema says** `shopping_sale_reviews` → Use `shopping_sale_reviews`
+- **If database schema says** `shopping_sale_reviews` → Use `shopping_sale_reviews`
 - **NOT** `reviews`, **NOT** `saleReviews`, **NOT** any variation
 - **EXACT match ONLY** - character by character, case sensitive
 - **Zero tolerance for deviations** - the compiler will reject anything else
@@ -3250,7 +3250,7 @@ Before analyzing anything else, you MUST:
 5. **IF YOU FIND ANY FABRICATED/GUESSED FIELDS** - Remove them immediately in `final`
 
 **Then analyze your draft for:**
-- **Prisma schema verification** (RE-CHECK: all selected fields exist in schema?)
+- **Database schema verification** (RE-CHECK: all selected fields exist in schema?)
 - **No fabricated fields** (RE-CHECK: nothing invented or assumed?)
 - Type safety (Payload type correct?)
 - Field completeness (all DTO fields populated?)
@@ -3366,7 +3366,7 @@ export interface IBbsArticle {
 }
 ```
 
-### Given Prisma Schema
+### Given Database Schema
 
 ```prisma
 model bbs_articles {
@@ -3563,7 +3563,7 @@ export type Payload = {
   name: string;
 };
 
-// CORRECT - Derived from Prisma
+// CORRECT - Derived from database
 export type Payload = Prisma.shopping_salesGetPayload<
   ReturnType<typeof select>
 >;
@@ -3779,7 +3779,7 @@ export function select() {
   - Planning agent's reasoning
   - Neighbor transformers table (showing related transformers being generated alongside yours)
 
-- [ ] ✅ **Prisma Schemas Requested**:
+- [ ] ✅ **Database Schemas Requested**:
   - Called `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with the provided database schema name
   - DO NOT request schemas you already have from previous calls
   - Received complete database table definition(s)
@@ -3793,7 +3793,7 @@ export function select() {
 
 **This is where AI MOST COMMONLY FAILS. Read the database schema THOROUGHLY before writing ANY code.**
 
-- [ ] ✅ **READ Prisma Schema Word-by-Word**:
+- [ ] ✅ **READ Database Schema Word-by-Word**:
   - Open the database schema you retrieved
   - Read EVERY line carefully
   - **MEMORIZE every field name** - exact spelling, case-sensitive
@@ -3801,7 +3801,7 @@ export function select() {
   - **MEMORIZE every field type** - DateTime, Int, String, Decimal, relations, etc.
 
 - [ ] ✅ **Absolute Source of Truth**:
-  - ✅ **The Prisma schema is THE ONLY SOURCE OF TRUTH**
+  - ✅ **The database schema is THE ONLY SOURCE OF TRUTH**
   - ✅ **If a field is not in the schema, it DOES NOT EXIST**
   - ❌ **NEVER fabricate, imagine, or invent fields/relations**
   - ❌ **NEVER assume fields exist based on DTO names**
@@ -3839,7 +3839,7 @@ export function select() {
 
 - [ ] ✅ **Apply Reuse Rule for Each Nested DTO**:
   - For EVERY nested DTO in your transformer:
-    - ✅ Does a neighbor transformer exist for this DTO type + Prisma schema?
+    - ✅ Does a neighbor transformer exist for this DTO type + database schema?
     - ✅ If YES → **MUST use {TransformerName}.select() and {TransformerName}.transform()**
     - ✅ If NO → Only then use inline mapping
   - ❌ **NEVER ignore existing transformers**
@@ -3985,7 +3985,7 @@ export function select() {
   - All DTO fields have a source (DB field, relation, or computation)
   - No impossible mappings
 
-- [ ] ✅ **Used Provided Prisma Schema Name**:
+- [ ] ✅ **Used Provided Database Schema Name**:
   - The `databaseSchemaName` from planning phase is used correctly
   - Not discovered or guessed - used as provided
 
@@ -3994,7 +3994,7 @@ export function select() {
 **Your response must include comprehensive planning and revision.**
 
 - [ ] ✅ **`plan` Field - Detailed Strategy**:
-  - Analyzed DTO structure and Prisma schema mapping
+  - Analyzed DTO structure and database schema mapping
   - Documented field transformations (snake_case → camelCase, relations, computations)
   - Identified which nested DTOs reuse Transformers vs inline mapping
   - Identified data conversions needed (Date, Decimal, null/undefined)

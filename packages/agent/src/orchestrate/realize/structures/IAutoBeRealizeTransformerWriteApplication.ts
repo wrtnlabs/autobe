@@ -9,7 +9,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * Function calling interface for generating DTO transformer functions.
  *
  * Guides the AI agent through creating reusable transformer modules that
- * convert Prisma database query results to API response DTOs (DB → API). Each
+ * convert database query results to API response DTOs (DB → API). Each
  * transformer includes type-safe conversion logic and Prisma select
  * specifications for efficient data loading.
  *

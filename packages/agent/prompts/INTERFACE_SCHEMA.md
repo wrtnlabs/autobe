@@ -686,8 +686,8 @@ interface IShoppingSale.ICreate {
   - `refresh_token`, `api_key`, `access_token`, `session_token` → NEVER in responses
 - **Request DTOs (Create/Login)**: Use plain `password` field ONLY
   - If database has `password_hashed`, `hashed_password`, or `password_hash` → DTO uses `password: string`
-  - If Prisma has `password` → DTO uses `password: string`
-  - **Field Mapping**: Prisma's `password_hashed` column maps to DTO's `password` field
+  - If database has `password` → DTO uses `password: string`
+  - **Field Mapping**: database's `password_hashed` column maps to DTO's `password` field
   - Backend receives plain text password and hashes it before storing in `password_hashed` column
   - Clients NEVER send pre-hashed passwords - hashing is backend's responsibility
 - **Request DTOs (Update)**: Password changes use dedicated endpoints, NOT general update DTOs
@@ -786,7 +786,7 @@ async update(
 
 ### 2.2. Database-Schema Consistency Principle
 
-**CRITICAL RULE**: Interface schemas must be implementable with the existing Prisma database schema.
+**CRITICAL RULE**: Interface schemas must be implementable with the existing database schema.
 
 #### 2.2.1. The Phantom Field Problem
 
@@ -798,8 +798,8 @@ async update(
 - **NEVER** assume all tables have these timestamps
 
 **Other Common Phantom Fields**:
-- Example: If Prisma has only `name` field, don't add `nickname` that would need DB changes
-- Example: If Prisma lacks `tags` relation, don't add `tags` array to the interface
+- Example: If database has only `name` field, don't add `nickname` that would need DB changes
+- Example: If database lacks `tags` relation, don't add `tags` array to the interface
 
 **ALLOWED**:
 - Query parameters: `sort`, `search`, `filter`, `page`, `limit`
@@ -837,7 +837,7 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
    - Exception: Computed/derived fields explicitly calculated from existing fields
    - Exception: Relation fields populated via joins
 3. **Timestamp Verification**:
-   - If `"`x-autobe-database-schema`": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
+   - If `"`x-autobe-database-schema`": "User"`, then `created_at` is ONLY valid if database `User` model has `created_at`
    - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked database model
 
 **Example**:
@@ -851,8 +851,8 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
       "email": { "type": "string" },
       "name": { "type": "string" },
       "created_at": { "type": "string" },
-      "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in Prisma
-      "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in Prisma
+      "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in database schema
+      "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in database schema
     },
     "x-autobe-database-schema": "shopping_customers"
   }
@@ -3828,9 +3828,9 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
 **Special Considerations**:
 - **Password Handling - Field Name Mapping**:
   - **Request DTOs (Create/Login)**: ALWAYS use `password: string` field (plain text)
-  - **Database Field Mapping**: If Prisma schema has `password_hashed`, `hashed_password`, or `password_hash` → DTO uses `password`
+  - **Database Field Mapping**: If database schema has `password_hashed`, `hashed_password`, or `password_hash` → DTO uses `password`
   - **Never accept**: `hashed_password`, `password_hash`, `password_hashed` in request DTOs
-  - **Backend Responsibility**: Backend receives plain `password`, hashes it, and stores in Prisma's `password_hashed` column
+  - **Backend Responsibility**: Backend receives plain `password`, hashes it, and stores in database's `password_hashed` column
   - **Example Mapping**:
     ```prisma
     // Prisma schema:
@@ -3851,8 +3851,8 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
 interface IUser.ICreate {
   email: string;
   name: string;
-  password: string;  // ✅ Plain text - maps to Prisma's password_hashed column
-  // ❌ password_hashed: string - NEVER use Prisma's hashed field name in DTO
+  password: string;  // ✅ Plain text - maps to database's password_hashed column
+  // ❌ password_hashed: string - NEVER use database's hashed field name in DTO
   // id, created_at are auto-generated
   // user_id, created_by come from auth context - NEVER in request body
 }
@@ -4256,8 +4256,8 @@ interface IBbsArticle.IUpdate {
    - Document ownership relations
 
 2. **Define Main Entity Schema** (`IEntityName`):
-   - Include all public-facing fields from Prisma
-   - **CRITICAL**: Verify each timestamp field exists in Prisma (don't assume)
+   - Include all public-facing fields from database schema
+   - **CRITICAL**: Verify each timestamp field exists in database schema (don't assume)
    - Add `"`x-autobe-database-schema`": "PrismaModelName"` for direct table mapping
    - Apply security filtering - remove sensitive fields
    - Document thoroughly with descriptions from database schema
@@ -4332,7 +4332,7 @@ interface IBbsArticle.IUpdate {
    - Verify EVERY property exists in the referenced database model
    - Double-check timestamp fields existence
    - Ensure no phantom fields are introduced
-   - Confirm field types match Prisma definitions
+   - Confirm field types match database definitions
 
 ### 6.3. Security Checklist for Each Type
 
@@ -4419,7 +4419,7 @@ interface IBbsArticle.IUpdate {
 - [ ] Decisions made for EVERY relevant relation, even if potentially incorrect
 
 **Common Excuses That Are NOT Acceptable**:
-- ❌ "Relation unclear from available information" → Analyze Prisma and decide
+- ❌ "Relation unclear from available information" → Analyze database schema and decide
 - ❌ "Need more context to determine relation" → Use what you have
 - ❌ "Leaving for review agent to determine" → Your job is to define it first
 - ❌ "Relation might vary by use case" → Choose the most common case
@@ -4754,14 +4754,14 @@ const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
 
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
 - **Mixed naming patterns** - Stick to IEntityName convention throughout
-- **Inconsistent required fields** - Required in Prisma should be required in Create
+- **Inconsistent required fields** - Required in database schema should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
 ### 8.7. Business Logic Mistakes
 
 - **Wrong cardinality in relations** - One-to-many vs many-to-many confusion
-- **Missing default values in descriptions** - Prisma defaults should be documented
-- **Incorrect optional/required mapping** - Prisma constraints must be respected
+- **Missing default values in descriptions** - Database defaults should be documented
+- **Incorrect optional/required mapping** - Database constraints must be respected
 
 ---
 
@@ -4807,7 +4807,7 @@ const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
    - Identify the target DTO type name from the input context
    - Analyze the type variant (.ICreate, .IUpdate, .ISummary, main entity, etc.)
    - Find which API operations use this type
-   - Locate the corresponding Prisma entity
+   - Locate the corresponding database entity
 
 2. **Context Gathering**:
    - Request database schemas if needed to understand entity structure
@@ -5018,7 +5018,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   * Material state information is accurate and should be trusted
   * These instructions ensure efficient resource usage and accurate analysis
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"

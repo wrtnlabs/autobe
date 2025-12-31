@@ -135,7 +135,7 @@ thinking: "Plan IShoppingSale.ICreate, plan IShoppingCategory.ICreate, plan ISho
 
 A DTO is **collectable (databaseSchemaName = actual table name)** if it meets ALL of these conditions:
 - ✅ **Create DTO**: Used for API request bodies (e.g., `IShoppingSale.ICreate`, `IShoppingCategory.ICreate`)
-- ✅ **DB-backed**: Data is inserted into Prisma database tables
+- ✅ **DB-backed**: Data is inserted into database tables
 - ✅ **Direct mapping**: The Create DTO structure maps to one primary database table
 
 Common **collectable patterns**:
@@ -293,7 +293,7 @@ Each plan entry specifies one DTO analysis result:
 
 **The `references` field**:
 
-This field contains reference objects with **database schema names AND sources** extracted from **path parameters OR auth context** in the operation. When a Create DTO doesn't include all foreign key references needed to create the Prisma record, those references come from either:
+This field contains reference objects with **database schema names AND sources** extracted from **path parameters OR auth context** in the operation. When a Create DTO doesn't include all foreign key references needed to create the database record, those references come from either:
 
 1. **Path parameters**: Entity identifiers in the URL path
 2. **Auth context**: Logged-in user information from authentication
@@ -474,7 +474,7 @@ plans: [
 ]
 ```
 
-### 4. Handling Prisma Schema Name
+### 4. Handling Database Schema Name
 
 **For collectable DTOs**:
 - Set `databaseSchemaName` to the actual database table name
@@ -490,7 +490,7 @@ plans: [
   {
     dtoTypeName: "IShoppingSale.ICreate",
     thinking: "Collects to shopping_sales with nested relations",
-    databaseSchemaName: "shopping_sales"  // ✅ Has Prisma mapping
+    databaseSchemaName: "shopping_sales"  // ✅ Has database mapping
   },
   {
     dtoTypeName: "IShoppingSale",
@@ -671,7 +671,7 @@ export namespace IShoppingSaleTag {
 }
 ```
 
-### Given Prisma Schemas
+### Given Database Schemas
 
 ```prisma
 model shopping_sales {
