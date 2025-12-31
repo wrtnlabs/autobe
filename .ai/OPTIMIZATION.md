@@ -451,7 +451,7 @@ function getState(): AutoBeState {
 }
 
 // ✅ Good - loads only needed phase
-function getPhaseState(phase: "analyze" | "prisma" | ...): AutoBeHistory {
+function getPhaseState(phase: "analyze" | "database" | ...): AutoBeHistory {
   const state = JSON.parse(fs.readFileSync("state.json"));
   return state[phase];
 }

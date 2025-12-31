@@ -196,7 +196,7 @@ export class AutoBeAgent {
 
       if (history.type === "analyze") {
         this.state_.analyze = history;
-      } else if (history.type === "prisma") {
+      } else if (history.type === "database") {
         this.state_.prisma = history;
       }
       // ... handle other types

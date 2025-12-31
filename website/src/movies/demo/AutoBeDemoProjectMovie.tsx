@@ -100,7 +100,7 @@ export default function AutoBeDemoProjectMovie(
         <table className="w-full">
           <tbody>
             {(
-              ["analyze", "prisma", "interface", "test", "realize"] as const
+              ["analyze", "database", "interface", "test", "realize"] as const
             ).map((phaseName) => {
               const phase = replay[phaseName];
               if (!phase) {

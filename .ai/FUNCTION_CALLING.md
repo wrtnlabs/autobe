@@ -457,8 +457,8 @@ public state(): AutoBeState {
 private updateState(history: AutoBeHistory): void {
   if (history.type === "analyze") {
     this.state_.analyze = history;
-  } else if (history.type === "prisma") {
-    this.state_.prisma = history;
+  } else if (history.type === "database") {
+    this.state_.database = history;
   }
   // ... update other phases
 }
@@ -527,7 +527,7 @@ Generates JSON schema:
       }
     },
     {
-      "name": "prisma",
+      "name": "database",
       "description": "Design Prisma database schema based on analyzed requirements.",
       "parameters": {
         "type": "object",

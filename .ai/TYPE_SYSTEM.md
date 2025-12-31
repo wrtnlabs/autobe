@@ -79,7 +79,7 @@ function getHistory<T extends AutoBeHistory.Type>(
 
 // TypeScript infers exact return type
 const analyze: AutoBeAnalyzeHistory | undefined = getHistory(histories, "analyze");
-const prisma: AutoBeDatabaseHistory | undefined = getHistory(histories, "prisma");
+const database: AutoBeDatabaseHistory | undefined = getHistory(histories, "database");
 ```
 
 ### Event Type System
