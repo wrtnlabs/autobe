@@ -27,7 +27,7 @@ export namespace AutoBeHackathonSessionSimulator {
         phase: "realize",
       }),
       analyze: await snapshots("analyze"),
-      prisma: await snapshots("database"),
+      database: await snapshots("database"),
       interface: await snapshots("interface"),
       test: await snapshots("test"),
       realize: await snapshots("realize"),
