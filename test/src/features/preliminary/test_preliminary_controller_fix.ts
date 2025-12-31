@@ -37,11 +37,11 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -50,11 +50,11 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     source: "interfaceSchemaReview",
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
@@ -84,7 +84,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     [
       "complete",
       "getAnalysisFiles",
-      "getPrismaSchemas",
+      "getDatabaseSchemas",
       "getInterfaceOperations",
       "getInterfaceSchemas",
     ].sort(),
@@ -94,12 +94,12 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
     preliminary.getKinds().slice().sort(),
     [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
     ].sort() as Array<
       | "analysisFiles"
-      | "prismaSchemas"
+      | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
     >,

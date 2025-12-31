@@ -37,9 +37,9 @@ export const ValidateEventGroup = (props: IValidateEventGroupProps) => {
   // Calculate validation statistics
   const errorEvents = events.filter((event) => {
     switch (event.type) {
-      case "prismaValidate":
+      case "databaseValidate":
       case "realizeValidate":
-      case "prismaInsufficient":
+      case "databaseInsufficient":
         return true;
       case "testValidate":
       case "realizeAuthorizationValidate":

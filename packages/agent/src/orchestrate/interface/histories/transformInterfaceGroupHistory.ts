@@ -12,9 +12,9 @@ export const transformInterfaceGroupHistory = (props: {
   instruction: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
 }): IAutoBeOrchestrateHistory => {

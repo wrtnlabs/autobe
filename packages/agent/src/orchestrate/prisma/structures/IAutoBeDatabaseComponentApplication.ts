@@ -3,7 +3,7 @@ import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseComponentApplication {
   /**
@@ -57,7 +57,7 @@ export namespace IAutoBeDatabaseComponentApplication {
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas;
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   /**

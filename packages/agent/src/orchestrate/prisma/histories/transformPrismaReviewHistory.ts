@@ -9,9 +9,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformPrismaReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabase.IComponent;
 }): IAutoBeOrchestrateHistory => ({

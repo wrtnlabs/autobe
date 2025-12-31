@@ -3,8 +3,8 @@ import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceAuthorizationsApplication {
   /**
@@ -28,7 +28,7 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -50,17 +50,17 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
-     * getPreviousPrismaSchemas) or final authorization operations generation
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
+     * getPreviousDatabaseSchemas) or final authorization operations generation
      * (complete). When preliminary returns empty array, that type is removed
      * from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas;
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   /**

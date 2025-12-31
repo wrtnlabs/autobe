@@ -3,7 +3,7 @@ import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseSchemaApplication {
   /**
@@ -25,7 +25,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -47,16 +47,16 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousPrismaSchemas) or
-     * final schema generation (complete). When preliminary returns empty array,
-     * that type is removed from the union, physically preventing repeated
-     * calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
+     * or final schema generation (complete). When preliminary returns empty
+     * array, that type is removed from the union, physically preventing
+     * repeated calls.
      */
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas;
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   /**

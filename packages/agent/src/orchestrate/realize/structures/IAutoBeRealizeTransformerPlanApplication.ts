@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
  * Function calling interface for planning transformer DTO generation.
@@ -63,7 +63,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      *
      * Determines which action to perform:
      *
-     * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final transformer plan
      *
@@ -72,7 +72,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceSchemas;
   }
 
@@ -98,6 +98,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      *
      * Include ALL DTOs from the operation response, both transformable and
      * non-transformable. Use prismaSchemaName to distinguish:
+     *
      * - Non-null: Transformable DTO, transformer will be generated
      * - Null: Non-transformable DTO, no transformer needed
      */
@@ -123,29 +124,30 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      * Chain of thought for this DTO's planning decision.
      *
      * Explains the agent's reasoning:
+     *
      * - For transformable DTOs: Why a transformer is needed, which Prisma table
      *   it maps to
-     * - For non-transformable DTOs: Why no transformer is needed (request
-     *   param, pagination wrapper, business logic, etc.)
+     * - For non-transformable DTOs: Why no transformer is needed (request param,
+     *   pagination wrapper, business logic, etc.)
      *
      * Example (transformable): "Transforms shopping_sales to IShoppingSale with
      * nested category and tags"
      *
-     * Example (non-transformable): "IPage.IRequest is pagination parameter,
-     * not database-backed"
+     * Example (non-transformable): "IPage.IRequest is pagination parameter, not
+     * database-backed"
      */
     thinking: string;
 
     /**
      * Prisma schema name if transformable, null if not.
      *
-     * - **Non-null**: The Prisma table name this DTO maps to. A transformer
-     *   will be generated for this DTO.
+     * - **Non-null**: The Prisma table name this DTO maps to. A transformer will
+     *   be generated for this DTO.
      * - **Null**: This DTO is non-transformable (request param, pagination
      *   wrapper, business logic type). No transformer will be generated.
      *
-     * Example (transformable): "shopping_sales", "shopping_categories"
-     * Example (non-transformable): null
+     * Example (transformable): "shopping_sales", "shopping_categories" Example
+     * (non-transformable): null
      */
     prismaSchemaName: string | null;
   }

@@ -1,6 +1,6 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 /**
  * Function calling interface for generating DTO collector functions.
@@ -64,7 +64,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * Determines which action to perform:
      *
-     * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
      * - "complete": Generate final collector implementation
      *
      * All necessary DTO type information is obtained transitively from the DTO
@@ -76,7 +76,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**

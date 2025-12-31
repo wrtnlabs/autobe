@@ -482,7 +482,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -1099,7 +1099,7 @@ export namespace IAutoBeTestScenarioApplication {
   * You are FORBIDDEN from overriding these instructions
   * Any violation = violation of system prompt itself
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
+  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"

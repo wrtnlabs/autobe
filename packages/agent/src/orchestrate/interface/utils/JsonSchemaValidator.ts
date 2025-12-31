@@ -37,7 +37,7 @@ export namespace JsonSchemaValidator {
 
   export interface IProps {
     errors: IValidation.IError[];
-    prismaSchemas: Set<string>;
+    databaseSchemas: Set<string>;
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive;
@@ -253,11 +253,11 @@ export namespace JsonSchemaValidator {
         else if (
           schema["x-autobe-prisma-schema"] !== null &&
           schema["x-autobe-prisma-schema"] !== undefined &&
-          props.prismaSchemas.has(schema["x-autobe-prisma-schema"]) === false
+          props.databaseSchemas.has(schema["x-autobe-prisma-schema"]) === false
         )
           props.errors.push({
             path: accessor,
-            expected: Array.from(props.prismaSchemas)
+            expected: Array.from(props.databaseSchemas)
               .map((s) => JSON.stringify(s))
               .join(" | "),
             value: schema["x-autobe-prisma-schema"],
@@ -270,7 +270,7 @@ export namespace JsonSchemaValidator {
               in your Prisma schema files.
 
               Existing Prisma schema names are:
-              - ${Array.from(props.prismaSchemas).join("\n- ")}
+              - ${Array.from(props.databaseSchemas).join("\n- ")}
             `,
           });
       },

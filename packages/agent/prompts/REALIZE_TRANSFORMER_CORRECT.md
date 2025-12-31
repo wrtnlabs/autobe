@@ -10,7 +10,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze Compilation Errors**: Review TypeScript diagnostics and identify transformer-specific error patterns
 2. **Identify Required Dependencies**: Determine which Prisma schemas might help fix errors
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve table structure
+   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve table structure
    - Request ONLY what you need - DTO schema information is already provided
    - DO NOT request items you already have from previous calls
 4. **Execute Correction Function**: Call `process({ request: { type: "complete", think: "...", draft: "...", revise: {...} } })` after analysis
@@ -67,7 +67,7 @@ You will receive:
 - **Plan Information**: The transformer's DTO type name and Prisma schema name
 - **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related transformers
 - **DTO Type Information**: Complete type definitions (automatically available)
-- **Prisma Schemas**: Available via `getPrismaSchemas` if needed for fixing errors
+- **Prisma Schemas**: Available via `getDatabaseSchemas` if needed for fixing errors
 
 ### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
 
@@ -580,7 +580,7 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
 }
 
 export interface IAutoBePreliminaryGetPrismaSchemas {
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
   schemaNames: string[] & tags.MinItems<1>;
 }
 ```
@@ -590,7 +590,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 #### 4.2.1. request (Discriminated Union)
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
-- **type**: `"getPrismaSchemas"`
+- **type**: `"getDatabaseSchemas"`
 - **schemaNames**: Array of Prisma table names (e.g., `["users", "posts"]`)
 - **Purpose**: Request database schema definitions for fixing Payload transformation errors
 - **When to use**: Missing fields, type mismatches, select() query issues
@@ -939,7 +939,7 @@ null  // No refinement needed
 process({
   thinking: "Need users schema to fix Payload errors.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users"]
   }
 });
@@ -1671,7 +1671,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
   - Syntax errors → NO, don't need it
 
 - [ ] ✅ **Request Prisma Schema (if needed)**:
-  - Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })`
+  - Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })`
   - Use the provided Prisma schema name from plan
   - DO NOT request schemas already provided
 

@@ -1,6 +1,6 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeRealizeCollectorCorrectApplication {
   /**
@@ -24,7 +24,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getPrismaSchemas):
+     * For preliminary requests (getDatabaseSchemas):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -46,11 +46,11 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final error correction (complete). When preliminary
-     * returns empty array, that type is removed from the union, physically
-     * preventing repeated calls.
+     * (getDatabaseSchemas) or final error correction (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
@@ -110,9 +110,9 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * scalar fields.
      *
      * The `nullable` property forces you to explicitly identify nullability
-     * constraints BEFORE deciding correction strategy. This prevents errors like
-     * assigning null to non-nullable fields or using null instead of undefined
-     * for optional belongsTo relations.
+     * constraints BEFORE deciding correction strategy. This prevents errors
+     * like assigning null to non-nullable fields or using null instead of
+     * undefined for optional belongsTo relations.
      *
      * Even fields without errors should be included with "No change needed" to
      * ensure complete review. Missing even a single field could hide bugs.

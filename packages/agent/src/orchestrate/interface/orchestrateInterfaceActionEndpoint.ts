@@ -81,7 +81,7 @@ async function process(
   },
 ): Promise<IAutoBeInterfaceActionEndpointApplication.IEndpoint[]> {
   const start: Date = new Date();
-  const prismaSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
+  const databaseSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
     ctx
       .state()
       .database!.result.data.files.flatMap((f) => f.models)
@@ -90,26 +90,26 @@ async function process(
 
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceActionEndpointApplication>(),
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     source: SOURCE,
     state: ctx.state(),
     local: {
       analysisFiles: ctx.state().analyze?.files ?? [],
-      prismaSchemas: props.group.prismaSchemas
-        .map((key) => prismaSchemas.get(key))
+      databaseSchemas: props.group.databaseSchemas
+        .map((key) => databaseSchemas.get(key))
         .filter((m) => m !== undefined),
     },
   });
@@ -167,9 +167,9 @@ async function process(
 function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   build: (next: IAutoBeInterfaceActionEndpointApplication.IComplete) => void;

@@ -20,21 +20,24 @@ export namespace IAutoBeAnalyzeReviewApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on your
-     * current state and explain your reasoning:
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
      * For completion (complete):
+     *
      * - What key assets did you acquire?
      * - What did you accomplish?
      * - Why is it sufficient to complete?
      * - Summarize - don't enumerate every single item.
      *
-     * This reflection helps you avoid duplicate requests and premature completion.
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
      */
     thinking: string;
 
@@ -56,8 +59,8 @@ export namespace IAutoBeAnalyzeReviewApplication {
    * Request to enhance and finalize planning documentation.
    *
    * Executes document enhancement to produce improved, complete markdown
-   * documentation following quality standards and best practices. The output
-   * is the enhanced document itself, not review comments.
+   * documentation following quality standards and best practices. The output is
+   * the enhanced document itself, not review comments.
    */
   export interface IComplete {
     /**
@@ -99,9 +102,9 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - DO: Expand brief sections with comprehensive business context
      * - DO: Convert vague statements to EARS format with clear conditions
      *
-     * The review criteria guide the enhancement process to ensure production-ready
-     * documentation that serves as a solid foundation for subsequent pipeline
-     * phases.
+     * The review criteria guide the enhancement process to ensure
+     * production-ready documentation that serves as a solid foundation for
+     * subsequent pipeline phases.
      */
     review: string;
 
@@ -120,8 +123,8 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - Expected level of detail and technical depth
      * - Content coverage scope and boundaries
      *
-     * The enhancer uses this plan to ensure the improved content aligns with the
-     * original architectural vision while meeting all quality standards and
+     * The enhancer uses this plan to ensure the improved content aligns with
+     * the original architectural vision while meeting all quality standards and
      * completeness requirements.
      */
     plan: string;
@@ -130,7 +133,8 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * Enhanced, production-ready markdown document.
      *
      * INPUT: The document written by Write Agent (may have quality issues)
-     * OUTPUT: The enhanced, complete markdown document ready for production use
+     * OUTPUT: The enhanced, complete markdown document ready for production
+     * use
      *
      * Enhancement transformation requirements:
      *
@@ -152,9 +156,9 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - Must align with the original plan structure
      * - Must be implementation-ready for subsequent pipeline phases
      *
-     * The enhanced document serves as the authoritative requirements specification
-     * that will guide all downstream generation phases (Prisma, Interface, Test,
-     * Realize).
+     * The enhanced document serves as the authoritative requirements
+     * specification that will guide all downstream generation phases (Prisma,
+     * Interface, Test, Realize).
      */
     content: string;
   }

@@ -114,24 +114,24 @@ async function execute(
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
       "previousAnalysisFiles",
-      "prismaSchemas",
-      "previousPrismaSchemas",
+      "databaseSchemas",
+      "previousDatabaseSchemas",
     ],
     state: ctx.state(),
     all: {
-      prismaSchemas: failure.data.files.map((f) => f.models).flat(),
+      databaseSchemas: failure.data.files.map((f) => f.models).flat(),
     },
     local: {
-      prismaSchemas: Array.from(
+      databaseSchemas: Array.from(
         new Set(failure.errors.map((e) => e.table).filter((t) => t !== null)),
       )
         .map((table: string): AutoBeDatabase.IModel | undefined =>
@@ -213,8 +213,8 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
-    | "prismaSchemas"
-    | "previousPrismaSchemas"
+    | "databaseSchemas"
+    | "previousDatabaseSchemas"
   >;
   build: (next: IAutoBeDatabaseCorrectApplication.IComplete) => void;
 }): IAgenticaController.IClass {

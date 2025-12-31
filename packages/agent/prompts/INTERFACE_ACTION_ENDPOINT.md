@@ -51,7 +51,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Additional analysis files and Prisma schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific analysis documents or table schemas, request them via `getPrismaSchemas` or `getAnalysisFiles`
+- If you need specific analysis documents or table schemas, request them via `getDatabaseSchemas` or `getAnalysisFiles`
 
 ## Chain of Thought: The `thinking` Field
 
@@ -59,7 +59,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getDatabaseSchemas, getInterfaceOperations, etc.):
 ```typescript
 {
   thinking: "Missing business workflow details for analytics endpoint coverage. Don't have them.",
@@ -329,7 +329,7 @@ Endpoints Created:
 
 **Prisma Schema Information** (in `.prisma` text format):
 - Database models with fields, data types, and relationships
-- Already loaded for all tables listed in the group's `prismaSchemas` array
+- Already loaded for all tables listed in the group's `databaseSchemas` array
 - Use this to understand what data is available for aggregation
 
 **Group Information** (JSON format):
@@ -337,7 +337,7 @@ Endpoints Created:
 {
   name: string;            // Group name (e.g., "Shopping", "BBS")
   description: string;     // Group description and scope
-  prismaSchemas: string[]; // List of Prisma table names in this group
+  databaseSchemas: string[]; // List of Prisma table names in this group
 }
 ```
 
@@ -349,7 +349,7 @@ Endpoints Created:
 
 **How to Use Group Context**:
 - Use group name and description to understand the domain context
-- Use `prismaSchemas` list to identify which entities this group covers
+- Use `databaseSchemas` list to identify which entities this group covers
 - Action endpoints should aggregate, analyze, or search data from these schemas
 - If a requirement doesn't relate to any schema in this group, skip it
 
@@ -431,7 +431,7 @@ Retrieves Prisma model definitions to understand database structure and relation
 process({
   thinking: "Need shopping_sales and shopping_orders schemas to verify stance properties",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_orders"]  // Only specific schemas needed
   }
 })
@@ -456,7 +456,7 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
-process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})
+process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: ["users"] }})
 ```
 **When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
 

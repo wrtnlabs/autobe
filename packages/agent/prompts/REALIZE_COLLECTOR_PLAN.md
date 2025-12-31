@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - **If incompatible** (read-only DTO, computed type): Exclude from plan
 4. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getInterfaceOperations", operationIds: [...] } })` to retrieve operation specs
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need ALL THREE to understand mappings
    - DO NOT request schemas you already have from previous calls
@@ -61,7 +61,7 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through which DTOs are collectable vs non-collectable
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceSchemas, getInterfaceOperations):
+**For preliminary requests** (getDatabaseSchemas, getInterfaceSchemas, getInterfaceOperations):
 ```typescript
 {
   thinking: "Need Interface operations to discover which Create DTOs are used.",
@@ -178,7 +178,7 @@ export namespace IShoppingSale {
 
 You will receive:
 - **Operation Specifications**: The OpenAPI operations that use Create DTOs (available via `getInterfaceOperations`)
-- **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
+- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 ## The Discovery Process: Finding Collectable DTOs
@@ -225,7 +225,7 @@ You will receive:
    process({
      thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
      request: {
-       type: "getPrismaSchemas",
+       type: "getDatabaseSchemas",
        schemaNames: ["shopping_sales", "shopping_sale_tags", "shopping_sale_inventories"]
      }
    });
@@ -613,7 +613,7 @@ process({
 process({
   thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_categories"]
   }
 });

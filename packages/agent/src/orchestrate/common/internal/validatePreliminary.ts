@@ -7,13 +7,13 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../structures/IAutoBePreliminaryGetPrismaSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBePreliminaryGetRealizeTransformers";
 
@@ -128,18 +128,20 @@ namespace PreliminaryApplicationValidator {
     return finalize(input, errors);
   };
 
-  export const getPrismaSchemas = (
+  export const getDatabaseSchemas = (
     controller: AutoBePreliminaryController<
-      "prismaSchemas" | "previousPrismaSchemas"
+      "databaseSchemas" | "previousDatabaseSchemas"
     >,
-    input: IAutoBePreliminaryRequest<"prismaSchemas" | "previousPrismaSchemas">,
+    input: IAutoBePreliminaryRequest<
+      "databaseSchemas" | "previousDatabaseSchemas"
+    >,
     previous: boolean,
   ): IValidation<
-    IAutoBePreliminaryRequest<"prismaSchemas" | "previousPrismaSchemas">
+    IAutoBePreliminaryRequest<"databaseSchemas" | "previousDatabaseSchemas">
   > => {
-    const accessor: "prismaSchemas" | "previousPrismaSchemas" = previous
-      ? "previousPrismaSchemas"
-      : "prismaSchemas";
+    const accessor: "databaseSchemas" | "previousDatabaseSchemas" = previous
+      ? "previousDatabaseSchemas"
+      : "databaseSchemas";
     if (controller.getAll()[accessor] === undefined)
       return nonExisting(controller, accessor, input);
 
@@ -167,10 +169,10 @@ namespace PreliminaryApplicationValidator {
       ${
         newbie.size === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_PRISMA_SCHEMA_EXHAUSTED.replace(
-              "getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"],
+              "getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"],
               previous
-                ? ("getPreviousPrismaSchemas" satisfies IAutoBePreliminaryGetPreviousPrismaSchemas["type"])
-                : ("getPrismaSchemas" satisfies IAutoBePreliminaryGetPrismaSchemas["type"]),
+                ? ("getPreviousDatabaseSchemas" satisfies IAutoBePreliminaryGetPreviousDatabaseSchemas["type"])
+                : ("getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"]),
             )
           : ""
       }
@@ -194,14 +196,14 @@ namespace PreliminaryApplicationValidator {
           .getArgumentTypeNames()
           .filter(
             (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetPrismaSchemas>(),
+              k !== typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>(),
           )
           .join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
             typia.misc.literals<
-              IAutoBePreliminaryGetPrismaSchemas["type"]
+              IAutoBePreliminaryGetDatabaseSchemas["type"]
             >()[0],
           ),
       });

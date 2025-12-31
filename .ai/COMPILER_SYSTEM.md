@@ -166,13 +166,13 @@ function validateOpenApiSpec(doc: AutoBeOpenApi.IDocument): IDiagnostic[] {
 ```typescript
 function validatePrismaAlignment(
   doc: AutoBeOpenApi.IDocument,
-  prismaSchemas: PrismaSchema[]
+  databaseSchemas: PrismaSchema[]
 ): IDiagnostic[] {
   const diagnostics: IDiagnostic[] = [];
 
   // Build map of Prisma fields
   const prismaFields = new Map<string, Set<string>>();
-  for (const schema of prismaSchemas) {
+  for (const schema of databaseSchemas) {
     prismaFields.set(
       schema.name,
       new Set(schema.fields.map((f) => f.name))
@@ -470,7 +470,7 @@ Different compiler tiers can validate in parallel when appropriate:
 // Validate Prisma and OpenAPI in parallel
 const [prismaResult, openapiResult] = await Promise.all([
   compiler.prisma.compile(prismaSchema),
-  compiler.interface.validate(openapiDoc, prismaSchemas),
+  compiler.interface.validate(openapiDoc, databaseSchemas),
 ]);
 
 // TypeScript compilation depends on both, so runs after

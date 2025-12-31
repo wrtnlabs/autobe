@@ -81,12 +81,12 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeAuthorization> {
-  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
-    new AutoBePreliminaryController<"prismaSchemas">({
+  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
+    new AutoBePreliminaryController<"databaseSchemas">({
       source: SOURCE,
       application:
         typia.json.application<IAutoBeRealizeAuthorizationWriteApplication>(),
-      kinds: ["prismaSchemas"],
+      kinds: ["databaseSchemas"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -166,7 +166,7 @@ async function process(
 
 function createController(props: {
   build: (next: IAutoBeRealizeAuthorizationWriteApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationWriteApplication.IProps> =

@@ -148,7 +148,7 @@ process({
 process({
   thinking: "Need to validate foreign key relationships with other schemas.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     modelNames: ["User", "Product"]
   }
 });
@@ -162,7 +162,7 @@ process({
 process({
   thinking: "Need previous schema design for comparison before approving changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     modelNames: ["Order"]
   }
 });
@@ -439,7 +439,7 @@ export namespace IAutoBeDatabaseReviewApplication {
      * Before requesting preliminary data or completing your task, reflect on your
      * current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
@@ -458,8 +458,8 @@ export namespace IAutoBeDatabaseReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
-     * getPreviousPrismaSchemas) or final schema review (complete).
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
+     * getPreviousDatabaseSchemas) or final schema review (complete).
      * When preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
      */
@@ -562,7 +562,7 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
 **IAutoBePreliminaryGetPrismaSchemas**
 ```typescript
 export interface IAutoBePreliminaryGetPrismaSchemas {
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
   modelNames: string[];
 }
 ```
@@ -584,7 +584,7 @@ export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
 **IAutoBePreliminaryGetPreviousPrismaSchemas**
 ```typescript
 export interface IAutoBePreliminaryGetPreviousPrismaSchemas {
-  type: "getPreviousPrismaSchemas";
+  type: "getPreviousDatabaseSchemas";
   modelNames: string[];
 }
 ```
@@ -632,7 +632,7 @@ export interface IAutoBePreliminaryGetPreviousPrismaSchemas {
 process({
   thinking: "Need foreign key validation. Missing User and Product schema definitions.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     modelNames: ["User", "Product"]
   }
 });
@@ -643,7 +643,7 @@ process({
 process({
   thinking: "Schema changed significantly. Need previous version to validate migration safety.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     modelNames: ["Order", "OrderItem"]
   }
 });

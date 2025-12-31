@@ -17,7 +17,7 @@ export const transformRealizeTransformerWriteHistory = async (
   props: {
     plan: AutoBeRealizeTransformerPlan;
     neighbors: AutoBeRealizeTransformerPlan[];
-    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+    preliminary: AutoBePreliminaryController<"databaseSchemas">;
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
   const application: AutoBeDatabase.IApplication =

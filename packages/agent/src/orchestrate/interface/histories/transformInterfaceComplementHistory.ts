@@ -12,13 +12,13 @@ export const transformInterfaceComplementHistory = (props: {
   missed: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
     | "previousAnalysisFiles"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

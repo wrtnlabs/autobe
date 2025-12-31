@@ -180,7 +180,7 @@ process({
 process({
   thinking: "Need previous database schema for reference when modifying design.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["component_tables", "related_models"]
   }
 });

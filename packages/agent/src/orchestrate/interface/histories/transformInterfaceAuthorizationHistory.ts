@@ -12,9 +12,9 @@ export const transformInterfaceAuthorizationHistory = (props: {
   actor: AutoBeAnalyzeActor;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {

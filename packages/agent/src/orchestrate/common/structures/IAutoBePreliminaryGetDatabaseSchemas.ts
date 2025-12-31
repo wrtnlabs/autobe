@@ -8,15 +8,15 @@ import { tags } from "typia";
  *
  * @author Samchon
  */
-export interface IAutoBePreliminaryGetPrismaSchemas {
+export interface IAutoBePreliminaryGetDatabaseSchemas {
   /**
    * Type discriminator for the request.
    *
    * Determines which action to perform: preliminary data retrieval or actual
-   * task execution. Value "getPrismaSchemas" indicates this is a preliminary
+   * task execution. Value "getDatabaseSchemas" indicates this is a preliminary
    * data request for Prisma schemas.
    */
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve.

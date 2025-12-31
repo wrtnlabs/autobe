@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze Role Requirements**: Review the provided role information
 2. **Identify Schema Dependencies**: Determine which Prisma table schemas are needed for authorization
 3. **Request Prisma Schemas** (when needed):
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - Request schemas for the role table and any related user tables
    - DO NOT request schemas you already have from previous calls
 4. **Execute Implementation Function**: Call `process({ request: { type: "complete", provider: {...}, decorator: {...}, payload: {...} } })` after gathering all necessary context
@@ -57,11 +57,11 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through gaps before acting
 
-**For preliminary requests** (getPrismaSchemas):
+**For preliminary requests** (getDatabaseSchemas):
 ```typescript
 {
   thinking: "Missing actor table fields for JWT payload design. Don't have them.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "admins"] }
 }
 ```
 - State what's MISSING that you don't already have
@@ -96,7 +96,7 @@ thinking: "Implemented join for user, login for admin, refresh for seller..."
 - Additional Prisma schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific table schemas, request them via getPrismaSchemas
+- If you need specific table schemas, request them via getDatabaseSchemas
 
 ## Core Mission
 
@@ -184,7 +184,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final decorator generation (complete).
+     * (getDatabaseSchemas) or final decorator generation (complete).
      */
     request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
@@ -226,7 +226,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve.
@@ -245,7 +245,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 The `request` property is a **discriminated union** that can be one of two types:
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
-- **type**: `"getPrismaSchemas"` - Discriminator indicating preliminary data request
+- **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of Prisma table names to retrieve (e.g., `["admins", "users", "user_sessions"]`)
 - **Purpose**: Request specific database schema definitions needed for authorization implementation
 - **When to use**: When you need to understand role table structure, user table relationships, and validation fields
@@ -284,7 +284,7 @@ You MUST call the `process()` function with your structured output:
 process({
   thinking: "Need admins and users schemas to understand role relationships.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["admins", "users"]
   }
 });

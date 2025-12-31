@@ -63,7 +63,7 @@ interface IState {
 
 function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
   switch (event.type) {
-    case "prismaValidate":
+    case "databaseValidate":
       return {
         title: "Prisma Validation Failed",
         description: (
@@ -208,7 +208,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
         isSuccess: isAuthSuccess,
         step: event.step,
       };
-    case "prismaInsufficient":
+    case "databaseInsufficient":
       return {
         title: "Prisma Model Generation Insufficient",
         description: (
@@ -243,7 +243,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
         ),
         isError: true,
         isSuccess: false,
-        step: undefined, // prismaInsufficient doesn't have step
+        step: undefined, // databaseInsufficient doesn't have step
       };
     case "interfaceOperationReview":
       return {

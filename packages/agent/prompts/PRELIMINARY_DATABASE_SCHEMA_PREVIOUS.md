@@ -8,4 +8,4 @@
 >
 > **DO NOT** use these to design new tables. They describe what has **ALREADY BEEN CREATED** in the database.
 >
-> **IMPORTANT**: Use `getPreviousPrismaSchemas` to load these schemas, NOT `getPrismaSchemas` (which is for NEW tables you need to design in current iteration).
+> **IMPORTANT**: Use `getPreviousDatabaseSchemas` to load these schemas, NOT `getDatabaseSchemas` (which is for NEW tables you need to design in current iteration).

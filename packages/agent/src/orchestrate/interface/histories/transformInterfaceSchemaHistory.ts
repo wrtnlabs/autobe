@@ -12,10 +12,10 @@ export const transformInterfaceSchemaHistory = (props: {
   otherTypeNames: string[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "interfaceOperations"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   >;

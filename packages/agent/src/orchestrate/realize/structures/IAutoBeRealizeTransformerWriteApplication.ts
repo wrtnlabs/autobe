@@ -3,7 +3,7 @@ import {
   AutoBeRealizeTransformerTransformMapping,
 } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 /**
  * Function calling interface for generating DTO transformer functions.
@@ -71,7 +71,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * Determines which action to perform:
      *
-     * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
      * - "complete": Generate final transformer implementation
      *
      * All necessary DTO type information is obtained transitively from the DTO
@@ -83,7 +83,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
@@ -125,9 +125,9 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     /**
      * Prisma field-by-field selection mapping for the select() function.
      *
-     * Documents which Prisma fields/relations must be selected from the database
-     * to enable the transform() function. This ensures no required data is
-     * missing from the query.
+     * Documents which Prisma fields/relations must be selected from the
+     * database to enable the transform() function. This ensures no required
+     * data is missing from the query.
      *
      * MUST include EVERY Prisma field needed by transform() - no exceptions.
      * Each mapping specifies:
@@ -153,7 +153,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * This structured approach:
      *
      * - Prevents missing field selections through systematic coverage
-     * - Forces explicit decision-making for each Prisma field (kind + nullable + how)
+     * - Forces explicit decision-making for each Prisma field (kind + nullable +
+     *   how)
      * - Ensures select() and transform() are perfectly aligned
      * - Documents what data to load from database
      * - Prevents confusion between scalar fields and relations
@@ -166,8 +167,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *   conversion
      * - **Computation sources (nullable: true/false)**: Fields needed for
      *   computed DTO properties
-     * - **Aggregations (nullable: false)**: _count, _sum, _avg for DTO
-     *   statistics
+     * - **Aggregations (nullable: false)**: _count, _sum, _avg for DTO statistics
      * - **BelongsTo relations (nullable: true/false)**: For nested object
      *   transformers
      * - **HasMany relations (nullable: null)**: For array transformers

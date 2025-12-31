@@ -82,15 +82,15 @@ async function process(
     .flat();
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
-  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
     new AutoBePreliminaryController({
       state: ctx.state(),
       source: SOURCE,
       application:
         typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
-      kinds: ["prismaSchemas"],
+      kinds: ["databaseSchemas"],
       local: {
-        prismaSchemas: models.filter(
+        databaseSchemas: models.filter(
           (m) => m.name === props.plan.prismaSchemaName,
         ),
       },
@@ -159,7 +159,7 @@ function createController(props: {
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];
   build: (next: IAutoBeRealizeTransformerWriteApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): ILlmController {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =

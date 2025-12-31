@@ -19,7 +19,7 @@ export const transformRealizeOperationWriteHistory = (props: {
   totalAuthorizations: AutoBeRealizeAuthorization[];
   dto: Record<string, string>;
   preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+    "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
   >;
 }): IAutoBeOrchestrateHistory => {
   const payloads: Record<string, string> = Object.fromEntries(

@@ -8,7 +8,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformRealizeAuthorizationWriteHistory = (props: {
   actor: AutoBeAnalyzeActor;
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [

@@ -80,17 +80,17 @@ export interface AutoBeInterfaceGroup {
    * - Framework tables (migrations, schema_versions)
    *
    * @example
-   * ```typescript
-   * // E-commerce sales group
-   * prismaSchemas: [
-   *   "shopping_sales",
-   *   "shopping_sale_snapshots",
-   *   "shopping_customers",
-   *   "shopping_products",
-   *   "shopping_sellers",
-   *   "shopping_sale_reviews"
-   * ]
-   * ```
+   *   ```typescript
+   *   // E-commerce sales group
+   *   databaseSchemas: [
+   *     "shopping_sales",
+   *     "shopping_sale_snapshots",
+   *     "shopping_customers",
+   *     "shopping_products",
+   *     "shopping_sellers",
+   *     "shopping_sale_reviews"
+   *   ]
+   *   ```;
    */
-  prismaSchemas: string[];
+  databaseSchemas: string[];
 }

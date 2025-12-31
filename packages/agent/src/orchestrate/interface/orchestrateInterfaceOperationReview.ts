@@ -39,9 +39,9 @@ async function process(
     ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
@@ -49,9 +49,9 @@ async function process(
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
@@ -65,7 +65,7 @@ async function process(
       source: SOURCE,
       controller: createReviewController({
         preliminary,
-        prismaSchemas: files,
+        databaseSchemas: files,
         build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
           pointer.value = next;
         },
@@ -106,12 +106,12 @@ async function process(
 function createReviewController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  prismaSchemas: AutoBeDatabase.IFile[];
+  databaseSchemas: AutoBeDatabase.IFile[];
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
   ) => void;

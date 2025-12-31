@@ -85,15 +85,15 @@ async function process(
     .flat();
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
-  const preliminary: AutoBePreliminaryController<"prismaSchemas"> =
+  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
     new AutoBePreliminaryController({
       state: ctx.state(),
       source: SOURCE,
       application:
         typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
-      kinds: ["prismaSchemas"],
+      kinds: ["databaseSchemas"],
       local: {
-        prismaSchemas: models.filter(
+        databaseSchemas: models.filter(
           (m) => m.name === props.plan.prismaSchemaName,
         ),
       },
@@ -157,7 +157,7 @@ function createController(
     plan: AutoBeRealizeCollectorPlan;
     neighbors: AutoBeRealizeCollectorPlan[];
     build: (next: IAutoBeRealizeCollectorWriteApplication.IComplete) => void;
-    preliminary: AutoBePreliminaryController<"prismaSchemas">;
+    preliminary: AutoBePreliminaryController<"databaseSchemas">;
   },
 ): ILlmController {
   const validate = (

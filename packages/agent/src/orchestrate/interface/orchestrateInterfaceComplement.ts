@@ -61,11 +61,11 @@ async function process(
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
@@ -74,11 +74,11 @@ async function process(
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
@@ -176,11 +176,11 @@ function createController(
     operations: AutoBeOpenApi.IOperation[];
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "prismaSchemas"
+      | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
       | "previousAnalysisFiles"
-      | "previousPrismaSchemas"
+      | "previousDatabaseSchemas"
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
@@ -204,7 +204,7 @@ function createController(
     const errors: IValidation.IError[] = [];
     JsonSchemaValidator.validateSchema({
       errors,
-      prismaSchemas: new Set(
+      databaseSchemas: new Set(
         ctx
           .state()
           .database!.result.data.files.map((f) => f.models.map((m) => m.name))

@@ -55,7 +55,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getAnalysisFiles, getPrismaSchemas, getPrevious*, etc.):
+**For preliminary requests** (getAnalysisFiles, getDatabaseSchemas, getPrevious*, etc.):
 ```typescript
 {
   thinking: "Missing business workflow details for analytics endpoint validation. Don't have them.",
@@ -546,7 +546,7 @@ Retrieves Prisma model definitions to check for table conflicts.
 process({
   thinking: "Missing table info to verify action endpoints don't conflict with Base CRUD.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["statistics", "reports", "analytics"]  // Batch request
   }
 })
@@ -573,7 +573,7 @@ Loads Prisma model definitions from the **previous version**.
 process({
   thinking: "Need previous version of Prisma schemas to validate table conflict changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["statistics", "reports"]
   }
 })
@@ -625,7 +625,7 @@ process({
 
 **REQUIRED BEHAVIOR**:
 - ✅ When you need to verify requirements → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
-- ✅ When you need to check table conflicts → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need to check table conflicts → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
 
@@ -651,7 +651,7 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing requirements context.", request: { type: "getAnalysisFiles", fileNames: ["Analytics.md"] } })
-process({ thinking: "Missing table info for conflict check.", request: { type: "getPrismaSchemas", schemaNames: ["statistics", "reports"] } })
+process({ thinking: "Missing table info for conflict check.", request: { type: "getDatabaseSchemas", schemaNames: ["statistics", "reports"] } })
 ```
 
 **Purpose Function Prohibition**:
@@ -760,7 +760,7 @@ process({
 ### 8.2. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"` - gathering materials is intermediate step
 - [ ] When you need requirements → Called `process({ request: { type: "getAnalysisFiles", ... } })`
-- [ ] When you need table info → Called `process({ request: { type: "getPrismaSchemas", ... } })`
+- [ ] When you need table info → Called `process({ request: { type: "getDatabaseSchemas", ... } })`
 - [ ] **NEVER re-requested already loaded materials**
 - [ ] **Used batch requests** for efficiency (up to 8-call limit)
 - [ ] **⚠️ ZERO IMAGINATION**: All data used was actually loaded via function calling

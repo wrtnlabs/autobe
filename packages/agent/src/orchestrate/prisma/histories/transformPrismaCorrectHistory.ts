@@ -10,9 +10,9 @@ export const transformPrismaCorrectHistory = (props: {
   result: IAutoBeDatabaseValidation.IFailure;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

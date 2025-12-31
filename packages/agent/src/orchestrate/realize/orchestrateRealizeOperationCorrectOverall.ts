@@ -64,7 +64,11 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           source: next.source,
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
-          kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
+          kinds: [
+            "databaseSchemas",
+            "realizeCollectors",
+            "realizeTransformers",
+          ],
           state: ctx.state(),
           all: {
             realizeCollectors: props.collectors,

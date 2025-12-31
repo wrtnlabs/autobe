@@ -10,7 +10,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze Compilation Errors**: Review the TypeScript diagnostics and identify error patterns
 2. **Identify Required Dependencies**: Determine which Prisma schemas, collectors, or transformers might help fix errors
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - **Collectors**: Use `process({ request: { type: "getRealizeCollectors", dtoTypeNames: [...] } })` to retrieve collector functions for Create DTOs
    - **Transformers**: Use `process({ request: { type: "getRealizeTransformers", dtoTypeNames: [...] } })` to retrieve transformer functions for response DTOs
    - Request ONLY what you actually need to fix the specific errors
@@ -43,11 +43,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and verify completion readiness.
 
-**For preliminary requests** (getPrismaSchemas, getRealizeCollectors, getRealizeTransformers):
+**For preliminary requests** (getDatabaseSchemas, getRealizeCollectors, getRealizeTransformers):
 ```typescript
 {
   thinking: "Missing entity field info to fix type errors. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["orders", "products"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["orders", "products"] }
 }
 {
   thinking: "Need collector logic to fix Create DTO transformation errors.",
@@ -127,7 +127,7 @@ export namespace IAutoBeRealizeCorrectApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas, getRealizeCollectors, getRealizeTransformers) or
+     * (getDatabaseSchemas, getRealizeCollectors, getRealizeTransformers) or
      * final error correction (complete).
      */
     request:
@@ -195,7 +195,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve.
@@ -256,7 +256,7 @@ export interface IAutoBePreliminaryGetRealizeTransformers {
 The `request` property is a **discriminated union** that can be one of four types:
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
-- **type**: `"getPrismaSchemas"` - Discriminator indicating preliminary data request
+- **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of Prisma table names to retrieve (e.g., `["users", "posts", "comments"]`)
 - **Purpose**: Request specific database schema definitions needed for fixing schema-related errors
 - **When to use**: When compilation errors indicate missing fields, type mismatches, or relationship issues
@@ -356,7 +356,7 @@ Request Prisma schemas:
 process({
   thinking: "Need users and posts schemas to fix relationship errors.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "posts"]
   }
 });

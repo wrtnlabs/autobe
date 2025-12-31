@@ -74,13 +74,13 @@ async function process(
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
   const preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
+    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
     state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
-    kinds: ["prismaSchemas", "interfaceSchemas", "interfaceOperations"],
+    kinds: ["databaseSchemas", "interfaceSchemas", "interfaceOperations"],
     local: {
       interfaceOperations: props.document.operations.filter(
         (op) =>
@@ -148,7 +148,7 @@ function createController(props: {
   dtoTypeNames: string[];
   build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "interfaceSchemas" | "interfaceOperations"
+    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

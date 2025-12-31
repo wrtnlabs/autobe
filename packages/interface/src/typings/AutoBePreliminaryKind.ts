@@ -1,11 +1,11 @@
 export type AutoBePreliminaryKind =
   | "analysisFiles"
-  | "prismaSchemas"
+  | "databaseSchemas"
   | "interfaceOperations"
   | "interfaceSchemas"
   | "realizeCollectors"
   | "realizeTransformers"
   | "previousAnalysisFiles"
-  | "previousPrismaSchemas"
+  | "previousDatabaseSchemas"
   | "previousInterfaceOperations"
   | "previousInterfaceSchemas";

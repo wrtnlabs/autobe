@@ -9,9 +9,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export function transformInterfaceOperationReviewHistory(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   operations: AutoBeOpenApi.IOperation[];

@@ -10,7 +10,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze Compilation Errors**: Review the TypeScript diagnostics and identify error patterns in authentication code
 2. **Identify Schema Dependencies**: Determine which Prisma table schemas might be needed to fix authorization errors
 3. **Request Prisma Schemas** (when needed):
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - Request ONLY when errors indicate schema-related issues (missing fields, wrong table relationships)
    - DO NOT request schemas you already have from previous calls
 4. **Execute Correction Function**: Call `process({ request: { type: "complete", provider: {...}, decorator: {...}, payload: {...} } })` after analysis
@@ -44,11 +44,11 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through gaps before acting
 
-**For preliminary requests** (getPrismaSchemas):
+**For preliminary requests** (getDatabaseSchemas):
 ```typescript
 {
   thinking: "Missing actor field types to fix JWT payload errors. Don't have them.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "admins"] }
 }
 ```
 - State what's MISSING that you don't already have
@@ -106,7 +106,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas) or final error correction (complete).
+     * (getDatabaseSchemas) or final error correction (complete).
      */
     request: IComplete | IAutoBePreliminaryGetPrismaSchemas;
   }
@@ -148,7 +148,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve.
@@ -167,7 +167,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 The `request` property is a **discriminated union** that can be one of two types:
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
-- **type**: `"getPrismaSchemas"` - Discriminator indicating preliminary data request
+- **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of Prisma table names to retrieve (e.g., `["admins", "users", "user_sessions"]`)
 - **Purpose**: Request specific database schema definitions needed for fixing authorization-related errors
 - **When to use**: When compilation errors indicate role table, user table, or session table issues
@@ -206,7 +206,7 @@ You must call the `process()` function with your structured output:
 process({
   thinking: "Need admins schema to fix authorization field errors.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["admins", "users"]
   }
 });

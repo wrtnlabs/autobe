@@ -3,10 +3,10 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceSchemaApplication {
   /**
@@ -31,7 +31,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -53,17 +53,17 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations) or final
+     * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations) or final
      * schema generation (complete). When preliminary returns empty array, that
      * type is removed from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
@@ -71,9 +71,9 @@ export namespace IAutoBeInterfaceSchemaApplication {
   /**
    * Request to generate a single OpenAPI schema component.
    *
-   * Executes schema generation to create a type definition for a specific
-   * DTO type. Each invocation handles one schema component to ensure accuracy
-   * and clear responsibility.
+   * Executes schema generation to create a type definition for a specific DTO
+   * type. Each invocation handles one schema component to ensure accuracy and
+   * clear responsibility.
    */
   export interface IComplete {
     /**
@@ -93,8 +93,8 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * The type name is already provided in the input context, so only the
      * schema definition itself needs to be returned.
      *
-     * DO: Define object types as named types in the components.schemas
-     * section. DO NOT: Use inline anonymous object definitions.
+     * DO: Define object types as named types in the components.schemas section.
+     * DO NOT: Use inline anonymous object definitions.
      *
      * This schema represents:
      *
@@ -115,14 +115,14 @@ export namespace IAutoBeInterfaceSchemaApplication {
      *
      * ```typescript
      * {
-     *   type: "object",
-     *   properties: {
-     *     id: { type: "string", format: "uuid" },
-     *     email: { type: "string", format: "email" },
-     *     profile: { "$ref": "#/components/schemas/IUserProfile" }
+     *   "type": "object",
+     *   "properties": {
+     *     "id": { "type": "string", "format": "uuid" },
+     *     "email": { "type": "string", "format": "email" },
+     *     "profile": { "$ref": "#/components/schemas/IUserProfile" }
      *   },
-     *   required: ["id", "email"],
-     *   description: "User entity representing system account holders..."
+     *   "required": ["id", "email"],
+     *   "description": "User entity representing system account holders..."
      * }
      * ```
      */

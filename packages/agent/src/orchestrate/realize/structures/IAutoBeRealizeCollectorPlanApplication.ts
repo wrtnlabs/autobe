@@ -1,8 +1,8 @@
 import { AutoBeRealizeCollectorReference } from "@autobe/interface";
 
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
 
 /**
  * Function calling interface for planning collector DTO generation.
@@ -65,7 +65,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * Determines which action to perform:
      *
-     * - "getPrismaSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
      * - "getInterfaceOperations": Retrieve operation specifications
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final collector plan
@@ -75,7 +75,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas;
   }

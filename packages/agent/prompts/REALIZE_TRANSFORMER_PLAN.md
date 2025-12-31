@@ -22,7 +22,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - **If transformable** (Read DTO + DB-backed + Direct mapping): Include in plan
    - **If incompatible** (request param, pagination result, business logic, computed aggregation): Exclude from plan
 4. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand DTO-to-Prisma mappings
    - DO NOT request schemas you already have from previous calls
@@ -60,11 +60,11 @@ This is a required self-reflection step that helps you:
 - Verify you have everything needed before completion
 - Think through which DTOs are transformable vs non-transformable
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceSchemas):
+**For preliminary requests** (getDatabaseSchemas, getInterfaceSchemas):
 ```typescript
 {
   thinking: "Need Prisma schemas to check if DTOs map to database tables.",
-  request: { type: "getPrismaSchemas", schemaNames: ["shopping_sales", "shopping_categories"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["shopping_sales", "shopping_categories"] }
 }
 ```
 - State what's MISSING that you don't already have
@@ -171,7 +171,7 @@ interface IShoppingSale {
 
 You will receive:
 - **Operation Specification**: The OpenAPI operation containing response DTO types
-- **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
+- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 ## The Discovery Process: Finding Transformable DTOs
@@ -206,7 +206,7 @@ You will receive:
    process({
      thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
      request: {
-       type: "getPrismaSchemas",
+       type: "getDatabaseSchemas",
        schemaNames: ["shopping_sales", "shopping_categories", "shopping_tags"]
      }
    });
@@ -448,7 +448,7 @@ process({
 process({
   thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_categories"]
   }
 });

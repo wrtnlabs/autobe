@@ -71,12 +71,12 @@ async function process(
   },
 ): Promise<AutoBeRealizeOperationFunction> {
   const preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+    "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
   > = new AutoBePreliminaryController({
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
-    kinds: ["prismaSchemas", "realizeCollectors", "realizeTransformers"],
+    kinds: ["databaseSchemas", "realizeCollectors", "realizeTransformers"],
     state: ctx.state(),
     all: {
       realizeCollectors: props.collectors,
@@ -153,7 +153,7 @@ function createController(props: {
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "prismaSchemas" | "realizeCollectors" | "realizeTransformers"
+    "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

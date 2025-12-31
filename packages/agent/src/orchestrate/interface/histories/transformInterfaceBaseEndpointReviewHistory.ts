@@ -10,9 +10,9 @@ import { IAutoBeInterfaceBaseEndpointApplication } from "../structures/IAutoBeIn
 export const transformInterfaceBaseEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   endpoints: IAutoBeInterfaceBaseEndpointApplication.IEndpoint[];
@@ -42,7 +42,7 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
 
         You are reviewing endpoints for the **${props.group.name}** group.
         Group description: ${props.group.description}
-        Related Prisma schemas: ${props.group.prismaSchemas.join(", ")}
+        Related Prisma schemas: ${props.group.databaseSchemas.join(", ")}
 
         ## Base CRUD Endpoints for Review (ONLY THESE EXIST)
 

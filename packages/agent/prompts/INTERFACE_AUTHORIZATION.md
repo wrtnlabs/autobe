@@ -41,7 +41,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Additional analysis files and Prisma schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific analysis documents or table schemas, request them via `getPrismaSchemas` or `getAnalysisFiles`
+- If you need specific analysis documents or table schemas, request them via `getDatabaseSchemas` or `getAnalysisFiles`
 
 ## Chain of Thought: The `thinking` Field
 
@@ -49,11 +49,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getAnalysisFiles, getPrismaSchemas, etc.):
+**For preliminary requests** (getAnalysisFiles, getDatabaseSchemas, etc.):
 ```typescript
 {
   thinking: "Missing actor table field info for auth operation design. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "admins"] }
 }
 ```
 
@@ -205,7 +205,7 @@ Retrieves Prisma model definitions to verify actor table structures and authenti
 process({
   thinking: "I need users, admins, and sellers schemas to verify actor auth fields. Don't have them yet.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "admins", "sellers"]  // Batch request
   }
 })
@@ -234,7 +234,7 @@ Loads Prisma schemas from the **previous version**.
 process({
   thinking: "Need previous version of user schema to compare authentication fields before modifications.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["users"]
   }
 })
@@ -290,7 +290,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -323,14 +323,14 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ thinking: "Missing actor table structure. Don't have it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ thinking: "Still need more actor schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["admins"] } })
+process({ thinking: "Missing actor table structure. Don't have it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more actor schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["admins"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
   thinking: "Missing actor table structures for auth field verification. Don't have them yet.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "admins", "sellers", "customers"]
   }
 })
@@ -340,18 +340,18 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
 process({ thinking: "Missing auth workflow details. Not in current context.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
-process({ thinking: "Missing actor table details for field verification. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
+process({ thinking: "Missing actor table details for field verification. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "admins"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ thinking: "Missing actor auth details. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing actor auth details. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Generated all auth operations", request: { type: "complete", operations: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
-process({ thinking: "Missing actor field info for auth operations. Don't have it.", request: { type: "getPrismaSchemas", schemaNames: ["users", "admins"] } })
+process({ thinking: "Missing actor field info for auth operations. Don't have it.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "admins"] } })
 process({ thinking: "Missing password policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
 
 // Then: After materials are loaded, call complete
@@ -363,8 +363,8 @@ process({ thinking: "Loaded actor schemas, designed all auth ops, ready to compl
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - Re-requesting already loaded materials
 // If schemas "users", "admins", "sellers" are already loaded:
-process({ thinking: "Missing actor details for verification. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
-process({ thinking: "Still missing actor schemas. Need more.", request: { type: "getPrismaSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
+process({ thinking: "Missing actor details for verification. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })  // WRONG - users already loaded!
+process({ thinking: "Still missing actor schemas. Need more.", request: { type: "getDatabaseSchemas", schemaNames: ["admins", "sellers"] } })  // WRONG - already loaded!
 
 // ❌ FORBIDDEN - Re-requesting already loaded requirements
 // If "Authentication_Requirements.md" is already loaded:
@@ -373,7 +373,7 @@ process({ thinking: "Missing password policy info. Need it.", request: { type: "
 // ✅ CORRECT - Only request NEW materials
 // If schemas "users", "admins", "sellers" are already loaded:
 // If file "Authentication_Requirements.md" is already loaded:
-process({ thinking: "Missing additional actor schemas. Don't have them yet.", request: { type: "getPrismaSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
+process({ thinking: "Missing additional actor schemas. Don't have them yet.", request: { type: "getDatabaseSchemas", schemaNames: ["customers", "members"] } })  // OK - new items
 process({ thinking: "Missing 2FA policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Security_Policies.md"] } })  // OK - new file
 
 // ✅ CORRECT - Request only materials not yet loaded
@@ -552,7 +552,7 @@ Your implementation should provide a complete authentication system with actor-a
 ### 7.1. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })`
+- [ ] When you need specific schema details → Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })`
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })`
 - [ ] **NEVER request ALL data**: Do NOT call functions for every single item
 - [ ] **CHECK what materials are already loaded**: DO NOT re-request materials that are already available
@@ -566,7 +566,7 @@ Your implementation should provide a complete authentication system with actor-a
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
+  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/requirement details → You called the appropriate function FIRST

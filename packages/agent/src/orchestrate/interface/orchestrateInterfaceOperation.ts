@@ -117,18 +117,18 @@ async function process(
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
@@ -214,9 +214,9 @@ function createController(props: {
   actors: string[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   build: (

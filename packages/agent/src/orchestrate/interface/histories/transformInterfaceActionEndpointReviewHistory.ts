@@ -10,9 +10,9 @@ import { IAutoBeInterfaceActionEndpointApplication } from "../structures/IAutoBe
 export const transformInterfaceActionEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
@@ -42,7 +42,7 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
 
         You are reviewing endpoints for the **${props.group.name}** group.
         Group description: ${props.group.description}
-        Related Prisma schemas: ${props.group.prismaSchemas.join(", ")}
+        Related Prisma schemas: ${props.group.databaseSchemas.join(", ")}
 
         ## Action Endpoints for Review (ONLY THESE EXIST)
 

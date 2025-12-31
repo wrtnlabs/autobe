@@ -157,7 +157,7 @@ process({
 process({
   thinking: "Need related schemas to fix foreign key errors.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     modelNames: ["User", "Product"]
   }
 });
@@ -171,7 +171,7 @@ process({
 process({
   thinking: "Need previous version of schema design to understand original structure before fixing.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     modelNames: ["Order"]
   }
 });

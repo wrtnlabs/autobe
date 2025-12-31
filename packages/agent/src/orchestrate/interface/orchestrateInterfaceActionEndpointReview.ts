@@ -38,9 +38,9 @@ export async function orchestrateInterfaceActionEndpointReview(
 
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
@@ -48,15 +48,15 @@ export async function orchestrateInterfaceActionEndpointReview(
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
     local: {
       analysisFiles: ctx.state().analyze?.files ?? [],
-      prismaSchemas:
+      databaseSchemas:
         ctx
           .state()
           .database?.result.data.files.map((f) => f.models)
@@ -88,9 +88,9 @@ async function predicate(
     authorizations: AutoBeOpenApi.IOperation[];
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "prismaSchemas"
+      | "databaseSchemas"
       | "previousAnalysisFiles"
-      | "previousPrismaSchemas"
+      | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     >;
     originalEndpoints: AutoBeOpenApi.IEndpoint[];
@@ -135,9 +135,9 @@ async function process(
     authorizations: AutoBeOpenApi.IOperation[];
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
-      | "prismaSchemas"
+      | "databaseSchemas"
       | "previousAnalysisFiles"
-      | "previousPrismaSchemas"
+      | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     >;
     originalEndpoints: AutoBeOpenApi.IEndpoint[];
@@ -197,9 +197,9 @@ async function process(
 function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   endpointSet: HashSet<IAutoBeInterfaceActionEndpointApplication.IEndpoint>;

@@ -56,11 +56,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getAnalysisFiles):
+**For preliminary requests** (getDatabaseSchemas, getAnalysisFiles):
 ```typescript
 {
   thinking: "Missing field context for completeness check. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "posts"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "posts"] }
 }
 ```
 
@@ -211,7 +211,7 @@ process({
 ```typescript
 process({
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "orders", "products"]  // Batch request
   }
 })
@@ -230,7 +230,7 @@ process({
 process({
   thinking: "Need previous version of Prisma schemas to validate field mapping changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "orders", "products"]
   }
 })
@@ -367,7 +367,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -400,14 +400,14 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
   thinking: "Missing entity field structures for completeness check. Don't have them.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "orders", "products"]
   }
 })
@@ -417,17 +417,17 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing business context for documentation. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
-process({ thinking: "Missing entity structures for field verification. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "orders"] } })
+process({ thinking: "Missing entity structures for field verification. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "orders"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ thinking: "Missing schema info. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema info. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Content review complete", request: { type: "complete", think: {...}, content: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
-process({ thinking: "Missing entity fields for completeness check. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "orders"] } })
+process({ thinking: "Missing entity fields for completeness check. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "orders"] } })
 // Then after materials loaded:
 process({ thinking: "Enhanced descriptions, added missing fields, ready to complete", request: { type: "complete", think: {...}, content: {...} } })
 ```
@@ -436,14 +436,14 @@ process({ thinking: "Enhanced descriptions, added missing fields, ready to compl
 
 ```typescript
 // ❌ ATTEMPT 1 - Re-requesting already loaded materials
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 // → Returns: []
-// → Result: "getPrismaSchemas" REMOVED from union
+// → Result: "getDatabaseSchemas" REMOVED from union
 // → Shows: PRELIMINARY_ARGUMENT_EMPTY.md
 
 // ❌ ATTEMPT 2 - Trying again with different items
-process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["categories"] } })
-// → COMPILER ERROR: "getPrismaSchemas" no longer exists in union
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["categories"] } })
+// → COMPILER ERROR: "getDatabaseSchemas" no longer exists in union
 // → PHYSICALLY IMPOSSIBLE to call
 
 // ✅ CORRECT - Check conversation history first, request only NEW materials with different types
@@ -1173,7 +1173,7 @@ export namespace IAutoBeInterfaceSchemaContentReviewApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
@@ -1192,7 +1192,7 @@ export namespace IAutoBeInterfaceSchemaContentReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
      * getInterfaceSchemas) or final content review (complete). When preliminary
      * returns empty array, that type is removed from the union, physically
      * preventing repeated calls.
@@ -1480,7 +1480,7 @@ Before submitting your content review:
 ### 13.1. Function Calling Strategy
 - [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", ... } })`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` with SPECIFIC entity names
+- [ ] When you need specific schema details → Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
 - [ ] **NEVER request ALL data**: Use batch requests but be strategic
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
@@ -1498,7 +1498,7 @@ Before submitting your content review:
 
 ### 13.3. Zero Imagination Policy
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
+  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any field descriptions without loading requirements
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/requirement details → You called the appropriate function FIRST

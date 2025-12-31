@@ -47,7 +47,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Additional materials (analysis files, Prisma schemas, interface schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific documents, table schemas, or interface schemas, request them via `getPrismaSchemas`, `getAnalysisFiles`, or `getInterfaceSchemas`
+- If you need specific documents, table schemas, or interface schemas, request them via `getDatabaseSchemas`, `getAnalysisFiles`, or `getInterfaceSchemas`
 
 ## Chain of Thought: The `thinking` Field
 
@@ -55,11 +55,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getDatabaseSchemas, getInterfaceOperations, etc.):
 ```typescript
 {
   thinking: "Missing auth entity fields for security validation. Don't have them.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "sessions"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "sessions"] }
 }
 ```
 
@@ -229,7 +229,7 @@ process({
 ```typescript
 process({
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "sessions", "tokens"]  // Batch request
   }
 })
@@ -243,7 +243,7 @@ process({
 process({
   thinking: "Need previous version of Prisma schemas to validate security pattern changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "sessions", "tokens"]
   }
 })
@@ -423,7 +423,7 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -458,14 +458,14 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["sessions"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["sessions"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
   thinking: "Missing auth-related entity structures for security validation. Don't have them.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "sessions", "tokens"]
   }
 })
@@ -475,17 +475,17 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing security policies for validation rules. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Security.md"] } })
-process({ thinking: "Missing auth entity structures for field verification. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "sessions"] } })
+process({ thinking: "Missing auth entity structures for field verification. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "sessions"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Security review complete", request: { type: "complete", think: {...}, content: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
-process({ thinking: "Missing auth entity fields for security checks. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "sessions"] } })
+process({ thinking: "Missing auth entity fields for security checks. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "sessions"] } })
 // Then after materials loaded:
 process({ thinking: "Validated all security rules, removed violations, ready to complete", request: { type: "complete", think: {...}, content: {...} } })
 ```
@@ -494,14 +494,14 @@ process({ thinking: "Validated all security rules, removed violations, ready to 
 
 ```typescript
 // ❌ ATTEMPT 1 - Re-requesting already loaded materials
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 // → Returns: []
-// → Result: "getPrismaSchemas" REMOVED from union
+// → Result: "getDatabaseSchemas" REMOVED from union
 // → Shows: PRELIMINARY_ARGUMENT_EMPTY.md
 
 // ❌ ATTEMPT 2 - Trying again
-process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
-// → COMPILER ERROR: "getPrismaSchemas" no longer exists in union
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
+// → COMPILER ERROR: "getDatabaseSchemas" no longer exists in union
 // → PHYSICALLY IMPOSSIBLE to call
 
 // ✅ CORRECT - Check conversation history first
@@ -1824,7 +1824,7 @@ Before submitting your security review:
 ### 12.1. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", ... } })`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] When you need specific schema details → Call `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` with SPECIFIC entity names
+- [ ] When you need specific schema details → Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
 - [ ] When you need specific operations → Call `process({ request: { type: "getInterfaceOperations", endpoints: [...] } })` with SPECIFIC endpoints
 - [ ] **NEVER request ALL data**: Use batch requests but be strategic
@@ -1839,7 +1839,7 @@ Before submitting your security review:
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getPrismaSchemas
+  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"

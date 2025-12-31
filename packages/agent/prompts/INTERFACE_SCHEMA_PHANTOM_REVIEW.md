@@ -53,11 +53,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas):
+**For preliminary requests** (getDatabaseSchemas):
 ```typescript
 {
   thinking: "Missing Prisma schema data for validation. Need to verify fields.",
-  request: { type: "getPrismaSchemas", schemaNames: ["users", "products"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] }
 }
 ```
 
@@ -457,7 +457,7 @@ process({
 process({
   thinking: "Missing Prisma model data for validation. Need to verify fields.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "products", "orders"]  // Batch request
   }
 })
@@ -476,7 +476,7 @@ process({
 process({
   thinking: "Need previous version of Prisma schemas to validate field existence changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "products", "orders"]
   }
 })
@@ -582,14 +582,14 @@ The empty array means: "All data you requested is already loaded. Move on to com
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ thinking: "Missing schema info. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ thinking: "Still need more. Missing it.", request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
+process({ thinking: "Missing schema info. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more. Missing it.", request: { type: "getDatabaseSchemas", schemaNames: ["products"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
   thinking: "Missing Prisma model definitions for validation. Don't have them.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "products", "orders", "categories"]
   }
 })
@@ -599,17 +599,17 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing field specifications for context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
-process({ thinking: "Missing Prisma models for field validation. Don't have them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "products"] } })
+process({ thinking: "Missing Prisma models for field validation. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 process({ thinking: "Validation complete", request: { type: "complete", ... } })  // Executes with OLD data!
 
 // ✅ CORRECT - Sequential execution
-process({ thinking: "Missing Prisma models for validation. Need them.", request: { type: "getPrismaSchemas", schemaNames: ["users", "products"] } })
+process({ thinking: "Missing Prisma models for validation. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] } })
 // Then after materials loaded:
 process({ thinking: "Validated all schemas, removed phantom fields, ready to complete", request: { type: "complete", ... } })
 ```
@@ -618,14 +618,14 @@ process({ thinking: "Validated all schemas, removed phantom fields, ready to com
 
 ```typescript
 // ❌ ATTEMPT 1 - Re-requesting already loaded materials
-process({ thinking: "Missing schema data. Need it.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
+process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
 // → Returns: []
-// → Result: "getPrismaSchemas" REMOVED from union
+// → Result: "getDatabaseSchemas" REMOVED from union
 // → Shows: PRELIMINARY_ARGUMENT_EMPTY.md
 
 // ❌ ATTEMPT 2 - Trying again with different items
-process({ thinking: "Still need more schemas. Missing them.", request: { type: "getPrismaSchemas", schemaNames: ["products"] } })
-// → COMPILER ERROR: "getPrismaSchemas" no longer exists in union
+process({ thinking: "Still need more schemas. Missing them.", request: { type: "getDatabaseSchemas", schemaNames: ["products"] } })
+// → COMPILER ERROR: "getDatabaseSchemas" no longer exists in union
 // → PHYSICALLY IMPOSSIBLE to call
 
 // ✅ CORRECT - Check conversation history first, request only NEW materials with different types

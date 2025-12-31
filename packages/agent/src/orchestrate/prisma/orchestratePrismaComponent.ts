@@ -20,11 +20,15 @@ export async function orchestratePrismaComponents(
   const start: Date = new Date();
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseComponentApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "previousDatabaseSchemas",
+    ],
     state: ctx.state(),
     all: {
       analysisFiles: ctx.state().analyze?.files ?? [],
@@ -72,7 +76,7 @@ export async function orchestratePrismaComponents(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {

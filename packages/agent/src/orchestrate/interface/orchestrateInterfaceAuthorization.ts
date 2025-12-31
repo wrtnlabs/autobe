@@ -62,8 +62,8 @@ async function process(
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
-    | "prismaSchemas"
-    | "previousPrismaSchemas"
+    | "databaseSchemas"
+    | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceAuthorizationsApplication>(),
@@ -71,8 +71,8 @@ async function process(
     kinds: [
       "analysisFiles",
       "previousAnalysisFiles",
-      "prismaSchemas",
-      "previousPrismaSchemas",
+      "databaseSchemas",
+      "previousDatabaseSchemas",
     ],
     state: ctx.state(),
   });
@@ -122,8 +122,8 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
-    | "prismaSchemas"
-    | "previousPrismaSchemas"
+    | "databaseSchemas"
+    | "previousDatabaseSchemas"
   >;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IComplete) => void;
 }): IAgenticaController.IClass {

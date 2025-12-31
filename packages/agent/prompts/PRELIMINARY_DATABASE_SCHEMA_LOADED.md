@@ -1,6 +1,6 @@
 # Loaded Prisma Schemas
 
-The following Prisma database models have been loaded into your context through previous `process()` calls with `type: "getPrismaSchemas"`.
+The following Prisma database models have been loaded into your context through previous `process()` calls with `type: "getDatabaseSchemas"`.
 
 {{PREVIOUS}}
 

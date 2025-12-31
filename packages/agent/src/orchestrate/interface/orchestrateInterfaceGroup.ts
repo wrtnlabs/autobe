@@ -25,18 +25,18 @@ export async function orchestrateInterfaceGroup(
   const prisma: AutoBeDatabaseHistory | null = ctx.state().database;
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
@@ -51,7 +51,7 @@ export async function orchestrateInterfaceGroup(
       controller: createController({
         pointer,
         preliminary,
-        prismaSchemas: new Set(
+        databaseSchemas: new Set(
           prisma !== null
             ? prisma.result.data.files
                 .map((f) => f.models)
@@ -86,12 +86,12 @@ function createController(props: {
   pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  prismaSchemas: Set<string>;
+  databaseSchemas: Set<string>;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
@@ -107,17 +107,17 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // Complete request validation - check prismaSchemas
+    // Complete request validation - check databaseSchemas
     const errors: IValidation.IError[] = [];
     result.data.request.groups.forEach((group, i) => {
-      group.prismaSchemas.forEach((key, j) => {
-        if (props.prismaSchemas.has(key) === false)
+      group.databaseSchemas.forEach((key, j) => {
+        if (props.databaseSchemas.has(key) === false)
           errors.push({
-            expected: Array.from(props.prismaSchemas)
+            expected: Array.from(props.databaseSchemas)
               .map((s) => JSON.stringify(s))
               .join(" | "),
             value: key,
-            path: `request.groups[${i}].prismaSchemas[${j}]`,
+            path: `request.groups[${i}].databaseSchemas[${j}]`,
             description: StringUtil.trim`
               The Prisma schema "${key}" does not exist in the current project.
 
@@ -125,7 +125,7 @@ function createController(props: {
 
               Here is the list of available Prisma schemas in the project:
 
-              ${Array.from(props.prismaSchemas)
+              ${Array.from(props.databaseSchemas)
                 .map((s) => `- ${s}`)
                 .join("\n")}
             `,

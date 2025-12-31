@@ -22,7 +22,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Planning reasoning explaining why this collector is needed
 2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
 4. **🚨 READ PRISMA SCHEMA THOROUGHLY**: This is the most critical step
@@ -295,7 +295,7 @@ You will receive:
   - **Prisma Schema Name**: The target database table (e.g., "shopping_sale_snapshot_unit_stocks") - **ALREADY PROVIDED**
   - **Planning Reasoning**: Explanation of why this collector is needed
 - **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - `Record<string, { dtoTypeName, prismaSchemaName, content }>` mapping file path to collector implementation
-- **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
+- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 **IMPORTANT**:
@@ -2693,7 +2693,7 @@ You MUST call the `process()` function with your structured output:
 process({
   thinking: "Need Prisma schema to understand table structure and relationships.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sale_snapshot_unit_stocks"]
   }
 });

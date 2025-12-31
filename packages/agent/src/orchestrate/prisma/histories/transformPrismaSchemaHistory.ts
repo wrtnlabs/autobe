@@ -12,7 +12,7 @@ export const transformPrismaSchemaHistory = (props: {
   otherTables: string[];
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

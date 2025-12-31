@@ -13,9 +13,9 @@ export const transformInterfaceBaseEndpointHistory = (props: {
   authorizations: AutoBeOpenApi.IOperation[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
   instruction: string;

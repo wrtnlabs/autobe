@@ -4,8 +4,8 @@ import { tags } from "typia";
  * Request to retrieve Prisma schemas from a previous version.
  *
  * This type is used to load Prisma database schema definitions that were
- * generated in a **previous version** of the AutoBE generation pipeline.
- * This is NOT about re-requesting schemas within the same execution, but rather
+ * generated in a **previous version** of the AutoBE generation pipeline. This
+ * is NOT about re-requesting schemas within the same execution, but rather
  * accessing artifacts from an earlier version.
  *
  * **Use Case:** When regenerating or modifying the database schema based on
@@ -13,53 +13,52 @@ import { tags } from "typia";
  * Prisma schemas to understand the existing database structure and what needs
  * to be modified.
  *
- * **Key Difference from `getPrismaSchemas`:**
+ * **Key Difference from `getDatabaseSchemas`:**
  *
- * - `getPrismaSchemas`: Fetches schemas from the **current version**
- *   (the version being generated right now)
- * - `getPreviousPrismaSchemas`: Fetches schemas from the **previous version**
+ * - `getDatabaseSchemas`: Fetches schemas from the **current version** (the
+ *   version being generated right now)
+ * - `getPreviousDatabaseSchemas`: Fetches schemas from the **previous version**
  *   (the last successfully generated version)
  *
  * **Example Scenario:**
  *
- * ```
- * Initial generation:
- * - PRISMA phase creates: users, posts, comments tables
- * - Generation completes successfully
+ *     Initial generation:
+ *     - PRISMA phase creates: users, posts, comments tables
+ *     - Generation completes successfully
  *
- * User: "Add email verification status to users"
+ *     User: "Add email verification status to users"
  *
- * Regeneration:
- * - PRISMA phase starts regeneration
- * - Calls getPreviousPrismaSchemas(["users"])
- *   → Loads the previous version of users table schema
- * - Creates new version with emailVerified field added
- * ```
+ *     Regeneration:
+ *     - PRISMA phase starts regeneration
+ *     - Calls getPreviousDatabaseSchemas(["users"])
+ *       → Loads the previous version of users table schema
+ *     - Creates new version with emailVerified field added
  *
  * **Waterfall + Spiral Pattern:**
  *
  * This aligns with AutoBE's regeneration cycles where:
+ *
  * - Compilation failures trigger regeneration with corrections
  * - User modifications trigger new versions
  * - Previous schemas serve as reference for incremental changes
  *
  * @author Samchon
  */
-export interface IAutoBePreliminaryGetPreviousPrismaSchemas {
+export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
   /**
    * Type discriminator for the request.
    *
    * Determines which action to perform: preliminary data retrieval or actual
-   * task execution. Value "getPreviousPrismaSchemas" indicates this is a
+   * task execution. Value "getPreviousDatabaseSchemas" indicates this is a
    * preliminary data request for Prisma schemas from a previous version.
    */
-  type: "getPreviousPrismaSchemas";
+  type: "getPreviousDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve from the previous version.
    *
-   * These are table schema names that were generated in a previous version
-   * and are needed as reference context for the current regeneration.
+   * These are table schema names that were generated in a previous version and
+   * are needed as reference context for the current regeneration.
    *
    * **Important Notes:**
    *

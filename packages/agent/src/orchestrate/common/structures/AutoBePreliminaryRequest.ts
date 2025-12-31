@@ -1,13 +1,13 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "./IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "./IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "./IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "./IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "./IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "./IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "./IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "./IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "./IAutoBePreliminaryGetPrismaSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "./IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "./IAutoBePreliminaryGetRealizeTransformers";
 
@@ -30,13 +30,13 @@ export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
 /** Maps preliminary `Kind` to corresponding request type. */
 type Mapper = {
   analysisFiles: IAutoBePreliminaryGetAnalysisFiles;
-  prismaSchemas: IAutoBePreliminaryGetPrismaSchemas;
+  databaseSchemas: IAutoBePreliminaryGetDatabaseSchemas;
   interfaceOperations: IAutoBePreliminaryGetInterfaceOperations;
   interfaceSchemas: IAutoBePreliminaryGetInterfaceSchemas;
   realizeCollectors: IAutoBePreliminaryGetRealizeCollectors;
   realizeTransformers: IAutoBePreliminaryGetRealizeTransformers;
   previousAnalysisFiles: IAutoBePreliminaryGetPreviousAnalysisFiles;
-  previousPrismaSchemas: IAutoBePreliminaryGetPreviousPrismaSchemas;
+  previousDatabaseSchemas: IAutoBePreliminaryGetPreviousDatabaseSchemas;
   previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
   previousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
 };

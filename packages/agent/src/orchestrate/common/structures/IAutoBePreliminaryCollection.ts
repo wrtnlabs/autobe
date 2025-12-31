@@ -20,7 +20,7 @@ export interface IAutoBePreliminaryCollection {
   analysisFiles: AutoBeAnalyzeFile[];
 
   /** Prisma database models from PRISMA phase. */
-  prismaSchemas: AutoBeDatabase.IModel[];
+  databaseSchemas: AutoBeDatabase.IModel[];
 
   /** OpenAPI operations from INTERFACE phase. */
   interfaceOperations: AutoBeOpenApi.IOperation[];
@@ -38,7 +38,7 @@ export interface IAutoBePreliminaryCollection {
   previousAnalysisFiles: AutoBeAnalyzeFile[];
 
   /** Prisma schemas from previous iteration (for complement). */
-  previousPrismaSchemas: AutoBeDatabase.IModel[];
+  previousDatabaseSchemas: AutoBeDatabase.IModel[];
 
   /** Interface operations from previous iteration (for complement). */
   previousInterfaceOperations: AutoBeOpenApi.IOperation[];

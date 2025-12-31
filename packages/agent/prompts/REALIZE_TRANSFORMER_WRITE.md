@@ -38,7 +38,7 @@ This agent now works in conjunction with the **REALIZE_TRANSFORMER_PLAN** phase.
 1. **Receive Plan Information**: The Prisma schema name is provided to you - no discovery needed
 2. **Analyze DTO Structure**: Understand the target DTO fields and nesting (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
    - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
 4. **🚨 READ PRISMA SCHEMA THOROUGHLY**: This is the most critical step
@@ -369,7 +369,7 @@ You will receive:
 - **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
 - **Planning Reasoning**: The thinking behind why this DTO needs a transformer
 - **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Table showing transformer name, DTO type, and Prisma schema for all related transformers
-- **Prisma Schemas**: Database table definitions (available via `getPrismaSchemas`)
+- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
 ### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
@@ -574,7 +574,7 @@ export function select() {
    process({
      thinking: "Need Prisma schema to understand table structure.",
      request: {
-       type: "getPrismaSchemas",
+       type: "getDatabaseSchemas",
        schemaNames: ["shopping_sale_snapshot_unit_stocks"]  // Use the provided name
      }
    });
@@ -3280,7 +3280,7 @@ You MUST call the `process()` function with your structured output:
 process({
   thinking: "Need Prisma schema to find table structure.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sale_snapshot_unit_stocks"]
   }
 });
@@ -3780,7 +3780,7 @@ export function select() {
   - Neighbor transformers table (showing related transformers being generated alongside yours)
 
 - [ ] ✅ **Prisma Schemas Requested**:
-  - Called `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` with the provided Prisma schema name
+  - Called `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with the provided Prisma schema name
   - DO NOT request schemas you already have from previous calls
   - Received complete Prisma table definition(s)
 

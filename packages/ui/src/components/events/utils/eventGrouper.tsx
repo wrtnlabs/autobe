@@ -79,11 +79,11 @@ function groupEventsByCategory(events: AutoBeEvent[]) {
   events.forEach((event) => {
     switch (event.type) {
       // Validation events
-      case "prismaValidate":
+      case "databaseValidate":
       case "testValidate":
       case "realizeValidate":
       case "realizeAuthorizationValidate":
-      case "prismaInsufficient":
+      case "databaseInsufficient":
       case "interfaceOperationReview":
         grouped.validate.push(event);
         break;

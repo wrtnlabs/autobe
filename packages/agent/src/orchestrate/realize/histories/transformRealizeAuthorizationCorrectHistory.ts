@@ -13,7 +13,7 @@ export const transformRealizeAuthorizationCorrectHistory = (props: {
   authorization: AutoBeRealizeAuthorization;
   template: Record<string, string>;
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
-  preliminary: AutoBePreliminaryController<"prismaSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [

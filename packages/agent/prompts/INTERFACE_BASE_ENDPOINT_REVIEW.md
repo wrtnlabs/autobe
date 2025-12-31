@@ -52,11 +52,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getAnalysisFiles, getPrismaSchemas, getPrevious*, etc.):
+**For preliminary requests** (getAnalysisFiles, getDatabaseSchemas, getPrevious*, etc.):
 ```typescript
 {
   thinking: "Missing stance property info for endpoint validation. Don't have it.",
-  request: { type: "getPrismaSchemas", schemaNames: ["teams", "projects"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["teams", "projects"] }
 }
 ```
 
@@ -522,7 +522,7 @@ Retrieves Prisma model definitions to verify entity stance and composite unique 
 process({
   thinking: "Missing stance and constraint info for validation. Don't have them.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "orders", "products", "teams"]  // Batch request
   }
 })
@@ -549,7 +549,7 @@ Loads Prisma model definitions from the **previous version**.
 process({
   thinking: "Need previous version of Prisma schemas to validate stance and constraint changes.",
   request: {
-    type: "getPreviousPrismaSchemas",
+    type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "teams"]
   }
 })
@@ -600,7 +600,7 @@ process({
 - ❌ Using "common sense" or "standard conventions" as substitutes for actual data
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getPrismaSchemas", ... } })`
+- ✅ When you need Prisma schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
@@ -610,14 +610,14 @@ process({
 **Batch Requesting Example**:
 ```typescript
 // ❌ INEFFICIENT - Multiple calls for same preliminary type
-process({ thinking: "Missing schema data.", request: { type: "getPrismaSchemas", schemaNames: ["users"] } })
-process({ thinking: "Still need more schemas.", request: { type: "getPrismaSchemas", schemaNames: ["orders"] } })
+process({ thinking: "Missing schema data.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
+process({ thinking: "Still need more schemas.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 
 // ✅ EFFICIENT - Single batched call
 process({
   thinking: "Missing entity structures for endpoint validation. Don't have them.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["users", "orders", "products", "teams"]
   }
 })
@@ -627,17 +627,17 @@ process({
 ```typescript
 // ✅ EFFICIENT - Different preliminary types in parallel
 process({ thinking: "Missing business context.", request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] } })
-process({ thinking: "Missing entity structures.", request: { type: "getPrismaSchemas", schemaNames: ["users", "teams"] } })
+process({ thinking: "Missing entity structures.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "teams"] } })
 ```
 
 **Purpose Function Prohibition**:
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
-process({ thinking: "Need schema data.", request: { type: "getPrismaSchemas", schemaNames: ["teams"] } })
+process({ thinking: "Need schema data.", request: { type: "getDatabaseSchemas", schemaNames: ["teams"] } })
 process({ thinking: "Review complete", request: { type: "complete", actions: [...], review: "..." } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
-process({ thinking: "Missing entity structures.", request: { type: "getPrismaSchemas", schemaNames: ["teams"] } })
+process({ thinking: "Missing entity structures.", request: { type: "getDatabaseSchemas", schemaNames: ["teams"] } })
 // Then after materials loaded:
 process({ thinking: "Validated endpoints, ready to complete", request: { type: "complete", actions: [...], review: "..." } })
 ```
@@ -734,7 +734,7 @@ process({
 
 ### 8.2. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"` - gathering materials is intermediate step
-- [ ] When you need schema details → Called `process({ request: { type: "getPrismaSchemas", ... } })`
+- [ ] When you need schema details → Called `process({ request: { type: "getDatabaseSchemas", ... } })`
 - [ ] When you need requirements → Called `process({ request: { type: "getAnalysisFiles", ... } })`
 - [ ] **NEVER re-requested already loaded materials**
 - [ ] **Used batch requests** for efficiency (up to 8-call limit)

@@ -61,11 +61,15 @@ async function process(
   },
 ): Promise<AutoBeDatabaseSchemaEvent> {
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseSchemaApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "previousAnalysisFiles", "previousPrismaSchemas"],
+    kinds: [
+      "analysisFiles",
+      "previousAnalysisFiles",
+      "previousDatabaseSchemas",
+    ],
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -124,7 +128,7 @@ async function process(
 
 function createController(props: {
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousPrismaSchemas"
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   targetComponent: AutoBeDatabase.IComponent;
   otherTables: string[];

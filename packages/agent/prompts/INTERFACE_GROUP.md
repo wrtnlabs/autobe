@@ -40,7 +40,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
-**For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas, getPreviousPrismaSchemas):
+**For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas, getPreviousDatabaseSchemas):
 ```typescript
 {
   thinking: "Missing detailed API organization context from requirements. Don't have them.",
@@ -143,8 +143,8 @@ export namespace IAutoBeInterfaceGroupApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getPrismaSchemas,
-     * getPreviousPrismaSchemas) or final group generation (complete). When
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
+     * getPreviousDatabaseSchemas) or final group generation (complete). When
      * preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
      */
@@ -187,13 +187,13 @@ The `request` property is a **discriminated union** that can be one of five type
 - **Availability**: ONLY when a previous version exists (NOT available in initial generation)
 
 **3. IAutoBePreliminaryGetPrismaSchemas** - Retrieve NEW Prisma schemas:
-- **type**: `"getPrismaSchemas"`
+- **type**: `"getDatabaseSchemas"`
 - **modelNames**: Array of Prisma model names to retrieve
 - **Purpose**: Request specific schemas for understanding domain organization
 - **When to use**: When you need detailed schema structure for grouping decisions
 
 **4. IAutoBePreliminaryGetPreviousPrismaSchemas** - Load schemas from previous version:
-- **type**: `"getPreviousPrismaSchemas"`
+- **type**: `"getPreviousDatabaseSchemas"`
 - **schemaNames**: Array of schema names from previous version
 - **Purpose**: Reference previous version when regenerating due to user modifications
 - **Availability**: ONLY when a previous version exists (NOT available in initial generation)
@@ -213,7 +213,7 @@ The `request` property is a **discriminated union** that can be one of five type
       {
         name: "Shopping",
         description: "Handles shopping-related entities and operations including sales, products, customers, and reviews",
-        prismaSchemas: [
+        databaseSchemas: [
           "shopping_sales",
           "shopping_sale_snapshots",
           "shopping_customers",
@@ -225,7 +225,7 @@ The `request` property is a **discriminated union** that can be one of five type
       {
         name: "BBS",
         description: "Manages bulletin board system functionality including articles, comments, and file attachments",
-        prismaSchemas: [
+        databaseSchemas: [
           "bbs_articles",
           "bbs_article_snapshots",
           "bbs_article_comments",
@@ -245,16 +245,16 @@ Each group object MUST contain three fields:
 
 1. **name** (string): PascalCase identifier derived from Prisma schema structure
 2. **description** (string): Comprehensive scope description (100-2000 characters)
-3. **prismaSchemas** (string[]): List of Prisma model names required for this group
+3. **databaseSchemas** (string[]): List of Prisma model names required for this group
 
-### prismaSchemas Field: Comprehensive Guide
+### databaseSchemas Field: Comprehensive Guide
 
 **Purpose**: Identify and list ALL Prisma schema model names required to implement complete API functionality for this endpoint group.
 
 **Critical Importance**:
 This field pre-filters database models for the endpoint generation phase, significantly reducing cognitive load on the endpoint generator and enabling more comprehensive endpoint coverage. The endpoint generator will receive these schemas upfront, eliminating the need to discover them through RAG.
 
-#### How to Determine prismaSchemas
+#### How to Determine databaseSchemas
 
 **previous version: Analyze Requirements Thoroughly**
 - Read all requirements related to this endpoint group
@@ -294,7 +294,7 @@ Analysis:
 - Need sellers? → shopping_sellers (sellers own products)
 - Need categories? → shopping_product_categories (for product organization)
 
-Result prismaSchemas:
+Result databaseSchemas:
 [
   "shopping_customers",
   "shopping_sales",
@@ -334,7 +334,7 @@ Result prismaSchemas:
 
 #### Validation Checklist
 
-Before finalizing `prismaSchemas`, verify:
+Before finalizing `databaseSchemas`, verify:
 
 - [ ] Each schema name exists in the Prisma schema
 - [ ] All directly mentioned entities are included

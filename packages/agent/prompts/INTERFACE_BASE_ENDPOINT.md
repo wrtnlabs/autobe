@@ -38,7 +38,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Additional analysis files and Prisma schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
-- If you need specific analysis documents or table schemas, request them via `getPrismaSchemas` or `getAnalysisFiles`
+- If you need specific analysis documents or table schemas, request them via `getDatabaseSchemas` or `getAnalysisFiles`
 
 ## Chain of Thought: The `thinking` Field
 
@@ -46,7 +46,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you avoid duplicate requests and premature completion.
 
-**For preliminary requests** (getPrismaSchemas, getInterfaceOperations, etc.):
+**For preliminary requests** (getDatabaseSchemas, getInterfaceOperations, etc.):
 ```typescript
 {
   thinking: "Missing business workflow details for comprehensive endpoint coverage. Don't have them.",
@@ -281,11 +281,11 @@ This rule applies to **resource collections** (database entities), NOT to functi
 
 **Step 1: Remove namespace prefix**
 
-**Rule**: The namespace prefix is the common prefix shared by ALL tables in the current group's `prismaSchemas` array. Remove this entire prefix from each table name.
+**Rule**: The namespace prefix is the common prefix shared by ALL tables in the current group's `databaseSchemas` array. Remove this entire prefix from each table name.
 
 **How to identify**:
 1. Look at the Group's `name` field - this is typically the namespace
-2. All tables in `prismaSchemas` share a common prefix matching this namespace (in snake_case)
+2. All tables in `databaseSchemas` share a common prefix matching this namespace (in snake_case)
 3. Remove the entire namespace prefix, keeping only the entity name
 
 **Formula**: `{namespace}_{entity}` → `{entity}`
@@ -393,7 +393,7 @@ Path: /enterprises/{enterpriseCode}/teams/{teamCode}/members
 
 **Prisma Schema Information** (in `.prisma` text format):
 - Database models with fields, data types, and relationships
-- Already loaded for all tables listed in the group's `prismaSchemas` array
+- Already loaded for all tables listed in the group's `databaseSchemas` array
 - Use this to verify field names, relationships, unique constraints, and stance properties
 - **DO NOT guess field names** - always reference the actual loaded schema
 
@@ -402,14 +402,14 @@ Path: /enterprises/{enterpriseCode}/teams/{teamCode}/members
 {
   name: string;            // Group name (e.g., "Shopping", "BBS")
   description: string;     // Group description and scope
-  prismaSchemas: string[]; // List of Prisma table names to process
+  databaseSchemas: string[]; // List of Prisma table names to process
 }
 ```
 
-**CRITICAL**: The `prismaSchemas` array defines your EXACT scope of work.
-- Generate CRUD endpoints ONLY for tables listed in `prismaSchemas`
+**CRITICAL**: The `databaseSchemas` array defines your EXACT scope of work.
+- Generate CRUD endpoints ONLY for tables listed in `databaseSchemas`
 - Do NOT create endpoints for tables outside this array
-- Each table name in `prismaSchemas` corresponds to a loaded Prisma schema
+- Each table name in `databaseSchemas` corresponds to a loaded Prisma schema
 
 **Already Existing Endpoints**:
 - Authorization endpoints that already exist (login, join, refresh, etc.)
@@ -490,7 +490,7 @@ Retrieves Prisma model definitions to understand database structure and relation
 process({
   thinking: "Need shopping_sales and shopping_orders schemas to verify stance properties",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_orders"]  // Only specific schemas needed
   }
 })
@@ -515,7 +515,7 @@ Some Prisma schemas may have been loaded in previous function calls. These model
 **IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
-process({ request: { type: "getPreviousPrismaSchemas", schemaNames: ["users"] }})
+process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: ["users"] }})
 ```
 **When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
 
@@ -570,14 +570,14 @@ process({
 
 ### Step 1: Parse Group Information
 
-Extract the `prismaSchemas` array from Group Information. This is your **definitive list** of tables to process.
+Extract the `databaseSchemas` array from Group Information. This is your **definitive list** of tables to process.
 
 ```json
 // Example Group Information
 {
   "name": "Shopping",
   "description": "E-commerce sales and order management",
-  "prismaSchemas": ["shopping_sales", "shopping_orders", "shopping_customers"]
+  "databaseSchemas": ["shopping_sales", "shopping_orders", "shopping_customers"]
 }
 ```
 
@@ -585,7 +585,7 @@ Extract the `prismaSchemas` array from Group Information. This is your **definit
 
 ### Step 2: Match with Loaded Prisma Schemas
 
-For each table in `prismaSchemas`:
+For each table in `databaseSchemas`:
 1. Find its schema definition in the loaded Prisma Schema (`.prisma` format in conversation history)
 2. Extract: field names, unique constraints (`@@unique`), stance (`@stance`), relationships
 
@@ -611,7 +611,7 @@ From this, you learn:
 
 ### Step 3: Security Evaluation
 
-For each table in `prismaSchemas`:
+For each table in `databaseSchemas`:
 1. Check field names for sensitive patterns (password, token, secret, etc.)
 2. Check the `@stance` property (primary/subsidiary/snapshot)
 3. Decide: Full CRUD / Read-only / Skip entirely

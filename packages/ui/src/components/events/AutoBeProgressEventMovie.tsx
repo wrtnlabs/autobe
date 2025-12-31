@@ -49,12 +49,12 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Review",
           description: "Reviewing the analysis results",
         };
-      case "prismaSchema":
+      case "databaseSchema":
         return {
           title: "Prisma Schemas",
           description: "Designing Database schemas",
         };
-      case "prismaReview":
+      case "databaseReview":
         return {
           title: "Prisma Review",
           description: "Reviewing the Prisma schemas",

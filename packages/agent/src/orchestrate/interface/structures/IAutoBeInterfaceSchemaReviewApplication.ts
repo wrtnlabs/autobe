@@ -4,10 +4,10 @@ import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAut
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
   /**
@@ -29,7 +29,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -51,7 +51,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
      * getInterfaceSchemas) or final schema review (complete). When preliminary
      * returns empty array, that type is removed from the union, physically
      * preventing repeated calls.
@@ -59,11 +59,11 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
@@ -91,11 +91,13 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     /**
      * Modified schema resulting from review fixes.
      *
-     * - If the schema has issues and needs modifications: return the corrected schema
+     * - If the schema has issues and needs modifications: return the corrected
+     *   schema
      * - If the schema is perfect and requires no changes: return null
      *
      * **IMPORTANT**: NEVER return the original schema unchanged to avoid
-     * accidental overwrites. Use null to explicitly indicate "no changes needed".
+     * accidental overwrites. Use null to explicitly indicate "no changes
+     * needed".
      */
     content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
   }
@@ -111,8 +113,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Findings from the review process.
      *
      * Documents all issues discovered during validation, categorized by type
-     * and severity. Each issue includes the specific problem identified in
-     * the schema.
+     * and severity. Each issue includes the specific problem identified in the
+     * schema.
      *
      * Should state "No issues found." when the schema passes validation.
      */

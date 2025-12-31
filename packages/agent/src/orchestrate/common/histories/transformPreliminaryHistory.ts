@@ -144,12 +144,12 @@ namespace PreliminaryTransformer {
         ];
   };
 
-  export const prismaSchemas = (
-    props: IProps<"prismaSchemas" | "previousPrismaSchemas">,
+  export const databaseSchemas = (
+    props: IProps<"databaseSchemas" | "previousDatabaseSchemas">,
   ): IMicroAgenticaHistoryJson[] => {
-    const kind: "prismaSchemas" | "previousPrismaSchemas" = props.previous
-      ? "previousPrismaSchemas"
-      : "prismaSchemas";
+    const kind: "databaseSchemas" | "previousDatabaseSchemas" = props.previous
+      ? "previousDatabaseSchemas"
+      : "databaseSchemas";
     const oldbie: Record<string, AutoBeDatabase.IModel> = Object.fromEntries(
       props.local[kind].map((s) => [s.name, s]),
     );
@@ -188,8 +188,8 @@ namespace PreliminaryTransformer {
               `,
         replace: props.previous
           ? {
-              from: "getPrismaSchemas",
-              to: "getPreviousPrismaSchemas",
+              from: "getDatabaseSchemas",
+              to: "getPreviousDatabaseSchemas",
             }
           : null,
       });
@@ -212,8 +212,8 @@ namespace PreliminaryTransformer {
           : "",
       replace: props.previous
         ? {
-            from: "getPrismaSchemas",
-            to: "getPreviousPrismaSchemas",
+            from: "getDatabaseSchemas",
+            to: "getPreviousDatabaseSchemas",
           }
         : null,
     });
@@ -227,8 +227,8 @@ namespace PreliminaryTransformer {
               thinking: "prisma schemas for DB schema information",
               request: {
                 type: props.previous
-                  ? "getPreviousPrismaSchemas"
-                  : "getPrismaSchemas",
+                  ? "getPreviousDatabaseSchemas"
+                  : "getDatabaseSchemas",
                 schemaNames: props.local[kind].map((s) => s.name),
               },
             },

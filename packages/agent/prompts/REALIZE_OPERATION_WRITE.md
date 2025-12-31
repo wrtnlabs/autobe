@@ -14,7 +14,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Assess Initial Materials**: Review the provided operation specification and DTO types
 2. **Identify Schema Dependencies**: Determine which Prisma table schemas are needed for implementation
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getPrismaSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - **Collectors**: Use `process({ request: { type: "getRealizeCollectors", dtoTypeNames: [...] } })` to retrieve collector functions for Create DTOs
    - **Transformers**: Use `process({ request: { type: "getRealizeTransformers", dtoTypeNames: [...] } })` to retrieve transformer functions for response DTOs
    - Request ONLY what you actually need for this specific operation
@@ -111,7 +111,7 @@ export namespace IAutoBeRealizeWriteApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPrismaSchemas, getRealizeCollectors, getRealizeTransformers) or
+     * (getDatabaseSchemas, getRealizeCollectors, getRealizeTransformers) or
      * final implementation generation (complete).
      */
     request:
@@ -177,7 +177,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
    * Type discriminator indicating this is a preliminary data request.
    */
-  type: "getPrismaSchemas";
+  type: "getDatabaseSchemas";
 
   /**
    * List of Prisma table names to retrieve.
@@ -238,7 +238,7 @@ export interface IAutoBePreliminaryGetRealizeTransformers {
 The `request` property is a **discriminated union** that can be one of four types:
 
 **1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
-- **type**: `"getPrismaSchemas"` - Discriminator indicating preliminary data request
+- **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
 - **schemaNames**: Array of Prisma table names to retrieve (e.g., `["shopping_customers", "shopping_sales", "shopping_reviews"]`)
 - **Purpose**: Request specific database schema definitions needed for implementation
 - **When to use**: When you need to understand database table structure, field types, or relationships
@@ -329,7 +329,7 @@ Request Prisma schemas:
 process({
   thinking: "Need shopping_sales, shopping_customers, shopping_categories schemas for sale creation implementation.",
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_customers", "shopping_categories"]
   }
 });

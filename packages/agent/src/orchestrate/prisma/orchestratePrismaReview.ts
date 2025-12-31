@@ -57,24 +57,24 @@ async function step(
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
-    | "prismaSchemas"
+    | "databaseSchemas"
     | "previousAnalysisFiles"
-    | "previousPrismaSchemas"
+    | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
-      "prismaSchemas",
+      "databaseSchemas",
       "previousAnalysisFiles",
-      "previousPrismaSchemas",
+      "previousDatabaseSchemas",
     ],
     state: ctx.state(),
     all: {
-      prismaSchemas: props.application.files.map((f) => f.models).flat(),
+      databaseSchemas: props.application.files.map((f) => f.models).flat(),
     },
     local: {
-      prismaSchemas: ((): AutoBeDatabase.IModel[] => {
+      databaseSchemas: ((): AutoBeDatabase.IModel[] => {
         const file: AutoBeDatabase.IFile | undefined =
           props.application.files.find(
             (f) => f.filename === props.component.filename,
@@ -135,8 +135,8 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
-    | "prismaSchemas"
-    | "previousPrismaSchemas"
+    | "databaseSchemas"
+    | "previousDatabaseSchemas"
   >;
   build: (next: IAutoBeDatabaseReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {

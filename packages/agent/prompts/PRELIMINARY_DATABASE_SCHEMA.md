@@ -41,7 +41,7 @@ These instructions are PERFECT and ERROR-FREE. The lists are LOGICALLY VERIFIED 
 
 NEVER RE-REQUEST ALREADY LOADED MODELS
 
-The following Prisma database models have been ALREADY LOADED into your context through previous `process()` calls with `type: "getPrismaSchemas"`:
+The following Prisma database models have been ALREADY LOADED into your context through previous `process()` calls with `type: "getDatabaseSchemas"`:
 
 {{LOADED}}
 
@@ -77,7 +77,7 @@ ALLOWED:
 - Verify relationships using already-loaded schema definitions
 
 ABSOLUTELY FORBIDDEN:
-- Calling `process()` with `type: "getPrismaSchemas"` for any schema name from the "ALREADY LOADED" list
+- Calling `process()` with `type: "getDatabaseSchemas"` for any schema name from the "ALREADY LOADED" list
 - Re-requesting models "to verify field types" or "to check relationships"
 - Requesting same schema multiple times in sequence
 - Making duplicate requests "just to be sure"
@@ -98,7 +98,7 @@ EXAMPLE OF CORRECT USAGE:
 // CORRECT - Request only new, needed schemas
 process({
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_products", "shopping_categories"]
   }
 })
@@ -106,7 +106,7 @@ process({
 // WRONG - Re-requesting the same schemas again
 process({
   request: {
-    type: "getPrismaSchemas",
+    type: "getDatabaseSchemas",
     schemaNames: ["shopping_products"]  // This was ALREADY requested above!
   }
 })
@@ -122,7 +122,7 @@ process({
 - Imagining field types based on "common conventions"
 
 **REQUIRED**:
-- Need field information? → Call `getPrismaSchemas` for the specific model
+- Need field information? → Call `getDatabaseSchemas` for the specific model
 - Need relationship details? → Load the actual Prisma schema first
 - Need unique constraints? → Request the schema definition
 - ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
@@ -139,4 +139,4 @@ This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause
 - Potential infinite loops
 - Pipeline failures
 
-ZERO TOLERANCE: You MUST NOT call `process()` with `type: "getPrismaSchemas"` for any schema in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.
+ZERO TOLERANCE: You MUST NOT call `process()` with `type: "getDatabaseSchemas"` for any schema in the "ALREADY LOADED" section. No exceptions, no special cases, no "verification" requests.

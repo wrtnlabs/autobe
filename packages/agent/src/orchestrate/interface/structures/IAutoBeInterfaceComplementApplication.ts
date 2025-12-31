@@ -4,10 +4,10 @@ import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAut
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousPrismaSchemas";
-import { IAutoBePreliminaryGetPrismaSchemas } from "../../common/structures/IAutoBePreliminaryGetPrismaSchemas";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceComplementApplication {
   /**
@@ -30,7 +30,7 @@ export namespace IAutoBeInterfaceComplementApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPrismaSchemas, etc.):
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -52,7 +52,7 @@ export namespace IAutoBeInterfaceComplementApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPrismaSchemas, getInterfaceOperations,
+     * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
      * getInterfaceSchemas) or final schema complementation (complete). When
      * preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
@@ -60,11 +60,11 @@ export namespace IAutoBeInterfaceComplementApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPrismaSchemas
+      | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
-      | IAutoBePreliminaryGetPreviousPrismaSchemas
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
@@ -72,9 +72,9 @@ export namespace IAutoBeInterfaceComplementApplication {
   /**
    * Request to add a missing schema definition.
    *
-   * Executes schema complementation to fill in a referenced but undefined schema
-   * type in the OpenAPI document's components.schemas section. Ensures the
-   * $ref reference resolves to a valid schema definition.
+   * Executes schema complementation to fill in a referenced but undefined
+   * schema type in the OpenAPI document's components.schemas section. Ensures
+   * the $ref reference resolves to a valid schema definition.
    */
   export interface IComplete {
     /**
@@ -87,12 +87,11 @@ export namespace IAutoBeInterfaceComplementApplication {
     type: "complete";
 
     /**
-     * The missing schema definition that needs to be added to the
-     * OpenAPI document's `components.schemas` section.
+     * The missing schema definition that needs to be added to the OpenAPI
+     * document's `components.schemas` section.
      *
-     * This schema definition is for a type that is referenced but
-     * not yet defined. The type name for this schema is provided in the
-     * input context.
+     * This schema definition is for a type that is referenced but not yet
+     * defined. The type name for this schema is provided in the input context.
      *
      * Example structure:
      *
