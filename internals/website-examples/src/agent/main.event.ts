@@ -22,7 +22,7 @@ agent.on("analyzeComplete", (event) => {
 });
 agent.on("databaseComplete", (event) => {
   console.log(
-    "Prisma complete:",
+    "Database complete:",
     event.schemas,
     event.compiled.type === "success" ? event.compiled.document : null,
   );

@@ -120,9 +120,9 @@ The [`AutoBeAnalyzeStartEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeS
 
 The `step` property indicates which iteration of the requirements analysis report this represents. If this value is not 0, it means the requirements analysis report has been revised that many times. If the `step` value of other events is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means those events have not been reflected in the latest requirements analysis report.
 
-### Prisma Events
+### Database Events
 <Tabs items={[
-  "Prisma Events",
+  "Database Events",
   <code>AutoBeDatabase</code>,
   <code>IAutoBeDatabaseValidation</code>,
   <code>IAutoBeDatabaseCompileResult</code>,
@@ -171,7 +171,7 @@ flowchart LR
   complete --"generates"--> prisma(Prisma Schema)
 ```
 
-Prisma events monitor the database design process. Database design in `@autobe` begins with the [`AutoBeDatabaseStartEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseStartEvent.html), followed by [`AutoBeDatabaseComponentEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseComponentEvent.html) which lists all tables that `@autobe` will design and their categorized groups. The [`AutoBeDatabaseSchemaEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseSchemaEvent.html) event is fired each time tables within a category group are completed.
+Database events monitor the database design process. Database design in `@autobe` begins with the [`AutoBeDatabaseStartEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseStartEvent.html), followed by [`AutoBeDatabaseComponentEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseComponentEvent.html) which lists all tables that `@autobe` will design and their categorized groups. The [`AutoBeDatabaseSchemaEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseSchemaEvent.html) event is fired each time tables within a category group are completed.
 
 Once all schema designs are completed, the [`AutoBeDatabaseValidateEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseValidateEvent.html) event is triggered, and `@autobe`'s built-in Prisma compiler validates the table designs. If validation succeeds, `@autobe` fires the [`AutoBeDatabaseCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseCompleteEvent.html) event. Conversely, if validation fails, the [`AutoBeDatabaseCorrectEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseCorrectEvent.html) event is triggered, requesting the AI to fix the compilation errors. The [`AutoBeDatabaseValidateEvent`](/api/interfaces/_autobe_interface.AutoBeDatabaseValidateEvent.html) event is then fired again, repeating this cycle.
 

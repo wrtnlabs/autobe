@@ -23,11 +23,11 @@ import { AutoBeEventMovie } from "@autobe/ui/events";
 
 **Supported Event Types:**
 - **Message Events**: `userMessage`, `assistantMessage`
-- **Start Events**: `analyzeStart`, `prismaStart`, `interfaceStart`, `testStart`, `realizeStart`, `realizeTestStart`, `realizeAuthorizationStart`
-- **Scenario Events**: `analyzeScenario`, `prismaComponents`, `interfaceGroups`, `realizeTestReset`
-- **Progress Events**: `analyzeWrite`, `analyzeReview`, `interfaceEndpoints`, `prismaSchemas`, `prismaReview`, `interfaceOperations`, `interfaceOperationsReview`, `interfaceAuthorization`, `interfaceSchemas`, `interfaceSchemasReview`, `testWrite`, `testScenarios`, `realizeWrite`, `realizeAuthorizationWrite`, `realizeTestOperation`
-- **Validate Events**: `prismaInsufficient`, `prismaValidate`, `interfaceComplement`, `testValidate`, `realizeValidate`, `realizeAuthorizationValidate`
-- **Complete Events**: `analyzeComplete`, `prismaComplete`, `interfaceComplete`, `testComplete`, `realizeComplete`
+- **Start Events**: `analyzeStart`, `databaseStart`, `interfaceStart`, `testStart`, `realizeStart`, `realizeTestStart`, `realizeAuthorizationStart`
+- **Scenario Events**: `analyzeScenario`, `databaseComponent`, `interfaceGroups`, `realizeTestReset`
+- **Progress Events**: `analyzeWrite`, `analyzeReview`, `interfaceEndpoints`, `databaseSchema`, `databaseReview`, `interfaceOperations`, `interfaceOperationsReview`, `interfaceAuthorization`, `interfaceSchemas`, `interfaceSchemasReview`, `testWrite`, `testScenarios`, `realizeWrite`, `realizeAuthorizationWrite`, `realizeTestOperation`
+- **Validate Events**: `databaseInsufficient`, `databaseValidate`, `interfaceComplement`, `testValidate`, `realizeValidate`, `realizeAuthorizationValidate`
+- **Complete Events**: `analyzeComplete`, `databaseComplete`, `interfaceComplete`, `testComplete`, `realizeComplete`
 
 ## Individual Event Components
 

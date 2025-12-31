@@ -138,8 +138,8 @@ const { connector, driver } = await api.functional.chat.start(
     analyzeComplete: async (evt) => {
       console.log("analyze completed", evt.files);
     },
-    prismaComplete: async (evt) => {
-      console.log("prisma completed", evt.schemas);
+    databaseComplete: async (evt) => {
+      console.log("database completed", evt.schemas);
     },
     interfaceComplete: async (evt) => {
       console.log("interface completed", evt.schemas);

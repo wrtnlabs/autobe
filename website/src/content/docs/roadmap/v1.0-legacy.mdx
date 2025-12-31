@@ -119,7 +119,7 @@ Improving ORM query generation to accurately execute database queries at runtime
 
 Currently, AutoBE occasionally generates code that passes compilation but fails at runtime when generating Prisma ORM queries in complex DB designs. Issues particularly arise with multi-relation joins, circular references, and complex filtering conditions.
 
-In v1.0, we're improving to accurately handle join queries and filtering logic, properly use basic aggregate functions, and maintain data consistency during transaction processing. Through this, we generate code that operates stably throughout the entire workflow from (analyze → prisma → interface → test → realize).
+In v1.0, we're improving to accurately handle join queries and filtering logic, properly use basic aggregate functions, and maintain data consistency during transaction processing. Through this, we generate code that operates stably throughout the entire workflow from (analyze → database → interface → test → realize).
 
 ### 2.4. Domestic Demonstration
 Wrtn Technologies validates practicality by applying AutoBE to their own service development.

@@ -353,7 +353,7 @@ const agent = new AutoBeAgent({
 
 // State is automatically rebuilt from histories
 console.log(agent.state().analyze);  // Reconstructed from analyzeComplete event
-console.log(agent.state().prisma);   // Reconstructed from prismaComplete event
+console.log(agent.state().database); // Reconstructed from databaseComplete event
 ```
 
 ### Event Serialization
