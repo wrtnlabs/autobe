@@ -97,7 +97,10 @@ async function process(
         Object.entries(props.document.components.schemas).filter(([_k, v]) => {
           let found: boolean = false;
           AutoBeOpenApiTypeChecker.visit({
-            components: props.document.components,
+            components: {
+              schemas: {},
+              authorizations: [],
+            },
             schema: v,
             closure: (next) => {
               if (
