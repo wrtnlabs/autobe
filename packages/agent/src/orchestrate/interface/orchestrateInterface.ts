@@ -218,18 +218,8 @@ export const orchestrateInterface =
           progress: complementProgress,
           document,
         });
-      assign(complemented);
       if (Object.keys(complemented).length === 0) break;
-
-      const oldbie: Set<string> = new Set(
-        Object.keys(document.components.schemas),
-      );
-      const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        Object.fromEntries(
-          Object.keys(complemented)
-            .filter((key) => oldbie.has(key) === false)
-            .map((key) => [key, complemented[key]]),
-        );
+      else assign(complemented);
 
       // REVIEW COMPLEMENTED
       for (const config of REVIEWERS) {
@@ -241,7 +231,7 @@ export const orchestrateInterface =
           await orchestrateInterfaceSchemaReview(ctx, config, {
             instruction: props.instruction,
             document,
-            schemas: newbie,
+            schemas: complemented,
             progress: reviewProgress,
           }),
         );

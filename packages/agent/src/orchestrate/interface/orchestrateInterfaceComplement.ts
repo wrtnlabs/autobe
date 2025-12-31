@@ -12,86 +12,42 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export const orchestrateInterfaceComplement = (
+export const orchestrateInterfaceComplement = async (
   ctx: AutoBeContext,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     progress: AutoBeProgressEventBase;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
-  step(ctx, props, {
-    wasEmpty: false,
-    life: ctx.retry,
-  });
-
-async function step(
-  ctx: AutoBeContext,
-  props: {
-    instruction: string;
-    document: AutoBeOpenApi.IDocument;
-    progress: AutoBeProgressEventBase;
-  },
-  state: {
-    wasEmpty: boolean;
-    life: number;
-  },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missedTypes: string[] = missedOpenApiSchemas(props.document).filter(
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
+  const typeNames: string[] = missedOpenApiSchemas(props.document).filter(
     (k) => JsonSchemaValidator.isPreset(k) === false,
   );
-  if (missedTypes.length === 0) return props.document.components.schemas;
-  else if (state.life === 0) return props.document.components.schemas;
+  if (typeNames.length === 0) return {};
+  props.progress.total += typeNames.length;
 
-  props.progress.total += missedTypes.length;
-  const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-
-  for (const missed of missedTypes) {
-    try {
-      const schema: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
+  const result: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  await executeCachedBatch(
+    ctx,
+    typeNames.map((it) => async (promptCacheKey) => {
+      result[it] = await process(ctx, {
         instruction: props.instruction,
         document: props.document,
+        missed: it,
         progress: props.progress,
-        missed,
+        promptCacheKey,
       });
-      newbie[missed] = schema;
-    } catch (error) {
-      // Skip failed schema
-      ++props.progress.completed;
-    }
-  }
-
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-    ...newbie,
-    ...props.document.components.schemas,
-  };
-  JsonSchemaNamingConvention.schemas(props.document.operations, schemas);
-  return await step(
-    ctx,
-    {
-      instruction: props.instruction,
-      document: {
-        ...props.document,
-        components: {
-          ...props.document.components,
-          schemas,
-        },
-      },
-      progress: props.progress,
-    },
-    {
-      wasEmpty: Object.keys(newbie).length === 0,
-      life: state.life - 1,
-    },
+    }),
   );
-}
+  return result;
+};
 
 async function process(
   ctx: AutoBeContext,
@@ -100,6 +56,7 @@ async function process(
     document: AutoBeOpenApi.IDocument;
     missed: string;
     progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
   const preliminary: AutoBePreliminaryController<
@@ -156,6 +113,7 @@ async function process(
         },
         preliminary,
       }),
+      promptCacheKey: props.promptCacheKey,
       enforceFunctionCall: true,
       ...transformInterfaceComplementHistory({
         state: ctx.state(),
@@ -164,7 +122,7 @@ async function process(
         missed: props.missed,
       }),
     });
-    if (pointer.value === null) throw new Error("Complement failed");
+    if (pointer.value === null) throw new Error("Complementation failed");
 
     ++props.progress.completed;
     ctx.dispatch({
