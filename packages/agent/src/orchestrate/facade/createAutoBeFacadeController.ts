@@ -1,4 +1,3 @@
-import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageEvent,
@@ -9,7 +8,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication } from "@samchon/openapi";
+import { ILlmApplication, ILlmController } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -22,7 +21,7 @@ import { IAutoBeFacadeApplication } from "./histories/IAutoBeFacadeApplication";
 
 export const createAutoBeFacadeController = (props: {
   context: AutoBeContext;
-}): IAgenticaController.IClass => {
+}): ILlmController<IAutoBeFacadeApplication> => {
   const application: ILlmApplication =
     typia.llm.application<IAutoBeFacadeApplication>();
   return {
