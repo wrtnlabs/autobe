@@ -19,7 +19,7 @@ Waterfall    | AutoBE    | Description
 -------------|-----------|----------------
 Requirements | Analze    | Debate requirements with user.
 Analysis     | Analze    | Write requirement analysis reports.
-Design       | Prisma    | Write prisma schema (DB ORM) files and draw ERD.
+Design       | Database  | Write prisma schema (DB ORM) files and draw ERD.
 Design       | Interface | Write OpenAPI document, convert it to a NestJS project.
 Development  | Realize   | Write implementation code for each API endpoint.
 Testing      | Test      | Write e2e test functions for each API endpoint.
@@ -39,14 +39,14 @@ The Analyze agent serves as the foundation of the entire development process. It
 
 Additionally, once other agents have generated code, the Analyze agent can interpret change requests in the context of existing implementations, assessing the impact and feasibility of modifications while maintaining system integrity. This comprehensive approach ensures that all subsequent development stages work from a clear, complete, and consistent specification.
 
-## Prisma Agent
+## Database Agent
 ```mermaid
 flowchart
 subgraph "Asset"
   analysis("Analysis Report")
 end
 analysis --"informs"--> AI
-subgraph "Prisma Agent"
+subgraph "Database Agent"
   AI[["Articial Intelligence"]] --"function calling"--> ast["AST"]
   ast --"diagnose" --> validator["Validator"]
   validator --"validation feedback" --> AI
@@ -64,7 +64,7 @@ An agent that generates database schemas through AutoBE's specialized AST-based 
   - Automatic ERD documentation generation (using `prisma-markdown`)
   - Schema optimization through self-review system
 
-The Prisma agent implements AutoBE's no-code methodology by working with structured data rather than text files. Instead of writing Prisma schema code directly, the AI constructs [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) AST (Abstract Syntax Tree) data through function calling. This approach eliminates syntax errors and ensures consistency by operating at a higher abstraction level.
+The Database agent implements AutoBE's no-code methodology by working with structured data rather than text files. Instead of writing Prisma schema code directly, the AI constructs [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) AST (Abstract Syntax Tree) data through function calling. This approach eliminates syntax errors and ensures consistency by operating at a higher abstraction level.
 
 The workflow begins with analyzing the requirements specification to understand the data model needs. The AI then uses function calling to build the [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) AST, which represents the complete database structure including entities, relationships, attributes, and constraints in a validated format.
 

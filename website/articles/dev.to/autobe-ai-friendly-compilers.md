@@ -42,9 +42,9 @@ end
 
 [`AutoBE`](https://github.com/wrtnlabs/autobe) generates backend applications through a compiler system based on the Waterfall model. The entire process consists of five sequential phases, each handled by dedicated agents.
 
-The **Facade Controller** orchestrates the entire process, while functional agents perform tasks in sequence. The **Analyze** agent analyzes user requirements to create detailed functional specifications, the **Prisma** agent designs the database schema based on these specifications, the **Interface** agent defines API interfaces, the **Test** agent generates E2E test code, and finally the **Realize** agent writes the actual API implementation code.
+The **Facade Controller** orchestrates the entire process, while functional agents perform tasks in sequence. The **Analyze** agent analyzes user requirements to create detailed functional specifications, the **Database** agent designs the database schema based on these specifications, the **Interface** agent defines API interfaces, the **Test** agent generates E2E test code, and finally the **Realize** agent writes the actual API implementation code.
 
-The output of each agent is validated through corresponding dedicated compilers. The Prisma agent's output is validated by our self-developed Prisma compiler, the Interface agent's output by the OpenAPI validator, and the TypeScript code from Test and Realize agents by the TypeScript compiler. This phase-by-phase validation system is the core mechanism that guarantees 100% compilation success.
+The output of each agent is validated through corresponding dedicated compilers. The Database agent's output is validated by our self-developed Prisma compiler, the Interface agent's output by the OpenAPI validator, and the TypeScript code from Test and Realize agents by the TypeScript compiler. This phase-by-phase validation system is the core mechanism that guarantees 100% compilation success.
 
 ### Prisma DB Schema Compiler
 A compiler for database design.
@@ -233,7 +233,7 @@ gantt
   Prefix Rule:        done,    2025-06-12,  7d
   Multimodal:         planned, 2025-07-02, 31d
 
-  section Prisma Agent
+  section Database Agent
   Compiler Development: done, 2025-06-01, 14d
   Prohibition Rule:     done, 2025-06-08,  7d
   SQLite Support:       done, 2025-06-16,  7d

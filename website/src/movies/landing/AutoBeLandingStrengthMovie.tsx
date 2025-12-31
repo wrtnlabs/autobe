@@ -16,7 +16,7 @@ const features = [
     subtitle: "40+ specialized agents collaborate",
     description: "From requirements analysis to API implementation - the entire waterfall development process is fully automated by our intelligent agent system.",
     footerColor: "text-blue-400",
-    footer: "• Analyze • Prisma • Interface • Test • Realize",
+    footer: "• Analyze • Database • Interface • Test • Realize",
   },
   {
     gradientFrom: "rgba(236, 72, 153, 0.1)",

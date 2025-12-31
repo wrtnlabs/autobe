@@ -13,7 +13,7 @@ gantt
   Prefix Rule:        done, 2025-06-12,  7d
   Multimodal:         done, 2025-07-02, 31d
 
-  section Prisma Agent
+  section Database Agent
   Compiler Development: done, 2025-06-01, 14d
   Prohibition Rule:     done, 2025-06-08,  7d
   SQLite Support:       done, 2025-06-16,  7d
@@ -67,7 +67,7 @@ gantt
 
 `@autobe`'s comprehensive three-month beta development roadmap spans from 2025-06-01 through 2025-08-31, marking a critical phase in our journey toward production readiness.
 
-Following the successful completion of our alpha release on 2025-05-31, we have established a robust foundation with fully developed Analysis, Prisma, and Interface Agents. These core components have successfully automated the most complex challenges in backend development: comprehensive requirements analysis, intelligent database architecture, and seamless API design. This achievement represents a significant milestone in our mission to completely automate backend application design.
+Following the successful completion of our alpha release on 2025-05-31, we have established a robust foundation with fully developed Analysis, Database, and Interface Agents. These core components have successfully automated the most complex challenges in backend development: comprehensive requirements analysis, intelligent database architecture, and seamless API design. This achievement represents a significant milestone in our mission to completely automate backend application design.
 
 The upcoming beta phase strategically focuses on delivering and refining the Test Agent and Realization Agent while ensuring system-wide stability and performance optimization across the entire `@autobe` ecosystem. Our ambitious target for 2025-08-31 is to achieve a breakthrough: a 100% reliable No-Code Agent platform that can autonomously handle any backend application development challenge without human intervention.
 
@@ -93,9 +93,9 @@ Verify whether requirements analysis documents properly reflect design artifacts
 
 This involves developing comprehensive multimodal processing capabilities that can parse and interpret UI/UX designs from various image formats while extracting functional requirements from visual mockups and wireframes. The system will cross-reference design elements with textual requirements to identify inconsistencies between visual designs and written specifications, ultimately generating detailed API requirements based on UI component interactions.
 
-Additionally, verify whether requirements analysis documents generated through multimodal inputs properly propagate those multimodal assets to Prisma or Interface agents. If necessary, modify the history structure to ensure proper reflection of visual design elements throughout the entire development pipeline.
+Additionally, verify whether requirements analysis documents generated through multimodal inputs properly propagate those multimodal assets to Database or Interface agents. If necessary, modify the history structure to ensure proper reflection of visual design elements throughout the entire development pipeline.
 
-## 2. Prisma Agent
+## 2. Database Agent
 ### 2.1. Compiler Development
 Create a custom Prisma compiler to enable direct Prisma AST construction, validation, and code generation through function calling, replacing the current text-based approach with compilation error feedback.
 
@@ -115,7 +115,7 @@ These rules will enforce circular dependency prevention by detecting and prevent
 ### 2.3. SQLite Support
 Implement comprehensive SQLite support in the custom Prisma compiler to enable playground website functionality and real-time validation of generated applications without external database dependencies.
 
-Currently, AutoBE's Prisma Agent exclusively targets PostgreSQL DBMS for schema design, creating significant operational limitations that impact both development workflows and user experience. The PostgreSQL dependency prevents the playground website from running generated applications directly in browser environments, as web-based platforms cannot host PostgreSQL servers. This limitation severely restricts the ability to demonstrate AutoBE's capabilities to potential users who want to experience end-to-end functionality without complex setup procedures.
+Currently, AutoBE's Database Agent exclusively targets PostgreSQL DBMS for schema design, creating significant operational limitations that impact both development workflows and user experience. The PostgreSQL dependency prevents the playground website from running generated applications directly in browser environments, as web-based platforms cannot host PostgreSQL servers. This limitation severely restricts the ability to demonstrate AutoBE's capabilities to potential users who want to experience end-to-end functionality without complex setup procedures.
 
 Additionally, AutoBE's own development and testing processes require PostgreSQL infrastructure setup, making it impossible to perform real-time validation of Test and Realize Agent outputs during development cycles. This dependency creates bottlenecks in the development workflow and prevents immediate verification of generated code functionality, forcing developers to rely on external database configurations that may not always be available or properly configured.
 
