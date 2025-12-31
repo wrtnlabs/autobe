@@ -69,7 +69,7 @@ import { SnakeCasePattern } from "../typings/SnakeCasePattern";
  */
 export namespace AutoBeDatabase {
   /**
-   * Root interface representing the entire Prisma application schema.
+   * Root interface representing the entire database application schema.
    *
    * Contains multiple schema files that will be generated, typically organized
    * by business domain. Based on the uploaded schemas, applications usually
