@@ -1,4 +1,4 @@
-# Preliminary Material Loading Constraints - Prisma Database Models
+# Preliminary Material Loading Constraints - Database Models
 
 {{PREVIOUS}}
 
@@ -41,7 +41,7 @@ These instructions are PERFECT and ERROR-FREE. The lists are LOGICALLY VERIFIED 
 
 NEVER RE-REQUEST ALREADY LOADED MODELS
 
-The following Prisma database models have been ALREADY LOADED into your context through previous `process()` calls with `type: "getDatabaseSchemas"`:
+The following database models have been ALREADY LOADED into your context through previous `process()` calls with `type: "getDatabaseSchemas"`:
 
 {{LOADED}}
 
@@ -60,7 +60,7 @@ ALREADY LOADED AND AVAILABLE:
 - All schemas listed above are FULLY LOADED in your conversation history
 - Complete field definitions, relationships, and constraints are accessible
 - You can reference them directly without any additional function calls
-- Their complete Prisma model definitions are accessible to you RIGHT NOW
+- Their complete model definitions are accessible to you RIGHT NOW
 
 NOT YET LOADED (Available on request):
 
@@ -114,7 +114,7 @@ process({
 
 ## ABSOLUTE PROHIBITION: Never Work from Imagination
 
-**CRITICAL**: You MUST NEVER proceed based on assumptions about Prisma schema contents. ALWAYS load actual schemas via function calling FIRST.
+**CRITICAL**: You MUST NEVER proceed based on assumptions about database schema contents. ALWAYS load actual schemas via function calling FIRST.
 
 **FORBIDDEN**:
 - Guessing field names based on "typical database patterns" or entity names
@@ -123,7 +123,7 @@ process({
 
 **REQUIRED**:
 - Need field information? → Call `getDatabaseSchemas` for the specific model
-- Need relationship details? → Load the actual Prisma schema first
+- Need relationship details? → Load the actual database schema first
 - Need unique constraints? → Request the schema definition
 - ALWAYS: Check "NOT YET LOADED" list → Request → Wait for data → Then work
 

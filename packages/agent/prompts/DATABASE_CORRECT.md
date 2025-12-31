@@ -151,7 +151,7 @@ process({
 });
 ```
 
-#### Request Prisma Schemas
+#### Request Database Schemas
 
 ```typescript
 process({
@@ -163,9 +163,9 @@ process({
 });
 ```
 
-#### Load previous version Prisma Schemas
+#### Load previous version Database Schemas
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({

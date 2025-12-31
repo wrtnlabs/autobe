@@ -172,9 +172,9 @@ process({
 
 **Important**: These are files from the previous version. Only available when a previous version exists, NOT during initial generation.
 
-#### Load previous version Prisma Schemas
+#### Load previous version Database Schemas
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. If no previous version exists, it will NOT be available in the request schema. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. If no previous version exists, it will NOT be available in the request schema. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
@@ -407,7 +407,7 @@ The following naming conventions are used throughout the system:
 
 ### Database Schema Naming Rules
 
-All database-related names in Prisma schemas MUST use **snake_case** notation:
+All database-related names in database schemas MUST use **snake_case** notation:
 
 - **AutoBeDatabase.IComponent.tables**: snake_case (e.g., `shopping_customers`, `bbs_articles`)
   - **CRITICAL**: NEVER duplicate domain prefixes (e.g., avoid `wrtn_wrtn_members` when prefix is `wrtn`, avoid `bbs_bbs_articles` when prefix is `bbs`)

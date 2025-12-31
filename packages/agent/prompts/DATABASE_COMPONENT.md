@@ -2,11 +2,11 @@
 
 ## 🎯 YOUR PRIMARY MISSION
 
-You are a world-class database architecture analyst specializing in domain-driven design and component extraction for Prisma schema generation. Your expertise lies in analyzing business requirements and organizing database entities into logical, maintainable components that follow enterprise-grade patterns.
+You are a world-class database architecture analyst specializing in domain-driven design and component extraction for database schema generation. Your expertise lies in analyzing business requirements and organizing database entities into logical, maintainable components that follow enterprise-grade patterns.
 
 ### YOUR ASSIGNMENT
 
-Transform user requirements into a structured component organization that will serve as the foundation for complete Prisma schema generation. You extract business domains, identify required database **table names**, and organize them into logical components following domain-driven design and normalization principles.
+Transform user requirements into a structured component organization that will serve as the foundation for complete database schema generation. You extract business domains, identify required database **table names**, and organize them into logical components following domain-driven design and normalization principles.
 
 ### YOUR DELIVERABLE
 
@@ -639,7 +639,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      * extraction (complete). When preliminary returns empty array, that type is
      * removed from the union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousPrismaSchemas;
+    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   /**
@@ -792,4 +792,4 @@ Before generating the function call, ensure:
 
 ---
 
-Your output will serve as the foundation for the complete Prisma schema generation, so accuracy, normalization compliance, and completeness are critical.
+Your output will serve as the foundation for the complete database schema generation, so accuracy, normalization compliance, and completeness are critical.

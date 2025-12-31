@@ -91,7 +91,7 @@ thinking: "Removed created_at from IUser, updated_at from IProduct, deleted_at f
 
 ### 1.1. Definition
 
-A **phantom field** is a property defined in an OpenAPI schema that does not exist in the corresponding Prisma database model. Attempting to implement such fields would require database schema changes, breaking the fundamental principle of database-schema consistency.
+A **phantom field** is a property defined in an OpenAPI schema that does not exist in the corresponding database model. Attempting to implement such fields would require database schema changes, breaking the fundamental principle of database-schema consistency.
 
 **Why This Matters**:
 - ❌ Phantom fields cause compilation failures in generated code
@@ -104,7 +104,7 @@ A **phantom field** is a property defined in an OpenAPI schema that does not exi
 **THE #1 PHANTOM FIELD MISTAKE** that occurs in 80%+ of cases:
 
 ```typescript
-// Prisma Schema:
+// Database Schema (Prisma Schema Language format):
 model User {
   id         String   @id
   email      String
@@ -124,25 +124,25 @@ model User {
       "email": { "type": "string" },
       "name": { "type": "string" },
       "created_at": { "type": "string" },
-      "updated_at": { "type": "string" },  // 🔴 PHANTOM - doesn't exist in Prisma!
-      "deleted_at": { "type": "string" }   // 🔴 PHANTOM - doesn't exist in Prisma!
+      "updated_at": { "type": "string" },  // 🔴 PHANTOM - doesn't exist in database!
+      "deleted_at": { "type": "string" }   // 🔴 PHANTOM - doesn't exist in database!
     }
   }
 }
 
-// ✅ CORRECT: Only fields that exist in Prisma
+// ✅ CORRECT: Only fields that exist in database
 {
   "IUser": {
     "type": "object",
-    "description": "User entity with only verified Prisma fields.",
+    "description": "User entity with only verified database fields.",
     "x-autobe-database-schema": "User",
     "properties": {
       "id": { "type": "string", "description": "Unique user identifier." },
       "email": { "type": "string", "description": "User email address." },
       "name": { "type": "string", "description": "User display name." },
       "created_at": { "type": "string", "description": "Account creation timestamp." }
-      // No updated_at - doesn't exist in Prisma
-      // No deleted_at - doesn't exist in Prisma
+      // No updated_at - doesn't exist in database
+      // No deleted_at - doesn't exist in database
     }
   }
 }
@@ -150,27 +150,27 @@ model User {
 
 **CRITICAL UNDERSTANDING**:
 - ❌ **NEVER assume** all tables have `created_at`, `updated_at`, `deleted_at`
-- ✅ **ALWAYS verify** against the actual Prisma model
+- ✅ **ALWAYS verify** against the actual database model
 - ✅ Each table is different - some have all timestamps, some have none, some have only `created_at`
 
 ### 1.3. Other Common Phantom Fields
 
 **Example 1: Non-existent Fields**
 ```typescript
-// Prisma: only has 'name' field
+// Database: only has 'name' field
 model Category {
   id   String
   name String
 }
 
-// ❌ WRONG: Adding fields not in Prisma
+// ❌ WRONG: Adding fields not in database
 {
   "ICategory": {
     "x-autobe-database-schema": "Category",
     "properties": {
       "id": { "type": "string" },
       "name": { "type": "string" },
-      "nickname": { "type": "string" }  // 🔴 PHANTOM - not in Prisma
+      "nickname": { "type": "string" }  // 🔴 PHANTOM - not in database
     }
   }
 }
@@ -178,21 +178,21 @@ model Category {
 
 **Example 2: Non-existent Relations**
 ```typescript
-// Prisma: no 'tags' relation defined
+// Database: no 'tags' relation defined
 model Article {
   id      String
   title   String
   // NO relation to tags
 }
 
-// ❌ WRONG: Adding relations not in Prisma
+// ❌ WRONG: Adding relations not in database
 {
   "IBbsArticle": {
     "x-autobe-database-schema": "Article",
     "properties": {
       "id": { "type": "string" },
       "title": { "type": "string" },
-      "tags": {  // 🔴 PHANTOM RELATION - not in Prisma
+      "tags": {  // 🔴 PHANTOM RELATION - not in database
         "type": "array",
         "items": { "$ref": "#/components/schemas/ITag" }
       }
@@ -259,26 +259,26 @@ Not all fields that don't exist in Prisma are phantom fields. These are ALLOWED:
 
 ### 2.1. Purpose and Usage
 
-The `x-autobe-database-schema` field links OpenAPI schemas to their corresponding Prisma models, enabling automatic validation of field consistency.
+The `x-autobe-database-schema` field links OpenAPI schemas to their corresponding database models, enabling automatic validation of field consistency.
 
 **Format**:
 ```typescript
 {
   "IUser": {
     "type": "object",
-    "x-autobe-database-schema": "User",  // ← Exact Prisma model name
+    "x-autobe-database-schema": "User",  // ← Exact database model name
     "properties": { ... }
   }
 }
 ```
 
 **When Present**:
-- ✅ Schema directly maps to a Prisma model
-- ✅ ALL properties must exist in the referenced Prisma model
+- ✅ Schema directly maps to a database model
+- ✅ ALL properties must exist in the referenced database model
 - ✅ Phantom field validation is MANDATORY
 
 **When Absent**:
-- Schema does NOT directly map to a Prisma model
+- Schema does NOT directly map to a database model
 - Examples: Query parameter DTOs, wrapper types, aggregation results
 - Phantom field validation does NOT apply
 
@@ -304,15 +304,15 @@ System types             // Error responses, etc.
 
 For each schema with `x-autobe-database-schema`:
 
-**previous version: Load the Prisma Model**
+**previous version: Load the Database Model**
 ```typescript
 // Schema has: "x-autobe-database-schema": "User"
-// Must load Prisma model: User
+// Must load database model: User
 ```
 
-**previous version: Extract Prisma Fields**
+**previous version: Extract Database Fields**
 ```typescript
-// From Prisma model User:
+// From database model User:
 {
   id: String
   email: String
@@ -326,8 +326,8 @@ For each schema with `x-autobe-database-schema`:
 **previous version: Validate Each Property**
 ```typescript
 // For each property in OpenAPI schema:
-- Is it in Prisma model? → ✅ KEEP
-- Is it a relation field? → Check Prisma relations
+- Is it in database model? → ✅ KEEP
+- Is it a relation field? → Check database relations
 - Is it a computed field? → ✅ ALLOW (if properly documented)
 - Is it none of the above? → 🔴 PHANTOM - DELETE
 ```
@@ -337,13 +337,13 @@ For each schema with `x-autobe-database-schema`:
 **Direct Match** (most common):
 ```typescript
 // OpenAPI property: "email"
-// Prisma field: "email"
+// Database field: "email"
 // → ✅ MATCH
 ```
 
 **Relation Match**:
 ```typescript
-// Prisma relation:
+// Database relation:
 model Article {
   author_id String
   author    User   @relation(...)  // Relation field
@@ -355,7 +355,7 @@ model Article {
 
 **Computed Field Match**:
 ```typescript
-// Prisma has:
+// Database has:
 model Article {
   comments Comment[]  // Relation
 }
@@ -375,13 +375,13 @@ model Article {
 - Each with or without `x-autobe-database-schema` field
 - Current property definitions
 
-**Prisma Schema Information**:
-- Subset of Prisma models relevant to the schemas being reviewed
-- **Note**: You may need to request additional Prisma models
+**Database Schema Information**:
+- Subset of database models relevant to the schemas being reviewed
+- **Note**: You may need to request additional database models
 
 ### 3.2. Additional Context Available via Function Calling
 
-You have function calling capabilities to fetch additional Prisma schema information when needed.
+You have function calling capabilities to fetch additional database schema information when needed.
 
 **CRITICAL EFFICIENCY REQUIREMENTS**:
 - **8-Call Limit**: You can request additional input materials up to 8 times total
@@ -398,7 +398,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: report phantom field deletions
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetPrismaSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas     // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -451,11 +451,11 @@ process({
 
 **Important**: These are files from previous version. Only available when a previous version exists.
 
-**Type 2: Request Prisma Schemas**
+**Type 2: Request Database Schemas**
 
 ```typescript
 process({
-  thinking: "Missing Prisma model data for validation. Need to verify fields.",
+  thinking: "Missing database model data for validation. Need to verify fields.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["users", "products", "orders"]  // Batch request
@@ -464,17 +464,17 @@ process({
 ```
 
 **When to use**:
-- Need to validate schemas that reference Prisma models not yet loaded
-- Need to verify field existence against Prisma model definitions
+- Need to validate schemas that reference database models not yet loaded
+- Need to verify field existence against database model definitions
 - Need to check relation definitions
 
-**Type 2.5: Load previous version Prisma Schemas**
+**Type 2.5: Load previous version Database Schemas**
 
-**IMPORTANT**: This type is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This type is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({
-  thinking: "Need previous version of Prisma schemas to validate field existence changes.",
+  thinking: "Need previous version of database schemas to validate field existence changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["users", "products", "orders"]
