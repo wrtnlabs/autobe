@@ -112,6 +112,9 @@ export namespace ArchiveLogger {
       content.push(`  - plan: ${event.plans[0]?.type}`);
     else if (event.type === "realizeWrite")
       content.push(`  - function: ${event.function.type}`);
+    // COMPLETIONS
+    else if (event.type === "interfaceComplete")
+      content.push(`  - missed: ${event.missed.join(", ")}`);
     // PRINT
     console.log(content.join("\n"));
   };
