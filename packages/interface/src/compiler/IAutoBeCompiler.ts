@@ -29,11 +29,11 @@ import { IAutoBeTypeScriptCompiler } from "./IAutoBeTypeScriptCompiler";
  */
 export interface IAutoBeCompiler {
   /**
-   * Custom Prisma compiler for database schema validation and generation.
+   * Custom Database compiler for database schema validation and generation.
    *
    * Provides the foundational compilation layer that transforms business
    * requirements into validated database architectures through sophisticated
-   * AST manipulation. The Prisma compiler operates exclusively on
+   * AST manipulation. The Database compiler operates exclusively on
    * {@link AutoBeDatabase.IApplication} structures, eliminating error-prone
    * text-based schema authoring while ensuring perfect consistency between
    * business logic and data storage design.

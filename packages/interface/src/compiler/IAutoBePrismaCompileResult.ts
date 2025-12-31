@@ -1,8 +1,8 @@
 /**
  * Result of compiling and processing Prisma schema files through the custom
- * Prisma Compiler.
+ * Database Compiler.
  *
- * This union type represents all possible outcomes when the Prisma Compiler
+ * This union type represents all possible outcomes when the Database Compiler
  * transforms validated {@link AutoBeDatabase.IApplication} AST structures into
  * production-ready artifacts. The compilation process includes schema
  * validation, documentation generation, ERD diagram creation, and dependency

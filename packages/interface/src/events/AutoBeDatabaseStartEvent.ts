@@ -1,11 +1,11 @@
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Prisma agent begins the database design process.
+ * Event fired when the Database agent begins the database design process.
  *
  * This event marks the initiation of the sophisticated three-tier compiler
  * infrastructure that transforms business requirements into validated database
- * architectures through AST manipulation. The Prisma agent start represents the
+ * architectures through AST manipulation. The Database agent start represents the
  * beginning of the foundational data layer development that will support all
  * subsequent application functionality.
  *
@@ -19,10 +19,10 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  */
 export interface AutoBeDatabaseStartEvent extends AutoBeEventBase<"databaseStart"> {
   /**
-   * Reason why the Prisma agent was activated through function calling.
+   * Reason why the Database agent was activated through function calling.
    *
    * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Prisma agent via function calling. This could include reasons such as
+   * the Database agent via function calling. This could include reasons such as
    * initial database design after requirements analysis completion, updating
    * database schemas due to requirement changes, regenerating data models to
    * reflect modified business logic, or creating additional database structures
@@ -40,7 +40,7 @@ export interface AutoBeDatabaseStartEvent extends AutoBeEventBase<"databaseStart
    * started for.
    *
    * Indicates which version of the requirements analysis this database design
-   * will reflect. This step number ensures that the Prisma agent works with the
+   * will reflect. This step number ensures that the Database agent works with the
    * current requirements and helps track the evolution of database schemas as
    * business requirements and data needs change.
    *

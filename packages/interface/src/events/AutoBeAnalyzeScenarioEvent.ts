@@ -69,7 +69,7 @@ export interface AutoBeAnalyzeScenarioEvent
    * access the system, each with their own permissions and capabilities. The
    * actors specified here directly influence:
    *
-   * - Prisma schema generation (user models and actor relationships)
+   * - Database schema generation (user models and actor relationships)
    * - API endpoint authorization decorators
    * - Test scenario generation for different permission levels
    * - Business logic for actor-based access control

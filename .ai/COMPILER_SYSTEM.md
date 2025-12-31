@@ -181,8 +181,8 @@ function validatePrismaAlignment(
 
   // Validate operation schemas reference real Prisma fields
   for (const [typeName, schema] of Object.entries(doc.components.schemas)) {
-    if (schema.type === "object" && schema["x-autobe-prisma-schema"]) {
-      const modelName = schema["x-autobe-prisma-schema"];
+    if (schema.type === "object" && schema["x-autobe-database-schema"]) {
+      const modelName = schema["x-autobe-database-schema"];
       const modelFields = prismaFields.get(modelName);
 
       if (!modelFields) {

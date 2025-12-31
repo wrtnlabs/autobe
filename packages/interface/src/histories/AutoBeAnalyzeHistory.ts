@@ -33,7 +33,7 @@ export interface AutoBeAnalyzeHistory
    * values represent subsequent revisions based on user feedback or additional
    * requirements gathering.
    *
-   * If other development artifacts (Prisma, Interface, Test histories) have
+   * If other development artifacts (Database, Interface, Test histories) have
    * step values lower than this value, it means those artifacts have not been
    * updated to reflect the latest requirements and may need regeneration.
    */

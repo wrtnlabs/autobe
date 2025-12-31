@@ -122,7 +122,7 @@ const document: AutoBeOpenApi.IDocument = {
         ...{
           description: "Information of shopping customer.",
         },
-        "x-autobe-prisma-schema": "shopping_customers",
+        "x-autobe-database-schema": "shopping_customers",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       "IShoppingSale.ICreate": {
         type: "object",
@@ -131,13 +131,13 @@ const document: AutoBeOpenApi.IDocument = {
         ...{
           description: "Create information of shopping sale.",
         },
-        "x-autobe-prisma-schema": "shopping_sales",
+        "x-autobe-database-schema": "shopping_sales",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       IShoppingSale: {
         type: "object",
         properties: {},
         required: [],
-        "x-autobe-prisma-schema": "shopping_sales",
+        "x-autobe-database-schema": "shopping_sales",
         ...{
           description: "Information of shopping sale.",
         },

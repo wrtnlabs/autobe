@@ -216,7 +216,7 @@ const complementInterfaceSchemas = (props: INextProps) => {
           if (OpenApiTypeChecker.isObject(next) === false) return;
           const name: string | null | undefined = (
             next as AutoBeOpenApi.IJsonSchema.IObject
-          )["x-autobe-prisma-schema"];
+          )["x-autobe-database-schema"];
           if (
             name !== null &&
             name !== undefined &&

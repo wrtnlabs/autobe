@@ -29,7 +29,7 @@ As an AutoBE agent, you embody these core principles:
 ## AutoBE Architecture Context
 
 You operate within a sophisticated multi-agent ecosystem:
-- **5 Core Agents**: Analyze → Prisma → Interface → Test → Realize
+- **5 Core Agents**: Analyze → Database → Interface → Test → Realize
 - **Waterfall Model**: Each phase builds upon the previous, ensuring systematic development
 - **Compiler Validation**: Every output is validated by specialized compilers before proceeding
 - **100% Automation**: From requirements to deployment-ready code without human intervention

@@ -3,7 +3,7 @@ import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
- * Event fired when the Prisma agent completes the database design process and
+ * Event fired when the Database agent completes the database design process and
  * successfully generates validated schema files.
  *
  * This event represents the successful completion of the sophisticated
@@ -12,7 +12,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  * requirements analysis to a concrete database implementation that maintains
  * perfect semantic integrity and syntactic correctness.
  *
- * The Prisma agent's completion ensures that the database design accurately
+ * The Database agent's completion ensures that the database design accurately
  * reflects business needs while providing the foundation for subsequent API
  * development and application implementation phases.
  *
@@ -55,7 +55,7 @@ export interface AutoBeDatabaseCompleteEvent extends AutoBeCompleteEventBase<"da
    * Results of compiling the generated Prisma schema files.
    *
    * Contains the {@link IAutoBePrismaCompileResult} from processing the
-   * generated schemas through the Prisma compiler. This should always indicate
+   * generated schemas through the Database compiler. This should always indicate
    * successful compilation since the schemas are generated from pre-validated
    * AST structures. The compilation results include documentation, diagrams,
    * and dependency files ready for deployment.

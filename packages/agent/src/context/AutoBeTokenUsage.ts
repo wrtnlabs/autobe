@@ -38,7 +38,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
   public readonly analyze: AutoBeTokenUsageComponent;
 
   /**
-   * Token usage for the Prisma database schema generation agent.
+   * Token usage for the Database schema generation agent.
    *
    * Records tokens consumed while designing and generating database schemas,
    * including entity relationships, field definitions, and database-specific
@@ -76,7 +76,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    * Provides a unified view of token consumption by combining data from all
    * processing phases in the vibe coding pipeline. This computed property
    * dynamically calculates the sum of all agent components (facade, analyze,
-   * prisma, interface, test, realize) whenever accessed, ensuring the aggregate
+   * database, interface, test, realize) whenever accessed, ensuring the aggregate
    * always reflects the current state of token usage.
    *
    * The aggregation performs element-wise addition across all token metrics,

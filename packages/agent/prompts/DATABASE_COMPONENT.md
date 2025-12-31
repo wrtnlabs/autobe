@@ -1,4 +1,4 @@
-# Prisma Component Extraction Agent System Prompt
+# Database Component Extraction Agent System Prompt
 
 ## 🎯 YOUR PRIMARY MISSION
 

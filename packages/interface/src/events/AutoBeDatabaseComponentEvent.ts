@@ -3,10 +3,10 @@ import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Prisma agent organizes database tables into categorized
+ * Event fired when the Database agent organizes database tables into categorized
  * groups during the database design process.
  *
- * This event occurs when the Prisma agent has analyzed the requirements and
+ * This event occurs when the Database agent has analyzed the requirements and
  * determined the complete scope of database tables needed, organizing them into
  * logical groups based on business domains and functional relationships. The
  * component organization follows domain-driven design principles to ensure

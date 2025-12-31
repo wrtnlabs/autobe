@@ -4,12 +4,12 @@ import { IAutoBePrismaCompileResult } from "./IAutoBePrismaCompileResult";
 import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
 
 /**
- * Interface for the custom Prisma compiler that handles database schema
+ * Interface for the custom Database compiler that handles database schema
  * validation and generation.
  *
  * This compiler provides the foundational compilation layer that transforms
  * business requirements into validated database architectures through
- * sophisticated AST manipulation. The Prisma compiler operates exclusively on
+ * sophisticated AST manipulation. The Database compiler operates exclusively on
  * {@link AutoBeDatabase.IApplication} structures, eliminating error-prone
  * text-based schema authoring while ensuring perfect consistency between
  * business logic and data storage design.

@@ -100,7 +100,7 @@ export namespace AutoBeDatabase {
    * logically structured database architecture.
    *
    * This interface is primarily used during the database design phase when the
-   * Prisma agent analyzes requirements and determines the complete scope of
+   * Database agent analyzes requirements and determines the complete scope of
    * tables needed, then organizes them into logical groups based on business
    * relationships and functional dependencies.
    *

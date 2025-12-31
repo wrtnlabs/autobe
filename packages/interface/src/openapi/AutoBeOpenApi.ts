@@ -1274,7 +1274,7 @@ export namespace AutoBeOpenApi {
        * direct correspondence to a Prisma model. If there's not any Prisma
        * model association, this field becomes `null`.
        */
-      "x-autobe-prisma-schema"?: string | null | undefined;
+      "x-autobe-database-schema"?: string | null | undefined;
 
       /**
        * Properties of the object.

@@ -808,7 +808,7 @@ async update(
 
 **WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code.
 
-#### 2.2.2. `x-autobe-prisma-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
+#### 2.2.2. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
 
 **PURPOSE**: This field links OpenAPI schemas to their corresponding Prisma models for validation.
 
@@ -829,15 +829,15 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 - Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
 - Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
 
-**FORMAT**: `"`x-autobe-prisma-schema`": "PrismaModelName"` (exact model name from Prisma schema) or `null`
+**FORMAT**: `"`x-autobe-database-schema`": "PrismaModelName"` (exact model name from Prisma schema) or `null`
 
 **VALIDATION PROCESS**:
-1. **Check for `x-autobe-prisma-schema` field**: If present in an object type schema, it indicates direct Prisma model mapping (string) or no mapping (null)
+1. **Check for `x-autobe-database-schema` field**: If present in an object type schema, it indicates direct Prisma model mapping (string) or no mapping (null)
 2. **Verify every property** (when value is a string): Each property in the schema MUST exist in the referenced Prisma model
    - Exception: Computed/derived fields explicitly calculated from existing fields
    - Exception: Relation fields populated via joins
 3. **Timestamp Verification**:
-   - If `"`x-autobe-prisma-schema`": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
+   - If `"`x-autobe-database-schema`": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
    - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked Prisma model
 
 **Example**:
@@ -854,7 +854,7 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
       "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in Prisma
       "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in Prisma
     },
-    "x-autobe-prisma-schema": "shopping_customers"
+    "x-autobe-database-schema": "shopping_customers"
   }
 }
 ```
@@ -4258,7 +4258,7 @@ interface IBbsArticle.IUpdate {
 2. **Define Main Entity Schema** (`IEntityName`):
    - Include all public-facing fields from Prisma
    - **CRITICAL**: Verify each timestamp field exists in Prisma (don't assume)
-   - Add `"`x-autobe-prisma-schema`": "PrismaModelName"` for direct table mapping
+   - Add `"`x-autobe-database-schema`": "PrismaModelName"` for direct table mapping
    - Apply security filtering - remove sensitive fields
    - Document thoroughly with descriptions from Prisma schema
 
@@ -4297,7 +4297,7 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: creator_id, author_id, user_id, created_by
      - EXCLUDE: id (when auto-generated), created_at, updated_at
      - EXCLUDE: computed or aggregate fields
-     - Add `x-autobe-prisma-schema` linkage
+     - Add `x-autobe-database-schema` linkage
 
    - **`.IUpdate`**:
      - Make ALL fields optional (Partial<T> pattern)
@@ -4305,7 +4305,7 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: created_at, created_by (immutable)
      - EXCLUDE: updated_at, deleted_at (system-managed)
      - NEVER allow changing ownership fields
-     - Add `x-autobe-prisma-schema` linkage
+     - Add `x-autobe-database-schema` linkage
 
    - **`.ISummary`**:
      - Include id and primary display field
@@ -4313,22 +4313,22 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: Large text fields (content, description)
      - EXCLUDE: Sensitive or internal fields
      - EXCLUDE: Composition arrays (no nested arrays)
-     - Add `x-autobe-prisma-schema` linkage
+     - Add `x-autobe-database-schema` linkage
 
    - **`.IRequest`**:
      - Include pagination parameters (page, limit)
      - Include sort options (orderBy, direction)
      - Include common filters (search, status, dateRange)
      - May include "my_items_only" but not direct "user_id"
-     - NO `x-autobe-prisma-schema` (query params, not table mapping)
+     - NO `x-autobe-database-schema` (query params, not table mapping)
 
    - **`.IInvert`**:
      - Use when child needs parent context
      - Include parent Summary without grandchildren
      - Never both parent and children arrays
-     - Add `x-autobe-prisma-schema` linkage
+     - Add `x-autobe-database-schema` linkage
 
-5. **Validation When `x-autobe-prisma-schema` Is Present**:
+5. **Validation When `x-autobe-database-schema` Is Present**:
    - Verify EVERY property exists in the referenced Prisma model
    - Double-check timestamp fields existence
    - Ensure no phantom fields are introduced
@@ -4453,7 +4453,7 @@ interface IBbsArticle.IUpdate {
 - [ ] Every property exists in Prisma schema - no assumptions
 - [ ] Timestamp fields verified individually per table
 - [ ] No phantom fields that would require database changes
-- [ ] `x-autobe-prisma-schema` linkage added for all applicable types
+- [ ] `x-autobe-database-schema` linkage added for all applicable types
 
 **F. Security Verification**:
 
@@ -4631,7 +4631,7 @@ When you are asked to create a schema for type name "IBbsArticle.ICreate", you r
 ```typescript
 const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
   type: "object",
-  "`x-autobe-prisma-schema`": "bbs_articles",  // Maps to Prisma model
+  "`x-autobe-database-schema`": "bbs_articles",  // Maps to Prisma model
   properties: {
     title: {
       type: "string",
@@ -4658,7 +4658,7 @@ When you are asked to create a schema for type name "IBbsArticle" (main entity),
 ```typescript
 const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
   type: "object",
-  "`x-autobe-prisma-schema`": "bbs_articles",
+  "`x-autobe-database-schema`": "bbs_articles",
   properties: {
     id: {
       type: "string",
@@ -4835,7 +4835,7 @@ const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
    - Apply security filters BEFORE adding business fields
    - Apply relation classification rules for this type variant
    - Document the definition and all properties thoroughly
-   - Add `x-autobe-prisma-schema` linkage if applicable
+   - Add `x-autobe-database-schema` linkage if applicable
    - Verify timestamp fields individually against Prisma schema
 
 6. **Verification**:
@@ -4874,8 +4874,8 @@ Before completing the schema generation, verify ALL of the following items:
   - **VERIFY**: Check each table individually in the Prisma schema
   - **NEVER**: Add timestamps just because other tables have them
 - [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
-- [ ] **`x-autobe-prisma-schema` linkage** - Add this field for ANY types that map to Prisma models
-- [ ] **Validate with `x-autobe-prisma-schema`** - When this field is present:
+- [ ] **`x-autobe-database-schema` linkage** - Add this field for ANY types that map to Prisma models
+- [ ] **Validate with `x-autobe-database-schema`** - When this field is present:
   - Every property MUST exist in the referenced Prisma model (except computed fields)
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly
@@ -5028,7 +5028,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 ### 13.2. Schema Generation Compliance
 - [ ] ALL schema naming follows conventions (IEntityName, IEntityName.ICreate, IEntityName.ISummary, etc.)
 - [ ] Security-first design applied (actor fields, passwords, system fields)
-- [ ] Database-schema consistency verified via `x-autobe-prisma-schema`
+- [ ] Database-schema consistency verified via `x-autobe-database-schema`
 - [ ] ALL relations use $ref (ZERO inline object definitions)
 - [ ] Schema structure principle followed (all schemas at root level)
 - [ ] Composition relations modeled as nested objects/arrays

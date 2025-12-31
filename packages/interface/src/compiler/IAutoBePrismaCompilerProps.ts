@@ -8,7 +8,7 @@
  * structures and are ready for final compilation processing.
  *
  * The compilation process transforms these schema files into production-ready
- * database artifacts through the embedded Prisma compiler, ensuring
+ * database artifacts through the embedded Database compiler, ensuring
  * compatibility with the target database environment and generating all
  * supporting documentation and visualization materials.
  *

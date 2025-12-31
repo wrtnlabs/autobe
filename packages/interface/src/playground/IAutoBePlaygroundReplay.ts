@@ -64,9 +64,9 @@ export interface IAutoBePlaygroundReplay {
   /**
    * Event snapshots from the database schema design phase.
    *
-   * Records the prisma agent's incremental progress through schema planning,
+   * Records the Database agent's incremental progress through schema planning,
    * model creation, relationship design, and compiler validation cycles. Null
-   * if the session didn't reach the prisma phase or if snapshot data wasn't
+   * if the session didn't reach the database phase or if snapshot data wasn't
    * captured for this phase.
    */
   database: AutoBeEventSnapshot[] | null;
@@ -168,7 +168,7 @@ export namespace IAutoBePlaygroundReplay {
     /**
      * Summary state for the database schema design phase.
      *
-     * Provides metrics on the prisma agent's performance including schema
+     * Provides metrics on the Database agent's performance including schema
      * generation success, timing, and iteration counts. Null if this phase
      * wasn't reached.
      */
@@ -238,7 +238,7 @@ export namespace IAutoBePlaygroundReplay {
      * execution. Each phase produces different types of elements:
      *
      * - Analyze: actors, documents
-     * - Prisma: namespaces, models
+     * - Database: namespaces, models
      * - Interface: operations, schemas
      * - Test: functions
      * - Realize: functions

@@ -43,5 +43,5 @@ export const transformPrismaReviewHistory = (props: {
       `,
     },
   ],
-  userMessage: "Please review the Prisma schema file.",
+  userMessage: "Please review the database schema file.",
 });

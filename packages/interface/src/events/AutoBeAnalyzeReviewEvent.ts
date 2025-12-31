@@ -32,7 +32,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Enforces strict Mermaid syntax rules (no parentheses within brackets)
  * - Iterative process continues until document meets all quality standards
  *
- * The review ensures that subsequent agents (Prisma, Interface, Test, Realize)
+ * The review ensures that subsequent agents (Database, Interface, Test, Realize)
  * receive well-structured, unambiguous requirements that enable fully automated
  * backend development without human intervention.
  *

@@ -2,7 +2,7 @@ import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Prisma agent creates fewer models than expected during
+ * Event fired when the Database agent creates fewer models than expected during
  * the database schema creation process.
  *
  * This event occurs when the AI function calling process results in an

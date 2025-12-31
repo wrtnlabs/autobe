@@ -3,17 +3,17 @@ import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Prisma agent validates the constructed database design
+ * Event fired when the Database agent validates the constructed database design
  * and encounters validation failures that need correction.
  *
- * This event occurs when the custom Prisma compiler processes the generated AST
+ * This event occurs when the custom Database compiler processes the generated AST
  * structure and detects validation errors that prevent successful schema
  * compilation. The validation process represents a critical quality gate in the
  * vibe coding pipeline, ensuring that only semantically correct and
  * business-aligned database designs proceed to final generation.
  *
  * The validation event triggers the feedback loop that enables AI
- * self-correction, providing detailed error information that helps the Prisma
+ * self-correction, providing detailed error information that helps the Database
  * agent understand what needs to be fixed and how to improve the database
  * design quality.
  *

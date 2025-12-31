@@ -187,12 +187,12 @@ export interface IAutoBeRpcListener {
   analyzeComplete?(event: AutoBeAnalyzeCompleteEvent): Promise<void>;
 
   /* -----------------------------------------------------------
-    PRISMA PHASE EVENTS
+    DATABASE PHASE EVENTS
   ----------------------------------------------------------- */
   /**
    * Optional handler for database design start events.
    *
-   * Called when the Prisma agent begins database schema design, enabling client
+   * Called when the Database agent begins database schema design, enabling client
    * applications to indicate the start of data architecture development and
    * prepare progress tracking for the database design phase.
    */
@@ -239,7 +239,7 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for database schema review events.
    *
-   * Called when the Prisma agent reviews and validates schema modifications,
+   * Called when the Database agent reviews and validates schema modifications,
    * enabling client applications to show that the database design is being
    * thoroughly evaluated against best practices and business requirements.
    *
@@ -275,7 +275,7 @@ export interface IAutoBeRpcListener {
   /**
    * Mandatory handler for database design completion events.
    *
-   * Called when the Prisma phase completes successfully, providing the
+   * Called when the Database phase completes successfully, providing the
    * validated database schemas and compilation results. Client applications
    * must handle this event to receive the completed database artifacts.
    */
@@ -370,7 +370,7 @@ export interface IAutoBeRpcListener {
    * Optional handler for API schema rename events.
    *
    * Called when the Interface agent detects and corrects DTO type names that
-   * violate the critical naming convention: ALL words from the Prisma table
+   * violate the critical naming convention: ALL words from the database table
    * name MUST be preserved in the DTO type name. This enables client
    * applications to show that naming consistency is being enforced to maintain
    * type-to-table traceability.

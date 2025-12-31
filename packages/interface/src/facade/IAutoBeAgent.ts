@@ -16,7 +16,7 @@ export interface IAutoBeAgent {
    * guiding the development process through natural language interaction.
    *
    * The agent analyzes the conversation context to determine appropriate
-   * actions, potentially activating specialized agents (Analyze, Prisma,
+   * actions, potentially activating specialized agents (Analyze, Database,
    * Interface, Test, Realize) through function calling based on user needs.
    * Real-time progress events are fired through registered listeners while the
    * conversation processes.
@@ -137,7 +137,7 @@ export interface IAutoBeAgent {
    * multi-phase operations.
    *
    * The phase information updates in real-time as the agent progresses through
-   * the waterfall development model, transitioning from analyze through prisma,
+   * the waterfall development model, transitioning from analyze through database,
    * interface, test, and realize phases. When no phase is active (before
    * starting or after completion), returns null.
    *

@@ -21,9 +21,9 @@ export const transformInterfaceSchemaRenameHistory = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          ## Prisma Table Names
+          ## Database Table Names
 
-          Here is the complete list of table names from the Prisma database schema.
+          Here is the complete list of table names from the database schema.
           Use these as the source of truth for determining correct DTO type names.
 
           Each table name should be converted to a DTO type name by:

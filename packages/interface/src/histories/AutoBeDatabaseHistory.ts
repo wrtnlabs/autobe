@@ -6,11 +6,11 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
- * History record generated when the Prisma agent analyzes the requirements
+ * History record generated when the Database agent analyzes the requirements
  * specification and completes the database design.
  *
- * The Prisma agent constructs data of type {@link AutoBeDatabase.IApplication}
- * through AI function calling, validates it, and then generates prisma schema
+ * The Database agent constructs data of type {@link AutoBeDatabase.IApplication}
+ * through AI function calling, validates it, and then generates Prisma schema
  * files. This history captures the complete database design process including
  * validation results, generated schema files, and compilation outcomes.
  *
@@ -27,7 +27,7 @@ export interface AutoBeDatabaseHistory extends AutoBeAgentHistoryBase<"database"
    * data.
    *
    * Contains the outcome of validating the AST structures generated through AI
-   * function calling. The Prisma agent generally creates valid
+   * function calling. The Database agent generally creates valid
    * {@link AutoBeDatabase.IApplication} data through a validation feedback
    * process, but when using very small AI models, this result might have
    * `success := false`.
@@ -60,7 +60,7 @@ export interface AutoBeDatabaseHistory extends AutoBeAgentHistoryBase<"database"
    * Results of compiling the generated Prisma schema files.
    *
    * Contains the compilation outcome when the generated schemas are processed
-   * by the Prisma compiler. This should always compile successfully since the
+   * by the Database compiler. This should always compile successfully since the
    * schemas are generated from validated AST structures. If compilation fails,
    * it would be a bug in the system and should be reported as an issue.
    *
@@ -71,11 +71,11 @@ export interface AutoBeDatabaseHistory extends AutoBeAgentHistoryBase<"database"
   compiled: IAutoBePrismaCompileResult;
 
   /**
-   * Instructions for the Prisma agent redefined by AI from user's utterance.
+   * Instructions for the Database agent redefined by AI from user's utterance.
    *
    * Contains AI-generated specific guidance for the database design phase,
    * interpreted and refined from the user's original request. These
-   * instructions direct the Prisma agent on how to approach database schema
+   * instructions direct the Database agent on how to approach database schema
    * design, which data models to prioritize, relationships to establish, and
    * any specific constraints or performance considerations to implement.
    */

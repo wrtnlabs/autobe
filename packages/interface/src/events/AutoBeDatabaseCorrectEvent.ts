@@ -4,11 +4,11 @@ import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Prisma agent corrects validation failures in the
+ * Event fired when the Database agent corrects validation failures in the
  * database design.
  *
- * This event occurs when the custom Prisma compiler detects validation errors
- * in the constructed AST structure and the Prisma agent receives feedback to
+ * This event occurs when the custom Database compiler detects validation errors
+ * in the constructed AST structure and the Database agent receives feedback to
  * correct compilation issues. The correction process represents the
  * sophisticated feedback loop that enables AI self-correction, ensuring that
  * only valid and semantically correct database designs proceed to final

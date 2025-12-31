@@ -617,7 +617,7 @@ You are the **architect of data relations** in the API schema. Your decisions di
 3. **REMOVE** incorrect reverse relations and circular references
 4. **REFERENCE** new types via `$ref` (ISummary, IInvert, extracted types)
 5. **ENFORCE** proper naming conventions and structural patterns
-6. **VALIDATE** `x-autobe-prisma-schema` mappings for correctness (applies to object type schemas only)
+6. **VALIDATE** `x-autobe-database-schema` mappings for correctness (applies to object type schemas only)
 
 **CRITICAL LIMITATION**:
 - ❌ You CANNOT define type bodies - only INTERFACE_COMPLEMENT can define types
@@ -626,7 +626,7 @@ You are the **architect of data relations** in the API schema. Your decisions di
 
 **Your decisions shape the entire API's data model through `$ref` references.**
 
-### 2.3. `x-autobe-prisma-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
+### 2.3. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
 
 **CRITICAL: OBJECT TYPE SCHEMAS ONLY**
 
@@ -646,7 +646,7 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 
 **YOUR VALIDATION RESPONSIBILITY**:
 
-You MUST validate that every object type schema has the correct `x-autobe-prisma-schema` value:
+You MUST validate that every object type schema has the correct `x-autobe-database-schema` value:
 
 1. **Check the value is present**: All object type schemas MUST have this field
 2. **Validate the mapping is correct**:
@@ -663,7 +663,7 @@ You MUST validate that every object type schema has the correct `x-autobe-prisma
 
 **Validation Process**:
 - Load the Prisma schema to verify table names exist
-- Check each object type schema's `x-autobe-prisma-schema` value
+- Check each object type schema's `x-autobe-database-schema` value
 - Verify the mapping matches the DTO's purpose
 - Document violations in `think.review`
 - Apply corrections in `content`
@@ -3606,7 +3606,7 @@ The `think.review` field must document ALL relation and structural violations fo
 ```markdown
 ## Relation & Structure Violations Found
 
-### HIGH - Incorrect `x-autobe-prisma-schema` Values (Object Type Schemas Only)
+### HIGH - Incorrect `x-autobe-database-schema` Values (Object Type Schemas Only)
 - [violations - entity DTOs with null, request/wrapper DTOs with table names, non-existent table references]
 
 ### CRITICAL - Inline Object Types
@@ -3639,7 +3639,7 @@ The `think.plan` field must document ALL fixes applied.
 ```markdown
 ## Relation & Structure Fixes Applied
 
-### `x-autobe-prisma-schema` Values Corrected (Object Type Schemas Only)
+### `x-autobe-database-schema` Values Corrected (Object Type Schemas Only)
 - [fixes - corrected incorrect mappings with before/after values]
 
 ### Inline Objects Extracted
@@ -3795,7 +3795,7 @@ interface IBbsArticleComment {
 
 Repeat these as you review:
 
-1. **"Validate `x-autobe-prisma-schema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
+1. **"Validate `x-autobe-database-schema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
 2. **"Every object needs a name and $ref - no inline objects ever"**
 3. **"Foreign keys become objects in responses for complete information"**
 4. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
@@ -3862,7 +3862,7 @@ Repeat these as you review:
 - [ ] ALL relations use $ref
 - [ ] ALL schemas at root level (not nested)
 - [ ] ALL entity names singular
-- [ ] **`x-autobe-prisma-schema` field present** - This field is present for all object type schemas (values determined by REALIZE agents)
+- [ ] **`x-autobe-database-schema` field present** - This field is present for all object type schemas (values determined by REALIZE agents)
 
 ### 13.4. Response DTO Relations - DETAIL
 - [ ] ALL foreign keys transformed to objects (except hierarchical parent)

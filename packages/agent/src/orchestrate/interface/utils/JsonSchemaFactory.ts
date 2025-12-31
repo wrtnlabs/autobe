@@ -147,9 +147,9 @@ export namespace JsonSchemaFactory {
       if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
       const model: AutoBeDatabase.IModel | undefined = value[
-        "x-autobe-prisma-schema"
+        "x-autobe-database-schema"
       ]
-        ? entireModels.find((m) => m.name === value["x-autobe-prisma-schema"])
+        ? entireModels.find((m) => m.name === value["x-autobe-database-schema"])
         : undefined;
       if (model === undefined) continue;
 
@@ -194,7 +194,7 @@ export namespace JsonSchemaFactory {
   
       Collection of records with pagination information.
     `,
-    "x-autobe-prisma-schema": null, // filled by relation review agent
+    "x-autobe-database-schema": null, // filled by relation review agent
   });
 
   export const fixPage = (path: string, input: unknown): void => {
@@ -234,7 +234,7 @@ export namespace JsonSchemaFactory {
         schema: value,
         closure: (next) => {
           if (AutoBeOpenApiTypeChecker.isObject(next))
-            next["x-autobe-prisma-schema"] = null;
+            next["x-autobe-database-schema"] = null;
         },
       });
     return init;

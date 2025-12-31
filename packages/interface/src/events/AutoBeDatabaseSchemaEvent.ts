@@ -4,10 +4,10 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Prisma agent generates a complete schema file for a
+ * Event fired when the Database agent generates a complete schema file for a
  * specific business domain during the database design process.
  *
- * This event occurs when the Prisma agent has successfully designed and
+ * This event occurs when the Database agent has successfully designed and
  * generated all database tables for a particular business domain (e.g., Sales,
  * Orders, Users). The agent follows a systematic 2-step process: strategic
  * planning (plan) and model generation (models), producing production-ready

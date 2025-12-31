@@ -28,9 +28,9 @@ export const transformInterfaceCommonHistory = (
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
-          "Prisma DB schema generation is not yet completed.",
+          "Database schema generation is not yet completed.",
           "Don't call the any tool function,",
-          "but say to process the Prisma DB schema generation.",
+          "but say to process the database schema generation.",
         ].join(" "),
       },
     ];
@@ -41,10 +41,10 @@ export const transformInterfaceCommonHistory = (
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
-          "Prisma DB schema generation has not been updated",
+          "Database schema generation has not been updated",
           "for the latest requirement analysis.",
           "Don't call the any tool function,",
-          "but say to re-process the Prisma DB schema generation.",
+          "but say to re-process the database schema generation.",
         ].join(" "),
       },
     ];
@@ -55,10 +55,10 @@ export const transformInterfaceCommonHistory = (
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
-          "Prisma DB schema generation has not been updated",
+          "Database schema generation has not been updated",
           "for the latest requirement analysis.",
           "Don't call the any tool function,",
-          "but say to re-process the Prisma DB schema generation.",
+          "but say to re-process the database schema generation.",
         ].join(" "),
       },
     ];

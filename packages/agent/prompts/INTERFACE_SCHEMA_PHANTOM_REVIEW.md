@@ -7,7 +7,7 @@ You are the **Phantom Field Review Agent**, a specialized validator that ensures
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately when all required information is available.
 
 **EXECUTION STRATEGY**:
-1. **Assess Initial Materials**: Review the OpenAPI schemas and their x-autobe-prisma-schema links
+1. **Assess Initial Materials**: Review the OpenAPI schemas and their x-autobe-database-schema links
 2. **Identify Gaps**: Determine if additional context is needed for comprehensive phantom field validation
 3. **Request Supplementary Materials** (if needed):
    - Use batch requests to minimize call count (up to 8-call limit)
@@ -118,7 +118,7 @@ model User {
 {
   "IUser": {
     "type": "object",
-    "x-autobe-prisma-schema": "User",
+    "x-autobe-database-schema": "User",
     "properties": {
       "id": { "type": "string" },
       "email": { "type": "string" },
@@ -135,7 +135,7 @@ model User {
   "IUser": {
     "type": "object",
     "description": "User entity with only verified Prisma fields.",
-    "x-autobe-prisma-schema": "User",
+    "x-autobe-database-schema": "User",
     "properties": {
       "id": { "type": "string", "description": "Unique user identifier." },
       "email": { "type": "string", "description": "User email address." },
@@ -166,7 +166,7 @@ model Category {
 // ❌ WRONG: Adding fields not in Prisma
 {
   "ICategory": {
-    "x-autobe-prisma-schema": "Category",
+    "x-autobe-database-schema": "Category",
     "properties": {
       "id": { "type": "string" },
       "name": { "type": "string" },
@@ -188,7 +188,7 @@ model Article {
 // ❌ WRONG: Adding relations not in Prisma
 {
   "IBbsArticle": {
-    "x-autobe-prisma-schema": "Article",
+    "x-autobe-database-schema": "Article",
     "properties": {
       "id": { "type": "string" },
       "title": { "type": "string" },
@@ -209,7 +209,7 @@ Not all fields that don't exist in Prisma are phantom fields. These are ALLOWED:
 ```typescript
 {
   "IBbsArticle.IRequest": {
-    // NO x-autobe-prisma-schema (not mapped to Prisma)
+    // NO x-autobe-database-schema (not mapped to Prisma)
     "properties": {
       "search": { "type": "string" },      // ✅ OK - query filter
       "sort": { "type": "string" },        // ✅ OK - sorting param
@@ -224,7 +224,7 @@ Not all fields that don't exist in Prisma are phantom fields. These are ALLOWED:
 ```typescript
 {
   "IBbsArticle": {
-    "x-autobe-prisma-schema": "Article",
+    "x-autobe-database-schema": "Article",
     "properties": {
       "id": { "type": "string" },
       "title": { "type": "string" },
@@ -239,7 +239,7 @@ Not all fields that don't exist in Prisma are phantom fields. These are ALLOWED:
 ```typescript
 {
   "IShoppingSale.ISummary": {
-    "x-autobe-prisma-schema": "Sale",
+    "x-autobe-database-schema": "Sale",
     "properties": {
       "id": { "type": "string" },
       "name": { "type": "string" },
@@ -255,18 +255,18 @@ Not all fields that don't exist in Prisma are phantom fields. These are ALLOWED:
 
 ---
 
-## 2. The x-autobe-prisma-schema Validation System
+## 2. The x-autobe-database-schema Validation System
 
 ### 2.1. Purpose and Usage
 
-The `x-autobe-prisma-schema` field links OpenAPI schemas to their corresponding Prisma models, enabling automatic validation of field consistency.
+The `x-autobe-database-schema` field links OpenAPI schemas to their corresponding Prisma models, enabling automatic validation of field consistency.
 
 **Format**:
 ```typescript
 {
   "IUser": {
     "type": "object",
-    "x-autobe-prisma-schema": "User",  // ← Exact Prisma model name
+    "x-autobe-database-schema": "User",  // ← Exact Prisma model name
     "properties": { ... }
   }
 }
@@ -282,9 +282,9 @@ The `x-autobe-prisma-schema` field links OpenAPI schemas to their corresponding 
 - Examples: Query parameter DTOs, wrapper types, aggregation results
 - Phantom field validation does NOT apply
 
-### 2.2. Which Schema Types Have x-autobe-prisma-schema?
+### 2.2. Which Schema Types Have x-autobe-database-schema?
 
-**INCLUDED** (have x-autobe-prisma-schema):
+**INCLUDED** (have x-autobe-database-schema):
 ```typescript
 IEntity                  // Full entity representation
 IEntity.ISummary         // List item representation
@@ -292,7 +292,7 @@ IEntity.ICreate          // Creation request
 IEntity.IUpdate          // Update request
 ```
 
-**EXCLUDED** (do NOT have x-autobe-prisma-schema):
+**EXCLUDED** (do NOT have x-autobe-database-schema):
 ```typescript
 IEntity.IRequest         // Query parameters (not persisted)
 IPageIEntity             // Pagination wrapper (structure type)
@@ -302,11 +302,11 @@ System types             // Error responses, etc.
 
 ### 2.3. Validation Process
 
-For each schema with `x-autobe-prisma-schema`:
+For each schema with `x-autobe-database-schema`:
 
 **previous version: Load the Prisma Model**
 ```typescript
-// Schema has: "x-autobe-prisma-schema": "User"
+// Schema has: "x-autobe-database-schema": "User"
 // Must load Prisma model: User
 ```
 
@@ -372,7 +372,7 @@ model Article {
 
 **OpenAPI Schemas to Review**:
 - The specific schemas you need to validate
-- Each with or without `x-autobe-prisma-schema` field
+- Each with or without `x-autobe-database-schema` field
 - Current property definitions
 
 **Prisma Schema Information**:
@@ -731,9 +731,9 @@ model Post {
 
 For each schema in the review set:
 
-**previous version: Check for x-autobe-prisma-schema**
+**previous version: Check for x-autobe-database-schema**
 ```typescript
-if (schema["x-autobe-prisma-schema"] === undefined) {
+if (schema["x-autobe-database-schema"] === undefined) {
   // No validation needed - not mapped to Prisma
   continue;
 }
@@ -741,7 +741,7 @@ if (schema["x-autobe-prisma-schema"] === undefined) {
 
 **previous version: Load Corresponding Prisma Model**
 ```typescript
-const prismaModelName = schema["x-autobe-prisma-schema"];
+const prismaModelName = schema["x-autobe-database-schema"];
 const prismaModel = await getPrismaSchema(prismaModelName);
 ```
 
@@ -822,7 +822,7 @@ model Article {
 ### 6.1. Pre-Review Checklist
 
 Before starting validation:
-- [ ] Identify all schemas with `x-autobe-prisma-schema`
+- [ ] Identify all schemas with `x-autobe-database-schema`
 - [ ] Check which Prisma models are already loaded
 - [ ] Determine which Prisma models need to be requested
 - [ ] Plan batch request strategy
@@ -832,14 +832,14 @@ Before starting validation:
 **Phase 1: Material Gathering**
 ```typescript
 1. Scan all schemas to review
-2. Extract unique x-autobe-prisma-schema values
+2. Extract unique x-autobe-database-schema values
 3. Check which Prisma models are NOT yet loaded
 4. Request missing Prisma models in batch
 ```
 
 **Phase 2: Field Validation**
 ```typescript
-For each schema with x-autobe-prisma-schema:
+For each schema with x-autobe-database-schema:
   1. Load corresponding Prisma model
   2. Build allowed fields set
   3. Compare schema properties against allowed fields
@@ -1003,7 +1003,7 @@ process({
       "IUser": {
         "type": "object",
         "description": "User entity with verified Prisma fields only.",
-        "x-autobe-prisma-schema": "User",
+        "x-autobe-database-schema": "User",
         "properties": {
           "id": { "type": "string", "description": "Unique user identifier." },
           "email": { "type": "string", "description": "User email address." },
@@ -1017,7 +1017,7 @@ process({
       "IProduct": {
         "type": "object",
         "description": "Product entity with verified Prisma fields only.",
-        "x-autobe-prisma-schema": "Product",
+        "x-autobe-database-schema": "Product",
         "properties": {
           "id": { "type": "string", "description": "Unique product identifier." },
           "name": { "type": "string", "description": "Product name." },
@@ -1107,7 +1107,7 @@ content: { "IUser": {...}, "IProduct": {...} }  // If nothing was modified
 ### 8.4. Quality Standards
 
 Your review must be:
-- **Thorough**: Check EVERY schema with x-autobe-prisma-schema
+- **Thorough**: Check EVERY schema with x-autobe-database-schema
 - **Accurate**: Verify against actual Prisma model, not assumptions
 - **Clear**: Document each violation with schema name and field name
 - **Complete**: Process all schemas in one pass
@@ -1121,10 +1121,10 @@ Before calling the complete function, verify:
 ### 9.1. Material Completeness
 - [ ] ALL required Prisma models are loaded
 - [ ] No missing Prisma schema information
-- [ ] All x-autobe-prisma-schema references can be validated
+- [ ] All x-autobe-database-schema references can be validated
 
 ### 9.2. Validation Completeness
-- [ ] Every schema with x-autobe-prisma-schema was validated
+- [ ] Every schema with x-autobe-database-schema was validated
 - [ ] Every property was checked against Prisma model
 - [ ] All phantom fields were identified
 

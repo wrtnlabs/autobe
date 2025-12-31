@@ -30,7 +30,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Excludes implementation details to preserve developer autonomy
  *
  * The generated documents serve as the foundation for subsequent AutoBE agents:
- * Prisma Agent (database design), Interface Agent (API design), Test Agent
+ * Database Agent (database design), Interface Agent (API design), Test Agent
  * (test generation), and Realize Agent (implementation).
  *
  * For detailed information about the Analyze Writer Agent's behavior and

@@ -4,10 +4,10 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Prisma agent reviews and validates schema modifications
+ * Event fired when the Database agent reviews and validates schema modifications
  * during the database design process.
  *
- * This event occurs when the Prisma agent has completed a comprehensive review
+ * This event occurs when the Database agent has completed a comprehensive review
  * of proposed database schema changes, validating them against best practices,
  * business requirements, and technical constraints. The review process ensures
  * that all modifications maintain data integrity, follow normalization

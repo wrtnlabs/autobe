@@ -28,20 +28,20 @@ export interface IAutoBeFacadeApplication {
   analyze(): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
-   * Run prisma agent.
+   * Run database agent.
    *
-   * Executes the Prisma agent to generate database schema files and ERD
+   * Executes the Database agent to generate database schema files and ERD
    * documentation. This agent reads the requirements specification created by
    * the {@link analyze Analyze agent} and produces a complete Prisma schema with
    * comprehensive documentation for each entity and attribute.
    *
    * **PREREQUISITE**: Only call this function after the {@link analyze} function
    * has been successfully executed and a requirements specification document
-   * has been generated. The Prisma agent depends on the structured requirements
+   * has been generated. The Database agent depends on the structured requirements
    * analysis to design the database schema properly. Without a completed
    * requirements specification, this function should NOT be called.
    *
-   * The agent will automatically validate the generated schema using the Prisma
+   * The agent will automatically validate the generated schema using the Database
    * compiler, self-correct any compilation errors through feedback loops, and
    * generate ERD documentation using prisma-markdown. An internal review
    * process ensures schema quality and optimization.
