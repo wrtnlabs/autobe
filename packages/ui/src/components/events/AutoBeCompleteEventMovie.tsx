@@ -387,7 +387,7 @@ const getMessage = (
 
 const getPhase = (event: IAutoBeCompleteEventMovieProps["event"]) => {
   if (event.type === "analyzeComplete") return "analyze";
-  else if (event.type === "databaseComplete") return "prisma";
+  else if (event.type === "databaseComplete") return "database";
   else if (event.type === "interfaceComplete") return "interface";
   else if (event.type === "testComplete") return "test";
   else if (event.type === "realizeComplete") return "realize";

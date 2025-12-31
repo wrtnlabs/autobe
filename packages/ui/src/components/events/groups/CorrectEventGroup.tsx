@@ -71,7 +71,7 @@ export const CorrectEventGroup = (props: ICorrectEventGroupProps) => {
       >
         {eventTypes.map((type) => {
           const typeDisplayNames = {
-            prismaCorrect: "🗄️ Database Schema",
+            databaseCorrect: "🗄️ Database Schema",
             testCorrect: "🧪 Test Suite",
             realizeCorrect: "⚙️ Implementation",
             realizeAuthorizationCorrect: "🔐 Authorization",

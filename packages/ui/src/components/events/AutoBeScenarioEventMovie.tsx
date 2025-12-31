@@ -49,7 +49,7 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
           </>
         ),
       };
-    case "prismaComponent":
+    case "databaseComponent":
       return {
         title: "Prisma Components",
         description: (
