@@ -43,7 +43,7 @@ TypeScript's plugin system enables powerful compiler extensions that are crucial
 
 The AST structures used by `@autobe` are incredibly deep and complex in their hierarchy, requiring extensive and intricate descriptions to help AI understand the context. Managing JSON schemas for AI function calling through traditional development methodologies—whether hand-written or duplicated through reflection—would be operationally unfeasible given this complexity.
 
-- [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts): AST structure for Prisma database schema design
+- [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts): AST structure for Prisma database schema design
 - [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts): AST structure for RESTful API design
 
 To solve this challenge, `@autobe` utilizes TypeScript's plugin system through the [`typia`](https://github.com/samchon/typia) library, which extends compilation capabilities by automatically converting TypeScript types into AI function calling schemas. [`typia`](https://github.com/samchon/typia) analyzes TypeScript source code at the compiler level and automatically generates appropriate AI function calling schemas for each AST type.
@@ -83,7 +83,7 @@ interface ICodeGenerator {
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/prisma/AutoBeDatabase.ts"
+      path="packages/interface/src/database/AutoBeDatabase.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>

@@ -50,8 +50,8 @@ The output of each agent is validated through corresponding dedicated compilers.
 A compiler for database design.
 
 - Compiler Structures
-  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts)
-  - [`IAutoBeDatabaseValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/IAutoBeDatabaseValidation.ts)
+  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)
+  - [`IAutoBeDatabaseValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/IAutoBeDatabaseValidation.ts)
   - [`IValidation`](https://github.com/samchon/openapi/blob/master/src/structures/IValidation.ts)
 - Generation Result
   - Prisma Schema Files: https://github.com/wrtnlabs/autobe-example-bbs/tree/main/prisma/schema
@@ -154,7 +154,7 @@ A compiler for AI function calling and validation feedback.
   - [`typia.llm.application<App, Model>()`](https://typia.io/docs/llm/application/): AI function calling
   - [`typia.llm.parameters<Params, Model>()`](https://typia.io/docs/llm/parameters/): AI structured output
 - AST Structures
-  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts)
+  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)
   - [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts)
   - [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)
 

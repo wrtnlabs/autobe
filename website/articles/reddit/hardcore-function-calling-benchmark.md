@@ -8,7 +8,7 @@
 
 As AutoBE utilizes LLM function calling in every phase instead of plain text writing, including compiler's AST (Abstract Syntax Tree) structures of infinite depths, I think this can be the most extreme function calling benchmark ever.
 
-- [DB Compiler's AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBeDatabase.ts)
+- [DB Compiler's AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)
 - [API specification's AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts)
 - [Test function's AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)
 
