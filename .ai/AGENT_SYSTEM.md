@@ -64,7 +64,7 @@ Agents must handle various error situations.
 
 Agent communication follows clear patterns.
 
-**Sequential Pipeline** is the most basic pattern. Agent A's output becomes Agent B's input, and B's output becomes C's input. The Analyze → Prisma → Interface → Test → Realize pipeline follows this pattern. Each stage waits for the previous stage to complete and executes sequentially.
+**Sequential Pipeline** is the most basic pattern. Agent A's output becomes Agent B's input, and B's output becomes C's input. The Analyze → Database → Interface → Test → Realize pipeline follows this pattern. Each stage waits for the previous stage to complete and executes sequentially.
 
 **Parallel Fan-Out** is a pattern where multiple agents execute one plan in parallel. When 10 document writes are planned in Analyze phase, 10 Write Agents execute simultaneously. Each agent is independent and doesn't affect others' results. When all agents complete, proceed to next stage.
 

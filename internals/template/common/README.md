@@ -18,13 +18,13 @@ subgraph "Backend Coding Agent"
 end
 subgraph "Functional Agents"
   coder --"Requirements Analysis"--> analyze("{{ANALYSIS_EMOJI}} Analyze")
-  coder --"ERD"--> prisma("{{DATABASE_EMOJI}} Prisma")
+  coder --"ERD"--> database("{{DATABASE_EMOJI}} Database")
   coder --"API Design"--> interface("{{INTERFACE_EMOJI}} Interface")
   coder --"Test Codes" --> test("{{TEST_EMOJI}} Test")
   coder --"Main Program" --> realize("{{REALIZE_EMOJI}} Realize")
 end
 subgraph "Compiler Feedback"
-  prisma --"validates" --> prismaCompiler("Prisma Compiler")
+  database --"validates" --> prismaCompiler("Prisma Compiler")
   interface --"validates" --> openapiValidator("OpenAPI Validator")
   interface --"generates" --> tsCompiler("TypeScript Compiler")
   test --"validates" --> tsCompiler("TypeScript Compiler")
@@ -115,7 +115,7 @@ Phase | Generated | FCSR | Token Consumption | Elapsed Time
 ------|-----------|------|-------------------|--------------
 {{BENCHMARK_AGGREGATE}}
 
-This table shows the comprehensive metrics for each phase of the AutoBE generation pipeline. For each phase (Analyze, Prisma, Interface, Test, Realize), it tracks:
+This table shows the comprehensive metrics for each phase of the AutoBE generation pipeline. For each phase (Analyze, Database, Interface, Test, Realize), it tracks:
 
 - **Phase**: The pipeline phase with success (✅) or failure (❌) indicator
 - **Generated**: Count of artifacts produced (e.g., actors, documents, namespaces, models, operations, schemas, functions)

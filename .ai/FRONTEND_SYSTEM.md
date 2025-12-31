@@ -76,7 +76,7 @@ Errors are displayed immediately. When compilation errors occur, clearly shows w
 
 Important information is prominent, less important information is subdued. Clear visual hierarchy helps users quickly grasp essentials.
 
-Stage progress is most prominent. The 5 stages Analyze → Prisma → Interface → Test → Realize are clearly distinguished, with the current stage highlighted.
+Stage progress is most prominent. The 5 stages Analyze → Database → Interface → Test → Realize are clearly distinguished, with the current stage highlighted.
 
 Success and failure are color-coded. Successful tasks are green, in-progress is blue, failures are red. Users can understand status at a glance.
 
@@ -156,7 +156,7 @@ Event grouping happens automatically. Groups from `analyzeStart` to `analyzeComp
 
 Frontend state synchronizes according to Backend events.
 
-The `AutoBeListenerState` class tracks current state. Updates state upon receiving completion events from Analyze, Prisma, Interface, Test, Realize stages. Final results are stored in fields like `state.analyze`, `state.prisma`.
+The `AutoBeListenerState` class tracks current state. Updates state upon receiving completion events from Analyze, Database, Interface, Test, Realize stages. Final results are stored in fields like `state.analyze`, `state.database`.
 
 State is immutable. On receiving new events, doesn't modify existing state but creates a new state object. Follows React's immutability principle, making state change tracking easy.
 

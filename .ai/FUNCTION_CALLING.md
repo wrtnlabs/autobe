@@ -291,7 +291,7 @@ export const validateInterfacePrerequisites = (state: AutoBeState): ValidationRe
     };
   }
 
-  if (!state.prisma || state.prisma.analyzeStep !== state.analyze.step) {
+  if (!state.database || state.database.analyzeStep !== state.analyze.step) {
     return {
       failure: true,
       message: "Cannot run interface() - prisma() must be completed and up-to-date."

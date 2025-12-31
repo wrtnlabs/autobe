@@ -20,7 +20,7 @@ Requirements Analysis → Database Schema (Prisma) → API Specification (OpenAP
 
 AutoBE follows a 5-phase waterfall with internal spiral loops:
 
-**Requirements** → **Analyze** → **Prisma** → **Interface** → **Test** → **Realize**
+**Requirements** → **Analyze** → **Database** → **Interface** → **Test** → **Realize**
 
 Each phase has 40+ specialized AI agents that collaborate. Failures trigger spiral loops that regenerate and correct until success.
 

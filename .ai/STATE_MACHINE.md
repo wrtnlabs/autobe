@@ -79,9 +79,9 @@ export const transformFacadeStateMessage = (state: AutoBeState): string => {
     return "Requirements analysis has not been completed yet. Please run analyze() first.";
   }
 
-  const prisma = state.prisma;
-  if (!prisma || prisma.analyzeStep !== analyze.step) {
-    return "Prisma schema is out-of-date or not generated. Please run prisma() first.";
+  const database = state.database;
+  if (!database || database.analyzeStep !== analyze.step) {
+    return "Database schema is out-of-date or not generated. Please run database() first.";
   }
 
   const interface_ = state.interface;
@@ -102,9 +102,9 @@ This function is called before each facade function executes. It validates that 
 ### Valid Transitions
 
 1. **Initial → Analyze**: Always allowed. Starts the pipeline.
-2. **Analyze Complete → Prisma**: Allowed if Analyze completed successfully.
-3. **Prisma Complete → Interface**: Allowed if Prisma completed successfully and matches Analyze step.
-4. **Interface Complete → Test**: Allowed if Interface completed successfully and matches Analyze + Prisma steps.
+2. **Analyze Complete → Database**: Allowed if Analyze completed successfully.
+3. **Database Complete → Interface**: Allowed if Database completed successfully and matches Analyze step.
+4. **Interface Complete → Test**: Allowed if Interface completed successfully and matches Analyze + Database steps.
 5. **Test Complete → Realize**: Allowed if Test completed successfully and matches all prerequisite steps.
 
 ### Invalid Transitions
@@ -250,18 +250,18 @@ export const predicateAnalyzeComplete = (state: AutoBeState): boolean => {
   return state.analyze !== null;
 };
 
-export const predicatePrismaComplete = (state: AutoBeState): boolean => {
-  return state.prisma !== null &&
+export const predicateDatabaseComplete = (state: AutoBeState): boolean => {
+  return state.database !== null &&
          state.analyze !== null &&
-         state.prisma.analyzeStep === state.analyze.step;
+         state.database.analyzeStep === state.analyze.step;
 };
 
 export const predicateInterfaceComplete = (state: AutoBeState): boolean => {
   return state.interface !== null &&
          state.analyze !== null &&
-         state.prisma !== null &&
+         state.database !== null &&
          state.interface.analyzeStep === state.analyze.step &&
-         state.interface.prismaStep === state.prisma.step;
+         state.interface.databaseStep === state.database.step;
 };
 ```
 
@@ -322,10 +322,10 @@ interface.analyzeStep = 5  // Cannot reference future!
 If a phase starts but fails before completing, no complete event is emitted, and state remains unchanged. The phase can be retried without affecting state integrity.
 
 ```typescript
-// Before: state.prisma = null
+// Before: state.database = null
 await orchestratePrisma();  // Fails with compiler error
 
-// After: state.prisma = null (unchanged)
+// After: state.database = null (unchanged)
 // Can retry:
 await orchestratePrisma();  // Try again
 ```

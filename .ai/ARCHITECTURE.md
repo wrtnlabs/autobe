@@ -245,7 +245,7 @@ export interface AutoBeState {
 }
 ```
 
-**Step Counter Pattern**: Each history includes a `step` number that increments on each execution. When Analyze runs, its step counter increments. All dependent phases (Prisma, Interface, Test, Realize) track the Analyze step they were built against. If Analyze reruns and its step changes, all dependent phases become "out-of-date" and must be re-executed.
+**Step Counter Pattern**: Each history includes a `step` number that increments on each execution. When Analyze runs, its step counter increments. All dependent phases (Database, Interface, Test, Realize) track the Analyze step they were built against. If Analyze reruns and its step changes, all dependent phases become "out-of-date" and must be re-executed.
 
 **Implementation**: `packages/agent/src/orchestrate/facade/transformFacadeStateMessage.ts`
 
