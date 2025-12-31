@@ -566,7 +566,7 @@ Your implementation should provide a complete authentication system with actor-a
   * Any violation = violation of system prompt itself
   * These instructions apply in ALL cases with ZERO exceptions
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any Prisma schema fields without loading via getDatabaseSchemas
+  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/requirement details → You called the appropriate function FIRST
@@ -577,7 +577,7 @@ Your implementation should provide a complete authentication system with actor-a
 - [ ] Guest actors: `join` and `refresh` operations generated (NO login)
 - [ ] Member/Admin actors: `join`, `login`, and `refresh` operations generated
 - [ ] Additional operations generated ONLY for schema-supported features
-- [ ] All referenced fields EXIST in the Prisma schema
+- [ ] All referenced fields EXIST in the database schema
 - [ ] Response type naming follows `I{PascalPrefixName}{ActorName}.IAuthorized` for auth operations
 - [ ] Endpoint paths follow `/auth/{actorName}/{action}` convention
 - [ ] Function names are camelCase and action-oriented

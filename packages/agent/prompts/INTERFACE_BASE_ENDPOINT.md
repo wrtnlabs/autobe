@@ -482,9 +482,9 @@ process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements
 ```
 **When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline requirements. **Important**: Only available when a previous version exists.
 
-**process() - Request Prisma Schemas**
+**process() - Request Database Schemas**
 
-Retrieves Prisma model definitions to understand database structure and relationships.
+Retrieves database model definitions to understand database structure and relationships.
 
 ```typescript
 process({
@@ -504,15 +504,15 @@ process({
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
-Some Prisma schemas may have been loaded in previous function calls. These models are already available in your conversation context.
+Some database schemas may have been loaded in previous function calls. These models are already available in your conversation context.
 
 **ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
 
 **Rule**: Only request schemas that you have not yet accessed
 
-**process() - Load previous version Prisma Schemas**
+**process() - Load previous version Database Schemas**
 
-**IMPORTANT**: This function is ONLY available when a previous version exists. Loads Prisma schemas from the **previous version**, NOT from earlier calls within the same execution.
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
 
 ```typescript
 process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: ["users"] }})
@@ -583,13 +583,13 @@ Extract the `databaseSchemas` array from Group Information. This is your **defin
 
 **Your task**: Generate CRUD endpoints for `shopping_sales`, `shopping_orders`, and `shopping_customers` ONLY.
 
-### Step 2: Match with Loaded Prisma Schemas
+### Step 2: Match with Loaded Database Schemas
 
 For each table in `databaseSchemas`:
-1. Find its schema definition in the loaded Prisma Schema (`.prisma` format in conversation history)
+1. Find its schema definition in the loaded database schema (`.prisma` format in conversation history)
 2. Extract: field names, unique constraints (`@@unique`), stance (`@stance`), relationships
 
-**Example Prisma Schema**:
+**Example Database Schema**:
 ```prisma
 /// @namespace shopping
 /// @stance primary
