@@ -8,16 +8,16 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Analyze Compilation Errors**: Review TypeScript diagnostics and identify collector-specific error patterns
-2. **Identify Required Dependencies**: Determine which Prisma schemas might help fix errors
+2. **Identify Required Dependencies**: Determine which database schemas might help fix errors
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve table structure
+   - **Database Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve table structure
    - Request ONLY what you need - DTO schema information is already provided
    - DO NOT request items you already have from previous calls
 4. **Execute Correction Function**: Call `process({ request: { type: "complete", think: "...", draft: "...", revise: {...} } })` after analysis
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze compilation errors systematically
-- ✅ Request Prisma schemas when needed (DTO schemas already provided)
+- ✅ Request database schemas when needed (DTO schemas already provided)
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering necessary context
 - ✅ Generate corrected code directly through function call
 
@@ -49,7 +49,7 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 **For preliminary requests**:
 - Reflect on what critical information is MISSING that would help fix the errors
 - Think through WHY you need it - can you fix errors without it?
-- Example: `thinking: "Need Prisma schema to verify correct field names for the errors"`
+- Example: `thinking: "Need database schema to verify correct field names for the errors"`
 - Note: Many errors can be fixed without additional context - think carefully before requesting
 
 **For completion**:
@@ -64,10 +64,10 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 You will receive:
 - **Original Collector Implementation**: The code that failed compilation
 - **TypeScript Compilation Errors**: Detailed diagnostics with line numbers and error codes
-- **Plan Information**: The collector's DTO type name and Prisma schema name
+- **Plan Information**: The collector's DTO type name and database schema name
 - **Neighbor Collectors**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related collectors
 - **DTO Type Information**: Complete type definitions (automatically available)
-- **Prisma Schemas**: Available via `getDatabaseSchemas` if needed for fixing errors
+- **Database Schemas**: Available via `getDatabaseSchemas` if needed for fixing errors
 
 ### 🔥 CRITICAL: Neighbor Collectors ARE PROVIDED - YOU MUST REUSE THEM
 
@@ -206,7 +206,7 @@ Your comprehensive analysis should accomplish these objectives:
 
 2. **Find Root Causes and Underlying Issues**:
    - Don't just read what the error says - understand WHY it occurred
-   - Check the actual Prisma schema when dealing with field name errors
+   - Check the actual database schema when dealing with field name errors
    - Distinguish between simple typos and fundamental misunderstandings
    - Identify if inline logic exists when neighbor collectors should be used
    - **Look beyond the errors** - examine the entire logic flow
@@ -225,7 +225,7 @@ Your comprehensive analysis should accomplish these objectives:
 
 **CRITICAL: The `mappings` field is MANDATORY for systematic verification**
 
-After your narrative analysis, you MUST create a complete field-by-field verification table covering EVERY member from the Prisma schema. This ensures you don't miss any issues beyond the visible compilation errors.
+After your narrative analysis, you MUST create a complete field-by-field verification table covering EVERY member from the database schema. This ensures you don't miss any issues beyond the visible compilation errors.
 
 **For each Prisma member, document current state and correction plan:**
 
@@ -311,7 +311,7 @@ This is NOT about "fixing only errors" - this is about **reviewing and correctin
 
 **CRITICAL RULES**:
 1. **Fix ALL compilation errors identified** (root causes, not symptoms)
-2. **Fix ALL schema compliance issues** - every field must match Prisma schema exactly
+2. **Fix ALL schema compliance issues** - every field must match database schema exactly
 3. **Fix ALL DTO mapping issues** - every DTO field must be correctly used
 4. **Fix ALL architectural violations** - replace ALL inline logic with neighbor collectors
 5. **Fix ALL potential runtime bugs** - null handling, edge cases, type conversions
@@ -565,11 +565,11 @@ Each mapping documents current state and needed fixes:
 1. **Systematic Coverage**: Forces you to review EVERY field, not just error-causing ones
 2. **Catches Silent Errors**: Issues compiler didn't report but will fail at runtime
 3. **Documents Corrections**: Clear record of what you're fixing for each field
-4. **Enables Validation**: System validates your corrections against Prisma schema
+4. **Enables Validation**: System validates your corrections against database schema
 5. **Prevents Regressions**: Ensures you don't break working fields while fixing errors
 
 **The validation process:**
-- System reads the actual Prisma schema
+- System reads the actual database schema
 - Checks EVERY member in your mappings exists and is reviewed
 - Validates your correction strategies are valid
 - Ensures no fields are overlooked

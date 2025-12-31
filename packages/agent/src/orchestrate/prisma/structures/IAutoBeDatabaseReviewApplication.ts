@@ -117,7 +117,7 @@ export namespace IAutoBeDatabaseReviewApplication {
     plan: string;
 
     /**
-     * Modified Prisma models based on review feedback.
+     * Modified database models based on review feedback.
      *
      * Contains ONLY the models that required changes, not the entire schema.
      * Each model is a complete table definition with all fields, relationships,

@@ -119,11 +119,11 @@ function createController(props: {
             value: key,
             path: `request.groups[${i}].databaseSchemas[${j}]`,
             description: StringUtil.trim`
-              The Prisma schema "${key}" does not exist in the current project.
+              The database schema "${key}" does not exist in the current project.
 
-              Make sure to provide only the valid Prisma schema names that are present in your project.
+              Make sure to provide only the valid database schema names that are present in your project.
 
-              Here is the list of available Prisma schemas in the project:
+              Here is the list of available database schemas in the project:
 
               ${Array.from(props.databaseSchemas)
                 .map((s) => `- ${s}`)

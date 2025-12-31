@@ -12,7 +12,7 @@ export interface IAutoBeInterfaceBaseEndpointApplication {
    * Process endpoint generation task or preliminary data requests.
    *
    * Creates Restful API endpoints referencing requirement analysis documents
-   * and Prisma schema files with ERD descriptions. Ensures endpoints cover all
+   * and database schema files with ERD descriptions. Ensures endpoints cover all
    * requirements and entities.
    *
    * @param props Request containing either preliminary data request or complete

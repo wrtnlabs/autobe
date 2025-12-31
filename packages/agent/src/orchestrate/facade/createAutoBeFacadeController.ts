@@ -59,11 +59,11 @@ export const createAutoBeFacadeController = (props: {
           type: history.compiled.type,
           description:
             history.compiled.type === "success"
-              ? "Prisma schemas have been generated successfully."
+              ? "Database schemas have been generated successfully."
               : history.result.success === false ||
                   history.compiled.type === "failure"
-                ? "Prisma schemas are generated, but compilation failed."
-                : "Unexpected error occurred while generating Prisma schemas.",
+                ? "Database schemas are generated, but compilation failed."
+                : "Unexpected error occurred while generating database schemas.",
         };
       },
       interface: async (next) => {
@@ -72,7 +72,7 @@ export const createAutoBeFacadeController = (props: {
         if (history.type === "assistantMessage")
           return {
             type: "prerequisites-not-satisfied",
-            description: "Prisma schemas are not yet completed.",
+            description: "Database schemas are not yet completed.",
           };
         return {
           type: "success",

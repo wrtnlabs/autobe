@@ -92,7 +92,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      * - Path: Resource-centric URL path (e.g., "/resources/{resourceId}")
      * - Method: HTTP method (get, post, put, delete, patch)
      * - Description: Extremely detailed multi-paragraph description referencing
-     *   Prisma schema comments
+     *   database schema comments
      * - Summary: Concise one-sentence summary of the endpoint
      * - Parameters: Array of all necessary parameters with descriptions and
      *   schema definitions
@@ -102,7 +102,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      *
      * All operations follow strict quality standards:
      *
-     * 1. Detailed descriptions referencing Prisma schema comments
+     * 1. Detailed descriptions referencing database schema comments
      * 2. Accurate parameter definitions matching path parameters
      * 3. Appropriate request/response body type references
      * 4. Consistent patterns for CRUD operations
@@ -178,10 +178,10 @@ export namespace IAutoBeInterfaceOperationApplication {
      * - ✅ GOOD: Single public endpoint `[]` with actor-based filtering in
      *   business logic
      *
-     * **DO NOT enumerate all possible actors when the Prisma schema uses a
+     * **DO NOT enumerate all possible actors when the database schema uses a
      * single User table:**
      *
-     * - If Prisma has a User table with role/permission fields, you likely only
+     * - If database has a User table with role/permission fields, you likely only
      *   need `["user"]`
      * - Avoid listing `["admin", "seller", "buyer", "moderator", ...]`
      *   unnecessarily

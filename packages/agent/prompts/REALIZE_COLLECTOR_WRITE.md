@@ -22,22 +22,22 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Planning reasoning explaining why this collector is needed
 2. **Analyze DTO Type**: Understand the Create DTO structure you need to consume (all DTO type information is available transitively from the DTO type name in the plan)
 3. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
    - All necessary DTO type information is obtained transitively from the DTO type names in the plan - no explicit Interface schema requests needed
    - DO NOT request schemas you already have from previous calls
-4. **🚨 READ PRISMA SCHEMA THOROUGHLY**: This is the most critical step
-   - **READ the entire Prisma schema word by word**
+4. **🚨 READ DATABASE SCHEMA THOROUGHLY**: This is the most critical step
+   - **READ the entire database schema word by word**
    - **MEMORIZE every field name, every relation name, every type**
-   - **The Prisma schema is THE ONLY SOURCE OF TRUTH**
+   - **The database schema is THE ONLY SOURCE OF TRUTH**
    - **NEVER fabricate, imagine, or invent fields/relations that don't exist in the schema**
    - **Verify relation field names** (NOT foreign key column names like `customer_id`, but relation names like `customer`)
 5. **Review Neighbor Collectors**: Check which other collectors are being generated - you can reuse them for nested creates
 6. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering context
 
 **REQUIRED ACTIONS**:
-- Use the provided **Prisma schema name** from the plan (don't discover it yourself)
+- Use the provided **database schema name** from the plan (don't discover it yourself)
 - Analyze the DTO type name provided (e.g., "IShoppingSaleUnitStock.ICreate") - the system provides complete type information transitively
-- Request Prisma schemas to understand database structure and relationships
+- Request database schemas to understand database structure and relationships
 - Review neighbor collectors for potential reuse in nested creates
 - Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
 - Generate collect() function that transforms DTO to Prisma CreateInput
@@ -70,7 +70,7 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 **For preliminary requests**:
 - Reflect on what critical information is MISSING that blocks your progress
 - Think through WHY you need it and HOW it will help
-- Example: `thinking: "Need Prisma schema to understand table structure and relationships"`
+- Example: `thinking: "Need database schema to understand table structure and relationships"`
 
 **For completion**:
 - Reflect on your implementation approach and key decisions
@@ -120,7 +120,7 @@ Your narrative planning should accomplish these objectives:
 
 **CRITICAL: The `mappings` field is MANDATORY and will be validated**
 
-After your narrative plan, you MUST create a complete field-by-field mapping table covering EVERY member from the Prisma schema. This structured approach:
+After your narrative plan, you MUST create a complete field-by-field mapping table covering EVERY member from the database schema. This structured approach:
 
 - **Prevents omissions**: You can't skip fields - validator checks completeness
 - **Forces explicit decisions**: For each field, you must decide `kind`, `nullable`, and `how`
@@ -177,7 +177,7 @@ mappings: [
 
 **Why mappings are critical:**
 
-1. **Early Error Detection**: System validates your mappings against actual Prisma schema
+1. **Early Error Detection**: System validates your mappings against actual database schema
 2. **Complete Coverage**: Ensures you don't miss any fields
 3. **Correct Classification**: Forces you to identify scalar vs relation, nullable vs required
 4. **Clear Documentation**: Your handling strategy for each field is explicit
@@ -186,7 +186,7 @@ mappings: [
 - Every Prisma field is in your mappings (no omissions)
 - No fabricated fields (all members exist in schema)
 - Correct kind classification (scalar vs belongsTo vs hasMany)
-- Correct nullability (matches Prisma schema)
+- Correct nullability (matches database schema)
 
 Focus on creating complete and accurate mappings - this is your most important planning deliverable.
 

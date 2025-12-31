@@ -449,7 +449,7 @@ actors: [
   { name: "enterpriseEmployee", kind: "member" }
 ]
 
-// In Prisma schema (generated later):
+// In database schema (generated later):
 model enterprise_employees {
   id       String @id
   email    String @unique

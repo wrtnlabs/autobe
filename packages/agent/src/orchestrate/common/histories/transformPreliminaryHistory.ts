@@ -225,7 +225,7 @@ namespace PreliminaryTransformer {
             controller: props.source,
             kind,
             arguments: {
-              thinking: "prisma schemas for DB schema information",
+              thinking: "database schemas for DB schema information",
               request: {
                 type: props.previous
                   ? "getPreviousDatabaseSchemas"
@@ -427,8 +427,8 @@ namespace PreliminaryTransformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table | References | Neighbor Collectors
-        --------------|--------------|------------|--------------------
+        DTO Type Name | Database Table | References | Neighbor Collectors
+        --------------|----------------|------------|--------------------
         ${newbie
           .map((c) =>
             [
@@ -496,8 +496,8 @@ namespace PreliminaryTransformer {
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER,
       available: StringUtil.trim`
-        DTO Type Name | Prisma Table | Neighbor Transformers 
-        --------------|--------------|----------------------
+        DTO Type Name | Database Table | Neighbor Transformers
+        --------------|----------------|----------------------
         ${newbie
           .map((t) =>
             [

@@ -160,7 +160,7 @@ namespace PreliminaryApplicationValidator {
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
     const description = StringUtil.trim`
-      Here are the list of prisma schema models you can use.
+      Here are the list of database schema models you can use.
 
       Please select from the below. Never assume non-existing models.
 

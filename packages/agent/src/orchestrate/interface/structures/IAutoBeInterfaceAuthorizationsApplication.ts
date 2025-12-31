@@ -90,7 +90,7 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
      * - Path: Resource-centric URL path (e.g., "/resources/{resourceId}")
      * - Method: HTTP method (get, post, put, delete, patch)
      * - Description: Extremely detailed multi-paragraph description referencing
-     *   Prisma schema comments
+     *   database schema comments
      * - Summary: Concise one-sentence summary of the endpoint
      * - Parameters: Array of all necessary parameters with descriptions and
      *   schema definitions
@@ -100,7 +100,7 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
      *
      * All operations must follow strict quality standards:
      *
-     * 1. Detailed descriptions referencing Prisma schema comments
+     * 1. Detailed descriptions referencing database schema comments
      * 2. Accurate parameter definitions matching path parameters
      * 3. Appropriate request/response body type references
      * 4. Consistent patterns for CRUD operations

@@ -81,7 +81,7 @@ export const transformRealizeCollectorWriteHistory = async (
           )}
           \`\`\`
 
-          At last, here is the list of Prisma schema members you have to consider:
+          At last, here is the list of database schema members you have to consider:
 
           Member | Kind | Nullable
           -------|------|----------
@@ -99,15 +99,15 @@ export const transformRealizeCollectorWriteHistory = async (
 
       **Plan Information from REALIZE_COLLECTOR_PLAN phase**:
 
-      - **Prisma Schema Name**: ${props.plan.prismaSchemaName}
+      - **Database Schema Name**: ${props.plan.prismaSchemaName}
       - **Planning Reasoning**: ${props.plan.thinking}
 
       **Your task**:
 
-      1. Use the provided Prisma schema name: \`${props.plan.prismaSchemaName}\`
-      2. Request Prisma schemas to understand the table structure
+      1. Use the provided database schema name: \`${props.plan.prismaSchemaName}\`
+      2. Request database schemas to understand the table structure
       3. Request Interface schemas to understand the DTO structure
-      4. Analyze field mappings between DTO properties and Prisma columns
+      4. Analyze field mappings between DTO properties and database columns
       5. Generate complete TypeScript code that includes:
          - A namespace with collect() function
          - Proper Prisma CreateInput types
@@ -115,7 +115,7 @@ export const transformRealizeCollectorWriteHistory = async (
          - Handling of nested relationships if needed
          - UUID generation for new records
 
-      Follow all coding standards and type safety rules. The Prisma table name is already determined - use it directly.
+      Follow all coding standards and type safety rules. The database table name is already determined - use it directly.
     `,
   };
 };
@@ -127,9 +127,9 @@ function getDeclaration(props: {
   application: AutoBeDatabase.IApplication;
 }): string {
   return StringUtil.trim`
-    Here is the declaration of the collector function for 
+    Here is the declaration of the collector function for
     the DTO type ${props.plan.dtoTypeName} and its corresponding
-    Prisma schema ${props.plan.prismaSchemaName}.
+    database schema ${props.plan.prismaSchemaName}.
 
     ${
       props.plan.references.length === 0

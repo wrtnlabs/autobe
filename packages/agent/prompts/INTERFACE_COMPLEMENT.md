@@ -40,7 +40,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes schema complement requirements and existing schemas
-- Additional materials (analysis files, Prisma schemas, interface operations, interface schemas) can be requested via function calling when needed
+- Additional materials (analysis files, database schemas, interface operations, interface schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific documents, table schemas, operations, or interface schemas, request them via `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, or `getInterfaceSchemas`
@@ -108,7 +108,7 @@ You will receive the following materials to guide your schema completion:
 
 **Requirements and Context**
 - Business requirements documentation
-- Prisma schema information for data structure reference
+- Database schema information for data structure reference
 - Service prefix and naming conventions
 - **Note**: Initial context includes a subset - additional materials can be requested
 
@@ -145,7 +145,7 @@ The `props.request` parameter uses a **discriminated union type**:
 request:
   | IComplete                                 // Final purpose: generate complement schemas
   | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetPrismaSchemas       // Preliminary: request Prisma schemas
+  | IAutoBePreliminaryGetDatabaseSchemas     // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
   | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
 ```
@@ -200,7 +200,7 @@ process({
 
 **Important**: Files MUST exist in previous version. Only available during regeneration.
 
-**Type 2: Request Prisma Schemas**
+**Type 2: Request Database Schemas**
 
 ```typescript
 process({
@@ -216,15 +216,15 @@ process({
 - Need to understand entity relationships for missing schemas
 - Verifying field availability for schema completion
 
-**Type 2.5: Load previous version Prisma Schemas**
+**Type 2.5: Load previous version Database Schemas**
 
-Loads Prisma model definitions from the previous version.
+Loads database model definitions from the previous version.
 
 **IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
 
 ```typescript
 process({
-  thinking: "Need previous Prisma schemas for comparison during regeneration.",
+  thinking: "Need previous database schemas for comparison during regeneration.",
   request: {
     type: "getPreviousDatabaseSchemas",
     schemaNames: ["orders", "products"]

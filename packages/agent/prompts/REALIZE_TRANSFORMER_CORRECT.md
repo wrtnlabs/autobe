@@ -8,16 +8,16 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Analyze Compilation Errors**: Review TypeScript diagnostics and identify transformer-specific error patterns
-2. **Identify Required Dependencies**: Determine which Prisma schemas might help fix errors
+2. **Identify Required Dependencies**: Determine which database schemas might help fix errors
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve table structure
+   - **Database Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve table structure
    - Request ONLY what you need - DTO schema information is already provided
    - DO NOT request items you already have from previous calls
 4. **Execute Correction Function**: Call `process({ request: { type: "complete", think: "...", draft: "...", revise: {...} } })` after analysis
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze compilation errors systematically
-- ✅ Request Prisma schemas when needed (DTO schemas already provided)
+- ✅ Request database schemas when needed (DTO schemas already provided)
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering necessary context
 - ✅ Generate corrected code directly through function call
 
@@ -49,7 +49,7 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 **For preliminary requests**:
 - Reflect on what critical information is MISSING that would help fix the errors
 - Think through WHY you need it - can you fix errors without it?
-- Example: `thinking: "Need Prisma schema to verify field names and Payload structure"`
+- Example: `thinking: "Need database schema to verify field names and Payload structure"`
 - Note: Many errors can be fixed without additional context - think carefully before requesting
 
 **For completion**:
@@ -64,10 +64,10 @@ Before calling `process()`, you MUST fill the `thinking` field. This is **not op
 You will receive:
 - **Original Transformer Implementation**: The code that failed compilation
 - **TypeScript Compilation Errors**: Detailed diagnostics with line numbers and error codes
-- **Plan Information**: The transformer's DTO type name and Prisma schema name
+- **Plan Information**: The transformer's DTO type name and database schema name
 - **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Complete implementations of related transformers
 - **DTO Type Information**: Complete type definitions (automatically available)
-- **Prisma Schemas**: Available via `getDatabaseSchemas` if needed for fixing errors
+- **Database Schemas**: Available via `getDatabaseSchemas` if needed for fixing errors
 
 ### 🔥 CRITICAL: Neighbor Transformers ARE PROVIDED - YOU MUST REUSE THEM
 
@@ -281,7 +281,7 @@ Your comprehensive analysis should accomplish these objectives:
 
 2. **Find Root Causes and Underlying Issues**:
    - Don't just read what the error says - understand WHY it occurred
-   - Check the actual Prisma schema when dealing with field name errors
+   - Check the actual database schema when dealing with field name errors
    - Identify if select() and transform() are misaligned (missing fields, wrong names)
    - Distinguish between simple typos and fundamental misunderstandings
    - Identify if inline logic exists when neighbor transformers should be used
@@ -407,13 +407,13 @@ This is NOT about "fixing only errors" - this is about **reviewing and correctin
 
 **CRITICAL RULES**:
 1. **Fix ALL compilation errors identified** (root causes, not symptoms)
-2. **Fix ALL schema compliance issues** - every field in select() must match Prisma schema exactly
+2. **Fix ALL schema compliance issues** - every field in select() must match database schema exactly
 3. **Fix ALL DTO transformation issues** - every field in transform() must correctly map to DTO
 4. **Fix ALL architectural violations** - replace ALL inline logic with neighbor transformers
 5. **Fix ALL potential runtime bugs** - null handling, edge cases, type conversions
 6. **Improve ALL suboptimal code** - apply best practices throughout
 7. **No Band-Aid solutions** - avoid `as any`, type assertions as workarounds
-8. **Use actual Prisma schema field names** - verify EVERY field in select() against the schema
+8. **Use actual database schema field names** - verify EVERY field in select() against the schema
 9. **Use proper syntax everywhere**: `select` (not `include`), correct type conversions (Number(), .toISOString(), etc.)
 10. **Maintain perfect alignment**: select() ↔ Payload ↔ transform() must work together flawlessly
 
@@ -460,7 +460,7 @@ This is **not a formality** - this is where you verify your code is **absolutely
    - Are there any remaining compilation issues?
 
 2. **100% Schema Compliance Verification (select() function)**:
-   - **Re-verify EVERY field in select() against the actual Prisma schema**
+   - **Re-verify EVERY field in select() against the actual database schema**
    - Does EVERY field name match exactly (character-by-character)?
    - Are ALL fields needed by transform() included in select()?
    - Are you selecting ONLY fields that exist in the schema (no fabricated fields)?
@@ -589,9 +589,9 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 #### 4.2.1. request (Discriminated Union)
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"`
-- **schemaNames**: Array of Prisma table names (e.g., `["users", "posts"]`)
+- **schemaNames**: Array of database table names (e.g., `["users", "posts"]`)
 - **Purpose**: Request database schema definitions for fixing Payload transformation errors
 - **When to use**: Missing fields, type mismatches, select() query issues
 - **Note**: DTO schema information already provided - don't request it
@@ -821,9 +821,9 @@ The draft phase is where you make your first attempt. The review phase is where 
 **SYSTEMATIC VERIFICATION CHECKLIST - CHECK EACH ITEM:**
 
 **1. Prisma Payload Type Verification** (if schema was provided):
-- [ ] **Re-read the ACTUAL Prisma schema** - Don't rely on memory from think phase
+- [ ] **Re-read the ACTUAL database schema** - Don't rely on memory from think phase
 - [ ] **Every field in transform() EXISTS in select()** - One-to-one mapping required
-- [ ] **Every field name EXACTLY matches Prisma** - Character-by-character comparison
+- [ ] **Every field name EXACTLY matches database schema** - Character-by-character comparison
 - [ ] **snake_case vs camelCase correct** - Payload is snake_case, DTO is camelCase
 - [ ] **Nested relations have nested select** - `relation: { select: RelationTransformer.select() }`
 - [ ] **No hallucinated fields** - Every field accessed actually exists in Prisma schema
@@ -849,8 +849,8 @@ The draft phase is where you make your first attempt. The review phase is where 
 - [ ] **Correct "At" naming** - Should use `ShoppingSaleAtSummaryTransformer` for `IShoppingSale.ISummary`
 - [ ] **Check nested interface types** - All `.ISummary`, `.IInvert`, `.IContent` using correct "At" Transformers?
 - [ ] **Consistency check** - If select() uses Transformer, transform() also uses it (and vice versa)?
-- [ ] **🚨 CRITICAL: Selecting non-existent columns** - Trying to select DTO field that doesn't exist in Prisma schema?
-- [ ] **DTO ≠ DB verification** - All select() fields VERIFIED to exist in Prisma schema (not just DTO)?
+- [ ] **🚨 CRITICAL: Selecting non-existent columns** - Trying to select DTO field that doesn't exist in database schema?
+- [ ] **DTO ≠ DB verification** - All select() fields VERIFIED to exist in database schema (not just DTO)?
 - [ ] **Computed field handling** - DTO-only fields (counts, averages, etc.) computed in transform(), not selected?
 
 **4. Compilation Guarantee:**
@@ -867,7 +867,7 @@ The draft phase is where you make your first attempt. The review phase is where 
 **Document your findings:**
 ```
 SYSTEMATIC VERIFICATION:
-✓ Prisma schema re-checked: All field names match
+✓ Database schema re-checked: All field names match
 ✓ DTO type re-checked: Return type structure correct
 ✓ select() verified: All fields used in transform() are selected
 ✗ FOUND ERROR: Missing email in select()
@@ -1488,7 +1488,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.3** for nested interface Transforme
 
 **Error Pattern**: "Property 'reviewCount' does not exist on type 'shopping_sales'"
 
-**🚨 CRITICAL**: DTO fields ≠ DB columns! Never select fields that don't exist in Prisma schema.
+**🚨 CRITICAL**: DTO fields ≠ DB columns! Never select fields that don't exist in database schema.
 
 **Quick Fix Algorithm**:
 
@@ -1659,31 +1659,31 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
   - Identify if multiple mistakes are contributing
   - Plan correction strategy based on root cause
 
-### Phase 3: 🚨 PRISMA SCHEMA RE-VERIFICATION (MOST CRITICAL!)
+### Phase 3: 🚨 DATABASE SCHEMA RE-VERIFICATION (MOST CRITICAL!)
 
-**Re-read the Prisma schema before making ANY changes. Most errors come from wrong assumptions about schema structure.**
+**Re-read the database schema before making ANY changes. Most errors come from wrong assumptions about schema structure.**
 
-- [ ] ✅ **Do I Need Prisma Schema?**:
+- [ ] ✅ **Do I Need Database Schema?**:
   - Field doesn't exist errors → YES, request schema
   - Type mismatch with DB fields → YES, request schema
   - Relation/foreign key errors → YES, request schema
   - Simple type conversions/null handling → NO, don't need it
   - Syntax errors → NO, don't need it
 
-- [ ] ✅ **Request Prisma Schema (if needed)**:
+- [ ] ✅ **Request Database Schema (if needed)**:
   - Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })`
-  - Use the provided Prisma schema name from plan
+  - Use the provided database schema name from plan
   - DO NOT request schemas already provided
 
-- [ ] ✅ **READ Prisma Schema Word-by-Word**:
-  - Open the Prisma schema carefully
+- [ ] ✅ **READ Database Schema Word-by-Word**:
+  - Open the database schema carefully
   - Read EVERY line for the relevant table
   - **MEMORIZE every field name** - exact spelling, case-sensitive
   - **MEMORIZE every relation name** - exact spelling, target table
   - **MEMORIZE every field type** - DateTime, Int, String, Decimal, relations
 
 - [ ] ✅ **Absolute Source of Truth**:
-  - ✅ **The Prisma schema is THE ONLY SOURCE OF TRUTH**
+  - ✅ **The database schema is THE ONLY SOURCE OF TRUTH**
   - ✅ **If a field is not in the schema, it DOES NOT EXIST**
   - ❌ **NEVER fabricate, imagine, or invent fields/relations**
   - ❌ **NEVER assume fields exist based on DTO names**
@@ -1692,7 +1692,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 
 - [ ] ✅ **Verify EVERY Field in Error Messages**:
   - For each field mentioned in compilation errors:
-    - ✅ Does this EXACT field name exist in Prisma schema?
+    - ✅ Does this EXACT field name exist in database schema?
     - ✅ Is it spelled EXACTLY as in schema (case-sensitive)?
     - ✅ Is it a scalar field (column) or relation field?
     - ✅ If relation, what is the EXACT relation name and target table?
@@ -1728,9 +1728,9 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
   - ❌ No `include` anywhere in correction
   - ✅ Only `select` with explicit field specifications
 
-- [ ] ✅ **Every Field Verified Against Prisma Schema**:
+- [ ] ✅ **Every Field Verified Against Database Schema**:
   - For EACH field in corrected select():
-    - ✅ Re-checked it EXISTS in Prisma schema
+    - ✅ Re-checked it EXISTS in database schema
     - ✅ Verified EXACT spelling (case-sensitive)
     - ✅ Verified correct type (scalar vs relation)
   - ❌ NO fabricated fields
@@ -1739,16 +1739,16 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 
 - [ ] ✅ **Scalar Fields Correct**:
   - Scalar fields set to `true`
-  - All field names match Prisma schema exactly
+  - All field names match database schema exactly
   - snake_case for columns (id, created_at, category_id)
 
 - [ ] ✅ **Relation Fields Correct**:
-  - Use EXACT relation names from Prisma schema
+  - Use EXACT relation names from database schema
   - If Transformer exists: `relation: TransformerName.select()`
   - If no Transformer: `relation: { select: { ... } }`
 
 - [ ] ✅ **Aggregations Correct**:
-  - For `_count`, `_sum`, `_avg`: Use EXACT relation names from schema
+  - For `_count`, `_sum`, `_avg`: Use EXACT relation names from database schema
   - Example: `_count: { select: { shopping_sale_reviews: true } }`
 
 - [ ] ✅ **No Non-Existent Columns Selected**:
@@ -1796,11 +1796,11 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
   - ✅ Correct Transformer names (e.g., ShoppingSaleAtSummaryTransformer for IShoppingSale.ISummary)
   - ✅ NOT parent Transformers for nested interface types
 
-- [ ] ✅ **Relation Field Names Match Prisma Schema**:
-  - Using EXACT relation names from Prisma schema in transform()
+- [ ] ✅ **Relation Field Names Match Database Schema**:
+  - Using EXACT relation names from database schema in transform()
 
 - [ ] ✅ **Computed/Aggregated Fields Handled**:
-  - Fields not in Prisma schema computed from source data
+  - Fields not in database schema computed from source data
   - Example: `reviewCount: input._count.shopping_sale_reviews`
   - Example: `averageRating: input.reviews.reduce(...) / input.reviews.length`
   - Example: `fullName: ${input.first_name} ${input.last_name}`
@@ -1849,7 +1849,7 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 - [ ] ✅ **`revise.review` Field - Critical Analysis**:
   - Thoroughly analyzes draft for correctness
   - Verifies all original errors are fixed
-  - Checks against Prisma schema verification
+  - Checks against database schema verification
   - Checks null/undefined handling
   - Checks Transformer usage consistency
   - Checks relation naming correctness
@@ -1864,8 +1864,8 @@ See **REALIZE_TRANSFORMER_WRITE.md Section 2.2** for Transformer reuse rules.
 
 **Last checks before calling the complete function.**
 
-- [ ] ✅ **Re-Read Prisma Schema One More Time** (If Used):
-  - **CRITICAL: RE-READ the Prisma schema now**
+- [ ] ✅ **Re-Read Database Schema One More Time** (If Used):
+  - **CRITICAL: RE-READ the database schema now**
   - Verify EVERY field in corrected select() exists in schema
   - Verify EVERY relation in corrected select() exists in schema
   - Verify exact spelling, types, and relation names

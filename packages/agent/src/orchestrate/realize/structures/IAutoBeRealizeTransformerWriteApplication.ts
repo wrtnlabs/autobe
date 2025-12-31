@@ -14,7 +14,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * specifications for efficient data loading.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (Prisma schemas only) → implementation planning → code generation →
+ * gathering (database schemas only) → implementation planning → code generation →
  * review and refinement. All necessary DTO type information is obtained
  * transitively from the DTO type names provided in the plan
  * (AutoBeRealizeTransformerPlan).
@@ -47,7 +47,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * For preliminary requests:
      *
-     * - What Prisma schemas are missing that you need?
+     * - What database schemas are missing that you need?
      * - Why do you need them for transformer generation?
      * - Be brief - state the gap, don't list everything you have.
      *
@@ -59,7 +59,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - Summarize - don't enumerate every field mapping.
      *
      * Note: All necessary DTO type information is available transitively from
-     * the DTO type names in the plan. You only need to request Prisma schemas.
+     * the DTO type names in the plan. You only need to request database schemas.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -71,7 +71,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * Determines which action to perform:
      *
-     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
      * - "complete": Generate final transformer implementation
      *
      * All necessary DTO type information is obtained transitively from the DTO
@@ -97,7 +97,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    * Follows plan → draft → revise pattern to ensure type safety and correct
    * field mappings.
    *
-   * Note: The Prisma schema name is provided as input from the planning phase,
+   * Note: The database schema name is provided as input from the planning phase,
    * so it doesn't need to be returned in the response.
    */
   export interface IComplete {
@@ -109,7 +109,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * MUST contain thorough analysis with these four mandatory sections:
      *
-     * 1. Prisma Schema Field Inventory - List ALL fields with exact names from
+     * 1. Database Schema Field Inventory - List ALL fields with exact names from
      *    schema
      * 2. DTO Property Inventory - List ALL properties with types
      * 3. Field-by-Field Mapping Strategy - Explicit table for BOTH select() and
@@ -123,16 +123,16 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     plan: string;
 
     /**
-     * Prisma field-by-field selection mapping for the select() function.
+     * Database field-by-field selection mapping for the select() function.
      *
-     * Documents which Prisma fields/relations must be selected from the
+     * Documents which database fields/relations must be selected from the
      * database to enable the transform() function. This ensures no required
      * data is missing from the query.
      *
-     * MUST include EVERY Prisma field needed by transform() - no exceptions.
+     * MUST include EVERY database field needed by transform() - no exceptions.
      * Each mapping specifies:
      *
-     * - `member`: Exact Prisma field/relation name (snake_case)
+     * - `member`: Exact database field/relation name (snake_case)
      * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
      *   relation
      * - `nullable`: Whether the field/relation is nullable (true/false for
@@ -153,7 +153,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * This structured approach:
      *
      * - Prevents missing field selections through systematic coverage
-     * - Forces explicit decision-making for each Prisma field (kind + nullable +
+     * - Forces explicit decision-making for each database field (kind + nullable +
      *   how)
      * - Ensures select() and transform() are perfectly aligned
      * - Documents what data to load from database
@@ -172,7 +172,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *   transformers
      * - **HasMany relations (nullable: null)**: For array transformers
      *
-     * The validator will cross-check this list against the Prisma schema and
+     * The validator will cross-check this list against the database schema and
      * DTO requirements to ensure complete coverage.
      */
     selectMappings: AutoBeRealizeTransformerSelectMapping[];
@@ -181,7 +181,7 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * DTO property-by-property transformation mapping for the transform()
      * function.
      *
-     * Documents how to transform Prisma payload data into each DTO property.
+     * Documents how to transform database payload data into each DTO property.
      * This ensures complete DTO coverage and correct transformation logic.
      *
      * MUST include EVERY property from the DTO type definition - no exceptions.
@@ -207,8 +207,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - **Direct mapping**: Simple field renaming (snake_case → camelCase)
      * - **Type conversion**: Decimal → Number, DateTime → ISO string
      * - **Nullable handling**: DateTime? → string | null
-     * - **Computed properties**: Calculate from multiple Prisma fields
-     * - **Aggregation**: Use _count, _sum, _avg from Prisma
+     * - **Computed properties**: Calculate from multiple database fields
+     * - **Aggregation**: Use _count, _sum, _avg from database
      * - **Nested objects**: Reuse neighbor transformers
      * - **Arrays**: Map with ArrayUtil.asyncMap + neighbor transformer
      *

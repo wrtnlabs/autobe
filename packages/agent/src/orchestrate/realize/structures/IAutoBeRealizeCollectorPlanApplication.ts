@@ -13,7 +13,7 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
  * other collectors are identified upfront.
  *
  * The planning follows a structured RAG workflow: preliminary context gathering
- * (Prisma schemas, DTO schemas, Operations) → eligibility analysis → plan
+ * (database schemas, DTO schemas, Operations) → eligibility analysis → plan
  * generation.
  *
  * **Key Decisions**: Not all DTOs require collectors. The agent must
@@ -44,7 +44,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * For preliminary requests:
      *
-     * - What schemas (Prisma, DTO, Operations) are missing that you need?
+     * - What schemas (database, DTO, Operations) are missing that you need?
      * - Why do you need them for planning?
      * - Be brief - state the gap, don't list everything you have.
      *
@@ -65,7 +65,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * Determines which action to perform:
      *
-     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
      * - "getInterfaceOperations": Retrieve operation specifications
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final collector plan
@@ -84,7 +84,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
    * Request to complete collector planning.
    *
    * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * collectable and non-collectable DTOs. Collectable DTOs have a Prisma schema
+   * collectable and non-collectable DTOs. Collectable DTOs have a database schema
    * name, while non-collectable DTOs have null.
    */
   export interface IComplete {
@@ -98,7 +98,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * - DTO type name analyzed
      * - Chain of thought explaining the analysis
-     * - Prisma schema name if collectable, or null if not
+     * - Database schema name if collectable, or null if not
      *
      * Include ALL DTOs from the operation request, both collectable and
      * non-collectable. Use prismaSchemaName to distinguish:
@@ -129,7 +129,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * Explains the agent's reasoning:
      *
-     * - For collectable DTOs: Why a collector is needed, which Prisma table it
+     * - For collectable DTOs: Why a collector is needed, which database table it
      *   maps to
      * - For non-collectable DTOs: Why no collector is needed (read-only DTO,
      *   computed type, etc.)
@@ -143,7 +143,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     thinking: string;
 
     /**
-     * Prisma schema name if collectable, null if not.
+     * Database schema name if collectable, null if not.
      *
      * - **Non-null**: The Prisma table name this DTO maps to. A collector will be
      *   generated for this DTO.

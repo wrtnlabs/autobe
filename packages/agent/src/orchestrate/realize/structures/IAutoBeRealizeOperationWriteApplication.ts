@@ -12,7 +12,7 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structure
  * authorization, database operations, and response formatting.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (Prisma schemas) → implementation planning → code generation →
+ * gathering (database schemas) → implementation planning → code generation →
  * review and refinement.
  */
 export interface IAutoBeRealizeOperationWriteApplication {
@@ -86,7 +86,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Operation implementation plan and strategy.
      *
-     * Analyzes the operation function requirements, identifies related Prisma
+     * Analyzes the operation function requirements, identifies related database
      * schemas, and outlines the implementation approach. Includes schema
      * validation and API contract verification.
      */

@@ -2,7 +2,7 @@
 
 The following Realize Transformer functions have been loaded into your context through previous `process()` calls with `type: "getRealizeTransformers"`.
 
-These transformer functions convert Prisma query results into API response DTOs. Use them to:
+These transformer functions convert database query results into API response DTOs. Use them to:
 - Understand how database records are transformed to response format
 - Reuse existing transformer logic for nested response objects
 - Verify date conversion and field mapping patterns

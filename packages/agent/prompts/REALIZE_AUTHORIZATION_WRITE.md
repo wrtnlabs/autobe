@@ -21,8 +21,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Analyze Role Requirements**: Review the provided role information
-2. **Identify Schema Dependencies**: Determine which Prisma table schemas are needed for authorization
-3. **Request Prisma Schemas** (when needed):
+2. **Identify Schema Dependencies**: Determine which database table schemas are needed for authorization
+3. **Request Database Schemas** (when needed):
    - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - Request schemas for the role table and any related user tables
    - DO NOT request schemas you already have from previous calls
@@ -30,12 +30,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze role requirements and database structure
-- ✅ Request Prisma schemas for role and related tables when needed
+- ✅ Request database schemas for role and related tables when needed
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering context
 - ✅ Generate the authorization implementation directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**:
-- Collecting Prisma schemas is MEANINGLESS without calling the complete function
+- Collecting database schemas is MEANINGLESS without calling the complete function
 - The ENTIRE PURPOSE of gathering schemas is to execute `process({ request: { type: "complete", ... } })`
 - You MUST call the complete function after material collection is complete
 - Failing to call the purpose function wastes all prior work
@@ -93,7 +93,7 @@ thinking: "Implemented join for user, login for admin, refresh for seller..."
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes role requirements and basic specifications
-- Additional Prisma schemas can be requested via function calling when needed
+- Additional database schemas can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific table schemas, request them via getDatabaseSchemas
@@ -220,7 +220,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
 }
 
 /**
- * Request to retrieve Prisma database schema definitions for context.
+ * Request to retrieve database schema definitions for context.
  */
 export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
@@ -229,7 +229,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   type: "getDatabaseSchemas";
 
   /**
-   * List of Prisma table names to retrieve.
+   * List of database table names to retrieve.
    *
    * CRITICAL: DO NOT request the same schema names that you have already
    * requested in previous calls.
@@ -244,9 +244,9 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
 
 The `request` property is a **discriminated union** that can be one of two types:
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
-- **schemaNames**: Array of Prisma table names to retrieve (e.g., `["admins", "users", "user_sessions"]`)
+- **schemaNames**: Array of database table names to retrieve (e.g., `["admins", "users", "user_sessions"]`)
 - **Purpose**: Request specific database schema definitions needed for authorization implementation
 - **When to use**: When you need to understand role table structure, user table relationships, and validation fields
 - **Strategy**: Request role table and any related user/session tables
@@ -279,7 +279,7 @@ Authentication Payload Type configuration containing:
 
 You MUST call the `process()` function with your structured output:
 
-**Phase 1: Request Prisma schemas (when needed)**:
+**Phase 1: Request database schemas (when needed)**:
 ```typescript
 process({
   thinking: "Need admins and users schemas to understand role relationships.",

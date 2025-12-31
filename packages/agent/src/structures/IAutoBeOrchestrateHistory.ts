@@ -32,7 +32,7 @@ export interface IAutoBeOrchestrateHistory {
 
   /**
    * Final user command message triggering the AI operation (e.g., "Write
-   * requirement analysis report.", "Make prisma schema file please").
+   * requirement analysis report.", "Make database schema file please").
    */
   userMessage: string;
 }

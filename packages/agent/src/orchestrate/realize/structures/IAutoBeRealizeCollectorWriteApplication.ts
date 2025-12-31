@@ -11,7 +11,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * connect/create syntax.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (Prisma schemas only) → implementation planning → code generation →
+ * gathering (database schemas only) → implementation planning → code generation →
  * review and refinement. All necessary DTO type information is obtained
  * transitively from the DTO type names provided in the plan
  * (AutoBeRealizeCollectorPlan).
@@ -40,7 +40,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * For preliminary requests:
      *
-     * - What Prisma schemas are missing that you need?
+     * - What database schemas are missing that you need?
      * - Why do you need them for collector generation?
      * - Be brief - state the gap, don't list everything you have.
      *
@@ -52,7 +52,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * - Summarize - don't enumerate every field mapping.
      *
      * Note: All necessary DTO type information is available transitively from
-     * the DTO type names in the plan. You only need to request Prisma schemas.
+     * the DTO type names in the plan. You only need to request database schemas.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -64,7 +64,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * Determines which action to perform:
      *
-     * - "getDatabaseSchemas": Retrieve Prisma table schemas for DB structure
+     * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
      * - "complete": Generate final collector implementation
      *
      * All necessary DTO type information is obtained transitively from the DTO
@@ -101,7 +101,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * MUST contain thorough analysis with these four mandatory sections:
      *
-     * 1. Prisma Schema Field Inventory - List ALL fields with exact names from
+     * 1. Database Schema Field Inventory - List ALL fields with exact names from
      *    schema
      * 2. DTO Property Inventory - List ALL properties with types
      * 3. Field-by-Field Mapping Strategy - Explicit mapping table for every field
@@ -113,12 +113,12 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     plan: string;
 
     /**
-     * Field-by-field mapping table for complete Prisma coverage.
+     * Field-by-field mapping table for complete database coverage.
      *
-     * MUST include EVERY field and relation from the Prisma schema - no
+     * MUST include EVERY field and relation from the database schema - no
      * exceptions. Each mapping specifies:
      *
-     * - `member`: Exact field/relation name from Prisma schema
+     * - `member`: Exact field/relation name from database schema
      * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
      *   relation
      * - `nullable`: Whether the field/relation is nullable (true/false for
@@ -146,7 +146,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * - Enables validation before code generation
      * - Creates clear documentation of field handling strategy
      *
-     * The validator will cross-check this list against the actual Prisma schema
+     * The validator will cross-check this list against the actual database schema
      * and reject incomplete mappings.
      */
     mappings: AutoBeRealizeCollectorMapping[];

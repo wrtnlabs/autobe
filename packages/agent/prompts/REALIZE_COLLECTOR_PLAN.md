@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - **If incompatible** (read-only DTO, computed type): Exclude from plan
 4. **Request Context** (RAG workflow):
    - Use `process({ request: { type: "getInterfaceOperations", operationIds: [...] } })` to retrieve operation specs
-   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need ALL THREE to understand mappings
    - DO NOT request schemas you already have from previous calls
@@ -31,9 +31,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **REQUIRED ACTIONS**:
 - Analyze operations to discover which Create DTOs are used
-- Request Prisma schemas to discover database table structures
+- Request database schemas to discover database table structures
 - Request Interface schemas to understand exact DTO shapes
-- Identify which Create DTOs map to Prisma tables (collectable, set prismaSchemaName)
+- Identify which Create DTOs map to database tables (collectable, set prismaSchemaName)
 - Identify which DTOs do NOT need collectors (read-only, set prismaSchemaName = null)
 - Execute `process({ request: { type: "complete", plans: [...] } })` immediately after gathering context
 - Generate a complete plan listing ALL DTOs with their planning decisions
@@ -136,7 +136,7 @@ thinking: "Plan IShoppingSale.ICreate, plan IShoppingCategory.ICreate, plan ISho
 A DTO is **collectable (prismaSchemaName = actual table name)** if it meets ALL of these conditions:
 - ✅ **Create DTO**: Used for API request bodies (e.g., `IShoppingSale.ICreate`, `IShoppingCategory.ICreate`)
 - ✅ **DB-backed**: Data is inserted into Prisma database tables
-- ✅ **Direct mapping**: The Create DTO structure maps to one primary Prisma table
+- ✅ **Direct mapping**: The Create DTO structure maps to one primary database table
 
 Common **collectable patterns**:
 - `IEntityName.ICreate` (e.g., `IShoppingSale.ICreate`, `IBbsArticle.ICreate`) - Main entity creation DTOs
@@ -178,7 +178,7 @@ export namespace IShoppingSale {
 
 You will receive:
 - **Operation Specifications**: The OpenAPI operations that use Create DTOs (available via `getInterfaceOperations`)
-- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
+- **Database Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 ## The Discovery Process: Finding Collectable DTOs
@@ -220,10 +220,10 @@ You will receive:
    - `IShoppingSale` -> NOT collectable (read-only response DTO)
    - `IShoppingSale.IUpdate` -> NOT collectable (update DTO, not create)
 
-5. **Request Prisma schemas** based on your hypothesis:
+5. **Request database schemas** based on your hypothesis:
    ```typescript
    process({
-     thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
+     thinking: "Need database schemas to verify DTO-to-table mappings.",
      request: {
        type: "getDatabaseSchemas",
        schemaNames: ["shopping_sales", "shopping_sale_tags", "shopping_sale_inventories"]
@@ -232,7 +232,7 @@ You will receive:
    ```
 
 6. **Compare and match**:
-   - Look at Create DTO fields vs Prisma table columns
+   - Look at Create DTO fields vs database table columns
    - Identify field name patterns (camelCase in DTO, snake_case in DB)
    - Check for nested objects that indicate relations
    - Find the table with matching fields and structure
@@ -608,10 +608,10 @@ process({
 });
 ```
 
-**Phase 3: Request Prisma schemas**:
+**Phase 3: Request database schemas**:
 ```typescript
 process({
-  thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
+  thinking: "Need database schemas to verify DTO-to-table mappings.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_categories"]

@@ -8,9 +8,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Analyze Compilation Errors**: Review the TypeScript diagnostics and identify error patterns
-2. **Identify Required Dependencies**: Determine which Prisma schemas, collectors, or transformers might help fix errors
+2. **Identify Required Dependencies**: Determine which database schemas, collectors, or transformers might help fix errors
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - **Database Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - **Collectors**: Use `process({ request: { type: "getRealizeCollectors", dtoTypeNames: [...] } })` to retrieve collector functions for Create DTOs
    - **Transformers**: Use `process({ request: { type: "getRealizeTransformers", dtoTypeNames: [...] } })` to retrieve transformer functions for response DTOs
    - Request ONLY what you actually need to fix the specific errors
@@ -19,7 +19,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze compilation errors systematically
-- ✅ Request preliminary data when needed (Prisma schemas, collectors, transformers)
+- ✅ Request preliminary data when needed (database schemas, collectors, transformers)
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering necessary context
 - ✅ Generate the corrected code directly through the function call
 
@@ -89,7 +89,7 @@ thinking: "Fixed error on line 23, line 45, line 67, line 89..."
 - NOT every compilation error needs additional context
 - ONLY request data when it will actually help fix the specific errors
 
-**When to request Prisma schemas**:
+**When to request database schemas**:
 - Field doesn't exist errors in Prisma queries
 - Type mismatch errors related to DB fields
 - Relationship/foreign key errors
@@ -189,7 +189,7 @@ export namespace IAutoBeRealizeCorrectApplication {
 }
 
 /**
- * Request to retrieve Prisma database schema definitions for context.
+ * Request to retrieve database schema definitions for context.
  */
 export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
@@ -198,7 +198,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   type: "getDatabaseSchemas";
 
   /**
-   * List of Prisma table names to retrieve.
+   * List of database table names to retrieve.
    *
    * CRITICAL: DO NOT request the same schema names that you have already
    * requested in previous calls.
@@ -255,9 +255,9 @@ export interface IAutoBePreliminaryGetRealizeTransformers {
 
 The `request` property is a **discriminated union** that can be one of four types:
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
-- **schemaNames**: Array of Prisma table names to retrieve (e.g., `["users", "posts", "comments"]`)
+- **schemaNames**: Array of database table names to retrieve (e.g., `["users", "posts", "comments"]`)
 - **Purpose**: Request specific database schema definitions needed for fixing schema-related errors
 - **When to use**: When compilation errors indicate missing fields, type mismatches, or relationship issues
 - **Strategy**: Request only schemas related to the specific errors you're fixing
@@ -351,7 +351,7 @@ You must call the `process()` function with your structured output:
 
 **Phase 1: Request preliminary data (when needed to fix errors)**:
 
-Request Prisma schemas:
+Request database schemas:
 ```typescript
 process({
   thinking: "Need users and posts schemas to fix relationship errors.",

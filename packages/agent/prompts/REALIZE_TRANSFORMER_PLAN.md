@@ -22,7 +22,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - **If transformable** (Read DTO + DB-backed + Direct mapping): Include in plan
    - **If incompatible** (request param, pagination result, business logic, computed aggregation): Exclude from plan
 4. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve Prisma table definitions
+   - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
    - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need BOTH to understand DTO-to-Prisma mappings
    - DO NOT request schemas you already have from previous calls
@@ -30,10 +30,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **REQUIRED ACTIONS**:
 - Analyze the operation's response DTO types (e.g., "IShoppingSaleUnitStock")
-- Request Prisma schemas to discover database table structures
+- Request database schemas to discover database table structures
 - Request Interface schemas to understand exact DTO shapes
-- Identify which DTOs map to Prisma tables (transformable, set prismaSchemaName)
-- Identify which DTOs do NOT map to Prisma tables (non-transformable, set prismaSchemaName = null)
+- Identify which DTOs map to database tables (transformable, set prismaSchemaName)
+- Identify which DTOs do NOT map to database tables (non-transformable, set prismaSchemaName = null)
 - Execute `process({ request: { type: "complete", plans: [...] } })` immediately after gathering context
 - Generate a complete plan listing ALL DTOs with their planning decisions
 
@@ -63,7 +63,7 @@ This is a required self-reflection step that helps you:
 **For preliminary requests** (getDatabaseSchemas, getInterfaceSchemas):
 ```typescript
 {
-  thinking: "Need Prisma schemas to check if DTOs map to database tables.",
+  thinking: "Need database schemas to check if DTOs map to database tables.",
   request: { type: "getDatabaseSchemas", schemaNames: ["shopping_sales", "shopping_categories"] }
 }
 ```
@@ -110,7 +110,7 @@ This is a required self-reflection step that helps you:
 **Good examples**:
 ```typescript
 // CORRECT - brief, focused on gap or accomplishment
-thinking: "Missing Prisma schemas to verify DTO-to-table mappings."
+thinking: "Missing database schemas to verify DTO-to-table mappings."
 thinking: "Found 4 transformable DTOs, 2 non-transformable (pagination wrappers). Planning complete."
 thinking: "IPage.IRequest is pagination param, excluded. 3 transformable DTOs identified."
 
@@ -123,7 +123,7 @@ thinking: "Plan IShoppingSale, plan IShoppingCategory, plan IShoppingBrand..."
 
 **Primary Goal**: Analyze operation response DTOs and generate a **complete transformer plan** that lists:
 1. ALL DTOs from the operation response (both transformable and non-transformable)
-2. Which Prisma tables each transformable DTO maps to (or null for non-transformable)
+2. Which database tables each transformable DTO maps to (or null for non-transformable)
 3. Chain of thought explaining each planning decision
 
 **Transformable vs Non-Transformable Criteria**:
@@ -131,7 +131,7 @@ thinking: "Plan IShoppingSale, plan IShoppingCategory, plan IShoppingBrand..."
 A DTO is **transformable (prismaSchemaName = actual table name)** if it meets ALL of these conditions:
 - ✅ **Read DTO**: Used for API responses (not request parameters)
 - ✅ **DB-backed**: Data comes directly from Prisma database queries
-- ✅ **Direct mapping**: The DTO structure maps to one primary Prisma table
+- ✅ **Direct mapping**: The DTO structure maps to one primary database table
 
 Common **transformable patterns**:
 - `IEntityName` (e.g., `IShoppingSale`, `IBbsArticle`) - Main entity DTOs
@@ -171,7 +171,7 @@ interface IShoppingSale {
 
 You will receive:
 - **Operation Specification**: The OpenAPI operation containing response DTO types
-- **Prisma Schemas**: Database table definitions (available via `getDatabaseSchemas`)
+- **Database Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **Interface Schemas**: DTO type definitions (available via `getInterfaceSchemas`)
 
 ## The Discovery Process: Finding Transformable DTOs
@@ -201,10 +201,10 @@ You will receive:
    - `IPage.IRequest` -> NOT transformable (request parameter)
    - `IPageIShoppingSale` -> NOT transformable (pagination wrapper)
 
-4. **Request Prisma schemas** based on your hypothesis:
+4. **Request database schemas** based on your hypothesis:
    ```typescript
    process({
-     thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
+     thinking: "Need database schemas to verify DTO-to-table mappings.",
      request: {
        type: "getDatabaseSchemas",
        schemaNames: ["shopping_sales", "shopping_categories", "shopping_tags"]
@@ -213,7 +213,7 @@ You will receive:
    ```
 
 5. **Compare and match**:
-   - Look at DTO fields vs Prisma table columns
+   - Look at DTO fields vs database table columns
    - Identify field name patterns (camelCase in DTO, snake_case in DB)
    - Check for nested objects that indicate relations
    - Find the table with matching fields and structure
@@ -391,7 +391,7 @@ Example: `"IShoppingSale"`, `"IShoppingCategory"`, `"IShoppingSale.ISummary"`
 **Chain of thought for this DTO's planning decision**
 
 Document:
-- For transformable DTOs: What Prisma table it maps to, why a transformer is needed
+- For transformable DTOs: What database table it maps to, why a transformer is needed
 - For non-transformable DTOs: Why no transformer is needed (request param, pagination, business logic, etc.)
 
 Example (transformable):
@@ -410,15 +410,15 @@ Example (non-transformable):
 
 #### prismaSchemaName
 
-**The Prisma table name if transformable, null if not**
+**The database table name if transformable, null if not**
 
 This field distinguishes transformable from non-transformable DTOs:
-- **Non-null**: The Prisma table name this DTO maps to. A transformer will be generated.
+- **Non-null**: The database table name this DTO maps to. A transformer will be generated.
 - **Null**: This DTO is non-transformable. No transformer will be generated.
 
 You must determine this by:
 1. Analyzing the DTO type name and purpose
-2. Requesting and examining Prisma schemas
+2. Requesting and examining database schemas
 3. Matching DTO fields to table columns
 4. Identifying if there's a direct table mapping
 
@@ -443,10 +443,10 @@ process({
 });
 ```
 
-**Phase 2: Request Prisma schemas**:
+**Phase 2: Request database schemas**:
 ```typescript
 process({
-  thinking: "Need Prisma schemas to verify DTO-to-table mappings.",
+  thinking: "Need database schemas to verify DTO-to-table mappings.",
   request: {
     type: "getDatabaseSchemas",
     schemaNames: ["shopping_sales", "shopping_categories"]
@@ -596,9 +596,9 @@ Note: `shopping_sale_tags` join table is NOT included because there's no corresp
 
 ### Schema Matching
 - [ ] ✅ Interface schemas requested for all candidate DTOs
-- [ ] ✅ Prisma schemas requested for potential table matches
-- [ ] ✅ DTO fields compared with Prisma table columns
-- [ ] ✅ Correct Prisma table identified for each transformable DTO
+- [ ] ✅ Database schemas requested for potential table matches
+- [ ] ✅ DTO fields compared with database table columns
+- [ ] ✅ Correct database table identified for each transformable DTO
 
 ### Plan Completeness
 - [ ] ✅ ALL DTOs from operation included in plan (both transformable and non-transformable)
@@ -810,7 +810,7 @@ plans: [
 1. **Receive operation specification** with response DTO types
 2. **Extract candidate DTOs**: Main return DTO + nested DTOs
 3. **Request Interface schemas** to understand DTO structures
-4. **Request Prisma schemas** to find matching tables
+4. **Request database schemas** to find matching tables
 5. **Analyze each DTO**:
    - ✅ Transformable (Read DTO + DB-backed) → Include in plan with prismaSchemaName
    - ❌ Non-transformable (request param, pagination, business logic) → Include in plan with prismaSchemaName = null

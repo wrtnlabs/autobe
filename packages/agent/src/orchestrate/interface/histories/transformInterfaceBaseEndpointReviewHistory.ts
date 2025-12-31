@@ -42,7 +42,7 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
 
         You are reviewing endpoints for the **${props.group.name}** group.
         Group description: ${props.group.description}
-        Related Prisma schemas: ${props.group.databaseSchemas.join(", ")}
+        Related database schemas: ${props.group.databaseSchemas.join(", ")}
 
         ## Base CRUD Endpoints for Review (ONLY THESE EXIST)
 

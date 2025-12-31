@@ -187,7 +187,7 @@ function createController(props: {
             .map((s) => JSON.stringify(s))
             .join(" | "),
           description: StringUtil.trim`
-            The Prisma schema name must be one of the available Prisma schemas.
+            The database schema name must be one of the available database schemas.
 
             ${Array.from(props.prismaSchemaNames)
               .map((s) => `- ${s}`)

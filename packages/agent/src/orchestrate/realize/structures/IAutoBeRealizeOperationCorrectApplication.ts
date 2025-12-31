@@ -82,7 +82,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      * - Error patterns and root causes
      * - Required fixes and their impact
      * - Whether quick fixes or deep refactoring is needed
-     * - Prisma schema and API contract constraints
+     * - Database schema and API contract constraints
      */
     think: string;
 

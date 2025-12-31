@@ -82,7 +82,7 @@ export const transformRealizeCollectorCorrectHistory = async (
           )}
           \`\`\`
 
-          Also, this is the list of Prisma schema members you have to consider:
+          Also, this is the list of database schema members you have to consider:
 
           Member | Kind | Nullable
           -------|------|----------
@@ -125,7 +125,7 @@ export const transformRealizeCollectorCorrectHistory = async (
       ${props.function.content}
       \`\`\`
 
-      Remember: Collectors transform DTO → Prisma CreateInput. Focus on:
+      Remember: Collectors transform DTO → Database CreateInput. Focus on:
       - Field mapping between ${props.function.plan.dtoTypeName} and Prisma.${props.function.plan.prismaSchemaName}CreateInput
       - UUID generation for primary keys
       - Foreign key connections using { connect: { id: ... } }

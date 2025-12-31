@@ -103,7 +103,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * - Container types (IPage<T> for pagination)
      * - Enumeration types
      *
-     * DO: Include detailed descriptions that reference the original Prisma
+     * DO: Include detailed descriptions that reference the original database
      * schema comments and thoroughly document each property. DO: Use a $ref to
      * a named type in the components.schemas section for every property that
      * references an object.

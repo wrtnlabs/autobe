@@ -304,7 +304,7 @@ export namespace AutoBePreliminaryController {
 
   /** Controller configuration options. */
   export interface IConfig<Kind extends AutoBePreliminaryKind> {
-    /** Prisma schema format: `"ast"` (JSON) or `"text"` (Prisma DSL). */
+    /** Database schema format: `"ast"` (JSON) or `"text"` (Prisma DSL). */
     prisma: Kind extends "databaseSchemas" ? "ast" | "text" : never;
   }
 }

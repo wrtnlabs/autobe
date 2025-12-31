@@ -2,7 +2,7 @@
 
 The following Realize Collector functions have been loaded into your context through previous `process()` calls with `type: "getRealizeCollectors"`.
 
-These collector functions transform API request DTOs into Prisma CreateInput structures. Use them to:
+These collector functions transform API request DTOs into database CreateInput structures. Use them to:
 - Understand how Create DTOs are converted to database input format
 - Reuse existing collector logic for nested create operations
 - Verify UUID generation and foreign key resolution patterns

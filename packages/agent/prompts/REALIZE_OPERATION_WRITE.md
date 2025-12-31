@@ -12,9 +12,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review the provided operation specification and DTO types
-2. **Identify Schema Dependencies**: Determine which Prisma table schemas are needed for implementation
+2. **Identify Schema Dependencies**: Determine which database table schemas are needed for implementation
 3. **Request Preliminary Data** (when needed):
-   - **Prisma Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
+   - **Database Schemas**: Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve specific table schemas
    - **Collectors**: Use `process({ request: { type: "getRealizeCollectors", dtoTypeNames: [...] } })` to retrieve collector functions for Create DTOs
    - **Transformers**: Use `process({ request: { type: "getRealizeTransformers", dtoTypeNames: [...] } })` to retrieve transformer functions for response DTOs
    - Request ONLY what you actually need for this specific operation
@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 4. **Execute Implementation Function**: Call `process({ request: { type: "complete", plan: "...", draft: "...", revise: {...} } })` after gathering all necessary context
 
 **REQUIRED ACTIONS**:
-- ✅ Request preliminary data dynamically when needed (Prisma schemas, collectors, transformers)
+- ✅ Request preliminary data dynamically when needed (database schemas, collectors, transformers)
 - ✅ Use efficient batching for requests of the same type
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering complete context
 - ✅ Generate the provider implementation directly through the function call
@@ -76,11 +76,11 @@ thinking: "Implemented POST /users with validation, PATCH /users with pagination
 ```
 
 **IMPORTANT: Strategic Preliminary Data Retrieval**:
-- NOT every operation needs Prisma schemas, collectors, or transformers
+- NOT every operation needs database schemas, collectors, or transformers
 - Simple operations often don't need additional context beyond the operation spec
 - ONLY request data when you actually need it for implementation
 
-**When to request Prisma schemas**:
+**When to request database schemas**:
 - Creating records (need to know required fields, relationships)
 - Complex updates (need to understand field types, nullability)
 - Direct DB queries without collectors/transformers
@@ -171,7 +171,7 @@ export namespace IAutoBeRealizeWriteApplication {
 }
 
 /**
- * Request to retrieve Prisma database schema definitions for context.
+ * Request to retrieve database schema definitions for context.
  */
 export interface IAutoBePreliminaryGetPrismaSchemas {
   /**
@@ -180,7 +180,7 @@ export interface IAutoBePreliminaryGetPrismaSchemas {
   type: "getDatabaseSchemas";
 
   /**
-   * List of Prisma table names to retrieve.
+   * List of database table names to retrieve.
    *
    * CRITICAL: DO NOT request the same schema names that you have already
    * requested in previous calls.
@@ -237,9 +237,9 @@ export interface IAutoBePreliminaryGetRealizeTransformers {
 
 The `request` property is a **discriminated union** that can be one of four types:
 
-**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve Prisma schema information:
+**1. IAutoBePreliminaryGetPrismaSchemas** - Retrieve database schema information:
 - **type**: `"getDatabaseSchemas"` - Discriminator indicating preliminary data request
-- **schemaNames**: Array of Prisma table names to retrieve (e.g., `["shopping_customers", "shopping_sales", "shopping_reviews"]`)
+- **schemaNames**: Array of database table names to retrieve (e.g., `["shopping_customers", "shopping_sales", "shopping_reviews"]`)
 - **Purpose**: Request specific database schema definitions needed for implementation
 - **When to use**: When you need to understand database table structure, field types, or relationships
 - **Strategy**: Request only schemas you actually need, batch multiple requests efficiently
@@ -270,7 +270,7 @@ The `request` property is a **discriminated union** that can be one of four type
 
 Document in this field:
 - Operation requirements analysis
-- Required Prisma schemas and their relationships
+- Required database schemas and their relationships
 - Implementation strategy overview
 - Data transformation requirements
 - Authentication/authorization approach
@@ -324,7 +324,7 @@ You must call the `process()` function with your structured output:
 
 **Phase 1: Request preliminary data (when needed)**:
 
-Request Prisma schemas:
+Request database schemas:
 ```typescript
 process({
   thinking: "Need shopping_sales, shopping_customers, shopping_categories schemas for sale creation implementation.",
@@ -3208,7 +3208,7 @@ export async function patchBbsArticleComments(props: {
 Before writing code, analyze:
 1. **Operation purpose**: What does this endpoint do?
 2. **Input parameters**: What data is provided?
-3. **Required database schemas**: Which Prisma tables are involved?
+3. **Required database schemas**: Which database tables are involved?
 4. **Authorization requirements**: Who can access this?
 5. **Expected output**: What should be returned?
 
@@ -3216,7 +3216,7 @@ Before writing code, analyze:
 
 **Phase 1: plan**
 - Analyze the operation specification
-- Identify required Prisma schemas
+- Identify required database schemas
 - Outline implementation strategy
 - Note any special considerations
 

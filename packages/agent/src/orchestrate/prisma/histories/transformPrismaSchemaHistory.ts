@@ -73,5 +73,5 @@ export const transformPrismaSchemaHistory = (props: {
       `,
     },
   ],
-  userMessage: "Make prisma schema file please",
+  userMessage: "Make database schema file please",
 });

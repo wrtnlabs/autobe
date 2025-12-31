@@ -60,7 +60,7 @@ export const transformRealizeTransformerWriteHistory = async (
         text: StringUtil.trim`
           Here is the declaration of the transformer function for
           the DTO type ${props.plan.dtoTypeName} and its corresponding
-          Prisma schema ${props.plan.prismaSchemaName}:
+          database schema ${props.plan.prismaSchemaName}:
 
           \`\`\`typescript
           ${AutoBeRealizeTransformerProgrammer.writeTemplate({
@@ -85,7 +85,7 @@ export const transformRealizeTransformerWriteHistory = async (
             )
             .join("\n")}
 
-          Here is the list of Prisma schema members you have to consider
+          Here is the list of database schema members you have to consider
           when writing select() function:
 
           Member | Kind | Nullable
@@ -114,22 +114,22 @@ export const transformRealizeTransformerWriteHistory = async (
 
       **Plan Information from REALIZE_TRANSFORMER_PLAN phase**:
 
-      - **Prisma Schema Name**: ${props.plan.prismaSchemaName}
+      - **Database Schema Name**: ${props.plan.prismaSchemaName}
       - **Planning Reasoning**: ${props.plan.thinking}
 
       **Your task**:
 
-      1. Use the provided Prisma schema name: \`${props.plan.prismaSchemaName}\`
-      2. Request Prisma schemas to understand the table structure
+      1. Use the provided database schema name: \`${props.plan.prismaSchemaName}\`
+      2. Request database schemas to understand the table structure
       3. Request Interface schemas to understand the DTO structure
-      4. Analyze field mappings between Prisma columns and DTO properties
+      4. Analyze field mappings between database columns and DTO properties
       5. Generate complete TypeScript code that includes:
          - A namespace with transform() and select() functions
          - Proper Prisma payload types
          - Type-safe field mappings from DB to DTO
          - Handling of nested relationships if needed
 
-      Follow all coding standards and type safety rules. The Prisma table name is already determined - use it directly.
+      Follow all coding standards and type safety rules. The database table name is already determined - use it directly.
     `,
   };
 };

@@ -101,7 +101,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      *   implemented
      * - **Logic Corrections Made**: Return types match operation intent, HTTP
      *   methods align with semantics, parameters properly utilized
-     * - **Schema Alignment Verified**: All fields exist in Prisma schema, types
+     * - **Schema Alignment Verified**: All fields exist in database schema, types
      *   correctly mapped, relationships properly defined
      * - **Quality Improvements Added**: Enhanced documentation, format
      *   specifications, validation rules, consistent naming patterns
@@ -132,7 +132,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * - **Logic Validation**: Return type consistency (list operations returning
      *   arrays, single retrieval returning single items), HTTP method semantics
      *   alignment, parameter usage verification
-     * - **Schema Compliance**: Field existence in Prisma schema, type accuracy,
+     * - **Schema Compliance**: Field existence in database schema, type accuracy,
      *   relationship validity, required field handling
      * - **Quality Assessment**: Documentation completeness, naming conventions,
      *   error handling patterns, pagination standards

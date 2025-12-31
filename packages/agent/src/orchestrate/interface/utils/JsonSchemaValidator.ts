@@ -263,16 +263,16 @@ export namespace JsonSchemaValidator {
               .join(" | "),
             value: schema["x-autobe-database-schema"],
             description: StringUtil.trim`
-              You've referenced a non-existing Prisma schema name
+              You've referenced a non-existing database schema name
               ${JSON.stringify(schema["x-autobe-database-schema"])} in
-              "x-autobe-database-schema" property. Make sure that the 
-              referenced Prisma schema name exists in your Prisma schema files. 
-              
-              Never assume non-existing models. This is not recommendation, 
+              "x-autobe-database-schema" property. Make sure that the
+              referenced database schema name exists in your database schema files.
+
+              Never assume non-existing models. This is not recommendation,
               but an instruction you must follow. Never repeat the same
               value again. I repeat that, you have to choose one of below:
 
-              Existing Prisma schema names are:
+              Existing database schema names are:
               - ${Array.from(props.databaseSchemas).join("\n- ")}
             `,
           });

@@ -37,5 +37,5 @@ export const transformPrismaCorrectHistory = (props: {
     },
   ],
   userMessage:
-    "Resolve the compilation errors in the provided Prisma schema files.",
+    "Resolve the compilation errors in the provided database schema files.",
 });

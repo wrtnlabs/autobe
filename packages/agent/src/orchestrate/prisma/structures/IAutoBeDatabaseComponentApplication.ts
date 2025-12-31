@@ -124,7 +124,7 @@ export namespace IAutoBeDatabaseComponentApplication {
     /**
      * Array of domain components that group related database tables.
      *
-     * Each component represents a business domain and becomes one Prisma schema
+     * Each component represents a business domain and becomes one database schema
      * file. Common domains include: Actors (users), Sales (products), Orders,
      * Carts, etc.
      *

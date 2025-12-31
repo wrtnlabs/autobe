@@ -38,7 +38,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **IMPORTANT: Input Materials and Function Calling**
 - Initial context includes prerequisite analysis requirements and target operations
-- Additional materials (analysis files, Prisma schemas, interface operations, interface schemas) can be requested via function calling when needed
+- Additional materials (analysis files, database schemas, interface operations, interface schemas) can be requested via function calling when needed
 - Execute function calls immediately when you identify what data you need
 - Do NOT ask for permission - the function calling system is designed for autonomous operation
 - If you need specific documents, operations, or schemas, request them via `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, or `getInterfaceSchemas`

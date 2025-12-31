@@ -71,7 +71,7 @@ export namespace IAutoBeInterfaceBaseEndpointReviewApplication {
    *
    * Use this when you identify a missing endpoint that should exist based on
    * requirements analysis. This is rare for base endpoint review since base
-   * endpoints are generated from Prisma schemas, but may be needed if:
+   * endpoints are generated from database schemas, but may be needed if:
    *
    * - A required CRUD operation was accidentally omitted
    * - A nested endpoint path is needed for subsidiary entities

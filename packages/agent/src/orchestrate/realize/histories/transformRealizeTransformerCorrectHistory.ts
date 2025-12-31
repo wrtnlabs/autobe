@@ -84,7 +84,7 @@ export const transformRealizeTransformerCorrectHistory = async (
           )}
           \`\`\`
 
-          Here is the list of Prisma schema members you have to consider
+          Here is the list of database schema members you have to consider
           when writing select() function:
 
           Member | Kind | Nullable
@@ -135,7 +135,7 @@ export const transformRealizeTransformerCorrectHistory = async (
       ${props.function.content}
       \`\`\`
 
-      Remember: Transformers transform Prisma Payload → DTO. Focus on:
+      Remember: Transformers transform Database Payload → DTO. Focus on:
       - Field mapping between Prisma.${props.function.plan.prismaSchemaName}GetPayload and ${props.function.plan.dtoTypeName}
       - Date to ISO string conversion (.toISOString())
       - Nested object transformation using neighbor transformers

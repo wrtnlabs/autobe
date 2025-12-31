@@ -12,7 +12,7 @@ export interface IAutoBeInterfaceGroupApplication {
    * Process group generation task or preliminary data requests.
    *
    * Generate logical groups for organizing API endpoint creation based on
-   * Prisma schema structure. Processes group generation with incremental
+   * database schema structure. Processes group generation with incremental
    * context loading to ensure comprehensive organization.
    *
    * @param props Request containing either preliminary data request or complete
@@ -69,7 +69,7 @@ export namespace IAutoBeInterfaceGroupApplication {
   /**
    * Request to generate API endpoint groups.
    *
-   * Executes group generation to organize API endpoints based on Prisma schema
+   * Executes group generation to organize API endpoints based on database schema
    * structure.
    */
   export interface IComplete {
@@ -85,10 +85,10 @@ export namespace IAutoBeInterfaceGroupApplication {
     /**
      * Array of API endpoint groups for organizing development.
      *
-     * DO: Derive groups from Prisma schema organization (namespaces, file
+     * DO: Derive groups from database schema organization (namespaces, file
      * structure, table prefixes) rather than arbitrary business domains. DO:
      * Create new groups only when existing schema structure cannot adequately
-     * cover all requirements. DO: Organize groups around existing Prisma schema
+     * cover all requirements. DO: Organize groups around existing database schema
      * structure. DO: Provide complete coverage of all entities and requirements
      * without overlap.
      */
