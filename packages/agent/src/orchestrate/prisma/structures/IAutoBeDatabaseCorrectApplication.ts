@@ -9,7 +9,7 @@ export interface IAutoBeDatabaseCorrectApplication {
   /**
    * Process schema correction task or preliminary data requests.
    *
-   * Fixes validation errors in specific Prisma models while preserving all
+   * Fixes validation errors in specific database models while preserving all
    * business logic and model descriptions. Returns ONLY corrected models.
    *
    * @param props Request containing either preliminary data request or complete
@@ -61,7 +61,7 @@ export namespace IAutoBeDatabaseCorrectApplication {
   }
 
   /**
-   * Request to fix validation errors in Prisma models.
+   * Request to fix validation errors in database models.
    *
    * Executes targeted error correction to resolve specific validation issues in
    * affected models only. Applies minimal changes while preserving original

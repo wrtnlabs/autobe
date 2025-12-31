@@ -5,7 +5,7 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request specific transformer
  * functions generated during the REALIZE_TRANSFORMER_WRITE phase. Transformers
- * convert Prisma query results into API response DTOs.
+ * convert database query results into API response DTOs.
  *
  * @author Samchon
  */

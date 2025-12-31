@@ -19,7 +19,7 @@ export interface IAutoBePreliminaryCollection {
   /** Requirements analysis files from ANALYZE phase. */
   analysisFiles: AutoBeAnalyzeFile[];
 
-  /** Prisma database models from PRISMA phase. */
+  /** Database models from DATABASE phase. */
   databaseSchemas: AutoBeDatabase.IModel[];
 
   /** OpenAPI operations from INTERFACE phase. */
@@ -37,7 +37,7 @@ export interface IAutoBePreliminaryCollection {
   /** Analysis files from previous iteration (for complement). */
   previousAnalysisFiles: AutoBeAnalyzeFile[];
 
-  /** Prisma schemas from previous iteration (for complement). */
+  /** Database schemas from previous iteration (for complement). */
   previousDatabaseSchemas: AutoBeDatabase.IModel[];
 
   /** Interface operations from previous iteration (for complement). */

@@ -5,7 +5,7 @@ import { tags } from "typia";
  *
  * This type is used in the preliminary phase to request specific collector
  * functions generated during the REALIZE_COLLECTOR_WRITE phase. Collectors
- * transform API request DTOs into Prisma CreateInput structures.
+ * transform API request DTOs into database CreateInput structures.
  *
  * @author Samchon
  */

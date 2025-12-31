@@ -9,7 +9,7 @@ export interface IAutoBeDatabaseReviewApplication {
   /**
    * Process schema review task or preliminary data requests.
    *
-   * Reviews generated Prisma models to validate normalization, relationships,
+   * Reviews generated database models to validate normalization, relationships,
    * indexes, and business alignment, producing necessary modifications.
    *
    * @param props Request containing either preliminary data request or complete
@@ -61,7 +61,7 @@ export namespace IAutoBeDatabaseReviewApplication {
   }
 
   /**
-   * Request to review and refine Prisma schema models.
+   * Request to review and refine database schema models.
    *
    * Executes comprehensive schema review to validate design quality and
    * identify necessary improvements for normalization, relationships, and

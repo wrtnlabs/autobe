@@ -9,7 +9,7 @@ export interface IAutoBeDatabaseSchemaApplication {
   /**
    * Process schema generation task or preliminary data requests.
    *
-   * Generates Prisma models for the target component following normalization
+   * Generates database models for the target component following normalization
    * principles and database design best practices.
    *
    * @param props Request containing either preliminary data request or complete
@@ -60,7 +60,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
   }
 
   /**
-   * Request to generate Prisma schema models.
+   * Request to generate database schema models.
    *
    * Executes schema generation to create production-ready database models
    * following normalization principles, relationship patterns, and indexing
@@ -100,7 +100,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
     plan: string;
 
     /**
-     * Production-ready Prisma schema models.
+     * Production-ready database schema models.
      *
      * Complete AST representation of all database tables for the target
      * component. Each model implements the planned structure, relationships,

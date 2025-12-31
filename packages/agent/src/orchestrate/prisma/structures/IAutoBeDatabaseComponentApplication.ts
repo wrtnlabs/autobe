@@ -9,7 +9,7 @@ export interface IAutoBeDatabaseComponentApplication {
   /**
    * Process component extraction task or preliminary data requests.
    *
-   * Organizes database tables into domain-based components for Prisma schema
+   * Organizes database tables into domain-based components for database schema
    * generation. Processes extraction with incremental context loading to ensure
    * comprehensive domain organization.
    *

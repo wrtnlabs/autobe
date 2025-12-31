@@ -1,16 +1,16 @@
 import { tags } from "typia";
 
 /**
- * Request to retrieve Prisma schemas from a previous version.
+ * Request to retrieve database schemas from a previous version.
  *
- * This type is used to load Prisma database schema definitions that were
+ * This type is used to load database schema definitions that were
  * generated in a **previous version** of the AutoBE generation pipeline. This
  * is NOT about re-requesting schemas within the same execution, but rather
  * accessing artifacts from an earlier version.
  *
  * **Use Case:** When regenerating or modifying the database schema based on
  * user change requests, agents need to reference the previously generated
- * Prisma schemas to understand the existing database structure and what needs
+ * database schemas to understand the existing database structure and what needs
  * to be modified.
  *
  * **Key Difference from `getDatabaseSchemas`:**
@@ -23,13 +23,13 @@ import { tags } from "typia";
  * **Example Scenario:**
  *
  *     Initial generation:
- *     - PRISMA phase creates: users, posts, comments tables
+ *     - DATABASE phase creates: users, posts, comments tables
  *     - Generation completes successfully
  *
  *     User: "Add email verification status to users"
  *
  *     Regeneration:
- *     - PRISMA phase starts regeneration
+ *     - DATABASE phase starts regeneration
  *     - Calls getPreviousDatabaseSchemas(["users"])
  *       → Loads the previous version of users table schema
  *     - Creates new version with emailVerified field added
@@ -50,12 +50,12 @@ export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
    *
    * Determines which action to perform: preliminary data retrieval or actual
    * task execution. Value "getPreviousDatabaseSchemas" indicates this is a
-   * preliminary data request for Prisma schemas from a previous version.
+   * preliminary data request for database schemas from a previous version.
    */
   type: "getPreviousDatabaseSchemas";
 
   /**
-   * List of Prisma table names to retrieve from the previous version.
+   * List of database table names to retrieve from the previous version.
    *
    * These are table schema names that were generated in a previous version and
    * are needed as reference context for the current regeneration.
@@ -76,7 +76,7 @@ export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
    * **When This Function is NOT Available:**
    *
    * - During initial generation (no previous version exists)
-   * - No previous Prisma schemas available for this orchestration task
+   * - No previous database schemas available for this orchestration task
    *
    * **Example Table Names:**
    *

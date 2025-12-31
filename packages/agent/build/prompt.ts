@@ -19,7 +19,7 @@ const DIRECTORY = path.resolve(__dirname, "../prompts");
 //   const prisma = await new AutoBeDatabaseCompiler().compile({
 //     files: await FileSystemIterator.read({
 //       root: path.resolve(`${directory}/prisma/schema`),
-//       extension: "database",
+//       extension: "prisma",
 //     }),
 //   });
 //   if (prisma.type !== "success") {
