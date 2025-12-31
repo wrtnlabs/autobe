@@ -3156,7 +3156,7 @@ export async function patchBbsArticleComments(props: {
 ### 🗂️ Naming Conventions
 
 - **Function names**: `camelCase`, descriptive of action
-- **Prisma model names**: Match schema exactly (usually `snake_case`)
+- **Database model names**: Match schema exactly (usually `snake_case`)
 - **Variable names**: `camelCase`, clear and readable
 
 ### 🛠️ Error Handling

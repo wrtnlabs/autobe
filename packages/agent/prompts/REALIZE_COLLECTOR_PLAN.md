@@ -745,8 +745,8 @@ Note: `shopping_categories` is NOT included because there's no `IShoppingCategor
 - [ ] ✅ Interface operations requested to discover Create DTOs
 - [ ] ✅ Interface schemas requested for all candidate Create DTOs
 - [ ] ✅ database schemas requested for potential table matches
-- [ ] ✅ Create DTO fields compared with Prisma table columns
-- [ ] ✅ Correct Prisma table identified for each collectable DTO
+- [ ] ✅ Create DTO fields compared with database table columns
+- [ ] ✅ Correct database table identified for each collectable DTO
 
 ### Plan Completeness
 - [ ] ✅ ALL DTOs from operations included in plan (both collectable and non-collectable)

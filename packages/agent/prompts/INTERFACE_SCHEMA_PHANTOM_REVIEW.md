@@ -77,7 +77,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 **Good examples**:
 ```typescript
 // ✅ CORRECT - explains gap without listing items
-thinking: "Missing Prisma field definitions for validation. Don't have them."
+thinking: "Missing database field definitions for validation. Don't have them."
 thinking: "Completed phantom field validation, removed all violations."
 
 // ❌ WRONG - listing specific items or being too verbose
@@ -1002,7 +1002,7 @@ process({
     content: {
       "IUser": {
         "type": "object",
-        "description": "User entity with verified Prisma fields only.",
+        "description": "User entity with verified database fields only.",
         "x-autobe-database-schema": "User",
         "properties": {
           "id": { "type": "string", "description": "Unique user identifier." },
@@ -1016,7 +1016,7 @@ process({
       },
       "IProduct": {
         "type": "object",
-        "description": "Product entity with verified Prisma fields only.",
+        "description": "Product entity with verified database fields only.",
         "x-autobe-database-schema": "Product",
         "properties": {
           "id": { "type": "string", "description": "Unique product identifier." },

@@ -141,11 +141,11 @@ After your narrative plan, you MUST create a complete field-by-field selection t
 - **No missing selections**: Validator checks you didn't forget any required fields
 - **Enables early validation**: System validates against database schema BEFORE you write code
 
-**For each Prisma field needed by the DTO, specify:**
+**For each database field needed by the DTO, specify:**
 
 ```typescript
 {
-  member: "created_at",     // Exact Prisma field/relation name
+  member: "created_at",     // Exact database field/relation name
   kind: "scalar",           // "scalar" | "belongsTo" | "hasOne" | "hasMany"
   nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
   how: "For DTO.createdAt (needs .toISOString())"  // Why selecting this field
@@ -232,7 +232,7 @@ transformMappings: [
 4. **Clear Documentation**: Your strategy is explicit and reviewable
 
 **The validator will check:**
-- selectMappings: All Prisma fields needed by DTO are selected
+- selectMappings: All database fields needed by DTO are selected
 - transformMappings: All DTO properties are handled in transform()
 - Alignment: Every transformMapping can be satisfied by selectMappings
 
@@ -280,7 +280,7 @@ This is **not a formality** - this is where you catch errors before they cause c
 **Essential Verification Criteria** (check each deeply):
 
 1. **Schema Fidelity** (Most Critical):
-   - Does EVERY Prisma field name in your select() actually exist in the schema you read?
+   - Does EVERY database field name in your select() actually exist in the schema you read?
    - Are you using relation field names (correct) or foreign key column names (wrong)?
    - Did you fabricate ANY fields that don't exist?
    - **Go back and cross-check against the actual schema** - don't verify from memory
@@ -368,7 +368,7 @@ You will receive:
 - **DTO Type Name**: The target API response type (e.g., "IShoppingSaleUnitStock")
 - **Prisma Schema Name**: The database table name (e.g., "shopping_sale_snapshot_unit_stocks") - **PROVIDED BY PLANNING PHASE**
 - **Planning Reasoning**: The thinking behind why this DTO needs a transformer
-- **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Table showing transformer name, DTO type, and Prisma schema for all related transformers
+- **Neighbor Transformers**: **PROVIDED AS INPUT MATERIAL** - Table showing transformer name, DTO type, and database schema for all related transformers
 - **Database Schemas**: Database table definitions (available via `getDatabaseSchemas`)
 - **DTO Type Information**: Complete type information obtained transitively from the DTO type names in the plan (no explicit schema requests needed)
 
@@ -3070,12 +3070,12 @@ Strategy:
 
 This is your structured CoT output documenting which database fields to select. This field is **MANDATORY** and **VALIDATED** by the system.
 
-**You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
+**You MUST create one mapping entry for EVERY database field needed by the DTO.**
 
 Each mapping specifies:
 ```typescript
 {
-  member: string;     // Exact Prisma field/relation name (snake_case)
+  member: string;     // Exact database field/relation name (snake_case)
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
   nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
   how: string;        // Why selecting this field (which DTO property needs it)
@@ -3741,7 +3741,7 @@ export function select() {
    - **MEMORIZE every relation name** - exact spelling, target table
    - **NEVER assume or fabricate** - only use what you SEE in the schema
 4. **Analyze the mapping** (DTO type information is already available transitively):
-   - Compare DTO fields with Prisma table columns
+   - Compare DTO fields with database table columns
    - **Verify each field EXISTS in database schema** (RE-CHECK against what you just read!)
    - **Verify exact spelling** (createdAt in DTO ≠ created_at in DB)
    - Identify field name transformations:
@@ -3782,7 +3782,7 @@ export function select() {
 - [ ] ✅ **Prisma Schemas Requested**:
   - Called `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with the provided database schema name
   - DO NOT request schemas you already have from previous calls
-  - Received complete Prisma table definition(s)
+  - Received complete database table definition(s)
 
 - [ ] ✅ **DTO Type Information Available**:
   - Complete DTO type information is obtained transitively from the DTO type name

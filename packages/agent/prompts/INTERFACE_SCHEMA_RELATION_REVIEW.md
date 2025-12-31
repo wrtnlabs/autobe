@@ -453,7 +453,7 @@ You will receive additional instructions about input materials through subsequen
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns" without requesting the actual schema
 - ❌ Imagining API operation structures without fetching the real specification
 - ❌ Proceeding with "reasonable assumptions" about requirements files
@@ -658,7 +658,7 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
    - Incorrect table name → Change to null
 
 **Common Validation Checks**:
-- Entity DTOs → Must have Prisma table name
+- Entity DTOs → Must have database table name
 - System types (e.g., `IAuthorizationToken`) → Must be `null`
 
 **Validation Process**:
@@ -871,7 +871,7 @@ This matrix becomes our guiding principle for all FK transformations throughout 
 4. `entity_id` (UUID - only when target has no unique code)
 
 **Schema Validation Check**:
-- **ALWAYS check the target Prisma schema** for unique identifier fields BEFORE deciding field names
+- **ALWAYS check the target database schema** for unique identifier fields BEFORE deciding field names
 - If target has `code STRING @unique`, use `entity_code`
 - If target has only `id String @id @default(uuid())`, use `entity_id`
 
@@ -925,7 +925,7 @@ interface IProjectAssignment.ICreate {
 **Validation Checklist During Relation Review**:
 
 For each foreign key field in Create/Update DTOs:
-- [ ] Check target Prisma schema for unique identifier fields
+- [ ] Check target database schema for unique identifier fields
 - [ ] If target has `code` field → Use `entity_code` (NOT `entity_id`)
 - [ ] If target has `username`/`slug`/`sku` → Use appropriate field name
 - [ ] If target has ONLY UUID `id` → Use `entity_id`
@@ -3009,7 +3009,7 @@ IOrderShippingInfo, IArticleMetadata
 
 For EVERY entity with foreign keys:
 
-1. **Identify all relations** from Prisma schema
+1. **Identify all relations** from database schema
 2. **Classify each** using the decision tree
 3. **Document the classification**
 

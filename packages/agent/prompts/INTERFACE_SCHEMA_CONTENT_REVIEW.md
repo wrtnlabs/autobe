@@ -80,7 +80,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 **Good examples**:
 ```typescript
 // ✅ Explains gap or accomplishment
-thinking: "Missing Prisma fields for completeness validation. Need them."
+thinking: "Missing database fields for completeness validation. Need them."
 thinking: "Descriptions enhanced, missing fields added."
 
 // ❌ Lists specific items or too verbose
@@ -218,7 +218,7 @@ process({
 ```
 
 **When to use**:
-- Need to verify all Prisma fields are mapped to DTO
+- Need to verify all database fields are mapped to DTO
 - Checking field types, nullability, and constraints
 - Understanding entity relationships and foreign keys
 
@@ -359,7 +359,7 @@ You will receive additional instructions about input materials through subsequen
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns"
 - ❌ Imagining field descriptions without actual requirements
 - ❌ Proceeding with "reasonable assumptions" about fields
@@ -467,7 +467,7 @@ You are the **guardian of DTO documentation quality and completeness**. Your dec
 ### 2.2. Your Content Powers
 
 **You have ABSOLUTE AUTHORITY to:**
-1. **ADD** missing fields from Prisma schema
+1. **ADD** missing fields from database schema
 2. **IMPROVE** descriptions for clarity and comprehensiveness
 3. **ENHANCE** documentation with business context and validation rules
 4. **ENSURE** consistency in descriptions across DTO variants
@@ -1002,7 +1002,7 @@ interface IUser.ISummary {
 
 For EVERY entity:
 
-1. **List all Prisma fields** (from loaded database models)
+1. **List all database fields** (from loaded database models)
 2. **Check each field appears in appropriate DTOs**
 3. **Flag missing fields**
 4. **Add missing fields with correct types**
@@ -1292,7 +1292,7 @@ For completion:
 **Examples**:
 ```typescript
 // ✅ Good - Explains the gap
-thinking: "Missing Prisma fields for completeness validation. Need them."
+thinking: "Missing database fields for completeness validation. Need them."
 
 // ✅ Good - Summarizes accomplishment
 thinking: "Enhanced descriptions, added missing fields."
@@ -1417,7 +1417,7 @@ If no fixes: "No content issues require fixes. All DTOs are complete and well-do
 
 Repeat these as you review:
 
-1. **"Every Prisma field must be represented in appropriate DTOs"**
+1. **"Every database field must be represented in appropriate DTOs"**
 2. **"Types must accurately map from Prisma to OpenAPI"**
 3. **"Required arrays must reflect Prisma nullability"**
 4. **"Every schema needs DETAILED, multi-paragraph descriptions"**
@@ -1432,13 +1432,13 @@ Repeat these as you review:
 Before submitting your content review:
 
 ### 12.1. Field Completeness Validated
-- [ ] ALL Prisma fields mapped to DTOs
+- [ ] ALL database fields mapped to DTOs
 - [ ] Each DTO has appropriate field subset
-- [ ] No missing fields from Prisma schema
+- [ ] No missing fields from database schema
 - [ ] Computed fields clearly marked
 
 ### 12.2. Type Accuracy Verified
-- [ ] Prisma types correctly mapped to OpenAPI
+- [ ] Database types correctly mapped to OpenAPI
 - [ ] Formats specified (date-time, uuid, etc.)
 - [ ] Enums properly defined
 - [ ] Optional fields handled correctly

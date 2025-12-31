@@ -303,11 +303,11 @@ Your comprehensive analysis should accomplish these objectives:
 
 After your narrative analysis, you MUST create a complete field-by-field verification table documenting the current state and needed corrections for select(). This ensures you don't miss any issues beyond visible compilation errors.
 
-**For each Prisma field needed by the DTO, document current state:**
+**For each database field needed by the DTO, document current state:**
 
 ```typescript
 {
-  member: "created_at",     // Exact Prisma field/relation name
+  member: "created_at",     // Exact database field/relation name
   kind: "scalar",           // "scalar" | "belongsTo" | "hasOne" | "hasMany"
   nullable: false,          // boolean for scalar/belongsTo, null for hasMany/hasOne
   how: "No change needed" or "Fix: Missing - add to select()"
@@ -390,7 +390,7 @@ transformMappings: [
 4. **Clear Correction Plan**: Documents exactly what to fix
 
 **The validator will check:**
-- selectMappings: All Prisma fields needed are reviewed
+- selectMappings: All database fields needed are reviewed
 - transformMappings: All DTO properties are reviewed
 - Corrections are valid and complete
 
@@ -470,7 +470,7 @@ This is **not a formality** - this is where you verify your code is **absolutely
 
 3. **100% DTO Transformation Compliance (transform() function)**:
    - **Re-verify EVERY DTO field is correctly transformed**
-   - Is EVERY Prisma field appropriately mapped to DTO?
+   - Is EVERY database field appropriately mapped to DTO?
    - Are ALL snake_case → camelCase conversions correct?
    - Are ALL type conversions correct (Date→.toISOString(), Decimal→Number())?
    - Are ALL computed DTO fields calculated correctly?
@@ -631,7 +631,7 @@ ROOT CAUSE ANALYSIS:
 - Inline transformer: Should use BbsUserAtSummaryTransformer
 
 select() VERIFICATION:
-- Reviewed all 12 Prisma fields
+- Reviewed all 12 database fields
 - Found 1 additional missing field (email) not causing error
 - Confirmed relation names correct
 
@@ -657,12 +657,12 @@ CORRECTION STRATEGY:
 
 This is your structured verification for select() - a complete review of which database fields to select with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
 
-**You MUST create one mapping entry for EVERY Prisma field needed by the DTO.**
+**You MUST create one mapping entry for EVERY database field needed by the DTO.**
 
 Each mapping documents current state and needed fixes:
 ```typescript
 {
-  member: string;     // Exact Prisma field/relation name
+  member: string;     // Exact database field/relation name
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
   nullable: boolean | null;
   how: string;        // "Already correct" or "Fix: [problem] → [solution]"
@@ -671,7 +671,7 @@ Each mapping documents current state and needed fixes:
 
 **Why this field is critical:**
 
-1. **Systematic Coverage**: Forces review of EVERY Prisma field needed
+1. **Systematic Coverage**: Forces review of EVERY database field needed
 2. **Catches Silent Errors**: Issues compiler didn't report in select()
 3. **Documents Corrections**: Clear record of select() fixes
 4. **Enables Validation**: System validates corrections against database schema
@@ -759,7 +759,7 @@ transformMappings: [
 - "Fix: Wrong null handling"
 
 **What the validators check:**
-- selectMappings: All needed Prisma fields reviewed, corrections valid
+- selectMappings: All needed database fields reviewed, corrections valid
 - transformMappings: All DTO properties reviewed, transformations valid
 - Alignment: transform() can work with data from select()
 

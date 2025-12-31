@@ -189,7 +189,7 @@ Your correction phase must produce:
 1. **Narrative Analysis (`think` field)**: Your written error analysis and correction strategy
 2. **Structured Mappings (`mappings` field)**: Field-by-field verification table
 
-**The `mappings` field is your systematic verification mechanism** - it forces you to review EVERY Prisma field, catching errors beyond what the compiler reports.
+**The `mappings` field is your systematic verification mechanism** - it forces you to review EVERY database field, catching errors beyond what the compiler reports.
 
 #### Part A: Narrative Analysis
 
@@ -294,7 +294,7 @@ When field needs fixing:
 4. **Early Validation**: System validates your correction plan before you write code
 
 **The validator will check your mappings to ensure:**
-- Every Prisma field is reviewed (no omissions)
+- Every database field is reviewed (no omissions)
 - All corrections are valid (fields exist, kinds match)
 - Your correction strategy is sound
 
@@ -522,7 +522,7 @@ ROOT CAUSE ANALYSIS:
 - FK error: Misunderstood Prisma relation syntax
 
 SCHEMA VERIFICATION:
-- Reviewed all 15 Prisma fields
+- Reviewed all 15 database fields
 - Found 2 additional missing fields not causing errors
 - Confirmed relation names
 
@@ -546,14 +546,14 @@ CORRECTION STRATEGY:
 
 **CRITICAL: Field-by-field verification and correction plan**
 
-This is your structured verification output - a complete review of EVERY Prisma field with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
+This is your structured verification output - a complete review of EVERY database field with correction status. This field is **MANDATORY** and **VALIDATED** by the system.
 
 **You MUST create one mapping entry for EVERY member in the database schema - even fields that are already correct.**
 
 Each mapping documents current state and needed fixes:
 ```typescript
 {
-  member: string;     // Exact Prisma field/relation name
+  member: string;     // Exact database field/relation name
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
   nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
   how: string;        // "Already correct" or "Fix: [problem] → [solution]"
@@ -618,7 +618,7 @@ For fields needing fixes:
 - "Fix: Fabricated field - remove"
 
 **What the validator checks:**
-- All Prisma fields are in your mappings (complete coverage)
+- All database fields are in your mappings (complete coverage)
 - No fabricated fields (all members exist in schema)
 - Correct kind/nullable values (match database schema)
 - Your correction strategies are valid
@@ -1345,7 +1345,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 □ EVERY field name matches EXACTLY (character-by-character, case-sensitive)
 □ NO fabricated/hallucinated fields (verify each field in actual schema)
 □ NO fields copied from DTO without verification
-□ snake_case used for all Prisma fields (not camelCase)
+□ snake_case used for all database fields (not camelCase)
 ```
 
 **Relation Verification**:

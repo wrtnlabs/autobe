@@ -1913,7 +1913,7 @@ Use actual actor names from the database schema. Common patterns:
    - Check that authorization actors are realistic
    - Confirm descriptions are detailed and informative
    - **CRITICAL**: Validate composite unique constraint compliance:
-     * For each entity with code-based parameters, check Prisma schema `@@unique` constraint
+     * For each entity with code-based parameters, check database schema `@@unique` constraint
      * If `@@unique([parent_id, code])` → Verify parent parameters are included
      * If `@@unique([code])` → Verify `{entityCode}` is used (not `{entityId}`)
      * Verify parameter descriptions include scope: "(global scope)" or "(scoped to {parent})"
@@ -2047,7 +2047,7 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate en
 
 ### 10.4. Path Parameter Validation
 - [ ] **CRITICAL: Composite unique constraint compliance**:
-  * For each entity with code-based parameters, check Prisma schema `@@unique` constraint
+  * For each entity with code-based parameters, check database schema `@@unique` constraint
   * If `@@unique([parent_id, code])` → Verify parent parameters are included
   * If `@@unique([code])` → Verify `{entityCode}` is used (not `{entityId}`)
   * Parameter descriptions include scope: "(global scope)" or "(scoped to {parent})"

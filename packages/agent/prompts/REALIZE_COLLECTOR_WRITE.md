@@ -91,7 +91,7 @@ Your planning phase must produce:
 1. **Narrative Plan (`plan` field)**: Your written analysis and strategy
 2. **Structured Mappings (`mappings` field)**: Field-by-field mapping table
 
-**The `mappings` field is your Chain-of-Thought (CoT) mechanism** - it forces you to explicitly think through EVERY Prisma field before coding, preventing omissions and hallucinations.
+**The `mappings` field is your Chain-of-Thought (CoT) mechanism** - it forces you to explicitly think through EVERY database field before coding, preventing omissions and hallucinations.
 
 #### Part A: Narrative Plan
 
@@ -183,7 +183,7 @@ mappings: [
 4. **Clear Documentation**: Your handling strategy for each field is explicit
 
 **The validator will check:**
-- Every Prisma field is in your mappings (no omissions)
+- Every database field is in your mappings (no omissions)
 - No fabricated fields (all members exist in schema)
 - Correct kind classification (scalar vs belongsTo vs hasMany)
 - Correct nullability (matches database schema)
@@ -221,7 +221,7 @@ This is **not a formality** - this is where you catch errors before they cause c
 **Essential Verification Criteria** (check each deeply):
 
 1. **Schema Fidelity** (Most Critical):
-   - Does EVERY Prisma field name in your draft actually exist in the schema you read?
+   - Does EVERY database field name in your draft actually exist in the schema you read?
    - Are you using relation field names (correct) or foreign key column names (wrong)?
    - Did you fabricate ANY fields that don't exist?
    - **Go back and cross-check against the actual schema** - don't verify from memory
@@ -1339,7 +1339,7 @@ shopping_sale_categories: {
 - **BelongsTo relations**: `relationName: { connect: { id: entityId } }`
 - **HasMany relations**: `relationName: { create: [...array] }`
 - **HasOne relations**: `relationName: { create: {...object} }`
-- **Always use snake_case** for Prisma field names (matches database column names)
+- **Always use snake_case** for database field names (matches database column names)
 - **Always use relation field names** from database schema, NOT `_id` suffixed column names
 
 **Complete Example:**
@@ -1877,7 +1877,7 @@ id: v4(),
 
 #### Value Decision Priority (Apply in Order)
 
-When a Prisma field is required but not in the DTO, follow this decision process:
+When a database field is required but not in the DTO, follow this decision process:
 
 ```
 For field 'X' required by Prisma but missing from DTO:
@@ -2552,14 +2552,14 @@ Strategy:
 
 **CRITICAL: Field-by-field mapping table (Chain-of-Thought mechanism)**
 
-This is your structured CoT output - a complete mapping of EVERY Prisma field/relation to your collection strategy. This field is **MANDATORY** and **VALIDATED** by the system.
+This is your structured CoT output - a complete mapping of EVERY database field/relation to your collection strategy. This field is **MANDATORY** and **VALIDATED** by the system.
 
 **You MUST create one mapping entry for EVERY member in the database schema - no exceptions.**
 
 Each mapping specifies:
 ```typescript
 {
-  member: string;     // Exact Prisma field/relation name
+  member: string;     // Exact database field/relation name
   kind: "scalar" | "belongsTo" | "hasOne" | "hasMany";
   nullable: boolean | null;  // true/false for scalar/belongsTo, null for hasMany/hasOne
   how: string;        // Brief one-line strategy
@@ -3196,7 +3196,7 @@ Before calling `process({ request: { type: "complete", ... } })`, systematically
 □ EVERY field name matches EXACTLY (character-by-character, case-sensitive)
 □ NO fabricated/hallucinated fields (verify each field in actual schema)
 □ NO fields copied from DTO without verification (DTO ≠ Database!)
-□ snake_case used for ALL Prisma fields (not camelCase)
+□ snake_case used for ALL database fields (not camelCase)
 □ Verified ALL scalar fields: id, timestamps, business fields
 □ Verified ALL relation fields: relation names (NOT FK columns)
 ```

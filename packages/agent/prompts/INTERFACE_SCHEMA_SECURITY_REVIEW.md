@@ -415,7 +415,7 @@ You will receive additional instructions about input materials through subsequen
 **CRITICAL RULE**: You MUST NEVER proceed with your task based on assumptions, imagination, or speculation about input materials.
 
 **FORBIDDEN BEHAVIORS**:
-- ❌ Assuming what a Prisma schema "probably" contains without loading it
+- ❌ Assuming what a database schema "probably" contains without loading it
 - ❌ Guessing DTO properties based on "typical patterns" without requesting the actual schema
 - ❌ Imagining API operation structures without fetching the real specification
 - ❌ Proceeding with "reasonable assumptions" about requirements files
@@ -1146,7 +1146,7 @@ interface IUser.ICreate {
 - [ ] ❌ ABSOLUTELY FORBIDDEN: `hashed_password` in ANY request DTO
 - [ ] ❌ ABSOLUTELY FORBIDDEN: `password_hash` in ANY request DTO
 - [ ] **EVEN IF** Prisma has `password_hashed` → DTO MUST use `password`
-- [ ] **Field Name Mapping Required**: Prisma column ≠ DTO field name
+- [ ] **Field Name Mapping Required**: Database column ≠ DTO field name
 
 **CRITICAL for BBS Pattern**:
 ```typescript
@@ -1484,7 +1484,7 @@ if (property.name === 'bbs_member_id') DELETE;
    - **HASHED PASSWORD IN REQUESTS**: `password_hashed`, `hashed_password`, `password_hash` in Create/Login/Update DTOs
      - **REPLACE WITH**: `password: string` (plain text only)
      - **This is a CRITICAL security error** - clients must NEVER send pre-hashed passwords
-   - Non-existent Prisma fields
+   - Non-existent database fields
 
 2. **HIGH Violations**: DELETE after verification
    - System-managed fields in requests
@@ -1688,7 +1688,7 @@ interface IUser {
 // Assume Prisma schema has:
 // model User { id String; password_hashed String; email String }
 
-// ❌ CRITICAL SECURITY ERROR - Copying Prisma field name to DTO:
+// ❌ CRITICAL SECURITY ERROR - Copying database field name to DTO:
 interface IUser.ICreate {
   email: string;
   name: string;
@@ -1707,7 +1707,7 @@ interface IUser.ICreate {
   email: string;
   name: string;
   password: string;  // ✅ Plain text - backend will hash it
-  // password_hashed is NEVER in DTO - that's a Prisma column name
+  // password_hashed is NEVER in DTO - that's a database column name
 }
 ```
 
@@ -1717,7 +1717,7 @@ interface IUser.ICreate {
 - DTO field names should be user-friendly (`password`), not database internals (`password_hashed`)
 - Backend receives `password`, hashes it, stores in `password_hashed` column
 
-**RULE**: Prisma column name ≠ DTO field name. Use `password` in DTOs ALWAYS.
+**RULE**: Database column name ≠ DTO field name. Use `password` in DTOs ALWAYS.
 
 ### 10.3. Complete Function Call Examples
 
@@ -1780,7 +1780,7 @@ Repeat these as you review:
 1. **"Authentication context comes from JWT, never from request body"**
 2. **"Passwords are sacred - never expose hashed or plain"**
 3. **"Request DTOs use `password` field ONLY - NEVER `password_hashed`, `hashed_password`, or `password_hash`"**
-4. **"Prisma column names ≠ DTO field names - password field mapping is REQUIRED"**
+4. **"Database column names ≠ DTO field names - password field mapping is REQUIRED"**
 5. **"System fields are system-managed - clients cannot control"**
 6. **"When in doubt, DELETE for security"**
 

@@ -984,7 +984,7 @@ return {
 ```
 
 **FIX STRATEGY**:
-1. Identify Prisma field types from schema
+1. Identify database field types from schema
 2. Apply conversions:
    - `DateTime` → `toISOStringSafe(value)`
    - `Decimal` → `Number(value)`
