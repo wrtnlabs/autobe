@@ -16,14 +16,14 @@ export function transformFacadeStateMessage(state: AutoBeState): string {
       or "out-of-date" (previously executed but needs updating due to 
       changes in earlier stages).
 
-      An agent cannot be executed if any of its prerequisite agents have 
-      a status of "none" or "out-of-date". In such cases, you must complete or 
-      update the earlier stages first. Additionally, re-executing an "up-to-date" 
-      agent will cause all subsequent agents to become "out-of-date", as they 
+      An agent cannot be executed if any of its prerequisite agents have
+      a status of "none" or "out-of-date". In such cases, you must complete or
+      update the earlier stages first. Additionally, re-executing an "up-to-date"
+      agent will cause all subsequent agents to become "out-of-date", as they
       depend on the updated output.
 
       - analyze: ${currentState.analyze}
-      - prisma: ${currentState.prisma}
+      - database: ${currentState.database}
       - interface: ${currentState.interface}
       - test: ${currentState.test}
       - realize: ${currentState.realize}
@@ -43,7 +43,7 @@ function getCurrentState(state: AutoBeState): ICurrentState {
   };
   return {
     analyze: state.analyze === null ? "none" : "up-to-date",
-    prisma: value(state.database),
+    database: value(state.database),
     interface: value(state.interface),
     test: value(state.test),
     realize: value(state.realize),
@@ -52,7 +52,7 @@ function getCurrentState(state: AutoBeState): ICurrentState {
 
 interface ICurrentState {
   analyze: "up-to-date" | "none";
-  prisma: "up-to-date" | "out-of-date" | "none";
+  database: "up-to-date" | "out-of-date" | "none";
   interface: "up-to-date" | "out-of-date" | "none";
   test: "up-to-date" | "out-of-date" | "none";
   realize: "up-to-date" | "out-of-date" | "none";

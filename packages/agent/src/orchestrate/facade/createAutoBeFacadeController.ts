@@ -37,7 +37,7 @@ export const createAutoBeFacadeController = (props: {
           return {
             type: "in-progress",
             description: StringUtil.trim`
-              Requirements are not yet fully elicited, 
+              Requirements are not yet fully elicited,
               therefore additional questions will be made to the user.
             `,
           };
@@ -47,7 +47,7 @@ export const createAutoBeFacadeController = (props: {
             "Analysis completed successfully, and report has been published.",
         };
       },
-      prisma: async (next) => {
+      database: async (next) => {
         const history: AutoBeAssistantMessageHistory | AutoBeDatabaseHistory =
           await orchestratePrisma(props.context, next);
         if (history.type === "assistantMessage")

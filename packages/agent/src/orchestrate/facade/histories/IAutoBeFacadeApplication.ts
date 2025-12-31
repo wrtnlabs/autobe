@@ -46,7 +46,7 @@ export interface IAutoBeFacadeApplication {
    * generate ERD documentation using prisma-markdown. An internal review
    * process ensures schema quality and optimization.
    */
-  prisma(props: {
+  database(props: {
     /**
      * Database design instructions from user conversation.
      *
