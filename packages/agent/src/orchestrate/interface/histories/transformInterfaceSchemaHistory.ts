@@ -9,6 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceSchemaHistory = (props: {
   operations: AutoBeOpenApi.IOperation[];
   typeName: string;
+  otherTypeNames: string[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "prismaSchemas"
@@ -64,6 +65,13 @@ export const transformInterfaceSchemaHistory = (props: {
           \`\`\`json
           ${JSON.stringify(props.operations)}
           \`\`\`
+
+          ## Other DTO Type names you can reference
+
+          While creating the JSON schema for the target type, you can reference
+          other DTO types defined in the API. Here are their type names:
+
+          - ${props.otherTypeNames.map((name) => `- ${name}`).join("\n")}
 
           ## DTO type to create
           

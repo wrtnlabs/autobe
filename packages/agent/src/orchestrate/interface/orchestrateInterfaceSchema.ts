@@ -62,6 +62,7 @@ export async function orchestrateInterfaceSchema(
       const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
         operations,
         progress,
+        otherTypeNames: typeNames.filter((k) => k !== it),
         promptCacheKey,
         typeName: it,
         instruction: props.instruction,
@@ -77,6 +78,7 @@ async function process(
   props: {
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
+    otherTypeNames: string[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
@@ -122,9 +124,10 @@ async function process(
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceSchemaHistory({
         preliminary,
-        typeName: props.typeName,
         operations: props.operations,
         instruction: props.instruction,
+        typeName: props.typeName,
+        otherTypeNames: props.otherTypeNames,
       }),
     });
     if (pointer.value !== null) {
