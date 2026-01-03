@@ -14,7 +14,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
@@ -39,17 +38,13 @@ export const orchestrateInterfaceComplement = async (
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
-      result[it] = await forceRetry(
-        () =>
-          process(ctx, {
-            instruction: props.instruction,
-            document: props.document,
-            typeName: it,
-            progress: props.progress,
-            promptCacheKey,
-          }),
-        ctx.retry,
-      );
+      result[it] = await process(ctx, {
+        instruction: props.instruction,
+        document: props.document,
+        typeName: it,
+        progress: props.progress,
+        promptCacheKey,
+      });
     }),
   );
   return result;
