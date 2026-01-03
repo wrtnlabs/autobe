@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
@@ -38,13 +39,17 @@ export const orchestrateInterfaceComplement = async (
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
-      result[it] = await process(ctx, {
-        instruction: props.instruction,
-        document: props.document,
-        typeName: it,
-        progress: props.progress,
-        promptCacheKey,
-      });
+      result[it] = await forceRetry(
+        () =>
+          process(ctx, {
+            instruction: props.instruction,
+            document: props.document,
+            typeName: it,
+            progress: props.progress,
+            promptCacheKey,
+          }),
+        ctx.retry,
+      );
     }),
   );
   return result;
@@ -60,7 +65,6 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
-  console.log("orchestrateInterfaceComplement start", props.typeName);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -117,64 +121,58 @@ async function process(
       ),
     },
   });
-  console.log("orchestrateInterfaceComplement prepared", props.typeName);
-  try {
-    return await preliminary.orchestrate(ctx, async (out) => {
-      const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
-        value: null,
-      };
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController(ctx, {
-          typeName: props.typeName,
-          operations: props.document.operations,
-          build: (next) => {
-            const container: Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            > = (OpenApiV3_1Emender.convertComponents({
-              schemas: {
-                [props.typeName]: next,
-              },
-            }).schemas ?? {}) as Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            >;
-            pointer.value = container[props.typeName];
-          },
-          preliminary,
-        }),
-        promptCacheKey: props.promptCacheKey,
-        enforceFunctionCall: true,
-        ...transformInterfaceComplementHistory({
-          document: props.document,
-          instruction: props.instruction,
-          preliminary,
-          typeName: props.typeName,
-        }),
-      });
-      if (pointer.value === null)
-        throw new Error(`Complementation failed: ${props.typeName}`);
-
-      ++props.progress.completed;
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController(ctx, {
         typeName: props.typeName,
-        schema: pointer.value,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        step: ctx.state().analyze?.step ?? 0,
-        completed: props.progress.completed,
-        total: props.progress.total,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeInterfaceComplementEvent);
-      return out(result)(pointer.value);
+        operations: props.document.operations,
+        build: (next) => {
+          const container: Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          > = (OpenApiV3_1Emender.convertComponents({
+            schemas: {
+              [props.typeName]: next,
+            },
+          }).schemas ?? {}) as Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          >;
+          pointer.value = container[props.typeName];
+        },
+        preliminary,
+      }),
+      promptCacheKey: props.promptCacheKey,
+      enforceFunctionCall: true,
+      ...transformInterfaceComplementHistory({
+        document: props.document,
+        instruction: props.instruction,
+        preliminary,
+        typeName: props.typeName,
+      }),
     });
-  } catch (error) {
-    console.log("orchestrateInterfaceComplement failed", props.typeName, error);
-    throw error;
-  }
+    if (pointer.value === null)
+      throw new Error(`Complementation failed: ${props.typeName}`);
+
+    ++props.progress.completed;
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      typeName: props.typeName,
+      schema: pointer.value,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      completed: props.progress.completed,
+      total: props.progress.total,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceComplementEvent);
+    return out(result)(pointer.value);
+  });
 }
 
 function createController(
