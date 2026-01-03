@@ -1,14 +1,14 @@
+import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformInterfaceComplementHistory = (props: {
-  state: AutoBeState;
   instruction: string;
+  document: AutoBeOpenApi.IDocument;
   typeName: string;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -35,6 +35,15 @@ export const transformInterfaceComplementHistory = (props: {
       text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
     },
     ...props.preliminary.getHistories(),
+    // {
+    //   type: "assistantMessage",
+    //   id: v7(),
+    //   created_at: new Date().toISOString(),
+    //   text: transformReferences({
+    //     document: props.document,
+    //     typeName: props.typeName,
+    //   }),
+    // },
     {
       type: "assistantMessage",
       id: v7(),
@@ -77,3 +86,8 @@ export const transformInterfaceComplementHistory = (props: {
     the ${JSON.stringify(props.typeName)} type.
   `,
 });
+
+// const transformReferences = (props: {
+//   document: AutoBeOpenApi.IDocument;
+//   typeName: string;
+// }): string => {};
