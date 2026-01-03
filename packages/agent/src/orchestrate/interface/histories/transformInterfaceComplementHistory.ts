@@ -1,5 +1,7 @@
+import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { Escaper } from "typia/lib/utils/Escaper";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -35,15 +37,12 @@ export const transformInterfaceComplementHistory = (props: {
       text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
     },
     ...props.preliminary.getHistories(),
-    // {
-    //   type: "assistantMessage",
-    //   id: v7(),
-    //   created_at: new Date().toISOString(),
-    //   text: transformReferences({
-    //     document: props.document,
-    //     typeName: props.typeName,
-    //   }),
-    // },
+    ...[
+      transformReferenceHistory({
+        document: props.document,
+        typeName: props.typeName,
+      }),
+    ].filter((r) => r !== null),
     {
       type: "assistantMessage",
       id: v7(),
@@ -87,7 +86,90 @@ export const transformInterfaceComplementHistory = (props: {
   `,
 });
 
-// const transformReferences = (props: {
-//   document: AutoBeOpenApi.IDocument;
-//   typeName: string;
-// }): string => {};
+const transformReferenceHistory = (props: {
+  document: AutoBeOpenApi.IDocument;
+  typeName: string;
+}): IMicroAgenticaHistoryJson | null => {
+  const references: IReference[] = [];
+  Object.entries(props.document.components.schemas).forEach(
+    ([accessor, schema]) =>
+      traverseReference({
+        container: references,
+        typeName: props.typeName,
+        accessor,
+        schema,
+        description: schema.description,
+      }),
+  );
+  if (references.length === 0) return null;
+  return {
+    type: "assistantMessage",
+    id: v7(),
+    created_at: new Date().toISOString(),
+    text: StringUtil.trim`
+      ## Existing Schema References
+
+      The following schema definitions reference the missing type
+      **${props.typeName}**. These references can provide context
+      and insights into how the missing type is used within the API.
+
+      \`\`\`json
+      ${JSON.stringify(references)}
+      \`\`\`
+    `,
+  };
+};
+
+const traverseReference = (props: {
+  container: IReference[];
+  typeName: string;
+  accessor: string;
+  schema: AutoBeOpenApi.IJsonSchema;
+  description: string;
+}): void => {
+  if (
+    AutoBeOpenApiTypeChecker.isReference(props.schema) &&
+    props.schema.$ref.endsWith("/" + props.typeName)
+  )
+    props.container.push({
+      accessor: props.accessor,
+      description: props.description,
+    });
+  else if (AutoBeOpenApiTypeChecker.isOneOf(props.schema))
+    props.schema.oneOf.forEach((next) =>
+      traverseReference({
+        ...props,
+        schema: next,
+      }),
+    );
+  else if (AutoBeOpenApiTypeChecker.isArray(props.schema))
+    traverseReference({
+      ...props,
+      accessor: `${props.accessor}[]`,
+      schema: props.schema.items,
+    });
+  else if (AutoBeOpenApiTypeChecker.isObject(props.schema)) {
+    for (const [key, value] of Object.entries(props.schema.properties))
+      traverseReference({
+        ...props,
+        accessor: Escaper.variable(key)
+          ? `${props.accessor}`
+          : `${props.accessor}[${JSON.stringify(key)}]`,
+        schema: value,
+      });
+    if (
+      typeof props.schema.additionalProperties === "object" &&
+      props.schema.additionalProperties !== null
+    )
+      traverseReference({
+        ...props,
+        accessor: `${props.accessor}{}`,
+        schema: props.schema.additionalProperties,
+      });
+  }
+};
+
+interface IReference {
+  accessor: string;
+  description: string;
+}
