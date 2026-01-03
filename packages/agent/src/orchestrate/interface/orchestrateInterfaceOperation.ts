@@ -193,20 +193,19 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        operations: pointer.value,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        ...props.progress,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeInterfaceOperationEvent);
-      return out(result)(pointer.value);
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      operations: pointer.value,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      ...props.progress,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceOperationEvent);
+    return out(result)(pointer.value);
   });
 }
 

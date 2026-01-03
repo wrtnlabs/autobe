@@ -104,25 +104,24 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value !== null)
-      return out(result)({
-        type: SOURCE,
-        id: v7(),
-        created_at: props.start.toISOString(),
-        plan: pointer.value.plan,
+    if (pointer.value === null) return out(result)(null);
+    return out(result)({
+      type: SOURCE,
+      id: v7(),
+      created_at: props.start.toISOString(),
+      plan: pointer.value.plan,
+      models: pointer.value.models,
+      file: {
+        filename: props.component.filename,
+        namespace: props.component.namespace,
         models: pointer.value.models,
-        file: {
-          filename: props.component.filename,
-          namespace: props.component.namespace,
-          models: pointer.value.models,
-        },
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: (props.completed.value += props.component.tables.length),
-        total: props.total,
-        step: ctx.state().analyze?.step ?? 0,
-      } satisfies AutoBeDatabaseSchemaEvent);
-    return out(result)(null);
+      },
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: (props.completed.value += props.component.tables.length),
+      total: props.total,
+      step: ctx.state().analyze?.step ?? 0,
+    } satisfies AutoBeDatabaseSchemaEvent);
   });
 }
 

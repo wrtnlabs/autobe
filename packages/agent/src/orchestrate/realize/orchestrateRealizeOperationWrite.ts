@@ -113,39 +113,38 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      const functor: AutoBeRealizeOperationFunction = {
-        type: "operation",
-        endpoint: {
-          method: props.scenario.operation.method,
-          path: props.scenario.operation.path,
+    if (pointer.value === null) return out(result)(null);
+
+    const functor: AutoBeRealizeOperationFunction = {
+      type: "operation",
+      endpoint: {
+        method: props.scenario.operation.method,
+        path: props.scenario.operation.path,
+      },
+      location: props.scenario.location,
+      name: props.scenario.functionName,
+      content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+        ctx,
+        {
+          operation: props.scenario.operation,
+          schemas: props.document.components.schemas,
+          code: pointer.value.revise.final ?? pointer.value.draft,
+          payload: props.authorization?.payload.name,
         },
-        location: props.scenario.location,
-        name: props.scenario.functionName,
-        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
-          ctx,
-          {
-            operation: props.scenario.operation,
-            schemas: props.document.components.schemas,
-            code: pointer.value.revise.final ?? pointer.value.draft,
-            payload: props.authorization?.payload.name,
-          },
-        ),
-      };
-      ctx.dispatch({
-        id: v7(),
-        type: "realizeWrite",
-        function: functor,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeRealizeWriteEvent);
-      return out(result)(functor);
-    }
-    return out(result)(null);
+      ),
+    };
+    ctx.dispatch({
+      id: v7(),
+      type: "realizeWrite",
+      function: functor,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeRealizeWriteEvent);
+    return out(result)(functor);
   });
 }
 

@@ -120,36 +120,35 @@ async function process(
         preliminary,
       })),
     });
-    if (pointer.value !== null) {
-      const content: string =
-        await AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
-          dtoTypeName,
-          schemas: document.components.schemas,
-          code: pointer.value.revise.final ?? pointer.value.draft,
-        });
-      const functor: AutoBeRealizeTransformerFunction = {
-        type: "transformer",
-        plan: props.plan,
-        neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
-        location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
-          dtoTypeName,
-        )}.ts`,
-        content,
-      };
-      ctx.dispatch({
-        id: v7(),
-        type: "realizeWrite",
-        function: functor,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeRealizeWriteEvent);
-      return out(result)(functor);
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    const content: string =
+      await AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
+        dtoTypeName,
+        schemas: document.components.schemas,
+        code: pointer.value.revise.final ?? pointer.value.draft,
+      });
+    const functor: AutoBeRealizeTransformerFunction = {
+      type: "transformer",
+      plan: props.plan,
+      neighbors: AutoBeRealizeTransformerProgrammer.getNeighbors(content),
+      location: `src/transformers/${AutoBeRealizeTransformerProgrammer.getName(
+        dtoTypeName,
+      )}.ts`,
+      content,
+    };
+    ctx.dispatch({
+      id: v7(),
+      type: "realizeWrite",
+      function: functor,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeRealizeWriteEvent);
+    return out(result)(functor);
   });
 }
 

@@ -66,40 +66,39 @@ const process = (
         preliminary: props.preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      props.progress.total = Math.max(
-        props.progress.total,
-        (props.progress.completed += pointer.value.scenarioGroups.length),
-      );
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        total: props.progress.total,
-        completed: props.progress.completed,
-        scenarios: pointer.value.scenarioGroups
-          .map((group) => {
-            return group.scenarios.map((s) => {
-              return {
-                ...s,
-                endpoint: group.endpoint,
-              } satisfies AutoBeTestScenario;
-            });
-          })
-          .flat(),
-        step: ctx.state().interface?.step ?? 0,
-        created_at: new Date().toISOString(),
-      });
-      // @todo michael: need to investigate scenario removal more gracefully
-      return out(result)(
-        pointer.value.pass
-          ? // || pointer.value.scenarioGroups.length < props.groups.length
-            props.groups
-          : pointer.value.scenarioGroups,
-      );
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    props.progress.total = Math.max(
+      props.progress.total,
+      (props.progress.completed += pointer.value.scenarioGroups.length),
+    );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      total: props.progress.total,
+      completed: props.progress.completed,
+      scenarios: pointer.value.scenarioGroups
+        .map((group) => {
+          return group.scenarios.map((s) => {
+            return {
+              ...s,
+              endpoint: group.endpoint,
+            } satisfies AutoBeTestScenario;
+          });
+        })
+        .flat(),
+      step: ctx.state().interface?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+    // @todo michael: need to investigate scenario removal more gracefully
+    return out(result)(
+      pointer.value.pass
+        ? // || pointer.value.scenarioGroups.length < props.groups.length
+          props.groups
+        : pointer.value.scenarioGroups,
+    );
   });
 
 const createController = (props: {

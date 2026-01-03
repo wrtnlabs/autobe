@@ -133,28 +133,26 @@ async function process(
         preliminary,
       }),
     });
+    if (pointer.value === null) return out(result)(null);
 
-    if (pointer.value !== null) {
-      const event: AutoBeInterfaceEndpointEvent = {
-        type: SOURCE,
-        kind: "base",
-        id: v7(),
-        endpoints: new HashSet(
-          pointer.value.endpoints.map((e) => e.endpoint),
-          AutoBeOpenApiEndpointComparator.hashCode,
-          AutoBeOpenApiEndpointComparator.equals,
-        ).toJSON(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        created_at: start.toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-      };
-      ctx.dispatch(event);
-      return out(result)(pointer.value.endpoints);
-    }
-    return out(result)(null);
+    const event: AutoBeInterfaceEndpointEvent = {
+      type: SOURCE,
+      kind: "base",
+      id: v7(),
+      endpoints: new HashSet(
+        pointer.value.endpoints.map((e) => e.endpoint),
+        AutoBeOpenApiEndpointComparator.hashCode,
+        AutoBeOpenApiEndpointComparator.equals,
+      ).toJSON(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      created_at: start.toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+    };
+    ctx.dispatch(event);
+    return out(result)(pointer.value.endpoints);
   });
 }
 

@@ -148,7 +148,7 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value === null) throw new Error("Schema review failed");
+    if (pointer.value === null) return out(result)(null);
 
     const content: AutoBeOpenApi.IJsonSchemaDescriptive =
       pointer.value.content === null

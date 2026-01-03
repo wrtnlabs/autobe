@@ -165,36 +165,35 @@ async function execute(
         result: failure,
       }),
     });
-    if (pointer.value !== null) {
-      const correction: AutoBeDatabase.IApplication = {
-        files: failure.data.files.map((file) => ({
-          filename: file.filename,
-          namespace: file.namespace,
-          models: file.models.map((model) => {
-            const newbie = pointer.value?.models.find(
-              (m) => m.name === model.name,
-            );
-            return newbie ?? model;
-          }),
-        })),
-      };
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        failure,
-        planning: pointer.value.planning,
-        correction: correction,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeDatabaseCorrectEvent);
-      return out(result)({
-        ...pointer.value,
-        correction,
-      });
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    const correction: AutoBeDatabase.IApplication = {
+      files: failure.data.files.map((file) => ({
+        filename: file.filename,
+        namespace: file.namespace,
+        models: file.models.map((model) => {
+          const newbie = pointer.value?.models.find(
+            (m) => m.name === model.name,
+          );
+          return newbie ?? model;
+        }),
+      })),
+    };
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      failure,
+      planning: pointer.value.planning,
+      correction: correction,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeDatabaseCorrectEvent);
+    return out(result)({
+      ...pointer.value,
+      correction,
+    });
   });
 }
 

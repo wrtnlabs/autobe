@@ -76,30 +76,29 @@ async function process(
         operations,
       }),
     });
-    if (pointer.value !== null) {
-      const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
-        (op) => ({
-          ...op,
-          authorizationType: null,
-        }),
-      );
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        operations: content,
-        review: pointer.value.think.review,
-        plan: pointer.value.think.plan,
-        content,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        created_at: new Date().toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        total: progress.total,
-        completed: ++progress.completed,
-      } satisfies AutoBeInterfaceOperationReviewEvent);
-      return out(result)(content);
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
+      (op) => ({
+        ...op,
+        authorizationType: null,
+      }),
+    );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      operations: content,
+      review: pointer.value.think.review,
+      plan: pointer.value.think.plan,
+      content,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      created_at: new Date().toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      total: progress.total,
+      completed: ++progress.completed,
+    } satisfies AutoBeInterfaceOperationReviewEvent);
+    return out(result)(content);
   });
 }
 

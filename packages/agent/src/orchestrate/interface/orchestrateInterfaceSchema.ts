@@ -138,32 +138,31 @@ async function process(
         otherTypeNames: props.otherTypeNames,
       }),
     });
-    if (pointer.value !== null) {
-      const container: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
-        OpenApiV3_1Emender.convertComponents({
-          schemas: {
-            [props.typeName]: pointer.value,
-          },
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-      const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-        container[props.typeName];
+    if (pointer.value === null) return out(result)(null);
 
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        typeName: props.typeName,
-        schema,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().database?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeInterfaceSchemaEvent);
-      return out(result)(schema);
-    }
-    return out(result)(null);
+    const container: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+      OpenApiV3_1Emender.convertComponents({
+        schemas: {
+          [props.typeName]: pointer.value,
+        },
+      }) as AutoBeOpenApi.IComponents
+    ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
+      container[props.typeName];
+
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      typeName: props.typeName,
+      schema,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().database?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemaEvent);
+    return out(result)(schema);
   });
 }
 

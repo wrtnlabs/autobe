@@ -227,52 +227,51 @@ const process = async (
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      if (pointer.value.length === 0) return out(result)([]);
-      props.progress.total = Math.max(
-        props.progress.total,
-        (props.progress.completed += pointer.value.length),
-      );
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        scenarios: pointer.value
-          .map((v) =>
-            v.scenarios.map(
-              (s) =>
-                ({
-                  endpoint: v.endpoint,
-                  draft: s.draft,
-                  functionName: s.functionName,
-                  dependencies: s.dependencies,
-                }) satisfies AutoBeTestScenario,
-            ),
-          )
-          .flat(),
-        completed: props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().interface?.step ?? 0,
-        created_at: new Date().toISOString(),
+    if (pointer.value === null) return out(result)(null);
+    else if (pointer.value.length === 0) return out(result)([]);
+
+    props.progress.total = Math.max(
+      props.progress.total,
+      (props.progress.completed += pointer.value.length),
+    );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      scenarios: pointer.value
+        .map((v) =>
+          v.scenarios.map(
+            (s) =>
+              ({
+                endpoint: v.endpoint,
+                draft: s.draft,
+                functionName: s.functionName,
+                dependencies: s.dependencies,
+              }) satisfies AutoBeTestScenario,
+          ),
+        )
+        .flat(),
+      completed: props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().interface?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+    const filteredGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
+      pointer.value.map((g) => {
+        return {
+          ...g,
+          scenarios: g.scenarios.slice(0, MAX_SCENARIO_COUNT),
+        };
       });
-      const filteredGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
-        pointer.value.map((g) => {
-          return {
-            ...g,
-            scenarios: g.scenarios.slice(0, MAX_SCENARIO_COUNT),
-          };
-        });
-      return out(result)(
-        await orchestrateTestScenarioReview(ctx, {
-          preliminary,
-          instruction: props.instruction,
-          groups: filteredGroups,
-          progress: props.reviewProgress,
-        }),
-      );
-    }
-    return out(result)(null);
+    return out(result)(
+      await orchestrateTestScenarioReview(ctx, {
+        preliminary,
+        instruction: props.instruction,
+        groups: filteredGroups,
+        progress: props.reviewProgress,
+      }),
+    );
   });
 };
 

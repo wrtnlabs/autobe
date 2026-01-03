@@ -178,22 +178,21 @@ async function process(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      props.progress.completed += pointer.value.length;
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        created_at: new Date().toISOString(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        operations: pointer.value,
-        total: props.progress.total,
-        completed: props.progress.completed,
-        step: ctx.state().database?.step ?? 0,
-      });
-      return out(result)(pointer.value);
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    props.progress.completed += pointer.value.length;
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      created_at: new Date().toISOString(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      operations: pointer.value,
+      total: props.progress.total,
+      completed: props.progress.completed,
+      step: ctx.state().database?.step ?? 0,
+    });
+    return out(result)(pointer.value);
   });
 }
 

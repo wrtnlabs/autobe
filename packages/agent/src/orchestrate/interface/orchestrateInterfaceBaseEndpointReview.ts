@@ -163,28 +163,27 @@ async function process(
       }),
     });
 
-    if (props.pointer.value !== null) {
-      const finalEndpoints: AutoBeOpenApi.IEndpoint[] = props.endpointSet
-        .toJSON()
-        .map((e) => e.endpoint);
+    if (props.pointer.value === null) return out(result)(null);
 
-      const event: AutoBeInterfaceEndpointReviewEvent = {
-        id: v7(),
-        type: SOURCE,
-        kind: "base",
-        endpoints: props.originalEndpoints,
-        content: finalEndpoints,
-        review: props.pointer.value.review,
-        created_at: start.toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        completed: props.progress.completed,
-        total: props.progress.total,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-      };
-      return out(result)(event);
-    }
-    return out(result)(null);
+    const finalEndpoints: AutoBeOpenApi.IEndpoint[] = props.endpointSet
+      .toJSON()
+      .map((e) => e.endpoint);
+
+    const event: AutoBeInterfaceEndpointReviewEvent = {
+      id: v7(),
+      type: SOURCE,
+      kind: "base",
+      endpoints: props.originalEndpoints,
+      content: finalEndpoints,
+      review: props.pointer.value.review,
+      created_at: start.toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      completed: props.progress.completed,
+      total: props.progress.total,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+    };
+    return out(result)(event);
   });
 }
 

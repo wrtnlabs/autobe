@@ -109,25 +109,24 @@ async function step(
         preliminary,
       }),
     });
-    if (pointer.value !== null) {
-      const event: AutoBeDatabaseReviewEvent = {
-        type: SOURCE,
-        id: v7(),
-        created_at: start.toISOString(),
-        filename: props.component.filename,
-        review: pointer.value.review,
-        plan: pointer.value.plan,
-        modifications: pointer.value.modifications,
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().analyze?.step ?? 0,
-      };
-      ctx.dispatch(event);
-      return out(result)(event);
-    }
-    return out(result)(null);
+    if (pointer.value === null) return out(result)(null);
+
+    const event: AutoBeDatabaseReviewEvent = {
+      type: SOURCE,
+      id: v7(),
+      created_at: start.toISOString(),
+      filename: props.component.filename,
+      review: pointer.value.review,
+      plan: pointer.value.plan,
+      modifications: pointer.value.modifications,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+    };
+    ctx.dispatch(event);
+    return out(result)(event);
   });
 }
 

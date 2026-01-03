@@ -155,8 +155,7 @@ async function process(
         typeName: props.typeName,
       }),
     });
-    if (pointer.value === null)
-      throw new Error(`Complementation failed: ${props.typeName}`);
+    if (pointer.value === null) return out(result)(null);
 
     ++props.progress.completed;
     ctx.dispatch({
