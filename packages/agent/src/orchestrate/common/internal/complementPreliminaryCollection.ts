@@ -181,11 +181,10 @@ const complementInterfaceSchemas = (props: INextProps) => {
   }
 
   // link dependencies
-  const kind: "interfaceSchemas" | "previousInterfaceSchemas" = props.previous
-    ? "previousInterfaceSchemas"
-    : "interfaceSchemas";
+  const kind: "interfaceSchemas" | "previousInterfaceSchemas" =
+    props.previous === true ? "previousInterfaceSchemas" : "interfaceSchemas";
   const prismaKind: "databaseSchemas" | "previousDatabaseSchemas" =
-    props.previous ? "previousDatabaseSchemas" : "databaseSchemas";
+    props.previous === true ? "previousDatabaseSchemas" : "databaseSchemas";
   const unique: Set<string> = new Set(Object.keys(props.local[kind]));
   for (const dto of Object.values(props.local[kind]))
     OpenApiTypeChecker.visit({

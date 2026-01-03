@@ -156,6 +156,9 @@ export const orchestrateInterface =
     const assign = (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
     ) => {
+      schemas = Object.fromEntries(
+        Object.entries(schemas).filter(([_k, v]) => v !== undefined),
+      );
       Object.assign(document.components.schemas, schemas);
       JsonSchemaFactory.authorize(document.components.schemas);
       Object.assign(

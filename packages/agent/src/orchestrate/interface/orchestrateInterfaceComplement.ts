@@ -89,30 +89,22 @@ async function process(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
-      interfaceOperations: props.document.operations.filter(
-        (o) =>
-          o.requestBody?.typeName === props.typeName ||
-          o.responseBody?.typeName === props.typeName,
-      ),
+      interfaceOperations: props.document.operations.filter((o) => {
+        const predicate = (key: string | undefined): boolean => {
+          if (key === undefined) return false;
+          const schema: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+            props.document.components.schemas[key];
+          return schema !== undefined && isReferenced(schema, props.typeName);
+        };
+        return (
+          predicate(o.requestBody?.typeName) ||
+          predicate(o.responseBody?.typeName)
+        );
+      }),
       interfaceSchemas: Object.fromEntries(
-        Object.entries(props.document.components.schemas).filter(([_k, v]) => {
-          let found: boolean = false;
-          AutoBeOpenApiTypeChecker.visit({
-            components: {
-              schemas: {},
-              authorizations: [],
-            },
-            schema: v,
-            closure: (next) => {
-              if (
-                AutoBeOpenApiTypeChecker.isReference(next) &&
-                next.$ref.split("/").pop() === props.typeName
-              )
-                found = true;
-            },
-          });
-          return found;
-        }),
+        Object.entries(props.document.components.schemas).filter(
+          ([_k, v]) => v !== undefined && isReferenced(v, props.typeName),
+        ),
       ),
     },
   });
@@ -243,7 +235,7 @@ function createController(
           "IAutoBeInterfaceComplementApplication.IComplete"
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
-    ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
+    ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
 
   return {
     protocol: "class",
@@ -258,3 +250,25 @@ function createController(
 }
 
 const SOURCE = "interfaceComplement" satisfies AutoBeEventSource;
+
+const isReferenced = (
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive,
+  typeName: string,
+): boolean => {
+  let found: boolean = false;
+  AutoBeOpenApiTypeChecker.visit({
+    components: {
+      authorizations: [],
+      schemas: {},
+    },
+    schema,
+    closure: (next) => {
+      if (
+        AutoBeOpenApiTypeChecker.isReference(next) &&
+        next.$ref.split("/").pop() === typeName
+      )
+        found = true;
+    },
+  });
+  return found;
+};

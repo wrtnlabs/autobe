@@ -196,19 +196,18 @@ export namespace JsonSchemaValidator {
           value: props.schema,
           description: `${props.typeName} must be an object type for authorization responses`,
         });
-        return;
+      } else {
+        // Check if token property exists
+        props.schema.properties ??= {};
+        props.schema.properties["token"] = {
+          $ref: "#/components/schemas/IAuthorizationToken",
+          description: "JWT token information for authentication",
+        } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
+
+        props.schema.required ??= [];
+        if (props.schema.required.includes("token") === false)
+          props.schema.required.push("token");
       }
-
-      // Check if token property exists
-      props.schema.properties ??= {};
-      props.schema.properties["token"] = {
-        $ref: "#/components/schemas/IAuthorizationToken",
-        description: "JWT token information for authentication",
-      } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
-
-      props.schema.required ??= [];
-      if (props.schema.required.includes("token") === false)
-        props.schema.required.push("token");
     }
 
     AutoBeOpenApiTypeChecker.skim({
@@ -472,7 +471,6 @@ export namespace JsonSchemaValidator {
           `,
         });
       else if (
-        key.endsWith(".IAuthorized") ||
         key.endsWith(".IRequest") ||
         key.endsWith(".ISummary") ||
         key.endsWith(".IInvert") ||
