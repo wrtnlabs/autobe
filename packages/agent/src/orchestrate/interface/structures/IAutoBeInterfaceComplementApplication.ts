@@ -53,9 +53,10 @@ export namespace IAutoBeInterfaceComplementApplication {
      *
      * Determines which action to perform: preliminary data retrieval
      * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas) or final schema complementation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * getInterfaceSchemas, getPreviousAnalysisFiles, getPreviousDatabaseSchemas,
+     * getPreviousInterfaceOperations, getPreviousInterfaceSchemas) or final
+     * schema complementation (complete). When preliminary returns empty array,
+     * that type is removed from the union, physically preventing repeated calls.
      */
     request:
       | IComplete

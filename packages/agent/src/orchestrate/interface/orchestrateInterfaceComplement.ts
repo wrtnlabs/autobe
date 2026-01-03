@@ -60,6 +60,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
+  console.log("orchestrateInterfaceComplement start", props.typeName);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -116,58 +117,64 @@ async function process(
       ),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
-      value: null,
-    };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
-        typeName: props.typeName,
-        operations: props.document.operations,
-        build: (next) => {
-          const container: Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          > = (OpenApiV3_1Emender.convertComponents({
-            schemas: {
-              [props.typeName]: next,
-            },
-          }).schemas ?? {}) as Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          >;
-          pointer.value = container[props.typeName];
-        },
-        preliminary,
-      }),
-      promptCacheKey: props.promptCacheKey,
-      enforceFunctionCall: true,
-      ...transformInterfaceComplementHistory({
-        state: ctx.state(),
-        instruction: props.instruction,
-        preliminary,
-        typeName: props.typeName,
-      }),
-    });
-    if (pointer.value === null)
-      throw new Error(`Complementation failed: ${props.typeName}`);
+  console.log("orchestrateInterfaceComplement prepared", props.typeName);
+  try {
+    return await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
+        value: null,
+      };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController(ctx, {
+          typeName: props.typeName,
+          operations: props.document.operations,
+          build: (next) => {
+            const container: Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            > = (OpenApiV3_1Emender.convertComponents({
+              schemas: {
+                [props.typeName]: next,
+              },
+            }).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >;
+            pointer.value = container[props.typeName];
+          },
+          preliminary,
+        }),
+        promptCacheKey: props.promptCacheKey,
+        enforceFunctionCall: true,
+        ...transformInterfaceComplementHistory({
+          state: ctx.state(),
+          instruction: props.instruction,
+          preliminary,
+          typeName: props.typeName,
+        }),
+      });
+      if (pointer.value === null)
+        throw new Error(`Complementation failed: ${props.typeName}`);
 
-    ++props.progress.completed;
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      schema: pointer.value,
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      completed: props.progress.completed,
-      total: props.progress.total,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceComplementEvent);
-    return out(result)(pointer.value);
-  });
+      ++props.progress.completed;
+      ctx.dispatch({
+        type: SOURCE,
+        id: v7(),
+        typeName: props.typeName,
+        schema: pointer.value,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        completed: props.progress.completed,
+        total: props.progress.total,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceComplementEvent);
+      return out(result)(pointer.value);
+    });
+  } catch (error) {
+    console.log("orchestrateInterfaceComplement failed", props.typeName, error);
+    throw error;
+  }
 }
 
 function createController(
