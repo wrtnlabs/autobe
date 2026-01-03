@@ -16,6 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -41,12 +42,16 @@ export async function orchestrateInterfaceSchemaReview(
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
     ctx,
-    typeNames.map((typeName) => async (promptCacheKey) => {
+    typeNames.map((it) => async (promptCacheKey) => {
+      const predicate = (key: string) =>
+        key === it ||
+        (JsonSchemaValidator.isPage(key) &&
+          JsonSchemaFactory.getPageName(key) === it);
       const reviewOperations: AutoBeOpenApi.IOperation[] =
         props.document.operations.filter(
           (op) =>
-            (op.requestBody && op.requestBody.typeName === typeName) ||
-            (op.responseBody && op.responseBody.typeName === typeName),
+            (op.requestBody && predicate(op.requestBody.typeName)) ||
+            (op.responseBody && predicate(op.responseBody.typeName)),
         );
       try {
         const reviewed: AutoBeOpenApi.IJsonSchemaDescriptive = await process(
@@ -55,14 +60,14 @@ export async function orchestrateInterfaceSchemaReview(
           {
             instruction: props.instruction,
             document: props.document,
-            typeName,
+            typeName: it,
             reviewOperations,
-            reviewSchema: props.schemas[typeName],
+            reviewSchema: props.schemas[it],
             progress: props.progress,
             promptCacheKey,
           },
         );
-        x[typeName] = reviewed;
+        x[it] = reviewed;
       } catch {
         ++props.progress.completed;
       }
