@@ -71,5 +71,5 @@ export const enum AutoBeConfigConstant {
    * limits and memory usage. Too high causes rate limit errors and resource
    * exhaustion; too low wastes potential parallelism.
    */
-  SEMAPHORE = 8,
+  SEMAPHORE = 16,
 }
