@@ -94,51 +94,44 @@ export namespace AutoBeExampleBenchmark {
         success: null,
         started_at: new Date(),
         completed_at: null,
-        trial: 0,
         count: 0,
       };
       props.projectState.phases.push(phaseState);
-      for (let i: number = 0; i < 1; ++i) {
-        try {
-          ++phaseState.trial;
-          phaseState.started_at = new Date();
-          phaseState.completed_at = null;
-          phaseState.count = 0;
-          const success: boolean = await getArchiver(phase)({
-            vendor: props.vendor,
-            project: props.projectState.name,
-            agent: (next) => ctx.createAgent(next),
-            on: (s) => {
-              ++phaseState.count;
-              const event = s.event;
-              if (
-                event.type !== "jsonValidateError" &&
-                event.type !== "jsonParseError" &&
-                event.type !== "preliminary" &&
-                event.type !== "consentFunctionCall"
-              )
-                phaseState.snapshot = s;
-              props.report();
-              if (props.on) props.on(s.event);
-            },
-          });
-          phaseState.success = success;
-          phaseState.completed_at = new Date();
-          props.report();
-          if (success === true) break;
-        } catch (error) {
-          console.log(
-            props.vendor,
-            props.projectState.name,
-            phaseState.name,
-            error,
-          );
-          continue;
-        }
+      try {
+        phaseState.started_at = new Date();
+        phaseState.completed_at = null;
+        phaseState.count = 0;
+        const success: boolean = await getArchiver(phase)({
+          vendor: props.vendor,
+          project: props.projectState.name,
+          agent: (next) => ctx.createAgent(next),
+          on: (s) => {
+            ++phaseState.count;
+            const event = s.event;
+            if (
+              event.type !== "jsonValidateError" &&
+              event.type !== "jsonParseError" &&
+              event.type !== "preliminary" &&
+              event.type !== "consentFunctionCall"
+            )
+              phaseState.snapshot = s;
+            props.report();
+            if (props.on) props.on(s.event);
+          },
+        });
+        phaseState.success = success;
+        phaseState.completed_at = new Date();
+        props.report();
+      } catch (error) {
+        console.log(
+          props.vendor,
+          props.projectState.name,
+          phaseState.name,
+          error,
+        );
+        throw error;
       }
-      if (phaseState.success === null) break;
-      else if (phaseState.success === false && phaseState.name !== "test")
-        break;
+      if (phaseState.success === null || phaseState.success === false) break;
     }
     props.projectState.completed_at = new Date();
     props.projectState.success = props.projectState.phases.every(

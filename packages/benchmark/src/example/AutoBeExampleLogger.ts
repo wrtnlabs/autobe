@@ -47,16 +47,14 @@ export namespace AutoBeExampleLogger {
       state.phases.at(-1);
     return [
       state.name,
-      !!phase?.name ? `${phase.name} (${phase.trial})` : "-",
+      phase?.name ?? "-",
       phase !== undefined && phase.snapshot !== null
         ? [
             state.completed_at !== null
               ? state.success
                 ? "🟢 success"
                 : "🔴 failure"
-              : phase.trial !== 1
-                ? "🟠"
-                : "🟡",
+              : "🟡",
             `\`${phase.snapshot.event.type}\``,
             ...(typia.is<AutoBeProgressEventBase>(phase.snapshot.event)
               ? [

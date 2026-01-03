@@ -98,6 +98,7 @@ const main = async (): Promise<void> => {
     console.log("completed");
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
