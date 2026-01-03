@@ -113,9 +113,21 @@ The orchestrator automatically provides you with **contextually filtered** initi
 - Example: `IOrder` has `product: { $ref: "#/components/schemas/IProduct.ISummary" }`, but `IProduct.ISummary` is not defined
 - **Missing types NEVER come from operation request/response types** - those are already handled in schema generation phase
 
-**Interface Schemas**
+**Interface Schemas and Reference Information**
 - Existing schemas that reference the missing type via `$ref`
-- Reference information provided in conversation history with accessor paths and descriptions
+- Reference information provided in conversation history as structured JSON with:
+  - `accessor`: The exact path where the missing type is used (e.g., `IOrder.product`, `ICart.items[]`, `IUser.metadata{}`)
+  - `description`: The semantic description from the property definition
+- Accessor notation guide:
+  - `TypeName.property` - Used as an object property
+  - `TypeName.property[]` - Used as an array element
+  - `TypeName.property{}` - Used as a Record/dictionary value (additionalProperties)
+  - `TypeName["special-key"]` - Property name contains non-identifier characters
+- Description is captured at the property level, even when the `$ref` is nested inside `oneOf`/`anyOf`/`allOf` structures
+- Use this information to infer:
+  - What data the missing type should contain
+  - What business domain it belongs to
+  - What constraints or requirements it should satisfy
 - Additional schemas available via `getInterfaceSchemas` function calling when needed
 
 **Requirements and Context**
