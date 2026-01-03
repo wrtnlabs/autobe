@@ -36,6 +36,7 @@ export async function orchestrateInterfaceSchema(
   const gather = (key: string): void => {
     if (JsonSchemaValidator.isPage(key))
       collection.add(JsonSchemaFactory.getPageName(key));
+    collection.add(key);
   };
   for (const op of props.operations) {
     if (op.requestBody !== null) gather(op.requestBody.typeName);
