@@ -109,13 +109,35 @@ const transformReferenceHistory = (props: {
     text: StringUtil.trim`
       ## Existing Schema References
 
-      The following schema definitions reference the missing type
-      **${props.typeName}**. These references can provide context
-      and insights into how the missing type is used within the API.
+      The missing type **${props.typeName}** is referenced in the following locations
+      within existing schema definitions. Use these references to understand the context,
+      purpose, and expected structure of the missing type.
+
+      Each reference includes:
+      - \`accessor\`: The exact path where this type is used in the schema tree
+      - \`description\`: The semantic description from that property definition
+
+      **Accessor Notation Guide**:
+      - \`TypeName.property\` - Used as an object property
+      - \`TypeName.property[]\` - Used as an array element
+      - \`TypeName.property{}\` - Used as a Record/dictionary value (additionalProperties)
+      - \`TypeName["special-key"]\` - Property name contains non-identifier characters
+
+      **How to Use This Information**:
+      1. The \`description\` field reveals the business purpose and semantic meaning
+      2. The \`accessor\` path shows the relationship and context within the API
+      3. Multiple references indicate different use cases the type must support
+      4. Description is captured at the property level, even if the $ref is nested
+         inside oneOf/anyOf/allOf structures (nullable, union types, etc.)
 
       \`\`\`json
-      ${JSON.stringify(references)}
+      ${JSON.stringify(references, null, 2)}
       \`\`\`
+
+      Analyze these references carefully to infer:
+      - What data this type should contain
+      - What business domain it belongs to
+      - What constraints or requirements it should satisfy
     `,
   };
 };
