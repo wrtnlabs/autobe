@@ -35,6 +35,7 @@ import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRe
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
+import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 
 export const orchestrateInterface =
   (ctx: AutoBeContext) =>
@@ -188,13 +189,12 @@ export const orchestrateInterface =
     // REVIEW GENERATED
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
-      total: 0,
+      total:
+        Object.keys(document.components.schemas).filter(
+          (k) => JsonSchemaValidator.isPreset(k) === false,
+        ).length * REVIEWERS.length,
     };
-    for (const config of REVIEWERS) {
-      reviewProgress.total = Math.ceil(
-        (Object.keys(document.components.schemas).length * REVIEWERS.length) /
-          AutoBeConfigConstant.INTERFACE_CAPACITY,
-      );
+    for (const config of REVIEWERS)
       assign(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
@@ -203,7 +203,6 @@ export const orchestrateInterface =
           progress: reviewProgress,
         }),
       );
-    }
 
     // COMPLEMENTATION
     const complementProgress: AutoBeProgressEventBase = {
