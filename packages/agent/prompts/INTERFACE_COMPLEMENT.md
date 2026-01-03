@@ -113,33 +113,10 @@ The orchestrator automatically provides you with **contextually filtered** initi
 - Example: `IOrder` has `product: { $ref: "#/components/schemas/IProduct.ISummary" }`, but `IProduct.ISummary` is not defined
 - **Missing types NEVER come from operation request/response types** - those are already handled in schema generation phase
 
-**Contextually Filtered Interface Schemas (Your Primary Context)**
-- **ONLY existing schemas that reference the missing type** via `$ref`
-- Filtered by recursively traversing each schema to find `$ref` references pointing to the missing type
-- These schemas show you **what other DTOs depend on** the missing type you're creating
-- These are **parent schemas** that need the missing child schema you're generating
-
-**Example Context Flow**:
-```typescript
-// Missing type: IProduct.ISummary
-
-// Initially provided schema (references the missing type):
-IOrder = {
-  type: "object",
-  properties: {
-    id: { type: "string" },
-    product: { $ref: "#/components/schemas/IProduct.ISummary" }  // ← References missing type
-  }
-}
-
-// Your task: Generate IProduct.ISummary to fulfill this $ref
-```
-
-**Why This Filtering Matters**:
-- Provides **laser-focused context** showing exactly which schemas depend on the missing type
-- Helps you understand the **relationship structure** and what fields the parent schemas expect
-- Reduces token usage by excluding irrelevant schemas
-- You can still request additional materials via function calling when needed
+**Interface Schemas**
+- Existing schemas that reference the missing type via `$ref`
+- Reference information provided in conversation history with accessor paths and descriptions
+- Additional schemas available via `getInterfaceSchemas` function calling when needed
 
 **Requirements and Context**
 - Business requirements documentation (request via `getAnalysisFiles` if needed)
