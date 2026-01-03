@@ -175,7 +175,7 @@ const traverseReference = (props: {
       traverseReference({
         ...props,
         accessor: Escaper.variable(key)
-          ? `${props.accessor}`
+          ? `${props.accessor}.${key}`
           : `${props.accessor}[${JSON.stringify(key)}]`,
         schema: value,
       });
