@@ -147,7 +147,7 @@ async function process(
         promptCacheKey: props.promptCacheKey,
         enforceFunctionCall: true,
         ...transformInterfaceComplementHistory({
-          state: ctx.state(),
+          document: props.document,
           instruction: props.instruction,
           preliminary,
           typeName: props.typeName,
