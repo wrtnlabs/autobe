@@ -10,7 +10,7 @@ import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_preliminary_controller_fix_of_chatgpt = async () => {
+export const test_preliminary_application_fix_erase = async () => {
   if (
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
@@ -23,7 +23,7 @@ export const test_preliminary_controller_fix_of_chatgpt = async () => {
   const agent: AutoBeAgent = new AutoBeAgent({
     vendor: {
       api: new OpenAI({ apiKey: "" }),
-      model: "gpt-4.1",
+      model: TestGlobal.vendorModel,
     },
     compiler: (listener) => new AutoBeCompiler(listener),
     histories: await AutoBeExampleStorage.getHistories({

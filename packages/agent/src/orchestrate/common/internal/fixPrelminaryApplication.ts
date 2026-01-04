@@ -1,14 +1,25 @@
-import { AutoBePreliminaryKind } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBePreliminaryKind } from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmFunction,
   ILlmSchema,
   LlmTypeChecker,
 } from "@samchon/openapi";
+import typia from "typia";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
+import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
+import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IAutoBePreliminaryGetRealizeCollectors } from "../structures/IAutoBePreliminaryGetRealizeCollectors";
+import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBePreliminaryGetRealizeTransformers";
 
 export const fixPreliminaryApplication = <
   Kind extends AutoBePreliminaryKind,
@@ -65,14 +76,26 @@ export const fixPreliminaryApplication = <
         eraseKind(kind);
       }
     }
+
+  for (const kind of props.preliminary.getKinds()) {
+    const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
+      kind.startsWith("previous")
+        ? (() => {
+            const value = kind.replace("previous", "");
+            return value[0].toLowerCase() + value.substring(1);
+          })()
+        : kind
+    ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+    const previous: boolean = kind.startsWith("previous");
+    ApplicationFixer[accessor]({
+      $defs: func.parameters.$defs,
+      controller: props.preliminary as any,
+      previous,
+    });
+  }
 };
 
 const getUnionErasure = (props: {
-  $defs: Record<string, ILlmSchema>;
-  request: ILlmSchema;
-}) => getUnionErasureOfChatGpt(props);
-
-const getUnionErasureOfChatGpt = (props: {
   $defs: Record<string, ILlmSchema>;
   request: ILlmSchema;
 }) => {
@@ -101,3 +124,140 @@ const getUnionErasureOfChatGpt = (props: {
     delete mapping[key];
   };
 };
+
+namespace ApplicationFixer {
+  export const analysisFiles = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<
+      "analysisFiles" | "previousAnalysisFiles"
+    >;
+    previous: boolean;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      props.previous
+        ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisFiles>()
+        : typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .fileNames as ILlmSchema.IArray;
+    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
+    items.enum = props.controller
+      .getAll()
+      [
+        props.previous ? "previousAnalysisFiles" : "analysisFiles"
+      ].map((x) => x.filename);
+  };
+
+  export const databaseSchemas = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<
+      "databaseSchemas" | "previousDatabaseSchemas"
+    >;
+    previous: boolean;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      props.previous
+        ? typia.reflect.name<IAutoBePreliminaryGetPreviousDatabaseSchemas>()
+        : typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .schemaNames as ILlmSchema.IArray;
+    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
+    items.enum = props.controller
+      .getAll()
+      [
+        props.previous ? "previousDatabaseSchemas" : "databaseSchemas"
+      ].map((x) => x.name);
+  };
+
+  export const interfaceOperations = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<
+      "interfaceOperations" | "previousInterfaceOperations"
+    >;
+    previous: boolean;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      props.previous
+        ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceOperations>()
+        : typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .endpoints as ILlmSchema.IArray;
+    array.items = {
+      anyOf: props.controller
+        .getAll()
+        [
+          props.previous ? "previousInterfaceOperations" : "interfaceOperations"
+        ].map(
+          (op) =>
+            ({
+              type: "object",
+              properties: {
+                path: {
+                  type: "string",
+                  enum: [op.path],
+                } satisfies ILlmSchema.IString,
+                method: {
+                  type: "string",
+                  enum: [op.method],
+                } satisfies ILlmSchema.IString,
+              },
+              required: ["path", "method"],
+            }) satisfies ILlmSchema.IObject,
+        ),
+    } satisfies ILlmSchema.IAnyOf;
+  };
+
+  export const interfaceSchemas = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<
+      "interfaceSchemas" | "previousInterfaceSchemas"
+    >;
+    previous: boolean;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      props.previous
+        ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceSchemas>()
+        : typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .typeNames as ILlmSchema.IArray;
+    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
+    items.enum = Object.keys(
+      props.controller.getAll()[
+        props.previous ? "previousInterfaceSchemas" : "interfaceSchemas"
+      ] satisfies Record<string, AutoBeOpenApi.IJsonSchema>,
+    );
+  };
+
+  export const realizeCollectors = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<"realizeCollectors">;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .dtoTypeNames as ILlmSchema.IArray;
+    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
+    items.enum = props.controller
+      .getAll()
+      .realizeCollectors.map((x) => x.plan.dtoTypeName);
+  };
+
+  export const realizeTransformers = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<"realizeTransformers">;
+  }): void => {
+    const type: ILlmSchema.IObject = props.$defs[
+      typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>()
+    ] as ILlmSchema.IObject;
+    const array: ILlmSchema.IArray = type.properties
+      .dtoTypeNames as ILlmSchema.IArray;
+    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
+    items.enum = props.controller
+      .getAll()
+      .realizeTransformers.map((x) => x.plan.dtoTypeName);
+  };
+}
