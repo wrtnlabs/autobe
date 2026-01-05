@@ -114,6 +114,21 @@ async function process(
       "previousInterfaceSchemas",
     ],
     state: ctx.state(),
+    all: {
+      interfaceOperations: props.operations,
+    },
+    local: {
+      interfaceOperations: props.operations.filter((o) => {
+        const predicate = (key: string) =>
+          key === props.typeName ||
+          (JsonSchemaValidator.isPage(key) &&
+            JsonSchemaFactory.getPageName(key) === props.typeName);
+        return (
+          (o.requestBody && predicate(o.requestBody.typeName)) ||
+          (o.responseBody && predicate(o.responseBody.typeName))
+        );
+      }),
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {

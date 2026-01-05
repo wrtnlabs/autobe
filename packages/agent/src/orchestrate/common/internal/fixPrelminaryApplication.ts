@@ -1,4 +1,9 @@
-import { AutoBeOpenApi, AutoBePreliminaryKind } from "@autobe/interface";
+import {
+  AutoBeAnalyzeFile,
+  AutoBeDatabase,
+  AutoBeOpenApi,
+  AutoBePreliminaryKind,
+} from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmFunction,
@@ -133,6 +138,12 @@ namespace ApplicationFixer {
     >;
     previous: boolean;
   }): void => {
+    const analysisFiles: AutoBeAnalyzeFile[] =
+      props.controller.getAll()[
+        props.previous ? "previousAnalysisFiles" : "analysisFiles"
+      ];
+    if (analysisFiles.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       props.previous
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisFiles>()
@@ -141,11 +152,7 @@ namespace ApplicationFixer {
     const array: ILlmSchema.IArray = type.properties
       .fileNames as ILlmSchema.IArray;
     const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = props.controller
-      .getAll()
-      [
-        props.previous ? "previousAnalysisFiles" : "analysisFiles"
-      ].map((x) => x.filename);
+    items.enum = analysisFiles.map((x) => x.filename);
   };
 
   export const databaseSchemas = (props: {
@@ -155,6 +162,12 @@ namespace ApplicationFixer {
     >;
     previous: boolean;
   }): void => {
+    const schemas: AutoBeDatabase.IModel[] =
+      props.controller.getAll()[
+        props.previous ? "previousDatabaseSchemas" : "databaseSchemas"
+      ];
+    if (schemas.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       props.previous
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousDatabaseSchemas>()
@@ -163,11 +176,7 @@ namespace ApplicationFixer {
     const array: ILlmSchema.IArray = type.properties
       .schemaNames as ILlmSchema.IArray;
     const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = props.controller
-      .getAll()
-      [
-        props.previous ? "previousDatabaseSchemas" : "databaseSchemas"
-      ].map((x) => x.name);
+    items.enum = schemas.map((x) => x.name);
   };
 
   export const interfaceOperations = (props: {
@@ -177,6 +186,12 @@ namespace ApplicationFixer {
     >;
     previous: boolean;
   }): void => {
+    const operations: AutoBeOpenApi.IOperation[] =
+      props.controller.getAll()[
+        props.previous ? "previousInterfaceOperations" : "interfaceOperations"
+      ];
+    if (operations.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       props.previous
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceOperations>()
@@ -185,27 +200,23 @@ namespace ApplicationFixer {
     const array: ILlmSchema.IArray = type.properties
       .endpoints as ILlmSchema.IArray;
     array.items = {
-      anyOf: props.controller
-        .getAll()
-        [
-          props.previous ? "previousInterfaceOperations" : "interfaceOperations"
-        ].map(
-          (op) =>
-            ({
-              type: "object",
-              properties: {
-                path: {
-                  type: "string",
-                  enum: [op.path],
-                } satisfies ILlmSchema.IString,
-                method: {
-                  type: "string",
-                  enum: [op.method],
-                } satisfies ILlmSchema.IString,
-              },
-              required: ["path", "method"],
-            }) satisfies ILlmSchema.IObject,
-        ),
+      anyOf: operations.map(
+        (op) =>
+          ({
+            type: "object",
+            properties: {
+              path: {
+                type: "string",
+                enum: [op.path],
+              } satisfies ILlmSchema.IString,
+              method: {
+                type: "string",
+                enum: [op.method],
+              } satisfies ILlmSchema.IString,
+            },
+            required: ["path", "method"],
+          }) satisfies ILlmSchema.IObject,
+      ),
     } satisfies ILlmSchema.IAnyOf;
   };
 
@@ -216,6 +227,13 @@ namespace ApplicationFixer {
     >;
     previous: boolean;
   }): void => {
+    const dtoTypeNames: string[] = Object.keys(
+      props.controller.getAll()[
+        props.previous ? "previousInterfaceSchemas" : "interfaceSchemas"
+      ] satisfies Record<string, AutoBeOpenApi.IJsonSchema>,
+    );
+    if (dtoTypeNames.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       props.previous
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceSchemas>()
@@ -224,17 +242,15 @@ namespace ApplicationFixer {
     const array: ILlmSchema.IArray = type.properties
       .typeNames as ILlmSchema.IArray;
     const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = Object.keys(
-      props.controller.getAll()[
-        props.previous ? "previousInterfaceSchemas" : "interfaceSchemas"
-      ] satisfies Record<string, AutoBeOpenApi.IJsonSchema>,
-    );
+    items.enum = dtoTypeNames;
   };
 
   export const realizeCollectors = (props: {
     $defs: Record<string, ILlmSchema>;
     controller: AutoBePreliminaryController<"realizeCollectors">;
   }): void => {
+    if (props.controller.getAll().realizeCollectors.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>()
     ] as ILlmSchema.IObject;
@@ -250,6 +266,8 @@ namespace ApplicationFixer {
     $defs: Record<string, ILlmSchema>;
     controller: AutoBePreliminaryController<"realizeTransformers">;
   }): void => {
+    if (props.controller.getAll().realizeTransformers.length === 0) return;
+
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>()
     ] as ILlmSchema.IObject;
