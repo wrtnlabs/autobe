@@ -18,7 +18,6 @@ import { HashMap, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
@@ -221,10 +220,8 @@ export const orchestrateInterface =
 
       // REVIEW COMPLEMENTED
       for (const config of REVIEWERS) {
-        reviewProgress.total = Math.ceil(
-          (Object.keys(document.components.schemas).length * REVIEWERS.length) /
-            AutoBeConfigConstant.INTERFACE_CAPACITY,
-        );
+        reviewProgress.total =
+          Object.keys(document.components.schemas).length * REVIEWERS.length;
         assign(
           await orchestrateInterfaceSchemaReview(ctx, config, {
             instruction: props.instruction,

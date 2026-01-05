@@ -8,7 +8,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformInterfaceOperationHistory = (props: {
   prefix: string;
-  endpoints: AutoBeOpenApi.IEndpoint[];
+  endpoint: AutoBeOpenApi.IEndpoint;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -66,20 +66,16 @@ export const transformInterfaceOperationHistory = (props: {
 
           ${props.instruction}
 
-          ## Operations
+          ## Operation
 
-          You have to make API operations for the given endpoints:
+          You have to make an API operation for the given endpoint:
 
-          \`\`\`json
-          ${JSON.stringify(props.endpoints)}
-          \`\`\`
-
-          If there is a content in the failure, it is to explain why it failed before.
-          Please supplement or modify the Operation accordingly.
+          - path: ${props.endpoint.path}
+          - method: ${props.endpoint.method}
         `,
       },
     ],
     userMessage:
-      "Create API operation specifications for the given endpoints please",
+      "Create an API operation specification for the given endpoint please",
   };
 };

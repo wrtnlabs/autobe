@@ -2,10 +2,10 @@ import { AutoBeOpenApi, CamelCasePattern } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceOperationApplication {
   /**
@@ -65,12 +65,12 @@ export namespace IAutoBeInterfaceOperationApplication {
   }
 
   /**
-   * Request to generate detailed API operations.
+   * Request to generate a detailed API operation.
    *
-   * Executes operation generation to create complete API operations following
-   * REST principles and quality standards. Each operation includes
-   * specification, path, method, detailed description, summary, parameters, and
-   * request/response bodies.
+   * Executes operation generation to create a complete API operation following
+   * REST principles and quality standards. The operation includes specification,
+   * path, method, detailed description, summary, parameters, and request/response
+   * bodies.
    */
   export interface IComplete {
     /**
@@ -83,9 +83,9 @@ export namespace IAutoBeInterfaceOperationApplication {
     type: "complete";
 
     /**
-     * Array of API operations to generate.
+     * The API operation to generate.
      *
-     * Each operation in this array includes:
+     * The operation includes:
      *
      * - Specification: Detailed API specification with clear purpose and
      *   functionality
@@ -100,7 +100,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      *   components.schemas
      * - ResponseBody: With typeName referencing appropriate response type
      *
-     * All operations follow strict quality standards:
+     * The operation follows strict quality standards:
      *
      * 1. Detailed descriptions referencing database schema comments
      * 2. Accurate parameter definitions matching path parameters
@@ -112,7 +112,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      * creation (POST), use .ICreate request body. For modification (PUT), use
      * .IUpdate request body.
      */
-    operations: IOperation[];
+    operation: IOperation;
   }
 
   /**

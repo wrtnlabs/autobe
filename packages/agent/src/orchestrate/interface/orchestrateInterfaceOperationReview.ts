@@ -12,6 +12,7 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
@@ -19,22 +20,34 @@ import { OperationValidator } from "./utils/OperationValidator";
 
 export async function orchestrateInterfaceOperationReview(
   ctx: AutoBeContext,
-  operations: AutoBeOpenApi.IOperation[],
-  progress: AutoBeProgressEventBase,
+  props: {
+    operations: AutoBeOpenApi.IOperation[];
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  try {
-    return await process(ctx, operations, progress);
-  } catch {
-    ++progress.completed;
-    return [];
-  }
+  const operations: Array<AutoBeOpenApi.IOperation | null> =
+    await executeCachedBatch(
+      ctx,
+      props.operations.map(
+        (operation) => async (promptCacheKey) =>
+          process(ctx, {
+            operation,
+            promptCacheKey,
+            progress: props.progress,
+          }),
+      ),
+    );
+  return operations.filter((o) => o !== null);
 }
 
 async function process(
   ctx: AutoBeContext,
-  operations: AutoBeOpenApi.IOperation[],
-  progress: AutoBeProgressEventBase,
-): Promise<AutoBeOpenApi.IOperation[]> {
+  props: {
+    operation: AutoBeOpenApi.IOperation;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
+): Promise<AutoBeOpenApi.IOperation | null> {
   const files: AutoBeDatabase.IFile[] =
     ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
@@ -73,32 +86,26 @@ async function process(
       enforceFunctionCall: false,
       ...transformInterfaceOperationReviewHistory({
         preliminary,
-        operations,
+        operation: props.operation,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
-      (op) => ({
-        ...op,
-        authorizationType: null,
-      }),
-    );
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
-      operations: content,
+      operation: props.operation,
       review: pointer.value.think.review,
       plan: pointer.value.think.plan,
-      content,
+      content: pointer.value.content,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
-      total: progress.total,
-      completed: ++progress.completed,
+      total: props.progress.total,
+      completed: ++props.progress.completed,
     } satisfies AutoBeInterfaceOperationReviewEvent);
-    return out(result)(content);
+    return out(result)(pointer.value.content);
   });
 }
 
@@ -128,11 +135,12 @@ function createReviewController(props: {
       });
 
     const errors: IValidation.IError[] = [];
-    OperationValidator.validate({
-      path: "$input.request.content",
-      operations: result.data.request.content,
-      errors,
-    });
+    if (result.data.request.content !== null)
+      OperationValidator.validate({
+        path: "$input.request.content",
+        operation: result.data.request.content,
+        errors,
+      });
     if (errors.length !== 0)
       return {
         success: false,

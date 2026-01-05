@@ -14,7 +14,7 @@ export function transformInterfaceOperationReviewHistory(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  operations: AutoBeOpenApi.IOperation[];
+  operation: AutoBeOpenApi.IOperation;
 }): IAutoBeOrchestrateHistory {
   return {
     histories: [
@@ -36,14 +36,14 @@ export function transformInterfaceOperationReviewHistory(props: {
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          Review the following API operations:
+          Review the following API operation:
 
           \`\`\`json
-          ${JSON.stringify(props.operations)}
+          ${JSON.stringify(props.operation)}
           \`\`\`
         `,
       },
     ],
-    userMessage: "Review the following API operations please",
+    userMessage: "Review the following API operation please",
   };
 }

@@ -13,7 +13,7 @@ export const test_interface_endpoint_compare = (): void => {
   TestValidator.equals("endpoints", endpoints, [
     { method: "patch", path: "/customers" },
     { method: "post", path: "/customers" },
-    { method: "post", path: "/sellers" },
     { method: "patch", path: "/sellers" },
+    { method: "post", path: "/sellers" },
   ]);
 };

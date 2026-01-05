@@ -7,14 +7,12 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { HashMap, HashSet, IPointer } from "tstl";
+import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
@@ -29,26 +27,18 @@ export async function orchestrateInterfaceOperation(
     endpoints: AutoBeOpenApi.IEndpoint[];
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
-    array: props.endpoints,
-    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
-  });
+  // write
   const progress: AutoBeProgressEventBase = {
-    total: matrix.flat().length,
+    total: props.endpoints.length,
     completed: 0,
   };
-  const reviewProgress: AutoBeProgressEventBase = {
-    total: matrix.length,
-    completed: 0,
-  };
-  return (
+  const written: AutoBeOpenApi.IOperation[] = (
     await executeCachedBatch(
       ctx,
-      matrix.map((it) => async (promptCacheKey) => {
-        const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(ctx, {
-          endpoints: it,
+      props.endpoints.map((endpoint) => async (promptCacheKey) => {
+        const row: AutoBeOpenApi.IOperation[] = await process(ctx, {
+          endpoint,
           progress,
-          reviewProgress,
           promptCacheKey,
           instruction: props.instruction,
         });
@@ -56,59 +46,49 @@ export async function orchestrateInterfaceOperation(
       }),
     )
   ).flat();
-}
 
-async function divideAndConquer(
-  ctx: AutoBeContext,
-  props: {
-    endpoints: AutoBeOpenApi.IEndpoint[];
-    progress: AutoBeProgressEventBase;
-    reviewProgress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-    instruction: string;
-  },
-): Promise<AutoBeOpenApi.IOperation[]> {
-  const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-    props.endpoints,
-    AutoBeOpenApiEndpointComparator.hashCode,
-    AutoBeOpenApiEndpointComparator.equals,
-  );
+  // unique dictionary
   const unique: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
+      written.map(
+        (w) =>
+          new Pair(
+            {
+              path: w.path,
+              method: w.method,
+            },
+            w,
+          ),
+      ),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
-  for (let i: number = 0; i < ctx.retry; ++i) {
-    if (remained.empty() === true || unique.size() >= props.endpoints.length)
-      break;
-    const operations: AutoBeOpenApi.IOperation[] = remained.size()
-      ? await process(ctx, {
-          endpoints: remained,
-          progress: props.progress,
-          promptCacheKey: props.promptCacheKey,
-          instruction: props.instruction,
-        })
-      : [];
 
-    for (const item of operations) {
-      unique.set(item, item);
-      remained.erase(item);
-    }
-  }
-  const newbie: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceOperationReview(
-      ctx,
-      unique.toJSON().map((it) => it.second),
-      props.reviewProgress,
+  // review
+  const reviewProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: written.length,
+  };
+  const reviewed: AutoBeOpenApi.IOperation[] =
+    await orchestrateInterfaceOperationReview(ctx, {
+      operations: written,
+      progress: reviewProgress,
+    });
+  for (const r of reviewed)
+    unique.set(
+      {
+        path: r.path,
+        method: r.method,
+      },
+      r,
     );
-  for (const item of newbie) unique.set(item, item);
   return unique.toJSON().map((it) => it.second);
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
-    endpoints: HashSet<AutoBeOpenApi.IEndpoint>;
+    endpoint: AutoBeOpenApi.IEndpoint;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
@@ -142,52 +122,42 @@ async function process(
       controller: createController({
         preliminary,
         actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
-        build: (operations) => {
+        build: (op) => {
           pointer.value ??= [];
-          const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
-            if (op.authorizationActors.length === 0)
-              return [
-                {
+          const matrix: AutoBeOpenApi.IOperation[] =
+            op.authorizationActors.length === 0
+              ? [
+                  {
+                    ...op,
+                    path:
+                      "/" +
+                      [prefix, ...op.path.split("/")]
+                        .filter((it) => it !== "")
+                        .join("/"),
+                    authorizationActor: null,
+                    authorizationType: null,
+                    prerequisites: [],
+                  },
+                ]
+              : op.authorizationActors.map((actor) => ({
                   ...op,
                   path:
                     "/" +
-                    [prefix, ...op.path.split("/")]
+                    [prefix, actor, ...op.path.split("/")]
                       .filter((it) => it !== "")
                       .join("/"),
-                  authorizationActor: null,
+                  authorizationActor: actor,
                   authorizationType: null,
                   prerequisites: [],
-                },
-              ];
-            return op.authorizationActors.map((actor) => ({
-              ...op,
-              path:
-                "/" +
-                [prefix, actor, ...op.path.split("/")]
-                  .filter((it) => it !== "")
-                  .join("/"),
-              authorizationActor: actor,
-              authorizationType: null,
-              prerequisites: [],
-            }));
-          });
+                }));
           pointer.value.push(...matrix.flat());
-          props.progress.completed += matrix.flat().length;
-          props.progress.total += operations
-            .map((op) =>
-              props.endpoints.has({ path: op.path, method: op.method })
-                ? op.authorizationActors.length === 0
-                  ? 0
-                  : op.authorizationActors.length - 1
-                : op.authorizationActors.length,
-            )
-            .reduce((a, b) => a + b, 0);
+          ++props.progress.completed;
         },
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceOperationHistory({
-        endpoints: props.endpoints.toJSON(),
+        endpoint: props.endpoint,
         instruction: props.instruction,
         prefix,
         preliminary,
@@ -218,9 +188,7 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (
-    operations: IAutoBeInterfaceOperationApplication.IOperation[],
-  ) => void;
+  build: (operation: IAutoBeInterfaceOperationApplication.IOperation) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -234,35 +202,33 @@ function createController(props: {
         request: result.data.request,
       });
 
-    const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
-      result.data.request.operations;
+    const op: IAutoBeInterfaceOperationApplication.IOperation =
+      result.data.request.operation;
     const errors: IValidation.IError[] = [];
     OperationValidator.validate({
-      path: "$input.request.operations",
+      path: "$input.request.operation",
       errors,
-      operations,
+      operation: op,
     });
 
-    operations.forEach((op, i) => {
-      // validate roles
-      if (props.actors.length === 0) op.authorizationActors = [];
-      else if (op.authorizationActors.length !== 0 && props.actors.length !== 0)
-        op.authorizationActors.forEach((actor, j) => {
-          if (props.actors.includes(actor) === true) return;
-          errors.push({
-            path: `$input.request.operations[${i}].authorizationActors[${j}]`,
-            expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
-            description: StringUtil.trim`
+    // validate roles
+    if (props.actors.length === 0) op.authorizationActors = [];
+    else if (op.authorizationActors.length !== 0 && props.actors.length !== 0)
+      op.authorizationActors.forEach((actor, j) => {
+        if (props.actors.includes(actor) === true) return;
+        errors.push({
+          path: `$input.request.operation.authorizationActors[${j}]`,
+          expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
+          description: StringUtil.trim`
               Actor "${actor}" is not defined in the roles list.
 
               Please select one of them below, or do not define (\`null\`):
 
               ${props.actors.map((role) => `- ${role}`).join("\n")}
             `,
-            value: actor,
-          });
+          value: actor,
         });
-    });
+      });
     if (errors.length !== 0)
       return {
         success: false,
@@ -286,7 +252,7 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "complete")
-          props.build(next.request.operations);
+          props.build(next.request.operation);
       },
     } satisfies IAutoBeInterfaceOperationApplication,
   };

@@ -1,10 +1,10 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceOperationReviewApplication {
   /**
@@ -64,12 +64,12 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Request to review and validate API operations.
+   * Request to review and validate an API operation.
    *
    * Executes systematic operation review for quality and correctness, analyzing
    * security vulnerabilities, schema compliance, logical consistency, and
-   * standard adherence. Outputs structured thinking process and enhanced
-   * operations.
+   * standard adherence. Outputs structured thinking process and the enhanced
+   * operation.
    */
   export interface IComplete {
     /**
@@ -92,9 +92,10 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     think: IThink;
 
     /**
-     * Production-ready operations with all critical issues resolved.
+     * Production-ready operation with all critical issues resolved, or null if
+     * the operation should be removed.
      *
-     * Final API operations after systematic enhancement:
+     * Final API operation after systematic enhancement:
      *
      * - **Security Fixes Applied**: All authentication boundaries enforced,
      *   sensitive data removed from responses, proper authorization
@@ -107,10 +108,12 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      *   specifications, validation rules, consistent naming patterns
      *
      * If no issues were found during review, this contains the exact original
-     * operations unchanged. These operations are validated and ready for schema
-     * generation and subsequent implementation phases.
+     * operation unchanged. If the operation violates fundamental architectural
+     * principles or should be removed entirely, this is null. The operation is
+     * validated and ready for schema generation and subsequent implementation
+     * phases.
      */
-    content: AutoBeOpenApi.IOperation[];
+    content: AutoBeOpenApi.IOperation | null;
   }
 
   /**
