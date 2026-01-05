@@ -256,7 +256,8 @@ export namespace JsonSchemaFactory {
     if (state.database === null) return;
     const models: string[] = state.database.result.data.files
       .map((f) => f.models.map((m) => m.name))
-      .flat();
+      .flat()
+      .sort();
     const fix = (obj: ILlmSchema | undefined) => {
       if (obj === undefined || LlmTypeChecker.isObject(obj) === false) return;
 
