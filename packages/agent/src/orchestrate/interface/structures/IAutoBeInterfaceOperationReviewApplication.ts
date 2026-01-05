@@ -92,8 +92,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     think: IThink;
 
     /**
-     * Production-ready operation with all critical issues resolved, or null if
-     * the operation should be removed.
+     * Corrected operation with issues resolved, or null if no modifications
+     * needed.
      *
      * Final API operation after systematic enhancement:
      *
@@ -107,11 +107,10 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * - **Quality Improvements Added**: Enhanced documentation, format
      *   specifications, validation rules, consistent naming patterns
      *
-     * If no issues were found during review, this contains the exact original
-     * operation unchanged. If the operation violates fundamental architectural
-     * principles or should be removed entirely, this is null. The operation is
-     * validated and ready for schema generation and subsequent implementation
-     * phases.
+     * If issues were found and corrected, this contains the enhanced operation.
+     * If the operation was already perfect and requires no modifications, this
+     * is null. The operation is validated and ready for schema generation and
+     * subsequent implementation phases.
      */
     content: AutoBeOpenApi.IOperation | null;
   }
