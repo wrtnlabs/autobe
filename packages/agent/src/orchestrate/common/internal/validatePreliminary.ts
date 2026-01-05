@@ -292,7 +292,7 @@ namespace PreliminaryApplicationValidator {
             ------ | ----
             ${newbie
               .toJSON()
-              .map((o) => `- ${o.method} | ${o.path}`)
+              .map((o) => `${o.method} | ${o.path}`)
               .join("\n")}
 
             ${
