@@ -162,7 +162,13 @@ function createController(props: {
           path: `$input.request.plans[${i}].dtoTypeName`,
           value: plan.dtoTypeName,
           expected: JSON.stringify(props.dtoTypeName),
-          description: `The DTO type name must be ${JSON.stringify(props.dtoTypeName)}.`,
+          description: StringUtil.trim`
+            The DTO type name must be ${JSON.stringify(props.dtoTypeName)}.
+
+            If you have planned other DTO type's transformer, 
+            please entirely remake the plan with ONLY the DTO type 
+            ${JSON.stringify(props.dtoTypeName)}.
+          `,
         });
       if (
         plan.databaseSchemaName !== null &&

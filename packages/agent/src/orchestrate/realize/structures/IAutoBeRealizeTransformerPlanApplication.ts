@@ -4,10 +4,9 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
 /**
  * Function calling interface for planning transformer DTO generation.
  *
- * Guides the AI agent through analyzing operation requirements and determining
- * which transformer DTOs must be generated before the REALIZE_TRANSFORMER_WRITE
- * phase. Solves the dependency problem by ensuring all transformers that import
- * other transformers are identified upfront.
+ * Guides the AI agent through analyzing a single DTO type and determining
+ * whether it needs a transformer. Each DTO is analyzed independently, enabling
+ * parallel processing across all DTOs.
  *
  * The planning follows a structured RAG workflow: preliminary context gathering
  * (database schemas, DTO schemas) → eligibility analysis → plan generation.
@@ -15,16 +14,14 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
  * **Key Decisions**: Not all DTOs require transformers. The agent must
  * distinguish transformable DTOs (Read DTO + DB-backed + Direct mapping) from
  * non-transformable DTOs (request params, pagination wrappers, business logic
- * types) and include ALL DTOs with databaseSchemaName set to null for
- * non-transformable ones.
+ * types) and set databaseSchemaName to null for non-transformable ones.
  */
 export interface IAutoBeRealizeTransformerPlanApplication {
   /**
    * Process transformer planning task or preliminary data requests.
    *
-   * Analyzes operation response DTOs and generates complete plan listing which
-   * transformers to generate. Ensures nested DTOs are analyzed recursively and
-   * ALL DTOs are included with appropriate databaseSchemaName values.
+   * Analyzes the given DTO type and generates a plan entry determining whether
+   * a transformer is needed. Returns exactly ONE plan entry for the given DTO.
    *
    * @param props Request containing either preliminary data request or complete
    *   plan
@@ -47,11 +44,9 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      *
      * For completion:
      *
-     * - How many DTOs are transformable vs non-transformable?
-     * - Why were certain DTOs excluded (pagination wrappers, request params,
-     *   business logic)?
-     * - Are nested DTOs analyzed recursively?
-     * - Summarize - don't enumerate every DTO.
+     * - Is this DTO transformable or non-transformable?
+     * - What database table does it map to (if transformable)?
+     * - Why is it non-transformable (if applicable)?
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -79,25 +74,24 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
   /**
    * Request to complete transformer planning.
    *
-   * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * transformable and non-transformable DTOs. Transformable DTOs have a
-   * database schema name, while non-transformable DTOs have null.
+   * Generates a plan with exactly ONE entry for the given DTO, indicating
+   * whether it is transformable (has database schema name) or non-transformable
+   * (null).
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Complete list of DTOs analyzed for transformer generation.
+     * Plan entry for the given DTO.
      *
-     * Each plan entry specifies one DTO with:
+     * Must contain exactly ONE entry with:
      *
-     * - DTO type name analyzed
+     * - DTO type name matching the given DTO
      * - Chain of thought explaining the analysis
      * - Database schema name if transformable, or null if not
      *
-     * Include ALL DTOs from the operation response, both transformable and
-     * non-transformable. Use databaseSchemaName to distinguish:
+     * Use databaseSchemaName to distinguish:
      *
      * - Non-null: Transformable DTO, transformer will be generated
      * - Null: Non-transformable DTO, no transformer needed

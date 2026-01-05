@@ -7,10 +7,9 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
 /**
  * Function calling interface for planning collector DTO generation.
  *
- * Guides the AI agent through analyzing operation requirements and determining
- * which collector DTOs must be generated before the REALIZE_COLLECTOR_WRITE
- * phase. Solves the dependency problem by ensuring all collectors that import
- * other collectors are identified upfront.
+ * Guides the AI agent through analyzing a single DTO type and determining
+ * whether it needs a collector. Each DTO is analyzed independently, enabling
+ * parallel processing across all DTOs.
  *
  * The planning follows a structured RAG workflow: preliminary context gathering
  * (database schemas, DTO schemas, Operations) → eligibility analysis → plan
@@ -18,16 +17,15 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/I
  *
  * **Key Decisions**: Not all DTOs require collectors. The agent must
  * distinguish collectable DTOs (Create DTO + DB-backed + Direct mapping) from
- * non-collectable DTOs (read-only DTOs, computed types) and include ALL DTOs
- * with databaseSchemaName set to null for non-collectable ones.
+ * non-collectable DTOs (read-only DTOs, computed types) and set
+ * databaseSchemaName to null for non-collectable ones.
  */
 export interface IAutoBeRealizeCollectorPlanApplication {
   /**
    * Process collector planning task or preliminary data requests.
    *
-   * Analyzes operation request DTOs and generates complete plan listing which
-   * collectors to generate. Ensures nested DTOs are analyzed recursively and
-   * ALL DTOs are included with appropriate databaseSchemaName values.
+   * Analyzes the given DTO type and generates a plan entry determining whether
+   * a collector is needed. Returns exactly ONE plan entry for the given DTO.
    *
    * @param props Request containing either preliminary data request or complete
    *   plan
@@ -50,10 +48,9 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      *
      * For completion:
      *
-     * - How many DTOs are collectable vs non-collectable?
-     * - Why were certain DTOs excluded (read-only, computed types)?
-     * - Are nested DTOs analyzed recursively?
-     * - Summarize - don't enumerate every DTO.
+     * - Is this DTO collectable or non-collectable?
+     * - What database table does it map to (if collectable)?
+     * - Why is it non-collectable (if applicable)?
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -83,25 +80,24 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
   /**
    * Request to complete collector planning.
    *
-   * Generates comprehensive plan listing ALL DTOs analyzed, including both
-   * collectable and non-collectable DTOs. Collectable DTOs have a database
-   * schema name, while non-collectable DTOs have null.
+   * Generates a plan with exactly ONE entry for the given DTO, indicating
+   * whether it is collectable (has database schema name) or non-collectable
+   * (null).
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Complete list of DTOs analyzed for collector generation.
+     * Plan entry for the given DTO.
      *
-     * Each plan entry specifies one DTO with:
+     * Must contain exactly ONE entry with:
      *
-     * - DTO type name analyzed
+     * - DTO type name matching the given DTO
      * - Chain of thought explaining the analysis
      * - Database schema name if collectable, or null if not
      *
-     * Include ALL DTOs from the operation request, both collectable and
-     * non-collectable. Use databaseSchemaName to distinguish:
+     * Use databaseSchemaName to distinguish:
      *
      * - Non-null: Collectable DTO, collector will be generated
      * - Null: Non-collectable DTO, no collector needed
