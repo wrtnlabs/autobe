@@ -10,9 +10,9 @@ export interface IAutoBeInterfaceOperationReviewApplication {
   /**
    * Process operation review task or preliminary data requests.
    *
-   * Analyzes operations for security vulnerabilities, schema compliance,
+   * Analyzes the operation for security vulnerabilities, schema compliance,
    * logical consistency, and standard adherence. Outputs structured thinking
-   * process and production-ready operations.
+   * process and the production-ready operation.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -86,8 +86,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      *
      * Encapsulates the agent's analytical review findings and actionable
      * improvement plan. This structured thinking process ensures systematic
-     * evaluation of API operations against AutoBE's quality standards before
-     * generating the final enhanced operations.
+     * evaluation of the API operation against AutoBE's quality standards before
+     * generating the final enhanced operation.
      */
     think: IThink;
 
@@ -120,7 +120,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    * Structured thinking process for operation review.
    *
    * Contains analytical review findings and improvement action plan organized
-   * for systematic enhancement of the operations.
+   * for systematic enhancement of the operation.
    */
   export interface IThink {
     /**

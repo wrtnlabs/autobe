@@ -31,7 +31,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ✅ Request additional input materials when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering complete context
-- ✅ Generate the operations directly through the function call
+- ✅ Generate the operation directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**
 - Collecting input materials is MEANINGLESS without calling the complete function

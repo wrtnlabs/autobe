@@ -253,7 +253,9 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
             API operations are being reviewed for quality and consistency.
             <br />
             <br />
-            <strong>Operations Count:</strong> {event.operations.length}
+            <strong>Method:</strong> {event.operation.method.toUpperCase()}
+            <br />
+            <strong>Path:</strong> {event.operation.path}
             <br />
             <strong>Status:</strong> Review in progress
             <br />

@@ -11,9 +11,9 @@ export interface IAutoBeInterfaceOperationApplication {
   /**
    * Process operation generation task or preliminary data requests.
    *
-   * Creates complete API operations following REST principles and quality
-   * standards. Processes operations with progress tracking to ensure iterative
-   * completion.
+   * Creates a complete API operation following REST principles and quality
+   * standards. Processes the operation with progress tracking to ensure
+   * iterative completion.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -68,9 +68,9 @@ export namespace IAutoBeInterfaceOperationApplication {
    * Request to generate a detailed API operation.
    *
    * Executes operation generation to create a complete API operation following
-   * REST principles and quality standards. The operation includes specification,
-   * path, method, detailed description, summary, parameters, and request/response
-   * bodies.
+   * REST principles and quality standards. The operation includes
+   * specification, path, method, detailed description, summary, parameters, and
+   * request/response bodies.
    */
   export interface IComplete {
     /**
