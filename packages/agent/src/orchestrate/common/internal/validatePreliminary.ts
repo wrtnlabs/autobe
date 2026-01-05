@@ -194,6 +194,7 @@ namespace PreliminaryApplicationValidator {
             ⛔ You MUST choose ONLY from the existing database schemas listed below!
 
             Existing database schema names you can request:
+
             ${availableSchemasList || "(No schemas available)"}
 
             ${exhaustedMessage}
@@ -300,6 +301,7 @@ namespace PreliminaryApplicationValidator {
             ⛔ You MUST choose ONLY from the existing endpoints listed below!
 
             Existing API endpoints you can request:
+            
             ${availableEndpointsList || "(No endpoints available)"}
 
             ${exhaustedMessage}
@@ -438,7 +440,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
-    const availableCollectorsList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const availableCollectorsList: string = quoted
+      .map((q) => `- ${q}`)
+      .join("\n");
     const exhaustedMessage: string =
       newbie.size === 0
         ? "All available collectors have already been requested."
@@ -463,6 +467,7 @@ namespace PreliminaryApplicationValidator {
             ⛔ You MUST choose ONLY from the existing collectors listed below!
 
             Existing realize collectors you can request:
+
             ${availableCollectorsList || "(No collectors available)"}
 
             ${exhaustedMessage}
@@ -513,7 +518,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
-    const availableTransformersList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const availableTransformersList: string = quoted
+      .map((q) => `- ${q}`)
+      .join("\n");
     const exhaustedMessage: string =
       newbie.size === 0
         ? "All available transformers have already been requested."
@@ -538,6 +545,7 @@ namespace PreliminaryApplicationValidator {
             ⛔ You MUST choose ONLY from the existing transformers listed below!
 
             Existing realize transformers you can request:
+            
             ${availableTransformersList || "(No transformers available)"}
 
             ${exhaustedMessage}
