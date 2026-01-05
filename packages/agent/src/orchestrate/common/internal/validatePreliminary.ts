@@ -69,30 +69,21 @@ namespace PreliminaryApplicationValidator {
         .map((f) => f.filename),
     );
 
-    const description: string = StringUtil.trim`
-      Here are the list of analysis requirement document files you can use.
+    const availableFilesList: string = controller
+      .getAll()
+      [accessor].filter((f) => newbie.has(f.filename))
+      .map((f) => `- ${JSON.stringify(f.filename)} (${f.documentType})`)
+      .join("\n");
 
-      Please select from the below. Never type arbitrary file names.
-
-      Filename | Document Type
-      ---------|---------------
-      ${controller
-        .getAll()
-        [accessor].filter((f) => newbie.has(f.filename))
-        .map((f) => [f.filename, f.documentType].join(" | "))
-        .join("\n")}
-
-      ${
-        newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED.replace(
-              "getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"],
-              previous
-                ? ("getPreviousAnalysisFiles" satisfies IAutoBePreliminaryGetPreviousAnalysisFiles["type"])
-                : ("getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"]),
-            )
-          : ""
-      }
-    `;
+    const exhaustedMessage: string =
+      newbie.size === 0
+        ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED.replace(
+            "getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"],
+            previous
+              ? ("getPreviousAnalysisFiles" satisfies IAutoBePreliminaryGetPreviousAnalysisFiles["type"])
+              : ("getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"]),
+          )
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.fileNames.forEach((key, i) => {
@@ -103,7 +94,21 @@ namespace PreliminaryApplicationValidator {
           expected: Array.from(newbie)
             .map((x) => JSON.stringify(x))
             .join(" | "),
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've requested a NON-EXISTING analysis file: ${JSON.stringify(key)}
+
+            This file does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
+            ⛔ NEVER assume or invent file names that are not in the list below!
+            ⛔ You MUST choose ONLY from the available files listed below!
+
+            Available analysis files you can request:
+            ${availableFilesList || "(No files available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.fileNames.every((k) => oldbie.has(k)))
@@ -159,24 +164,16 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
-    const description = StringUtil.trim`
-      Here are the list of database schema models you can use.
-
-      Please select from the below. Never assume non-existing models.
-
-      ${quoted.map((q) => `- ${q}`).join("\n")}
-
-      ${
-        newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_EXHAUSTED.replace(
-              "getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"],
-              previous
-                ? ("getPreviousDatabaseSchemas" satisfies IAutoBePreliminaryGetPreviousDatabaseSchemas["type"])
-                : ("getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"]),
-            )
-          : ""
-      }
-    `;
+    const availableSchemasList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const exhaustedMessage: string =
+      newbie.size === 0
+        ? AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_EXHAUSTED.replace(
+            "getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"],
+            previous
+              ? ("getPreviousDatabaseSchemas" satisfies IAutoBePreliminaryGetPreviousDatabaseSchemas["type"])
+              : ("getDatabaseSchemas" satisfies IAutoBePreliminaryGetDatabaseSchemas["type"]),
+          )
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.schemaNames.forEach((key, i) => {
@@ -185,7 +182,22 @@ namespace PreliminaryApplicationValidator {
           path: `$input.request.schemaNames[${i}]`,
           value: key,
           expected: quoted.join(" | "),
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've referenced a NON-EXISTING database schema name: ${JSON.stringify(key)}
+
+            This database schema does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
+            ⛔ NEVER assume or invent schema names that are not in the list below!
+            ⛔ NEVER repeat the same invalid value - I repeat: ${JSON.stringify(key)} is INVALID!
+            ⛔ You MUST choose ONLY from the existing database schemas listed below!
+
+            Existing database schema names you can request:
+            ${availableSchemasList || "(No schemas available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.schemaNames.every((k) => oldbie.has(k)))
@@ -255,29 +267,19 @@ namespace PreliminaryApplicationValidator {
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
-    const description: string = StringUtil.trim`
-      Here are the list of API endpoints you can use.
-
-      Please select from the below. Never assume non-existing endpoints.
-
-      Method | Path
-      -------|------
-      ${newbie
-        .toJSON()
-        .map((o) => [o.method, o.path].join(" | "))
-        .join("\n")}
-      
-      ${
-        newbie.size() === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED.replace(
-              "getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"],
-              previous
-                ? ("getPreviousInterfaceOperations" satisfies IAutoBePreliminaryGetPreviousInterfaceOperations["type"])
-                : ("getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"]),
-            )
-          : ""
-      }
-    `;
+    const availableEndpointsList: string = newbie
+      .toJSON()
+      .map((o) => `- ${o.method.toUpperCase()} ${o.path}`)
+      .join("\n");
+    const exhaustedMessage: string =
+      newbie.size() === 0
+        ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_OPERATION_EXHAUSTED.replace(
+            "getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"],
+            previous
+              ? ("getPreviousInterfaceOperations" satisfies IAutoBePreliminaryGetPreviousInterfaceOperations["type"])
+              : ("getInterfaceOperations" satisfies IAutoBePreliminaryGetInterfaceOperations["type"]),
+          )
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.endpoints.forEach((key, i) => {
@@ -286,7 +288,22 @@ namespace PreliminaryApplicationValidator {
           path: `$input.request.endpoints[${i}]`,
           value: key,
           expected: "AutoBeOpenApi.IEndpoint",
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've requested a NON-EXISTING API endpoint: ${key.method.toUpperCase()} ${key.path}
+
+            This endpoint does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request "${key.method.toUpperCase()} ${key.path}" again - it does not exist!
+            ⛔ NEVER assume or invent endpoints that are not in the list below!
+            ⛔ NEVER repeat the same invalid endpoint!
+            ⛔ You MUST choose ONLY from the existing endpoints listed below!
+
+            Existing API endpoints you can request:
+            ${availableEndpointsList || "(No endpoints available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.endpoints.every((k) => oldbie.has(k)))
@@ -342,24 +359,16 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((k) => JSON.stringify(k));
-    const description: string = StringUtil.trim`
-      Here are the list of interface schemas you can use.
-
-      Please select from the below. Never assume non-existing schemas.
-
-      ${quoted.map((q) => `- ${q}`).join("\n")}
-
-      ${
-        newbie.size === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED.replace(
-              "getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"],
-              previous
-                ? ("getPreviousInterfaceSchemas" satisfies IAutoBePreliminaryGetPreviousInterfaceSchemas["type"])
-                : ("getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"]),
-            )
-          : ""
-      }
-    `;
+    const availableSchemasList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const exhaustedMessage: string =
+      newbie.size === 0
+        ? AutoBeSystemPromptConstant.PRELIMINARY_INTERFACE_SCHEMA_EXHAUSTED.replace(
+            "getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"],
+            previous
+              ? ("getPreviousInterfaceSchemas" satisfies IAutoBePreliminaryGetPreviousInterfaceSchemas["type"])
+              : ("getInterfaceSchemas" satisfies IAutoBePreliminaryGetInterfaceSchemas["type"]),
+          )
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.typeNames.forEach((key, i) => {
@@ -368,7 +377,22 @@ namespace PreliminaryApplicationValidator {
           path: `$input.request.typeNames[${i}]`,
           value: key,
           expected: quoted.join(" | "),
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've referenced a NON-EXISTING interface schema name: ${JSON.stringify(key)}
+
+            This interface schema does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
+            ⛔ NEVER assume or invent schema names that are not in the list below!
+            ⛔ NEVER repeat the same invalid value - I repeat: ${JSON.stringify(key)} is INVALID!
+            ⛔ You MUST choose ONLY from the existing interface schemas listed below!
+
+            Existing interface schema names you can request:
+            ${availableSchemasList || "(No schemas available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.typeNames.every((k) => oldbie.has(k)))
@@ -414,19 +438,11 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
-    const description = StringUtil.trim`
-      Here are the list of realize collector functions you can use.
-
-      Please select from the below. Never assume non-existing collectors.
-
-      ${quoted.map((q) => `- ${q}`).join("\n")}
-
-      ${
-        newbie.size === 0
-          ? "All available collectors have already been requested."
-          : ""
-      }
-    `;
+    const availableCollectorsList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const exhaustedMessage: string =
+      newbie.size === 0
+        ? "All available collectors have already been requested."
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.dtoTypeNames.forEach((key, i) => {
@@ -435,7 +451,22 @@ namespace PreliminaryApplicationValidator {
           path: `$input.request.dtoTypeNames[${i}]`,
           value: key,
           expected: quoted.join(" | "),
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've referenced a NON-EXISTING realize collector: ${JSON.stringify(key)}
+
+            This collector does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
+            ⛔ NEVER assume or invent collector names that are not in the list below!
+            ⛔ NEVER repeat the same invalid value - I repeat: ${JSON.stringify(key)} is INVALID!
+            ⛔ You MUST choose ONLY from the existing collectors listed below!
+
+            Existing realize collectors you can request:
+            ${availableCollectorsList || "(No collectors available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.dtoTypeNames.every((k) => oldbie.has(k)))
@@ -482,19 +513,11 @@ namespace PreliminaryApplicationValidator {
     );
 
     const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
-    const description = StringUtil.trim`
-      Here are the list of realize transformer functions you can use.
-
-      Please select from the below. Never assume non-existing transformers.
-
-      ${quoted.map((q) => `- ${q}`).join("\n")}
-
-      ${
-        newbie.size === 0
-          ? "All available transformers have already been requested."
-          : ""
-      }
-    `;
+    const availableTransformersList: string = quoted.map((q) => `- ${q}`).join("\n");
+    const exhaustedMessage: string =
+      newbie.size === 0
+        ? "All available transformers have already been requested."
+        : "";
 
     const errors: IValidation.IError[] = [];
     input.request.dtoTypeNames.forEach((key, i) => {
@@ -503,7 +526,22 @@ namespace PreliminaryApplicationValidator {
           path: `$input.request.dtoTypeNames[${i}]`,
           value: key,
           expected: quoted.join(" | "),
-          description,
+          description: StringUtil.trim`
+            [CRITICAL ERROR] You've referenced a NON-EXISTING realize transformer: ${JSON.stringify(key)}
+
+            This transformer does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
+            ⛔ NEVER assume or invent transformer names that are not in the list below!
+            ⛔ NEVER repeat the same invalid value - I repeat: ${JSON.stringify(key)} is INVALID!
+            ⛔ You MUST choose ONLY from the existing transformers listed below!
+
+            Existing realize transformers you can request:
+            ${availableTransformersList || "(No transformers available)"}
+
+            ${exhaustedMessage}
+          `,
         });
     });
     if (input.request.dtoTypeNames.every((k) => oldbie.has(k)))
@@ -558,10 +596,17 @@ const nonExisting = <Kind extends AutoBePreliminaryKind>(
         .join(" | "),
       value: kind,
       description: StringUtil.trim`
-        The preliminary data of type "${kind}" does not exist.
+        [CRITICAL ERROR] You've requested a NON-EXISTING preliminary data type: "${kind}"
 
-        You must choose one of below available kinds:
+        This data type does NOT exist in the current context. This is NOT a recommendation,
+        but an ABSOLUTE INSTRUCTION you MUST follow:
 
+        ⛔ NEVER request "${kind}" again - it is NOT available in this context!
+        ⛔ NEVER assume data types that are not in the list below!
+        ⛔ NEVER repeat the same invalid request type!
+        ⛔ You MUST choose ONLY from the available kinds listed below!
+
+        Available preliminary data kinds you can request:
         ${controller
           .getKinds()
           .map((k) => `- ${k}`)
