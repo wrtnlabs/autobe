@@ -25,7 +25,7 @@ export async function orchestrateInterfaceOperationReview(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  const operations: Array<AutoBeOpenApi.IOperation | null> =
+  const operations: Array<AutoBeOpenApi.IOperation | false> =
     await executeCachedBatch(
       ctx,
       props.operations.map((operation) => async (promptCacheKey) => {
@@ -37,11 +37,11 @@ export async function orchestrateInterfaceOperationReview(
           });
         } catch {
           ++props.progress.completed;
-          return null;
+          return false;
         }
       }),
     );
-  return operations.filter((o) => o !== null);
+  return operations.filter((o) => o !== false);
 }
 
 async function process(
@@ -51,7 +51,7 @@ async function process(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeOpenApi.IOperation | null> {
+): Promise<AutoBeOpenApi.IOperation | false> {
   const files: AutoBeDatabase.IFile[] =
     ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
@@ -83,6 +83,7 @@ async function process(
       controller: createReviewController({
         preliminary,
         databaseSchemas: files,
+        operation: props.operation,
         build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
           pointer.value = next;
         },
@@ -95,13 +96,22 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
+    const content: AutoBeOpenApi.IOperation | null =
+      pointer.value.content !== null
+        ? {
+            ...props.operation,
+            description: pointer.value.content.description,
+            requestBody: pointer.value.content.requestBody,
+            responseBody: pointer.value.content.responseBody,
+          }
+        : null;
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
       operation: props.operation,
       review: pointer.value.think.review,
       plan: pointer.value.think.plan,
-      content: pointer.value.content,
+      content,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: new Date().toISOString(),
@@ -109,7 +119,7 @@ async function process(
       total: props.progress.total,
       completed: ++props.progress.completed,
     } satisfies AutoBeInterfaceOperationReviewEvent);
-    return out(result)(pointer.value.content);
+    return out(result)(content ?? false);
   });
 }
 
@@ -122,6 +132,7 @@ function createReviewController(props: {
     | "previousInterfaceOperations"
   >;
   databaseSchemas: AutoBeDatabase.IFile[];
+  operation: AutoBeOpenApi.IOperation;
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
   ) => void;
@@ -142,7 +153,12 @@ function createReviewController(props: {
     if (result.data.request.content !== null)
       OperationValidator.validate({
         path: "$input.request.content",
-        operation: result.data.request.content,
+        operation: {
+          ...props.operation,
+          description: result.data.request.content.description,
+          requestBody: result.data.request.content.requestBody,
+          responseBody: result.data.request.content.responseBody,
+        },
         errors,
       });
     if (errors.length !== 0)

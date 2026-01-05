@@ -64,12 +64,24 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Request to review and validate an API operation.
+   * Request to review and validate an API operation with minimal correction
+   * power.
    *
-   * Executes systematic operation review for quality and correctness, analyzing
-   * security vulnerabilities, schema compliance, logical consistency, and
-   * standard adherence. Outputs structured thinking process and the enhanced
-   * operation.
+   * This agent can ONLY modify fields present in the IOperation type. For
+   * issues in fields not present in IOperation, it must reject the operation by
+   * returning null.
+   *
+   * The IOperation type contains only:
+   *
+   * - description: Can fix soft delete mismatches, inappropriate security
+   *   mentions, add schema references
+   * - requestBody: Complete object - can modify both description and typeName to
+   *   fix clarity issues and naming convention violations
+   * - responseBody: Complete object - can modify both description and typeName
+   *   to fix clarity issues and naming convention violations
+   *
+   * Fields not in IOperation cannot be modified - the agent must reject by
+   * returning null if those fields have issues.
    */
   export interface IComplete {
     /**
@@ -92,28 +104,49 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     think: IThink;
 
     /**
-     * Corrected operation with issues resolved, or null if no modifications
-     * needed.
+     * Corrected operation with issues resolved, or null if operation rejected.
      *
-     * Final API operation after systematic enhancement:
+     * The agent can only modify fields present in IOperation type (description,
+     * requestBody, responseBody).
      *
-     * - **Security Fixes Applied**: All authentication boundaries enforced,
-     *   sensitive data removed from responses, proper authorization
-     *   implemented
-     * - **Logic Corrections Made**: Return types match operation intent, HTTP
-     *   methods align with semantics, parameters properly utilized
-     * - **Schema Alignment Verified**: All fields exist in database schema, types
-     *   correctly mapped, relationships properly defined
-     * - **Quality Improvements Added**: Enhanced documentation, format
-     *   specifications, validation rules, consistent naming patterns
+     * Return values:
      *
-     * If issues were found and corrected, this contains the enhanced operation.
-     * If the operation was already perfect and requires no modifications, this
-     * is null. The operation is validated and ready for schema generation and
-     * subsequent implementation phases.
+     * - **Corrected operation**: If fixable issues were found and corrected in
+     *   the modifiable fields
+     * - **null**: If operation is perfect OR if issues exist in fields not
+     *   present in IOperation type
+     *
+     * When null is returned:
+     *
+     * - For perfect operations: means "no changes needed, proceed"
+     * - For failed validation: means "reject this operation, remove from
+     *   pipeline"
+     *
+     * The orchestrator will filter out null operations from the final operation
+     * list.
      */
-    content: AutoBeOpenApi.IOperation | null;
+    content: IOperation | null;
   }
+
+  /**
+   * Operation with ONLY the fields that this agent can modify.
+   *
+   * This type contains ONLY the modifiable fields. Fields not in this type
+   * cannot be modified - if they have issues, the agent must return null.
+   *
+   * Fields in this type:
+   *
+   * - **description**: Operation description text - can fix soft delete
+   *   mismatches, remove inappropriate security mentions, add schema references
+   * - **requestBody**: Complete request body object (or null) - can modify both
+   *   description and typeName to fix naming conventions or improve clarity
+   * - **responseBody**: Complete response body object (or null) - can modify
+   *   both description and typeName to fix naming conventions or improve clarity
+   */
+  export interface IOperation extends Pick<
+    AutoBeOpenApi.IOperation,
+    "description" | "requestBody" | "responseBody"
+  > {}
 
   /**
    * Structured thinking process for operation review.
@@ -123,41 +156,50 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    */
   export interface IThink {
     /**
-     * Comprehensive review analysis with prioritized findings.
+     * Comprehensive operation-level review analysis with prioritized findings.
      *
      * Systematic assessment organized by severity levels (CRITICAL, HIGH,
      * MEDIUM, LOW):
      *
-     * - **Security Analysis**: Authentication boundary violations, exposed
-     *   passwords/tokens, unauthorized data access patterns, SQL injection
-     *   risks
-     * - **Logic Validation**: Return type consistency (list operations returning
-     *   arrays, single retrieval returning single items), HTTP method semantics
-     *   alignment, parameter usage verification
-     * - **Schema Compliance**: Field existence in database schema, type accuracy,
-     *   relationship validity, required field handling
-     * - **Quality Assessment**: Documentation completeness, naming conventions,
-     *   error handling patterns, pagination standards
+     * - **Authorization Analysis**: `authorizationActor` and `authorizationType`
+     *   configuration issues, missing authorization on sensitive operations
+     * - **Path Structure Validation**: Composite unique constraint completeness,
+     *   unique code usage vs UUID, path-parameter correspondence
+     * - **Metadata Consistency**: Method-name alignment (POST→create,
+     *   DELETE→erase), typeName conventions, HTTP method semantics
+     * - **Description Accuracy**: Operation descriptions contradicting database
+     *   schema capabilities (e.g., soft delete mentioned without schema
+     *   support), inappropriate security mentions
+     *
+     * Note: This review focuses on Operation metadata. DTO field-level issues
+     * (password fields in response types, missing required fields, etc.) are
+     * validated by Schema Review agents.
      *
      * Each finding includes specific examples, current vs expected behavior,
-     * and concrete fix recommendations. Critical security issues and logical
-     * contradictions are highlighted for immediate attention.
+     * and concrete fix recommendations. Critical authorization and path
+     * structure issues are highlighted for immediate attention.
      */
     review: string;
 
     /**
-     * Prioritized action plan for identified issues.
+     * Prioritized action plan for identified operation-level issues.
      *
      * Structured improvement strategy categorized by severity:
      *
-     * - **Immediate Actions (CRITICAL)**: Security vulnerabilities that must be
-     *   fixed before production (password exposure, missing authorization,
-     *   authentication bypass risks)
-     * - **Required Fixes (HIGH)**: Functional issues affecting API correctness
-     *   (wrong return types, missing required fields, schema mismatches)
-     * - **Recommended Improvements (MEDIUM)**: Quality enhancements for better
-     *   API design (validation rules, format specifications, consistency)
-     * - **Optional Enhancements (LOW)**: Documentation and usability improvements
+     * - **Immediate Actions (CRITICAL)**: Authorization configuration failures
+     *   (missing `authorizationActor` on sensitive operations), path structure
+     *   violations (incomplete composite unique paths)
+     * - **Required Fixes (HIGH)**: Metadata consistency issues (method-name
+     *   misalignment, typeName convention violations), description accuracy
+     *   problems (soft delete mentioned without schema support)
+     * - **Recommended Improvements (MEDIUM)**: Suboptimal authorization
+     *   configuration, minor path parameter issues
+     * - **Optional Enhancements (LOW)**: Description improvements, documentation
+     *   enhancements
+     *
+     * Note: This plan addresses Operation metadata only. DTO field-level fixes
+     * (password field removal, required field additions, etc.) are handled by
+     * Schema Review agents.
      *
      * If the operation passes review without issues, contains: "No improvements
      * required. The operation meets AutoBE standards."
