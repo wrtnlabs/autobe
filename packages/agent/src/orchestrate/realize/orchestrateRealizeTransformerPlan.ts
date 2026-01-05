@@ -12,9 +12,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerPlanHistory } from "./histories/transformRealizeTransformerPlanHistory";
@@ -48,17 +46,13 @@ export async function orchestrateRealizeTransformerPlan(
       .map((m) => m.name),
   );
 
-  const matrix: string[][] = divideArray({
-    array: Array.from(dtoTypeNames),
-    capacity: AutoBeConfigConstant.INTERFACE_CAPACITY * 2,
-  });
   const result: AutoBeRealizeTransformerPlan[][] = await executeCachedBatch(
     ctx,
-    matrix.map(
+    Array.from(dtoTypeNames).map(
       (it) => (promptCacheKey) =>
         process(ctx, {
           document,
-          dtoTypeNames: it,
+          dtoTypeName: it,
           prismaSchemaNames,
           promptCacheKey,
           progress: props.progress,
@@ -72,7 +66,7 @@ async function process(
   ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
-    dtoTypeNames: string[];
+    dtoTypeName: string;
     prismaSchemaNames: Set<string>;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
@@ -88,8 +82,8 @@ async function process(
     kinds: ["databaseSchemas", "interfaceSchemas"],
     local: {
       interfaceSchemas: Object.fromEntries(
-        Object.entries(props.document.components.schemas).filter(([key]) =>
-          props.dtoTypeNames.includes(key),
+        Object.entries(props.document.components.schemas).filter(
+          ([key]) => key === props.dtoTypeName,
         ),
       ),
     },
@@ -103,7 +97,7 @@ async function process(
       source: "realizePlan",
       controller: createController({
         prismaSchemaNames: props.prismaSchemaNames,
-        dtoTypeNames: props.dtoTypeNames,
+        dtoTypeName: props.dtoTypeName,
         build: (next) => {
           pointer.value = next;
         },
@@ -114,6 +108,7 @@ async function process(
       ...transformRealizeTransformerPlanHistory({
         state: ctx.state(),
         preliminary,
+        dtoTypeName: props.dtoTypeName,
       }),
     });
     if (pointer.value === null) return out(result)(null);
@@ -132,7 +127,7 @@ async function process(
       plans,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: (props.progress.completed += props.dtoTypeNames.length),
+      completed: ++props.progress.completed,
       total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
@@ -144,7 +139,7 @@ async function process(
 
 function createController(props: {
   prismaSchemaNames: Set<string>;
-  dtoTypeNames: string[];
+  dtoTypeName: string;
   build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
     "databaseSchemas" | "interfaceSchemas"
@@ -162,18 +157,12 @@ function createController(props: {
 
     const errors: IValidation.IError[] = [];
     result.data.request.plans.map((plan, i) => {
-      if (props.dtoTypeNames.includes(plan.dtoTypeName) === false)
+      if (plan.dtoTypeName !== props.dtoTypeName)
         errors.push({
           path: `$input.request.plans[${i}].dtoTypeName`,
           value: plan.dtoTypeName,
-          expected: props.dtoTypeNames
-            .map((s) => JSON.stringify(s))
-            .join(" | "),
-          description: StringUtil.trim`
-            The DTO type name must be one of the available DTOs in the interface schema.
-
-            ${props.dtoTypeNames.map((s) => `- ${s}`).join("\n")}
-          `,
+          expected: JSON.stringify(props.dtoTypeName),
+          description: `The DTO type name must be ${JSON.stringify(props.dtoTypeName)}.`,
         });
       if (
         plan.databaseSchemaName !== null &&

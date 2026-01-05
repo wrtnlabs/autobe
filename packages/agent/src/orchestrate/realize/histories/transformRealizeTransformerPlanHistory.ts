@@ -11,6 +11,7 @@ export const transformRealizeTransformerPlanHistory = (props: {
   preliminary: AutoBePreliminaryController<
     "databaseSchemas" | "interfaceSchemas"
   >;
+  dtoTypeName: string;
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [
@@ -28,38 +29,37 @@ export const transformRealizeTransformerPlanHistory = (props: {
         text: StringUtil.trim`
           I understand the task.
 
-          I need to analyze ALL DTOs from the operation response and create a complete plan that determines which transformers to generate.
+          I need to analyze the given DTO type "${props.dtoTypeName}" and determine if it needs a transformer.
 
           **My approach**:
-          1. Extract all candidate DTOs from operation response (including nested DTOs)
-          2. Request database schemas to understand database structure
-          3. Request Interface schemas to understand DTO shapes
-          4. Analyze each DTO to determine if it's transformable or not
-          5. Generate complete plan including ALL DTOs with appropriate databaseSchemaName
+          1. Request Interface schema to understand the DTO structure
+          2. Request database schemas to find matching table
+          3. Analyze the DTO to determine if it's transformable or not
+          4. Generate a plan with ONE entry for this DTO
 
           **For transformable DTOs**: Set databaseSchemaName to actual database table name
           **For non-transformable DTOs**: Set databaseSchemaName to null
 
-          I will include ALL DTOs in the plan with their analysis results.
+          I will return exactly ONE plan entry for the given DTO.
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      Analyze the operation response DTOs and create a complete transformer plan.
+      Analyze the DTO type "${props.dtoTypeName}" and create a transformer plan entry.
 
       **Your task**:
-      1. Identify ALL DTO types from the operation response (including nested DTOs)
-      2. Request necessary database schemas and Interface schemas to understand mappings
-      3. Determine which DTOs are transformable (map to database tables) vs non-transformable
-      4. Generate complete plan including ALL DTOs
+      1. Request Interface schema to understand the DTO structure
+      2. Request database schema to find the matching table
+      3. Determine if this DTO is transformable (maps to database table) or non-transformable
+      4. Generate a plan with exactly ONE entry for this DTO
 
       **Remember**:
-      - Include ALL DTOs in your plan (both transformable and non-transformable)
+      - Your plan must contain exactly ONE entry for "${props.dtoTypeName}"
       - Transformable DTOs: Set databaseSchemaName to actual database table name
       - Non-transformable DTOs: Set databaseSchemaName to null
-      - Analyze nested DTOs recursively (category, tags, etc.)
+      - Do NOT include other DTOs in your plan
 
-      Create the complete plan now.
+      Create the plan for this DTO now.
     `,
   };
 };
