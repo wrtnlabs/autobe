@@ -77,13 +77,11 @@ async function process(
     kinds: ["databaseSchemas", "interfaceSchemas", "interfaceOperations"],
     local: {
       interfaceOperations: props.document.operations.filter(
-        (op) =>
-          op.requestBody !== null &&
-          props.dtoTypeName.includes(op.requestBody.typeName),
+        (op) => op.requestBody?.typeName === props.dtoTypeName,
       ),
       interfaceSchemas: Object.fromEntries(
-        Object.entries(props.document.components.schemas).filter(([key]) =>
-          props.dtoTypeName.includes(key),
+        Object.entries(props.document.components.schemas).filter(
+          ([key]) => key === props.dtoTypeName,
         ),
       ),
     },
@@ -128,7 +126,7 @@ async function process(
       plans,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: (props.progress.completed += props.dtoTypeName.length),
+      completed: ++props.progress.completed,
       total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
