@@ -299,7 +299,7 @@ export namespace JsonSchemaValidator {
             false
         )
           props.errors.push({
-            path: accessor,
+            path: `${accessor}["x-autobe-database-schema"]`,
             expected: Array.from(props.databaseSchemas)
               .map((s) => JSON.stringify(s))
               .join(" | "),
