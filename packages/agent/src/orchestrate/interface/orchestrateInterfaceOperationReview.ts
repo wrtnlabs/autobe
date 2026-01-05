@@ -28,14 +28,18 @@ export async function orchestrateInterfaceOperationReview(
   const operations: Array<AutoBeOpenApi.IOperation | null> =
     await executeCachedBatch(
       ctx,
-      props.operations.map(
-        (operation) => async (promptCacheKey) =>
-          process(ctx, {
+      props.operations.map((operation) => async (promptCacheKey) => {
+        try {
+          return await process(ctx, {
             operation,
             promptCacheKey,
             progress: props.progress,
-          }),
-      ),
+          });
+        } catch {
+          ++props.progress.completed;
+          return null;
+        }
+      }),
     );
   return operations.filter((o) => o !== null);
 }
