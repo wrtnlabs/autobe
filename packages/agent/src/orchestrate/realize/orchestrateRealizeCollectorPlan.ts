@@ -102,7 +102,7 @@ async function process(
         preliminary,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: "collector-plan",
+      promptCacheKey: props.promptCacheKey,
       ...transformRealizeCollectorPlanHistory({
         state: ctx.state(),
         preliminary,
