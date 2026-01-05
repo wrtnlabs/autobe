@@ -160,8 +160,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      *   API design (validation rules, format specifications, consistency)
      * - **Optional Enhancements (LOW)**: Documentation and usability improvements
      *
-     * If all operations pass review without issues, contains: "No improvements
-     * required. All operations meet AutoBE standards."
+     * If the operation passes review without issues, contains: "No improvements
+     * required. The operation meets AutoBE standards."
      *
      * Each action item includes the specific operation path, the exact change
      * needed, and the rationale for the modification.
