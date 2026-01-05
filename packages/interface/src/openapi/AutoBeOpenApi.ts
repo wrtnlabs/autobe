@@ -85,15 +85,15 @@ export namespace AutoBeOpenApi {
    *
    * IMPORTANT: When creating this document, you MUST ensure that:
    *
-   * 1. The API operations and component schemas directly correspond to the Prisma
-   *    DB schema
+   * 1. The API operations and component schemas directly correspond to the
+   *    database schema
    * 2. All entity types and their properties reference and incorporate the
-   *    description comments from the related Prisma DB schema tables and
+   *    description comments from the related database schema tables and
    *    columns
    * 3. Descriptions are detailed and organized into multiple paragraphs
    * 4. The API fully represents all entities and relationships defined in the
-   *    Prisma schema
-   * 5. EVERY SINGLE TABLE in the Prisma DB schema MUST have corresponding API
+   *    database schema
+   * 5. EVERY SINGLE TABLE in the database schema MUST have corresponding API
    *    operations for CRUD actions (Create, Read, Update, Delete) as
    *    applicable
    * 6. NO TABLE should be omitted from the API design - all tables require API
@@ -107,21 +107,21 @@ export namespace AutoBeOpenApi {
    * - **Main Entity Types**: Use `IEntityName` format for main entity with
    *   detailed information (e.g., `IShoppingSale`)
    *
-   *   - These MUST directly correspond to entity tables in the Prisma schema
+   *   - These MUST directly correspond to entity tables in the database schema
    *   - Their descriptions MUST incorporate the table description comments from the
-   *       Prisma schema
+   *       database schema
    *   - Each property MUST reference the corresponding column description from the
-   *       Prisma schema
+   *       database schema
    *   - Entity types should represent the full, detailed version of domain entities
    * - **Related Operation Types**: Use `IEntityName.IOperation` format with these
    *   common suffixes:
    *
    *   - `IEntityName.ICreate`: Request body for creation operations (POST)
    *
-   *       - Should include all required fields from the Prisma schema entity
+   *       - Should include all required fields from the database schema entity
    *   - `IEntityName.IUpdate`: Request body for update operations (PUT)
    *
-   *       - Should include updatable fields as defined in the Prisma schema
+   *       - Should include updatable fields as defined in the database schema
    *   - `IEntityName.ISummary`: Simplified response version with essential
    *       properties
    *   - `IEntityName.IRequest`: Request parameters for list operations (often with
@@ -132,8 +132,8 @@ export namespace AutoBeOpenApi {
    *       `data` properties
    *
    * These consistent naming patterns create a predictable and self-documenting
-   * API that accurately reflects the underlying Prisma schema, making it easier
-   * for developers to understand the purpose of each schema and its
+   * API that accurately reflects the underlying database schema, making it
+   * easier for developers to understand the purpose of each schema and its
    * relationship to the database model.
    */
   export interface IDocument {
@@ -146,15 +146,15 @@ export namespace AutoBeOpenApi {
      * document.
      *
      * CRITICAL: This array MUST include operations for EVERY TABLE defined in
-     * the Prisma schema. The AI generation MUST NOT skip or omit any tables
+     * the database schema. The AI generation MUST NOT skip or omit any tables
      * when creating operations. The operations array MUST be complete and
      * exhaustive, covering all database entities without exception.
      *
      * IMPORTANT: For each API operation, ensure that:
      *
-     * 1. EVERY independent entity table in the Prisma schema has corresponding API
-     *    operations for basic CRUD functions (at minimum)
-     * 2. ALL TABLES from the Prisma schema MUST have at least one API operation,
+     * 1. EVERY independent entity table in the database schema has corresponding
+     *    API operations for basic CRUD functions (at minimum)
+     * 2. ALL TABLES from the database schema MUST have at least one API operation,
      *    no matter how many tables are in the schema
      * 3. DO NOT STOP generating API operations until ALL tables have been
      *    addressed
@@ -184,23 +184,23 @@ export namespace AutoBeOpenApi {
      * components section in an OpenAPI document.
      *
      * CRITICAL: Components MUST include type definitions for EVERY TABLE in the
-     * Prisma schema. The AI generation process MUST create schema components
+     * database schema. The AI generation process MUST create schema components
      * for ALL database entities without exception, regardless of how many
      * tables are in the database.
      *
      * IMPORTANT: For all component types and their properties:
      *
      * 1. EVERY component MUST have a detailed description that references the
-     *    corresponding Prisma DB schema table's description comments
+     *    corresponding database schema table's description comments
      * 2. EACH property within component types MUST have detailed descriptions that
-     *    reference the corresponding column description comments in the Prisma
-     *    DB schema
+     *    reference the corresponding column description comments in the
+     *    database schema
      * 3. All descriptions MUST be organized into MULTIPLE PARAGRAPHS (separated by
      *    line breaks) based on different aspects of the entity
      * 4. Descriptions should be comprehensive enough that anyone who reads them
      *    can understand the purpose, functionality, and relationships of the
      *    type
-     * 5. ALL TABLES from the Prisma schema MUST have corresponding schema
+     * 5. ALL TABLES from the database schema MUST have corresponding schema
      *    components, no matter how many tables are in the schema
      *
      * All request and response bodies must reference named types defined in
@@ -321,9 +321,9 @@ export namespace AutoBeOpenApi {
      * Detailed description about the API operation.
      *
      * IMPORTANT: This field MUST be extensively detailed and MUST reference the
-     * description comments from the related Prisma DB schema tables and
-     * columns. The description should be organized into MULTIPLE PARAGRAPHS
-     * separated by line breaks to improve readability and comprehension.
+     * description comments from the related database schema tables and columns.
+     * The description should be organized into MULTIPLE PARAGRAPHS separated by
+     * line breaks to improve readability and comprehension.
      *
      * For example, include separate paragraphs for:
      *
@@ -408,7 +408,7 @@ export namespace AutoBeOpenApi {
      *
      * This field specifies which user actor is allowed to access this endpoint.
      * The actor name must correspond exactly to the actual actors defined in
-     * your system's Prisma schema.
+     * your system's database schema.
      *
      * ## Naming Convention
      *
@@ -1023,7 +1023,7 @@ export namespace AutoBeOpenApi {
      * IMPORTANT: For each schema in this collection:
      *
      * 1. EVERY schema MUST have a detailed description that references and aligns
-     *    with the description comments from the corresponding Prisma DB schema
+     *    with the description comments from the corresponding database schema
      *    tables
      * 2. EACH property within the schema MUST have detailed descriptions that
      *    reference and align with the description comments from the
@@ -1264,15 +1264,21 @@ export namespace AutoBeOpenApi {
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
       /**
-       * Related Prisma schema.
+       * Related database schema.
        *
-       * If the type is directly related to a specific Prisma schema model,
+       * If the type is directly related to a specific database schema model,
        * include the exact model name here to establish a clear link between the
-       * OpenAPI schema and the Prisma model.
+       * OpenAPI schema and the database model.
        *
        * This field is optional and should only be included when there is a
-       * direct correspondence to a Prisma model. If there's not any Prisma
+       * direct correspondence to a database model. If there's not any database
        * model association, this field becomes `null`.
+       *
+       * **CRITICAL**: The database schema name MUST be an actually existing
+       * model name from the loaded Prisma schema. Never guess or invent schema
+       * names based on patterns or conventions. Only use schema names that have
+       * been verified to exist via preliminary data loading. Using non-existent
+       * schema names causes compilation failures and pipeline breakdown.
        */
       "x-autobe-database-schema"?: string | null | undefined;
 
@@ -1285,7 +1291,7 @@ export namespace AutoBeOpenApi {
        *
        * IMPORTANT: Each property in this object MUST have a detailed
        * description that references and aligns with the description comments
-       * from the corresponding Prisma DB schema column.
+       * from the corresponding database schema column.
        *
        * If you need additional properties that is represented by dynamic key,
        * you can use the {@link additionalProperties} instead.
@@ -1444,9 +1450,9 @@ export namespace AutoBeOpenApi {
    * When creating descriptions for components, types, and properties:
    *
    * 1. ALWAYS refer to and incorporate the description comments from the
-   *    corresponding Prisma DB schema tables and columns. The descriptions
+   *    corresponding database schema tables and columns. The descriptions
    *    should match the style, level of detail, and terminology used in the
-   *    Prisma schema.
+   *    database schema.
    * 2. ALL descriptions MUST be organized into MULTIPLE PARAGRAPHS separated by
    *    line breaks. Single-paragraph descriptions should be avoided.
    * 3. Descriptions should comprehensively cover:
@@ -1456,8 +1462,8 @@ export namespace AutoBeOpenApi {
    *    - Validation rules, constraints, and edge cases
    *    - Usage context and examples when helpful
    * 4. For each property of an object type, ensure its description reflects the
-   *    corresponding column description in the Prisma DB schema, maintaining
-   *    the same level of detail and terminology
+   *    corresponding column description in the database schema, maintaining the
+   *    same level of detail and terminology
    * 5. Descriptions should be so detailed and clear that anyone reading them can
    *    fully understand the type or property without needing to reference any
    *    other documentation
@@ -1518,7 +1524,7 @@ export namespace AutoBeOpenApi {
        *
        * CRITICAL: This description MUST be extensively detailed and MUST
        * reference and align with the description comments from the
-       * corresponding Prisma DB schema tables and columns.
+       * corresponding database schema tables and columns.
        *
        * The description MUST be organized into MULTIPLE PARAGRAPHS (separated
        * by line breaks) based on different aspects of the type:

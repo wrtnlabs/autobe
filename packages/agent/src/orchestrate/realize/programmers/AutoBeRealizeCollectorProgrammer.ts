@@ -292,7 +292,7 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
           path: `$input.request.mappings[${i}].member`,
           value: m.member,
           expected: required
-            .map((r) => `AutoBeRealizeMapping<"${r}">`)
+            .map((r) => `AutoBeRealizeMapping<"${r.member}">`)
             .join(" | "),
           description: StringUtil.trim`
           '${m.member}' is not a valid Prisma member.

@@ -829,7 +829,7 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 - Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
 - Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
 
-**FORMAT**: `"`x-autobe-database-schema`": "PrismaModelName"` (exact model name from database schema) or `null`
+**FORMAT**: `"`x-autobe-database-schema`": "database_model_name"` (exact model name from database schema) or `null`
 
 **VALIDATION PROCESS**:
 1. **Check for `x-autobe-database-schema` field**: If present in an object type schema, it indicates direct database model mapping (string) or no mapping (null)

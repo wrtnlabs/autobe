@@ -235,7 +235,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
       };
       increment();
       this.histories_.push(history);
-      this.dispatch({
+      void this.dispatch({
         type: "assistantMessage",
         id: history.id,
         text: history.text,
@@ -299,7 +299,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         throw new Error("User message cannot be empty");
       }
     }
-    this.dispatch({
+    void this.dispatch({
       type: "userMessage",
       id: v7(),
       contents: userContent,

@@ -15,7 +15,7 @@ import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_preliminary_application_fix_enum = async () => {
+export const test_schema_preliminary_enum = async () => {
   if (
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,

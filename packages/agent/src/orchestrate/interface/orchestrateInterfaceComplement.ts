@@ -17,6 +17,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
@@ -236,6 +237,10 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
+  JsonSchemaFactory.fixPlugin(
+    ctx.state(),
+    application.functions[0].parameters.$defs,
+  );
 
   return {
     protocol: "class",
