@@ -70,11 +70,13 @@ namespace PreliminaryTransformer {
       ? "previousAnalysisFiles"
       : "analysisFiles";
     const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
-      props.local[kind].map((f) => [f.filename, f]),
+      props.local[kind]
+        .map((f) => [f.filename, f] as const)
+        .sort(([a], [b]) => a.localeCompare(b)),
     );
-    const newbie: AutoBeAnalyzeFile[] = props.all[kind].filter(
-      (f) => oldbie[f.filename] === undefined,
-    );
+    const newbie: AutoBeAnalyzeFile[] = props.all[kind]
+      .filter((f) => oldbie[f.filename] === undefined)
+      .sort((a, b) => a.filename.localeCompare(b.filename));
 
     const analyze: AutoBeAnalyzeHistory | null = props.previous
       ? props.state.previousAnalyze
@@ -151,11 +153,13 @@ namespace PreliminaryTransformer {
       ? "previousDatabaseSchemas"
       : "databaseSchemas";
     const oldbie: Record<string, AutoBeDatabase.IModel> = Object.fromEntries(
-      props.local[kind].map((s) => [s.name, s]),
+      props.local[kind]
+        .map((s) => [s.name, s] as const)
+        .sort(([a], [b]) => a.localeCompare(b)),
     );
-    const newbie: AutoBeDatabase.IModel[] = props.all[kind].filter(
-      (s) => oldbie[s.name] === undefined,
-    );
+    const newbie: AutoBeDatabase.IModel[] = props.all[kind]
+      .filter((s) => oldbie[s.name] === undefined)
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
@@ -245,20 +249,24 @@ namespace PreliminaryTransformer {
     const kind: "interfaceOperations" | "previousInterfaceOperations" =
       props.previous ? "previousInterfaceOperations" : "interfaceOperations";
     const oldbie: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-      props.local[kind].map((o) => ({
-        method: o.method,
-        path: o.path,
-      })),
+      props.local[kind]
+        .map((o) => ({
+          method: o.method,
+          path: o.path,
+        }))
+        .sort(AutoBeOpenApiEndpointComparator.compare),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     );
-    const newbie: AutoBeOpenApi.IOperation[] = props.all[kind].filter(
-      (o) =>
-        oldbie.has({
-          method: o.method,
-          path: o.path,
-        }) === false,
-    );
+    const newbie: AutoBeOpenApi.IOperation[] = props.all[kind]
+      .filter(
+        (o) =>
+          oldbie.has({
+            method: o.method,
+            path: o.path,
+          }) === false,
+      )
+      .sort(AutoBeOpenApiEndpointComparator.compare);
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
@@ -341,7 +349,9 @@ namespace PreliminaryTransformer {
       ? "previousInterfaceSchemas"
       : "interfaceSchemas";
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-    for (const [k, v] of Object.entries(props.all[kind]))
+    for (const [k, v] of Object.entries(props.all[kind]).sort(([a], [b]) =>
+      a.localeCompare(b),
+    ))
       if (props.local[kind][k] === undefined) newbie[k] = v;
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
@@ -371,6 +381,7 @@ namespace PreliminaryTransformer {
           .join("\n")}
       `,
       loaded: Object.keys(props.local[kind])
+        .sort()
         .map((k) => `- ${k}`)
         .join("\n"),
       exhausted:
@@ -410,12 +421,13 @@ namespace PreliminaryTransformer {
   ): IMicroAgenticaHistoryJson[] => {
     const oldbie: Record<string, AutoBeRealizeCollectorFunction> =
       Object.fromEntries(
-        props.local.realizeCollectors.map((c) => [c.plan.dtoTypeName, c]),
+        props.local.realizeCollectors
+          .map((c) => [c.plan.dtoTypeName, c] as const)
+          .sort(([a], [b]) => a.localeCompare(b)),
       );
-    const newbie: AutoBeRealizeCollectorFunction[] =
-      props.all.realizeCollectors.filter(
-        (c) => oldbie[c.plan.dtoTypeName] === undefined,
-      );
+    const newbie: AutoBeRealizeCollectorFunction[] = props.all.realizeCollectors
+      .filter((c) => oldbie[c.plan.dtoTypeName] === undefined)
+      .sort((a, b) => a.plan.dtoTypeName.localeCompare(b.plan.dtoTypeName));
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
@@ -478,12 +490,14 @@ namespace PreliminaryTransformer {
   ): IMicroAgenticaHistoryJson[] => {
     const oldbie: Record<string, AutoBeRealizeTransformerFunction> =
       Object.fromEntries(
-        props.local.realizeTransformers.map((t) => [t.plan.dtoTypeName, t]),
+        props.local.realizeTransformers
+          .map((t) => [t.plan.dtoTypeName, t] as const)
+          .sort(([a], [b]) => a.localeCompare(b)),
       );
     const newbie: AutoBeRealizeTransformerFunction[] =
-      props.all.realizeTransformers.filter(
-        (t) => oldbie[t.plan.dtoTypeName] === undefined,
-      );
+      props.all.realizeTransformers
+        .filter((t) => oldbie[t.plan.dtoTypeName] === undefined)
+        .sort((a, b) => a.plan.dtoTypeName.localeCompare(b.plan.dtoTypeName));
 
     const assistant: IAgenticaHistoryJson.IAssistantMessage =
       createAssistantMessage({
