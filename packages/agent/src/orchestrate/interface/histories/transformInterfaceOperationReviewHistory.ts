@@ -24,13 +24,13 @@ export function transformInterfaceOperationReviewHistory(props: {
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
       },
-      ...props.preliminary.getHistories(),
       {
         type: "systemMessage",
         id: v7(),
         created_at: new Date().toISOString(),
         text: AutoBeSystemPromptConstant.INTERFACE_OPERATION_REVIEW,
       },
+      ...props.preliminary.getHistories(),
       {
         type: "assistantMessage",
         id: v7(),
