@@ -210,9 +210,6 @@ export const orchestrateInterface =
       total: 0,
     };
     while (missedOpenApiSchemas(document).length !== 0) {
-      // @todo remove console.log
-      console.log("try complementation loop", missedOpenApiSchemas(document));
-
       // COMPLEMENT OMITTED
       const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceComplement(ctx, {
