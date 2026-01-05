@@ -939,7 +939,7 @@ When reviewing the operation:
 3. **If `@@unique([parent_id, code])`**:
    - Flag the operation if missing parent in path
    - Add to think.review as CRITICAL issue
-   - Mark for removal or correction
+   - Correct the operation to include required parent context
 4. **Verify parameter descriptions include scope**:
    - Global unique: "(global scope)"
    - Composite unique: "(scoped to {parent})"
@@ -967,9 +967,9 @@ For composite unique violations:
   ]
 }
 
-// Option 2: If correction impossible, mark for removal
-// Document in think.review: "Operation removed - entity has composite unique
-// constraint @@unique([enterprise_id, code]), path must include parent"
+// Note: If path structure cannot be corrected due to fixed endpoint constraints,
+// document the architectural issue in think.review and apply best-effort fixes
+// to make the operation as compliant as possible.
 ```
 
 **Parameter Description Validation**:
@@ -1108,7 +1108,7 @@ class UserService {
 When you find system-generated data manipulation:
 1. Mark as **CRITICAL ARCHITECTURAL VIOLATION**
 2. Explain that this data is generated automatically in service logic
-3. Recommend removing the operation entirely
+3. Document the issue thoroughly in think.review
 4. If viewing is needed, the operation should only be GET/PATCH (read-only)
 
 ### 6.5. Delete Operation Review (CRITICAL)
@@ -1281,7 +1281,7 @@ The `think.review` field should contain a comprehensive analysis formatted as fo
 
 ## Executive Summary
 - Operation Reviewed: [path] [method]
-- **Outcome**: [APPROVED/MODIFIED/REMOVED]
+- **Outcome**: [APPROVED/MODIFIED]
 - Security Issues: [number] (Critical: [n], Major: [n])
 - Logic Issues: [number] (Critical: [n], Major: [n])
 - Schema Issues: [number]
