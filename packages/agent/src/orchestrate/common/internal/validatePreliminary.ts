@@ -95,6 +95,7 @@ namespace PreliminaryApplicationValidator {
             ${controller
               .getAll()
               [accessor].filter((f) => newbie.has(f.filename))
+              .sort((a, b) => a.filename.localeCompare(b.filename))
               .map((f) => `${f.filename} | ${f.documentType}`)
               .join("\n")}
 
@@ -164,7 +165,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const errors: IValidation.IError[] = [];
-    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
+    const quoted: string[] = Array.from(newbie)
+      .sort()
+      .map((x) => JSON.stringify(x));
 
     input.request.schemaNames.forEach((key, i) => {
       if (all.has(key) === false)
@@ -292,6 +295,7 @@ namespace PreliminaryApplicationValidator {
             ------ | ----
             ${newbie
               .toJSON()
+              .sort(AutoBeOpenApiEndpointComparator.compare)
               .map((o) => `${o.method} | ${o.path}`)
               .join("\n")}
 
@@ -361,7 +365,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const errors: IValidation.IError[] = [];
-    const quoted: string[] = Array.from(newbie).map((k) => JSON.stringify(k));
+    const quoted: string[] = Array.from(newbie)
+      .sort()
+      .map((k) => JSON.stringify(k));
 
     input.request.typeNames.forEach((key, i) => {
       if (all.has(key) === false)
@@ -440,7 +446,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const errors: IValidation.IError[] = [];
-    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
+    const quoted: string[] = Array.from(newbie)
+      .sort()
+      .map((x) => JSON.stringify(x));
 
     input.request.dtoTypeNames.forEach((key, i) => {
       if (all.has(key) === false)
@@ -515,7 +523,9 @@ namespace PreliminaryApplicationValidator {
     );
 
     const errors: IValidation.IError[] = [];
-    const quoted: string[] = Array.from(newbie).map((x) => JSON.stringify(x));
+    const quoted: string[] = Array.from(newbie)
+      .sort()
+      .map((x) => JSON.stringify(x));
 
     input.request.dtoTypeNames.forEach((key, i) => {
       if (all.has(key) === false)
