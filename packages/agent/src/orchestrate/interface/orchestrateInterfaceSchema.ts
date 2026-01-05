@@ -242,10 +242,6 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  JsonSchemaFactory.fixPlugin(
-    ctx.state(),
-    application.functions[0].parameters.$defs,
-  );
 
   return {
     protocol: "class",

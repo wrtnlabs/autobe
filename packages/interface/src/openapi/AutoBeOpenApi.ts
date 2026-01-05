@@ -1264,25 +1264,6 @@ export namespace AutoBeOpenApi {
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
       /**
-       * Related database schema.
-       *
-       * If the type is directly related to a specific database schema model,
-       * include the exact model name here to establish a clear link between the
-       * OpenAPI schema and the database model.
-       *
-       * This field is optional and should only be included when there is a
-       * direct correspondence to a database model. If there's not any database
-       * model association, this field becomes `null`.
-       *
-       * **CRITICAL**: The database schema name MUST be an actually existing
-       * model name from the loaded Prisma schema. Never guess or invent schema
-       * names based on patterns or conventions. Only use schema names that have
-       * been verified to exist via preliminary data loading. Using non-existent
-       * schema names causes compilation failures and pipeline breakdown.
-       */
-      "x-autobe-database-schema"?: string | null | undefined;
-
-      /**
        * Properties of the object.
        *
        * The `properties` means a list of key-value pairs of the object's

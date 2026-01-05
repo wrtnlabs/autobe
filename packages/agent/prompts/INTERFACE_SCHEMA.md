@@ -808,57 +808,6 @@ async update(
 
 **WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code.
 
-#### 2.2.2. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
-
-**PURPOSE**: This field links OpenAPI schemas to their corresponding database models for validation.
-
-**CRITICAL: OBJECT TYPE SCHEMAS ONLY**
-
-This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
-- ✅ **APPLIES TO**: Object type schemas (`"type": "object"`)
-- ❌ **DOES NOT APPLY TO**: Primitive types, array types, enum types, or any non-object type
-
-**TYPE SAFETY**:
-- Type: `string | null` (enforced at TypeScript level)
-- `undefined` is **NOT POSSIBLE** (prevented by type system)
-- This field is **MANDATORY** for all object type schemas
-- Non-object types do NOT have this field
-
-**USAGE**:
-- Present in ANY object type schema that maps to a database model
-- Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
-- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
-
-**FORMAT**: `"`x-autobe-database-schema`": "database_model_name"` (exact model name from database schema) or `null`
-
-**VALIDATION PROCESS**:
-1. **Check for `x-autobe-database-schema` field**: If present in an object type schema, it indicates direct database model mapping (string) or no mapping (null)
-2. **Verify every property** (when value is a string): Each property in the schema MUST exist in the referenced database model
-   - Exception: Computed/derived fields explicitly calculated from existing fields
-   - Exception: Relation fields populated via joins
-3. **Timestamp Verification**:
-   - If `"`x-autobe-database-schema`": "User"`, then `created_at` is ONLY valid if database `User` model has `created_at`
-   - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked database model
-
-**Example**:
-```json
-// If a DB schema only has: id, email, name, created_at
-{
-  "IShoppingCustomer": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" },
-      "name": { "type": "string" },
-      "created_at": { "type": "string" },
-      "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in database schema
-      "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in database schema
-    },
-    "x-autobe-database-schema": "shopping_customers"
-  }
-}
-```
-
 ### 2.3. Named Types and $ref Principle
 
 **ABSOLUTE MANDATE**: Every object type MUST be defined as a named DTO and referenced using `$ref`. This is not a suggestion - it's MANDATORY.
@@ -4258,7 +4207,6 @@ interface IBbsArticle.IUpdate {
 2. **Define Main Entity Schema** (`IEntityName`):
    - Include all public-facing fields from database schema
    - **CRITICAL**: Verify each timestamp field exists in database schema (don't assume)
-   - Add `"`x-autobe-database-schema`": "PrismaModelName"` for direct table mapping
    - Apply security filtering - remove sensitive fields
    - Document thoroughly with descriptions from database schema
 
@@ -4297,7 +4245,6 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: creator_id, author_id, user_id, created_by
      - EXCLUDE: id (when auto-generated), created_at, updated_at
      - EXCLUDE: computed or aggregate fields
-     - Add `x-autobe-database-schema` linkage
 
    - **`.IUpdate`**:
      - Make ALL fields optional (Partial<T> pattern)
@@ -4305,7 +4252,6 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: created_at, created_by (immutable)
      - EXCLUDE: updated_at, deleted_at (system-managed)
      - NEVER allow changing ownership fields
-     - Add `x-autobe-database-schema` linkage
 
    - **`.ISummary`**:
      - Include id and primary display field
@@ -4313,26 +4259,17 @@ interface IBbsArticle.IUpdate {
      - EXCLUDE: Large text fields (content, description)
      - EXCLUDE: Sensitive or internal fields
      - EXCLUDE: Composition arrays (no nested arrays)
-     - Add `x-autobe-database-schema` linkage
 
    - **`.IRequest`**:
      - Include pagination parameters (page, limit)
      - Include sort options (orderBy, direction)
      - Include common filters (search, status, dateRange)
      - May include "my_items_only" but not direct "user_id"
-     - NO `x-autobe-database-schema` (query params, not table mapping)
 
    - **`.IInvert`**:
      - Use when child needs parent context
      - Include parent Summary without grandchildren
      - Never both parent and children arrays
-     - Add `x-autobe-database-schema` linkage
-
-5. **Validation When `x-autobe-database-schema` Is Present**:
-   - Verify EVERY property exists in the referenced database model
-   - Double-check timestamp fields existence
-   - Ensure no phantom fields are introduced
-   - Confirm field types match database definitions
 
 ### 6.3. Security Checklist for Each Type
 
@@ -4453,7 +4390,6 @@ interface IBbsArticle.IUpdate {
 - [ ] Every property exists in database schema - no assumptions
 - [ ] Timestamp fields verified individually per table
 - [ ] No phantom fields that would require database changes
-- [ ] `x-autobe-database-schema` linkage added for all applicable types
 
 **F. Security Verification**:
 
@@ -4631,7 +4567,6 @@ When you are asked to create a schema for type name "IBbsArticle.ICreate", you r
 ```typescript
 const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
   type: "object",
-  "`x-autobe-database-schema`": "bbs_articles",  // Maps to database model
   properties: {
     title: {
       type: "string",
@@ -4658,7 +4593,6 @@ When you are asked to create a schema for type name "IBbsArticle" (main entity),
 ```typescript
 const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
   type: "object",
-  "`x-autobe-database-schema`": "bbs_articles",
   properties: {
     id: {
       type: "string",
@@ -4835,7 +4769,6 @@ const schema: AutoBeOpenApi.IJsonSchemaDescriptive = {
    - Apply security filters BEFORE adding business fields
    - Apply relation classification rules for this type variant
    - Document the definition and all properties thoroughly
-   - Add `x-autobe-database-schema` linkage if applicable
    - Verify timestamp fields individually against database schema
 
 6. **Verification**:
@@ -4874,11 +4807,6 @@ Before completing the schema generation, verify ALL of the following items:
   - **VERIFY**: Check each table individually in the database schema
   - **NEVER**: Add timestamps just because other tables have them
 - [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
-- [ ] **`x-autobe-database-schema` linkage** - Add this field for ANY types that map to database models
-- [ ] **Validate with `x-autobe-database-schema`** - When this field is present:
-  - Every property MUST exist in the referenced database model (except computed fields)
-  - Use it to double-check timestamp fields existence
-  - Ensure the database model name is spelled correctly
 - [ ] **CRITICAL: Composite unique constraint compliance** - When entity has unique `code` field:
   - Check database schema `@@unique` constraint on target entity
   - If `@@unique([code])` (global) → Can use independently
@@ -5028,7 +4956,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 ### 13.2. Schema Generation Compliance
 - [ ] ALL schema naming follows conventions (IEntityName, IEntityName.ICreate, IEntityName.ISummary, etc.)
 - [ ] Security-first design applied (actor fields, passwords, system fields)
-- [ ] Database-schema consistency verified via `x-autobe-database-schema`
+- [ ] Database-schema consistency verified
 - [ ] ALL relations use $ref (ZERO inline object definitions)
 - [ ] Schema structure principle followed (all schemas at root level)
 - [ ] Composition relations modeled as nested objects/arrays

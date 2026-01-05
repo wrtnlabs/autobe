@@ -51,7 +51,6 @@ export namespace JsonSchemaValidator {
       path: props.path,
     });
     validateAuthorization(props);
-    validateDatabaseSchema(props);
     validateRecursive(props);
 
     validateKey({
@@ -260,67 +259,67 @@ export namespace JsonSchemaValidator {
     });
   };
 
-  const validateDatabaseSchema = (props: IProps): void => {
-    // fulfill error messages for "x-autobe-database-schema" misplacement
-    for (const e of props.errors) {
-      if (e.path.endsWith(`.properties["x-autobe-database-schema"]`) === false)
-        continue;
-      e.expected =
-        "undefined value (remove this property and re-define it in the root schema)";
-      e.description = StringUtil.trim`
-        You have defined a property named "x-autobe-database-schema"
-        somewhere wrong place.
-        
-        You have defined a property name "x-autobe-database-schema" as 
-        an object type. However, this "x-autobe-database-schema" property
-        must be defined only in the root schema object as a metadata,
-        not in the nested object property.
+  // const validateDatabaseSchema = (props: IProps): void => {
+  //   // fulfill error messages for "x-autobe-database-schema" misplacement
+  //   for (const e of props.errors) {
+  //     if (e.path.endsWith(`.properties["x-autobe-database-schema"]`) === false)
+  //       continue;
+  //     e.expected =
+  //       "undefined value (remove this property and re-define it in the root schema)";
+  //     e.description = StringUtil.trim`
+  //       You have defined a property named "x-autobe-database-schema"
+  //       somewhere wrong place.
 
-        Remove this property at the next time, and re-define it in the
-        root object schema.
-        
-        - Current path (wrong): ${e.path}
-        - Must be (object root): ${e.path.replace(
-          `.properties["x-autobe-database-schema"]`,
-          `["x-autobe-database-schema"]`,
-        )}
-      `;
-    }
-    // check database schema existence
-    AutoBeOpenApiTypeChecker.skim({
-      schema: props.schema,
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
-      closure: (schema, accessor) => {
-        if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
-        else if (
-          schema["x-autobe-database-schema"] !== null &&
-          schema["x-autobe-database-schema"] !== undefined &&
-          props.databaseSchemas.has(schema["x-autobe-database-schema"]) ===
-            false
-        )
-          props.errors.push({
-            path: accessor,
-            expected: Array.from(props.databaseSchemas)
-              .map((s) => JSON.stringify(s))
-              .join(" | "),
-            value: schema["x-autobe-database-schema"],
-            description: StringUtil.trim`
-              You've referenced a non-existing database schema name
-              ${JSON.stringify(schema["x-autobe-database-schema"])} in
-              "x-autobe-database-schema" property. Make sure that the
-              referenced database schema name exists in your database schema files.
+  //       You have defined a property name "x-autobe-database-schema" as
+  //       an object type. However, this "x-autobe-database-schema" property
+  //       must be defined only in the root schema object as a metadata,
+  //       not in the nested object property.
 
-              Never assume non-existing models. This is not recommendation,
-              but an instruction you must follow. Never repeat the same
-              value again. I repeat that, you have to choose one of below:
+  //       Remove this property at the next time, and re-define it in the
+  //       root object schema.
 
-              Existing database schema names are:
-              - ${Array.from(props.databaseSchemas).join("\n- ")}
-            `,
-          });
-      },
-    });
-  };
+  //       - Current path (wrong): ${e.path}
+  //       - Must be (object root): ${e.path.replace(
+  //         `.properties["x-autobe-database-schema"]`,
+  //         `["x-autobe-database-schema"]`,
+  //       )}
+  //     `;
+  //   }
+  //   // check database schema existence
+  //   AutoBeOpenApiTypeChecker.skim({
+  //     schema: props.schema,
+  //     accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+  //     closure: (schema, accessor) => {
+  //       if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
+  //       else if (
+  //         schema["x-autobe-database-schema"] !== null &&
+  //         schema["x-autobe-database-schema"] !== undefined &&
+  //         props.databaseSchemas.has(schema["x-autobe-database-schema"]) ===
+  //           false
+  //       )
+  //         props.errors.push({
+  //           path: accessor,
+  //           expected: Array.from(props.databaseSchemas)
+  //             .map((s) => JSON.stringify(s))
+  //             .join(" | "),
+  //           value: schema["x-autobe-database-schema"],
+  //           description: StringUtil.trim`
+  //             You've referenced a non-existing database schema name
+  //             ${JSON.stringify(schema["x-autobe-database-schema"])} in
+  //             "x-autobe-database-schema" property. Make sure that the
+  //             referenced database schema name exists in your database schema files.
+
+  //             Never assume non-existing models. This is not recommendation,
+  //             but an instruction you must follow. Never repeat the same
+  //             value again. I repeat that, you have to choose one of below:
+
+  //             Existing database schema names are:
+  //             - ${Array.from(props.databaseSchemas).join("\n- ")}
+  //           `,
+  //         });
+  //     },
+  //   });
+  // };
 
   const validateRecursive = (props: IProps): void => {
     const report = (description: string) =>

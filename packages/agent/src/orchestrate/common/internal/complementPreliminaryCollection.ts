@@ -7,9 +7,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@samchon/openapi";
-import pluralize from "pluralize";
 import { HashMap, HashSet, Pair } from "tstl";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeRealizeCollectorProgrammer } from "../../realize/programmers/AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "../../realize/programmers/AutoBeRealizeTransformerProgrammer";
@@ -183,8 +181,6 @@ const complementInterfaceSchemas = (props: INextProps) => {
   // link dependencies
   const kind: "interfaceSchemas" | "previousInterfaceSchemas" =
     props.previous === true ? "previousInterfaceSchemas" : "interfaceSchemas";
-  const prismaKind: "databaseSchemas" | "previousDatabaseSchemas" =
-    props.previous === true ? "previousDatabaseSchemas" : "databaseSchemas";
   const unique: Set<string> = new Set(Object.keys(props.local[kind]));
   for (const dto of Object.values(props.local[kind]))
     OpenApiTypeChecker.visit({
@@ -203,38 +199,4 @@ const complementInterfaceSchemas = (props: INextProps) => {
       props.all[kind][key] !== undefined
     )
       props.local[kind][key] = props.all[kind][key];
-
-  // load related database schemas
-  if (props.kinds.includes(prismaKind) === true) {
-    const prisma: Set<string> = new Set();
-    for (const [key, value] of Object.entries(props.local[kind])) {
-      OpenApiTypeChecker.visit({
-        components: {
-          schemas: props.all[kind],
-        },
-        schema: value,
-        closure: (next) => {
-          if (OpenApiTypeChecker.isObject(next) === false) return;
-          const name: string | null | undefined = (
-            next as AutoBeOpenApi.IJsonSchema.IObject
-          )["x-autobe-database-schema"];
-          if (
-            name !== null &&
-            name !== undefined &&
-            props.all[prismaKind].find((m) => m.name === name) !== undefined
-          )
-            prisma.add(name);
-        },
-      });
-      const candidate: string = pluralize(NamingConvention.snake(key));
-      if (props.all[prismaKind].find((m) => m.name === candidate) !== undefined)
-        prisma.add(candidate);
-    }
-    for (const name of prisma) {
-      if (props.local[prismaKind].find((m) => m.name === name) === undefined)
-        props.local[prismaKind].push(
-          props.all[prismaKind].find((m) => m.name === name)!,
-        );
-    }
-  }
 };

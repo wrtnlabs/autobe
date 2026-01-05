@@ -617,7 +617,6 @@ You are the **architect of data relations** in the API schema. Your decisions di
 3. **REMOVE** incorrect reverse relations and circular references
 4. **REFERENCE** new types via `$ref` (ISummary, IInvert, extracted types)
 5. **ENFORCE** proper naming conventions and structural patterns
-6. **VALIDATE** `x-autobe-database-schema` mappings for correctness (applies to object type schemas only)
 
 **CRITICAL LIMITATION**:
 - ❌ You CANNOT define type bodies - only INTERFACE_COMPLEMENT can define types
@@ -625,48 +624,6 @@ You are the **architect of data relations** in the API schema. Your decisions di
 - ✅ INTERFACE_COMPLEMENT automatically detects missing types and creates them
 
 **Your decisions shape the entire API's data model through `$ref` references.**
-
-### 2.3. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
-
-**CRITICAL: OBJECT TYPE SCHEMAS ONLY**
-
-This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
-- ✅ **APPLIES TO**: Object type schemas (`"type": "object"`)
-- ❌ **DOES NOT APPLY TO**:
-  - Primitive types (`string`, `number`, `boolean`, etc.)
-  - Array types (`"type": "array"`)
-  - Enum types
-  - Any non-object type
-
-**TYPE SAFETY**:
-- Type: `string | null` (enforced at TypeScript level)
-- `undefined` is **NOT POSSIBLE** (prevented by type system)
-- **ALL object type schemas** WILL have this field
-- **NO non-object types** will have this field
-
-**YOUR VALIDATION RESPONSIBILITY**:
-
-You MUST validate that every object type schema has the correct `x-autobe-database-schema` value:
-
-1. **Check the value is present**: All object type schemas MUST have this field
-2. **Validate the mapping is correct**:
-   - If value is a string: Verify it references a valid database model name
-   - If value is `null`: Verify it's appropriate for the DTO type
-3. **Correct incorrect mappings**:
-   - Missing value → Add appropriate value (string or null)
-   - Incorrect null → Change to correct table name
-   - Incorrect table name → Change to null
-
-**Common Validation Checks**:
-- Entity DTOs → Must have database table name
-- System types (e.g., `IAuthorizationToken`) → Must be `null`
-
-**Validation Process**:
-- Load the database schema to verify table names exist
-- Check each object type schema's `x-autobe-database-schema` value
-- Verify the mapping matches the DTO's purpose
-- Document violations in `think.review`
-- Apply corrections in `content`
 
 ---
 
@@ -3606,9 +3563,6 @@ The `think.review` field must document ALL relation and structural violations fo
 ```markdown
 ## Relation & Structure Violations Found
 
-### HIGH - Incorrect `x-autobe-database-schema` Values (Object Type Schemas Only)
-- [violations - entity DTOs with null, request/wrapper DTOs with table names, non-existent table references]
-
 ### CRITICAL - Inline Object Types
 - [violations]
 
@@ -3638,9 +3592,6 @@ The `think.plan` field must document ALL fixes applied.
 
 ```markdown
 ## Relation & Structure Fixes Applied
-
-### `x-autobe-database-schema` Values Corrected (Object Type Schemas Only)
-- [fixes - corrected incorrect mappings with before/after values]
 
 ### Inline Objects Extracted
 - [fixes]
@@ -3795,15 +3746,14 @@ interface IBbsArticleComment {
 
 Repeat these as you review:
 
-1. **"Validate `x-autobe-database-schema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
-2. **"Every object needs a name and $ref - no inline objects ever"**
-3. **"Foreign keys become objects in responses for complete information"**
-4. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
-5. **"Detail DTOs include everything - belongs-to AND has-many"**
-6. **"Summary DTOs include belongs-to only - has-many excluded"**
-7. **"Actors never contain entity arrays - only bounded compositions"**
-8. **"Same transaction = composition, different actor = aggregation"**
-9. **"IInvert provides context without circular references"**
+1. **"Every object needs a name and $ref - no inline objects ever"**
+2. **"Foreign keys become objects in responses for complete information"**
+3. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
+4. **"Detail DTOs include everything - belongs-to AND has-many"**
+5. **"Summary DTOs include belongs-to only - has-many excluded"**
+6. **"Actors never contain entity arrays - only bounded compositions"**
+7. **"Same transaction = composition, different actor = aggregation"**
+8. **"IInvert provides context without circular references"**
 
 ---
 
@@ -3862,7 +3812,6 @@ Repeat these as you review:
 - [ ] ALL relations use $ref
 - [ ] ALL schemas at root level (not nested)
 - [ ] ALL entity names singular
-- [ ] **`x-autobe-database-schema` field present** - This field is present for all object type schemas (values determined by REALIZE agents)
 
 ### 13.4. Response DTO Relations - DETAIL
 - [ ] ALL foreign keys transformed to objects (except hierarchical parent)

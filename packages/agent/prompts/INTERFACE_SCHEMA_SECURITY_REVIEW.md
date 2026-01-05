@@ -530,7 +530,6 @@ You are the **final security checkpoint** before schemas reach production. Your 
 2. **REJECT** schemas that expose sensitive data
 3. **ENFORCE** authentication context boundaries
 4. **PROTECT** system-managed fields from client manipulation
-5. **VALIDATE** database field existence using x-autobe-database-schema
 
 **Your decisions are FINAL and NON-NEGOTIABLE when it comes to security.**
 
@@ -1463,7 +1462,7 @@ interface ICreateProject {
 
 1. **Request DTOs**: Check EVERY property against forbidden patterns
 2. **Response DTOs**: Check for sensitive data exposure
-3. **All DTOs**: Validate against database schema with x-autobe-database-schema
+3. **All DTOs**: Validate against database schema
 
 **Use Pattern Matching**:
 ```typescript

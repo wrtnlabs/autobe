@@ -119,28 +119,19 @@ const document: AutoBeOpenApi.IDocument = {
         type: "object",
         properties: {},
         required: [],
-        ...{
-          description: "Information of shopping customer.",
-        },
-        "x-autobe-database-schema": "shopping_customers",
+        description: "Information of shopping customer.",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       "IShoppingSale.ICreate": {
         type: "object",
         properties: {},
         required: [],
-        ...{
-          description: "Create information of shopping sale.",
-        },
-        "x-autobe-database-schema": "shopping_sales",
+        description: "Create information of shopping sale.",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       IShoppingSale: {
         type: "object",
         properties: {},
         required: [],
-        "x-autobe-database-schema": "shopping_sales",
-        ...{
-          description: "Information of shopping sale.",
-        },
+        description: "Information of shopping sale.",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
     },
     authorizations: [

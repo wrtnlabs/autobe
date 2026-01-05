@@ -1,14 +1,8 @@
 import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import {
-  ILlmSchema,
-  LlmTypeChecker,
-  OpenApi,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
 
-import { AutoBeState } from "../../../context/AutoBeState";
 import { JsonSchemaValidator } from "./JsonSchemaValidator";
 
 export namespace JsonSchemaFactory {
@@ -62,7 +56,6 @@ export namespace JsonSchemaFactory {
   }): void => {
     removeUnused(props.document);
     removeDuplicated(props.document);
-    fixTimestamps(props);
   };
 
   const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
@@ -142,37 +135,37 @@ export namespace JsonSchemaFactory {
     for (const key of correct.keys()) delete document.components.schemas[key];
   };
 
-  const fixTimestamps = (props: {
-    document: AutoBeOpenApi.IDocument;
-    application: AutoBeDatabase.IApplication;
-  }): void => {
-    const entireModels: AutoBeDatabase.IModel[] = props.application.files
-      .map((f) => f.models)
-      .flat();
-    for (const value of Object.values(props.document.components.schemas)) {
-      if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
+  // const fixTimestamps = (props: {
+  //   document: AutoBeOpenApi.IDocument;
+  //   application: AutoBeDatabase.IApplication;
+  // }): void => {
+  //   const entireModels: AutoBeDatabase.IModel[] = props.application.files
+  //     .map((f) => f.models)
+  //     .flat();
+  //   for (const value of Object.values(props.document.components.schemas)) {
+  //     if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
-      const model: AutoBeDatabase.IModel | undefined = value[
-        "x-autobe-database-schema"
-      ]
-        ? entireModels.find((m) => m.name === value["x-autobe-database-schema"])
-        : undefined;
-      if (model === undefined) continue;
+  //     const model: AutoBeDatabase.IModel | undefined = value[
+  //       "x-autobe-database-schema"
+  //     ]
+  //       ? entireModels.find((m) => m.name === value["x-autobe-database-schema"])
+  //       : undefined;
+  //     if (model === undefined) continue;
 
-      const properties: string[] = Object.keys(value.properties);
-      for (const key of properties) {
-        if (
-          key !== "created_at" &&
-          key !== "updated_at" &&
-          key !== "deleted_at"
-        )
-          continue;
-        const column: AutoBeDatabase.IPlainField | undefined =
-          model.plainFields.find((c) => c.name === key);
-        if (column === undefined) delete value.properties[key];
-      }
-    }
-  };
+  //     const properties: string[] = Object.keys(value.properties);
+  //     for (const key of properties) {
+  //       if (
+  //         key !== "created_at" &&
+  //         key !== "updated_at" &&
+  //         key !== "deleted_at"
+  //       )
+  //         continue;
+  //       const column: AutoBeDatabase.IPlainField | undefined =
+  //         model.plainFields.find((c) => c.name === key);
+  //       if (column === undefined) delete value.properties[key];
+  //     }
+  //   }
+  // };
 
   /* -----------------------------------------------------------
     PAGINATION
@@ -200,7 +193,6 @@ export namespace JsonSchemaFactory {
   
       Collection of records with pagination information.
     `,
-    "x-autobe-database-schema": null, // filled by relation review agent
   });
 
   export const fixPage = (path: string, input: unknown): void => {
@@ -231,49 +223,8 @@ export namespace JsonSchemaFactory {
         string,
         AutoBeOpenApi.IJsonSchemaDescriptive
       >;
-    for (const value of Object.values(init))
-      AutoBeOpenApiTypeChecker.visit({
-        components: {
-          schemas: init,
-          authorizations: [],
-        },
-        schema: value,
-        closure: (next) => {
-          if (AutoBeOpenApiTypeChecker.isObject(next))
-            next["x-autobe-database-schema"] = null;
-        },
-      });
     return init;
   })();
-
-  /* -----------------------------------------------------------
-    PLUGIN
-  ----------------------------------------------------------- */
-  export const fixPlugin = (
-    state: AutoBeState,
-    $defs: Record<string, ILlmSchema>,
-  ): void => {
-    if (state.database === null) return;
-    const models: string[] = state.database.result.data.files
-      .map((f) => f.models.map((m) => m.name))
-      .flat()
-      .sort();
-    const fix = (obj: ILlmSchema | undefined) => {
-      if (obj === undefined || LlmTypeChecker.isObject(obj) === false) return;
-
-      const property = obj.properties["x-autobe-database-schema"];
-      if (property === undefined || LlmTypeChecker.isAnyOf(property) === false)
-        return;
-
-      const str: ILlmSchema.IString | undefined = property.anyOf.filter((s) =>
-        LlmTypeChecker.isString(s),
-      )[0];
-      if (str === undefined) return;
-      str.enum = models;
-    };
-    fix($defs["AutoBeOpenApi.IJsonSchema.IObject"]);
-    fix($defs["AutoBeOpenApi.IJsonSchemaDescriptive.IObject"]);
-  };
 }
 
 namespace IPage {
