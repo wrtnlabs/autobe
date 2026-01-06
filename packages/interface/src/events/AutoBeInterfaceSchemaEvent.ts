@@ -25,6 +25,18 @@ export interface AutoBeInterfaceSchemaEvent
     AutoBeEventBase<"interfaceSchema">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
+  /**
+   * Type name of the schema being defined.
+   *
+   * Represents the unique identifier for the schema definition being created
+   * in the OpenAPI specification. This type name will be used as the key in
+   * the OpenAPI components.schemas object and referenced throughout the API
+   * specification for type consistency and reusability.
+   *
+   * The type name follows TypeScript naming conventions and should be
+   * descriptive of the data structure it represents, enabling clear
+   * understanding of the schema's purpose in the API contract.
+   */
   typeName: string;
 
   /**

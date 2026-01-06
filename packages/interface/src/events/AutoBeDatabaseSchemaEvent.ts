@@ -16,8 +16,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * Each event represents the completion of a single table within a namespace.
  * Multiple events are emitted for each namespace, one per table, enabling
- * fine-grained progress tracking and parallel generation of tables within
- * the same business domain.
+ * fine-grained progress tracking and parallel generation of tables within the
+ * same business domain.
  *
  * @author Samchon
  */
@@ -42,6 +42,20 @@ export interface AutoBeDatabaseSchemaEvent
    */
   plan: string;
 
+  /**
+   * Business domain namespace where this database table belongs.
+   *
+   * Identifies the logical business domain or functional area that this
+   * database table is part of. The namespace follows domain-driven design
+   * principles, grouping related tables together to maintain coherent schema
+   * organization and clear separation of concerns across different business
+   * areas.
+   *
+   * The namespace determines which Prisma schema file this table will be
+   * written to, enabling systematic development and maintainable database
+   * architecture. Each namespace typically corresponds to a major business
+   * domain such as "Actors", "Sales", or "Systematic".
+   */
   namespace: string;
 
   /**
