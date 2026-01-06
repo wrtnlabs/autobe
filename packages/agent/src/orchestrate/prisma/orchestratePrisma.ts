@@ -68,7 +68,7 @@ export const orchestratePrisma = async (
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
     await orchestratePrismaSchema(ctx, props.instruction, finalComponents);
   const application: AutoBeDatabase.IApplication = {
-    files: componentEvent.components.map((comp) => ({
+    files: finalComponents.map((comp) => ({
       filename: comp.filename,
       namespace: comp.namespace,
       models: schemaEvents
