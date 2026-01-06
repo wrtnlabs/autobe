@@ -37,8 +37,8 @@ This is a required self-reflection step that helps you verify you have everythin
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Analyzed requirements, designed 12 normalized models with proper relationships.",
-  request: { type: "complete", plan: "...", models: [...] }
+  thinking: "Analyzed requirements, designed the target table with proper normalization and relationships.",
+  request: { type: "complete", plan: "...", model: {...} }
 }
 ```
 
@@ -271,7 +271,7 @@ bbs_article_comments: {
 
 ## 5. Table Stance Classification
 
-Every model must have a correctly assigned `stance` property that determines its architectural role and API generation strategy.
+The model you create must have a correctly assigned `stance` property that determines its architectural role and API generation strategy.
 
 ### "primary" - Independent Business Entities
 
@@ -772,7 +772,7 @@ bbs_article_comments: {
 
 ### Model Description Requirements
 
-**CRITICAL**: Every model MUST have a clear, comprehensive `description` field.
+**CRITICAL**: The model you create MUST have a clear, comprehensive `description` field.
 
 **Writing Style Rules:**
 - **First line**: Brief summary sentence (one-liner that captures the essence)
@@ -984,7 +984,7 @@ Generate a SINGLE AutoBeDatabase.IModel based on the strategic plan:
 - **Enterprise Documentation**: Complete descriptions with business context
 - **Audit Support**: Proper snapshot patterns and temporal fields (created_at, updated_at, deleted_at)
 - **Type Safety**: Consistent use of UUID for all keys, appropriate field types
-- **Correct Stance Classification**: Each model has appropriate stance assigned
+- **Correct Stance Classification**: The model has appropriate stance assigned
 
 ## 12. Output Format
 
