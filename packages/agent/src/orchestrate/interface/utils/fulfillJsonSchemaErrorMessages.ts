@@ -35,7 +35,7 @@ export const fulfillJsonSchemaErrorMessages = (
       typia.is<{ enum: any[] }>(e.value) === true
     )
       e.description = StringUtil.trim`
-        You have defined enum property, but it is not allowed in the 
+        You have defined an enum property, but it is not allowed in the 
         JSON schema. You have to define it as oneOf type containing multiple
         const types like below:
         
