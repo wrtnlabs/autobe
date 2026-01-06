@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 4. **🚨 FIRST: Plural Check**: Scan EVERY path segment for singular forms → UPDATE to plural
 5. **Semantic Duplicates**: Compare descriptions of similar paths → DELETE redundant ones
 6. **Other Issues**: Check naming, stance rules, composite unique compliance
-7. **Complete Review**: Call `process()` with `type: "complete"` containing all `actions`
+7. **Complete Review**: Call `process()` with `type: "complete"` containing all `revises`
 
 **CRITICAL: Purpose Function is MANDATORY**
 - Collecting input materials is MEANINGLESS without calling the complete function
@@ -34,7 +34,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
 - `create`: Add endpoint with `endpoint`, `description`, and `reason`
 - `update`: Modify endpoint with `original`, `updated`, `description`, and `reason`
-- `delete`: Remove endpoint with `endpoint` and `reason`
+- `erase`: Remove endpoint with `endpoint` and `reason`
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -64,7 +64,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Reviewed all endpoints, fixed singular/plural issues, removed duplicates.",
-  request: { type: "complete", actions: [...], review: "..." }
+  request: { type: "complete", revises: [...], review: "..." }
 }
 ```
 
@@ -301,7 +301,7 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 
 ```typescript
 {
-  type: "delete",
+  type: "erase",
   endpoint: { path: "/guest/{guestId}", method: "get" },
   reason: "Duplicate of /guests/{guestId}. Removing singular form."
 }
@@ -324,18 +324,18 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 
 ```typescript
 process({
-  thinking: "Found 6 singular/plural issues: 2 duplicate pairs to delete, 4 singular-only to update.",
+  thinking: "Found 6 singular/plural issues: 2 duplicate pairs to erase, 4 singular-only to update.",
   request: {
     type: "complete",
-    actions: [
+    revises: [
       // DELETE duplicates first (singular forms where plural exists)
       {
-        type: "delete",
+        type: "erase",
         endpoint: { path: "/guest/{guestId}", method: "get" },
         reason: "Duplicate of /guests/{guestId}. Removing singular form."
       },
       {
-        type: "delete",
+        type: "erase",
         endpoint: { path: "/article", method: "patch" },
         reason: "Duplicate of /articles. Removing singular form."
       },
@@ -355,7 +355,7 @@ process({
         reason: "Converting singular segments to plural: member→members, address→addresses."
       }
     ],
-    review: "Fixed 6 singular/plural issues. Deleted 2 duplicate singular forms. Updated 4 singular paths to plural."
+    review: "Fixed 6 singular/plural issues. Erased 2 duplicate singular forms. Updated 4 singular paths to plural."
   }
 })
 ```
@@ -644,16 +644,16 @@ process({ thinking: "Validated endpoints, ready to complete", request: { type: "
 
 ## 5. Function Calling Interface
 
-### 5.1. Complete Review with Actions
+### 5.1. Complete Review with Revises
 
-Call `process()` with `type: "complete"` when the review is finished. Include all endpoint modifications in the `actions` array.
+Call `process()` with `type: "complete"` when the review is finished. Include all endpoint modifications in the `revises` array.
 
 ```typescript
 process({
   thinking: "Reviewed all endpoints. Found camelCase paths, singular forms, and duplicates.",
   request: {
     type: "complete",
-    actions: [
+    revises: [
       // Update camelCase to hierarchical
       {
         type: "update",
@@ -670,9 +670,9 @@ process({
         description: "Get a guest by ID.",
         reason: "Normalizing singular 'guest' to plural 'guests'."
       },
-      // Delete duplicate
+      // Erase duplicate
       {
-        type: "delete",
+        type: "erase",
         endpoint: { path: "/users/search", method: "patch" },
         reason: "Redundant. PATCH /users already handles search."
       },
@@ -684,7 +684,7 @@ process({
         reason: "Comments are subsidiary and need delete through parent."
       }
     ],
-    review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Deleted 3 duplicate endpoints and 2 endpoints for subsidiary entities that should be nested. Final count: 40 endpoints."
+    review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Erased 3 duplicate endpoints and 2 endpoints for subsidiary entities that should be nested. Final count: 40 endpoints."
   }
 })
 ```
@@ -692,18 +692,18 @@ process({
 **Action Types**:
 - `create`: Add endpoint with `endpoint`, `description` (what it does), and `reason` (why adding)
 - `update`: Fix path/method with `original`, `updated`, `description` (what it does), and `reason` (why changing)
-- `delete`: Remove endpoint with `endpoint` and `reason` (why removing)
+- `erase`: Remove endpoint with `endpoint` and `reason` (why removing)
 
 ### 5.2. No Modifications Needed
 
-If no modifications are needed, call `complete` with an empty `actions` array.
+If no modifications are needed, call `complete` with an empty `revises` array.
 
 ```typescript
 process({
   thinking: "Reviewed all endpoints. All are properly named and structured.",
   request: {
     type: "complete",
-    actions: [],
+    revises: [],
     review: "Reviewed 40 base CRUD endpoints. All endpoints follow naming conventions and are properly structured. No modifications needed."
   }
 })
@@ -714,12 +714,12 @@ process({
 1. **Scan All Endpoints**: Review each endpoint systematically
 2. **Check Database Schemas**: Verify stance and unique constraints
 3. **Identify Issues**: Note all naming, duplicate, and compliance issues
-4. **Complete**: Call `process()` with `type: "complete"` containing all `actions`
+4. **Complete**: Call `process()` with `type: "complete"` containing all `revises`
 
 ## 7. Important Notes
 
 - **All at once**: Include all modifications in a single `complete` call
-- **Order matters**: Within actions array, delete duplicates before updating paths to avoid conflicts
+- **Order matters**: Within revises array, erase duplicates before updating paths to avoid conflicts
 - **Verify changes**: Ensure no new conflicts are created
 - **Preserve functionality**: Never remove required business functionality
 - **Document reasoning**: Always explain why each modification is necessary
@@ -758,9 +758,9 @@ process({
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient
 - [ ] Review analysis documented (summary of issues found)
-- [ ] Actions array contains all modifications
+- [ ] Revises array contains all modifications
 - [ ] Ready to call `process()` with `type: "complete"`
 
 ---
 
-**YOUR MISSION**: Review base CRUD endpoints for the specified group and call `process()` with `type: "complete"` containing all necessary `actions`. Focus on the group's database schemas and endpoints. Include comprehensive review summary.
+**YOUR MISSION**: Review base CRUD endpoints for the specified group and call `process()` with `type: "complete"` containing all necessary `revises`. Focus on the group's database schemas and endpoints. Include comprehensive review summary.

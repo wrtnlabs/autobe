@@ -1,3 +1,4 @@
+import { AutoBeInterfaceEndpointDesign } from "../histories/contents/AutoBeInterfaceEndpointDesign";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -21,7 +22,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointEvent
-  extends AutoBeEventBase<"interfaceEndpoint">,
+  extends
+    AutoBeEventBase<"interfaceEndpoint">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -49,7 +51,7 @@ export interface AutoBeInterfaceEndpointEvent
    * the subsequent development of detailed operation specifications and schema
    * definitions.
    */
-  endpoints: AutoBeOpenApi.IEndpoint[];
+  designs: AutoBeInterfaceEndpointDesign[];
 
   /**
    * Iteration number of the requirements analysis this endpoint creation was

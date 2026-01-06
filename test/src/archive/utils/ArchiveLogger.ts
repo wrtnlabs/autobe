@@ -102,7 +102,16 @@ export namespace ArchiveLogger {
         `  - schemas: ${event.models.map((m) => m.name).join(", ")}`,
       );
     else if (event.type === "interfaceEndpoint")
-      content.push(`  - endpoints: ${event.endpoints.length}`);
+      content.push(`  - endpoints: ${event.designs.length}`);
+    else if (event.type === "interfaceEndpointReview")
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - endpoints: ${event.designs.length}`,
+        `  - revised:`,
+        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
+        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
+        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
+      );
     else if (event.type === "interfaceOperation")
       content.push(
         `  - operations: ${event.operations.map((o) => `${o.method.toUpperCase()} ${o.path}`)}`,

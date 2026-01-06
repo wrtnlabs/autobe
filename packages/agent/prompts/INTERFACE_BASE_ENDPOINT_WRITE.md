@@ -13,10 +13,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Request ONLY the specific schemas or files needed to resolve ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", endpoints: [...] } })` with your designed endpoints
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", designs: [...] } })` with your designed endpoints
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Your PRIMARY GOAL is to call `process({ request: { type: "complete", endpoints: [...] } })` with endpoint designs
+- Your PRIMARY GOAL is to call `process({ request: { type: "complete", designs: [...] } })` with endpoint designs
 - Gathering input materials is ONLY to resolve specific ambiguities or gaps
 - DON'T treat material gathering as a checklist to complete
 - Call the complete function as soon as you have sufficient context to design endpoints
@@ -58,7 +58,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Designed complete endpoint set covering all user workflows.",
-  request: { type: "complete", endpoints: [...] }
+  request: { type: "complete", designs: [...] }
 }
 ```
 
@@ -534,7 +534,7 @@ process({
   thinking: "Generated base CRUD endpoints for all safe tables in the group.",
   request: {
     type: "complete",
-    endpoints: [
+    designs: [
       {
         endpoint: { path: "/resources", method: "patch" },
         description: "Search and filter resources collection"
@@ -629,7 +629,7 @@ Check "Already Existing Endpoints" list. Do NOT create endpoints that already ex
 
 ### Step 6: Call Complete
 
-Assemble all endpoints and call `process({ request: { type: "complete", endpoints: [...] } })`.
+Assemble all endpoints and call `process({ request: { type: "complete", designs: [...] } })`.
 
 ## 8. Examples
 

@@ -1,27 +1,26 @@
-import { AutoBeOpenApi } from "@autobe/interface";
-import { tags } from "typia";
+import { AutoBeInterfaceEndpointDesign } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
-export interface IAutoBeInterfaceBaseEndpointApplication {
+export interface IAutoBeInterfaceEndpointWriteApplication {
   /**
    * Process endpoint generation task or preliminary data requests.
    *
-   * Creates Restful API endpoints referencing requirement analysis documents
-   * and database schema files with ERD descriptions. Ensures endpoints cover all
-   * requirements and entities.
+   * Generates API endpoints based on requirements analysis and database
+   * schemas. Endpoints are created to fulfill business requirements while
+   * adhering to RESTful design principles and AutoBE conventions.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceBaseEndpointApplication.IProps): void;
+  process(props: IAutoBeInterfaceEndpointWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceBaseEndpointApplication {
+export namespace IAutoBeInterfaceEndpointWriteApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -51,10 +50,9 @@ export namespace IAutoBeInterfaceBaseEndpointApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
-     * getPreviousDatabaseSchemas) or final endpoint generation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getDatabaseSchemas) or final endpoint generation
+     * (complete). When preliminary returns empty array, that type is removed
+     * from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -65,6 +63,14 @@ export namespace IAutoBeInterfaceBaseEndpointApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
+  /**
+   * Request to complete endpoint generation.
+   *
+   * Finalizes the endpoint generation task by submitting all generated
+   * endpoints. Each endpoint is derived from requirements analysis and database
+   * schemas, designed to fulfill specific business needs while maintaining
+   * RESTful conventions and API design best practices.
+   */
   export interface IComplete {
     /**
      * Type discriminator for the request.
@@ -75,24 +81,29 @@ export namespace IAutoBeInterfaceBaseEndpointApplication {
      */
     type: "complete";
 
-    /** The base endpoints to generate. */
-    endpoints: IEndpoint[] & tags.MinItems<1>;
-  }
-
-  export interface IEndpoint {
-    /** The endpoint definition containing path and HTTP method. */
-    endpoint: AutoBeOpenApi.IEndpoint;
-
     /**
-     * Explanation of why this endpoint was created.
+     * Array of endpoint designs to generate.
      *
-     * Describes the purpose, use case, or requirement that this endpoint
-     * fulfills. This context helps the EndpointReview agent to:
+     * Each design pairs an endpoint (path + method) with a description of its
+     * purpose. All endpoints must adhere to RESTful conventions and AutoBE
+     * design standards.
      *
-     * - Identify duplicate or redundant endpoints
-     * - Detect missing functionality
-     * - Verify that path/method aligns with the intended purpose
+     * ## Path Structure
+     *
+     * - Must use hierarchical `/` structure (NOT camelCase concatenation)
+     * - Must start with `/`
+     * - Must NOT include domain prefixes (`/shopping/`, `/bbs/`)
+     * - Resource collection names should use plural form
+     *
+     * ## Common Validation Rules
+     *
+     * - Must NOT duplicate existing endpoints
+     * - HTTP methods must align with their semantic meanings
+     * - Path parameters must be clearly named (e.g., `{userId}`, `{productId}`)
+     * - Nested paths should reflect entity relationships
+     *
+     * @see AutoBeInterfaceEndpointDesign - Endpoint design type with description
      */
-    description: string;
+    designs: AutoBeInterfaceEndpointDesign[];
   }
 }

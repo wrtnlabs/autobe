@@ -107,7 +107,7 @@ export const orchestrateInterface =
         instruction: props.instruction,
         groups: init.groups,
         authorizations: authOperations,
-        excluded: baseEndpoints,
+        baseEndpoints: baseEndpoints,
         progress: endpointProgress,
         reviewProgress: endpointReviewProgress,
       });

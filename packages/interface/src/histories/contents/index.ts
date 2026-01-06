@@ -13,6 +13,11 @@ export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceGroup";
 export * from "./AutoBeInterfacePrerequisite";
 export * from "./AutoBeInterfaceSchemaRefactor";
+export * from "./AutoBeInterfaceEndpointRevise";
+export * from "./AutoBeInterfaceEndpointCreate";
+export * from "./AutoBeInterfaceEndpointUpdate";
+export * from "./AutoBeInterfaceEndpointErase";
+export * from "./AutoBeInterfaceEndpointDesign";
 
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestPrepareMapping";
