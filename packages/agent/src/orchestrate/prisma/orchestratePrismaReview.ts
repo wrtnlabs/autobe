@@ -29,7 +29,7 @@ export async function orchestratePrismaReview(
     model: AutoBeDatabase.IModel;
   }> = componentList.flatMap((component) => {
     const file: AutoBeDatabase.IFile | undefined = application.files.find(
-      (f) => f.filename === component.filename,
+      (f) => f.namespace === component.namespace,
     );
     if (file === undefined) return [];
     return component.tables
