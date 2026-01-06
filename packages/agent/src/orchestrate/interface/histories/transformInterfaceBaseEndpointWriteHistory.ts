@@ -7,11 +7,10 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceActionEndpointHistory = (props: {
+export const transformInterfaceBaseEndpointWriteHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   authorizations: AutoBeOpenApi.IOperation[];
-  excluded: AutoBeOpenApi.IEndpoint[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -27,7 +26,7 @@ export const transformInterfaceActionEndpointHistory = (props: {
         type: "systemMessage",
         id: v7(),
         created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT,
+        text: AutoBeSystemPromptConstant.INTERFACE_BASE_ENDPOINT_WRITE,
       },
       ...props.preliminary.getHistories(),
       {
@@ -35,14 +34,13 @@ export const transformInterfaceActionEndpointHistory = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-        ## API Design Instructions
+        ## API Design Instructions (Reference)
 
         The following API-specific instructions were extracted from
         the user's requirements. These focus on API interface design aspects
         such as endpoint patterns, request/response formats, DTO schemas,
         and operation specifications.
 
-        Follow these instructions when designing action endpoints for the ${props.group.name} group.
         Carefully distinguish between:
         - Suggestions or recommendations (consider these as guidance)
         - Direct specifications or explicit commands (these must be followed exactly)
@@ -52,15 +50,7 @@ export const transformInterfaceActionEndpointHistory = (props: {
 
         ${props.instruction}
 
-        ## Group Information
-
-        Here is the target group for the endpoints:
-
-        \`\`\`json
-        ${JSON.stringify(props.group)}
-        \`\`\`
-
-        ## Already Existing Endpoints (Authorization)
+        ## Authorization Endpoints (Reference - Already Exist)
 
         These authorization endpoints already exist. Do NOT create similar endpoints:
 
@@ -75,17 +65,18 @@ export const transformInterfaceActionEndpointHistory = (props: {
         )}
         \`\`\`
 
-        ## Excluded Endpoints (Base CRUD)
+        ## Target Group for Design (YOUR TASK)
 
-        These base CRUD endpoints already exist. Do NOT create similar endpoints.
-        Action endpoints should complement these, not duplicate them:
+        You are designing base CRUD endpoints for the **${props.group.name}** group.
 
         \`\`\`json
-        ${JSON.stringify(props.excluded)}
+        ${JSON.stringify(props.group)}
         \`\`\`
+
+        Design base CRUD endpoints that cover all entities in this group.
         `,
       },
     ],
-    userMessage: `Design action endpoints for the ${props.group.name} group please`,
+    userMessage: `Design endpoints for the ${props.group.name} group please`,
   };
 };

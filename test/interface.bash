@@ -17,10 +17,10 @@ code results/qwen/qwen3-next-80b-a3b-instruct/reddit/interface
 code results/qwen/qwen3-next-80b-a3b-instruct/shopping/interface
 
 # individual testings
-pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.complement.todo.log
-pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.complement.bbs.log
-pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.complement.reddit.log
-pnpm ts-node src/agent/interface.complement.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.complement.shopping.log
+pnpm ts-node src/agent/interface.endpoint.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.endpoint.todo.log
+pnpm ts-node src/agent/interface.endpoint.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.endpoint.bbs.log
+pnpm ts-node src/agent/interface.endpoint.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.endpoint.reddit.log
+pnpm ts-node src/agent/interface.endpoint.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.endpoint.shopping.log
 
 ######################################################
 # qwen/qwen3-235b-a22b-2507

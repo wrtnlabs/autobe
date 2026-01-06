@@ -13,10 +13,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Request ONLY the specific schemas or files needed to resolve ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", endpoints: [...] } })` with your designed endpoints
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", designs: [...] } })` with your designed endpoints
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Your PRIMARY GOAL is to call `process({ request: { type: "complete", endpoints: [...] } })` with endpoint designs
+- Your PRIMARY GOAL is to call `process({ request: { type: "complete", designs: [...] } })` with endpoint designs
 - Gathering input materials is ONLY to resolve specific ambiguities or gaps
 - DON'T treat material gathering as a checklist to complete
 - Call the complete function as soon as you have sufficient context to design endpoints
@@ -58,7 +58,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Designed complete endpoint set covering all user workflows.",
-  request: { type: "complete", endpoints: [...] }
+  request: { type: "complete", designs: [...] }
 }
 ```
 
@@ -534,26 +534,26 @@ process({
   thinking: "Generated base CRUD endpoints for all safe tables in the group.",
   request: {
     type: "complete",
-    endpoints: [
+    designs: [
       {
-        endpoint: { path: "/resources", method: "patch" },
-        description: "Search and filter resources collection"
+        description: "Search and filter resources collection",
+        endpoint: { path: "/resources", method: "patch" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "get" },
-        description: "Retrieve a single resource by code"
+        description: "Retrieve a single resource by code",
+        endpoint: { path: "/resources/{resourceCode}", method: "get" }
       },
       {
-        endpoint: { path: "/resources", method: "post" },
-        description: "Create a new resource"
+        description: "Create a new resource",
+        endpoint: { path: "/resources", method: "post" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "put" },
-        description: "Update an existing resource"
+        description: "Update an existing resource",
+        endpoint: { path: "/resources/{resourceCode}", method: "put" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "delete" },
-        description: "Delete a resource"
+        description: "Delete a resource",
+        endpoint: { path: "/resources/{resourceCode}", method: "delete" }
       }
     ]
   }
@@ -629,7 +629,7 @@ Check "Already Existing Endpoints" list. Do NOT create endpoints that already ex
 
 ### Step 6: Call Complete
 
-Assemble all endpoints and call `process({ request: { type: "complete", endpoints: [...] } })`.
+Assemble all endpoints and call `process({ request: { type: "complete", designs: [...] } })`.
 
 ## 8. Examples
 
@@ -649,11 +649,11 @@ model enterprises {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/enterprises", "method": "patch"}, "description": "Search enterprises"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}, "description": "Get enterprise by code"},
-  {"endpoint": {"path": "/enterprises", "method": "post"}, "description": "Create enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}, "description": "Update enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}, "description": "Delete enterprise"}
+  {"description": "Search enterprises", "endpoint": {"path": "/enterprises", "method": "patch"}},
+  {"description": "Get enterprise by code", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}},
+  {"description": "Create enterprise", "endpoint": {"path": "/enterprises", "method": "post"}},
+  {"description": "Update enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}},
+  {"description": "Delete enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}}
 ]
 ```
 
@@ -674,11 +674,11 @@ model enterprise_teams {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}, "description": "Search teams within enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}, "description": "Get team by code within enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}, "description": "Create team in enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}, "description": "Update team"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}, "description": "Delete team"}
+  {"description": "Search teams within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}},
+  {"description": "Get team by code within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}},
+  {"description": "Create team in enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}},
+  {"description": "Update team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}},
+  {"description": "Delete team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}}
 ]
 ```
 
@@ -698,10 +698,10 @@ model members {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/members", "method": "patch"}, "description": "Search members"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "get"}, "description": "Get member by ID"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "put"}, "description": "Update member"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "delete"}, "description": "Delete member"}
+  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}},
+  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}},
+  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}},
+  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}}
 ]
 ```
 
@@ -725,8 +725,8 @@ model article_snapshots {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}, "description": "Search article snapshots"},
-  {"endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}, "description": "Get specific snapshot"}
+  {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}},
+  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}}
 ]
 ```
 

@@ -24,15 +24,15 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Request ONLY the specific schemas or files needed to resolve ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", endpoints: [...] } })` with your designed endpoints
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", designs: [...] } })` with your designed endpoints
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Your PRIMARY GOAL is to call `process({ request: { type: "complete", endpoints: [...] } })` with endpoint designs
+- Your PRIMARY GOAL is to call `process({ request: { type: "complete", designs: [...] } })` with endpoint designs
 - Gathering input materials is ONLY to resolve specific ambiguities or gaps
 - DON'T treat material gathering as a checklist to complete
 - Call the complete function as soon as you have sufficient context to design endpoints
 - The initial materials are usually SUFFICIENT for endpoint design
-- **Empty array is valid**: If no action endpoints are needed, call with `endpoints: []`
+- **Empty array is valid**: If no action endpoints are needed, call with `designs: []`
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER request all schemas/files just to be thorough
@@ -71,7 +71,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Identified dashboard and search endpoints from requirements. No analytics needed for this group.",
-  request: { type: "complete", endpoints: [...] }
+  request: { type: "complete", designs: [...] }
 }
 ```
 
@@ -475,18 +475,18 @@ process({
   thinking: "Generated analytics and dashboard endpoints based on requirements.",
   request: {
     type: "complete",
-    endpoints: [
+    designs: [
       {
-        endpoint: { path: "/statistics/sales/monthly", method: "get" },
-        description: "Monthly sales trends with revenue and order counts"
+        description: "Monthly sales trends with revenue and order counts",
+        endpoint: { path: "/statistics/sales/monthly", method: "get" }
       },
       {
-        endpoint: { path: "/dashboard/admin/overview", method: "get" },
-        description: "Admin dashboard with active users, revenue, and system health"
+        description: "Admin dashboard with active users, revenue, and system health",
+        endpoint: { path: "/dashboard/admin/overview", method: "get" }
       },
       {
-        endpoint: { path: "/search/global", method: "patch" },
-        description: "Cross-entity search across articles, products, and categories"
+        description: "Cross-entity search across articles, products, and categories",
+        endpoint: { path: "/search/global", method: "patch" }
       }
     ]
   }
@@ -499,7 +499,7 @@ process({
   thinking: "No analytics, dashboard, or search requirements found for this group.",
   request: {
     type: "complete",
-    endpoints: []
+    designs: []
   }
 })
 ```
@@ -671,9 +671,9 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/analytics/sales/monthly", "method": "get"}, "description": "Monthly sales trends"},
-  {"endpoint": {"path": "/analytics/sales/categories", "method": "get"}, "description": "Sales breakdown by category"},
-  {"endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}, "description": "Customer behavior analysis with filters"}
+  {"description": "Monthly sales trends", "endpoint": {"path": "/analytics/sales/monthly", "method": "get"}},
+  {"description": "Sales breakdown by category", "endpoint": {"path": "/analytics/sales/categories", "method": "get"}},
+  {"description": "Customer behavior analysis with filters", "endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}}
 ]
 ```
 
@@ -681,8 +681,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/dashboard/admins/overview", "method": "get"}, "description": "Admin dashboard summary"},
-  {"endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}, "description": "Seller performance metrics"}
+  {"description": "Admin dashboard summary", "endpoint": {"path": "/dashboard/admins/overview", "method": "get"}},
+  {"description": "Seller performance metrics", "endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}}
 ]
 ```
 
@@ -690,8 +690,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/search/global", "method": "patch"}, "description": "Cross-entity unified search"},
-  {"endpoint": {"path": "/search/products/advanced", "method": "patch"}, "description": "Advanced product search with filters"}
+  {"description": "Cross-entity unified search", "endpoint": {"path": "/search/global", "method": "patch"}},
+  {"description": "Advanced product search with filters", "endpoint": {"path": "/search/products/advanced", "method": "patch"}}
 ]
 ```
 
@@ -699,8 +699,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/reports/revenues/summary", "method": "get"}, "description": "Revenue summary report"},
-  {"endpoint": {"path": "/reports/inventories/status", "method": "patch"}, "description": "Filtered inventory status report"}
+  {"description": "Revenue summary report", "endpoint": {"path": "/reports/revenues/summary", "method": "get"}},
+  {"description": "Filtered inventory status report", "endpoint": {"path": "/reports/inventories/status", "method": "patch"}}
 ]
 ```
 
@@ -708,8 +708,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/products/enriched", "method": "patch"}, "description": "Products with seller, category, and reviews"},
-  {"endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}, "description": "Order with items, customer, and shipping"}
+  {"description": "Products with seller, category, and reviews", "endpoint": {"path": "/products/enriched", "method": "patch"}},
+  {"description": "Order with items, customer, and shipping", "endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}}
 ]
 ```
 
@@ -717,8 +717,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}, "description": "Customer lifetime value and purchase metrics"},
-  {"endpoint": {"path": "/products/{productId}/analytics", "method": "get"}, "description": "Product performance analytics"}
+  {"description": "Customer lifetime value and purchase metrics", "endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}},
+  {"description": "Product performance analytics", "endpoint": {"path": "/products/{productId}/analytics", "method": "get"}}
 ]
 ```
 
@@ -776,4 +776,4 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ---
 
-**YOUR MISSION**: Discover and generate action endpoints for the specified group's domain. Focus on requirements that have NO corresponding database table but relate to this group's database schemas. This includes analytics, dashboards, search, reports, integrations, notifications, batch operations, workflows, and more. Verify NO exact (path + method) collision with Base CRUD endpoints. Nested paths under Base resources are allowed. If all requirements are satisfied by database table CRUD, return an empty array. Call `process()` with `type: "complete"` immediately.
+**YOUR MISSION**: Discover and generate action endpoints for the specified group's domain. Focus on requirements that have NO corresponding database table but relate to this group's database schemas. This includes analytics, dashboards, search, reports, integrations, notifications, batch operations, workflows, and more. Verify NO exact (path + method) collision with Base CRUD endpoints. Nested paths under Base resources are allowed. If all requirements are satisfied by database table CRUD, return an empty designs array. Call `process()` with `type: "complete"` immediately.

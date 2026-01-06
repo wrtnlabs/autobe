@@ -1,11 +1,14 @@
-import { AutoBeInterfaceGroup, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeInterfaceEndpointDesign,
+  AutoBeInterfaceGroup,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { IAutoBeInterfaceActionEndpointApplication } from "../structures/IAutoBeInterfaceActionEndpointApplication";
 
 export const transformInterfaceActionEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
@@ -15,7 +18,7 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  endpoints: IAutoBeInterfaceActionEndpointApplication.IEndpoint[];
+  designs: AutoBeInterfaceEndpointDesign[];
   baseEndpoints: AutoBeOpenApi.IEndpoint[];
   authorizations: AutoBeOpenApi.IOperation[];
   group: AutoBeInterfaceGroup;
@@ -25,7 +28,7 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT,
+      text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT_WRITE,
     },
     {
       type: "systemMessage",
@@ -38,28 +41,9 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
       id: v7(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        ## Group Context
+        ## Authorization Endpoints (Reference - Already Exist)
 
-        You are reviewing endpoints for the **${props.group.name}** group.
-        Group description: ${props.group.description}
-        Related database schemas: ${props.group.databaseSchemas.join(", ")}
-
-        ## Action Endpoints for Review (ONLY THESE EXIST)
-
-        ⚠️ CRITICAL: You can ONLY update or delete endpoints from this list.
-        DO NOT reference any endpoint that is not listed here.
-
-        \`\`\`json
-        ${JSON.stringify(props.endpoints)}
-        \`\`\`
-
-        ## Base CRUD Endpoints (Already Exist)
-
-        \`\`\`json
-        ${JSON.stringify(props.baseEndpoints)}
-        \`\`\`
-
-        ## Authorization Endpoints (Already Exist)
+        These authorization endpoints already exist. For reference only:
 
         \`\`\`json
         ${JSON.stringify(
@@ -72,7 +56,34 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
         )}
         \`\`\`
 
-        Review according to the criteria in the system prompt. Call \`process()\` with \`type: "complete"\` containing all \`actions\`.
+        ## Base CRUD Endpoints (Reference - Already Exist)
+
+        These base CRUD endpoints already exist. For reference only:
+
+        \`\`\`json
+        ${JSON.stringify(props.baseEndpoints)}
+        \`\`\`
+
+        ## Target Group
+
+        You are reviewing endpoints for the **${props.group.name}** group.
+
+        - **Description**: ${props.group.description}
+        - **Related Database Schemas**: ${props.group.databaseSchemas.join(", ")}
+
+        ## Action Endpoint Designs for Review (YOUR TASK)
+
+        ⚠️ CRITICAL: These are the ONLY endpoints you can review.
+
+        You can ONLY create new endpoints, update these endpoints, or erase these endpoints.
+        
+        DO NOT reference any endpoint that is not listed here.
+
+        \`\`\`json
+        ${JSON.stringify(props.designs, null, 2)}
+        \`\`\`
+
+        Review according to the criteria in the system prompt. Call \`process()\` with \`type: "complete"\` containing all \`revises\`.
       `,
       created_at: new Date().toISOString(),
     },

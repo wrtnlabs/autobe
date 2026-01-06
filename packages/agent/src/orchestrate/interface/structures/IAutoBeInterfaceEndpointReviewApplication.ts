@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceEndpointRevise } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -10,12 +10,14 @@ export interface IAutoBeInterfaceEndpointReviewApplication {
   /**
    * Process endpoint review task or preliminary data requests.
    *
-   * Consolidates all endpoints generated independently and performs holistic
-   * review to ensure consistency, remove duplicates, eliminate
-   * over-engineering, and verify REST API design principles.
+   * Reviews and validates generated endpoints to ensure they meet quality
+   * standards. The review process examines endpoint design, identifies issues
+   * such as duplicates or inconsistencies, and applies corrections through
+   * create, update, or erase operations. This ensures the final API structure
+   * is clean, consistent, and maintainable.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing either preliminary data request or endpoint
+   *   review completion
    */
   process(props: IAutoBeInterfaceEndpointReviewApplication.IProps): void;
 }
@@ -50,10 +52,11 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
-     * getPreviousDatabaseSchemas) or final endpoint review (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * (getAnalysisFiles, getDatabaseSchemas, getPreviousAnalysisFiles,
+     * getPreviousDatabaseSchemas, getPreviousInterfaceOperations) or completion
+     * of the review with all modifications (complete). When preliminary returns
+     * empty array, that type is removed from the union, physically preventing
+     * repeated calls.
      */
     request:
       | IComplete
@@ -65,11 +68,12 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
   }
 
   /**
-   * Request to review and refine API endpoints.
+   * Request to complete the endpoint review process.
    *
-   * Executes comprehensive endpoint review to consolidate independently
-   * generated endpoints, ensure consistency, eliminate redundancy, and create a
-   * clean, maintainable API structure following REST best practices.
+   * Finalizes the review by submitting all identified endpoint modifications.
+   * The modifications (create, update, erase) are applied to ensure the final
+   * API structure is consistent, free of duplicates, properly designed, and
+   * aligned with RESTful conventions and AutoBE standards.
    */
   export interface IComplete {
     /**
@@ -82,35 +86,14 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
     type: "complete";
 
     /**
-     * Comprehensive review analysis of all collected endpoints.
+     * All endpoint revisions to apply.
      *
-     * Contains detailed findings from the holistic review including:
+     * Include all create, update, and erase operations identified during review.
+     * Revisions are validated and applied in order. If no modifications are
+     * needed, provide an empty array.
      *
-     * - Identified inconsistencies in naming conventions
-     * - Duplicate endpoints that serve the same purpose
-     * - Over-engineered solutions that add unnecessary complexity
-     * - Violations of REST API design principles
-     * - Recommendations for improvement and standardization
-     *
-     * The review provides actionable feedback for creating a clean, consistent,
-     * and maintainable API structure.
+     * @see AutoBeInterfaceEndpointRevise - Discriminated union of revision types
      */
-    review: string;
-
-    /**
-     * Refined collection of API endpoints after review and cleanup.
-     *
-     * The final optimized set of endpoints after:
-     *
-     * - Removing duplicates and redundant endpoints
-     * - Standardizing naming conventions across all paths
-     * - Simplifying over-engineered solutions
-     * - Ensuring consistent REST patterns
-     * - Aligning HTTP methods with their semantic meanings
-     *
-     * This collection represents the production-ready API structure that
-     * balances functionality with simplicity and maintainability.
-     */
-    endpoints: AutoBeOpenApi.IEndpoint[];
+    revises: AutoBeInterfaceEndpointRevise[];
   }
 }

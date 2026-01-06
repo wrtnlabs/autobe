@@ -52,7 +52,7 @@ export const validate_interface_endpoint = async (props: {
       instruction: "",
       groups: group.groups,
       authorizations: authorizations.map((a) => a.operations).flat(),
-      excluded: baseEndpoints,
+      baseEndpoints,
       progress,
       reviewProgress,
     });

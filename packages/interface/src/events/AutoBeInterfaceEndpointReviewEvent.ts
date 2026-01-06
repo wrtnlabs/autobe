@@ -1,4 +1,5 @@
-import { AutoBeOpenApi } from "../openapi";
+import { AutoBeInterfaceEndpointDesign } from "../histories/contents/AutoBeInterfaceEndpointDesign";
+import { AutoBeInterfaceEndpointRevise } from "../histories/contents/AutoBeInterfaceEndpointRevise";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -22,7 +23,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Kakasoo
  */
 export interface AutoBeInterfaceEndpointReviewEvent
-  extends AutoBeEventBase<"interfaceEndpointReview">,
+  extends
+    AutoBeEventBase<"interfaceEndpointReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -35,6 +37,8 @@ export interface AutoBeInterfaceEndpointReviewEvent
    */
   kind: "base" | "action";
 
+  group: string;
+
   /**
    * Original API endpoints submitted for review.
    *
@@ -43,30 +47,9 @@ export interface AutoBeInterfaceEndpointReviewEvent
    * structure correctness, and adherence to AutoBE standards. These are the
    * endpoints being evaluated for potential issues and improvements.
    */
-  endpoints: AutoBeOpenApi.IEndpoint[];
+  designs: AutoBeInterfaceEndpointDesign[];
 
-  /**
-   * Detailed review feedback from the Interface Endpoints Review Agent.
-   *
-   * Contains comprehensive assessment results including:
-   *
-   * - RESTful convention compliance
-   * - Path structure validation
-   * - HTTP method appropriateness
-   * - Naming consistency verification
-   * - Identified design issues and recommendations
-   */
-  review: string;
-
-  /**
-   * Revised endpoints based on the amendment plan.
-   *
-   * The final corrected API endpoints after applying all fixes from the
-   * improvement plan. If no issues were found during review, this contains the
-   * original endpoints unchanged. These enhanced endpoints are ready for
-   * operation generation and subsequent implementation phases.
-   */
-  content: AutoBeOpenApi.IEndpoint[];
+  revises: AutoBeInterfaceEndpointRevise[];
 
   /**
    * Current iteration number of the endpoint review process.

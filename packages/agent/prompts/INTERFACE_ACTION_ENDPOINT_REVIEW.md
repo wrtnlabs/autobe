@@ -26,7 +26,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 4. **🚨 FIRST: Plural Check**: Scan EVERY path segment for singular forms → UPDATE to plural
 5. **Semantic Duplicates**: Compare descriptions of similar paths → DELETE redundant ones
 6. **Requirements Check**: Verify each endpoint is justified by requirements
-7. **Complete Review**: Call `process()` with `type: "complete"` containing all `actions`
+7. **Complete Review**: Call `process()` with `type: "complete"` containing all `revises`
 
 **CRITICAL: Purpose Function is MANDATORY**
 - Collecting input materials is MEANINGLESS without calling the complete function
@@ -37,7 +37,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
 - `create`: Add endpoint with `endpoint`, `description`, and `reason`
 - `update`: Modify endpoint with `original`, `updated`, `description`, and `reason`
-- `delete`: Remove endpoint with `endpoint` and `reason`
+- `erase`: Remove endpoint with `endpoint` and `reason`
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -67,7 +67,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Reviewed all endpoints, fixed singular/plural issues, removed unjustified endpoints.",
-  request: { type: "complete", actions: [...], review: "..." }
+  request: { type: "complete", revises: [...], review: "..." }
 }
 ```
 
@@ -336,9 +336,9 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 
 ```typescript
 {
-  type: "delete",
-  endpoint: { path: "/statistic/sales/monthly", method: "get" },
-  reason: "Duplicate of /statistics/sales/monthly. Removing singular form."
+  type: "erase",
+  reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
+  endpoint: { path: "/statistic/sales/monthly", method: "get" }
 }
 ```
 
@@ -359,33 +359,33 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 
 ```typescript
 process({
-  thinking: "Found 4 singular/plural issues: 1 duplicate pair to delete, 3 singular-only to update.",
+  thinking: "Found 4 singular/plural issues: 1 duplicate pair to erase, 3 singular-only to update.",
   request: {
     type: "complete",
-    actions: [
+    revises: [
       // DELETE duplicate (singular form where plural exists)
       {
-        type: "delete",
-        endpoint: { path: "/statistic/sales/monthly", method: "get" },
-        reason: "Duplicate of /statistics/sales/monthly. Removing singular form."
+        type: "erase",
+        reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
+        endpoint: { path: "/statistic/sales/monthly", method: "get" }
       },
       // UPDATE singular-only endpoints to plural
       {
         type: "update",
+        reason: "Converting singular 'report' to plural 'reports'.",
         original: { path: "/report/revenue/summary", method: "get" },
         updated: { path: "/reports/revenue/summary", method: "get" },
-        description: "Get revenue summary report.",
-        reason: "Converting singular 'report' to plural 'reports'."
+        description: "Get revenue summary report."
       },
       {
         type: "update",
+        reason: "Converting singular segments to plural: analytic→analytics, customer→customers.",
         original: { path: "/analytic/customer/behavior", method: "patch" },
         updated: { path: "/analytics/customers/behavior", method: "patch" },
-        description: "Analyze customer behavior patterns.",
-        reason: "Converting singular segments to plural: analytic→analytics, customer→customers."
+        description: "Analyze customer behavior patterns."
       }
     ],
-    review: "Fixed 4 singular/plural issues. Deleted 1 duplicate singular form. Updated 3 singular paths to plural."
+    review: "Fixed 4 singular/plural issues. Erased 1 duplicate singular form. Updated 3 singular paths to plural."
   }
 })
 ```
@@ -668,66 +668,66 @@ process({ thinking: "Validated endpoints against requirements, ready to complete
 
 ## 5. Function Calling Interface
 
-### 5.1. Complete Review with Actions
+### 5.1. Complete Review with Revises
 
-Call `process()` with `type: "complete"` when the review is finished. Include all modifications in the `actions` array.
+Call `process()` with `type: "complete"` when the review is finished. Include all modifications in the `revises` array.
 
 ```typescript
 process({
   thinking: "Reviewed all action endpoints. Found unjustified endpoints, camelCase paths, and duplicates.",
   request: {
     type: "complete",
-    actions: [
-      // Delete unjustified endpoint
+    revises: [
+      // Erase unjustified endpoint
       {
-        type: "delete",
-        endpoint: { path: "/analytics/customer/behavior", method: "patch" },
-        reason: "No requirements mention customer behavior analytics."
+        type: "erase",
+        reason: "No requirements mention customer behavior analytics.",
+        endpoint: { path: "/analytics/customer/behavior", method: "patch" }
       },
       // Update camelCase to hierarchical
       {
         type: "update",
+        reason: "Converting camelCase to hierarchical structure.",
         original: { path: "/statistics/salesByMonth", method: "get" },
         updated: { path: "/statistics/sales/monthly", method: "get" },
-        description: "Get monthly sales statistics.",
-        reason: "Converting camelCase to hierarchical structure."
+        description: "Get monthly sales statistics."
       },
       // Fix HTTP method
       {
         type: "update",
+        reason: "Global search requires complex request body. PATCH is appropriate.",
         original: { path: "/search/global", method: "get" },
         updated: { path: "/search/global", method: "patch" },
-        description: "Search across all entities with complex filters.",
-        reason: "Global search requires complex request body. PATCH is appropriate."
+        description: "Search across all entities with complex filters."
       },
       // Create missing endpoint from requirements
       {
         type: "create",
+        reason: "Requirements specify 'Administrators SHALL view monthly sales trends'.",
         endpoint: { path: "/reports/monthly/summary", method: "get" },
-        description: "Get monthly summary report for trend analysis.",
-        reason: "Requirements specify 'Administrators SHALL view monthly sales trends'."
+        description: "Get monthly summary report for trend analysis."
       }
     ],
-    review: "Reviewed 12 action endpoints. Deleted 4 unjustified endpoints (no requirements backing). Updated 3 paths from camelCase to hierarchical. Final count: 8 action endpoints, all justified by requirements."
+    review: "Reviewed 12 action endpoints. Erased 4 unjustified endpoints (no requirements backing). Updated 3 paths from camelCase to hierarchical. Final count: 8 action endpoints, all justified by requirements."
   }
 })
 ```
 
 **Action Types**:
-- `create`: Add endpoint with `endpoint`, `description` (what it does), and `reason` (why adding)
-- `update`: Fix path/method with `original`, `updated`, `description` (what it does), and `reason` (why changing)
-- `delete`: Remove endpoint with `endpoint` and `reason` (why removing)
+- `create`: Add endpoint with `type`, `reason` (why adding), `endpoint`, and `description` (what it does)
+- `update`: Fix path/method with `type`, `reason` (why changing), `original`, `updated`, and `description` (what it does)
+- `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
 
 ### 5.2. No Modifications Needed
 
-If no modifications are needed, call `complete` with an empty `actions` array.
+If no modifications are needed, call `complete` with an empty `revises` array.
 
 ```typescript
 process({
   thinking: "Reviewed all action endpoints. All are properly justified and named.",
   request: {
     type: "complete",
-    actions: [],
+    revises: [],
     review: "Reviewed 8 action endpoints. All endpoints are justified by requirements and follow naming conventions. No modifications needed."
   }
 })
@@ -783,9 +783,9 @@ process({
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient
 - [ ] Review analysis documented (summary of issues found)
-- [ ] Actions array contains all modifications
+- [ ] Revises array contains all modifications
 - [ ] Ready to call `process()` with `type: "complete"`
 
 ---
 
-**YOUR MISSION**: Review action endpoints for the specified group and call `process()` with `type: "complete"` containing all necessary `actions`. Focus on the group's domain and requirements. Delete unjustified endpoints ruthlessly. Include comprehensive review summary.
+**YOUR MISSION**: Review action endpoints for the specified group and call `process()` with `type: "complete"` containing all necessary `revises`. Focus on the group's domain and requirements. Delete unjustified endpoints ruthlessly. Include comprehensive review summary.
