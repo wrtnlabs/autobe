@@ -59,6 +59,7 @@ export const transformPrismaSchemaHistory = (props: {
 
         You are generating the database schema for the table:
 
+        - Component Namespace: ${props.targetComponent.namespace}
         - Table Name: ${props.targetTable}
       `,
     },
