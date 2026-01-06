@@ -7,6 +7,7 @@ import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
+import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
 import { AutoBeDatabaseInsufficientEvent } from "./AutoBeDatabaseInsufficientEvent";
 import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
@@ -119,6 +120,7 @@ export type AutoBeEvent =
   // PRISMA
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseComponentEvent
+  | AutoBeDatabaseComponentReviewEvent
   | AutoBeDatabaseSchemaEvent
   | AutoBeDatabaseInsufficientEvent
   | AutoBeDatabaseReviewEvent
