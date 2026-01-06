@@ -26,7 +26,7 @@ const fulfillTypeAsArrayError = (e: IValidation.IError): boolean => {
       
       The JSON schema's type property value must be a single string type.
       In your case, you have to change it to an "oneOf" type which 
-      represents an union type.
+      represents a union type.
 
       So, please change the value as below:
 
