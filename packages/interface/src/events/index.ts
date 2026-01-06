@@ -34,6 +34,7 @@ export * from "./AutoBeAnalyzeWriteEvent";
 // PRISMA
 export * from "./AutoBeDatabaseCompleteEvent";
 export * from "./AutoBeDatabaseComponentEvent";
+export * from "./AutoBeDatabaseComponentReviewEvent";
 export * from "./AutoBeDatabaseCorrectEvent";
 export * from "./AutoBeDatabaseInsufficientEvent";
 export * from "./AutoBeDatabaseReviewEvent";
