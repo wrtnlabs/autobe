@@ -3,6 +3,7 @@ import {
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseHistory,
   AutoBeDatabaseReviewEvent,
   AutoBeDatabaseSchemaEvent,
@@ -16,6 +17,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
+import { orchestratePrismaComponentReview } from "./orchestratePrismaComponentReview";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaReview } from "./orchestratePrismaReview";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
@@ -51,20 +53,27 @@ export const orchestratePrisma = async (
     await orchestratePrismaComponents(ctx, props.instruction);
   ctx.dispatch(componentEvent);
 
+  // COMPONENT REVIEW (each event is dispatched inside)
+  const componentReviewEvents: AutoBeDatabaseComponentReviewEvent[] =
+    await orchestratePrismaComponentReview(ctx, {
+      instruction: props.instruction,
+      components: componentEvent.components,
+    });
+
+  // Extract reviewed components from all events
+  const finalComponents: AutoBeDatabase.IComponent[] =
+    componentReviewEvents.map((e) => e.modification);
+
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
-    await orchestratePrismaSchema(
-      ctx,
-      props.instruction,
-      componentEvent.components,
-    );
+    await orchestratePrismaSchema(ctx, props.instruction, finalComponents);
   const application: AutoBeDatabase.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };
 
   // REVIEW
   const reviewEvents: AutoBeDatabaseReviewEvent[] =
-    await orchestratePrismaReview(ctx, application, componentEvent.components);
+    await orchestratePrismaReview(ctx, application, finalComponents);
   for (const event of reviewEvents) {
     const file: AutoBeDatabase.IFile | undefined = application.files.find(
       (f) => f.filename === event.filename,

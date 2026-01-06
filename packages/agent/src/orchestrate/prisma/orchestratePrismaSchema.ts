@@ -29,10 +29,14 @@ export async function orchestratePrismaSchema(
   return await executeCachedBatch(
     ctx,
     componentList.map((component) => async (promptCacheKey) => {
-      const otherTables: string[] = componentList
-        .filter((y) => component !== y)
-        .map((c) => c.tables)
-        .flat();
+      const otherTables: string[] = Array.from(
+        new Set(
+          componentList
+            .filter((y) => component !== y)
+            .map((c) => c.tables)
+            .flat(),
+        ),
+      );
       const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
         instruction,
         component,
