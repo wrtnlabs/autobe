@@ -136,6 +136,6 @@ export namespace IAutoBeDatabaseReviewApplication {
      * Models not included remain unchanged from the original schema. All
      * modifications must resolve issues identified in the review.
      */
-    modifications: AutoBeDatabase.IModel[];
+    content: AutoBeDatabase.IModel | null;
   }
 }

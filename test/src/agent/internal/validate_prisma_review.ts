@@ -33,7 +33,13 @@ export const validate_prisma_review = async (props: {
   const events: AutoBeDatabaseReviewEvent[] = await orchestratePrismaReview(
     props.agent.getContext(),
     {
-      files: writeEvents.map((e) => e.file),
+      files: component.components.map((c) => ({
+        filename: c.filename,
+        namespace: c.namespace,
+        models: writeEvents
+          .filter((we) => we.namespace === c.namespace)
+          .map((we) => we.model),
+      })),
     } satisfies AutoBeDatabase.IApplication,
     component.components,
   );

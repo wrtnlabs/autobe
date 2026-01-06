@@ -9,7 +9,8 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformPrismaSchemaHistory = (props: {
   analysis: Record<string, string>;
   targetComponent: AutoBeDatabase.IComponent;
-  otherTables: string[];
+  targetTable: string;
+  otherComponents: AutoBeDatabase.IComponent[];
   instruction: string;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
@@ -43,16 +44,22 @@ export const transformPrismaSchemaHistory = (props: {
 
         ${props.instruction}
 
-        ## Target Component
+        ## Component Context
         
-        Here is the input data for generating Prisma DB schema.
+        Here is the component context for generating DB schema.
         
         \`\`\`json
         ${JSON.stringify({
           targetComponent: props.targetComponent,
-          otherTables: props.otherTables,
+          otherComponents: props.otherComponents,
         })}
         \`\`\`
+
+        ## Table Context
+
+        You are generating the database schema for the table:
+
+        - Table Name: ${props.targetTable}
       `,
     },
     {
@@ -60,18 +67,19 @@ export const transformPrismaSchemaHistory = (props: {
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: StringUtil.trim`
-        You've already taken a mistake that creating models from the other components.
+        You've already taken a mistake that creating model of others.
 
-        Note that, you have to make models from the target component only. Never make
-        models from the other components. The other components' models are already made.
+        Note that, you have to make a target model only. Never make model 
+        of others. All the other models are already made.
         
         \`\`\`json
         ${JSON.stringify({
           targetComponent: props.targetComponent,
+          targetTable: props.targetTable,
         })}
         \`\`\`
       `,
     },
   ],
-  userMessage: "Make database schema file please",
+  userMessage: "Make database schema please",
 });

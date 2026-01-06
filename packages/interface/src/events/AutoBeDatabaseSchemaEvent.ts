@@ -43,6 +43,8 @@ export interface AutoBeDatabaseSchemaEvent
    */
   plan: string;
 
+  namespace: string;
+
   /**
    * Prisma schema models generated based on the strategic plan.
    *
@@ -55,28 +57,7 @@ export interface AutoBeDatabaseSchemaEvent
    * fields, foreign key relationships, business fields with appropriate types,
    * strategic indexes, and comprehensive English-only descriptions.
    */
-  models: AutoBeDatabase.IModel[];
-
-  /**
-   * Generated Prisma schema file information for a specific business domain.
-   *
-   * This field contains the complete schema file data including the filename,
-   * namespace, and the production-ready Prisma schema models. The AI agent has
-   * analyzed the requirements, designed the tables, and produced models that
-   * include all necessary relationships, indexes, and constraints.
-   *
-   * The generated file follows the naming convention
-   * `schema-{number}-{domain}.prisma` where the number indicates dependency
-   * order and the domain represents the business area. The final models within
-   * the file follow Prisma conventions while incorporating enterprise patterns
-   * like snapshot tables and materialized views.
-   *
-   * Each model in the file.models array represents a table in the database with
-   * proper field definitions, relationships, indexes, and comprehensive
-   * documentation, designed to ensure production readiness from the initial
-   * generation.
-   */
-  file: AutoBeDatabase.IFile;
+  model: AutoBeDatabase.IModel;
 
   /**
    * Iteration number of the requirements analysis this schema was generated

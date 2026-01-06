@@ -4,14 +4,15 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Database agent reviews and validates schema modifications
- * during the database design process.
+ * Event fired when the Database agent reviews and validates schema
+ * modifications during the database design process.
  *
- * This event occurs when the Database agent has completed a comprehensive review
- * of proposed database schema changes, validating them against best practices,
- * business requirements, and technical constraints. The review process ensures
- * that all modifications maintain data integrity, follow normalization
- * principles, and optimize for performance while aligning with business logic.
+ * This event occurs when the Database agent has completed a comprehensive
+ * review of proposed database schema changes, validating them against best
+ * practices, business requirements, and technical constraints. The review
+ * process ensures that all modifications maintain data integrity, follow
+ * normalization principles, and optimize for performance while aligning with
+ * business logic.
  *
  * The review includes validation of normalization compliance, relationship
  * integrity, indexing strategies, naming conventions, and temporal field
@@ -27,7 +28,9 @@ export interface AutoBeDatabaseReviewEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /** Name of the Prisma schema file being reviewed. */
-  filename: string;
+  namespace: string;
+
+  modelName: string;
 
   /**
    * Comprehensive review analysis of the proposed schema modifications.
@@ -116,7 +119,7 @@ export interface AutoBeDatabaseReviewEvent
    * - The final schema merges these modifications with the original draft
    * - All modifications must resolve issues identified in the review
    */
-  modifications: AutoBeDatabase.IModel[];
+  content: AutoBeDatabase.IModel | null;
 
   /**
    * Iteration number of the requirements analysis this review was performed

@@ -59,24 +59,29 @@ export const orchestratePrisma = async (
       componentEvent.components,
     );
   const application: AutoBeDatabase.IApplication = {
-    files: schemaEvents.map((e) => e.file),
+    files: componentEvent.components.map((comp) => ({
+      filename: comp.filename,
+      namespace: comp.namespace,
+      models: schemaEvents
+        .filter((se) => se.namespace === comp.namespace)
+        .map((se) => se.model),
+    })),
   };
 
   // REVIEW
   const reviewEvents: AutoBeDatabaseReviewEvent[] =
     await orchestratePrismaReview(ctx, application, componentEvent.components);
   for (const event of reviewEvents) {
+    if (event.content === null) continue;
+
+    const model: AutoBeDatabase.IModel = event.content;
     const file: AutoBeDatabase.IFile | undefined = application.files.find(
-      (f) => f.filename === event.filename,
+      (f) => f.namespace === event.namespace,
     );
     if (file === undefined) continue;
-    for (const modification of event.modifications) {
-      const index: number = file.models.findIndex(
-        (m) => m.name === modification.name,
-      );
-      if (index === -1) file.models.push(modification);
-      else file.models[index] = modification;
-    }
+
+    const index: number = file.models.findIndex((m) => m.name === model.name);
+    if (index !== -1) file.models[index] = model;
   }
 
   // VALIDATE

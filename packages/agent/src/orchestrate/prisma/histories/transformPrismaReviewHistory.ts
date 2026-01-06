@@ -14,6 +14,7 @@ export const transformPrismaReviewHistory = (props: {
     | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabase.IComponent;
+  model: AutoBeDatabase.IModel;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -34,14 +35,12 @@ export const transformPrismaReviewHistory = (props: {
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        Now, please review the tables in the "${props.component.namespace}" namespace.
+        Now, please review the table "${props.model.name}" 
+        in the "${props.component.namespace}" namespace.
         
-        Focus your review exclusively on these tables.
-        
-        **Tables in this namespace:**
-        ${props.component.tables.map((table) => `- ${table}`).join("\n")}
+        Focus your review exclusively on the table "${props.model.name}".
       `,
     },
   ],
-  userMessage: "Please review the database schema file.",
+  userMessage: "Please review the database schema.",
 });

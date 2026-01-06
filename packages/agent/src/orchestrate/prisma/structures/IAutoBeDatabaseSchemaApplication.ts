@@ -1,5 +1,4 @@
 import { AutoBeDatabase } from "@autobe/interface";
-import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
@@ -133,6 +132,6 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * - Proper historical data preservation where needed
      * - Optimized index strategy for expected query patterns
      */
-    models: AutoBeDatabase.IModel[] & tags.MinItems<1>;
+    model: AutoBeDatabase.IModel;
   }
 }

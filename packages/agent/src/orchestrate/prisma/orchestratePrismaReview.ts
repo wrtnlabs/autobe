@@ -21,18 +21,39 @@ export async function orchestratePrismaReview(
   application: AutoBeDatabase.IApplication,
   componentList: AutoBeDatabase.IComponent[],
 ): Promise<AutoBeDatabaseReviewEvent[]> {
+  // Flatten component list into individual table tasks
+  const tableTasks: Array<{
+    component: AutoBeDatabase.IComponent;
+    table: string;
+    model: AutoBeDatabase.IModel;
+  }> = componentList.flatMap((component) => {
+    const file: AutoBeDatabase.IFile | undefined = application.files.find(
+      (f) => f.filename === component.filename,
+    );
+    if (file === undefined) return [];
+    return component.tables
+      .map((table) => {
+        const model = file.models.find((m) => m.name === table);
+        if (model === undefined) return null;
+        return { component, table, model };
+      })
+      .filter((task): task is NonNullable<typeof task> => task !== null);
+  });
+
   const progress: AutoBeProgressEventBase = {
     completed: 0,
-    total: componentList.length,
+    total: tableTasks.length,
   };
+
   return (
     await executeCachedBatch(
       ctx,
-      componentList.map((component) => async (promptCacheKey) => {
+      tableTasks.map((task) => async (promptCacheKey) => {
         try {
           return await step(ctx, {
             application,
-            component,
+            component: task.component,
+            model: task.model,
             progress,
             promptCacheKey,
           });
@@ -50,6 +71,7 @@ async function step(
   props: {
     application: AutoBeDatabase.IApplication;
     component: AutoBeDatabase.IComponent;
+    model: AutoBeDatabase.IModel;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -74,16 +96,7 @@ async function step(
       databaseSchemas: props.application.files.map((f) => f.models).flat(),
     },
     local: {
-      databaseSchemas: ((): AutoBeDatabase.IModel[] => {
-        const file: AutoBeDatabase.IFile | undefined =
-          props.application.files.find(
-            (f) => f.filename === props.component.filename,
-          );
-        if (file === undefined) return [];
-        return props.component.tables
-          .map((table) => file.models.find((m) => m.name === table))
-          .filter((m) => m !== undefined);
-      })(),
+      databaseSchemas: [props.model],
     },
     config: {
       prisma: "ast",
@@ -106,6 +119,7 @@ async function step(
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaReviewHistory({
         component: props.component,
+        model: props.model,
         preliminary,
       }),
     });
@@ -115,10 +129,11 @@ async function step(
       type: SOURCE,
       id: v7(),
       created_at: start.toISOString(),
-      filename: props.component.filename,
+      namespace: props.component.namespace,
       review: pointer.value.review,
       plan: pointer.value.plan,
-      modifications: pointer.value.modifications,
+      modelName: props.model.name,
+      content: pointer.value.content,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

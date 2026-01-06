@@ -98,9 +98,7 @@ export namespace ArchiveLogger {
         `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
       );
     else if (event.type === "databaseSchema")
-      content.push(
-        `  - schemas: ${event.models.map((m) => m.name).join(", ")}`,
-      );
+      content.push(`  - model: ${event.model.name}`);
     else if (event.type === "interfaceEndpoint")
       content.push(`  - endpoints: ${event.endpoints.length}`);
     else if (event.type === "interfaceOperation")
