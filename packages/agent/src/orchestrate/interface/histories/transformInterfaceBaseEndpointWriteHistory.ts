@@ -70,7 +70,7 @@ export const transformInterfaceBaseEndpointWriteHistory = (props: {
         You are designing base CRUD endpoints for the **${props.group.name}** group.
 
         \`\`\`json
-        ${JSON.stringify(props.group, null, 2)}
+        ${JSON.stringify(props.group)}
         \`\`\`
 
         Design base CRUD endpoints that cover all entities in this group.

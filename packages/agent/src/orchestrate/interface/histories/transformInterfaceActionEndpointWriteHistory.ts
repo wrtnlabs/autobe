@@ -80,7 +80,7 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
         You are designing action endpoints for the **${props.group.name}** group.
 
         \`\`\`json
-        ${JSON.stringify(props.group, null, 2)}
+        ${JSON.stringify(props.group)}
         \`\`\`
 
         Design action endpoints that fulfill the requirements for this group.

@@ -93,6 +93,7 @@ export const orchestrateInterfaceEndpointReview = async (
       id: v7(),
       type: SOURCE,
       kind: props.programmer.kind,
+      group: props.group.name,
       designs: props.designs,
       revises: pointer.value.revises,
       created_at: new Date().toISOString(),

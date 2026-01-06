@@ -4,8 +4,6 @@ import {
   IAutoBeTokenUsageJson,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { HashSet } from "tstl";
 import typia from "typia";
 
 export namespace ArchiveLogger {
@@ -106,16 +104,13 @@ export namespace ArchiveLogger {
     else if (event.type === "interfaceEndpoint")
       content.push(
         `  - kind: ${event.kind}`,
+        `  - group: ${event.group}`,
         `  - endpoints: ${event.designs.length}`,
-        `  - unique: ${new HashSet(
-          event.designs.map((d) => d.endpoint),
-          AutoBeOpenApiEndpointComparator.hashCode,
-          AutoBeOpenApiEndpointComparator.equals,
-        ).size()}`,
       );
     else if (event.type === "interfaceEndpointReview")
       content.push(
         `  - kind: ${event.kind}`,
+        `  - group: ${event.group}`,
         `  - endpoints: ${event.designs.length}`,
         `  - revised:`,
         `    - create: ${event.revises.filter((r) => r.type === "create").length}`,

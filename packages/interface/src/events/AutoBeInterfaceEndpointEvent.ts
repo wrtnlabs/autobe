@@ -36,6 +36,8 @@ export interface AutoBeInterfaceEndpointEvent
    */
   kind: "base" | "action";
 
+  group: string;
+
   /**
    * Array of API endpoints that have been defined for the application.
    *

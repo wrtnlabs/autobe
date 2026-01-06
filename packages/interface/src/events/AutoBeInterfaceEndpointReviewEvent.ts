@@ -37,6 +37,8 @@ export interface AutoBeInterfaceEndpointReviewEvent
    */
   kind: "base" | "action";
 
+  group: string;
+
   /**
    * Original API endpoints submitted for review.
    *
