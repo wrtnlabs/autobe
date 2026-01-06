@@ -112,26 +112,8 @@ export namespace ArchiveLogger {
         `  - endpoints: ${event.designs.length}`,
         `  - revised:`,
         `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
-        ...event.revises
-          .filter((r) => r.type === "create")
-          .map(
-            (c) =>
-              `      - ${c.endpoint.method.toUpperCase()} ${c.endpoint.path}`,
-          ),
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
-        ...event.revises
-          .filter((r) => r.type === "update")
-          .map(
-            (u) =>
-              `      - ${u.original.method.toUpperCase()} ${u.original.path} -> ${u.updated.method.toUpperCase()} ${u.updated.path}`,
-          ),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
-        ...event.revises
-          .filter((r) => r.type === "erase")
-          .map(
-            (e) =>
-              `      - ${e.endpoint.method.toUpperCase()} ${e.endpoint.path}`,
-          ),
       );
     else if (event.type === "interfaceOperation")
       content.push(
