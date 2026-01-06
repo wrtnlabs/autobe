@@ -78,6 +78,9 @@ export class AutoBeListener {
       databaseComponent: async (event) => {
         this.insert(event);
       },
+      databaseComponentReview: async (event) => {
+        this.accumulate(event);
+      },
       databaseSchema: async (event) => {
         this.accumulate(event);
       },

@@ -7,6 +7,7 @@ import {
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseCorrectEvent,
   AutoBeDatabaseInsufficientEvent,
   AutoBeDatabaseReviewEvent,
@@ -192,9 +193,9 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for database design start events.
    *
-   * Called when the Database agent begins database schema design, enabling client
-   * applications to indicate the start of data architecture development and
-   * prepare progress tracking for the database design phase.
+   * Called when the Database agent begins database schema design, enabling
+   * client applications to indicate the start of data architecture development
+   * and prepare progress tracking for the database design phase.
    */
   databaseStart?(event: AutoBeDatabaseStartEvent): Promise<void>;
 
@@ -206,6 +207,16 @@ export interface IAutoBeRpcListener {
    * the database architecture and show progress scope.
    */
   databaseComponent?(event: AutoBeDatabaseComponentEvent): Promise<void>;
+
+  /**
+   * Optional handler for database component review events.
+   *
+   * Called when the Database agent reviews and validates the component
+   * organization during the database design process.
+   */
+  databaseComponentReview?(
+    event: AutoBeDatabaseComponentReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for database schema creation progress events.

@@ -124,6 +124,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "imageDescribeDraft":
     case "imageDescribeComplete":
     case "interfaceEndpointReview":
+    case "databaseComponentReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":
     case "vendorRequest":
