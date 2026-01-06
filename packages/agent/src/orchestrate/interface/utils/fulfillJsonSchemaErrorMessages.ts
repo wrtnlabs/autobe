@@ -21,7 +21,7 @@ const fulfillTypeAsArrayError = (e: IValidation.IError): boolean => {
   ) {
     e.description = StringUtil.trim`
       You have defined the JSON schema's type property value as an 
-      array type listing up the every types what you want, but it is not 
+      array type listing all the types that you want, but this is not 
       allowed in the JSON schema.
       
       The JSON schema's type property value must be a single string type.
