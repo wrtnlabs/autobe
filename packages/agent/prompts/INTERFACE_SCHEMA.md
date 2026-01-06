@@ -859,7 +859,7 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 }
 ```
 
-#### 2.2.3. CRITICAL: Correct Placement of Schema Metadata Properties
+#### 2.2.3. CRITICAL: Correct Placement of Object Type Metadata Properties
 
 **COMMON MISTAKE**: Placing schema metadata properties (`description`, `required`, `x-autobe-database-schema`) inside the `properties` object instead of at the object type level.
 
