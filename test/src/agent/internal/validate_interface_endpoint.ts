@@ -60,6 +60,8 @@ export const validate_interface_endpoint = async (props: {
     ...baseEndpoints,
     ...actionEndpoints,
   ];
+  console.log("base", baseEndpoints.length);
+  console.log("action", actionEndpoints.length);
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,

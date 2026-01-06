@@ -10,7 +10,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
-import { HashSet, IPointer } from "tstl";
+import { HashMap, HashSet, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -39,7 +39,7 @@ interface IProgrammer {
   }): Promise<AutoBeInterfaceEndpointRevise[]>;
 }
 
-export const orchestrateInterfaceEndpointWrite = async (
+export const orchestrateInterfaceEndpointOverall = async (
   ctx: AutoBeContext,
   props: {
     programmer: IProgrammer;
@@ -55,24 +55,34 @@ export const orchestrateInterfaceEndpointWrite = async (
         group,
         promptCacheKey,
       });
-      const dict: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-        contents.map((c) => c.endpoint),
+      const dict: HashMap<
+        AutoBeOpenApi.IEndpoint,
+        AutoBeInterfaceEndpointDesign
+      > = new HashMap(
+        contents.map((c) => new Pair(c.endpoint, c)),
         (e) => AutoBeOpenApiEndpointComparator.hashCode(e),
         (a, b) => AutoBeOpenApiEndpointComparator.equals(a, b),
       );
       for (const revise of await props.programmer.review({
         group,
-        designs: contents,
+        designs: dict.toJSON().map((it) => it.second),
         promptCacheKey: promptCacheKey + "_review",
       })) {
-        if (revise.type === "create") dict.insert(revise.endpoint);
+        if (revise.type === "create")
+          dict.set(revise.endpoint, {
+            endpoint: revise.endpoint,
+            description: revise.description,
+          });
         else if (revise.type === "update") {
           dict.erase(revise.original);
-          dict.insert(revise.updated);
+          dict.set(revise.updated, {
+            endpoint: revise.updated,
+            description: revise.description,
+          });
         } else if (revise.type === "erase") dict.erase(revise.endpoint);
         else revise satisfies never;
       }
-      return dict.toJSON();
+      return dict.toJSON().map((it) => it.first);
     }),
   );
   return new HashSet(

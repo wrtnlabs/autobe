@@ -7,8 +7,8 @@ import {
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformInterfaceActionEndpointReviewHistory } from "./histories/transformInterfaceActionEndpointReviewHistory";
 import { transformInterfaceActionEndpointWriteHistory } from "./histories/transformInterfaceActionEndpointWriteHistory";
+import { orchestrateInterfaceEndpointOverall } from "./orchestrateInterfaceEndpointOverall";
 import { orchestrateInterfaceEndpointReview } from "./orchestrateInterfaceEndpointReview";
-import { orchestrateInterfaceEndpointWrite } from "./orchestrateInterfaceEndpointWrite";
 
 export const orchestrateInterfaceActionEndpoint = (
   ctx: AutoBeContext,
@@ -21,7 +21,7 @@ export const orchestrateInterfaceActionEndpoint = (
     reviewProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeOpenApi.IEndpoint[]> =>
-  orchestrateInterfaceEndpointWrite(ctx, {
+  orchestrateInterfaceEndpointOverall(ctx, {
     programmer: {
       kind: "action",
       history: (next) =>

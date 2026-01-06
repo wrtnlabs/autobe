@@ -1,4 +1,4 @@
-import { AutoBeExampleProject } from "@autobe/interface";
+import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
@@ -9,13 +9,15 @@ const main = async () => {
   const project: AutoBeExampleProject = typia.assert<AutoBeExampleProject>(
     TestGlobal.getArguments("project")?.[0] ?? "todo",
   );
-  await validate_interface_endpoint({
-    agent: await prepare_interface_agent({
+  const endpoints: AutoBeOpenApi.IEndpoint[] =
+    await validate_interface_endpoint({
+      agent: await prepare_interface_agent({
+        vendor: TestGlobal.vendorModel,
+        project,
+      }),
       vendor: TestGlobal.vendorModel,
       project,
-    }),
-    vendor: TestGlobal.vendorModel,
-    project,
-  });
+    });
+  console.log(JSON.stringify(endpoints, null, 2));
 };
 main().catch(console.error);
