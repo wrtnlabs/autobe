@@ -30,11 +30,12 @@ export const fulfillJsonSchemaErrorMessages = (
         \`\`\`
       `;
     else if (
+      // enum to const
       isInvalidJsonSchema(e) &&
       typia.is<{ enum: any[] }>(e.value) === true
     )
       e.description = StringUtil.trim`
-        You have defined only enum property, but it is not allowed in the 
+        You have defined enum property, but it is not allowed in the 
         JSON schema. You have to define it as oneOf type containing multiple
         const types like below:
         
@@ -54,6 +55,7 @@ export const fulfillJsonSchemaErrorMessages = (
         Please fill it with detailed description about the type.
       `;
     else if (
+      // no required property
       e.value === undefined &&
       e.path.endsWith(".required") &&
       e.expected === "Array<string>"
@@ -69,6 +71,7 @@ export const fulfillJsonSchemaErrorMessages = (
         "required" property even though it becomes an empty array.
       `;
     else if (isExcludedObjectType(e) === true)
+      // nested object
       e.description = StringUtil.trim`
         Nested inline object type definitions are not allowed in AutoBE.
 
@@ -108,6 +111,35 @@ export const fulfillJsonSchemaErrorMessages = (
         and oneOf variants. Change the inline object definition to a named schema 
         reference at the next time.
       `;
+    else if (
+      isInvalidJsonSchema(e) &&
+      e.path.endsWith(`.properties["x-autobe-database-schema"]`) === true
+    ) {
+      const expected: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject["x-autobe-database-schema"]`;
+      const actual: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties["x-autobe-database-schema"]`;
+      const correctPlace: string = e.path.replace(
+        `.properties["x-autobe-database-schema"]`,
+        `["x-autobe-database-schema"]`,
+      );
+
+      e.expected = "undefined";
+      e.description = StringUtil.trim`
+        Your intention was to defining \`${expected}\` to explain the 
+        current object type is related to a database schema ${e.value},
+        but you actually defined it under the \`${actual}\` place.
+
+        Erase current ${e.path} property, and re-define the ${JSON.stringify(e.value)} 
+        value under the ${correctPlace} place. Note that, "x-autobe-database-schema" 
+        is not a member field of an object type, but a metadata describing the 
+        object type.
+
+        Don't mind. This is a little bit minor mistake. Just fix it quickly 
+        just by moving the ${JSON.stringify(e.value)} value to the correct place 
+        ${correctPlace}. 
+        
+        Note that, this is not a recommendation, but an instruction you must obey.
+      `;
+    }
 };
 
 const isExcludedObjectType = (error: IValidation.IError): boolean =>
