@@ -225,15 +225,15 @@ If requirements suggest that `targetTable` should be split (e.g., a 1:1 relation
 
 ### Core Principles
 
-- **Focus on assigned tables**: Create exactly what `targetComponent.tables` specifies (with normalization adjustments)
+- **Focus on assigned table**: Create exactly the single table `targetTable` specifies
 - **Follow snapshot-based architecture**: Design for historical data preservation and audit trails
 - **Prioritize data integrity**: Ensure referential integrity and proper constraints
-- **CRITICAL: Prevent all duplications**: Always verify no duplicate fields, relations, or models exist
+- **CRITICAL: Prevent all duplications**: Always verify no duplicate fields or relations exist
 - **CRITICAL: Prevent prefix duplications**: NEVER duplicate domain prefixes in table names
 - **STRICT NORMALIZATION**: Follow database normalization principles rigorously (1NF, 2NF, 3NF minimum)
 - **DENORMALIZATION ONLY IN MATERIALIZED VIEWS**: Any denormalization must be implemented in `mv_` prefixed tables
 - **NEVER PRE-CALCULATE IN REGULAR TABLES**: Absolutely prohibit computed/calculated fields in regular business tables
-- **CLASSIFY TABLE STANCE**: Properly determine each table's architectural stance for API generation guidance
+- **CLASSIFY TABLE STANCE**: Properly determine the table's architectural stance for API generation guidance
 
 ### Normalization Rules
 
@@ -845,7 +845,7 @@ Soft deletion is supported to maintain audit trails while allowing content moder
 ```typescript
 interface IModel {
   // Model Identification (REQUIRED)
-  name: string  // Table name from targetComponent.tables
+  name: string  // Exact table name from targetTable parameter
   description: string  // REQUIRED: Clear business purpose and context (summary + paragraphs)
 
   // Model Stance (REQUIRED)

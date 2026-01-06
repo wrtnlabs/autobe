@@ -37,8 +37,8 @@ This is a required self-reflection step that helps you verify you have everythin
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking: "Reviewed all models, identified 3 normalization issues, prepared corrections.",
-  request: { type: "complete", review: "...", plan: "...", modifications: [...] }
+  thinking: "Reviewed the table, identified 1 normalization issue, prepared correction.",
+  request: { type: "complete", review: "...", plan: "...", content: {...} }
 }
 ```
 
@@ -51,12 +51,12 @@ This is a required self-reflection step that helps you verify you have everythin
 **Good examples**:
 ```typescript
 // ✅ Brief summary of review
-thinking: "Validated 12 models, found 2 FK issues and 1 stance error, ready to fix"
-thinking: "All models pass normalization checks, no modifications needed"
-thinking: "Identified missing timestamps in 3 tables, corrected stance classifications"
+thinking: "Validated the table, found 1 FK issue, ready to fix"
+thinking: "Table passes all normalization checks, no modification needed"
+thinking: "Identified missing deleted_at field, corrected stance classification"
 
 // ❌ WRONG - too verbose, listing everything
-thinking: "Found issue in User table: missing deleted_at, and in Post table: wrong stance, and in Comment table: FK error, and..."
+thinking: "Found issue in the table: missing deleted_at field, wrong stance value should be primary not subsidiary, FK references wrong table, and..."
 ```
 
 ## 2. Your Mission
@@ -203,75 +203,75 @@ Your review must comprehensively evaluate the following aspects:
 
 ### Dimension 5: Naming Conventions
 
-- **Table Names**: Plural, snake_case (e.g., shopping_customers)
+- **Table Name**: Plural, snake_case (e.g., shopping_customers)
 - **Field Names**: Singular, snake_case (e.g., created_at)
-- **Consistency**: Ensure naming patterns are uniform across all models
+- **Consistency**: Ensure naming patterns are correct for this table
 - **Clarity**: Names must clearly convey purpose without ambiguity
-- **PREFIX VALIDATION**: NEVER allow duplicated domain prefixes in table names (e.g., `wrtn_wrtn_members`, `bbs_bbs_articles` are INVALID)
+- **PREFIX VALIDATION**: NEVER allow duplicated domain prefixes in table name (e.g., `wrtn_wrtn_members`, `bbs_bbs_articles` are INVALID)
 
 ### Dimension 6: Business Logic Alignment
 
-- **Requirement Coverage**: Verify all business entities are represented
-- **Constraint Implementation**: Confirm business rules are enforced at database level
+- **Requirement Coverage**: Verify the table represents its business entity correctly
+- **Constraint Implementation**: Confirm business rules are enforced at database level for this table
 - **Audit Trail**: Validate temporal fields (created_at, updated_at) presence
 - **Soft Delete**: Check deleted_at implementation where required
-- **Authentication Fields**: Verify password_hash exists for entities requiring login
-- **Status Management**: Confirm status/business_status fields for workflow entities
+- **Authentication Fields**: Verify password_hash exists if this entity requires login
+- **Status Management**: Confirm status/business_status fields if this entity has workflow
 
 ### Dimension 7: Documentation Quality
 
-- **Model Descriptions**: Each table must have a clear purpose description
+- **Model Description**: The table must have a clear purpose description
 - **Field Documentation**: Complex fields require explanatory comments
 - **Relationship Clarification**: Document non-obvious relationships
 
 ### Dimension 8: Requirement Coverage & Traceability
 
-- **Complete Coverage**: Verify every EARS requirement has corresponding schema implementation
-- **Entity Mapping**: Ensure all business entities from requirements are represented
-- **Feature Support**: Validate schema supports all specified features and workflows
-- **Missing Elements**: Identify any requirements not reflected in the schema
+- **Complete Coverage**: Verify relevant EARS requirements have corresponding implementation in this table
+- **Entity Mapping**: Ensure the business entity represented by this table matches requirements
+- **Feature Support**: Validate this table supports all specified features and workflows related to it
+- **Missing Elements**: Identify any requirements not reflected in this table
 
 ### Dimension 9: Cross-Domain Consistency
 
-- **Shared Concepts**: Verify consistent implementation of common entities across namespaces
-- **Integration Points**: Validate proper relationships between different business domains
-- **Data Standards**: Ensure uniform data representation across the entire schema
-- **Domain Boundaries**: Confirm appropriate separation of concerns between namespaces
+- **Shared Concepts**: Verify this table's implementation is consistent with similar entities in other domains
+- **Integration Points**: Validate proper relationships with tables in different business domains
+- **Data Standards**: Ensure data representation in this table follows system-wide standards
+- **Domain Boundaries**: Confirm this table respects appropriate separation of concerns
 
 ### Dimension 10: Security & Access Control Implementation
 
-- **Permission Model**: Verify schema supports the required role-based access control
-- **Data Sensitivity**: Ensure appropriate handling of PII and sensitive data
-- **Row-Level Security**: Validate support for multi-tenant or user-specific data isolation
-- **Audit Requirements**: Confirm security-related events can be tracked
+- **Permission Model**: Verify this table supports the required role-based access control
+- **Data Sensitivity**: Ensure appropriate handling of PII and sensitive data in this table
+- **Row-Level Security**: Validate support for multi-tenant or user-specific data isolation if applicable
+- **Audit Requirements**: Confirm security-related events can be tracked for this table
 
 ### Dimension 11: Scalability & Future-Proofing
 
-- **Growth Patterns**: Assess schema's ability to handle anticipated data growth
-- **Extensibility**: Evaluate ease of adding new features without major restructuring
-- **Partitioning Strategy**: Consider future data partitioning or sharding needs
-- **Version Management**: Ensure schema can evolve without breaking changes
+- **Growth Patterns**: Assess this table's ability to handle anticipated data growth
+- **Extensibility**: Evaluate ease of adding new fields or features to this table
+- **Partitioning Strategy**: Consider future data partitioning or sharding needs for this table
+- **Version Management**: Ensure this table can evolve without breaking changes
 
 ### Dimension 12: Holistic Performance Strategy
 
-- **Query Complexity**: Analyze potential join patterns across the entire schema
-- **Hot Paths**: Identify and optimize frequently accessed data paths
-- **Denormalization Balance**: Justify any denormalization for performance gains
-- **Cache Strategy**: Consider what data might benefit from caching layers
+- **Query Complexity**: Analyze potential join patterns involving this table
+- **Hot Paths**: Identify and optimize frequently accessed data paths in this table
+- **Denormalization Balance**: Justify any denormalization for performance gains in this table
+- **Cache Strategy**: Consider if this table's data might benefit from caching layers
 
 ### Dimension 13: Data Governance & Lifecycle
 
-- **Retention Policies**: Verify support for data retention requirements
-- **Archival Strategy**: Ensure old data can be archived without losing referential integrity
-- **Data Quality**: Validate constraints ensure data quality at insertion
-- **Temporal Data**: Proper handling of historical and time-series data
+- **Retention Policies**: Verify this table supports data retention requirements
+- **Archival Strategy**: Ensure old data in this table can be archived without losing referential integrity
+- **Data Quality**: Validate constraints ensure data quality at insertion for this table
+- **Temporal Data**: Proper handling of historical and time-series data in this table
 
 ### Dimension 14: Compliance & Regulatory Alignment
 
-- **Regulatory Requirements**: Ensure schema supports compliance needs (GDPR, etc.)
-- **Audit Trail Completeness**: Verify all regulatory audit requirements are met
-- **Data Residency**: Consider geographic data storage requirements
-- **Right to Erasure**: Validate support for data deletion requirements
+- **Regulatory Requirements**: Ensure this table supports compliance needs (GDPR, etc.)
+- **Audit Trail Completeness**: Verify regulatory audit requirements are met for this table
+- **Data Residency**: Consider geographic data storage requirements for this table's data
+- **Right to Erasure**: Validate support for data deletion requirements in this table
 
 ## 5. Review Process
 
