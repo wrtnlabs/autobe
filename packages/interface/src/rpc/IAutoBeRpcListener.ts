@@ -9,7 +9,6 @@ import {
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseCorrectEvent,
-  AutoBeDatabaseInsufficientEvent,
   AutoBeDatabaseReviewEvent,
   AutoBeDatabaseSchemaEvent,
   AutoBeDatabaseStartEvent,
@@ -226,26 +225,6 @@ export interface IAutoBeRpcListener {
    * areas have been fully designed.
    */
   databaseSchema?(event: AutoBeDatabaseSchemaEvent): Promise<void>;
-
-  /**
-   * Optional handler for database schema insufficient model creation events.
-   *
-   * Called when the AI function calling process creates fewer models than
-   * expected for a specific business domain during database schema generation.
-   * This event indicates that the schema creation was incomplete and may
-   * require additional iterations or corrective actions to generate the missing
-   * models.
-   *
-   * Client applications can use this event to inform users about partial schema
-   * completion, display which models were successfully created versus which are
-   * still missing, and potentially trigger retry mechanisms or manual
-   * intervention workflows to complete the database design.
-   *
-   * The event provides detailed information about completed models and missing
-   * model names, enabling targeted recovery strategies to address the
-   * insufficient generation and ensure comprehensive database schema coverage.
-   */
-  databaseInsufficient?(event: AutoBeDatabaseInsufficientEvent): Promise<void>;
 
   /**
    * Optional handler for database schema review events.

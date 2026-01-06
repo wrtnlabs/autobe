@@ -5,6 +5,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -114,6 +115,8 @@ async function step(
         build: (next) => {
           pointer.value = next;
         },
+        targetComponent: props.component,
+        targetTable: props.model.name,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -153,18 +156,54 @@ function createController(props: {
     | "previousDatabaseSchemas"
   >;
   build: (next: IAutoBeDatabaseReviewApplication.IComplete) => void;
+  targetComponent: AutoBeDatabase.IComponent;
+  targetTable: string;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeDatabaseReviewApplication.IProps> => {
     const result: IValidation<IAutoBeDatabaseReviewApplication.IProps> =
       typia.validate<IAutoBeDatabaseReviewApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
-      return result;
-    return props.preliminary.validate({
-      thinking: result.data.thinking,
-      request: result.data.request,
-    });
+    if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+    else if (result.data.request.content === null) return result;
+
+    const actual: AutoBeDatabase.IModel = result.data.request.content;
+    const expected: string = props.targetTable;
+
+    if (actual.name === expected) return result;
+    return {
+      success: false,
+      data: result.data,
+      errors: [
+        {
+          path: "$input.request.content.name",
+          value: actual.name,
+          expected: JSON.stringify(expected),
+          description: StringUtil.trim`
+            You modified a model with the wrong table name.
+
+            You are responsible for reviewing exactly ONE table with the exact name specified.
+
+            - filename: current domain's filename
+            - namespace: current domain's namespace
+            - expected table name: ${expected}
+            - actual table name: ${actual.name}
+
+            ${JSON.stringify({
+              filename: props.targetComponent.filename,
+              namespace: props.targetComponent.namespace,
+              targetTable: expected,
+              actualTableName: actual.name,
+            })}
+          `,
+        },
+      ],
+    };
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(

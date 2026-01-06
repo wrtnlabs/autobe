@@ -9,7 +9,6 @@ import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
-import { AutoBeDatabaseInsufficientEvent } from "./AutoBeDatabaseInsufficientEvent";
 import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
 import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
 import { AutoBeDatabaseStartEvent } from "./AutoBeDatabaseStartEvent";
@@ -122,7 +121,6 @@ export type AutoBeEvent =
   | AutoBeDatabaseComponentEvent
   | AutoBeDatabaseComponentReviewEvent
   | AutoBeDatabaseSchemaEvent
-  | AutoBeDatabaseInsufficientEvent
   | AutoBeDatabaseReviewEvent
   | AutoBeDatabaseValidateEvent
   | AutoBeDatabaseCorrectEvent

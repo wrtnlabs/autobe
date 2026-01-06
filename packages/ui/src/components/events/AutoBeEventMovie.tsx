@@ -79,7 +79,6 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "realizeTestOperation":
       return <AutoBeProgressEventMovie event={back} />;
     // VALIDATE EVENTS
-    case "databaseInsufficient":
     case "databaseValidate":
     case "testValidate":
     case "realizeValidate":

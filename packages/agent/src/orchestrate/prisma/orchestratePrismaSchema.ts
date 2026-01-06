@@ -134,11 +134,9 @@ function createController(props: {
   build: (next: IAutoBeDatabaseSchemaApplication.IComplete) => void;
   dispatch: AutoBeContext["dispatch"];
 }): IAgenticaController.IClass {
-  const validate = (
-    input: unknown,
-  ): IValidation<IAutoBeDatabaseSchemaApplication.IProps> => {
+  const validate: Validator = (input) => {
     const result: IValidation<IAutoBeDatabaseSchemaApplication.IProps> =
-      defaultValidate(input);
+      typia.validate<IAutoBeDatabaseSchemaApplication.IProps>(input);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
@@ -151,15 +149,6 @@ function createController(props: {
     const expected: string = props.targetTable;
 
     if (actual.name === expected) return result;
-
-    props.dispatch({
-      type: "databaseInsufficient",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      component: props.targetComponent,
-      actual: [actual],
-      missed: [expected],
-    });
     return {
       success: false,
       data: result.data,
@@ -167,7 +156,7 @@ function createController(props: {
         {
           path: "$input.request.model.name",
           value: actual.name,
-          expected: `"${expected}"`,
+          expected: JSON.stringify(expected),
           description: StringUtil.trim`
             You created a model with the wrong table name.
 
@@ -211,8 +200,5 @@ function createController(props: {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeDatabaseSchemaApplication.IProps>;
-
-const defaultValidate: Validator =
-  typia.createValidate<IAutoBeDatabaseSchemaApplication.IProps>();
 
 const SOURCE = "databaseSchema" satisfies AutoBeEventSource;

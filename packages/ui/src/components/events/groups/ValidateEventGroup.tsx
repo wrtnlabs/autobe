@@ -1,5 +1,4 @@
 import {
-  AutoBeDatabaseInsufficientEvent,
   AutoBeDatabaseValidateEvent,
   AutoBeInterfaceOperationReviewEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -11,7 +10,6 @@ import { AutoBeValidateEventMovie } from "../AutoBeValidateEventMovie";
 import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 
 export type ValidateEvent =
-  | AutoBeDatabaseInsufficientEvent
   | AutoBeDatabaseValidateEvent
   | AutoBeInterfaceOperationReviewEvent
   | AutoBeTestValidateEvent
@@ -39,7 +37,6 @@ export const ValidateEventGroup = (props: IValidateEventGroupProps) => {
     switch (event.type) {
       case "databaseValidate":
       case "realizeValidate":
-      case "databaseInsufficient":
         return true;
       case "testValidate":
       case "realizeAuthorizationValidate":

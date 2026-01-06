@@ -36,7 +36,6 @@ export * from "./AutoBeDatabaseCompleteEvent";
 export * from "./AutoBeDatabaseComponentEvent";
 export * from "./AutoBeDatabaseComponentReviewEvent";
 export * from "./AutoBeDatabaseCorrectEvent";
-export * from "./AutoBeDatabaseInsufficientEvent";
 export * from "./AutoBeDatabaseReviewEvent";
 export * from "./AutoBeDatabaseSchemaEvent";
 export * from "./AutoBeDatabaseStartEvent";

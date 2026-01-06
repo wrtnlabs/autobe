@@ -1,5 +1,4 @@
 import {
-  AutoBeDatabaseInsufficientEvent,
   AutoBeDatabaseValidateEvent,
   AutoBeInterfaceOperationReviewEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -12,7 +11,6 @@ import { EventCard, EventContent, EventHeader } from "./common";
 
 export interface IAutoBeValidateEventMovieProps {
   event:
-    | AutoBeDatabaseInsufficientEvent
     | AutoBeDatabaseValidateEvent
     | AutoBeInterfaceOperationReviewEvent
     | AutoBeTestValidateEvent
@@ -207,43 +205,6 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
         isError: !isAuthSuccess,
         isSuccess: isAuthSuccess,
         step: event.step,
-      };
-    case "databaseInsufficient":
-      return {
-        title: "Prisma Model Generation Insufficient",
-        description: (
-          <>
-            Prisma model generation was incomplete for the assigned component.
-            <br />
-            <br />
-            <strong>Component:</strong> {event.component.namespace}
-            <br />
-            <strong>Generated Models:</strong> {event.actual.length}
-            <br />
-            <strong>Missing Models:</strong> {event.missed.length}
-            <br />
-            <br />
-            {event.missed.length > 0 && (
-              <>
-                <strong>Missed Tables:</strong>
-                <br />
-                {event.missed.slice(0, 5).map((table: string, idx: number) => (
-                  <div key={idx} style={{ marginTop: "0.25rem" }}>
-                    • {table}
-                  </div>
-                ))}
-                {event.missed.length > 5 && (
-                  <div style={{ marginTop: "0.25rem" }}>
-                    ... and {event.missed.length - 5} more
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        ),
-        isError: true,
-        isSuccess: false,
-        step: undefined, // databaseInsufficient doesn't have step
       };
     case "interfaceOperationReview":
       return {
