@@ -91,7 +91,7 @@ const fulfillNoRequiredError = (e: IValidation.IError): boolean => {
       You have missed the "required" property in the JSON schema of object type.
 
       When defining the object type, you have to fill the "required" property
-      which lists up the every required property names.
+      which lists all the required property names.
 
       Please fill it with the required fields. If you think that there is
       not any required fields at all, you still have to fill the 
