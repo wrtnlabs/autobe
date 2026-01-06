@@ -112,8 +112,10 @@ export const fulfillJsonSchemaErrorMessages = (
         reference at the next time.
       `;
     else if (
+      // x-autobe-database-schema in properties
       isInvalidJsonSchema(e) &&
-      e.path.endsWith(`.properties["x-autobe-database-schema"]`) === true
+      e.path.endsWith(`.properties["x-autobe-database-schema"]`) === true &&
+      typeof e.value === "string"
     ) {
       const expected: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject["x-autobe-database-schema"]`;
       const actual: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties["x-autobe-database-schema"]`;
@@ -124,20 +126,152 @@ export const fulfillJsonSchemaErrorMessages = (
 
       e.expected = "undefined";
       e.description = StringUtil.trim`
-        Your intention was to defining \`${expected}\` to explain the 
-        current object type is related to a database schema ${e.value},
-        but you actually defined it under the \`${actual}\` place.
+        You have placed "x-autobe-database-schema" in the wrong location.
 
-        Erase current ${e.path} property, and re-define the ${JSON.stringify(e.value)} 
-        value under the ${correctPlace} place. Note that, "x-autobe-database-schema" 
-        is not a member field of an object type, but a metadata describing the 
-        object type.
+        **Type System Violation**:
+        - You defined: \`${actual}\` (as a field inside properties)
+        - Required type: \`${expected}\` (as metadata at object type level)
 
-        Don't mind. This is a little bit minor mistake. Just fix it quickly 
-        just by moving the ${JSON.stringify(e.value)} value to the correct place 
-        ${correctPlace}. 
-        
-        Note that, this is not a recommendation, but an instruction you must obey.
+        The "x-autobe-database-schema" is NOT a regular field that appears in the
+        object's properties, but a METADATA annotation that describes which database
+        table this schema type corresponds to. In the AutoBE type system, metadata
+        properties must be defined at the object type level, outside of "properties".
+
+        **Current (Wrong)**:
+        \`\`\`json
+        {
+          "type": "object",
+          "properties": {
+            ...,
+            "x-autobe-database-schema": ${JSON.stringify(e.value)}  // ❌ Wrong: inside properties
+          },
+          ...
+        }
+        \`\`\`
+
+        **Correct**:
+        \`\`\`json
+        {
+          "type": "object",
+          "x-autobe-database-schema": ${JSON.stringify(e.value)},  // ✅ Correct: metadata level
+          "properties": { ... },
+          ...
+        }
+        \`\`\`
+
+        **Action Required**:
+        1. Remove "x-autobe-database-schema" from: ${e.path}
+        2. Place it at the correct location: ${correctPlace}
+
+        This is a structural requirement enforced by the AutoBE type system.
+        The compiler will continue to reject this schema until corrected.
+      `;
+    } else if (
+      // required in properties
+      isInvalidJsonSchema(e) &&
+      e.path.endsWith(`.properties.required`) === true &&
+      Array.isArray(e.value) === true
+    ) {
+      const expected: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.required`;
+      const actual: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties.required`;
+      const correctPlace: string = e.path.replace(
+        `.properties.required`,
+        `.required`,
+      );
+
+      e.expected = "undefined";
+      e.description = StringUtil.trim`
+        You have placed "required" in the wrong location.
+
+        **Type System Violation**:
+        - You defined: \`${actual}\` (as a field inside properties)
+        - Required type: \`${expected}\` (as metadata at object type level)
+
+        The "required" property is NOT a field of the object type, but a METADATA
+        array that lists which properties are mandatory. In the AutoBE type system,
+        schema metadata must be defined at the object type level, outside of "properties".
+
+        **Current (Wrong)**:
+        \`\`\`json
+        {
+          "type": "object",
+          "properties": {
+            ...,
+            "required": ${JSON.stringify(e.value)}  // ❌ Wrong: inside properties
+          },
+          ...
+        }
+        \`\`\`
+
+        **Correct**:
+        \`\`\`json
+        {
+          "type": "object",
+          "properties": { ... },
+          "required": ${JSON.stringify(e.value)},  // ✅ Correct: metadata level
+          ...
+        }
+        \`\`\`
+
+        **Action Required**:
+        1. Remove "required" from: ${e.path}
+        2. Place it at the correct location: ${correctPlace}
+
+        This is a structural requirement enforced by the AutoBE type system.
+        The compiler will continue to reject this schema until corrected.
+      `;
+    } else if (
+      isInvalidJsonSchema(e) &&
+      e.path.endsWith(`.properties.description`) === true &&
+      typeof e.value === "string"
+    ) {
+      const expected: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.description`;
+      const actual: string = `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties.description`;
+      const correctPlace: string = e.path.replace(
+        `.properties.description`,
+        `.description`,
+      );
+
+      e.expected = "undefined";
+      e.description = StringUtil.trim`
+        You have placed "description" in the wrong location.
+
+        **Type System Violation**:
+        - You defined: \`${actual}\` (as a field inside properties)
+        - Required type: \`${expected}\` (as metadata at object type level)
+
+        The "description" property is NOT a field of the object type, but a METADATA
+        string that describes the entire schema. In the AutoBE type system, schema
+        metadata must be defined at the object type level, outside of "properties".
+
+        **Current (Wrong)**:
+        \`\`\`json
+        {
+          "type": "object",
+          "properties": {
+            ...,
+            "description": ${JSON.stringify(e.value)}  // ❌ Wrong: inside properties
+          },
+          ...
+        }
+        \`\`\`
+
+        **Correct**:
+        \`\`\`json
+        {
+          "type": "object",
+          "description": ${JSON.stringify(e.value)},  // ✅ Correct: metadata level
+          "properties": { ... },
+          ...
+        }
+        \`\`\`
+
+        **Action Required**:
+        1. Remove "description" from: ${e.path}
+        2. Place it at the correct location: ${correctPlace}
+
+        This is a structural requirement enforced by the AutoBE type system.
+        The compiler will continue to reject this schema until corrected.
       `;
     }
 };

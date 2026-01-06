@@ -859,6 +859,87 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 }
 ```
 
+#### 2.2.3. CRITICAL: Correct Placement of Schema Metadata Properties
+
+**COMMON MISTAKE**: Placing schema metadata properties (`description`, `required`, `x-autobe-database-schema`) inside the `properties` object instead of at the object type level.
+
+**THE PROBLEM**:
+
+JSON Schema has a fundamental distinction between:
+- **Schema metadata properties**: Describe the schema itself (`description`, `required`, `x-autobe-database-schema`, etc.)
+- **Data field properties**: Describe actual data that appears in API requests/responses (defined inside `properties`)
+
+Schema metadata properties are **NOT fields** of the object type. They MUST be placed at the object type level, outside of `properties`.
+
+**❌ WRONG - Metadata inside properties**:
+```json
+{
+  "IUser": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "email": { "type": "string" },
+      "description": "User entity",             // ❌ WRONG: This is metadata, not a field!
+      "required": ["id", "email"],              // ❌ WRONG: This is metadata, not a field!
+      "x-autobe-database-schema": "users"        // ❌ WRONG: This is metadata, not a field!
+    }
+  }
+}
+```
+
+**✅ CORRECT - Metadata at object type level**:
+```json
+{
+  "IUser": {
+    "type": "object",
+    "description": "User entity",               // ✅ CORRECT: Metadata at object level
+    "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
+    "properties": {
+      "id": { "type": "string" },
+      "email": { "type": "string" }
+    },
+    "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
+  }
+}
+```
+
+**WHY THIS MATTERS**:
+
+1. **Type System Enforcement**: The AutoBE compiler validates schema structure using strict TypeScript types. Metadata properties inside `properties` violate the type system and cause immediate compilation failures.
+
+2. **Semantic Correctness**: The `properties` object is exclusively for data fields that appear in API responses. Metadata properties describe the schema's structure and rules, not the data itself.
+
+3. **Compiler Enforcement**: If you place ANY schema metadata inside `properties`, the AutoBE compiler will:
+   - **REJECT** the schema with a detailed, field-specific error message
+   - Explain which metadata property was misplaced and why
+   - Provide the exact correct location for the property
+   - Show before/after examples
+   - Continue rejecting until corrected
+
+**COMMON SCHEMA METADATA PROPERTIES** (never put these in `properties`):
+- `description` - Documentation describing the entire schema
+- `required` - Array listing which property names are mandatory
+- `x-autobe-database-schema` - Database table mapping annotation
+- Other JSON Schema metadata: `type`, `additionalProperties`, `oneOf`, `enum`, constraints, etc.
+
+**HOW TO IDENTIFY**:
+
+Ask yourself: **"Does this property appear in the actual API request/response JSON?"**
+- **NO** → It's metadata, place at object type level
+- **YES** → It's a data field, place inside `properties`
+
+Examples:
+- `"description": "User entity"` → Does "description" key appear in API JSON? **NO** → Metadata
+- `"required": ["id"]` → Does "required" key appear in API JSON? **NO** → Metadata
+- `"x-autobe-database-schema": "User"` → Does this key appear in API JSON? **NO** → Metadata
+- `"id": { "type": "string" }` → Does "id" key appear in API JSON? **YES** → Data field
+- `"email": { "type": "string" }` → Does "email" key appear in API JSON? **YES** → Data field
+
+**REMEMBER**:
+- Schema metadata describes the schema itself, not the data
+- The `properties` object is ONLY for data that the API actually transmits
+- Always place metadata at the same level as `type` and `properties`, never inside `properties`
+
 ### 2.3. Named Types and $ref Principle
 
 **ABSOLUTE MANDATE**: Every object type MUST be defined as a named DTO and referenced using `$ref`. This is not a suggestion - it's MANDATORY.
