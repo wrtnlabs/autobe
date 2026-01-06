@@ -302,8 +302,8 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 ```typescript
 {
   type: "erase",
-  endpoint: { path: "/guest/{guestId}", method: "get" },
-  reason: "Duplicate of /guests/{guestId}. Removing singular form."
+  reason: "Duplicate of /guests/{guestId}. Removing singular form.",
+  endpoint: { path: "/guest/{guestId}", method: "get" }
 }
 ```
 
@@ -313,10 +313,10 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 ```typescript
 {
   type: "update",
+  reason: "Converting singular 'article' to plural 'articles' for REST convention.",
   original: { path: "/article/{articleId}", method: "get" },
   updated: { path: "/articles/{articleId}", method: "get" },
-  description: "Get an article by ID.",
-  reason: "Converting singular 'article' to plural 'articles' for REST convention."
+  description: "Get an article by ID."
 }
 ```
 
@@ -331,28 +331,28 @@ process({
       // DELETE duplicates first (singular forms where plural exists)
       {
         type: "erase",
-        endpoint: { path: "/guest/{guestId}", method: "get" },
-        reason: "Duplicate of /guests/{guestId}. Removing singular form."
+        reason: "Duplicate of /guests/{guestId}. Removing singular form.",
+        endpoint: { path: "/guest/{guestId}", method: "get" }
       },
       {
         type: "erase",
-        endpoint: { path: "/article", method: "patch" },
-        reason: "Duplicate of /articles. Removing singular form."
+        reason: "Duplicate of /articles. Removing singular form.",
+        endpoint: { path: "/article", method: "patch" }
       },
       // UPDATE singular-only endpoints to plural
       {
         type: "update",
+        reason: "Converting singular 'category' to plural 'categories'.",
         original: { path: "/category/{categoryId}", method: "get" },
         updated: { path: "/categories/{categoryId}", method: "get" },
-        description: "Get a category by ID.",
-        reason: "Converting singular 'category' to plural 'categories'."
+        description: "Get a category by ID."
       },
       {
         type: "update",
+        reason: "Converting singular segments to plural: member→members, address→addresses.",
         original: { path: "/member/{memberId}/address", method: "post" },
         updated: { path: "/members/{memberId}/addresses", method: "post" },
-        description: "Create address for a member.",
-        reason: "Converting singular segments to plural: member→members, address→addresses."
+        description: "Create address for a member."
       }
     ],
     review: "Fixed 6 singular/plural issues. Erased 2 duplicate singular forms. Updated 4 singular paths to plural."
@@ -657,31 +657,31 @@ process({
       // Update camelCase to hierarchical
       {
         type: "update",
+        reason: "Converting camelCase path to hierarchical structure.",
         original: { path: "/moderationLogs", method: "patch" },
         updated: { path: "/moderation/logs", method: "patch" },
-        description: "Search moderation logs with filters.",
-        reason: "Converting camelCase path to hierarchical structure."
+        description: "Search moderation logs with filters."
       },
       // Fix singular to plural
       {
         type: "update",
+        reason: "Normalizing singular 'guest' to plural 'guests'.",
         original: { path: "/guest/{guestId}", method: "get" },
         updated: { path: "/guests/{guestId}", method: "get" },
-        description: "Get a guest by ID.",
-        reason: "Normalizing singular 'guest' to plural 'guests'."
+        description: "Get a guest by ID."
       },
       // Erase duplicate
       {
         type: "erase",
-        endpoint: { path: "/users/search", method: "patch" },
-        reason: "Redundant. PATCH /users already handles search."
+        reason: "Redundant. PATCH /users already handles search.",
+        endpoint: { path: "/users/search", method: "patch" }
       },
       // Create missing nested endpoint
       {
         type: "create",
+        reason: "Comments are subsidiary and need delete through parent.",
         endpoint: { path: "/articles/{articleId}/comments/{commentId}", method: "delete" },
-        description: "Delete a comment under an article.",
-        reason: "Comments are subsidiary and need delete through parent."
+        description: "Delete a comment under an article."
       }
     ],
     review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Erased 3 duplicate endpoints and 2 endpoints for subsidiary entities that should be nested. Final count: 40 endpoints."
@@ -690,9 +690,9 @@ process({
 ```
 
 **Action Types**:
-- `create`: Add endpoint with `endpoint`, `description` (what it does), and `reason` (why adding)
-- `update`: Fix path/method with `original`, `updated`, `description` (what it does), and `reason` (why changing)
-- `erase`: Remove endpoint with `endpoint` and `reason` (why removing)
+- `create`: Add endpoint with `type`, `reason` (why adding), `endpoint`, and `description` (what it does)
+- `update`: Fix path/method with `type`, `reason` (why changing), `original`, `updated`, and `description` (what it does)
+- `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
 
 ### 5.2. No Modifications Needed
 

@@ -477,16 +477,16 @@ process({
     type: "complete",
     designs: [
       {
-        endpoint: { path: "/statistics/sales/monthly", method: "get" },
-        description: "Monthly sales trends with revenue and order counts"
+        description: "Monthly sales trends with revenue and order counts",
+        endpoint: { path: "/statistics/sales/monthly", method: "get" }
       },
       {
-        endpoint: { path: "/dashboard/admin/overview", method: "get" },
-        description: "Admin dashboard with active users, revenue, and system health"
+        description: "Admin dashboard with active users, revenue, and system health",
+        endpoint: { path: "/dashboard/admin/overview", method: "get" }
       },
       {
-        endpoint: { path: "/search/global", method: "patch" },
-        description: "Cross-entity search across articles, products, and categories"
+        description: "Cross-entity search across articles, products, and categories",
+        endpoint: { path: "/search/global", method: "patch" }
       }
     ]
   }
@@ -671,9 +671,9 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/analytics/sales/monthly", "method": "get"}, "description": "Monthly sales trends"},
-  {"endpoint": {"path": "/analytics/sales/categories", "method": "get"}, "description": "Sales breakdown by category"},
-  {"endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}, "description": "Customer behavior analysis with filters"}
+  {"description": "Monthly sales trends", "endpoint": {"path": "/analytics/sales/monthly", "method": "get"}},
+  {"description": "Sales breakdown by category", "endpoint": {"path": "/analytics/sales/categories", "method": "get"}},
+  {"description": "Customer behavior analysis with filters", "endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}}
 ]
 ```
 
@@ -681,8 +681,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/dashboard/admins/overview", "method": "get"}, "description": "Admin dashboard summary"},
-  {"endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}, "description": "Seller performance metrics"}
+  {"description": "Admin dashboard summary", "endpoint": {"path": "/dashboard/admins/overview", "method": "get"}},
+  {"description": "Seller performance metrics", "endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}}
 ]
 ```
 
@@ -690,8 +690,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/search/global", "method": "patch"}, "description": "Cross-entity unified search"},
-  {"endpoint": {"path": "/search/products/advanced", "method": "patch"}, "description": "Advanced product search with filters"}
+  {"description": "Cross-entity unified search", "endpoint": {"path": "/search/global", "method": "patch"}},
+  {"description": "Advanced product search with filters", "endpoint": {"path": "/search/products/advanced", "method": "patch"}}
 ]
 ```
 
@@ -699,8 +699,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/reports/revenues/summary", "method": "get"}, "description": "Revenue summary report"},
-  {"endpoint": {"path": "/reports/inventories/status", "method": "patch"}, "description": "Filtered inventory status report"}
+  {"description": "Revenue summary report", "endpoint": {"path": "/reports/revenues/summary", "method": "get"}},
+  {"description": "Filtered inventory status report", "endpoint": {"path": "/reports/inventories/status", "method": "patch"}}
 ]
 ```
 
@@ -708,8 +708,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/products/enriched", "method": "patch"}, "description": "Products with seller, category, and reviews"},
-  {"endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}, "description": "Order with items, customer, and shipping"}
+  {"description": "Products with seller, category, and reviews", "endpoint": {"path": "/products/enriched", "method": "patch"}},
+  {"description": "Order with items, customer, and shipping", "endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}}
 ]
 ```
 
@@ -717,8 +717,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}, "description": "Customer lifetime value and purchase metrics"},
-  {"endpoint": {"path": "/products/{productId}/analytics", "method": "get"}, "description": "Product performance analytics"}
+  {"description": "Customer lifetime value and purchase metrics", "endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}},
+  {"description": "Product performance analytics", "endpoint": {"path": "/products/{productId}/analytics", "method": "get"}}
 ]
 ```
 

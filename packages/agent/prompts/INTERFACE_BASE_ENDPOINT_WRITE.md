@@ -536,24 +536,24 @@ process({
     type: "complete",
     designs: [
       {
-        endpoint: { path: "/resources", method: "patch" },
-        description: "Search and filter resources collection"
+        description: "Search and filter resources collection",
+        endpoint: { path: "/resources", method: "patch" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "get" },
-        description: "Retrieve a single resource by code"
+        description: "Retrieve a single resource by code",
+        endpoint: { path: "/resources/{resourceCode}", method: "get" }
       },
       {
-        endpoint: { path: "/resources", method: "post" },
-        description: "Create a new resource"
+        description: "Create a new resource",
+        endpoint: { path: "/resources", method: "post" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "put" },
-        description: "Update an existing resource"
+        description: "Update an existing resource",
+        endpoint: { path: "/resources/{resourceCode}", method: "put" }
       },
       {
-        endpoint: { path: "/resources/{resourceCode}", method: "delete" },
-        description: "Delete a resource"
+        description: "Delete a resource",
+        endpoint: { path: "/resources/{resourceCode}", method: "delete" }
       }
     ]
   }
@@ -649,11 +649,11 @@ model enterprises {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/enterprises", "method": "patch"}, "description": "Search enterprises"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}, "description": "Get enterprise by code"},
-  {"endpoint": {"path": "/enterprises", "method": "post"}, "description": "Create enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}, "description": "Update enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}, "description": "Delete enterprise"}
+  {"description": "Search enterprises", "endpoint": {"path": "/enterprises", "method": "patch"}},
+  {"description": "Get enterprise by code", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}},
+  {"description": "Create enterprise", "endpoint": {"path": "/enterprises", "method": "post"}},
+  {"description": "Update enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}},
+  {"description": "Delete enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}}
 ]
 ```
 
@@ -674,11 +674,11 @@ model enterprise_teams {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}, "description": "Search teams within enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}, "description": "Get team by code within enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}, "description": "Create team in enterprise"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}, "description": "Update team"},
-  {"endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}, "description": "Delete team"}
+  {"description": "Search teams within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}},
+  {"description": "Get team by code within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}},
+  {"description": "Create team in enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}},
+  {"description": "Update team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}},
+  {"description": "Delete team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}}
 ]
 ```
 
@@ -698,10 +698,10 @@ model members {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/members", "method": "patch"}, "description": "Search members"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "get"}, "description": "Get member by ID"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "put"}, "description": "Update member"},
-  {"endpoint": {"path": "/members/{memberId}", "method": "delete"}, "description": "Delete member"}
+  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}},
+  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}},
+  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}},
+  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}}
 ]
 ```
 
@@ -725,8 +725,8 @@ model article_snapshots {
 **Generated Endpoints:**
 ```json
 [
-  {"endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}, "description": "Search article snapshots"},
-  {"endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}, "description": "Get specific snapshot"}
+  {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}},
+  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}}
 ]
 ```
 

@@ -337,8 +337,8 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 ```typescript
 {
   type: "erase",
-  endpoint: { path: "/statistic/sales/monthly", method: "get" },
-  reason: "Duplicate of /statistics/sales/monthly. Removing singular form."
+  reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
+  endpoint: { path: "/statistic/sales/monthly", method: "get" }
 }
 ```
 
@@ -366,23 +366,23 @@ process({
       // DELETE duplicate (singular form where plural exists)
       {
         type: "erase",
-        endpoint: { path: "/statistic/sales/monthly", method: "get" },
-        reason: "Duplicate of /statistics/sales/monthly. Removing singular form."
+        reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
+        endpoint: { path: "/statistic/sales/monthly", method: "get" }
       },
       // UPDATE singular-only endpoints to plural
       {
         type: "update",
+        reason: "Converting singular 'report' to plural 'reports'.",
         original: { path: "/report/revenue/summary", method: "get" },
         updated: { path: "/reports/revenue/summary", method: "get" },
-        description: "Get revenue summary report.",
-        reason: "Converting singular 'report' to plural 'reports'."
+        description: "Get revenue summary report."
       },
       {
         type: "update",
+        reason: "Converting singular segments to plural: analytic→analytics, customer→customers.",
         original: { path: "/analytic/customer/behavior", method: "patch" },
         updated: { path: "/analytics/customers/behavior", method: "patch" },
-        description: "Analyze customer behavior patterns.",
-        reason: "Converting singular segments to plural: analytic→analytics, customer→customers."
+        description: "Analyze customer behavior patterns."
       }
     ],
     review: "Fixed 4 singular/plural issues. Erased 1 duplicate singular form. Updated 3 singular paths to plural."
@@ -681,31 +681,31 @@ process({
       // Erase unjustified endpoint
       {
         type: "erase",
-        endpoint: { path: "/analytics/customer/behavior", method: "patch" },
-        reason: "No requirements mention customer behavior analytics."
+        reason: "No requirements mention customer behavior analytics.",
+        endpoint: { path: "/analytics/customer/behavior", method: "patch" }
       },
       // Update camelCase to hierarchical
       {
         type: "update",
+        reason: "Converting camelCase to hierarchical structure.",
         original: { path: "/statistics/salesByMonth", method: "get" },
         updated: { path: "/statistics/sales/monthly", method: "get" },
-        description: "Get monthly sales statistics.",
-        reason: "Converting camelCase to hierarchical structure."
+        description: "Get monthly sales statistics."
       },
       // Fix HTTP method
       {
         type: "update",
+        reason: "Global search requires complex request body. PATCH is appropriate.",
         original: { path: "/search/global", method: "get" },
         updated: { path: "/search/global", method: "patch" },
-        description: "Search across all entities with complex filters.",
-        reason: "Global search requires complex request body. PATCH is appropriate."
+        description: "Search across all entities with complex filters."
       },
       // Create missing endpoint from requirements
       {
         type: "create",
+        reason: "Requirements specify 'Administrators SHALL view monthly sales trends'.",
         endpoint: { path: "/reports/monthly/summary", method: "get" },
-        description: "Get monthly summary report for trend analysis.",
-        reason: "Requirements specify 'Administrators SHALL view monthly sales trends'."
+        description: "Get monthly summary report for trend analysis."
       }
     ],
     review: "Reviewed 12 action endpoints. Erased 4 unjustified endpoints (no requirements backing). Updated 3 paths from camelCase to hierarchical. Final count: 8 action endpoints, all justified by requirements."
@@ -714,9 +714,9 @@ process({
 ```
 
 **Action Types**:
-- `create`: Add endpoint with `endpoint`, `description` (what it does), and `reason` (why adding)
-- `update`: Fix path/method with `original`, `updated`, `description` (what it does), and `reason` (why changing)
-- `erase`: Remove endpoint with `endpoint` and `reason` (why removing)
+- `create`: Add endpoint with `type`, `reason` (why adding), `endpoint`, and `description` (what it does)
+- `update`: Fix path/method with `type`, `reason` (why changing), `original`, `updated`, and `description` (what it does)
+- `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
 
 ### 5.2. No Modifications Needed
 
