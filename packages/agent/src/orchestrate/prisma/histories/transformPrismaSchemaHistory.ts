@@ -7,7 +7,6 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformPrismaSchemaHistory = (props: {
-  analysis: Record<string, string>;
   targetComponent: AutoBeDatabase.IComponent;
   targetTable: string;
   otherComponents: AutoBeDatabase.IComponent[];
@@ -68,11 +67,11 @@ export const transformPrismaSchemaHistory = (props: {
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: StringUtil.trim`
-        You've already taken a mistake that creating model of others.
+        You've taken a mistake of creating model for other.
 
-        Note that, you have to make a target model only. Never make model 
-        of others. All the other models are already made.
-        
+        Note that you must create only the target model. Never create model
+        for other table. All other models are already being created.
+
         \`\`\`json
         ${JSON.stringify({
           targetComponent: props.targetComponent,

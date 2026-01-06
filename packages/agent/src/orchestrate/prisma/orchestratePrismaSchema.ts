@@ -101,13 +101,6 @@ async function process(
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaSchemaHistory({
-        analysis:
-          ctx
-            .state()
-            .analyze?.files.map((file) => ({ [file.filename]: file.content }))
-            .reduce((acc, cur) => {
-              return Object.assign(acc, cur);
-            }, {}) ?? {},
         targetComponent: props.targetComponent,
         targetTable: props.targetTable,
         otherComponents: props.otherComponents,

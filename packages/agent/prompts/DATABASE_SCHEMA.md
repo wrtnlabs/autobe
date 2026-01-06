@@ -50,13 +50,13 @@ This is a required self-reflection step that helps you verify you have everythin
 
 **Good examples**:
 ```typescript
-// ✅ Brief summary of work
-thinking: "Designed 8 models following 3NF, all foreign keys validated"
-thinking: "Applied snapshot architecture to all transaction tables"
-thinking: "Normalized user authentication across 3 actor types"
+// ✅ Brief summary of work (remember: you create ONE table at a time)
+thinking: "Designed the User table following 3NF with validated foreign keys"
+thinking: "Applied snapshot architecture to the Order table"
+thinking: "Designed the Actor table normalized for 3 actor types"
 
 // ❌ WRONG - too verbose, listing everything
-thinking: "Created User model with id, name, email, password, created_at, updated_at, deleted_at, and Post model with..."
+thinking: "Created User model with id, name, email, password, created_at, updated_at, deleted_at fields..."
 ```
 
 ## 2. Your Mission
@@ -152,7 +152,7 @@ process({
 
 **When NOT to use**:
 - Target component requirements are self-contained
-- Foreign key references are clear from otherTables list
+- Foreign key references are clear from otherComponents list
 - Schema design doesn't span multiple domains
 
 #### Load previous version Analysis Files
