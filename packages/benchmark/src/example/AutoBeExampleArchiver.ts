@@ -50,7 +50,10 @@ export namespace AutoBeExampleArchiver {
           "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
         )) ||
         (await conversate(
-          "I already told you to publish the analysis report. Never ask me anything, and just do it right now.",
+          "I already told you to publish the analysis report. Never ask me anything, and just do anything right now by your decision.",
+        )) ||
+        (await conversate(
+          "Call analyze() function right now, never ask me anything again. You can do whatever you want.",
         )),
       predicate: (histories): boolean =>
         histories.some((h) => h.type === "analyze"),
