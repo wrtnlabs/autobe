@@ -15,10 +15,10 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
-import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
-import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
-import { LlmSchemaFactory } from "./utils/LlmSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
+import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
+import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 export async function orchestrateInterfaceSchema(
@@ -29,13 +29,13 @@ export async function orchestrateInterfaceSchema(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // fix operation type names
-  JsonSchemaNamingConvention.operations(props.operations);
+  AutoBeJsonSchemaNamingConvention.operations(props.operations);
 
   // gather type names
   const collection: Set<string> = new Set();
   const gather = (key: string): void => {
-    if (JsonSchemaValidator.isPage(key))
-      collection.add(JsonSchemaFactory.getPageName(key));
+    if (AutoBeJsonSchemaValidator.isPage(key))
+      collection.add(AutoBeJsonSchemaFactory.getPageName(key));
     collection.add(key);
   };
   for (const op of props.operations) {
@@ -43,11 +43,11 @@ export async function orchestrateInterfaceSchema(
     if (op.responseBody !== null) gather(op.responseBody.typeName);
   }
   const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    JsonSchemaFactory.presets(collection);
+    AutoBeJsonSchemaFactory.presets(collection);
 
   // divide and conquer
   const typeNames: string[] = Array.from(collection).filter(
-    (k) => JsonSchemaValidator.isPreset(k) === false,
+    (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
   );
   const progress: AutoBeProgressEventBase = {
     total: typeNames.length,
@@ -61,8 +61,8 @@ export async function orchestrateInterfaceSchema(
     typeNames.map((it) => async (promptCacheKey) => {
       const predicate = (key: string) =>
         key === it ||
-        (JsonSchemaValidator.isPage(key) &&
-          JsonSchemaFactory.getPageName(key) === it);
+        (AutoBeJsonSchemaValidator.isPage(key) &&
+          AutoBeJsonSchemaFactory.getPageName(key) === it);
       const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
         (op) =>
           (op.requestBody && predicate(op.requestBody.typeName)) ||
@@ -121,8 +121,8 @@ async function process(
       interfaceOperations: props.operations.filter((o) => {
         const predicate = (key: string) =>
           key === props.typeName ||
-          (JsonSchemaValidator.isPage(key) &&
-            JsonSchemaFactory.getPageName(key) === props.typeName);
+          (AutoBeJsonSchemaValidator.isPage(key) &&
+            AutoBeJsonSchemaFactory.getPageName(key) === props.typeName);
         return (
           (o.requestBody && predicate(o.requestBody.typeName)) ||
           (o.responseBody && predicate(o.responseBody.typeName))
@@ -157,7 +157,7 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      JsonSchemaFactory.fixSchema(props.typeName, pointer.value);
+      AutoBeJsonSchemaFactory.fixSchema(props.typeName, pointer.value);
 
     ctx.dispatch({
       type: SOURCE,
@@ -208,7 +208,7 @@ function createController(
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validateSchema({
+    AutoBeJsonSchemaValidator.validateSchema({
       errors,
       databaseSchemas: new Set(
         ctx
@@ -238,7 +238,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.isObjectType({
+    AutoBeJsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true
@@ -250,7 +250,7 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  LlmSchemaFactory.fixDatabasePlugin(
+  AutoBeLlmSchemaFactory.fixDatabasePlugin(
     ctx.state(),
     application.functions[0].parameters.$defs,
   );

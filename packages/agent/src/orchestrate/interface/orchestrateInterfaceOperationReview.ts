@@ -16,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
-import { OperationValidator } from "./utils/OperationValidator";
+import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
 
 export async function orchestrateInterfaceOperationReview(
   ctx: AutoBeContext,
@@ -151,7 +151,7 @@ function createReviewController(props: {
 
     const errors: IValidation.IError[] = [];
     if (result.data.request.content !== null)
-      OperationValidator.validate({
+      AutoBeInterfaceOperationValidator.validate({
         path: "$input.request.content",
         operation: {
           ...props.operation,

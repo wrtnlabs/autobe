@@ -4,9 +4,9 @@ import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import typia, { tags } from "typia";
 
-import { JsonSchemaValidator } from "./JsonSchemaValidator";
+import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
-export namespace JsonSchemaFactory {
+export namespace AutoBeJsonSchemaFactory {
   /* -----------------------------------------------------------
     ASSIGNMENTS
   ----------------------------------------------------------- */
@@ -19,7 +19,7 @@ export namespace JsonSchemaFactory {
       typeNames.delete(key);
     }
     for (const key of typeNames)
-      if (JsonSchemaValidator.isPage(key)) {
+      if (AutoBeJsonSchemaValidator.isPage(key)) {
         const data: string = getPageName(key);
         schemas[key] = page(data);
         typeNames.delete(key);
@@ -206,7 +206,7 @@ export namespace JsonSchemaFactory {
     for (const key of Object.keys(input[path]))
       if (DEFAULT_SCHEMAS[key] !== undefined)
         input[path][key] = DEFAULT_SCHEMAS[key];
-      else if (JsonSchemaValidator.isPage(key) === true) {
+      else if (AutoBeJsonSchemaValidator.isPage(key) === true) {
         const data: string = key.substring("IPage".length);
         input[path][key] = page(data);
       }

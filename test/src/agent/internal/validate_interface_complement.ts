@@ -2,8 +2,8 @@ import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { orchestrateInterfaceComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceComplement";
 import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
-import { JsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaFactory";
-import { JsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaNamingConvention";
+import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
@@ -70,18 +70,18 @@ export const validate_interface_complement = async (props: {
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   ): void => {
     Object.assign(document.components.schemas, schemas);
-    JsonSchemaFactory.authorize(document.components.schemas);
+    AutoBeJsonSchemaFactory.authorize(document.components.schemas);
     Object.assign(
       document.components.schemas,
-      JsonSchemaFactory.presets(
+      AutoBeJsonSchemaFactory.presets(
         new Set(Object.keys(document.components.schemas)),
       ),
     );
-    JsonSchemaNamingConvention.schemas(
+    AutoBeJsonSchemaNamingConvention.schemas(
       document.operations,
       document.components.schemas,
     );
-    JsonSchemaFactory.finalize({
+    AutoBeJsonSchemaFactory.finalize({
       document,
       application: props.agent.getContext().state().database!.result.data,
     });

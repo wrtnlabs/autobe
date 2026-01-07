@@ -1,114 +1,54 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
-  AutoBeInterfacePrerequisite,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
+import { AutoBeInterfacePrerequisiteEvent } from "@autobe/interface/src/events/AutoBeInterfacePrerequisiteEvent";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { HashMap, IPointer, Pair } from "tstl";
+import { HashMap, IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
 import { IAutoBeInterfacePrerequisiteApplication } from "./structures/IAutoBeInterfacePrerequisiteApplication";
+import { AutoBeInterfacePrerequisiteProgrammer } from "./utils/AutoBeInterfacePrerequisiteProgrammer";
 
 export async function orchestrateInterfacePrerequisite(
   ctx: AutoBeContext,
   document: AutoBeOpenApi.IDocument,
-): Promise<AutoBeInterfacePrerequisite[]> {
-  const operations: AutoBeOpenApi.IOperation[] =
-    document.operations.filter((op) => op.authorizationType === null) ?? [];
+): Promise<AutoBeInterfacePrerequisiteEvent[]> {
+  const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+    AutoBeInterfacePrerequisiteProgrammer.associate(document.operations);
+  const candidates: AutoBeOpenApi.IOperation[] = document.operations.filter(
+    AutoBeInterfacePrerequisiteProgrammer.isCandidate,
+  );
   const progress: AutoBeProgressEventBase = {
-    total: operations.length,
+    total: candidates.length,
     completed: 0,
   };
-  const prerequisiteOperations: AutoBeOpenApi.IOperation[] =
-    document.operations.filter(
-      (op) => op.authorizationType === null && op.method === "post",
-    );
 
-  const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
-    new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
-      prerequisiteOperations.map(
-        (op) => new Pair({ path: op.path, method: op.method }, op),
-      ),
-      AutoBeOpenApiEndpointComparator.hashCode,
-      AutoBeOpenApiEndpointComparator.equals,
-    );
-
-  const prerequisitesNotFound: string = [
-    `You have to select one of the endpoints below`,
-    "",
-    " method | path ",
-    "--------|------",
-    ...prerequisiteOperations
-      .map((op) => `\`${op.method}\` | \`${op.path}\``)
-      .join("\n"),
-  ].join("\n");
-
-  const exclude: AutoBeInterfacePrerequisite[] = [];
-  let include: AutoBeOpenApi.IOperation[] = [...operations];
-  let trial: number = 0;
-
-  do {
-    const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
-      array: include,
-      capacity: AutoBeConfigConstant.INTERFACE_CAPACITY,
-    });
+  const result: Array<AutoBeInterfacePrerequisiteEvent | null> =
     await executeCachedBatch(
       ctx,
-      matrix.map((ops) => async (promptCacheKey) => {
-        const row: AutoBeInterfacePrerequisite[] = await divideAndConquer(ctx, {
-          dict: dict,
-          document,
-          includes: ops,
-          progress,
-          promptCacheKey,
-          prerequisitesNotFound,
-        });
-        exclude.push(...row);
-        return row;
+      candidates.map((it) => async (promptCacheKey) => {
+        try {
+          return await process(ctx, {
+            dict,
+            document,
+            operation: it,
+            progress,
+            promptCacheKey,
+          });
+        } catch {
+          return null;
+        }
       }),
     );
-    include = include.filter((op) => {
-      if (
-        exclude.some(
-          (el) =>
-            el.endpoint.method === op.method && el.endpoint.path === op.path,
-        )
-      ) {
-        return false;
-      }
-      return true;
-    });
-  } while (include.length > 0 && ++trial < ctx.retry);
-  return exclude;
-}
-
-async function divideAndConquer(
-  ctx: AutoBeContext,
-  props: {
-    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
-    document: AutoBeOpenApi.IDocument;
-    includes: AutoBeOpenApi.IOperation[];
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-    prerequisitesNotFound: string;
-  },
-): Promise<AutoBeInterfacePrerequisite[]> {
-  try {
-    return await process(ctx, props);
-  } catch {
-    props.progress.completed += props.includes.length;
-    return [];
-  }
+  return result.filter((r) => r !== null);
 }
 
 async function process(
@@ -116,12 +56,11 @@ async function process(
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     document: AutoBeOpenApi.IDocument;
-    includes: AutoBeOpenApi.IOperation[];
+    operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
-    prerequisitesNotFound: string;
   },
-): Promise<AutoBeInterfacePrerequisite[]> {
+): Promise<AutoBeInterfacePrerequisiteEvent | null> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -151,59 +90,59 @@ async function process(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
-      interfaceOperations: props.includes,
+      interfaceOperations: [props.operation],
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeInterfacePrerequisite[] | null> = {
+    const pointer: IPointer<AutoBeOpenApi.IPrerequisite[] | null> = {
       value: null,
     };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        document: props.document,
         dict: props.dict,
-        includes: props.includes,
-        prerequisitesNotFound: props.prerequisitesNotFound,
+        document: props.document,
+        operation: props.operation,
         preliminary,
         build: (next) => {
-          pointer.value = next;
+          pointer.value ??= [];
+          pointer.value.push(...next);
         },
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfacePrerequisiteHistory({
         document: props.document,
-        includes: props.includes,
+        operation: props.operation,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    props.progress.completed += pointer.value.length;
-    if (pointer.value.length > 1)
-      props.progress.total += pointer.value.length - 1;
-
-    ctx.dispatch({
+    const event: AutoBeInterfacePrerequisiteEvent = {
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      operations: pointer.value,
+      endpoint: {
+        path: props.operation.path,
+        method: props.operation.method,
+      },
+      prerequisites: pointer.value,
       total: props.progress.total,
-      completed: props.progress.completed,
+      completed: ++props.progress.completed,
       step: ctx.state().database?.step ?? 0,
-    });
-    return out(result)(pointer.value);
+    };
+    ctx.dispatch(event);
+    return out(result)(event);
   });
 }
 
 function createController(props: {
-  document: AutoBeOpenApi.IDocument;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
-  includes: AutoBeOpenApi.IOperation[];
-  prerequisitesNotFound: string;
+  document: AutoBeOpenApi.IDocument;
+  operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -214,7 +153,7 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
   >;
-  build: (next: AutoBeInterfacePrerequisite[]) => void;
+  build: (next: AutoBeOpenApi.IPrerequisite[]) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -228,82 +167,19 @@ function createController(props: {
         request: result.data.request,
       });
 
-    const operations: AutoBeInterfacePrerequisite[] =
-      result.data.request.operations;
-    const filteredOperations: AutoBeInterfacePrerequisite[] = [];
-    const errors: IValidation.IError[] = [];
-
-    props.includes.forEach((el) => {
-      // Find the matched operation in the includes
-      const matched: AutoBeInterfacePrerequisite | undefined = operations.find(
-        (op) =>
-          op.endpoint.method === el.method && op.endpoint.path === el.path,
-      );
-
-      // Remove duplicate operations in Prerequisites
-      if (matched) {
-        const prerequisites: Map<string, AutoBeOpenApi.IPrerequisite> =
-          new Map();
-        matched.prerequisites.forEach((op) => {
-          if (
-            prerequisites.get(op.endpoint.method + op.endpoint.path) !==
-            undefined
-          ) {
-            return;
-          }
-          prerequisites.set(op.endpoint.method + op.endpoint.path, op);
-        });
-        matched.prerequisites = Array.from(prerequisites.values());
-        filteredOperations.push(matched);
-      }
-    });
-
-    filteredOperations.forEach((op, i) => {
-      op.prerequisites.forEach((p, j) => {
-        if (props.dict.has(p.endpoint) === false) {
-          errors.push({
-            value: p.endpoint,
-            path: `$input.request.operations[${i}].prerequisites[${j}].endpoint`,
-            expected: "AutoBeOpenApi.IEndpoint",
-            description: props.prerequisitesNotFound,
-          });
-        }
-
-        if (
-          p.endpoint.method === op.endpoint.method &&
-          p.endpoint.path === op.endpoint.path
-        ) {
-          errors.push({
-            value: p.endpoint,
-            path: `$input.request.operations[${i}].prerequisites[${j}].endpoint`,
-            expected: "AutoBeOpenApi.IEndpoint",
-            description: "Self-reference is not allowed.",
-          });
-        }
+    const errors: IValidation.IError[] =
+      AutoBeInterfacePrerequisiteProgrammer.validate({
+        dict: props.dict,
+        document: props.document,
+        operation: props.operation,
+        complete: result.data.request,
       });
-    });
-
     return errors.length === 0
-      ? {
-          success: true,
-          data: {
-            ...result.data,
-            request: {
-              ...result.data.request,
-              operations: filteredOperations,
-            },
-          },
-        }
+      ? result
       : {
           success: false,
-          data: {
-            ...result.data,
-            request: {
-              ...result.data.request,
-              operations: filteredOperations,
-            },
-          },
           errors,
+          data: result.data,
         };
   };
 
@@ -314,6 +190,7 @@ function createController(props: {
       },
     });
   props.preliminary.fixApplication(application);
+
   return {
     protocol: "class",
     name: SOURCE,
@@ -321,7 +198,7 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "complete")
-          props.build(next.request.operations);
+          props.build(next.request.prerequisites);
       },
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };

@@ -16,9 +16,9 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
-import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
-import { LlmSchemaFactory } from "./utils/LlmSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
+import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 export const orchestrateInterfaceComplement = async (
@@ -30,7 +30,7 @@ export const orchestrateInterfaceComplement = async (
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
   const typeNames: string[] = missedOpenApiSchemas(props.document).filter(
-    (k) => JsonSchemaValidator.isPreset(k) === false,
+    (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
   );
   if (typeNames.length === 0) return {};
   props.progress.total += typeNames.length;
@@ -119,7 +119,10 @@ async function process(
         typeName: props.typeName,
         operations: props.document.operations,
         build: (next) => {
-          pointer.value = JsonSchemaFactory.fixSchema(props.typeName, next);
+          pointer.value = AutoBeJsonSchemaFactory.fixSchema(
+            props.typeName,
+            next,
+          );
         },
         preliminary,
       }),
@@ -184,7 +187,7 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validateSchema({
+    AutoBeJsonSchemaValidator.validateSchema({
       errors,
       databaseSchemas: new Set(
         ctx
@@ -214,7 +217,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.isObjectType({
+    AutoBeJsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true
@@ -226,7 +229,7 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  LlmSchemaFactory.fixDatabasePlugin(
+  AutoBeLlmSchemaFactory.fixDatabasePlugin(
     ctx.state(),
     application.functions[0].parameters.$defs,
   );

@@ -15,10 +15,10 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
-import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
-import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
-import { LlmSchemaFactory } from "./utils/LlmSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
+import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
+import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 interface IConfig {
@@ -37,7 +37,7 @@ export async function orchestrateInterfaceSchemaReview(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const typeNames: string[] = Object.keys(props.schemas).filter(
-    (k) => JsonSchemaValidator.isPreset(k) === false,
+    (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
   );
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
@@ -45,8 +45,8 @@ export async function orchestrateInterfaceSchemaReview(
     typeNames.map((it) => async (promptCacheKey) => {
       const predicate = (key: string) =>
         key === it ||
-        (JsonSchemaValidator.isPage(key) &&
-          JsonSchemaFactory.getPageName(key) === it);
+        (AutoBeJsonSchemaValidator.isPage(key) &&
+          AutoBeJsonSchemaFactory.getPageName(key) === it);
       const reviewOperations: AutoBeOpenApi.IOperation[] =
         props.document.operations.filter(
           (op) =>
@@ -73,7 +73,7 @@ export async function orchestrateInterfaceSchemaReview(
       }
     }),
   );
-  JsonSchemaNamingConvention.schemas(props.document.operations, x);
+  AutoBeJsonSchemaNamingConvention.schemas(props.document.operations, x);
   return x;
 }
 
@@ -153,7 +153,10 @@ async function process(
     const content: AutoBeOpenApi.IJsonSchemaDescriptive =
       pointer.value.content === null
         ? props.reviewSchema
-        : JsonSchemaFactory.fixSchema(props.typeName, pointer.value.content);
+        : AutoBeJsonSchemaFactory.fixSchema(
+            props.typeName,
+            pointer.value.content,
+          );
     ctx.dispatch({
       type: SOURCE,
       kind: config.kind,
@@ -210,7 +213,7 @@ function createController(
     // If content is null, schema is perfect and doesn't need validation
     if (result.data.request.content !== null) {
       const errors: IValidation.IError[] = [];
-      JsonSchemaValidator.validateSchema({
+      AutoBeJsonSchemaValidator.validateSchema({
         errors,
         databaseSchemas: new Set(
           ctx
@@ -241,7 +244,7 @@ function createController(
     }),
   );
   if (
-    JsonSchemaValidator.isObjectType({
+    AutoBeJsonSchemaValidator.isObjectType({
       operations: props.operations,
       typeName: props.typeName,
     }) === true
@@ -253,7 +256,7 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.content as ILlmSchema.IReference
     ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  LlmSchemaFactory.fixDatabasePlugin(
+  AutoBeLlmSchemaFactory.fixDatabasePlugin(
     ctx.state(),
     application.functions[0].parameters.$defs,
   );

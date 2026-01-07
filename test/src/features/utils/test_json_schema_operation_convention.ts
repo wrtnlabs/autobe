@@ -1,4 +1,4 @@
-import { JsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaNamingConvention";
+import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
@@ -39,7 +39,7 @@ export const test_json_schema_operation_convention = () => {
         },
       }) satisfies AutoBeOpenApi.IOperation,
   );
-  JsonSchemaNamingConvention.operations(operations);
+  AutoBeJsonSchemaNamingConvention.operations(operations);
 
   const typeNames: Set<string> = new Set();
   for (const op of operations) {

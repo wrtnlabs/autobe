@@ -2,7 +2,7 @@ import { ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 
-export namespace LlmSchemaFactory {
+export namespace AutoBeLlmSchemaFactory {
   export const fixDatabasePlugin = (
     state: AutoBeState,
     $defs: Record<string, ILlmSchema>,

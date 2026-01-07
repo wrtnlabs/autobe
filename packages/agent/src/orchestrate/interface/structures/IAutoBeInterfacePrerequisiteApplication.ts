@@ -1,13 +1,13 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfacePrerequisiteApplication {
   /**
@@ -86,22 +86,6 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
      */
     type: "complete";
 
-    /**
-     * Target operations requiring prerequisite analysis.
-     *
-     * Each operation will be analyzed for dependency requirements and returned
-     * with appropriate prerequisites from Available API Operations.
-     */
-    operations: IOperation[];
-  }
-
-  /**
-   * Operation with its analyzed prerequisite dependencies.
-   *
-   * Represents a single API operation and its complete prerequisite chain
-   * needed for successful execution.
-   */
-  export interface IOperation {
     /**
      * The API endpoint being analyzed.
      *

@@ -3,9 +3,9 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-import { JsonSchemaFactory } from "./JsonSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
 
-export namespace JsonSchemaValidator {
+export namespace AutoBeJsonSchemaValidator {
   export const isObjectType = (props: {
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
@@ -30,8 +30,8 @@ export namespace JsonSchemaValidator {
     key !== "IPage";
 
   export const isPreset = (typeName: string): boolean =>
-    JsonSchemaFactory.DEFAULT_SCHEMAS[typeName] !== undefined ||
-    JsonSchemaValidator.isPage(typeName) === true;
+    AutoBeJsonSchemaFactory.DEFAULT_SCHEMAS[typeName] !== undefined ||
+    AutoBeJsonSchemaValidator.isPage(typeName) === true;
 
   export interface IProps {
     errors: IValidation.IError[];

@@ -1,10 +1,10 @@
-import { JsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 
 export const test_compiler_interface_preset = (): void => {
-  const preset = JsonSchemaFactory.presets(
+  const preset = AutoBeJsonSchemaFactory.presets(
     new Set(["IPageIShoppingSale.ISummary"]),
   );
   TestValidator.equals(
