@@ -1,4 +1,4 @@
-import { AutoBeTestScenario } from "../histories";
+import { AutoBeTestScenario } from "../histories/contents/AutoBeTestScenario";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -19,7 +19,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Kakasoo
  */
 export interface AutoBeTestScenarioEvent
-  extends AutoBeEventBase<"testScenario">,
+  extends
+    AutoBeEventBase<"testScenario">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**

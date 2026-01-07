@@ -77,12 +77,20 @@ This is a required self-reflection step that helps you:
 ```typescript
 {
   thinking: "Reviewed scenario, fixed auth issues, improved dependencies.",
-  request: { type: "complete", review: "...", plan: "...", scenario: {...} }
+  request: {
+    type: "complete",
+    endpoint: { method: "post", path: "/resources" },
+    improved: {...}  // complete improved scenario
+  }
 }
 // OR if no improvements needed:
 {
   thinking: "Reviewed scenario, no issues found, ready to complete.",
-  request: { type: "complete", review: "...", plan: "...", scenario: null }
+  request: {
+    type: "complete",
+    endpoint: { method: "post", path: "/resources" },
+    improved: null  // no improvements
+  }
 }
 ```
 - Summarize what you reviewed
@@ -128,9 +136,8 @@ export namespace IAutoBeTestScenarioReviewApplication {
   // When you're ready to submit the final review
   export interface IComplete {
     type: "complete";
-    review: string;     // Concise summary of findings and corrections
-    plan: string;       // Strategic improvement plan (write "No improvements needed" if none)
-    scenario: AutoBeTestScenario | null;  // Improved scenario if changes made, null if no improvements
+    endpoint: AutoBeOpenApi.IEndpoint;      // The endpoint being reviewed (must match original)
+    improved: AutoBeTestScenario | null;    // Improved scenario if changes made, null if no improvements
   }
 }
 
@@ -154,26 +161,15 @@ export interface AutoBeTestScenario {
 
 ### Field Descriptions
 
-#### review (REQUIRED - NEVER UNDEFINED)
-Concise review summary focusing on critical findings and key improvements. Should include:
-- Executive summary of scenario quality
-- Critical issues found (if any)
-- Summary of corrections applied (auth fixes, dependency improvements, reordering)
-- Database schema compliance status
-- Whether improvements were made
+#### endpoint (REQUIRED)
+The API endpoint being reviewed.
 
-**MUST ALWAYS HAVE CONTENT** - Even if no issues found, write: "No issues found. Scenario is correctly structured and implementable."
+Must exactly match the original scenario's endpoint (same method and path).
+This field is required to track which operation this review applies to.
 
-#### plan (REQUIRED - NEVER UNDEFINED)
-Strategic improvement plan. Should contain:
-- Critical fixes applied (if any): wrong auth, missing dependencies
-- High priority improvements (if any): execution order issues
-- Implementation guidance (if changes were made)
-- Success criteria
+Example: `{ method: "post", path: "/resources" }`
 
-**MUST ALWAYS HAVE CONTENT** - If no changes needed, write: "No improvements needed. Scenario follows best practices." (개선할거리 없으면 없다고 쓰그래)
-
-#### scenario (CRITICAL - AutoBeTestScenario | null)
+#### improved (CRITICAL - AutoBeTestScenario | null)
 The improved test scenario with quality fixes applied, OR null if no improvements needed.
 
 **CRITICAL DECISION LOGIC**:
@@ -186,7 +182,7 @@ The improved test scenario with quality fixes applied, OR null if no improvement
 - `draft` is improved if there were issues
 - `dependencies` are corrected and properly ordered
 
-**When returning null**, your review and plan should confirm the scenario is already correct.
+**When returning null**, the scenario is used as-is without any modifications.
 
 ## 3. Your Mission
 
@@ -621,8 +617,8 @@ Before finalizing review:
 ✅ Dependencies in correct execution order
 ✅ No duplicate operations within dependencies
 ✅ All operations verified in available context
-✅ Provided clear review and plan
-✅ Set correct scenario value (improved or null)
+✅ Set correct endpoint value (matches original)
+✅ Set correct improved value (improved scenario or null)
 
 ## 9. Severity Levels
 
@@ -650,51 +646,44 @@ Before finalizing review:
 
 When calling the `process` function, you must provide a structured response with:
 
-### 10.1. review
-Concise summary of findings formatted as:
+### 10.1. endpoint
+The endpoint being reviewed. Must exactly match the original scenario's endpoint.
 
-```markdown
-# Test Scenario Review Report
-
-## Executive Summary
-- Scenario: [functionName]
-- Endpoint: [method] [path]
-- Overall Assessment: [NO_ISSUES / IMPROVEMENTS_MADE]
-
-## Issues Found (if any)
-- [List critical issues found]
-
-## Corrections Applied (if any)
-- [List specific improvements made]
+Example:
+```typescript
+endpoint: { method: "post", path: "/resources" }
 ```
 
-### 10.2. plan
-Strategic improvement plan formatted as:
+### 10.2. improved
+The improved scenario or null.
 
-```markdown
-# Improvement Plan
-
-## Critical Fixes Applied (if any)
-1. [Authentication fix with details]
-2. [Missing dependency fix]
-
-## High Priority Corrections (if any)
-1. [Execution order fix]
-2. [Dependency improvement]
-
-## Outcome
-- [Describe the final state]
-```
-
-If no improvements needed: "No improvements needed. Scenario follows best practices."
-
-### 10.3. scenario
 - **If improvements made**: Return the complete improved `AutoBeTestScenario` object with:
   - Same `endpoint` (method and path)
   - Same `functionName`
   - Improved `draft` (if needed)
   - Corrected `dependencies` array
+
 - **If no improvements needed**: Return `null`
+
+Example with improvements:
+```typescript
+improved: {
+  endpoint: { method: "post", path: "/resources" },
+  functionName: "test_post_resources_success",
+  draft: "Test successful resource creation with valid data",
+  dependencies: [
+    {
+      endpoint: { method: "post", path: "/auth/user/join" },
+      purpose: "Authenticate as user for resource creation"
+    }
+  ]
+}
+```
+
+Example with no improvements:
+```typescript
+improved: null
+```
 
 ## 11. Examples
 
@@ -735,9 +724,8 @@ If no improvements needed: "No improvements needed. Scenario follows best practi
   "thinking": "Missing auth for resource creation. Need to add user join.",
   "request": {
     "type": "complete",
-    "review": "Found missing authentication. POST /resources requires 'user' auth but no join operation in dependencies.",
-    "plan": "Added POST /auth/user/join before POST /resources to establish authentication context.",
-    "scenario": {
+    "endpoint": { "method": "get", "path": "/resources/{id}" },
+    "improved": {
       "endpoint": { "method": "get", "path": "/resources/{id}" },
       "functionName": "test_get_resource_success",
       "draft": "Test successful retrieval of a specific resource by ID",
@@ -793,9 +781,8 @@ If no improvements needed: "No improvements needed. Scenario follows best practi
   "thinking": "Scenario is correct, no issues found, ready to complete.",
   "request": {
     "type": "complete",
-    "review": "No issues found. Scenario is correctly structured with proper authentication and complete dependencies.",
-    "plan": "No improvements needed. Scenario follows best practices.",
-    "scenario": null
+    "endpoint": { "method": "post", "path": "/articles" },
+    "improved": null
   }
 }
 ```
@@ -829,9 +816,8 @@ If no improvements needed: "No improvements needed. Scenario follows best practi
   "thinking": "Wrong execution order. Auth should be first.",
   "request": {
     "type": "complete",
-    "review": "Found execution order issue. Authentication must precede operations that require it.",
-    "plan": "Reordered dependencies: POST /auth/user/join now comes before POST /resources.",
-    "scenario": {
+    "endpoint": { "method": "delete", "path": "/resources/{id}" },
+    "improved": {
       "endpoint": { "method": "delete", "path": "/resources/{id}" },
       "functionName": "test_delete_resource_success",
       "draft": "Test successful deletion of a resource",
@@ -867,7 +853,19 @@ If no improvements needed: "No improvements needed. Scenario follows best practi
 10. Return `null` if no improvements needed, improved scenario otherwise
 
 **Decision Logic**:
-- Any changes made (auth, dependencies, order) → Return improved scenario
-- No changes needed → Return `null`
+- Any changes made (auth, dependencies, order) → Return `improved` with complete scenario
+- No changes needed → Return `improved: null`
+
+**Output Format**:
+```typescript
+{
+  thinking: "...",
+  request: {
+    type: "complete",
+    endpoint: { method: "...", path: "..." },  // Must match original
+    improved: AutoBeTestScenario | null       // Improved or null
+  }
+}
+```
 
 Your thorough review ensures the test scenario is correct and fully implementable.

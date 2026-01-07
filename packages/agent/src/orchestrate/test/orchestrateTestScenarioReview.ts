@@ -1,23 +1,27 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
+  AutoBeTestScenarioReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { HashMap, IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioReviewHistory } from "./histories/transformTestScenarioReviewHistory";
 import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestScenarioReviewApplication";
 
 /**
- * Orchestrate test scenario review for a single scenario.
+ * Orchestrate test scenario review for multiple scenarios in parallel.
  *
- * Reviews and potentially improves a single test scenario by validating:
+ * Reviews each test scenario individually using executeCachedBatch for optimal
+ * performance. Each scenario is validated for:
  * - Authentication correctness (authorizationActor alignment)
  * - Dependency completeness (all prerequisites included)
  * - Execution order (proper sequencing)
@@ -25,31 +29,43 @@ import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestSc
  *
  * @param ctx - AutoBe context for LLM interactions and state management
  * @param props - Review configuration
- * @param props.preliminary - Controller for RAG-based data retrieval
- * @param props.scenario - Single test scenario to review
+ * @param props.dict - Endpoint to operation lookup map
+ * @param props.document - Complete OpenAPI document
+ * @param props.scenarios - Array of test scenarios to review
  * @param props.progress - Progress tracking for batch operations
  * @param props.instruction - E2E-test-specific instructions from requirements
- * @returns Improved scenario if changes needed, original scenario otherwise
+ * @returns Array of review events (null entries filtered out)
  */
-export const orchestrateTestScenarioReview = async (
+export async function orchestrateTestScenarioReview(
   ctx: AutoBeContext,
   props: {
-    preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
-    >;
-    scenario: AutoBeTestScenario;
+    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+    document: AutoBeOpenApi.IDocument;
+    scenarios: AutoBeTestScenario[];
     progress: AutoBeProgressEventBase;
     instruction: string;
   },
-): Promise<AutoBeTestScenario> => {
-  try {
-    return await process(ctx, props);
-  } catch {
-    // On error, return original scenario unchanged
-    props.progress.completed += 1;
-    return props.scenario;
-  }
-};
+): Promise<AutoBeTestScenarioReviewEvent[]> {
+  const result: Array<AutoBeTestScenarioReviewEvent | null> =
+    await executeCachedBatch(
+      ctx,
+      props.scenarios.map((scenario) => async (promptCacheKey) => {
+        try {
+          return await process(ctx, {
+            dict: props.dict,
+            document: props.document,
+            scenario,
+            progress: props.progress,
+            instruction: props.instruction,
+            promptCacheKey,
+          });
+        } catch {
+          return null;
+        }
+      }),
+    );
+  return result.filter((r) => r !== null);
+}
 
 /**
  * Process single scenario review with LLM agent.
@@ -57,70 +73,78 @@ export const orchestrateTestScenarioReview = async (
  * Executes the review workflow:
  * 1. Provides scenario and prerequisites to review agent
  * 2. Agent analyzes for correctness issues
- * 3. Agent returns review/plan and optionally improved scenario
- * 4. Dispatches review event with results
+ * 3. Agent returns improved scenario or null
+ * 4. Creates and dispatches review event
  *
  * @param ctx - AutoBe context
- * @param props - Review configuration with scenario
- * @returns Improved scenario or original if no improvements needed
+ * @param props - Review configuration with single scenario
+ * @returns Review event or null if review failed
  */
-const process = (
+async function process(
   ctx: AutoBeContext,
   props: {
-    preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
-    >;
+    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+    document: AutoBeOpenApi.IDocument;
     scenario: AutoBeTestScenario;
     progress: AutoBeProgressEventBase;
     instruction: string;
+    promptCacheKey: string;
   },
-): Promise<AutoBeTestScenario> =>
-  props.preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null> =
-      {
-        value: null,
-      };
+): Promise<AutoBeTestScenarioReviewEvent | null> {
+  const preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+  > = new AutoBePreliminaryController({
+    application:
+      typia.json.application<IAutoBeTestScenarioReviewApplication>(),
+    source: SOURCE,
+    kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
+    state: ctx.state(),
+  });
+
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<AutoBeTestScenario | null> = {
+      value: null,
+    };
+
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        originalScenario: props.scenario,
-        pointer,
-        preliminary: props.preliminary,
+        dict: props.dict,
+        scenario: props.scenario,
+        preliminary,
+        build: (improved) => {
+          pointer.value = improved;
+        },
       }),
       enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
       ...transformTestScenarioReviewHistory({
         state: ctx.state(),
         scenario: props.scenario,
         instruction: props.instruction,
-        preliminary: props.preliminary,
+        preliminary,
       }),
     });
 
-    // If no response received, return original scenario
-    if (pointer.value === null) return out(result)(props.scenario);
-
-    // Update progress
-    props.progress.completed += 1;
-    props.progress.total = Math.max(props.progress.total, props.progress.completed);
-
-    // Determine the final scenario: use improved if provided, otherwise original
-    const finalScenario: AutoBeTestScenario = pointer.value.scenario ?? props.scenario;
-
-    // Dispatch review event
-    ctx.dispatch({
+    // Create event with original and improved scenarios
+    const event: AutoBeTestScenarioReviewEvent = {
       type: SOURCE,
       id: v7(),
+      created_at: new Date().toISOString(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
+      endpoint: props.scenario.endpoint,
+      original: props.scenario,
+      improved: pointer.value,
       total: props.progress.total,
-      completed: props.progress.completed,
-      scenarios: [finalScenario],
+      completed: ++props.progress.completed,
       step: ctx.state().interface?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
+    };
 
-    return out(result)(finalScenario);
+    ctx.dispatch(event);
+    return out(result)(event);
   });
+}
 
 /**
  * Create function calling controller for test scenario review.
@@ -129,21 +153,23 @@ const process = (
  * The controller handles:
  * - Validating review responses against TypeScript types
  * - Processing preliminary data requests (analysisFiles, interfaceOperations, interfaceSchemas)
- * - Capturing final review results in pointer
+ * - Capturing improved scenario in build callback
  *
  * @param props - Controller configuration
- * @param props.pointer - Mutable pointer to store review result
- * @param props.originalScenario - Original scenario for reference/fallback
+ * @param props.dict - Endpoint to operation lookup map
+ * @param props.scenario - Original scenario being reviewed
  * @param props.preliminary - Controller for preliminary data requests
+ * @param props.build - Callback to capture improved scenario
  * @returns Agentica controller instance for LLM function calling
  */
-const createController = (props: {
-  pointer: IPointer<IAutoBeTestScenarioReviewApplication.IComplete | null>;
-  originalScenario: AutoBeTestScenario;
+function createController(props: {
+  dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+  scenario: AutoBeTestScenario;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
-}): IAgenticaController.IClass => {
+  build: (improved: AutoBeTestScenario | null) => void;
+}): IAgenticaController.IClass {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeTestScenarioReviewApplication.IProps> => {
@@ -163,43 +189,68 @@ const createController = (props: {
     }
 
     // Complete request validation
-    // If scenario is provided, validate it matches the original endpoint
-    if (result.data.request.scenario !== null) {
-      const errors: IValidation.IError[] = [];
+    const errors: IValidation.IError[] = [];
 
-      const improved = result.data.request.scenario;
-      const original = props.originalScenario;
+    // Validate endpoint matches original
+    const complete = result.data.request;
+    if (
+      complete.endpoint.method !== props.scenario.endpoint.method ||
+      complete.endpoint.path !== props.scenario.endpoint.path
+    ) {
+      errors.push({
+        value: complete.endpoint,
+        path: "$input.request.endpoint",
+        expected: "AutoBeOpenApi.IEndpoint",
+        description: `Endpoint must match the original scenario: ${props.scenario.endpoint.method} ${props.scenario.endpoint.path}`,
+      });
+    }
 
-      // Validate endpoint consistency
+    // If improved scenario provided, validate it
+    if (complete.improved !== null) {
+      const improved = complete.improved;
+
+      // Validate improved endpoint matches original
       if (
-        improved.endpoint.method !== original.endpoint.method ||
-        improved.endpoint.path !== original.endpoint.path
+        improved.endpoint.method !== props.scenario.endpoint.method ||
+        improved.endpoint.path !== props.scenario.endpoint.path
       ) {
         errors.push({
           value: improved.endpoint,
-          path: "$input.request.scenario.endpoint",
+          path: "$input.request.improved.endpoint",
           expected: "AutoBeOpenApi.IEndpoint",
-          description: `Improved scenario endpoint must match original endpoint: ${original.endpoint.method} ${original.endpoint.path}`,
+          description: `Improved scenario endpoint must match original: ${props.scenario.endpoint.method} ${props.scenario.endpoint.path}`,
         });
       }
 
-      // Validate functionName consistency
-      if (improved.functionName !== original.functionName) {
+      // Validate improved functionName matches original
+      if (improved.functionName !== props.scenario.functionName) {
         errors.push({
           value: improved.functionName,
-          path: "$input.request.scenario.functionName",
+          path: "$input.request.improved.functionName",
           expected: "string",
-          description: `Improved scenario functionName must match original: ${original.functionName}`,
+          description: `Improved scenario functionName must match original: ${props.scenario.functionName}`,
         });
       }
 
-      if (errors.length > 0) {
-        return {
-          success: false,
-          errors,
-          data: result.data,
-        };
-      }
+      // Validate all dependency endpoints exist in available operations
+      improved.dependencies.forEach((dep, idx) => {
+        if (!props.dict.has(dep.endpoint)) {
+          errors.push({
+            value: dep.endpoint,
+            path: `$input.request.improved.dependencies[${idx}].endpoint`,
+            expected: "AutoBeOpenApi.IEndpoint",
+            description: `Dependency endpoint not found in available operations: ${dep.endpoint.method} ${dep.endpoint.path}`,
+          });
+        }
+      });
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors,
+        data: result.data,
+      };
     }
 
     return result;
@@ -217,14 +268,13 @@ const createController = (props: {
     name: SOURCE,
     application,
     execute: {
-      process: (input) => {
-        // Capture complete request in pointer for return value extraction
-        if (input.request.type === "complete") {
-          props.pointer.value = input.request;
+      process: (next) => {
+        if (next.request.type === "complete") {
+          props.build(next.request.improved);
         }
       },
     } satisfies IAutoBeTestScenarioReviewApplication,
   };
-};
+}
 
 const SOURCE = "testScenarioReview" satisfies AutoBeEventSource;

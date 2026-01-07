@@ -1,4 +1,4 @@
-import { AutoBeTestScenario } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -61,11 +61,11 @@ export namespace IAutoBeTestScenarioReviewApplication {
   }
 
   /**
-   * Request to review and refine test scenarios.
+   * Request to review and refine a single test scenario.
    *
    * Executes comprehensive scenario review to validate implementability,
    * dependency correctness, authentication flows, and business logic coverage,
-   * producing refined scenarios ready for test implementation.
+   * producing refined scenario ready for test implementation.
    */
   export interface IComplete {
     /**
@@ -78,43 +78,31 @@ export namespace IAutoBeTestScenarioReviewApplication {
     type: "complete";
 
     /**
-     * Comprehensive review analysis of all test scenarios.
+     * The API endpoint being reviewed.
      *
-     * Contains detailed findings from holistic review including:
-     *
-     * - Executive summary of overall scenario quality
-     * - Critical issues requiring immediate fixes (non-existent dependencies,
-     *   unimplementable scenarios)
-     * - Key improvement recommendations (authentication flows, edge case
-     *   coverage)
-     * - Database schema compliance validation
-     * - Modified scenarios identification by functionName
-     *
-     * The review provides actionable feedback for creating implementable,
-     * focused test scenarios (max 3 per endpoint) that accurately reflect
-     * business requirements.
+     * Must match the endpoint of the original scenario being reviewed. Used to
+     * ensure consistency and track which operation this review applies to.
      */
-    review: string;
+    endpoint: AutoBeOpenApi.IEndpoint;
 
     /**
-     * Strategic test improvement plan.
+     * The improved test scenario, or null if no improvements needed.
      *
-     * Contains structured action plan with priority-based improvements:
+     * Decision logic:
      *
-     * - Critical fixes: Non-existent endpoints, impossible dependencies
-     * - High priority enhancements: Missing authentication, incomplete edge cases
-     * - Implementation guidance: Correct dependency patterns, proper test flows
-     * - Success criteria: Complete API coverage, implementable scenarios only
-     * - Specific scenario action items by functionName
+     * - If ANY improvements were made (auth fixes, dependency corrections,
+     *   reordering) → Return the complete improved AutoBeTestScenario
+     * - If scenario is already perfect with no issues → Return null
      *
-     * This plan serves as the blueprint for validating and improving test
-     * scenarios.
+     * When returning improved scenario:
      *
-     * // 개선할거리 없으면 없다고 쓰그래
+     * - Endpoint MUST match the original (same method and path)
+     * - FunctionName MUST match the original (same name)
+     * - Draft can be improved if needed
+     * - Dependencies should be corrected and properly ordered
+     *
+     * // 개선할 거 있으면 채우고 아니면 null인 것이니라
      */
-    plan: string;
-
-    // 개선할 거 있으면 채우고 아니면 null인 것이니라
-    scenario: AutoBeTestScenario | null;
+    improved: AutoBeTestScenario | null;
   }
 }
