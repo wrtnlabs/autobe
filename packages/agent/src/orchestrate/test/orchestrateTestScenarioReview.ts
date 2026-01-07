@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
+  AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
@@ -94,6 +95,9 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeTestScenario> {
+  const authorizations: AutoBeInterfaceAuthorization[] =
+    ctx.state().interface?.authorizations ?? [];
+
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -114,6 +118,7 @@ async function process(
         dict: props.dict,
         operation: props.operation,
         scenario: props.scenario,
+        authorizations,
         preliminary,
         build: (improved) => {
           pointer.value = improved;
@@ -171,6 +176,7 @@ function createController(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   scenario: AutoBeTestScenario;
   operation: AutoBeOpenApi.IOperation;
+  authorizations: AutoBeInterfaceAuthorization[];
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
@@ -202,7 +208,6 @@ function createController(props: {
       operation: props.operation,
       scenario: result.data.request.content,
       accessor: "$input.request.content",
-      authorizations: [],
     });
     if (errors.length > 0) {
       return {
@@ -228,6 +233,15 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "complete") {
+          // Fulfill missing authentication dependencies if content is not null
+          if (next.request.content !== null) {
+            AutoBeTestScenarioProgrammer.fulfill({
+              dict: props.dict,
+              authorizations: props.authorizations,
+              operation: props.operation,
+              scenario: next.request.content,
+            });
+          }
           props.build(next.request.content);
         }
       },

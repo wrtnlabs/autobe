@@ -213,7 +213,6 @@ function createController(props: {
       AutoBeTestScenarioProgrammer.validate({
         errors,
         dict: props.dict,
-        authorizations: props.authorizations,
         operation: props.operation,
         scenario,
         accessor: `$input.request.scenarios[${i}]`,
@@ -242,8 +241,18 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete")
+        if (next.request.type === "complete") {
+          // Fulfill missing authentication dependencies for each scenario
+          for (const scenario of next.request.scenarios) {
+            AutoBeTestScenarioProgrammer.fulfill({
+              dict: props.dict,
+              authorizations: props.authorizations,
+              operation: props.operation,
+              scenario,
+            });
+          }
           props.build(next.request.scenarios);
+        }
       },
     } satisfies IAutoBeTestScenarioApplication,
   };
