@@ -18,6 +18,7 @@ import { transformInterfaceComplementHistory } from "./histories/transformInterf
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
+import { LlmSchemaFactory } from "./utils/LlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 export const orchestrateInterfaceComplement = async (
@@ -225,7 +226,7 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  JsonSchemaFactory.fixPlugin(
+  LlmSchemaFactory.fixDatabasePlugin(
     ctx.state(),
     application.functions[0].parameters.$defs,
   );
