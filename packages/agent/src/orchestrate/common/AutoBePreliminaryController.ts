@@ -212,12 +212,17 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * controller's `all`/`local` collections.
    *
    * @param application LLM application to modify (mutated in-place).
+   * @param enumerable Whether to use `enum` values for item lists
    */
-  public fixApplication(application: ILlmApplication): ILlmApplication {
+  public fixApplication(
+    application: ILlmApplication,
+    enumerable: boolean = false,
+  ): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
       application,
+      enumerable,
     });
     return application;
   }
