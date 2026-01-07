@@ -57,11 +57,11 @@ export const transformInterfacePrerequisiteHistory = (props: {
         text: StringUtil.trim`
           ## Target Operation
 
-          Operation requiring prerequisite analysis.
+          Single operation requiring prerequisite analysis.
 
-          For each of these operations, analyze if they need any prerequisites
-          from the available operations above. Add prerequisites only when there
-          are genuine dependencies like resource existence checks or state validations.
+          Analyze if this operation needs any prerequisites from the available
+          operations above. Add prerequisites only when there are genuine
+          dependencies like resource existence checks or state validations.
 
           \`\`\`json
           ${JSON.stringify(props.operation)}
@@ -81,7 +81,7 @@ export const transformInterfacePrerequisiteHistory = (props: {
 
           ### Domain Schemas
 
-          Schema definitions for the target operations.
+          Schema definitions for the target operation.
 
           \`\`\`json
           ${JSON.stringify(domainSchemas)}

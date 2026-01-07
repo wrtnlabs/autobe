@@ -13,8 +13,8 @@ export interface IAutoBeInterfacePrerequisiteApplication {
   /**
    * Process prerequisite analysis task or preliminary data requests.
    *
-   * Analyzes each operation's dependencies and returns complete list with
-   * required prerequisite chains based on resource relationships.
+   * Analyzes a single operation's dependencies and returns the complete
+   * prerequisite chain based on resource relationships.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -73,7 +73,7 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
    * Request to analyze and generate API operation prerequisites.
    *
    * Executes prerequisite analysis to determine which Available API Operations
-   * must be executed before each Target Operation based on resource creation
+   * must be executed before the target operation based on resource creation
    * dependencies and existence validations.
    */
   export interface IComplete {

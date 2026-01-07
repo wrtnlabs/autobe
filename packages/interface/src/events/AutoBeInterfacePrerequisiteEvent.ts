@@ -4,23 +4,22 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event emitted during the API prerequisite dependency analysis phase.
+ * Event emitted when a single API operation's prerequisite dependencies are analyzed.
  *
- * This event is triggered when the Interface Prerequisite Agent analyzes API
- * operations to determine their prerequisite dependencies. It represents the
- * process of establishing which POST operations must be executed before a given
- * operation can succeed, ensuring proper resource creation order for E2E test
- * generation.
+ * This event is triggered when the Interface Prerequisite Agent completes
+ * analyzing one API operation to determine its prerequisite dependencies. It
+ * represents the result of establishing which POST operations must be executed
+ * before the target operation can succeed, ensuring proper resource creation
+ * order for E2E test generation.
  *
- * The prerequisite analysis phase examines each API operation to identify
- * required resource dependencies based on path parameters, request body
- * schemas, and entity relationships. For example, a `PUT
- * /orders/{orderId}/items/{itemId}` operation would require `POST /orders` and
- * `POST /orders/{orderId}/items` as prerequisites to create the necessary
- * resources first.
+ * The prerequisite analysis examines the API operation to identify required
+ * resource dependencies based on path parameters, request body schemas, and
+ * entity relationships. For example, a `PUT /orders/{orderId}/items/{itemId}`
+ * operation would require `POST /orders` and `POST /orders/{orderId}/items` as
+ * prerequisites to create the necessary resources first.
  *
  * By extending multiple base interfaces, this event provides comprehensive
- * tracking capabilities including progress monitoring for batch operation
+ * tracking capabilities including progress monitoring for one-by-one operation
  * processing and token usage analytics for cost optimization.
  *
  * @author Samchon
