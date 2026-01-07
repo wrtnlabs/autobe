@@ -140,9 +140,9 @@ export namespace IAutoBeDatabaseComponentApplication {
      *       "review": "Considering the relationships, shopping_channel_categories connects channels and sales, but it fundamentally defines channel structure.",
      *       "rationale": "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference.",
      *       "tables": [
-     *         "shopping_channels",
-     *         "shopping_sections",
-     *         "shopping_channel_categories"
+     *         { "name": "shopping_channels", "description": "Represents sales channels (e.g., online store, mobile app) with branding and configuration." },
+     *         { "name": "shopping_sections", "description": "Sections within a channel for organizing content and products hierarchically." },
+     *         { "name": "shopping_channel_categories", "description": "Product categories specific to each channel for navigation and filtering." }
      *       ]
      *     },
      *     {
@@ -152,9 +152,9 @@ export namespace IAutoBeDatabaseComponentApplication {
      *       "review": "While customers interact with sales, the customer entity itself is about identity, not transactions.",
      *       "rationale": "This component groups all actor-related tables to maintain separation between identity management and business transactions.",
      *       "tables": [
-     *         "shopping_customers",
-     *         "shopping_citizens",
-     *         "shopping_administrators"
+     *         { "name": "shopping_customers", "description": "Customer accounts with authentication credentials and profile information." },
+     *         { "name": "shopping_citizens", "description": "Verified citizen information linked to customer accounts for identity verification." },
+     *         { "name": "shopping_administrators", "description": "Admin users with elevated privileges for platform management." }
      *       ]
      *     },
      *     {
@@ -164,10 +164,10 @@ export namespace IAutoBeDatabaseComponentApplication {
      *       "review": "Sales snapshots are integral to the sales domain for tracking product history and price changes.",
      *       "rationale": "Consolidating all sales-related tables enables coherent management of the entire product lifecycle.",
      *       "tables": [
-     *         "shopping_sales",
-     *         "shopping_sale_snapshots",
-     *         "shopping_sale_units",
-     *         "shopping_sale_unit_options"
+     *         { "name": "shopping_sales", "description": "Products or services available for purchase with pricing and inventory." },
+     *         { "name": "shopping_sale_snapshots", "description": "Point-in-time snapshots of sale data for audit trails and version history." },
+     *         { "name": "shopping_sale_units", "description": "Purchasable units within a sale (e.g., size variants, package options)." },
+     *         { "name": "shopping_sale_unit_options", "description": "Configurable options for sale units (e.g., color, material choices)." }
      *       ]
      *     }
      *   ]
@@ -178,6 +178,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      *
      * - Table names must follow snake_case convention with domain prefix (e.g.,
      *   `shopping_customers`)
+     * - Each table must include a description explaining its purpose
      * - Each component becomes one `.prisma` file containing related models
      * - Filename numbering indicates dependency order for schema generation
      * - Namespace is used for documentation organization and domain grouping

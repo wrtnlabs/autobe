@@ -11,7 +11,7 @@ export const transformPrismaComponentReviewHistory = (props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabase.IComponent;
-  allTables: string[];
+  allTableNames: string[];
   instruction: string;
   prefix: string | null;
 }): IAutoBeOrchestrateHistory => ({
@@ -34,18 +34,26 @@ export const transformPrismaComponentReviewHistory = (props: {
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        ## Component to Enrich
+        ## Component to Review
 
         ${props.prefix !== null ? `**Table Prefix**: \`${props.prefix}\`` : ""}
 
         ### Target Component
 
         - **Namespace**: \`${props.component.namespace}\`
-        - **Current Tables**: ${JSON.stringify(props.component.tables)}
+        - **Filename**: \`${props.component.filename}\`
 
-        ### All Tables in System
+        ### Current Tables
 
-        ${JSON.stringify(props.allTables.sort())}
+        The following tables are currently assigned to this component:
+
+        ${JSON.stringify(props.component.tables, null, 2)}
+
+        ### All Tables in System (Other Components)
+
+        These table names exist in other components. You CANNOT create tables with these names:
+
+        ${JSON.stringify(props.allTableNames.filter((t) => !props.component.tables.some((ct) => ct.name === t)).sort())}
 
         ### User Instructions
 
@@ -54,10 +62,17 @@ export const transformPrismaComponentReviewHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Analyze requirements for the "${props.component.namespace}" component and enrich its table list.
+    Review the "${props.component.namespace}" component's table list and apply necessary revisions.
 
     1. First, fetch analysis files using \`getAnalysisFiles\` to understand requirements
-    2. Identify missing tables based on feature requirements
-    3. Call \`process({ request: { type: "complete", ... } })\` with the enriched table list
+    2. Identify issues: missing tables, naming problems, or misplaced tables
+    3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
+
+    Use revises to:
+    - **Create**: Add missing tables that requirements need
+    - **Update**: Rename tables with naming convention issues
+    - **Erase**: Remove tables that belong to other components
+
+    If no changes are needed, return an empty revises array.
   `,
 });

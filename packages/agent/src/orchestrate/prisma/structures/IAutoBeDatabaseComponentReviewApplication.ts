@@ -1,20 +1,24 @@
+import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseComponentReviewApplication {
   /**
-   * Analyze requirements and enrich the component's table list.
+   * Analyze requirements and review the component's table list.
    *
    * Your PRIMARY task is to deeply analyze user requirements and ensure
    * complete table coverage for all features in this component's domain.
+   * Review existing tables and identify necessary modifications using
+   * create, update, or erase operations.
    *
    * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
    * what features this component's domain needs to support, then systematically
-   * verify table coverage.
+   * verify table coverage and apply corrections.
    *
    * @param props Request containing either preliminary data request or complete
-   *   task with enriched table list
+   *   task with table revisions
    */
   process(props: IAutoBeDatabaseComponentReviewApplication.IProps): void;
 }
@@ -33,8 +37,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      * For completion (complete):
      *
      * - What requirements did you analyze?
-     * - How many tables are you adding and why?
-     * - Summarize the requirements-to-tables mapping.
+     * - How many revisions are you making and why?
+     * - Summarize the requirements-to-revisions mapping.
      */
     thinking: string;
 
@@ -42,8 +46,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      * Request type discriminator.
      *
      * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
-     * documents. Use complete to submit the enriched table list after
-     * thorough requirements analysis.
+     * documents. Use complete to submit table revisions after thorough
+     * requirements analysis.
      */
     request:
       | IComplete
@@ -53,12 +57,12 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
   }
 
   /**
-   * Submit the enriched table list after requirements analysis.
+   * Submit table revisions after requirements analysis.
    *
    * Call this after you have:
    * 1. Fetched and analyzed requirements documents
-   * 2. Identified missing tables based on feature requirements
-   * 3. Verified naming conventions and domain fit
+   * 2. Identified missing tables, naming issues, or misplaced tables
+   * 3. Prepared create/update/erase operations with clear reasons
    */
   export interface IComplete {
     /**
@@ -69,50 +73,73 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     /**
      * Requirements coverage analysis.
      *
-     * Document how you analyzed requirements and mapped them to tables:
+     * Document how you analyzed requirements and mapped them to table
+     * modifications:
      *
      * - What features does this domain support?
      * - What data storage needs does each feature have?
      * - What tables are missing to fulfill these requirements?
-     * - What existing tables correctly cover requirements?
+     * - What existing tables need renaming or removal?
      *
      * Be specific - reference actual requirements and explain the
-     * requirements-to-tables mapping.
+     * requirements-to-revisions mapping.
      */
     review: string;
 
     /**
-     * Table changes with requirement-based justification.
+     * Array of table revision operations.
      *
-     * For each table added, explain which requirement it fulfills:
+     * Include all create, update, and erase operations identified during
+     * review. Each operation must include a reason explaining why the
+     * change is necessary.
      *
-     * - "Added order_cancellations: Requirement 3.2 - cancellation tracking"
-     * - "Added order_refunds: Requirement 3.4 - refund processing"
+     * ## Operation Types:
      *
-     * For tables kept, confirm they cover existing requirements.
-     * For tables removed, explain why they don't belong to this domain.
-     */
-    plan: string;
-
-    /**
-     * Final enriched table list.
+     * ### Create - Add missing tables
+     * Use when a table is needed to fulfill requirements but doesn't exist.
+     * ```typescript
+     * {
+     *   type: "create",
+     *   reason: "Requirement 3.2 specifies order cancellation tracking",
+     *   table: "order_cancellations",
+     *   description: "Stores cancellation records with reasons and timestamps"
+     * }
+     * ```
      *
-     * Contains the complete list of tables after requirements-driven
-     * enrichment. This REPLACES the original table list.
+     * ### Update - Rename tables
+     * Use when a table has naming convention issues.
+     * ```typescript
+     * {
+     *   type: "update",
+     *   reason: "Table name violates snake_case convention",
+     *   original: "orderCancel",
+     *   updated: "order_cancellations",
+     *   description: "Stores cancellation records with reasons and timestamps"
+     * }
+     * ```
      *
-     * CONSTRAINTS:
+     * ### Erase - Remove tables
+     * Use when a table belongs to another domain or is unnecessary.
+     * ```typescript
+     * {
+     *   type: "erase",
+     *   reason: "Table belongs to Actors component, not Orders",
+     *   table: "shopping_customers"
+     * }
+     * ```
      *
-     * - ADD tables that requirements need but are missing
-     * - REMOVE tables that belong to other domains
-     * - RENAME tables to fix naming convention issues
-     * - CANNOT add tables that exist in OTHER components
+     * ## Constraints:
      *
-     * Naming conventions:
+     * - CANNOT create tables that exist in OTHER components
+     * - Each operation must have a clear, requirement-based reason
+     * - Empty array is valid if no modifications are needed
+     *
+     * ## Naming Conventions:
      *
      * - Snake case: `user_profiles` not `userProfiles`
      * - Plural form: `users` not `user`
      * - Domain prefix: `shopping_customers`
      */
-    tables: string[];
+    revises: AutoBeDatabaseComponentTableRevise[];
   }
 }

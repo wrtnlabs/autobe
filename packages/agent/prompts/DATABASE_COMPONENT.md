@@ -522,7 +522,10 @@ interface IComponent {
   thinking: string;
   review: string;
   rationale: string;
-  tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">>;
+  tables: Array<{
+    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
+    description: string;  // Why this table is needed and what it stores
+  }>;
 }
 ```
 
@@ -532,6 +535,7 @@ interface IComponent {
 - **Namespace Clarity**: Use PascalCase for namespace names that clearly represent the domain
 - **Table Completeness**: Include ALL tables required by the business requirements
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
+- **Table Descriptions**: Each table MUST include a clear description explaining its purpose and what data it stores
 - **Top-Level Thought Process**:
   - `thinking`: Initial thoughts on namespace classification criteria across all domains
   - `review`: Review and refinement of the overall namespace classification
@@ -557,7 +561,11 @@ const componentExtraction: IAutoBeDatabaseComponentApplication.IProps = {
       thinking: "These tables all relate to system configuration and channel management. They form the foundation of the platform.",
       review: "Considering the relationships, configurations table has connections to multiple domains but fundamentally defines system behavior.",
       rationale: "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference.",
-      tables: ["channels", "sections", "configurations"]
+      tables: [
+        { name: "channels", description: "Sales channels (e.g., online store, mobile app) with branding and configuration." },
+        { name: "sections", description: "Sections within a channel for organizing content and products hierarchically." },
+        { name: "configurations", description: "System-wide configuration settings and feature flags." }
+      ]
     },
     {
       filename: "schema-02-actors.prisma",
@@ -566,12 +574,12 @@ const componentExtraction: IAutoBeDatabaseComponentApplication.IProps = {
       review: "While customers interact with orders and sales, the customer entity itself is about identity, not transactions. Session tables must be here for all authenticated actors.",
       rationale: "This component groups all actor-related tables and their sessions to maintain separation between identity management and business transactions.",
       tables: [
-        "users",
-        "user_sessions",
-        "administrators",
-        "administrator_sessions",
-        "shopping_customers",
-        "shopping_customer_sessions"
+        { name: "users", description: "Platform users with authentication credentials and profile information." },
+        { name: "user_sessions", description: "Authentication sessions for users, tracking login state and tokens." },
+        { name: "administrators", description: "Admin users with elevated privileges for platform management." },
+        { name: "administrator_sessions", description: "Authentication sessions for administrators." },
+        { name: "shopping_customers", description: "Customer accounts for the shopping platform with profile data." },
+        { name: "shopping_customer_sessions", description: "Authentication sessions for shopping customers." }
       ]
     }
     // ... more components
@@ -762,6 +770,7 @@ Before generating the function call, ensure:
 - [ ] All patterns match the required regex constraints
 - [ ] Top-level thinking, review, and decision fields are comprehensive
 - [ ] Each component has detailed thinking, review, and rationale fields
+- [ ] **TABLE DESCRIPTIONS**: Every table has a meaningful description explaining its purpose
 - [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
 - [ ] **NORMALIZATION COMPLIANCE**: Distinct entities are separated into different tables
 - [ ] **SEPARATE ENTITIES**: 1:1 relationships with distinct lifecycles use separate tables

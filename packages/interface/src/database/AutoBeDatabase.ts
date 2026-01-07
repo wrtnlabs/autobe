@@ -195,14 +195,49 @@ export namespace AutoBeDatabase {
     rationale: string;
 
     /**
-     * Array of table names that will be included in this component's schema
+     * Array of table designs that will be included in this component's schema
      * file.
      *
-     * Contains all database table names that belong to this business domain,
-     * ensuring logical grouping and proper organization of related data
-     * structures.
+     * Contains all database tables that belong to this business domain,
+     * each with a name and description explaining its purpose. This ensures
+     * logical grouping, proper organization, and clear documentation of
+     * related data structures.
      */
-    tables: Array<string & SnakeCasePattern> & tags.MinItems<1>;
+    tables: Array<ITableDesign> & tags.MinItems<1>;
+  }
+
+  /**
+   * Interface representing a table design with name and description.
+   *
+   * Each table design pairs a table name with a description explaining why
+   * the table is needed and what data it stores. This provides business
+   * context that helps review agents validate requirements coverage and
+   * guides schema generation with proper documentation.
+   */
+  export interface ITableDesign {
+    /**
+     * Name of the database table.
+     *
+     * Must follow snake_case naming convention with appropriate domain prefix.
+     * Examples: `shopping_customers`, `bbs_articles`, `order_items`
+     */
+    name: string & SnakeCasePattern;
+
+    /**
+     * Description of what this table stores and why it's needed.
+     *
+     * Should explain:
+     *
+     * - What business concept this table represents
+     * - What data it stores
+     * - Why this table is necessary for the component's domain
+     *
+     * **IMPORTANT**: Description must be written in English.
+     *
+     * @example "Stores customer profile information including authentication
+     *   credentials, contact details, and preferences for the shopping platform."
+     */
+    description: string;
   }
 
   /**

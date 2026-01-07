@@ -1,4 +1,5 @@
 import { AutoBeDatabase } from "../database";
+import { AutoBeDatabaseComponentTableRevise } from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -43,20 +44,25 @@ export interface AutoBeDatabaseComponentReviewEvent
   review: string;
 
   /**
-   * Strategic plan for component organization improvements.
+   * Array of table revision operations applied during the review.
    *
-   * Contains the planning document outlining identified issues and proposed
-   * corrections to the component structure. This plan guides the modifications
-   * needed to ensure optimal domain organization.
+   * Contains all create, update, and erase operations that were identified
+   * and applied during the review process. Each operation includes a reason
+   * explaining why the change was necessary, providing a clear audit trail
+   * of modifications.
+   *
+   * - **Create**: Tables added to fulfill missing requirements
+   * - **Update**: Tables renamed to fix naming convention issues
+   * - **Erase**: Tables removed because they belong to other components
    */
-  plan: string;
+  revises: AutoBeDatabaseComponentTableRevise[];
 
   /**
    * The reviewed component with updated table list.
    *
-   * Contains the complete component definition after review, including any
-   * tables that were added, removed, or renamed. This replaces the original
-   * component in the final organization used for schema generation.
+   * Contains the complete component definition after review, with all revisions
+   * applied. Tables that were added, removed, or renamed are reflected in this
+   * final component structure used for schema generation.
    */
   modification: AutoBeDatabase.IComponent;
 

@@ -32,7 +32,7 @@ export async function orchestratePrismaSchema(
     component: AutoBeDatabase.IComponent;
     table: string;
   }> = componentList.flatMap((component) =>
-    component.tables.map((table) => ({ component, table })),
+    component.tables.map((table) => ({ component, table: table.name })),
   );
 
   return await executeCachedBatch(

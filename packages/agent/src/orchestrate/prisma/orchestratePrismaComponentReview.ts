@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -26,21 +27,23 @@ export async function orchestratePrismaComponentReview(
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const total: number = props.components.length;
   const completed: IPointer<number> = { value: 0 };
-  const allTables: string[] = props.components.flatMap((c) => c.tables);
+  const allTableNames: string[] = props.components.flatMap((c) =>
+    c.tables.map((t) => t.name),
+  );
 
   return await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
-      const otherTables: Set<string> = new Set(
+      const otherTableNames: Set<string> = new Set(
         props.components
           .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables),
+          .flatMap((c) => c.tables.map((t) => t.name)),
       );
 
       const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
         component,
-        otherTables,
-        allTables,
+        otherTableNames,
+        allTableNames,
         instruction: props.instruction,
         prefix,
         start,
@@ -58,8 +61,8 @@ async function process(
   ctx: AutoBeContext,
   props: {
     component: AutoBeDatabase.IComponent;
-    otherTables: Set<string>;
-    allTables: string[];
+    otherTableNames: Set<string>;
+    allTableNames: string[];
     instruction: string;
     prefix: string | null;
     start: Date;
@@ -96,7 +99,7 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        otherTables: props.otherTables,
+        otherTableNames: props.otherTableNames,
         build: (next) => {
           pointer.value = next;
         },
@@ -105,7 +108,7 @@ async function process(
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaComponentReviewHistory({
         component: props.component,
-        allTables: props.allTables,
+        allTableNames: props.allTableNames,
         instruction: props.instruction,
         prefix: props.prefix,
         preliminary,
@@ -114,8 +117,42 @@ async function process(
 
     if (pointer.value === null) return out(result)(null);
 
-    const validTables: string[] = pointer.value.tables.filter(
-      (t) => props.otherTables.has(t) === false,
+    // Apply revises to the component's tables
+    const tableMap = new Map<string, AutoBeDatabase.ITableDesign>(
+      props.component.tables.map((t) => [t.name, t]),
+    );
+
+    const revises: AutoBeDatabaseComponentTableRevise[] = [];
+    for (const revise of pointer.value.revises) {
+      if (revise.type === "create") {
+        // Only add if not in other components
+        if (!props.otherTableNames.has(revise.table)) {
+          tableMap.set(revise.table, {
+            name: revise.table,
+            description: revise.description,
+          });
+          revises.push(revise);
+        }
+      } else if (revise.type === "update") {
+        // Remove original, add updated (if not in other components)
+        tableMap.delete(revise.original);
+        if (!props.otherTableNames.has(revise.updated)) {
+          tableMap.set(revise.updated, {
+            name: revise.updated,
+            description: revise.description,
+          });
+          revises.push(revise);
+        }
+      } else if (revise.type === "erase") {
+        tableMap.delete(revise.table);
+        revises.push(revise);
+      } else {
+        revise satisfies never;
+      }
+    }
+
+    const validTables: AutoBeDatabase.ITableDesign[] = Array.from(
+      tableMap.values(),
     );
 
     const component: AutoBeDatabase.IComponent = {
@@ -123,7 +160,7 @@ async function process(
       namespace: props.component.namespace,
       thinking: props.component.thinking,
       review: pointer.value.review,
-      rationale: pointer.value.plan,
+      rationale: props.component.rationale,
       tables: validTables,
     };
 
@@ -132,7 +169,7 @@ async function process(
       id: v7(),
       created_at: props.start.toISOString(),
       review: component.review,
-      plan: component.rationale,
+      revises,
       modification: component,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -147,7 +184,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  otherTables: Set<string>;
+  otherTableNames: Set<string>;
   build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (

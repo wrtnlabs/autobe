@@ -34,9 +34,9 @@ export async function orchestratePrismaReview(
     if (file === undefined) return [];
     return component.tables
       .map((table) => {
-        const model = file.models.find((m) => m.name === table);
+        const model = file.models.find((m) => m.name === table.name);
         if (model === undefined) return null;
-        return { component, table, model };
+        return { component, table: table.name, model };
       })
       .filter((task): task is NonNullable<typeof task> => task !== null);
   });
