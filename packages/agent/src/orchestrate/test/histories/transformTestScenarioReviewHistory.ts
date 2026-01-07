@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -6,13 +6,25 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { IAutoBeTestScenarioApplication } from "../structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
+/**
+ * Transform test scenario review context into conversational history.
+ *
+ * Creates the complete conversation history for reviewing a single test scenario,
+ * including system prompts, user instructions, and the scenario to be reviewed.
+ *
+ * @param props - Configuration for history transformation
+ * @param props.state - Current AutoBe state containing interface document
+ * @param props.instruction - E2E-test-specific instructions from user requirements
+ * @param props.scenario - Single test scenario to review and potentially improve
+ * @param props.preliminary - Controller for RAG-based preliminary data requests
+ * @returns Complete conversation history ready for LLM agent processing
+ */
 export function transformTestScenarioReviewHistory(props: {
   state: AutoBeState;
   instruction: string;
-  groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+  scenario: AutoBeTestScenario;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
@@ -62,20 +74,19 @@ export function transformTestScenarioReviewHistory(props: {
 
           ${props.instruction}
 
-          ## Test Scenario Groups to Review
+          ## Test Scenario to Review
 
-          Each scenario group includes the target endpoint and its prerequisite endpoints.
+          The following test scenario needs to be reviewed for quality and correctness.
+          Prerequisites are provided for reference to validate dependency completeness.
 
           \`\`\`json
-          ${JSON.stringify(
-            props.groups.map((g) => ({
-              ...g,
-              prerequisites: getPrerequisites({
-                document,
-                endpoint: g.endpoint,
-              }),
-            })),
-          )}
+          ${JSON.stringify({
+            scenario: props.scenario,
+            prerequisites: getPrerequisites({
+              document,
+              endpoint: props.scenario.endpoint,
+            }),
+          })}
           \`\`\`
         `,
       },

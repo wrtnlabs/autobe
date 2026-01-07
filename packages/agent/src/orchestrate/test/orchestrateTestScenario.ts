@@ -257,6 +257,7 @@ const process = async (
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
+    // Limit scenarios per endpoint to MAX_SCENARIO_COUNT
     const filteredGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
       pointer.value.map((g) => {
         return {
@@ -264,14 +265,46 @@ const process = async (
           scenarios: g.scenarios.slice(0, MAX_SCENARIO_COUNT),
         };
       });
-    return out(result)(
-      await orchestrateTestScenarioReview(ctx, {
-        preliminary,
-        instruction: props.instruction,
-        groups: filteredGroups,
-        progress: props.reviewProgress,
-      }),
-    );
+
+    // Review each scenario individually
+    const reviewedGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
+
+    for (const group of filteredGroups) {
+      const reviewedScenarios: IAutoBeTestScenarioApplication.IScenario[] = [];
+
+      for (const scenario of group.scenarios) {
+        // Convert IScenario to AutoBeTestScenario for review
+        const testScenario: AutoBeTestScenario = {
+          endpoint: group.endpoint,
+          draft: scenario.draft,
+          functionName: scenario.functionName,
+          dependencies: scenario.dependencies,
+        };
+
+        // Review the scenario
+        const reviewedTestScenario: AutoBeTestScenario =
+          await orchestrateTestScenarioReview(ctx, {
+            preliminary,
+            instruction: props.instruction,
+            scenario: testScenario,
+            progress: props.reviewProgress,
+          });
+
+        // Convert back to IScenario
+        reviewedScenarios.push({
+          draft: reviewedTestScenario.draft,
+          functionName: reviewedTestScenario.functionName,
+          dependencies: reviewedTestScenario.dependencies,
+        });
+      }
+
+      reviewedGroups.push({
+        endpoint: group.endpoint,
+        scenarios: reviewedScenarios,
+      });
+    }
+
+    return out(result)(reviewedGroups);
   });
 };
 

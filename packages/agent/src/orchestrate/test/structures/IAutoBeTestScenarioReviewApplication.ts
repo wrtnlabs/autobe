@@ -1,7 +1,8 @@
+import { AutoBeTestScenario } from "@autobe/interface";
+
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBeTestScenarioApplication } from "./IAutoBeTestScenarioApplication";
 
 export interface IAutoBeTestScenarioReviewApplication {
   /**
@@ -108,23 +109,12 @@ export namespace IAutoBeTestScenarioReviewApplication {
      *
      * This plan serves as the blueprint for validating and improving test
      * scenarios.
+     *
+     * // 개선할거리 없으면 없다고 쓰그래
      */
     plan: string;
 
-    /** If the scenario groups pass the review, Set to true. */
-    pass: boolean;
-
-    /**
-     * The reviewed and improved scenario groups with all quality fixes applied.
-     *
-     * This is the primary output containing:
-     *
-     * - All critical issues resolved
-     * - Authentication flows corrected
-     * - Database dependencies validated
-     * - Quality enhancements implemented
-     * - Only implementable scenarios retained
-     */
-    scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+    // 개선할 거 있으면 채우고 아니면 null인 것이니라
+    scenario: AutoBeTestScenario | null;
   }
 }
