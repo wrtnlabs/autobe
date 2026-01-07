@@ -98,6 +98,7 @@ async function process(
         describe: false,
       },
       retry: ctx.retry,
+      throw: true,
     },
     histories: transformImageDescribeDraftHistories(),
     controllers: [
@@ -122,6 +123,7 @@ async function process(
       e.body.tool_choice = "required";
     }
   });
+
   await agent.conversate(
     content.map((c) => createAutoBeUserMessageContent({ content: c })),
   );

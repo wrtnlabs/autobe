@@ -17,5 +17,6 @@ const main = async () => {
     vendor: TestGlobal.vendorModel,
     project,
   });
+  console.log("completed");
 };
 main().catch(console.log);

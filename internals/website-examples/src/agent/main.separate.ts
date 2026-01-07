@@ -10,7 +10,6 @@ const worker: WorkerConnector<null, null, IAutoBeCompiler> =
 await worker.connect(`${__dirname}/compiler${path.extname(__filename)}`);
 
 const agent = new AutoBeAgent({
-  model: "chatgpt",
   vendor: {
     api: new OpenAI({ apiKey: "********" }),
     model: "gpt-4.1",

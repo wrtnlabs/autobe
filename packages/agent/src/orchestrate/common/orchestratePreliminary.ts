@@ -13,7 +13,6 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { throwExecuteFailure } from "../../factory/throwExecuteFailure";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
@@ -34,13 +33,12 @@ export const orchestratePreliminary = async <
   const executes: AgenticaExecuteHistory[] = props.histories.filter(
     (h) => h.type === "execute",
   );
-  if (executes.length === 0) throw new Error("Failed to function calling");
+  if (executes.length === 0)
+    throw new Error("Failed to function calling from the preliminary step.");
 
   for (const exec of executes) {
-    // EXCEPTION
-    if (exec.success === false) throwExecuteFailure(exec);
     // ANALYSIS
-    else if (isAnalysisFiles(props.preliminary, exec.arguments)) {
+    if (isAnalysisFiles(props.preliminary, exec.arguments)) {
       const pa: AutoBePreliminaryController<"analysisFiles"> =
         props.preliminary;
       orchestrateAnalyzeFiles(ctx, {

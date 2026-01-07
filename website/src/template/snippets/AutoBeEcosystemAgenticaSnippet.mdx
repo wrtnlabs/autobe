@@ -19,7 +19,6 @@ const agent = new Agentica({
     // functions from Swagger/OpenAPI
     assertHttpController({
       name: "shopping",
-      model: "chatgpt",
       document: await fetch(
         "https://shopping-be.wrtn.ai/editor/swagger.json",
       ).then(r => r.json()),

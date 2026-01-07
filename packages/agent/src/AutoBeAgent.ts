@@ -1,9 +1,7 @@
 import {
-  AgenticaExecuteHistory,
   IAgenticaTokenUsageJson,
   IAgenticaVendor,
   MicroAgentica,
-  MicroAgenticaHistory,
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
@@ -32,7 +30,6 @@ import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { supportMistral } from "./factory/supportMistral";
-import { throwExecuteFailure } from "./factory/throwExecuteFailure";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
 import { transformFacadeStateMessage } from "./orchestrate/facade/structures/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
@@ -168,14 +165,15 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
       vendor,
       config: {
         ...(props.config ?? {}),
-        retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
         executor: {
-          describe: null,
+          describe: false,
         },
         systemPrompt: {
           common: (config) => getCommonPrompt(config),
           execute: () => transformFacadeStateMessage(this.state_),
         },
+        retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+        throw: true,
       },
       controllers: [
         createAutoBeFacadeController({
@@ -312,14 +310,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
     );
     this.histories_.push(userMessageHistory);
 
-    const agenticaHistories: MicroAgenticaHistory[] =
-      await this.agentica_.conversate(userMessageHistory.contents);
-    const errorHistory: AgenticaExecuteHistory | undefined =
-      agenticaHistories.find(
-        (h): h is AgenticaExecuteHistory =>
-          h.type === "execute" && h.success === false,
-      );
-    if (errorHistory !== undefined) throwExecuteFailure(errorHistory);
+    await this.agentica_.conversate(userMessageHistory.contents);
     return this.histories_.slice(index);
   }
 

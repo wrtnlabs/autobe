@@ -5,7 +5,6 @@ import OpenAI from "openai";
 declare function makeProject(files: Record<string, string>): Promise<void>;
 
 const agent = new AutoBeAgent({
-  model: "chatgpt",
   vendor: {
     api: new OpenAI({ apiKey: "********" }),
     model: "gpt-4.1",

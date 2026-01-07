@@ -86,6 +86,7 @@ async function correct<Model extends ILlmSchema.Model>(
           ].join("\n\n"),
       },
       retry: 4,
+      throw: true,
     },
     histories: transformTestCorrectHistories(written, event.result),
     controllers: [

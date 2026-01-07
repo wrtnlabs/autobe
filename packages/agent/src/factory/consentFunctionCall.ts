@@ -43,13 +43,14 @@ export const consentFunctionCall = async (props: {
     vendor: props.vendor,
     config: {
       ...(props.config ?? []),
-      retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
       executor: {
         describe: null,
       },
       systemPrompt: {
         common: () => getCommonPrompt(props.config),
       },
+      retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+      throw: true,
     },
     histories: [
       {

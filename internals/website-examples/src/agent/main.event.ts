@@ -3,7 +3,6 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import OpenAI from "openai";
 
 const agent = new AutoBeAgent({
-  model: "chatgpt",
   vendor: {
     api: new OpenAI({ apiKey: "********" }),
     model: "gpt-4.1",

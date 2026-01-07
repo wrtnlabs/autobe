@@ -1,5 +1,4 @@
 import {
-  AgenticaExecuteHistory,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -54,7 +53,6 @@ import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { supportMistral } from "./supportMistral";
-import { throwExecuteFailure } from "./throwExecuteFailure";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -144,13 +142,14 @@ export const createAutoBeContext = (props: {
           vendor: props.vendor,
           config: {
             ...(props.config ?? {}),
-            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             executor: {
               describe: null,
             },
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
             },
+            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+            throw: true,
           } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
@@ -270,14 +269,7 @@ export const createAutoBeContext = (props: {
             })
             .catch(() => {});
           throw result.error;
-        }
-
-        const executeFailure: AgenticaExecuteHistory | undefined =
-          result.histories
-            .filter((h) => h.type === "execute")
-            .find((h) => h.success === false);
-        if (executeFailure !== undefined) throwExecuteFailure(executeFailure);
-        else if (
+        } else if (
           true === next.enforceFunctionCall &&
           false === result.histories.some((h) => h.type === "execute")
         ) {
@@ -290,7 +282,9 @@ export const createAutoBeContext = (props: {
 
                 ${result.histories.map((h) => `- ${h.type}`).join("\n")}
 
-                ${JSON.stringify(result.histories)}
+                \`\`\`json
+                ${JSON.stringify(result.histories, null, 2)}
+                \`\`\`
               `,
             );
           };
@@ -321,7 +315,7 @@ export const createAutoBeContext = (props: {
                   new AutoBeTokenUsageComponent(tokenUsage),
                 );
               consume(newTokenUsage);
-              if (newHistories.some((h) => h.type === "execute" && h.success))
+              if (newHistories.some((h) => h.type === "execute"))
                 return success(newHistories);
             }
           }

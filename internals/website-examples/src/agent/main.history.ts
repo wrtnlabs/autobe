@@ -7,7 +7,6 @@ declare function getHistories(): Promise<AutoBeHistory[]>;
 declare function archiveHistories(histories: AutoBeHistory[]): Promise<void>;
 
 const agent = new AutoBeAgent({
-  model: "chatgpt",
   vendor: {
     api: new OpenAI({ apiKey: "********" }),
     model: "gpt-4.1",

@@ -138,6 +138,7 @@ async function process<Model extends ILlmSchema.Model>(
           ].join("\n\n"),
       },
       retry: 4,
+      throw: true,
     },
     histories: transformTestWriteHistories({
       scenario,
