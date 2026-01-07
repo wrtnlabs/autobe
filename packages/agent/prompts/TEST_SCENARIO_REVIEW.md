@@ -137,6 +137,7 @@ export namespace IAutoBeTestScenarioReviewApplication {
   export interface IComplete {
     type: "complete";
     endpoint: AutoBeOpenApi.IEndpoint;      // The endpoint being reviewed (must match original)
+    review: string;                         // Comprehensive analysis of issues found and corrections applied
     improved: AutoBeTestScenario | null;    // Improved scenario if changes made, null if no improvements
   }
 }
@@ -168,6 +169,31 @@ Must exactly match the original scenario's endpoint (same method and path).
 This field is required to track which operation this review applies to.
 
 Example: `{ method: "post", path: "/resources" }`
+
+#### review (REQUIRED - string)
+Comprehensive review analysis documenting the assessment process and findings.
+
+**Must include:**
+- Authentication validation results (authorizationActor alignment checked)
+- Dependency completeness analysis (prerequisites verification)
+- Execution order verification (sequencing correctness)
+- Business logic coverage assessment
+- Specific issues identified (if any)
+- Corrections applied (if any)
+
+**Be thorough but concise:**
+- Document what you analyzed and what you found
+- Explain corrections with reasoning
+- If perfect, explicitly state no issues found
+
+**Example reviews:**
+```
+"Reviewed scenario authentication: POST /resources requires user auth, added user join dependency. Verified execution order: auth before resource creation. Dependencies complete. Ready for implementation."
+
+"Analyzed scenario: All dependencies present, execution order correct (auth → create article → create comment), authorizationActor alignment verified. No issues found, scenario is implementable as-is."
+
+"Fixed authentication issues: target operation needs admin role but had user auth. Replaced with admin join. Reordered dependencies: auth must precede all business operations. Verified all prerequisites included."
+```
 
 #### improved (CRITICAL - AutoBeTestScenario | null)
 The improved test scenario with quality fixes applied, OR null if no improvements needed.
@@ -654,7 +680,26 @@ Example:
 endpoint: { method: "post", path: "/resources" }
 ```
 
-### 10.2. improved
+### 10.2. review
+Comprehensive review analysis documenting your assessment.
+
+**Essential content:**
+- What you analyzed (authentication, dependencies, order, business logic)
+- What issues you found (if any)
+- What corrections you applied (if any)
+- Why scenario is now implementable (or was already correct)
+
+**Keep it focused:**
+- Be specific about findings, not generic
+- Explain reasoning for corrections
+- Don't enumerate every single detail
+
+Example:
+```typescript
+review: "Reviewed authentication: POST /articles needs user role, added user join. Verified dependencies complete, execution order correct. Scenario implementable."
+```
+
+### 10.3. improved
 The improved scenario or null.
 
 - **If improvements made**: Return the complete improved `AutoBeTestScenario` object with:
@@ -725,6 +770,7 @@ improved: null
   "request": {
     "type": "complete",
     "endpoint": { "method": "get", "path": "/resources/{id}" },
+    "review": "Reviewed scenario authentication: Target GET /resources/{id} is public (authorizationActor: null), but dependency POST /resources requires user role. Added user join authentication before resource creation. Verified execution order: auth → create → retrieve. All prerequisites complete.",
     "improved": {
       "endpoint": { "method": "get", "path": "/resources/{id}" },
       "functionName": "test_get_resource_success",
@@ -782,6 +828,7 @@ improved: null
   "request": {
     "type": "complete",
     "endpoint": { "method": "post", "path": "/articles" },
+    "review": "Analyzed scenario: POST /articles requires user authentication, user join present. No prerequisites needed (independent operation). Execution order correct: auth before business operation. Tests business logic (article creation), not validation. Scenario implementable as-is.",
     "improved": null
   }
 }
@@ -817,6 +864,7 @@ improved: null
   "request": {
     "type": "complete",
     "endpoint": { "method": "delete", "path": "/resources/{id}" },
+    "review": "Identified execution order issue: Authentication was after resource creation, but must come first. Reordered dependencies: user join now precedes POST /resources. Verified both operations require user role. All prerequisites complete, execution chain correct.",
     "improved": {
       "endpoint": { "method": "delete", "path": "/resources/{id}" },
       "functionName": "test_delete_resource_success",
@@ -863,6 +911,7 @@ improved: null
   request: {
     type: "complete",
     endpoint: { method: "...", path: "..." },  // Must match original
+    review: "...",                             // Comprehensive analysis
     improved: AutoBeTestScenario | null       // Improved or null
   }
 }

@@ -80,10 +80,29 @@ export namespace IAutoBeTestScenarioReviewApplication {
     /**
      * The API endpoint being reviewed.
      *
-     * Must match the endpoint of the original scenario being reviewed. Used to
-     * ensure consistency and track which operation this review applies to.
+     * Must match the endpoint of the original scenario being reviewed.
+     *
+     * Used to ensure consistency and track which operation this review applies
+     * to.
      */
     endpoint: AutoBeOpenApi.IEndpoint;
+
+    /**
+     * Comprehensive review analysis of the test scenario.
+     *
+     * Analyzes the scenario for implementability, dependency correctness,
+     * authentication flows, execution order, and business logic coverage.
+     * Documents identified issues and applied corrections.
+     *
+     * Should include:
+     *
+     * - Authentication validation (correct authorizationActor alignment)
+     * - Dependency completeness (all prerequisites present)
+     * - Execution order verification (proper sequencing)
+     * - Business logic coverage assessment
+     * - Specific issues found and corrections applied
+     */
+    review: string;
 
     /**
      * The improved test scenario, or null if no improvements needed.
@@ -100,8 +119,6 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * - FunctionName MUST match the original (same name)
      * - Draft can be improved if needed
      * - Dependencies should be corrected and properly ordered
-     *
-     * // 개선할 거 있으면 채우고 아니면 null인 것이니라
      */
     improved: AutoBeTestScenario | null;
   }
