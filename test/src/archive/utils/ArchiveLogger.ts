@@ -121,6 +121,11 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - typeName: ${event.typeName}`);
+    else if (event.type === "testScenario")
+      content.push(
+        `  - functions: ${event.scenarios.length}`,
+        ...event.scenarios.map((s) => `    - ${s.functionName}`),
+      );
     else if (event.type === "realizePlan")
       content.push(`  - plan: ${event.plans[0]?.type}`);
     else if (event.type === "realizeWrite")
