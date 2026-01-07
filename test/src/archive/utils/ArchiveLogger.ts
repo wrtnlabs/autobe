@@ -128,6 +128,8 @@ export namespace ArchiveLogger {
     // COMPLETIONS
     else if (event.type === "interfaceComplete")
       content.push(`  - missed: ${event.missed.join(", ")}`);
+    else if (event.type === "testComplete" && event.compiled.type === "failure")
+      console.log(JSON.stringify(event.compiled.diagnostics, null, 2));
     // PRINT
     console.log(content.join("\n"));
   };
