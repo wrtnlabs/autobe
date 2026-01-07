@@ -5,15 +5,10 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
-  AutoBeTestScenarioReviewEvent,
 } from "@autobe/interface";
-import {
-  AutoBeOpenApiEndpointComparator,
-  MapUtil,
-  StringUtil,
-} from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { HashMap, HashSet, IPointer, Pair } from "tstl";
+import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
@@ -23,14 +18,15 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
+import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
-import { IAutoBeTestScenarioAuthorizationActor } from "./structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "./utils/getPrerequisites";
 
 /**
  * Orchestrate test scenario generation for all API operations.
  *
  * Following the InterfacePrerequisite pattern:
+ *
  * - Generate one scenario per operation in parallel
  * - Review all generated scenarios in parallel
  * - Return final scenarios array
@@ -52,99 +48,64 @@ export const orchestrateTestScenario = async (
   }
 
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
-    new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
-      document.operations.map(
-        (op) =>
-          new Pair(
-            {
-              path: op.path,
-              method: op.method,
-            },
-            op,
-          ),
-      ),
-      AutoBeOpenApiEndpointComparator.hashCode,
-      AutoBeOpenApiEndpointComparator.equals,
-    );
-
-  const endpointNotFound: string = [
-    `You have to select one of the endpoints below`,
-    "",
-    " method | path ",
-    "--------|------",
-    ...document.operations
-      .map((op) => `\`${op.method}\` | \`${op.path}\``)
-      .join("\n"),
-  ].join("\n");
-
-  const candidates: AutoBeOpenApi.IOperation[] = document.operations;
+    AutoBeTestScenarioProgrammer.associate(document.operations);
   const progress: AutoBeProgressEventBase = {
-    total: candidates.length,
-    completed: 0,
-  };
-  const reviewProgress: AutoBeProgressEventBase = {
-    total: candidates.length,
+    total: document.operations.length,
     completed: 0,
   };
 
-  // Generate scenarios in parallel (one per operation)
-  const generatedScenarios: Array<AutoBeTestScenario | null> =
-    await executeCachedBatch(
-      ctx,
-      candidates.map((operation) => async (promptCacheKey) => {
-        try {
-          return await processGeneration(ctx, {
-            dict,
-            endpointNotFound,
-            document,
-            operation,
-            progress,
-            promptCacheKey,
-            instruction,
-          });
-        } catch {
-          return null;
-        }
-      }),
-    );
+  const matrix: AutoBeTestScenario[][] = await executeCachedBatch(
+    ctx,
+    document.operations.map((operation) => async (promptCacheKey) => {
+      try {
+        return await process(ctx, {
+          dict,
+          document,
+          operation,
+          progress,
+          promptCacheKey,
+          instruction,
+        });
+      } catch {
+        return [];
+      }
+    }),
+  );
+  const scenarios: AutoBeTestScenario[] = matrix.flat();
 
-  const validScenarios = generatedScenarios.filter((s) => s !== null);
-
-  // Review all scenarios in parallel
-  const reviewEvents: AutoBeTestScenarioReviewEvent[] =
-    await orchestrateTestScenarioReview(ctx, {
-      dict,
-      document,
-      scenarios: validScenarios,
-      progress: reviewProgress,
-      instruction,
-    });
-
-  // Return improved scenarios (or original if no improvements)
-  return reviewEvents.map((event) => event.improved ?? event.original);
+  return await orchestrateTestScenarioReview(ctx, {
+    dict,
+    document,
+    scenarios,
+    progress: {
+      total: scenarios.length,
+      completed: 0,
+    },
+    instruction,
+  });
 };
 
 /**
  * Process single operation scenario generation.
  *
  * Following InterfacePrerequisite pattern:
- * - preliminary.orchestrate wrapper
- * - conversate with controller
- * - dispatch event
- * - return scenario
+ *
+ * - Preliminary.orchestrate wrapper
+ * - Conversate with controller
+ * - Dispatch event
+ * - Return scenario
  */
-async function processGeneration(
+async function process(
   ctx: AutoBeContext,
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
-    endpointNotFound: string;
-    document: AutoBeOpenApi.IDocument;
     operation: AutoBeOpenApi.IOperation;
+    document: AutoBeOpenApi.IDocument;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
   },
-): Promise<AutoBeTestScenario | null> {
+): Promise<AutoBeTestScenario[]> {
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
@@ -173,38 +134,29 @@ async function processGeneration(
           endpoint: props.operation,
         }))
           unique.insert(pr.endpoint);
-
-        return unique
-          .toJSON()
-          .map((endpoint) =>
-            props.document.operations.find(
-              (op) =>
-                op.method === endpoint.method && op.path === endpoint.path,
-            ),
-          )
-          .filter((op) => op !== undefined);
+        return unique.toJSON().map((endpoint) => props.dict.get(endpoint));
       })(),
     },
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario | null> = {
+    const pointer: IPointer<AutoBeTestScenario[] | null> = {
       value: null,
     };
 
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        endpointNotFound: props.endpointNotFound,
         dict: props.dict,
+        operation: props.operation,
         authorizations,
         preliminary,
-        build: (scenario: AutoBeTestScenario) => {
+        build: (scenarios) => {
           // Normalize function name to snake_case
-          scenario.functionName = NamingConvention.snake(
-            scenario.functionName,
-          );
-          pointer.value = scenario;
+          for (const s of scenarios)
+            s.functionName = NamingConvention.snake(s.functionName);
+          pointer.value ??= [];
+          pointer.value.push(...scenarios);
         },
       }),
       enforceFunctionCall: true,
@@ -225,22 +177,21 @@ async function processGeneration(
       id: v7(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      scenarios: [pointer.value],
+      scenarios: pointer.value,
       total: props.progress.total,
       completed: ++props.progress.completed,
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-
     return out(result)(pointer.value);
   });
 }
 
 function createController(props: {
-  endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
-  build: (scenario: AutoBeTestScenario) => void;
+  operation: AutoBeOpenApi.IOperation;
+  build: (scenarios: AutoBeTestScenario[]) => void;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
@@ -257,145 +208,17 @@ function createController(props: {
         request: result.data.request,
       });
 
-    const scenario = result.data.request.scenario;
     const errors: IValidation.IError[] = [];
-
-    // Validate endpoint exists
-    if (!props.dict.has(scenario.endpoint)) {
-      errors.push({
-        value: scenario.endpoint,
-        path: "$input.request.scenario.endpoint",
-        expected: "AutoBeOpenApi.IEndpoint",
-        description: props.endpointNotFound,
-      });
-    }
-
-    // Validate all dependency endpoints exist
-    scenario.dependencies.forEach((dep, idx) => {
-      if (!props.dict.has(dep.endpoint)) {
-        errors.push({
-          value: dep.endpoint,
-          path: `$input.request.scenario.dependencies[${idx}].endpoint`,
-          expected: "AutoBeOpenApi.IEndpoint",
-          description: props.endpointNotFound,
-        });
-      }
-    });
-
-    // Authentication Correction
-    if (props.dict.has(scenario.endpoint)) {
-      const entireRoles: Map<string, IAutoBeTestScenarioAuthorizationActor> =
-        new Map();
-      for (const authorization of props.authorizations) {
-        for (const op of authorization.operations) {
-          if (op.authorizationType === null) continue;
-          const value: IAutoBeTestScenarioAuthorizationActor = MapUtil.take(
-            entireRoles,
-            authorization.name,
-            () => ({
-              name: authorization.name,
-              join: null,
-              login: null,
-            }),
-          );
-          if (op.authorizationType === "join") value.join = op;
-          else if (op.authorizationType === "login") value.login = op;
-        }
-      }
-
-      const operation: AutoBeOpenApi.IOperation =
-        props.dict.get(scenario.endpoint);
-
-      // Gather authorization actors
-      const localRoles: Map<string, IAutoBeTestScenarioAuthorizationActor> =
-        new Map();
-      const add = (operation: AutoBeOpenApi.IOperation) => {
-        const actor: string | null = operation.authorizationActor;
-        if (actor === null) return;
-        MapUtil.take(localRoles, actor, () => ({
-          name: actor,
-          join: null,
-          login: null,
-        }));
-      };
-      add(operation);
-      scenario.dependencies.forEach((d) => {
-        if (props.dict.has(d.endpoint)) {
-          const depOperation: AutoBeOpenApi.IOperation =
-            props.dict.get(d.endpoint);
-          add(depOperation);
-        }
-      });
-
-      // Single actor case - add join operation
-      if (localRoles.size === 1) {
-        const actor: IAutoBeTestScenarioAuthorizationActor = localRoles
-          .values()
-          .next().value!;
-        if (actor.join === null) {
-          const joinOperation: AutoBeOpenApi.IOperation | null =
-            entireRoles.get(actor.name)?.join ?? null;
-          if (joinOperation === null) throw new Error("Unreachable code");
-
-          scenario.dependencies.push({
-            endpoint: {
-              method: joinOperation.method,
-              path: joinOperation.path,
-            },
-            purpose: StringUtil.trim`
-              Essential authentication prerequisite:
-              This join operation (${joinOperation.method} ${joinOperation.path}) must be executed before any operations requiring '${actor.name}' actor authorization.
-              It establishes the necessary user account and authentication context for the '${actor.name}' actor, enabling subsequent API calls that depend on this specific authorization level.
-              Without this join operation, the main scenario endpoint and its dependencies will fail due to insufficient authentication credentials.
-            `,
-          });
-        }
-      }
-
-      // Multiple actors case - add both join and login operations
-      if (localRoles.size > 1) {
-        for (const role of localRoles.values()) {
-          if (role.join === null) {
-            const joinOperation: AutoBeOpenApi.IOperation | null =
-              entireRoles.get(role.name)?.join ?? null;
-            if (joinOperation === null) throw new Error("Unreachable code");
-
-            scenario.dependencies.push({
-              endpoint: {
-                path: joinOperation.path,
-                method: joinOperation.method,
-              },
-              purpose: StringUtil.trim`
-                Multi-actor authentication setup:
-                This join operation (${joinOperation.method} ${joinOperation.path}) is required to establish a '${role.name}' actor user account in the system.
-                This scenario involves multiple authorization actors, requiring separate user accounts for each actor to properly test cross-actor interactions and authorization boundaries.
-                The join operation creates the foundational user identity that will be used throughout the test scenario for '${role.name}' specific operations.
-                This join operation is required for the '${role.name}' actor authentication.
-              `,
-            });
-          }
-          if (role.login === null) {
-            const loginOperation: AutoBeOpenApi.IOperation | null =
-              entireRoles.get(role.name)?.login ?? null;
-            if (loginOperation === null) throw new Error("Unreachable code");
-
-            scenario.dependencies.push({
-              endpoint: {
-                path: loginOperation.path,
-                method: loginOperation.method,
-              },
-              purpose: StringUtil.trim`
-                Actor switching authentication:
-                This login operation (${loginOperation.method} ${loginOperation.path}) enables dynamic user actor switching during test execution for the '${role.name}' actor.
-                In scenarios with multiple actors, the test agent needs to authenticate as different users to simulate real-world multi-user interactions.
-                This login operation ensures proper session management and authorization context switching, allowing the test to validate permissions, access controls, and business logic that span across different user actors within a single test scenario.
-                This login operation may be required for user actor swapping between multiple actors.
-              `,
-            });
-          }
-        }
-      }
-    }
+    result.data.request.scenarios.forEach((scenario, i) =>
+      AutoBeTestScenarioProgrammer.validate({
+        errors,
+        dict: props.dict,
+        authorizations: props.authorizations,
+        operation: props.operation,
+        scenario,
+        accessor: `$input.request.scenarios[${i}]`,
+      }),
+    );
 
     return errors.length === 0
       ? result
@@ -419,9 +242,8 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
-          props.build(next.request.scenario);
-        }
+        if (next.request.type === "complete")
+          props.build(next.request.scenarios);
       },
     } satisfies IAutoBeTestScenarioApplication,
   };

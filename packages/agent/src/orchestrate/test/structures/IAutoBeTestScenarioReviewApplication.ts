@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
+import { AutoBeTestScenario } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -78,16 +78,6 @@ export namespace IAutoBeTestScenarioReviewApplication {
     type: "complete";
 
     /**
-     * The API endpoint being reviewed.
-     *
-     * Must match the endpoint of the original scenario being reviewed.
-     *
-     * Used to ensure consistency and track which operation this review applies
-     * to.
-     */
-    endpoint: AutoBeOpenApi.IEndpoint;
-
-    /**
      * Comprehensive review analysis of the test scenario.
      *
      * Analyzes the scenario for implementability, dependency correctness,
@@ -120,6 +110,6 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * - Draft can be improved if needed
      * - Dependencies should be corrected and properly ordered
      */
-    improved: AutoBeTestScenario | null;
+    content: AutoBeTestScenario | null;
   }
 }

@@ -96,8 +96,9 @@ export const transformTestScenarioHistory = (props: {
 
           Single operation requiring test scenario generation.
 
-          Generate ONE focused test scenario for this operation that validates
-          the primary business workflow. Focus on the most critical use case.
+          Generate 1-3 focused test scenarios for this operation that validate
+          the most critical business workflows. Focus on primary success paths
+          and important edge cases.
 
           \`\`\`json
           ${JSON.stringify({
@@ -113,6 +114,6 @@ export const transformTestScenarioHistory = (props: {
         `,
       },
     ],
-    userMessage: "Design test scenario for the target operation please",
+    userMessage: "Design test scenarios for the target operation please",
   };
 };

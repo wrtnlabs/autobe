@@ -15,6 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioReviewHistory } from "./histories/transformTestScenarioReviewHistory";
+import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
 import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestScenarioReviewApplication";
 
 /**
@@ -22,6 +23,7 @@ import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestSc
  *
  * Reviews each test scenario individually using executeCachedBatch for optimal
  * performance. Each scenario is validated for:
+ *
  * - Authentication correctness (authorizationActor alignment)
  * - Dependency completeness (all prerequisites included)
  * - Execution order (proper sequencing)
@@ -45,32 +47,32 @@ export async function orchestrateTestScenarioReview(
     progress: AutoBeProgressEventBase;
     instruction: string;
   },
-): Promise<AutoBeTestScenarioReviewEvent[]> {
-  const result: Array<AutoBeTestScenarioReviewEvent | null> =
-    await executeCachedBatch(
-      ctx,
-      props.scenarios.map((scenario) => async (promptCacheKey) => {
-        try {
-          return await process(ctx, {
-            dict: props.dict,
-            document: props.document,
-            scenario,
-            progress: props.progress,
-            instruction: props.instruction,
-            promptCacheKey,
-          });
-        } catch {
-          return null;
-        }
-      }),
-    );
-  return result.filter((r) => r !== null);
+): Promise<AutoBeTestScenario[]> {
+  return await executeCachedBatch(
+    ctx,
+    props.scenarios.map((scenario) => async (promptCacheKey) => {
+      try {
+        return await process(ctx, {
+          dict: props.dict,
+          document: props.document,
+          operation: props.dict.get(scenario.endpoint),
+          scenario,
+          progress: props.progress,
+          instruction: props.instruction,
+          promptCacheKey,
+        });
+      } catch {
+        return scenario;
+      }
+    }),
+  );
 }
 
 /**
  * Process single scenario review with LLM agent.
  *
  * Executes the review workflow:
+ *
  * 1. Provides scenario and prerequisites to review agent
  * 2. Agent analyzes for correctness issues
  * 3. Agent returns improved scenario or null
@@ -85,17 +87,17 @@ async function process(
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     document: AutoBeOpenApi.IDocument;
+    operation: AutoBeOpenApi.IOperation;
     scenario: AutoBeTestScenario;
     progress: AutoBeProgressEventBase;
     instruction: string;
     promptCacheKey: string;
   },
-): Promise<AutoBeTestScenarioReviewEvent | null> {
+): Promise<AutoBeTestScenario> {
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
-    application:
-      typia.json.application<IAutoBeTestScenarioReviewApplication>(),
+    application: typia.json.application<IAutoBeTestScenarioReviewApplication>(),
     source: SOURCE,
     kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
     state: ctx.state(),
@@ -110,6 +112,7 @@ async function process(
       source: SOURCE,
       controller: createController({
         dict: props.dict,
+        operation: props.operation,
         scenario: props.scenario,
         preliminary,
         build: (improved) => {
@@ -142,7 +145,7 @@ async function process(
     };
 
     ctx.dispatch(event);
-    return out(result)(event);
+    return out(result)(event.improved ?? props.scenario);
   });
 }
 
@@ -151,8 +154,10 @@ async function process(
  *
  * Sets up the LLM application interface with validation and execution logic.
  * The controller handles:
+ *
  * - Validating review responses against TypeScript types
- * - Processing preliminary data requests (analysisFiles, interfaceOperations, interfaceSchemas)
+ * - Processing preliminary data requests (analysisFiles, interfaceOperations,
+ *   interfaceSchemas)
  * - Capturing improved scenario in build callback
  *
  * @param props - Controller configuration
@@ -165,6 +170,7 @@ async function process(
 function createController(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   scenario: AutoBeTestScenario;
+  operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
@@ -186,65 +192,18 @@ function createController(props: {
         thinking: result.data.thinking,
         request: result.data.request,
       });
-    }
+    } else if (result.data.request.content === null) return result;
 
     // Complete request validation
     const errors: IValidation.IError[] = [];
-
-    // Validate endpoint matches original
-    const complete = result.data.request;
-    if (
-      complete.endpoint.method !== props.scenario.endpoint.method ||
-      complete.endpoint.path !== props.scenario.endpoint.path
-    ) {
-      errors.push({
-        value: complete.endpoint,
-        path: "$input.request.endpoint",
-        expected: "AutoBeOpenApi.IEndpoint",
-        description: `Endpoint must match the original scenario: ${props.scenario.endpoint.method} ${props.scenario.endpoint.path}`,
-      });
-    }
-
-    // If improved scenario provided, validate it
-    if (complete.improved !== null) {
-      const improved = complete.improved;
-
-      // Validate improved endpoint matches original
-      if (
-        improved.endpoint.method !== props.scenario.endpoint.method ||
-        improved.endpoint.path !== props.scenario.endpoint.path
-      ) {
-        errors.push({
-          value: improved.endpoint,
-          path: "$input.request.improved.endpoint",
-          expected: "AutoBeOpenApi.IEndpoint",
-          description: `Improved scenario endpoint must match original: ${props.scenario.endpoint.method} ${props.scenario.endpoint.path}`,
-        });
-      }
-
-      // Validate improved functionName matches original
-      if (improved.functionName !== props.scenario.functionName) {
-        errors.push({
-          value: improved.functionName,
-          path: "$input.request.improved.functionName",
-          expected: "string",
-          description: `Improved scenario functionName must match original: ${props.scenario.functionName}`,
-        });
-      }
-
-      // Validate all dependency endpoints exist in available operations
-      improved.dependencies.forEach((dep, idx) => {
-        if (!props.dict.has(dep.endpoint)) {
-          errors.push({
-            value: dep.endpoint,
-            path: `$input.request.improved.dependencies[${idx}].endpoint`,
-            expected: "AutoBeOpenApi.IEndpoint",
-            description: `Dependency endpoint not found in available operations: ${dep.endpoint.method} ${dep.endpoint.path}`,
-          });
-        }
-      });
-    }
-
+    AutoBeTestScenarioProgrammer.validate({
+      errors,
+      dict: props.dict,
+      operation: props.operation,
+      scenario: result.data.request.content,
+      accessor: "$input.request.content",
+      authorizations: [],
+    });
     if (errors.length > 0) {
       return {
         success: false,
@@ -252,7 +211,6 @@ function createController(props: {
         data: result.data,
       };
     }
-
     return result;
   };
 
@@ -270,7 +228,7 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "complete") {
-          props.build(next.request.improved);
+          props.build(next.request.content);
         }
       },
     } satisfies IAutoBeTestScenarioReviewApplication,

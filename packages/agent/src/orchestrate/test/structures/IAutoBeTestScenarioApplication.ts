@@ -77,6 +77,30 @@ export namespace IAutoBeTestScenarioApplication {
      */
     type: "complete";
 
-    scenario: AutoBeTestScenario;
+    /**
+     * Array of generated test scenarios for the target operation.
+     *
+     * Contains 1-3 focused test scenarios that cover:
+     *
+     * - Primary success paths (most common business workflows)
+     * - Important edge cases (critical boundary conditions)
+     * - Key error scenarios (meaningful business logic failures)
+     *
+     * Each scenario includes:
+     *
+     * - endpoint: The target API operation being tested
+     * - functionName: snake_case test function name
+     * - draft: Detailed test description and validation points
+     * - dependencies: Ordered list of prerequisite operations (auth,
+     *   setup, etc.)
+     *
+     * Guidelines:
+     *
+     * - Focus on business logic validation, not framework validation
+     * - Each scenario must be independently implementable
+     * - Dependencies must be correctly ordered (auth → setup → target)
+     * - Avoid duplicate or overlapping scenarios
+     */
+    scenarios: AutoBeTestScenario[];
   }
 }
