@@ -166,8 +166,6 @@ async function process(
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
-      namespace: props.component.namespace,
-      tables: validTables,
       review: component.review,
       revises,
       modification: component,

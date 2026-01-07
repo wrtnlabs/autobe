@@ -97,6 +97,15 @@ export namespace ArchiveLogger {
       content.push(
         `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
       );
+    else if (event.type === "databaseComponentReview")
+      content.push(
+        `  - namespace: ${event.modification.namespace}`,
+        `  - tables: ${event.modification.tables.length}`,
+        `  - revised:`,
+        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
+        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
+        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
+      );
     else if (event.type === "databaseSchema")
       content.push(`  - model: ${event.model.name}`);
     else if (event.type === "interfaceEndpoint")

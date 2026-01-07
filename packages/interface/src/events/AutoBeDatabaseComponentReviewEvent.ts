@@ -1,5 +1,7 @@
-import { AutoBeDatabase } from "../database";
-import { AutoBeDatabaseComponentTableRevise } from "../histories/contents";
+import {
+  AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentTableRevise,
+} from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -64,7 +66,7 @@ export interface AutoBeDatabaseComponentReviewEvent
    * applied. Tables that were added, removed, or renamed are reflected in this
    * final component structure used for schema generation.
    */
-  modification: AutoBeDatabase.IComponent;
+  modification: AutoBeDatabaseComponent;
 
   /**
    * Iteration number of the requirements analysis this component review was
