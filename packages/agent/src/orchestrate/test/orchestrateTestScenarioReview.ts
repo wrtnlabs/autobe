@@ -37,7 +37,7 @@ import { IAutoBeTestScenarioReviewApplication } from "./structures/IAutoBeTestSc
  * @param props.scenarios - Array of test scenarios to review
  * @param props.progress - Progress tracking for batch operations
  * @param props.instruction - E2E-test-specific instructions from requirements
- * @returns Array of review events (null entries filtered out)
+ * @returns Promise resolving to an array of reviewed test scenarios
  */
 export async function orchestrateTestScenarioReview(
   ctx: AutoBeContext,
