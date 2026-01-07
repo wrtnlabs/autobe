@@ -3,8 +3,12 @@ import {
   AutoBeOpenApi,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { AutoBeOpenApiEndpointComparator, MapUtil, StringUtil } from "@autobe/utils";
-import { HashMap, Pair } from "tstl";
+import {
+  AutoBeOpenApiEndpointComparator,
+  MapUtil,
+  StringUtil,
+} from "@autobe/utils";
+import { HashMap, Pair, Singleton } from "tstl";
 import { IValidation } from "typia";
 
 import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
@@ -45,7 +49,11 @@ export namespace AutoBeTestScenarioProgrammer {
    * - Single actor: Adds join operation if missing
    * - Multiple actors: Adds join + login operations for each actor if missing
    *
-   * This function mutates the scenario by appending to its dependencies array.
+   * This function mutates the scenario by prepending auth dependencies to
+   * ensure they execute before all other operations (correct execution order).
+   *
+   * Duplicate prevention: Tracks existing join/login operations in dependencies
+   * to avoid adding them twice.
    *
    * @param props - Fulfillment configuration
    * @param props.dict - Endpoint to operation lookup map
@@ -95,8 +103,9 @@ export namespace AutoBeTestScenarioProgrammer {
     // Check existing dependencies to track what's already included
     props.scenario.dependencies.forEach((d) => {
       if (props.dict.has(d.endpoint)) {
-        const depOperation: AutoBeOpenApi.IOperation =
-          props.dict.get(d.endpoint);
+        const depOperation: AutoBeOpenApi.IOperation = props.dict.get(
+          d.endpoint,
+        );
 
         // Track non-auth operation actors
         if (depOperation.authorizationActor !== null) {
@@ -126,7 +135,10 @@ export namespace AutoBeTestScenarioProgrammer {
       }
     });
 
-    // Single actor case - add join operation
+    // Collect authentication dependencies to prepend
+    const authDeps: AutoBeTestScenario["dependencies"] = [];
+
+    // Single actor case - add join operation only
     if (localRoles.size === 1) {
       const actor: IAutoBeTestScenarioAuthorizationActor = localRoles
         .values()
@@ -134,9 +146,12 @@ export namespace AutoBeTestScenarioProgrammer {
       if (actor.join === null) {
         const joinOperation: AutoBeOpenApi.IOperation | null =
           entireRoles.get(actor.name)?.join ?? null;
-        if (joinOperation === null) throw new Error("Unreachable code");
+        if (joinOperation === null)
+          throw new Error(
+            `Authorization actor '${actor.name}' requires join operation, but none is configured in authorization settings`,
+          );
 
-        props.scenario.dependencies.push({
+        authDeps.push({
           endpoint: {
             method: joinOperation.method,
             path: joinOperation.path,
@@ -157,9 +172,12 @@ export namespace AutoBeTestScenarioProgrammer {
         if (role.join === null) {
           const joinOperation: AutoBeOpenApi.IOperation | null =
             entireRoles.get(role.name)?.join ?? null;
-          if (joinOperation === null) throw new Error("Unreachable code");
+          if (joinOperation === null)
+            throw new Error(
+              `Authorization actor '${role.name}' requires join operation for multi-actor scenarios, but none is configured in authorization settings`,
+            );
 
-          props.scenario.dependencies.push({
+          authDeps.push({
             endpoint: {
               path: joinOperation.path,
               method: joinOperation.method,
@@ -176,9 +194,12 @@ export namespace AutoBeTestScenarioProgrammer {
         if (role.login === null) {
           const loginOperation: AutoBeOpenApi.IOperation | null =
             entireRoles.get(role.name)?.login ?? null;
-          if (loginOperation === null) throw new Error("Unreachable code");
+          if (loginOperation === null)
+            throw new Error(
+              `Authorization actor '${role.name}' requires login operation for multi-actor scenarios, but none is configured in authorization settings`,
+            );
 
-          props.scenario.dependencies.push({
+          authDeps.push({
             endpoint: {
               path: loginOperation.path,
               method: loginOperation.method,
@@ -194,6 +215,9 @@ export namespace AutoBeTestScenarioProgrammer {
         }
       }
     }
+
+    // Prepend authentication dependencies to ensure they execute first
+    props.scenario.dependencies = [...authDeps, ...props.scenario.dependencies];
   };
 
   /**
@@ -217,6 +241,25 @@ export namespace AutoBeTestScenarioProgrammer {
     scenario: AutoBeTestScenario;
     accessor: string;
   }): void => {
+    const table: Singleton<string> = new Singleton(() => {
+      const operations: AutoBeOpenApi.IOperation[] = props.dict
+        .toJSON()
+        .map((pair) => pair.second)
+        .filter(
+          (o) =>
+            AutoBeOpenApiEndpointComparator.equals(o, props.operation) ===
+            false,
+        );
+      return [
+        "",
+        "You must select one of the endpoints below:",
+        "",
+        " method | path ",
+        "--------|------",
+        ...operations.map((op) => ` \`${op.method}\` | \`${op.path}\` `),
+      ].join("\n");
+    });
+
     if (
       AutoBeOpenApiEndpointComparator.equals(
         props.scenario.endpoint,
@@ -227,6 +270,12 @@ export namespace AutoBeTestScenarioProgrammer {
         path: `${props.accessor}.endpoint`,
         expected: "AutoBeOpenApi.IEndpoint",
         value: props.scenario.endpoint,
+        description: StringUtil.trim`
+          The scenario endpoint must exactly match the target operation endpoint being tested.
+
+          - Expected endpoint: (method: ${props.operation.method}, path: ${props.operation.path})
+          - Received endpoint: (method: ${props.scenario.endpoint.method}, path: ${props.scenario.endpoint.path})
+        `,
       });
     props.scenario.dependencies.forEach((dep, j) => {
       if (props.dict.has(dep.endpoint) === false)
@@ -234,6 +283,15 @@ export namespace AutoBeTestScenarioProgrammer {
           path: `${props.accessor}.dependencies[${j}].endpoint`,
           expected: "AutoBeOpenApi.IEndpoint",
           value: dep.endpoint,
+          description: StringUtil.trim`
+            Dependency endpoint does not exist in the API document.
+
+            All dependencies must reference valid operations defined in the OpenAPI specification.
+
+            Invalid endpoint: ${dep.endpoint.method} ${dep.endpoint.path}
+
+            ${table.get()}
+          `,
         });
       else if (
         AutoBeOpenApiEndpointComparator.equals(dep.endpoint, props.operation)
@@ -242,6 +300,16 @@ export namespace AutoBeTestScenarioProgrammer {
           path: `${props.accessor}.dependencies[${j}].endpoint`,
           expected: "AutoBeOpenApi.IEndpoint",
           value: dep.endpoint,
+          description: StringUtil.trim`
+            Scenario cannot depend on itself (circular dependency detected).
+
+            Dependencies must reference different operations, not the operation being tested.
+
+            Remove this dependency or replace it with a different prerequisite operation.
+
+            - Current operation: (method: ${props.operation.method}, path: ${props.operation.path})
+            - Self-referencing dependency: (method: ${dep.endpoint.method}, path: ${dep.endpoint.path})
+          `,
         });
     });
   };
