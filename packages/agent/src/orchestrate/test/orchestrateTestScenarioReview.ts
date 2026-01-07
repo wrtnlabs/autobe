@@ -76,12 +76,12 @@ export async function orchestrateTestScenarioReview(
  *
  * 1. Provides scenario and prerequisites to review agent
  * 2. Agent analyzes for correctness issues
- * 3. Agent returns improved scenario or null
+ * 3. Agent returns an improved scenario, or the original if improvements fail
  * 4. Creates and dispatches review event
  *
  * @param ctx - AutoBe context
  * @param props - Review configuration with single scenario
- * @returns Review event or null if review failed
+ * @returns Reviewed test scenario (improved or original if review failed)
  */
 async function process(
   ctx: AutoBeContext,
