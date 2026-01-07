@@ -117,24 +117,23 @@ export namespace IAutoBeDatabaseReviewApplication {
     plan: string;
 
     /**
-     * Modified database models based on review feedback.
+     * Modified database model based on review feedback.
      *
-     * Contains ONLY the models that required changes, not the entire schema.
-     * Each model is a complete table definition with all fields, relationships,
-     * indexes, and documentation. These modifications merge with the original
-     * schema to produce the final implementation.
+     * Contains the single modified model if changes are required, or null
+     * if the table passes validation. The model is a complete table definition
+     * with all fields, relationships, indexes, and documentation.
      *
      * Model requirements:
      *
-     * - Complete models: Each entry must be a complete model definition
-     * - Targeted changes: Only includes models that need modifications
+     * - Complete model: Must be a complete model definition
+     * - Targeted change: Only the single table that needs modification
      * - AST compliance: Follows AutoBeDatabase.IModel interface structure
      * - Relationship integrity: All foreign keys reference valid models
      * - Index optimization: Strategic indexes without redundancy
      * - Documentation: Comprehensive English descriptions
      *
-     * Models not included remain unchanged from the original schema. All
-     * modifications must resolve issues identified in the review.
+     * If null, the original model remains unchanged from the original schema.
+     * If not null, the modification must resolve issues identified in the review.
      */
     content: AutoBeDatabase.IModel | null;
   }

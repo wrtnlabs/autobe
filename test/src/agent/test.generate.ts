@@ -18,4 +18,4 @@ const main = async () => {
     project,
   });
 };
-main().catch(console.error);
+main().catch(console.log);

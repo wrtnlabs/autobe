@@ -20,4 +20,4 @@ const main = async () => {
     });
   console.log(JSON.stringify(endpoints, null, 2));
 };
-main().catch(console.error);
+main().catch(console.log);
