@@ -16,29 +16,11 @@ pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > ar
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > archive.qwen-qwen3-next-80b-a3b-instruct.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > archive.qwen-qwen3-next-80b-a3b-instruct.shopping.log
 
-# qwen/qwen3-next-80b-a3b-thinking (0.15)
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-thinking --project todo > archive.qwen-qwen3-next-80b-a3b-thinking.todo.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-thinking --project bbs > archive.qwen-qwen3-next-80b-a3b-thinking.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-thinking --project reddit > archive.qwen-qwen3-next-80b-a3b-thinking.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-thinking --project shopping > archive.qwen-qwen3-next-80b-a3b-thinking.shopping.log
-
 # qwen/qwen3-30b-a3b-thinking-2507 (0.051)
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > archive.qwen-qwen3-30b-a3b-thinking-2507.todo.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > archive.qwen-qwen3-30b-a3b-thinking-2507.bbs.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
-
-# qwen/qwen3-235b-a22b-2507 (0.071)
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-2507 --project todo > archive.qwen-qwen3-235b-a22b-2507.todo.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-2507 --project bbs > archive.qwen-qwen3-235b-a22b-2507.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-2507 --project reddit > archive.qwen-qwen3-235b-a22b-2507.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-2507 --project shopping > archive.qwen-qwen3-235b-a22b-2507.shopping.log
-
-# qwen/qwen3-235b-a22b-thinking-2507 (0.11)
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-thinking-2507 --project todo > archive.qwen-qwen3-235b-a22b-thinking-2507.todo.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-thinking-2507 --project bbs > archive.qwen-qwen3-235b-a22b-thinking-2507.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-thinking-2507 --project reddit > archive.qwen-qwen3-235b-a22b-thinking-2507.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-235b-a22b-thinking-2507 --project shopping > archive.qwen-qwen3-235b-a22b-thinking-2507.shopping.log
 
 ######################################################
 # GLM
