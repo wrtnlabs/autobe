@@ -8,7 +8,7 @@ export const test_json_schema_presets = () => {
     AutoBeJsonSchemaFactory.presets(
       new Set(["IPageIUser.ISummary", "IUser.IAuthorized"]),
     );
-  TestValidator.predicate("IPage.IPaination", () =>
+  TestValidator.predicate("IPage.IPagination", () =>
     typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IPage.IPagination"]),
   );
   TestValidator.predicate("IAuthorizationToken", () =>
