@@ -1,9 +1,11 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeDatabase,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -20,16 +22,17 @@ export async function orchestratePrismaComponentReview(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    components: AutoBeDatabase.IComponent[];
+    components: AutoBeDatabaseComponent[];
   },
 ): Promise<AutoBeDatabaseComponentReviewEvent[]> {
-  const start: Date = new Date();
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const total: number = props.components.length;
-  const completed: IPointer<number> = { value: 0 };
   const allTableNames: string[] = props.components.flatMap((c) =>
     c.tables.map((t) => t.name),
   );
+  const progress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: props.components.length,
+  };
 
   return await executeCachedBatch(
     ctx,
@@ -46,9 +49,7 @@ export async function orchestratePrismaComponentReview(
         allTableNames,
         instruction: props.instruction,
         prefix,
-        start,
-        total,
-        completed,
+        progress,
         promptCacheKey,
       });
       ctx.dispatch(event);
@@ -60,14 +61,12 @@ export async function orchestratePrismaComponentReview(
 async function process(
   ctx: AutoBeContext,
   props: {
-    component: AutoBeDatabase.IComponent;
+    component: AutoBeDatabaseComponent;
     otherTableNames: Set<string>;
     allTableNames: string[];
     instruction: string;
     prefix: string | null;
-    start: Date;
-    total: number;
-    completed: IPointer<number>;
+    progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponentReviewEvent> {
@@ -114,11 +113,10 @@ async function process(
         preliminary,
       }),
     });
-
     if (pointer.value === null) return out(result)(null);
 
     // Apply revises to the component's tables
-    const tableMap = new Map<string, AutoBeDatabase.ITableDesign>(
+    const tableMap = new Map<string, AutoBeDatabaseComponentTableDesign>(
       props.component.tables.map((t) => [t.name, t]),
     );
 
@@ -151,11 +149,11 @@ async function process(
       }
     }
 
-    const validTables: AutoBeDatabase.ITableDesign[] = Array.from(
+    const validTables: AutoBeDatabaseComponentTableDesign[] = Array.from(
       tableMap.values(),
     );
 
-    const component: AutoBeDatabase.IComponent = {
+    const component: AutoBeDatabaseComponent = {
       filename: props.component.filename,
       namespace: props.component.namespace,
       thinking: props.component.thinking,
@@ -167,14 +165,16 @@ async function process(
     return out(result)({
       type: SOURCE,
       id: v7(),
-      created_at: props.start.toISOString(),
+      created_at: new Date().toISOString(),
+      namespace: props.component.namespace,
+      tables: validTables,
       review: component.review,
       revises,
       modification: component,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: ++props.completed.value,
-      total: props.total,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     });
   });
