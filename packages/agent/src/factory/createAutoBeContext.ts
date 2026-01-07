@@ -143,7 +143,7 @@ export const createAutoBeContext = (props: {
           config: {
             ...(props.config ?? {}),
             executor: {
-              describe: null,
+              describe: false,
             },
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
