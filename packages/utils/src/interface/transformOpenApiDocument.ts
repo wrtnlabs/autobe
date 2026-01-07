@@ -11,7 +11,7 @@ import { StringUtil } from "../StringUtil";
 import { AutoBeOpenApiEndpointComparator } from "./AutoBeOpenApiEndpointComparator";
 
 export function transformOpenApiDocument(
-  document: AutoBeOpenApi.IDocument,
+  input: AutoBeOpenApi.IDocument,
 ): OpenApi.IDocument {
   const dict: HashMap<AutoBeOpenApi.IEndpoint, string> = new HashMap(
     AutoBeOpenApiEndpointComparator.hashCode,
@@ -19,7 +19,7 @@ export function transformOpenApiDocument(
   );
   const paths: Record<string, OpenApi.IPath> = {};
 
-  for (const op of document.operations) {
+  for (const op of input.operations) {
     dict.set(op, op.name);
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
@@ -71,12 +71,12 @@ export function transformOpenApiDocument(
     };
   }
 
-  const result: OpenApi.IDocument = OpenApi.convert({
+  const document: OpenApi.IDocument = OpenApi.convert({
     openapi: "3.1.0",
     paths,
-    components: document.components,
+    components: input.components,
   } as OpenApiV3_1.IDocument);
-  const migrate: IHttpMigrateApplication = HttpMigration.application(result);
+  const migrate: IHttpMigrateApplication = HttpMigration.application(document);
   migrate.routes.forEach((r) => {
     if (r.method === "head") return;
     const name: string = dict.get({
@@ -87,5 +87,5 @@ export function transformOpenApiDocument(
     r.accessor[r.accessor.length - 1] = name;
     r.operation()["x-samchon-accessor"] = r.accessor;
   });
-  return result;
+  return document;
 }

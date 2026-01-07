@@ -6,7 +6,6 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -153,18 +152,7 @@ async function process(
     const content: AutoBeOpenApi.IJsonSchemaDescriptive =
       pointer.value.content === null
         ? props.reviewSchema
-        : (
-            ((
-              OpenApiV3_1Emender.convertComponents({
-                schemas: {
-                  [props.typeName]: pointer.value.content,
-                },
-              }) as AutoBeOpenApi.IComponents
-            ).schemas ?? {}) as Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            >
-          )[props.typeName];
+        : JsonSchemaFactory.fixSchema(props.typeName, pointer.value.content);
     ctx.dispatch({
       type: SOURCE,
       kind: config.kind,

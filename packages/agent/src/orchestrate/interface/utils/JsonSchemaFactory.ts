@@ -6,6 +6,7 @@ import {
   OpenApi,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
+import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import typia, { tags } from "typia";
 
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -249,6 +250,38 @@ export namespace JsonSchemaFactory {
   /* -----------------------------------------------------------
     PLUGIN
   ----------------------------------------------------------- */
+  export const fixSchema = (
+    key: string,
+    value: AutoBeOpenApi.IJsonSchemaDescriptive,
+  ): AutoBeOpenApi.IJsonSchemaDescriptive => {
+    const emended: AutoBeOpenApi.IJsonSchemaDescriptive = (
+      ((
+        OpenApiV3_1Emender.convertComponents({
+          schemas: {
+            [key]: value,
+          },
+        }) as AutoBeOpenApi.IComponents
+      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
+    )[key];
+    AutoBeOpenApiTypeChecker.visit({
+      components: {
+        authorizations: [],
+        schemas: {},
+      },
+      schema: emended,
+      closure(next) {
+        for (const k of Object.keys(next))
+          if (
+            k === "x-autobe-database-schema" &&
+            AutoBeOpenApiTypeChecker.isObject(next)
+          )
+            continue;
+          else if (k.startsWith("x-")) delete (next as any)[k];
+      },
+    });
+    return emended;
+  };
+
   export const fixPlugin = (
     state: AutoBeState,
     $defs: Record<string, ILlmSchema>,
