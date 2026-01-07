@@ -43,6 +43,30 @@ Fetch files that are relevant to your component's domain. For example:
 - Orders component → Order flow, payment requirements
 - Products component → Product catalog, inventory requirements
 
+#### Additional Context Options
+
+**Load Previous Version Analysis Files** (only available during regeneration):
+
+```typescript
+process({
+  thinking: "Need previous requirements to understand what changed.",
+  request: { type: "getPreviousAnalysisFiles", fileNames: ["..."] }
+})
+```
+
+Use when regenerating due to user modifications to compare with the previous version.
+
+**Load Previous Version Database Schemas** (only available during regeneration):
+
+```typescript
+process({
+  thinking: "Need previous database schema to understand baseline design.",
+  request: { type: "getPreviousDatabaseSchemas", schemaNames: ["..."] }
+})
+```
+
+Use when you need to reference the previous database schema design to understand what needs to be changed. Only available when a previous version exists.
+
 ### Step 2: Deep Requirements Analysis (CRITICAL)
 
 **This is your PRIMARY task.** Before identifying any revisions, you MUST thoroughly analyze each requirement in the fetched documents:

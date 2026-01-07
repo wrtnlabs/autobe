@@ -67,10 +67,10 @@ export const transformPrismaSchemaHistory = (props: {
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: StringUtil.trim`
-        You've taken a mistake of creating model for other.
+        ## Critical Reminder: Single Table Focus
 
-        Note that you must create only the target model. Never create model
-        for other table. All other models are already being created.
+        You must create ONLY the target model specified below.
+        Do NOT create models for other tables - they are handled separately.
 
         \`\`\`json
         ${JSON.stringify({

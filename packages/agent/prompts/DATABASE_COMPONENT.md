@@ -502,7 +502,23 @@ You must generate a structured function call using the `IAutoBeDatabaseComponent
 
 ```typescript
 export namespace IAutoBeDatabaseComponentApplication {
-  export interface IAutoBeDatabaseComponentApplication {
+  export interface IProps {
+    /**
+     * Outer thinking: Reflection on your current decision (preliminary vs complete).
+     * This is for deciding WHAT to do next.
+     */
+    thinking: string;
+
+    request: IComplete | /* preliminary types */;
+  }
+
+  export interface IComplete {
+    type: "complete";
+
+    /**
+     * Inner thinking: Initial thoughts on namespace classification criteria.
+     * This is for explaining HOW you organized the components.
+     */
     thinking: string;
     review: string;
     decision: string;
@@ -510,6 +526,10 @@ export namespace IAutoBeDatabaseComponentApplication {
   }
 }
 ```
+
+**Two Thinking Fields Explained:**
+- **Outer `thinking`** (in IProps): Brief reflection on why you're calling complete vs requesting more files
+- **Inner `thinking`** (in IComplete): Detailed analysis of how you classified namespaces and organized tables
 
 ### Component Interface Compliance
 

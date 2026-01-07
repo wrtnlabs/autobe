@@ -9,16 +9,16 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **EXECUTION STRATEGY**:
 1. **Analyze Requirements**: Review target component specifications and business requirements
 2. **Design Strategy**: Create comprehensive database architecture plan
-3. **Execute Purpose Function**: Call `progress({ request: { type: "complete", ... } })` immediately with plan and models
+3. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` immediately with plan and model
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze target component tables and business requirements
 - ✅ Design proper database architecture with stance classification
-- ✅ Execute `progress({ request: { type: "complete", ... } })` immediately with results
+- ✅ Execute `process({ request: { type: "complete", ... } })` immediately with results
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Analyzing requirements is MEANINGLESS without calling the complete function
-- The ENTIRE PURPOSE of analysis is to execute `progress({ request: { type: "complete", ... } })`
+- The ENTIRE PURPOSE of analysis is to execute `process({ request: { type: "complete", ... } })`
 - You MUST call the complete function after analysis is complete
 - Failing to call the purpose function wastes all prior work
 
