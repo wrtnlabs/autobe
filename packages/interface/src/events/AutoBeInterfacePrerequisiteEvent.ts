@@ -1,47 +1,60 @@
-import { AutoBeInterfacePrerequisite } from "../histories/contents/AutoBeInterfacePrerequisite";
+import { AutoBeOpenApi } from "../openapi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event emitted during the API prerequisite dependency analysis phase.
+ * Event emitted when a single API operation's prerequisite dependencies are analyzed.
  *
- * This event is triggered when the Interface Prerequisite Agent analyzes API
- * operations to determine their prerequisite dependencies. It represents the
- * process of establishing which POST operations must be executed before a given
- * operation can succeed, ensuring proper resource creation order for E2E test
- * generation.
+ * This event is triggered when the Interface Prerequisite Agent completes
+ * analyzing one API operation to determine its prerequisite dependencies. It
+ * represents the result of establishing which POST operations must be executed
+ * before the target operation can succeed, ensuring proper resource creation
+ * order for E2E test generation.
  *
- * The prerequisite analysis phase examines each API operation to identify
- * required resource dependencies based on path parameters, request body
- * schemas, and entity relationships. For example, a `PUT
- * /orders/{orderId}/items/{itemId}` operation would require `POST /orders` and
- * `POST /orders/{orderId}/items` as prerequisites to create the necessary
- * resources first.
+ * The prerequisite analysis examines the API operation to identify required
+ * resource dependencies based on path parameters, request body schemas, and
+ * entity relationships. For example, a `PUT /orders/{orderId}/items/{itemId}`
+ * operation would require `POST /orders` and `POST /orders/{orderId}/items` as
+ * prerequisites to create the necessary resources first.
  *
  * By extending multiple base interfaces, this event provides comprehensive
- * tracking capabilities including progress monitoring for batch operation
+ * tracking capabilities including progress monitoring for one-by-one operation
  * processing and token usage analytics for cost optimization.
  *
  * @author Samchon
  */
 export interface AutoBeInterfacePrerequisiteEvent
-  extends AutoBeEventBase<"interfacePrerequisite">,
+  extends
+    AutoBeEventBase<"interfacePrerequisite">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Array of operations with their analyzed prerequisite dependencies.
+   * The API endpoint being analyzed for prerequisite dependencies.
    *
-   * Contains the {@link AutoBeInterfacePrerequisite} results that map each
-   * analyzed API operation to its required prerequisite POST operations. Each
-   * entry specifies which operations must be executed first to create the
-   * necessary resources for the target operation to succeed.
-   *
-   * These prerequisite mappings are essential for generating valid E2E tests
-   * that execute operations in the correct order, ensuring that required
-   * resources exist before dependent operations are tested.
+   * Identifies the specific operation (method + path) that requires
+   * prerequisite operations to be executed first. This can be any HTTP method
+   * (GET, POST, PUT, DELETE, PATCH) as all operations may have resource
+   * dependencies that need to be satisfied.
    */
-  operations: AutoBeInterfacePrerequisite[];
+  endpoint: AutoBeOpenApi.IEndpoint;
+
+  /**
+   * Array of prerequisite POST operations required before this operation.
+   *
+   * Contains the list of API operations that must be successfully executed
+   * before the target operation can be performed. Each prerequisite is a POST
+   * operation that creates a required resource, derived from path parameter
+   * dependencies, request body schema references, and entity relationships.
+   *
+   * For example, a `DELETE /orders/{orderId}/items/{itemId}` operation would
+   * have prerequisites including `POST /orders` to create the order and `POST
+   * /orders/{orderId}/items` to create the item being deleted.
+   *
+   * Prerequisites are ordered logically with parent resources before child
+   * resources to ensure proper creation sequence.
+   */
+  prerequisites: AutoBeOpenApi.IPrerequisite[];
 
   /**
    * Iteration number of the Prisma schema this prerequisite analysis was

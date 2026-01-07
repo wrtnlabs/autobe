@@ -3,9 +3,9 @@ import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-import { JsonSchemaValidator } from "./JsonSchemaValidator";
+import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
-export namespace OperationValidator {
+export namespace AutoBeInterfaceOperationValidator {
   export const validate = (props: {
     errors: IValidation.IError[];
     path: string;
@@ -49,7 +49,7 @@ export namespace OperationValidator {
         path: `${props.path}.requestBody`,
         body: props.operation.requestBody,
       });
-      JsonSchemaValidator.validateKey({
+      AutoBeJsonSchemaValidator.validateKey({
         errors: props.errors,
         path: `${props.path}.requestBody.typeName`,
         key: props.operation.requestBody.typeName,
@@ -62,7 +62,7 @@ export namespace OperationValidator {
         path: `${props.path}.responseBody`,
         body: props.operation.responseBody,
       });
-      JsonSchemaValidator.validateKey({
+      AutoBeJsonSchemaValidator.validateKey({
         errors: props.errors,
         path: `${props.path}.responseBody.typeName`,
         key: props.operation.responseBody.typeName,

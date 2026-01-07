@@ -1,5 +1,5 @@
-import { JsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaFactory";
-import { JsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaNamingConvention";
+import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 
 const main = async (): Promise<void> => {
@@ -26,13 +26,13 @@ const main = async (): Promise<void> => {
     );
   trace("initial");
 
-  JsonSchemaNamingConvention.schemas(
+  AutoBeJsonSchemaNamingConvention.schemas(
     document.operations,
     document.components.schemas,
   );
   trace("convention");
 
-  JsonSchemaFactory.finalize({
+  AutoBeJsonSchemaFactory.finalize({
     document,
     application,
   });

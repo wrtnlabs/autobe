@@ -18,7 +18,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { OperationValidator } from "./utils/OperationValidator";
+import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
@@ -205,7 +205,7 @@ function createController(props: {
     const op: IAutoBeInterfaceOperationApplication.IOperation =
       result.data.request.operation;
     const errors: IValidation.IError[] = [];
-    OperationValidator.validate({
+    AutoBeInterfaceOperationValidator.validate({
       path: "$input.request.operation",
       errors,
       operation: op,

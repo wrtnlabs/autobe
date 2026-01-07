@@ -17,4 +17,11 @@ export namespace AutoBeOpenApiEndpointComparator {
 
   export const hashCode = (endpoint: AutoBeOpenApi.IEndpoint): number =>
     hash(endpoint.path, endpoint.method);
+
+  export const clone = (
+    endpoint: AutoBeOpenApi.IEndpoint,
+  ): AutoBeOpenApi.IEndpoint => ({
+    path: endpoint.path,
+    method: endpoint.method,
+  });
 }

@@ -2,7 +2,7 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { MapUtil } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@samchon/openapi";
 
-export namespace JsonSchemaNamingConvention {
+export namespace AutoBeJsonSchemaNamingConvention {
   export const operations = (operations: AutoBeOpenApi.IOperation[]): void => {
     const convention: Convention = new Convention();
     for (const op of operations) {

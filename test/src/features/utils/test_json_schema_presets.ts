@@ -1,14 +1,14 @@
-import { JsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/JsonSchemaFactory";
+import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 export const test_json_schema_presets = () => {
   const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    JsonSchemaFactory.presets(
+    AutoBeJsonSchemaFactory.presets(
       new Set(["IPageIUser.ISummary", "IUser.IAuthorized"]),
     );
-  TestValidator.predicate("IPage.IPaination", () =>
+  TestValidator.predicate("IPage.IPagination", () =>
     typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IPage.IPagination"]),
   );
   TestValidator.predicate("IAuthorizationToken", () =>

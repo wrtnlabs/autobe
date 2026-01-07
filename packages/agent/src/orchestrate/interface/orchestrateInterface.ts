@@ -5,10 +5,10 @@ import {
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
-  AutoBeInterfacePrerequisite,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { AutoBeInterfacePrerequisiteEvent } from "@autobe/interface/src/events/AutoBeInterfacePrerequisiteEvent";
 import {
   AutoBeOpenApiEndpointComparator,
   missedOpenApiSchemas,
@@ -32,9 +32,9 @@ import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequi
 import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
-import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
-import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
-import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
+import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 
 export const orchestrateInterface =
   (ctx: AutoBeContext) =>
@@ -160,18 +160,18 @@ export const orchestrateInterface =
         Object.entries(schemas).filter(([_k, v]) => v !== undefined),
       );
       Object.assign(document.components.schemas, schemas);
-      JsonSchemaFactory.authorize(document.components.schemas);
+      AutoBeJsonSchemaFactory.authorize(document.components.schemas);
       Object.assign(
         document.components.schemas,
-        JsonSchemaFactory.presets(
+        AutoBeJsonSchemaFactory.presets(
           new Set(Object.keys(document.components.schemas)),
         ),
       );
-      JsonSchemaNamingConvention.schemas(
+      AutoBeJsonSchemaNamingConvention.schemas(
         document.operations,
         document.components.schemas,
       );
-      JsonSchemaFactory.finalize({
+      AutoBeJsonSchemaFactory.finalize({
         document,
         application: ctx.state().database!.result.data,
       });
@@ -190,7 +190,7 @@ export const orchestrateInterface =
       completed: 0,
       total:
         Object.keys(document.components.schemas).filter(
-          (k) => JsonSchemaValidator.isPreset(k) === false,
+          (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
         ).length * REVIEWERS.length,
     };
     for (const config of REVIEWERS)
@@ -238,7 +238,7 @@ export const orchestrateInterface =
     // FINALIZATION
     //------------------------------------------------
     // CONNECT PREREQUISITES
-    const prerequisites: AutoBeInterfacePrerequisite[] =
+    const prerequisites: AutoBeInterfacePrerequisiteEvent[] =
       await orchestrateInterfacePrerequisite(ctx, document);
     document.operations.forEach((op) => {
       op.prerequisites =

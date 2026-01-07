@@ -11,7 +11,7 @@ import { getReferenceIds } from "../../test/utils/getReferenceIds";
 // @todo -> RAG
 export const transformInterfacePrerequisiteHistory = (props: {
   document: AutoBeOpenApi.IDocument;
-  includes: AutoBeOpenApi.IOperation[];
+  operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -37,10 +37,9 @@ export const transformInterfacePrerequisiteHistory = (props: {
             props.document.components.schemas[next.$ref.split("/").pop()!];
       },
     });
-  for (const op of props.includes) {
-    if (op.requestBody) visit(op.requestBody.typeName);
-    if (op.responseBody) visit(op.responseBody.typeName);
-  }
+  if (props.operation.requestBody) visit(props.operation.requestBody.typeName);
+  if (props.operation.responseBody)
+    visit(props.operation.responseBody.typeName);
 
   return {
     histories: [
@@ -56,31 +55,33 @@ export const transformInterfacePrerequisiteHistory = (props: {
         id: v7(),
         created_at: new Date().toISOString(),
         text: StringUtil.trim`
-          ## Target Operations
+          ## Target Operation
 
-          Operations requiring prerequisite analysis.
+          Single operation requiring prerequisite analysis.
 
-          For each of these operations, analyze if they need any prerequisites
-          from the available operations above. Add prerequisites only when there
-          are genuine dependencies like resource existence checks or state validations.
+          Analyze if this operation needs any prerequisites from the available
+          operations above. Add prerequisites only when there are genuine
+          dependencies like resource existence checks or state validations.
 
           \`\`\`json
-          ${JSON.stringify(
-            props.includes.map((op) => {
-              return {
-                ...op,
-                requiredIds: getReferenceIds({
-                  document: props.document,
-                  operation: op,
-                }),
-              };
-            }),
-          )}
+          ${JSON.stringify(props.operation)}
           \`\`\`
+
+          Also, here is the list of reference IDs found in the target 
+          operation's path parameters.
+
+          ${
+            getReferenceIds({
+              document: props.document,
+              operation: props.operation,
+            })
+              .map((id) => `- ${id}`)
+              .join("\n") || "- None"
+          }
 
           ### Domain Schemas
 
-          Schema definitions for the target operations.
+          Schema definitions for the target operation.
 
           \`\`\`json
           ${JSON.stringify(domainSchemas)}

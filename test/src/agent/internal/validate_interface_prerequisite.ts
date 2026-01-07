@@ -1,11 +1,8 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateInterfacePrerequisite } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfacePrerequisite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import {
-  AutoBeExampleProject,
-  AutoBeInterfacePrerequisite,
-  AutoBeOpenApi,
-} from "@autobe/interface";
+import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfacePrerequisiteEvent } from "@autobe/interface/src/events/AutoBeInterfacePrerequisiteEvent";
 
 import { validate_interface_operation } from "./validate_interface_operation";
 import { validate_interface_rename } from "./validate_interface_rename";
@@ -14,7 +11,7 @@ export const validate_interface_prerequisite = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<AutoBeInterfacePrerequisite[]> => {
+}): Promise<AutoBeInterfacePrerequisiteEvent[]> => {
   const document: AutoBeOpenApi.IDocument = {
     operations:
       (await AutoBeExampleStorage.load({
@@ -33,7 +30,7 @@ export const validate_interface_prerequisite = async (props: {
     },
   };
 
-  const prerequisites: AutoBeInterfacePrerequisite[] =
+  const prerequisites: AutoBeInterfacePrerequisiteEvent[] =
     await orchestrateInterfacePrerequisite(props.agent.getContext(), document);
 
   await AutoBeExampleStorage.save({
