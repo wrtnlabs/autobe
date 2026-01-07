@@ -158,8 +158,8 @@ export const createAutoBeContext = (props: {
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {
-          if (next.enforceFunctionCall === true && !!event.body.tools?.length)
-            event.body.tool_choice = "required";
+          // if (next.enforceFunctionCall === true && !!event.body.tools?.length)
+          //   event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
             delete event.body.parallel_tool_calls;
           if (next.promptCacheKey)

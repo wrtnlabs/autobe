@@ -26,10 +26,10 @@ pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3
 # qwen/qwen3-30b-a3b-thinking-2507
 ######################################################
 # archiving
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo --from interface --to interface > archive.qwen-qwen3-235b-a22b-2507.todo.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs --from interface --to interface > archive.qwen-qwen3-235b-a22b-2507.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit --from interface --to interface > archive.qwen-qwen3-235b-a22b-2507.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping --from interface --to interface > archive.qwen-qwen3-235b-a22b-2507.shopping.log
+pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo --from interface --to interface > archive.qwen-qwen3-30b-a3b-thinking-2507.todo.log
+pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs --from interface --to interface > archive.qwen-qwen3-30b-a3b-thinking-2507.bbs.log
+pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit --from interface --to interface > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
+pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping --from interface --to interface > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
 
 # opening projects
 code results/qwen/qwen3-30b-a3b-thinking-2507/todo/interface

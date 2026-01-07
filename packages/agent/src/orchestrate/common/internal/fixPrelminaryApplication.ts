@@ -32,7 +32,7 @@ export const fixPreliminaryApplication = <
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
   application: ILlmApplication;
-  enumerable: boolean;
+  operable: boolean;
 }): void => {
   if (
     props.preliminary.getKinds().some((k) => k.includes("previous")) === false
@@ -83,23 +83,23 @@ export const fixPreliminaryApplication = <
       }
     }
 
-  if (props.enumerable === true)
-    for (const kind of props.preliminary.getKinds()) {
-      const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
-        kind.startsWith("previous")
-          ? (() => {
-              const value = kind.replace("previous", "");
-              return value[0].toLowerCase() + value.substring(1);
-            })()
-          : kind
-      ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
-      const previous: boolean = kind.startsWith("previous");
-      ApplicationFixer[accessor]({
-        $defs: func.parameters.$defs,
-        controller: props.preliminary as any,
-        previous,
-      });
-    }
+  for (const kind of props.preliminary.getKinds()) {
+    const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
+      kind.startsWith("previous")
+        ? (() => {
+            const value = kind.replace("previous", "");
+            return value[0].toLowerCase() + value.substring(1);
+          })()
+        : kind
+    ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+    if (accessor === "interfaceOperations" && props.operable !== true) continue;
+
+    ApplicationFixer[accessor]({
+      $defs: func.parameters.$defs,
+      controller: props.preliminary as any,
+      previous: kind.startsWith("previous"),
+    });
+  }
 };
 
 const getUnionErasure = (props: {
