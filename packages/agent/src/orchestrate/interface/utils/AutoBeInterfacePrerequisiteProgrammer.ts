@@ -115,9 +115,11 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
             Operations list provided in your context.
 
             ### Your Invalid Prerequisite [${i}]
+
             \`${raw.endpoint.method} ${raw.endpoint.path}\`
 
             ### Why This Is Wrong
+
             - This endpoint does not exist in the document's operations
             - You may have invented/hallucinated this endpoint
             - You may have made a typo in the path or method
@@ -154,9 +156,11 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
             a circular dependency and is logically invalid.
 
             ### Target Operation
+
             \`${props.operation.method} ${props.operation.path}\`
 
             ### Your Prerequisite [${i}]
+
             \`${raw.endpoint.method} ${raw.endpoint.path}\`
 
             These are THE SAME operation!
