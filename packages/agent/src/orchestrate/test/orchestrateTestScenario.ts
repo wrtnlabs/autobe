@@ -211,8 +211,7 @@ async function processGeneration(
       promptCacheKey: props.promptCacheKey,
       ...transformTestScenarioHistory({
         state: ctx.state(),
-        include: [props.operation],
-        exclude: [],
+        operation: props.operation,
         instruction: props.instruction,
         preliminary,
       }),

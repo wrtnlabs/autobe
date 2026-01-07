@@ -9,10 +9,22 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 import { IAutoBeTestScenarioAuthorizationActor } from "../structures/IAutoBeTestScenarioAuthorizationActor";
 import { getPrerequisites } from "../utils/getPrerequisites";
 
+/**
+ * Transform test scenario generation context into conversational history.
+ *
+ * Following the InterfacePrerequisite pattern:
+ * - Provides system prompts
+ * - Provides preliminary data histories
+ * - Provides single target operation
+ * - Provides prerequisites for the operation
+ * - Provides authorization actors
+ *
+ * @param props - Configuration for history transformation
+ * @returns Complete conversation history ready for LLM agent processing
+ */
 export const transformTestScenarioHistory = (props: {
   state: AutoBeState;
-  include: AutoBeOpenApi.IOperation[];
-  exclude: AutoBeOpenApi.IEndpoint[];
+  operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
@@ -43,6 +55,11 @@ export const transformTestScenarioHistory = (props: {
     }
   }
 
+  // Find authorization actor for this operation
+  const operationAuthorizationActors = Array.from(
+    authorizationActors.values(),
+  ).filter((actor) => actor.name === props.operation.authorizationActor);
+
   return {
     histories: [
       {
@@ -65,7 +82,7 @@ export const transformTestScenarioHistory = (props: {
           specific edge cases to validate, business logic verification strategies,
           and critical user workflows that must be tested.
 
-          Follow these instructions when generating test scenarios.
+          Follow these instructions when generating test scenario.
           Carefully distinguish between:
           - Suggestions or recommendations (consider these as guidance)
           - Direct specifications or explicit commands (these must be followed exactly)
@@ -75,42 +92,27 @@ export const transformTestScenarioHistory = (props: {
 
           ${props.instruction}
 
-          ## Included in Test Plan
+          ## Target Operation
 
-          Below are the endpoints that have been included in the test plan.
-          Each endpoint shows its authentication requirements and related authentication APIs.
-          When testing endpoints that require authentication, ensure you include the corresponding
-          join/login operations in your test scenario to establish proper authentication context.
+          Single operation requiring test scenario generation.
 
-          \`\`\`json
-          ${JSON.stringify(
-            props.include.map((el) => ({
-              method: el.method,
-              path: el.path,
-              prerequisites: getPrerequisites({
-                endpoint: el,
-                document,
-              }),
-              authorizationActors: Array.from(
-                authorizationActors.values(),
-              ).filter((actor) => actor.name === el.authorizationActor),
-            })),
-          )}
-          \`\`\`
-
-          ## Excluded from Test Plan
-
-          These are the endpoints that have already been used in test codes generated as part of a plan group.
-          These endpoints do not need to be tested again.
-          However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.
+          Generate ONE focused test scenario for this operation that validates
+          the primary business workflow. Focus on the most critical use case.
 
           \`\`\`json
-          ${JSON.stringify(props.exclude)}
+          ${JSON.stringify({
+            operation: props.operation,
+            prerequisites: getPrerequisites({
+              endpoint: props.operation,
+              document,
+            }),
+            authorizationActors: operationAuthorizationActors,
+          })}
           \`\`\`
 
         `,
       },
     ],
-    userMessage: "Design test scenarios for the included endpoints please",
+    userMessage: "Design test scenario for the target operation please",
   };
 };
