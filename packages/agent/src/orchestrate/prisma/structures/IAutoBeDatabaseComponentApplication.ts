@@ -1,4 +1,4 @@
-import { AutoBeDatabase } from "@autobe/interface";
+import { AutoBeDatabaseComponent } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
@@ -183,6 +183,6 @@ export namespace IAutoBeDatabaseComponentApplication {
      * - Filename numbering indicates dependency order for schema generation
      * - Namespace is used for documentation organization and domain grouping
      */
-    components: AutoBeDatabase.IComponent[] & tags.MinItems<1>;
+    components: AutoBeDatabaseComponent[] & tags.MinItems<1>;
   }
 }

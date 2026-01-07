@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseSchemaEvent,
   AutoBeEventSource,
 } from "@autobe/interface";
@@ -19,7 +20,7 @@ import { IAutoBeDatabaseSchemaApplication } from "./structures/IAutoBeDatabaseSc
 export async function orchestratePrismaSchema(
   ctx: AutoBeContext,
   instruction: string,
-  componentList: AutoBeDatabase.IComponent[],
+  componentList: AutoBeDatabaseComponent[],
 ): Promise<AutoBeDatabaseSchemaEvent[]> {
   const start: Date = new Date();
   const total: number = componentList
@@ -29,7 +30,7 @@ export async function orchestratePrismaSchema(
 
   // Flatten component list into individual table tasks
   const tableTasks: Array<{
-    component: AutoBeDatabase.IComponent;
+    component: AutoBeDatabaseComponent;
     table: string;
   }> = componentList.flatMap((component) =>
     component.tables.map((table) => ({ component, table: table.name })),
@@ -38,7 +39,7 @@ export async function orchestratePrismaSchema(
   return await executeCachedBatch(
     ctx,
     tableTasks.map((task) => async (promptCacheKey) => {
-      const otherComponents: AutoBeDatabase.IComponent[] = componentList.filter(
+      const otherComponents: AutoBeDatabaseComponent[] = componentList.filter(
         (c) => c !== task.component,
       );
       const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
@@ -61,9 +62,9 @@ async function process(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    targetComponent: AutoBeDatabase.IComponent;
+    targetComponent: AutoBeDatabaseComponent;
     targetTable: string;
-    otherComponents: AutoBeDatabase.IComponent[];
+    otherComponents: AutoBeDatabaseComponent[];
     start: Date;
     total: number;
     completed: IPointer<number>;
@@ -129,7 +130,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  targetComponent: AutoBeDatabase.IComponent;
+  targetComponent: AutoBeDatabaseComponent;
   targetTable: string;
   build: (next: IAutoBeDatabaseSchemaApplication.IComplete) => void;
   dispatch: AutoBeContext["dispatch"];

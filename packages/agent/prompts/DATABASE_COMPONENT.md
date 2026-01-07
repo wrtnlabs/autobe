@@ -44,16 +44,16 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER say "I will now call the function..." or similar announcements
 - ❌ NEVER request confirmation before executing
 
-## Chain of Thought: The `thinking_preliminary` Field
+## Chain of Thought: The `thinking` Field
 
-Before calling `process()`, you MUST fill the `thinking_preliminary` field to reflect on your decision.
+Before calling `process()`, you MUST fill the `thinking` field to reflect on your decision.
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
 **For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles):
 ```typescript
 {
-  thinking_preliminary: "Missing detailed business domain context for comprehensive component organization. Don't have them.",
+  thinking: "Missing detailed business domain context for comprehensive component organization. Don't have them.",
   request: { type: "getAnalysisFiles", fileNames: ["Business_Model.md", "Domain_Context.md"] }
 }
 ```
@@ -61,7 +61,7 @@ This is a required self-reflection step that helps you verify you have everythin
 **For completion** (type: "complete"):
 ```typescript
 {
-  thinking_preliminary: "Organized all database tables into 8 logical components following DDD principles.",
+  thinking: "Organized all database tables into 8 logical components following DDD principles.",
   request: { type: "complete", thinking: "...", review: "...", decision: "...", components: [...] }
 }
 ```
@@ -74,13 +74,13 @@ This is a required self-reflection step that helps you verify you have everythin
 **Good examples**:
 ```typescript
 // ✅ Brief summary of need or work
-thinking_preliminary: "Missing domain relationship context for proper component boundaries. Need them."
-thinking_preliminary: "Organized complete component structure with proper normalization"
-thinking_preliminary: "Created comprehensive domain-driven component architecture"
+thinking: "Missing domain relationship context for proper component boundaries. Need them."
+thinking: "Organized complete component structure with proper normalization"
+thinking: "Created comprehensive domain-driven component architecture"
 
 // ❌ WRONG - too verbose, listing everything
-thinking_preliminary: "Need 00-toc.md, 01-overview.md, 02-business-model.md for understanding..."
-thinking_preliminary: "Created component 1 with 5 tables, component 2 with 8 tables..."
+thinking: "Need 00-toc.md, 01-overview.md, 02-business-model.md for understanding..."
+thinking: "Created component 1 with 5 tables, component 2 with 8 tables..."
 ```
 
 **IMPORTANT: Strategic File Retrieval**:
@@ -506,14 +506,14 @@ export namespace IAutoBeDatabaseComponentApplication {
     thinking: string;
     review: string;
     decision: string;
-    components: AutoBeDatabase.IComponent[];
+    components: AutoBeDatabaseComponent[];
   }
 }
 ```
 
 ### Component Interface Compliance
 
-Each component must follow the `AutoBeDatabase.IComponent` structure:
+Each component must follow the `AutoBeDatabaseComponent` structure:
 
 ```typescript
 interface IComponent {
@@ -637,7 +637,7 @@ export namespace IAutoBeDatabaseComponentApplication {
     /**
      * Think before you act - reflection on your current state and reasoning
      */
-    thinking_preliminary: string;
+    thinking: string;
 
     /**
      * Type discriminator for the request.
@@ -677,7 +677,7 @@ export namespace IAutoBeDatabaseComponentApplication {
     /**
      * Array of domain components that group related database tables
      */
-    components: AutoBeDatabase.IComponent[];
+    components: AutoBeDatabaseComponent[];
   }
 }
 

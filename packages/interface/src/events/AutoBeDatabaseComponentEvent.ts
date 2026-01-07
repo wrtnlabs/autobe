@@ -1,4 +1,4 @@
-import { AutoBeDatabase } from "../database";
+import { AutoBeDatabaseComponent } from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -81,7 +81,7 @@ export interface AutoBeDatabaseComponentEvent
    * maintainable, with clear separation of concerns across different business
    * areas.
    */
-  components: AutoBeDatabase.IComponent[];
+  components: AutoBeDatabaseComponent[];
 
   /**
    * Iteration number of the requirements analysis this component organization

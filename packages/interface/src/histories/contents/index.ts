@@ -18,6 +18,7 @@ export * from "./AutoBeInterfaceEndpointUpdate";
 export * from "./AutoBeInterfaceEndpointErase";
 export * from "./AutoBeInterfaceEndpointDesign";
 
+export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";
 export * from "./AutoBeDatabaseComponentTableRevise";
 export * from "./AutoBeDatabaseComponentTableCreate";

@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseHistory,
@@ -61,8 +62,9 @@ export const orchestratePrisma = async (
     });
 
   // Extract reviewed components from all events
-  const finalComponents: AutoBeDatabase.IComponent[] =
-    componentReviewEvents.map((e) => e.modification);
+  const finalComponents: AutoBeDatabaseComponent[] = componentReviewEvents.map(
+    (e) => e.modification,
+  );
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
