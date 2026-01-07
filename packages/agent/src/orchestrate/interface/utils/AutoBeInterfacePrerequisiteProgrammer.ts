@@ -176,12 +176,14 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
             DIFFERENT instance of the resource, not reference itself.
 
             Example:
+
             - ❌ Wrong: \`POST /articles\` as prerequisite of \`POST /articles\`
             - ✅ Correct: Remove the self-reference entirely, or if parent article
               is truly needed, the system will handle it through data generation,
               not through explicit prerequisites.
 
             ### How to Fix
+            
             Remove this prerequisite from your prerequisites array. Only include
             operations that create DIFFERENT resources that this operation depends on.
 
