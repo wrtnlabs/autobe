@@ -82,22 +82,23 @@ export const fixPreliminaryApplication = <
       }
     }
 
-  for (const kind of props.preliminary.getKinds()) {
-    const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
-      kind.startsWith("previous")
-        ? (() => {
-            const value = kind.replace("previous", "");
-            return value[0].toLowerCase() + value.substring(1);
-          })()
-        : kind
-    ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
-    const previous: boolean = kind.startsWith("previous");
-    ApplicationFixer[accessor]({
-      $defs: func.parameters.$defs,
-      controller: props.preliminary as any,
-      previous,
-    });
-  }
+  // for (const kind of props.preliminary.getKinds()) {
+  //   const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
+  //     kind.startsWith("previous")
+  //       ? (() => {
+  //           const value = kind.replace("previous", "");
+  //           return value[0].toLowerCase() + value.substring(1);
+  //         })()
+  //       : kind
+  //   ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+  //   const previous: boolean = kind.startsWith("previous");
+  //   ApplicationFixer[accessor]({
+  //     $defs: func.parameters.$defs,
+  //     controller: props.preliminary as any,
+  //     previous,
+  //   });
+  // }
+  ApplicationFixer;
 };
 
 const getUnionErasure = (props: {
