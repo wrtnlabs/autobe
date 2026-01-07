@@ -65,7 +65,7 @@ export const test_schema_preliminary_enum = async () => {
     ],
     state: agent.getContext().state(),
   });
-  preliminary.fixApplication(application);
+  preliminary.fixApplication(application, true);
 
   const state: AutoBeState = preliminary.getState();
   const $defs: Record<string, ILlmSchema> = application.functions.find(

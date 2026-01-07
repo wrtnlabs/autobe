@@ -32,6 +32,7 @@ export const fixPreliminaryApplication = <
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
   application: ILlmApplication;
+  operable: boolean;
 }): void => {
   if (
     props.preliminary.getKinds().some((k) => k.includes("previous")) === false
@@ -91,11 +92,12 @@ export const fixPreliminaryApplication = <
           })()
         : kind
     ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
-    const previous: boolean = kind.startsWith("previous");
+    if (accessor === "interfaceOperations" && props.operable !== true) continue;
+
     ApplicationFixer[accessor]({
       $defs: func.parameters.$defs,
       controller: props.preliminary as any,
-      previous,
+      previous: kind.startsWith("previous"),
     });
   }
 };

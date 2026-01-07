@@ -212,12 +212,17 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * controller's `all`/`local` collections.
    *
    * @param application LLM application to modify (mutated in-place).
+   * @param operable Whether to include API operations
    */
-  public fixApplication(application: ILlmApplication): ILlmApplication {
+  public fixApplication(
+    application: ILlmApplication,
+    operable: boolean = false,
+  ): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
       application,
+      operable,
     });
     return application;
   }
