@@ -18,22 +18,22 @@
  *   community moderation, demonstrating complex social application patterns
  * - **shopping**: E-commerce application with products, shopping carts, orders,
  *   and payment processing, showcasing transactional business logic
- * - **chat**: Real-time messaging application with channels, direct messages,
- *   and presence, demonstrating real-time communication patterns
+ * - **chat**: Real-time messaging application with channels, direct messages, and
+ *   presence, demonstrating real-time communication patterns
  * - **account**: User account management system with authentication,
  *   authorization, profiles, and security features, showcasing identity and
  *   access management patterns
  *
  * These examples serve multiple purposes:
  *
- * 1. **Learning**: Help users understand how to write effective requirements
- *    for AutoBE
+ * 1. **Learning**: Help users understand how to write effective requirements for
+ *    AutoBE
  * 2. **Demonstration**: Showcase AutoBE's ability to generate complete backends
  *    for various domains
- * 3. **Testing**: Provide consistent test cases for validating AutoBE's
- *    generation quality
- * 4. **Bootstrapping**: Offer starting points that users can modify and extend
- *    for their own needs
+ * 3. **Testing**: Provide consistent test cases for validating AutoBE's generation
+ *    quality
+ * 4. **Bootstrapping**: Offer starting points that users can modify and extend for
+ *    their own needs
  *
  * @author Samchon
  */
