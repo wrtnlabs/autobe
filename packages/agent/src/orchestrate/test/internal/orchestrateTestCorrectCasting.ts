@@ -17,7 +17,7 @@ interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
   ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
 }
 
-export async function orchestrateTestCorrectCasting<
+export const orchestrateTestCorrectCasting = <
   Procedure extends IAutoBeTestProcedure,
 >(
   ctx: AutoBeContext,
@@ -26,8 +26,8 @@ export async function orchestrateTestCorrectCasting<
     procedures: Procedure[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<Procedure[]> {
-  const result: Array<Procedure | null> = await executeCachedBatch(
+): Promise<Procedure[]> =>
+  executeCachedBatch(
     ctx,
     props.procedures.map((procedure) => async () => {
       const event: AutoBeTestValidateEvent<Procedure["function"]> =
@@ -78,5 +78,3 @@ export async function orchestrateTestCorrectCasting<
       };
     }),
   );
-  return result.filter((r) => r !== null);
-}
