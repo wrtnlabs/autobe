@@ -1,3 +1,5 @@
+import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
+
 /**
  * Request to update (rename) an existing table in the component.
  *
@@ -31,14 +33,14 @@ export interface AutoBeDatabaseComponentTableUpdate {
    *
    * Must be from the current component's table list. Must match exactly.
    */
-  original: string;
+  original: string & SnakeCasePattern;
 
   /**
    * The updated table name.
    *
    * Must follow snake_case naming convention with appropriate domain prefix.
    */
-  updated: string;
+  updated: string & SnakeCasePattern;
 
   /**
    * Updated description of what this table stores.
