@@ -129,7 +129,7 @@ export const orchestrateRealize =
         controllers: {},
       });
 
-    // FIAL OPERATIONS
+    // FINAL STEP, THE OPERATIONS
     const finalOperations: AutoBeRealizeOperationFunction[] =
       await orchestrateRealizeOperation(ctx, {
         authorizations,
