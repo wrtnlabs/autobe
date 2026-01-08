@@ -1,3 +1,5 @@
+import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
+
 /**
  * Request to erase a table from the component.
  *
@@ -32,5 +34,5 @@ export interface AutoBeDatabaseComponentTableErase {
    *
    * Must be from the current component's table list. Must match exactly.
    */
-  table: string;
+  table: string & SnakeCasePattern;
 }

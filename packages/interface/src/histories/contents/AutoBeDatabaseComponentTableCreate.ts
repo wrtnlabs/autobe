@@ -1,3 +1,5 @@
+import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
+
 /**
  * Request to create a new table in the component.
  *
@@ -32,7 +34,7 @@ export interface AutoBeDatabaseComponentTableCreate {
    *
    * Must follow snake_case naming convention with appropriate domain prefix.
    */
-  table: string;
+  table: string & SnakeCasePattern;
 
   /**
    * Description of what this table stores.

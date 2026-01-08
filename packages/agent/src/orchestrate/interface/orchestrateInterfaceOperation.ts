@@ -17,8 +17,9 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
+import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
@@ -124,6 +125,8 @@ async function process(
         actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
         build: (op) => {
           pointer.value ??= [];
+          for (const p of op.parameters)
+            AutoBeJsonSchemaFactory.fixSchema(p.schema);
           const matrix: AutoBeOpenApi.IOperation[] =
             op.authorizationActors.length === 0
               ? [
@@ -205,8 +208,8 @@ function createController(props: {
     const op: IAutoBeInterfaceOperationApplication.IOperation =
       result.data.request.operation;
     const errors: IValidation.IError[] = [];
-    AutoBeInterfaceOperationValidator.validate({
-      path: "$input.request.operation",
+    AutoBeInterfaceOperationProgrammer.validate({
+      accessor: "$input.request.operation",
       errors,
       operation: op,
     });
@@ -220,12 +223,12 @@ function createController(props: {
           path: `$input.request.operation.authorizationActors[${j}]`,
           expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
           description: StringUtil.trim`
-              Actor "${actor}" is not defined in the roles list.
+            Actor "${actor}" is not defined in the roles list.
 
-              Please select one of them below, or do not define (\`null\`):
+            Please select one of them below, or do not define (\`null\`):
 
-              ${props.actors.map((role) => `- ${role}`).join("\n")}
-            `,
+            ${props.actors.map((role) => `- ${role}`).join("\n")}
+          `,
           value: actor,
         });
       });

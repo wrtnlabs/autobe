@@ -149,7 +149,6 @@ export const createAutoBeContext = (props: {
               common: () => getCommonPrompt(props.config),
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
-            throw: true,
           } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],

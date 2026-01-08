@@ -3,6 +3,7 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import typia, { tags } from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
@@ -244,19 +245,19 @@ export namespace AutoBeJsonSchemaFactory {
   /* -----------------------------------------------------------
     PLUGIN
   ----------------------------------------------------------- */
-  export const fixSchema = (
-    key: string,
-    value: AutoBeOpenApi.IJsonSchemaDescriptive,
-  ): AutoBeOpenApi.IJsonSchemaDescriptive => {
-    const emended: AutoBeOpenApi.IJsonSchemaDescriptive = (
+  export const fixSchema = <Schema extends AutoBeOpenApi.IJsonSchema>(
+    value: Schema,
+  ): Schema => {
+    const id: string = v7();
+    const emended: AutoBeOpenApi.IJsonSchema = (
       ((
         OpenApiV3_1Emender.convertComponents({
           schemas: {
-            [key]: value,
+            [id]: value,
           },
         }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
-    )[key];
+      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchema>
+    )[id];
     AutoBeOpenApiTypeChecker.visit({
       components: {
         authorizations: [],
@@ -271,9 +272,34 @@ export namespace AutoBeJsonSchemaFactory {
           )
             continue;
           else if (k.startsWith("x-")) delete (next as any)[k];
+        if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
+        else if (AutoBeOpenApiTypeChecker.isArray(next)) fixArraySchema(next);
       },
     });
-    return emended;
+    return emended as Schema;
+  };
+
+  const fixStringSchema = (schema: AutoBeOpenApi.IJsonSchema.IString): void => {
+    if (schema.format !== undefined) {
+      delete schema.pattern;
+      if (
+        schema.format === "uuid" ||
+        schema.format === "ipv4" ||
+        schema.format === "ipv6" ||
+        schema.format === "date" ||
+        schema.format === "date-time" ||
+        schema.format === "time"
+      ) {
+        delete schema.minLength;
+        delete schema.maxLength;
+      }
+    }
+    if (schema.contentMediaType === "") delete schema.contentMediaType;
+    if (schema.minLength === 0) delete schema.minLength;
+  };
+
+  const fixArraySchema = (schema: AutoBeOpenApi.IJsonSchema.IArray): void => {
+    if (schema.minItems === 0) delete schema.minItems;
   };
 }
 

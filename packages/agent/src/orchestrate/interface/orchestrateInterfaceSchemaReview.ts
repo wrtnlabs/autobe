@@ -153,10 +153,7 @@ async function process(
     const content: AutoBeOpenApi.IJsonSchemaDescriptive =
       pointer.value.content === null
         ? props.reviewSchema
-        : AutoBeJsonSchemaFactory.fixSchema(
-            props.typeName,
-            pointer.value.content,
-          );
+        : AutoBeJsonSchemaFactory.fixSchema(pointer.value.content);
     ctx.dispatch({
       type: SOURCE,
       kind: config.kind,

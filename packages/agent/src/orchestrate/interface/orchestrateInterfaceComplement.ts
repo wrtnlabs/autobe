@@ -119,10 +119,7 @@ async function process(
         typeName: props.typeName,
         operations: props.document.operations,
         build: (next) => {
-          pointer.value = AutoBeJsonSchemaFactory.fixSchema(
-            props.typeName,
-            next,
-          );
+          pointer.value = AutoBeJsonSchemaFactory.fixSchema(next);
         },
         preliminary,
       }),

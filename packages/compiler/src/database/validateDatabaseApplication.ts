@@ -415,7 +415,7 @@ function validateDuplicatedIndexes(
     new Set(model.ginIndexes.map((g) => g.fieldName)).size
   )
     errors.push({
-      path: `${accessor}.ginIndexes[].fieldName`,
+      path: `${accessor}.ginIndexes`,
       table: model.name,
       field: null,
       message: StringUtil.trim`

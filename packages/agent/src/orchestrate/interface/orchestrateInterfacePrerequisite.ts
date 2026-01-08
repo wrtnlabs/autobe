@@ -14,8 +14,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
+import { AutoBeInterfacePrerequisiteProgrammer } from "./programmers/AutoBeInterfacePrerequisiteProgrammer";
 import { IAutoBeInterfacePrerequisiteApplication } from "./structures/IAutoBeInterfacePrerequisiteApplication";
-import { AutoBeInterfacePrerequisiteProgrammer } from "./utils/AutoBeInterfacePrerequisiteProgrammer";
 
 export async function orchestrateInterfacePrerequisite(
   ctx: AutoBeContext,

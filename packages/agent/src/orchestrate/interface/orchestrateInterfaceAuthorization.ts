@@ -7,7 +7,6 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -17,7 +16,9 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
+import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceAuthorization(
   ctx: AutoBeContext,
@@ -77,10 +78,9 @@ async function process(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -104,7 +104,7 @@ async function process(
         ? ({
             type: SOURCE,
             id: v7(),
-            operations: pointer.value.operations,
+            operations: pointer.value,
             completed: ++props.progress.completed,
             metric: result.metric,
             tokenUsage: result.tokenUsage,
@@ -125,7 +125,7 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: IAutoBeInterfaceAuthorizationsApplication.IComplete) => void;
+  build: (next: AutoBeOpenApi.IOperation[]) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -138,81 +138,22 @@ function createController(props: {
         thinking: result.data.thinking,
         request: result.data.request,
       });
-    // remove login operation for guest role
-    else if (props.actor.kind === "guest") {
-      result.data.request.operations = result.data.request.operations.filter(
-        (op) => op.authorizationType !== "login",
-      );
-    }
 
     const errors: IValidation.IError[] = [];
-    result.data.request.operations.forEach((op, i) => {
-      // validate authorizationActor
-      if (op.authorizationActor !== null) {
-        op.authorizationActor = props.actor.name;
-      }
-
-      // validate responseBody.typeName -> must be ~.IAuthorized
-      if (op.authorizationType === null) return;
-      else if (op.responseBody === null)
-        errors.push({
-          path: `$input.request.operations.${i}.responseBody`,
-          expected:
-            "Response body with I{RoleName(PascalCase)}.IAuthorized type is required",
-          value: op.responseBody,
-          description: StringUtil.trim`
-            Response body is required for authentication operations.
-
-            The responseBody must contain description and typeName fields.
-            typeName must be I{Prefix(PascalCase)}{RoleName(PascalCase)}.IAuthorized
-            description must be a detailed description of the response body.
-          `,
-        });
-      else if (!op.responseBody.typeName.endsWith(".IAuthorized"))
-        errors.push({
-          path: `$input.request.operations.${i}.responseBody.typeName`,
-          expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
-          value: op.responseBody?.typeName,
-          description: StringUtil.trim`
-            Wrong response body type name: ${op.responseBody?.typeName}
-
-            For authentication operations (login, join, refresh), the response body type name must follow the convention "I{RoleName}.IAuthorized".
-
-            This standardized naming convention ensures consistency across all authentication endpoints and clearly identifies authorization response types.
-            The actor name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).
-          `,
-        });
+    AutoBeInterfaceAuthorizationProgrammer.validateAuthorizationTypes({
+      errors,
+      actor: props.actor.kind,
+      operations: result.data.request.operations,
+      accessor: "$input.request.operations",
     });
-
-    // validate authorization types' existence
-    type AuthorizationType = NonNullable<
-      AutoBeOpenApi.IOperation["authorizationType"]
-    >;
-    const authorizationTypes: Set<AuthorizationType> = new Set(
-      result.data.request.operations
-        .map((o) => o.authorizationType)
-        .filter((v) => v !== null),
+    result.data.request.operations.forEach((operation, index) =>
+      AutoBeInterfaceAuthorizationProgrammer.validateOperation({
+        errors,
+        actor: props.actor.kind,
+        operation,
+        accessor: `$input.request.operations[${index}]`,
+      }),
     );
-    for (const type of typia.misc.literals<AuthorizationType>())
-      if (props.actor.kind === "guest" && type === "login") continue;
-      else if (authorizationTypes.has(type) === false)
-        errors.push({
-          path: "$input.request.operations[].authorizationType",
-          expected: StringUtil.trim`{
-            ...(AutoBeOpenApi.IOperation data),
-            authorizationType: "${type}"
-          }`,
-          value: `No authorizationType "${type}" found in any operation`,
-          description: StringUtil.trim`
-            There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
-            for the "${props.actor}" role's authorization activity; "${type}".
-
-            However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}"
-            value, so that the "${props.actor}" cannot perform the authorization ${type} activity.
-
-            Please make that operation at the next function calling. You have to do it.
-          `,
-        });
     if (errors.length !== 0) {
       return {
         success: false,
@@ -236,7 +177,19 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "complete") {
+          for (const o of next.request.operations)
+            for (const p of o.parameters)
+              AutoBeJsonSchemaFactory.fixSchema(p.schema);
+          props.build(
+            next.request.operations.filter((operation) =>
+              AutoBeInterfaceAuthorizationProgrammer.filter({
+                actor: props.actor.kind,
+                operation,
+              }),
+            ),
+          );
+        }
       },
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
