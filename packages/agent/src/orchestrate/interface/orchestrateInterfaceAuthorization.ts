@@ -217,13 +217,13 @@ function createController(props: {
           errors.push({
             path: `$input.request.operations[${i}].requestBody`,
             expected: "Request body with appropriate type is required",
-            value: `AutoBeOpenApi.IRequestBody<\`\${string}${expected}\`>`,
+            value: op.requestBody,
             description: StringUtil.trim`
               Request body is required for authentication ${op.authorizationType} operation.
 
               Define it with typeName and description fields.
 
-              Note that, the typeName must be end with ".${expected}" 
+              Note that, the typeName must end with ".${expected}" 
               
               (e.g., IUser.${expected}, IAdmin.${expected}).
           `,

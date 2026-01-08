@@ -94,7 +94,7 @@ export namespace AutoBeInterfaceOperationValidator {
       if (props.operation.path.includes(`{${p.name}}`) === false)
         props.errors.push({
           path: `${props.accessor}.parameters[${i}]`,
-          expected: `undefined, or expressed in AutoBeOpenApi.IOperation.path`,
+          expected: `removed, or expressed in AutoBeOpenApi.IOperation.path`,
           value: p,
           description: StringUtil.trim`
             Parameter "${p.name}" is defined but not used in path "${props.operation.path}".
