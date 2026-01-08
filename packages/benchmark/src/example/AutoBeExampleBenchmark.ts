@@ -21,6 +21,7 @@ export namespace AutoBeExampleBenchmark {
       vendors: string[];
       projects?: AutoBeExampleProject[];
       phases?: AutoBePhase[];
+      imagePath?: string;
       progress: (state: IAutoBeExampleBenchmarkState) => void;
       on?: (event: AutoBeEvent) => void;
     },
@@ -47,6 +48,7 @@ export namespace AutoBeExampleBenchmark {
     await Promise.all(
       state.vendors.map(async (vendor) => {
         await executeVendor(ctx, {
+          imagePath: props.imagePath,
           phases: props.phases,
           vendorState: vendor,
           on: props.on,
@@ -59,6 +61,7 @@ export namespace AutoBeExampleBenchmark {
   const executeVendor = async (
     ctx: IContext,
     props: {
+      imagePath?: string;
       vendorState: IAutoBeExampleBenchmarkState.IOfVendor;
       phases?: AutoBePhase[];
       report: () => void;
@@ -67,6 +70,7 @@ export namespace AutoBeExampleBenchmark {
   ): Promise<void> => {
     for (const project of props.vendorState.projects)
       await executeProject(ctx, {
+        imagePath: props.imagePath,
         vendor: props.vendorState.name,
         projectState: project,
         phases: props.phases,
@@ -80,6 +84,7 @@ export namespace AutoBeExampleBenchmark {
     props: {
       vendor: string;
       projectState: IAutoBeExampleBenchmarkState.IOfProject;
+      imagePath?: string;
       phases?: AutoBePhase[];
       report: () => void;
       on?: (event: AutoBeEvent) => void;
@@ -104,6 +109,7 @@ export namespace AutoBeExampleBenchmark {
         const success: boolean = await getArchiver(phase)({
           vendor: props.vendor,
           project: props.projectState.name,
+          imagePath: props.imagePath,
           agent: (next) => ctx.createAgent(next),
           on: (s) => {
             ++phaseState.count;

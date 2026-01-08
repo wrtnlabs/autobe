@@ -25,6 +25,8 @@ const main = async (): Promise<void> => {
   const vendor: string | null = TestGlobal.getArguments("vendor")?.[0] ?? null;
   const project: string | null =
     TestGlobal.getArguments("project")?.[0] ?? null;
+  const imagePath: string | null =
+    TestGlobal.getArguments("image")?.[0] ?? null;
 
   if (vendor === null) throw new Error("Vendor argument is required.");
   if (project === null) throw new Error("Project argument is required.");
@@ -90,6 +92,7 @@ const main = async (): Promise<void> => {
       {
         vendors: [vendor],
         projects: [project],
+        imagePath: imagePath ?? undefined,
         phases,
         progress: () => {},
         on: (event) => ArchiveLogger.event(start, event),

@@ -5,6 +5,7 @@ import {
   AutoBeHistory,
   AutoBePhase,
   AutoBeUserConversateContent,
+  AutoBeUserImageConversateContent,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import cp from "child_process";
@@ -47,10 +48,47 @@ export namespace AutoBeExampleStorage {
     return JSON.parse(content) as T;
   };
 
+  export const loadImages = async (
+    imagePath: string,
+  ): Promise<AutoBeUserConversateContent[]> => {
+    const stat: fs.Stats = await fs.promises.lstat(imagePath);
+
+    const filePaths: string[] = await (async () => {
+      if (stat.isFile() === true) {
+        if (imagePath.endsWith(".png") === false)
+          throw new Error("Image Format must be .png");
+        return [imagePath];
+      }
+      const files: string[] = await fs.promises.readdir(imagePath);
+      return files
+        .filter((f) => f.endsWith(".png"))
+        .map((f) => path.join(imagePath, f));
+    })();
+
+    return Promise.all(
+      filePaths.map(async (filePath) => {
+        const extension: string = path.extname(filePath).toLowerCase().slice(1);
+        const base64Data: string = `data:image/${extension};base64,${await fs.promises.readFile(filePath, "base64")}`;
+        return {
+          type: "image",
+          image: {
+            type: "base64",
+            data: base64Data,
+          } satisfies AutoBeUserImageConversateContent.IBase64,
+        } satisfies AutoBeUserConversateContent;
+      }),
+    );
+  };
+
   export const getUserMessage = async (props: {
     project: AutoBeExampleProject;
     phase: AutoBePhase;
+    imagePath?: string;
   }): Promise<AutoBeUserConversateContent[]> => {
+    const imageMessages: AutoBeUserConversateContent[] = props.imagePath
+      ? await loadImages(props.imagePath)
+      : [];
+
     const full: string = `${TEST_ROOT}/scripts/${props.project}/${props.phase}`;
     if (props.project === "account" && props.phase === "analyze") {
       const files: string[] = await fs.promises.readdir(full);
@@ -71,6 +109,7 @@ export namespace AutoBeExampleStorage {
       );
       return [
         ...contents,
+        ...imageMessages,
         {
           type: "text",
           text: "Convert the images into a planning document.",
@@ -87,6 +126,7 @@ export namespace AutoBeExampleStorage {
             )
           : PROMPT_TEMPLATE[props.phase];
       return [
+        ...imageMessages,
         {
           type: "text",
           text,
@@ -97,6 +137,7 @@ export namespace AutoBeExampleStorage {
     const text: string = await fs.promises.readFile(`${full}.md`, "utf8");
 
     return [
+      ...imageMessages,
       {
         type: "text",
         text,
