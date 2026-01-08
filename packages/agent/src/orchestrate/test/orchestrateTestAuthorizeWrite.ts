@@ -92,7 +92,7 @@ async function process(
   const { metric, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     controller: createController({
-      operatiopn: props.operation,
+      operation: props.operation,
       build: (next) => {
         pointer.value = next;
       },
@@ -144,7 +144,7 @@ async function process(
 }
 
 function createController(props: {
-  operatiopn: AutoBeOpenApi.IOperation;
+  operation: AutoBeOpenApi.IOperation;
   build: (next: IAutoBeTestAuthorizationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
@@ -154,7 +154,7 @@ function createController(props: {
 
     const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName({
       actor: result.data.actor,
-      operation: props.operatiopn,
+      operation: props.operation,
     });
     const errors: IValidation.IError[] = validateEmptyCode({
       functionName,
