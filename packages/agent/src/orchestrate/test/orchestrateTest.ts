@@ -53,9 +53,7 @@ export const orchestrateTest =
       ctx.state().interface?.document;
     if (document === undefined)
       throw new Error("No document found. Please check the logs.");
-
-    // CHECK OPERATIONS
-    if (document.operations.length === 0)
+    else if (document.operations.length === 0)
       return ctx.assistantMessage({
         id: v7(),
         type: "assistantMessage",
@@ -66,7 +64,7 @@ export const orchestrateTest =
           "please check if the Interface agent is called.",
       });
 
-    // PLAN
+    // SCENARIO PLANNING
     const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(
       ctx,
       props.instruction,
@@ -87,7 +85,47 @@ export const orchestrateTest =
       completed: 0,
     };
 
-    // MAKE TEST FUNCTIONS
+    // PREPARE COMPILER
+    const compile = async (
+      functions: AutoBeTestFunction[],
+    ): Promise<IAutoBeTypeScriptCompileResult> => {
+      const c: IAutoBeCompiler = await ctx.compiler();
+      return await c.typescript.compile({
+        files: Object.fromEntries([
+          ...Object.entries(
+            await ctx.files({
+              dbms: "sqlite",
+            }),
+          ).filter(([key]) => key.endsWith(".ts")),
+          ...functions.map((f) => [f.location, f.content]),
+        ]),
+      });
+    };
+    const out = async (
+      functions: AutoBeTestFunction[],
+      result?: IAutoBeTypeScriptCompileResult,
+    ): Promise<AutoBeTestHistory> =>
+      ctx.dispatch({
+        type: "testComplete",
+        id: v7(),
+        functions,
+        compiled: result ?? (await compile(functions)),
+        aggregates: ctx.getCurrentAggregates("test"),
+        step: ctx.state().analyze?.step ?? 0,
+        elapsed: new Date().getTime() - start.getTime(),
+        created_at: new Date().toISOString(),
+      });
+
+    // AUTHORIZE
+    const authorizes: AutoBeTestAuthorizeFunction[] =
+      await orchestrateTestAuthorize(ctx, {
+        instruction: props.instruction,
+        document,
+        writeProgress,
+        correctProgress,
+      });
+
+    // DATA COMPOSER
     const prepares: AutoBeTestPrepareFunction[] = await orchestrateTestPrepare(
       ctx,
       {
@@ -97,6 +135,12 @@ export const orchestrateTest =
         correctProgress,
       },
     );
+    const prepareCompiled: IAutoBeTypeScriptCompileResult =
+      await compile(prepares);
+    if (prepareCompiled.type !== "success")
+      return await out([...authorizes, ...prepares]);
+
+    // GENERATE API
     const generates: AutoBeTestGenerateFunction[] =
       await orchestrateTestGenerate(ctx, {
         instruction: props.instruction,
@@ -105,13 +149,18 @@ export const orchestrateTest =
         writeProgress,
         correctProgress,
       });
-    const authorizes: AutoBeTestAuthorizeFunction[] =
-      await orchestrateTestAuthorize(ctx, {
-        instruction: props.instruction,
-        document,
-        writeProgress,
-        correctProgress,
-      });
+    const generateCompiled: IAutoBeTypeScriptCompileResult = await compile([
+      ...authorizes,
+      ...prepares,
+      ...generates,
+    ]);
+    if (generateCompiled.type !== "success")
+      return await out(
+        [...authorizes, ...prepares, ...generates],
+        generateCompiled,
+      );
+
+    // ACTUAL TEST FUNCTION
     const operations: AutoBeTestOperationFunction[] =
       await orchestrateTestOperation(ctx, {
         instruction: props.instruction,
@@ -123,42 +172,5 @@ export const orchestrateTest =
         writeProgress,
         correctProgress,
       });
-
-    // DO COMPILE
-    const everyFunctions: AutoBeTestFunction[] = [
-      ...authorizes,
-      ...prepares,
-      ...generates,
-      ...operations,
-    ];
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    const compileResult: IAutoBeTypeScriptCompileResult =
-      await compiler.typescript.compile({
-        files: Object.fromEntries([
-          ...Object.entries(
-            await ctx.files({
-              dbms: "sqlite",
-            }),
-          ).filter(([key]) => key.endsWith(".ts")),
-          ...Object.entries(
-            await compiler.getTemplate({
-              dbms: "sqlite",
-              phase: "test",
-            }),
-          ).filter(
-            ([key]) => key.startsWith("test/utils") && key.endsWith(".ts"),
-          ),
-          ...everyFunctions.map((f) => [f.location, f.content]),
-        ]),
-      });
-    return ctx.dispatch({
-      type: "testComplete",
-      id: v7(),
-      functions: everyFunctions,
-      compiled: compileResult,
-      aggregates: ctx.getCurrentAggregates("test"),
-      step: ctx.state().analyze?.step ?? 0,
-      elapsed: new Date().getTime() - start.getTime(),
-      created_at: new Date().toISOString(),
-    });
+    return await out([...authorizes, ...prepares, ...generates, ...operations]);
   };

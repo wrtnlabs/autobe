@@ -81,6 +81,7 @@ export namespace ArchiveLogger {
       content.push(
         `  - kind: ${event.kind}`,
         `  - function: ${event.function.type}`,
+        `  - file: ${event.function.location}`,
       );
       console.log(event.result.diagnostics);
     } else if (event.type === "interfaceComplement")

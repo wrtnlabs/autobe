@@ -1,17 +1,22 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
 import { orchestrateTestOperation } from "@autobe/agent/src/orchestrate/test/orchestrateTestOperation";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeExampleProject,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
+  AutoBeTestFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestOperationFunction,
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
 } from "@autobe/interface";
+import { v7 } from "uuid";
 
+import { assert_test_compilation } from "./assert_test_compilation";
 import { validate_test_authorization } from "./validate_test_authorization";
 import { validate_test_generate } from "./validate_test_generate";
 import { validate_test_prepare } from "./validate_test_prepare";
@@ -22,8 +27,8 @@ export const validate_test_operation = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeTestOperationFunction[]> => {
-  const document: AutoBeOpenApi.IDocument = props.agent.getContext().state()
-    .interface!.document;
+  const ctx: AutoBeContext = props.agent.getContext();
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
 
   // Load dependencies
   const scenarios: AutoBeTestScenario[] =
@@ -56,15 +61,14 @@ export const validate_test_operation = async (props: {
 
   const writeProgress: AutoBeProgressEventBase = {
     completed: 0,
-    total: 0,
+    total: scenarios.length,
   };
   const correctProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
-
   const testOperations: AutoBeTestOperationFunction[] =
-    await orchestrateTestOperation(props.agent.getContext(), {
+    await orchestrateTestOperation(ctx, {
       instruction: "",
       document,
       scenarios,
@@ -75,6 +79,27 @@ export const validate_test_operation = async (props: {
       correctProgress,
     });
 
+  const everyFunctions: AutoBeTestFunction[] = [
+    ...authorizes,
+    ...prepares,
+    ...generates,
+    ...testOperations,
+  ];
+  ctx.dispatch({
+    type: "testComplete",
+    id: v7(),
+    functions: everyFunctions,
+    compiled: await assert_test_compilation({
+      ...props,
+      functions: everyFunctions,
+      type: "operation",
+    }),
+    aggregates: ctx.getCurrentAggregates("test"),
+    step: ctx.state().analyze?.step ?? 0,
+    elapsed: 1_000,
+    created_at: new Date().toISOString(),
+  });
+
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
@@ -82,5 +107,18 @@ export const validate_test_operation = async (props: {
       ["test.operation.json"]: JSON.stringify(testOperations),
     },
   });
+  try {
+    await FileSystemIterator.save({
+      root: `${
+        AutoBeExampleStorage.TEST_ROOT
+      }/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${
+        props.project
+      }/test`,
+      files: {
+        ...(await props.agent.getFiles()),
+        "pnpm-workspace.yaml": "",
+      },
+    });
+  } catch {}
   return testOperations;
 };

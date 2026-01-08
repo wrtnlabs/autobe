@@ -136,7 +136,7 @@ async function process(
     type: "testWrite",
     function: {
       type: "prepare",
-      location: `test/features/utils/prepare/${functionName}.ts`,
+      location: `test/prepare/${functionName}.ts`,
       content: await AutoBeTestPrepareProgrammer.replaceImportStatements({
         compiler: await ctx.compiler(),
         typeName: props.typeName,

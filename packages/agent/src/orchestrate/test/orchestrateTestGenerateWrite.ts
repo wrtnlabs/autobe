@@ -130,7 +130,7 @@ async function process(
     throw new Error("Failed to create generation function.");
   }
 
-  const location: string = `test/features/utils/generation/${functionName}.ts`;
+  const location: string = `test/generate/${functionName}.ts`;
   return {
     type: "testWrite",
     id: v7(),
@@ -164,7 +164,6 @@ function createController(props: {
   functionName: string;
   build: (next: IAutoBeTestGenerationWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
-
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeTestGenerationWriteApplication.IProps> =
       typia.validate<IAutoBeTestGenerationWriteApplication.IProps>(input);
@@ -185,11 +184,12 @@ function createController(props: {
       : result;
   };
 
-  const application: ILlmApplication = typia.llm.application<IAutoBeTestGenerationWriteApplication>({
-    validate: {
-      generate: validate,
-    },
-  });
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestGenerationWriteApplication>({
+      validate: {
+        generate: validate,
+      },
+    });
 
   return {
     protocol: "class",

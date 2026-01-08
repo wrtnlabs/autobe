@@ -17,5 +17,6 @@ const main = async () => {
     vendor: TestGlobal.vendorModel,
     project,
   });
+  console.log(`code results/${TestGlobal.vendorModel}/${project}/test`);
 };
 main().catch(console.log);

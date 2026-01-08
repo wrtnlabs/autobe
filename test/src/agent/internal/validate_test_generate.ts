@@ -1,4 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
 import { orchestrateTestGenerate } from "@autobe/agent/src/orchestrate/test/orchestrateTestGenerate";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
@@ -9,6 +10,7 @@ import {
   AutoBeTestPrepareFunction,
 } from "@autobe/interface";
 
+import { assert_test_compilation } from "./assert_test_compilation";
 import { validate_test_prepare } from "./validate_test_prepare";
 
 export const validate_test_generate = async (props: {
@@ -16,8 +18,8 @@ export const validate_test_generate = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeTestGenerateFunction[]> => {
-  const document: AutoBeOpenApi.IDocument = props.agent.getContext().state()
-    .interface!.document;
+  const ctx: AutoBeContext = props.agent.getContext();
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
 
   // Load prepares
   const prepares: AutoBeTestPrepareFunction[] =
@@ -29,15 +31,14 @@ export const validate_test_generate = async (props: {
 
   const writeProgress: AutoBeProgressEventBase = {
     completed: 0,
-    total: 0,
+    total: prepares.length,
   };
   const correctProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
-
   const generates: AutoBeTestGenerateFunction[] = await orchestrateTestGenerate(
-    props.agent.getContext(),
+    ctx,
     {
       instruction: "",
       document,
@@ -47,6 +48,11 @@ export const validate_test_generate = async (props: {
     },
   );
 
+  await assert_test_compilation({
+    ...props,
+    functions: [...prepares, ...generates],
+    type: "generate",
+  });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,

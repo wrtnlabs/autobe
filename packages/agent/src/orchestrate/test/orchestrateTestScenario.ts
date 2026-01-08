@@ -66,7 +66,8 @@ export const orchestrateTestScenario = async (
           promptCacheKey,
           instruction,
         });
-      } catch {
+      } catch (error) {
+        ++progress.completed;
         return [];
       }
     }),
@@ -106,6 +107,8 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
+  console.log("process", props.operation.method, props.operation.path);
+
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
