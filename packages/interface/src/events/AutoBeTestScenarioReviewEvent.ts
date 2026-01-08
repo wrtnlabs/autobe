@@ -11,18 +11,38 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * analyzing one test scenario to validate authentication correctness,
  * dependency completeness, execution order, and business logic coverage.
  *
- * The review process examines the test scenario to identify issues such as:
+ * The review process follows a three-tier priority system:
+ *
+ * **PRIORITY 1: Validation Error Testing Detection** (Can result in "erase"):
+ *
+ * - Detects scenarios testing HTTP 400 validation errors (invalid types, missing
+ *   fields, invalid formats)
+ * - These scenarios violate absolute prohibitions from TEST_SCENARIO.md Section
+ *   2.1
+ * - AutoBE's three-tier compiler system (TypeScript + Typia + NestJS) already
+ *   guarantees type safety
+ * - Testing framework guarantees wastes time and creates meaningless coverage
+ * - Such scenarios are marked for deletion via "erase" flag
+ *
+ * **PRIORITY 2: Technical Correctness** (Can result in improved scenario):
  *
  * - Missing authentication operations
  * - Incomplete dependency chains
  * - Wrong execution order (auth should precede business operations)
- * - Validation-only tests (framework-level tests that should be removed)
+ * - These are fixable issues that result in corrected scenarios
+ *
+ * **PRIORITY 3: Quality Assessment** (Can result in null):
+ *
+ * - Scenario passes all checks and needs no changes
+ * - Already tests business logic correctly with proper authentication and
+ *   dependencies
  *
  * By extending multiple base interfaces, this event provides comprehensive
  * tracking capabilities including progress monitoring for one-by-one scenario
  * processing and token usage analytics for cost optimization.
  *
  * @author Michael
+ * @author Samchon
  */
 export interface AutoBeTestScenarioReviewEvent
   extends
@@ -47,20 +67,47 @@ export interface AutoBeTestScenarioReviewEvent
   original: AutoBeTestScenario;
 
   /**
-   * The improved test scenario after review, or null if no improvements needed.
+   * The review result: improved scenario, deletion flag, or null.
    *
-   * - If `null`: The original scenario was already correct with no issues found
-   * - If `AutoBeTestScenario`: Contains the improved version with fixes applied:
+   * Three possible outcomes reflecting the review priority system:
    *
+   * **1. "erase" - Scenario must be deleted** (PRIORITY 1 violation):
+   *
+   * - Scenario tests HTTP 400 validation errors (invalid email, missing fields,
+   *   wrong types)
+   * - Tests framework-level validations instead of business logic
+   * - Violates absolute prohibition from TEST_SCENARIO.md Section 2.1
+   * - AutoBE's compiler system already guarantees type safety - testing these
+   *   guarantees is forbidden
+   * - Such scenarios are fundamentally wrong and must be completely removed
+   * - Examples: "test_api_user_registration_invalid_email",
+   *   "test_api_article_creation_missing_title"
+   *
+   * **2. AutoBeTestScenario - Scenario has been improved** (PRIORITY 2 fixes):
+   *
+   * - Scenario tests business logic BUT had technical issues
+   * - Contains the improved version with corrections applied:
    *   - Corrected authentication operations
    *   - Complete dependency chains
-   *   - Proper execution order
+   *   - Proper execution order (auth before business operations)
    *   - Refined test descriptions
+   * - Maintains the same `endpoint` and `functionName` as the original
+   * - Conceptually correct, just needed technical corrections
    *
-   * The improved scenario maintains the same `endpoint` and `functionName` as
-   * the original, ensuring consistency in test identification.
+   * **3. null - No improvements needed** (PRIORITY 3 - perfect scenario):
+   *
+   * - The original scenario was already correct with no issues found
+   * - Tests business logic correctly
+   * - Has proper authentication, complete dependencies, correct execution order
+   * - Ready for implementation as-is
+   *
+   * The review agent follows this decision tree:
+   *
+   * 1. Does scenario test validation errors? → "erase"
+   * 2. Does scenario have auth/dependency/order issues? → improved scenario
+   * 3. Is scenario perfect? → null
    */
-  improved: AutoBeTestScenario | null;
+  improved: AutoBeTestScenario | "erase" | null;
 
   /**
    * Iteration number of the interface specification this review was performed
