@@ -144,7 +144,6 @@ async function process(
     const pointer: IPointer<AutoBeTestScenario[] | null> = {
       value: null,
     };
-
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -169,8 +168,9 @@ async function process(
         preliminary,
       }),
     });
-
     if (pointer.value === null) return out(result)(null);
+
+    pointer.value.splice(3);
 
     // Dispatch event
     ctx.dispatch({
