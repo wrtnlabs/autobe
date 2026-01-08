@@ -545,12 +545,19 @@ Per TEST_SCENARIO.md Section 2.1, testing HTTP 400 validation errors is ABSOLUTE
   "functionName": "test_api_order_wrong_type_quantity",
   "draft": "Verify 400 error when quantity is string instead of number"
 }
+
+// ❌ MUST ERASE
+{
+  "functionName": "test_api_product_creation_invalid_price",
+  "draft": "Test that negative price value returns 400 validation error"
+}
 ```
 
 **Why each must be erased**:
 - First example: `@IsEmail()` decorator already guarantees email validation
 - Second example: TypeScript compilation fails if required field is missing
 - Third example: Type system prevents passing wrong types
+- Fourth example: `@Min(0)` decorator or business layer validation already handles this - testing framework validation, not business logic
 
 **Your action when detected**:
 ```typescript

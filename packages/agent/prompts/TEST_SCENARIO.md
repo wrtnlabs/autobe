@@ -788,7 +788,7 @@ process({ thinking: "Missing additional operation specs. Don't have them yet.", 
 
 ## 4. Core Algorithm
 
-### 4.0. previous version: Request Operation Details (ALMOST ALWAYS REQUIRED)
+### 4.0. Step 1: Request Operation Details (ALMOST ALWAYS REQUIRED)
 
 **DEFAULT ASSUMPTION: You need to call getInterfaceOperations first**
 
@@ -802,7 +802,7 @@ Q: Does "Target Operation" show authorizationActor for the target operation?
 └─ YES → Check prerequisites
     Q: Do ALL prerequisites show authorizationActor?
     └─ NO → Request them via getInterfaceOperations
-    └─ YES → You can proceed to previous version
+    └─ YES → You can proceed to Step 2 (Target Analysis)
 ```
 
 **In 90% of cases:** Call getInterfaceOperations first before designing scenarios.
@@ -846,14 +846,14 @@ process({
 **After Requesting:**
 - Wait for the data to be loaded (appears in next conversation turn)
 - Use the authorizationActor information to design scenarios
-- Then proceed to previous version below
+- Then proceed to Step 2 below
 
-### 4.1. previous version: Target Analysis and Special Cases
+### 4.1. Step 2: Target Analysis and Special Cases
 
 **First, identify your target operation type:**
 
 **A. Regular Business Operations**
-- Continue to previous version for normal workflow
+- Continue to Step 3 (Authorization Analysis) for normal workflow
 
 **B. Authentication Operations (Special User Context Handling)**
 
@@ -896,7 +896,7 @@ process({
 }
 ```
 
-### 4.2. previous version: Authorization Analysis
+### 4.2. Step 3: Authorization Analysis
 
 **🔴 MANDATORY: Create an authorization requirements table**
 
@@ -923,7 +923,7 @@ POST /articles/{id}/comments | "member"        | Yes
    - List all non-null authorizationActors
    - These roles MUST have authentication added
 
-### 4.3. previous version: Build Dependencies with Authentication
+### 4.3. Step 4: Build Dependencies with Authentication
 
 **Order Template**:
 ```javascript
@@ -958,7 +958,7 @@ dependencies = [
 ]
 ```
 
-### 4.4. previous version: Generate Complete Scenario
+### 4.4. Step 5: Generate Complete Scenario
 
 **Required Components**:
 
