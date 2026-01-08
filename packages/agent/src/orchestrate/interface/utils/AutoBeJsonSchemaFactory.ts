@@ -272,9 +272,34 @@ export namespace AutoBeJsonSchemaFactory {
           )
             continue;
           else if (k.startsWith("x-")) delete (next as any)[k];
+        if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
+        else if (AutoBeOpenApiTypeChecker.isArray(next)) fixArraySchema(next);
       },
     });
     return emended as Schema;
+  };
+
+  const fixStringSchema = (schema: AutoBeOpenApi.IJsonSchema.IString): void => {
+    if (schema.format !== undefined) {
+      delete schema.pattern;
+      if (
+        schema.format === "uuid" ||
+        schema.format === "ipv4" ||
+        schema.format === "ipv6" ||
+        schema.format === "date" ||
+        schema.format === "date-time" ||
+        schema.format === "time"
+      ) {
+        delete schema.minLength;
+        delete schema.maxLength;
+      }
+    }
+    if (schema.contentMediaType === "") delete schema.contentMediaType;
+    if (schema.minLength === 0) delete schema.minLength;
+  };
+
+  const fixArraySchema = (schema: AutoBeOpenApi.IJsonSchema.IArray): void => {
+    if (schema.minItems === 0) delete schema.minItems;
   };
 }
 
