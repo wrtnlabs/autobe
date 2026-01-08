@@ -153,10 +153,31 @@ function createController(props: {
         errors,
         operation: op,
       });
+      if (op.authorizationType === null) {
+        errors.push({
+          path: `$input.request.operations[${i}].authorizationType`,
+          expected: StringUtil.trim`{
+            ...(AutoBeOpenApi.IOperation data),
+            authorizationType: "login" | "join" | "refresh"
+          }`,
+          value: op.authorizationType,
+          description: StringUtil.trim`
+            For authentication operations, the authorizationType field must 
+            be defined. It indicates the type of authorization activity the 
+            operation performs, such as "login", "join", or "refresh".
+
+            Leaving authorizationType as null is not allowed for authentication 
+            operations. If you intend to create a non-authentication operation,
+            please remove the operation from the list.
+          `,
+        });
+        return;
+      }
+
+      op.parameters = [];
       if (op.authorizationActor !== null) {
         op.authorizationActor = props.actor.name;
       }
-      if (op.authorizationType === null) return;
 
       // validate responseBody.typeName -> must be ~.IAuthorized
       if (op.responseBody === null)
