@@ -49,7 +49,7 @@ export async function orchestrateTestScenarioReview(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
-  return await executeCachedBatch(
+  const matrix: Array<AutoBeTestScenario | "erase"> = await executeCachedBatch(
     ctx,
     props.scenarios.map((scenario) => async (promptCacheKey) => {
       try {
@@ -67,6 +67,7 @@ export async function orchestrateTestScenarioReview(
       }
     }),
   );
+  return matrix.filter((s) => s !== "erase");
 }
 
 /**
@@ -94,7 +95,7 @@ async function process(
     instruction: string;
     promptCacheKey: string;
   },
-): Promise<AutoBeTestScenario> {
+): Promise<AutoBeTestScenario | "erase"> {
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
@@ -108,7 +109,7 @@ async function process(
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario | null> = {
+    const pointer: IPointer<AutoBeTestScenario | "erase" | null> = {
       value: null,
     };
 
@@ -180,7 +181,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   >;
-  build: (improved: AutoBeTestScenario | null) => void;
+  build: (improved: AutoBeTestScenario | "erase" | null) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -198,7 +199,11 @@ function createController(props: {
         thinking: result.data.thinking,
         request: result.data.request,
       });
-    } else if (result.data.request.content === null) return result;
+    } else if (
+      result.data.request.content === null ||
+      result.data.request.content === "erase"
+    )
+      return result;
 
     // Complete request validation
     const errors: IValidation.IError[] = [];
@@ -234,7 +239,10 @@ function createController(props: {
       process: (next) => {
         if (next.request.type === "complete") {
           // Fulfill missing authentication dependencies if content is not null
-          if (next.request.content !== null) {
+          if (
+            next.request.content !== null &&
+            next.request.content !== "erase"
+          ) {
             AutoBeTestScenarioProgrammer.fulfill({
               dict: props.dict,
               authorizations: props.authorizations,

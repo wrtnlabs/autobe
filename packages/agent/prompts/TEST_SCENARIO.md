@@ -123,9 +123,151 @@ thinking: "Generated 3 scenarios with dependencies: auth join, create resource, 
 
 Generate 1-3 test scenarios that transform the target operation definition into focused test cases with proper authentication, complete dependency chains, and meaningful business logic validation. Each scenario must reflect real-world usage patterns and validate actual business requirements. **Remember: Generate 1-3 focused scenarios for the target operation that cover the most critical workflows.**
 
-### 2.1. Critical Authorization Verification Rule
+### 2.1. ABSOLUTE PROHIBITION: HTTP 400 Validation Error Testing
+
+**🔴 CRITICAL PRINCIPLE**: NEVER create test scenarios that intentionally send invalid requests to trigger HTTP 400 errors.
+
+**WHY THIS IS ABSOLUTELY FORBIDDEN:**
+
+AutoBE's architecture guarantees type safety and validation at compile-time and runtime. Testing these guarantees is redundant and misleading.
+
+**1. AutoBE's Type Safety System is Perfect and Complete**
+
+The three-tier compiler system ensures 100% type correctness:
+- **TypeScript Compiler**: Catches type mismatches at compile-time (string vs number, missing properties, wrong types)
+- **Typia Runtime Validation**: Provides runtime type checking with 20,000x faster performance than class-validator
+- **NestJS DTO Validation**: Framework-level validation decorators (@IsEmail, @IsString, etc.) are already tested by the framework itself
+
+When you write a test like `test_api_user_registration_invalid_email`, you are NOT testing your business logic. You are testing whether TypeScript, Typia, and NestJS work correctly - which they do, with 100% guarantee.
+
+**2. HTTP 400 Errors Are Infrastructure Guarantees, Not Business Logic**
+
+Consider these scenarios:
+- Invalid email format → 400 (guaranteed by `@IsEmail()` decorator + Typia validation)
+- Wrong type (string instead of number) → 400 (guaranteed by TypeScript compilation + DTO validation)
+- Missing required fields → 400 (guaranteed by `@IsNotEmpty()` decorator)
+- Invalid UUID format → 400 (guaranteed by `@IsUUID()` decorator)
+
+These are NOT your application's business logic. These are infrastructural guarantees provided by the framework and compiler. Your test suite should focus on what makes your application unique, not on proving that industry-standard tools work.
+
+**3. Testing 400 Errors = Testing the Framework (Waste of Time)**
+
+When you write tests for validation errors, you are:
+- ❌ NOT testing your business logic
+- ❌ NOT testing your application's unique features
+- ❌ NOT testing user workflows
+- ✅ Testing TypeScript (already proven by Microsoft)
+- ✅ Testing Typia (already proven by its test suite)
+- ✅ Testing NestJS (already proven by the framework's test suite)
+
+This creates meaningless test coverage metrics and wastes development time. Each 400-error test you write is time NOT spent testing actual business logic.
+
+**4. Focus on What Matters: Real Business Workflows**
+
+Your tests should validate:
+- ✅ Business rule enforcement (e.g., "only article author can delete their article")
+- ✅ Complex workflows (e.g., "order requires payment before shipping")
+- ✅ State transitions (e.g., "published article cannot be edited by non-authors")
+- ✅ Multi-step processes (e.g., "user registration → email verification → profile setup")
+- ✅ Authorization logic (e.g., "admin can see all users, regular user can see only themselves")
+
+**FORBIDDEN EXAMPLES WITH EXPLANATIONS:**
+
+```json
+// ❌ ABSOLUTELY FORBIDDEN
+{
+  "functionName": "test_api_user_registration_invalid_email",
+  "draft": "Test that invalid email format returns 400 error"
+}
+```
+**Why this is wrong**: The `@IsEmail()` decorator already guarantees this. You're testing NestJS, not your application.
+
+```json
+// ❌ ABSOLUTELY FORBIDDEN
+{
+  "functionName": "test_api_article_creation_missing_title",
+  "draft": "Test that missing required title field returns 400"
+}
+```
+**Why this is wrong**: TypeScript compilation fails if title is missing in the DTO. The type system already prevents this.
+
+```json
+// ❌ ABSOLUTELY FORBIDDEN
+{
+  "functionName": "test_api_order_wrong_type_quantity",
+  "draft": "Test that sending string instead of number for quantity returns 400"
+}
+```
+**Why this is wrong**: TypeScript won't compile if you pass a string to a number field. Typia runtime validation catches this at the boundary. You're testing the compiler.
+
+```json
+// ❌ ABSOLUTELY FORBIDDEN
+{
+  "functionName": "test_api_product_creation_invalid_price",
+  "draft": "Test that negative price value returns 400 validation error"
+}
+```
+**Why this is wrong**: If you have `@Min(0)` decorator, this is framework validation, not business logic. If you DON'T have the decorator, you should test the business rule "negative prices are rejected in the business layer", not the DTO validation.
+
+**CORRECT APPROACH WITH EXPLANATIONS:**
+
+```json
+// ✅ CORRECT - Tests actual business workflow
+{
+  "functionName": "test_api_user_registration_with_verification",
+  "draft": "Test complete user registration workflow: user submits registration, receives verification email, clicks verification link, and account becomes active. Validates that unverified users cannot access protected resources."
+}
+```
+**Why this is correct**: Tests multi-step business process, state transitions, and authorization rules unique to your application.
+
+```json
+// ✅ CORRECT - Tests business rule enforcement
+{
+  "functionName": "test_api_article_deletion_by_author_only",
+  "draft": "Test that article deletion succeeds when requested by the original author, and validates that other users cannot delete articles they didn't create. Validates ownership-based authorization logic."
+}
+```
+**Why this is correct**: Tests business-specific authorization logic that defines your application's behavior.
+
+```json
+// ✅ CORRECT - Tests complex business state
+{
+  "functionName": "test_api_order_lifecycle_from_creation_to_delivery",
+  "draft": "Test complete order lifecycle: customer creates order, payment is processed, order status changes to paid, admin marks as shipped, customer confirms delivery. Validates state transition rules and multi-actor workflow."
+}
+```
+**Why this is correct**: Tests real-world business process with multiple states and actors, validating your application's unique workflow logic.
+
+**ENFORCEMENT RULES:**
+
+If you find yourself writing any of these patterns, STOP IMMEDIATELY:
+- ❌ "invalid" in functionName or draft → You're testing validation
+- ❌ "wrong type" in functionName or draft → You're testing the type system
+- ❌ "missing field" in functionName or draft → You're testing DTO validation
+- ❌ "400 error" in functionName or draft → You're testing framework behavior
+- ❌ "validation error" in functionName or draft → You're testing infrastructure
+
+Instead, ask yourself:
+- ✅ "Does this test a unique business rule?"
+- ✅ "Does this test a real user workflow?"
+- ✅ "Does this test state transitions specific to my application?"
+- ✅ "Would this test still be valuable if I changed frameworks?"
+
+If the answer to all these is NO, you're testing the wrong thing.
+
+**REMEMBER**: AutoBE's type safety is guaranteed. Your job is to test business logic, not to validate that the compiler works.
+
+### 2.2. Critical Authorization Verification Rule
 
 **🔴 CRITICAL PRINCIPLE**: You MUST check the authorizationActor for EVERY operation involved in your test scenario.
+
+**WHY THIS MATTERS:**
+
+Authorization is business logic, not infrastructure. Unlike type validation (which is guaranteed by the compiler), authorization rules define your application's security model. Different operations may require different user roles, and testing these rules ensures your API correctly enforces access control.
+
+**Authorization vs Validation - Critical Distinction:**
+- **Validation** (type safety, required fields) → Guaranteed by compiler, DON'T test
+- **Authorization** (who can access what) → Business logic, MUST test
 
 **MANDATORY VERIFICATION PROCESS**:
 1. **Target Operation**: Look up its authorizationActor in "API Operations"
@@ -137,27 +279,72 @@ Generate 1-3 test scenarios that transform the target operation definition into 
 - `authorizationActor: "roleX"` → MUST add authentication for roleX before this operation
 - Authentication must PRECEDE any operation that requires it
 
+**Why each rule exists:**
+- **null authorizationActor**: Public endpoints (e.g., viewing public articles, reading banners) don't require authentication. Testing these validates your public API accessibility.
+- **Non-null authorizationActor**: Protected endpoints enforce role-based access control. Testing these validates your security model works correctly.
+- **Authentication order**: You cannot access protected resources before authenticating. This reflects real-world API usage patterns.
+
 **⚠️ WARNING**: The prerequisites array only provides endpoints. You MUST look up each endpoint in "API Operations" to find its authorizationActor. Never assume an operation is public without verification.
 
-### 2.2. Test Scenario Design Philosophy
+### 2.3. Test Scenario Design Philosophy
 
 **CRITICAL**: Focus on creating scenarios that validate real business workflows, not framework-level validations.
 
-**Design Principles**:
-- **Business Logic Focus**: Test what users actually do, not type checking
-- **Complete Workflows**: Include all steps from authentication to completion
-- **Realistic Patterns**: Follow actual user behavior patterns
-- **No Framework Testing**: Skip validation errors, focus on business rules
+**WHY THIS PHILOSOPHY MATTERS:**
+
+Test scenarios are specifications of real-world user behavior. They document how users interact with your API and validate that these interactions work correctly. Good test scenarios answer the question: "Can users accomplish their goals?" Bad test scenarios answer: "Does the compiler work?"
+
+**Design Principles Explained**:
+
+**Business Logic Focus**: Test what users actually do, not type checking
+- Users don't intentionally send malformed requests - they use your frontend or SDK which generates valid requests
+- Your tests should simulate real usage: creating resources, updating them, deleting them, querying them
+- Business logic examples: authorization rules, workflow sequences, state transitions, calculated fields
+
+**Complete Workflows**: Include all steps from authentication to completion
+- Real users follow complete workflows: they log in (or join), perform actions, verify results
+- Each test should tell a story: "User joins as member, creates an article, adds comments, then deletes the article"
+- Incomplete workflows (e.g., testing update without first creating the resource) don't reflect real usage
+
+**Realistic Patterns**: Follow actual user behavior patterns
+- Users create parent resources before child resources (articles before comments)
+- Users authenticate before accessing protected resources
+- Multiple users can interact (admin creates product, customer orders it, staff ships it)
+
+**No Framework Testing**: Skip validation errors, focus on business rules
+- As explained in Section 2.1, validation is guaranteed by the compiler
+- Your tests should focus on rules unique to your application
+- Framework behavior (400 errors for invalid types) is already proven by framework test suites
 
 **Ask Before Creating Each Scenario**:
-- Does this test a meaningful business workflow?
-- Are all dependencies properly authenticated?
-- Is the execution order realistic and correct?
-- Does this avoid testing framework-level validations?
+- Does this test a meaningful business workflow? → If NO, reconsider the scenario
+- Are all dependencies properly authenticated? → If NO, add authentication
+- Is the execution order realistic and correct? → If NO, reorder dependencies
+- Does this avoid testing framework-level validations? → If NO, delete the scenario
 
-### 2.3. User Context Strategy: Critical Rules
+**Example of Philosophy in Action:**
+
+❌ **Wrong approach** (testing framework):
+```
+Scenario: Test article creation with invalid title type
+Purpose: Verify 400 error when title is number instead of string
+```
+This tests TypeScript/Typia, not your business logic.
+
+✅ **Correct approach** (testing business logic):
+```
+Scenario: Test article publication workflow with category assignment
+Purpose: Verify that members can create articles, assign them to categories, and the articles appear in the correct category listing
+```
+This tests real user workflow and business rules.
+
+### 2.4. User Context Strategy: Critical Rules
 
 **⚠️ CRITICAL PRINCIPLE**: User Context determines how user authentication is established in your test scenario.
+
+**WHY USER CONTEXT MATTERS:**
+
+Test scenarios must establish user identity before accessing protected resources. The way you establish this identity (join vs login) determines whether you're creating a new user or using an existing one. This choice affects test isolation, data independence, and scenario correctness.
 
 **🔴 FUNDAMENTAL RULE: User Context Type Determines Authentication Method**
 
@@ -167,16 +354,33 @@ Generate 1-3 test scenarios that transform the target operation definition into 
 - Fresh, isolated test environment
 - Example: `/auth/admin/join`, `/auth/member/join`
 
+**Why join is the default:**
+- **Test Isolation**: Each test creates its own users, preventing conflicts between tests
+- **Data Independence**: No shared state - one test's data doesn't affect another
+- **Parallel Execution**: Tests can run simultaneously without interfering
+- **Clean State**: Every test starts with a fresh user, no leftover data from previous runs
+
 **Existing User Context (RARE - 1% of cases)**
 - **MUST use `login` ONLY** - Uses pre-existing user accounts
 - **NEVER use `join`** for existing user contexts
 - Only when specifically testing login functionality or legacy users
 - Example: `/auth/admin/login`, `/auth/member/login`
 
-**🚨 ABSOLUTE PROHIBITION**: 
+**Why login is rare:**
+- Used ONLY when the test scenario is specifically about logging in
+- Example: "Test that user can login with correct password"
+- Even then, you first use `join` to create the user, THEN use `login` to test the login operation
+- Never use login for normal business operation tests
+
+**🚨 ABSOLUTE PROHIBITION**:
 - **NEVER mix join and login in the same test scenario**
 - **NEVER use login unless explicitly testing login functionality**
 - **When in doubt, ALWAYS use join (new user context)**
+
+**Why these prohibitions exist:**
+- **Mixing join and login**: Creates confusion about which user is performing actions
+- **Using login for business tests**: Requires pre-existing test data, breaks test isolation
+- **Default to join**: Ensures tests are self-contained and independent
 
 **How User Context Works in Tests**:
 ```typescript
@@ -206,20 +410,35 @@ describe('Wrong Pattern', () => {
 });
 ```
 
-### 2.4. System-Generated vs User-Managed Data
+### 2.5. System-Generated vs User-Managed Data
 
 **🔴 CRITICAL DISTINCTION**: Understand what data is created by users vs generated by the system.
+
+**WHY THIS DISTINCTION MATTERS:**
+
+Your test scenarios simulate user actions, not system internals. Users interact with your API to create, read, update, and delete resources. They do NOT manually create audit logs or system metrics - these are byproducts of user actions. Including system-generated data in dependencies creates unrealistic scenarios that don't reflect actual API usage.
 
 **User-Managed Data (Include in Dependencies)**:
 - Business entities users create (posts, comments, orders)
 - Configuration users set (preferences, settings)
 - Content users upload (images, documents)
 
+**Why these are included:**
+- Users explicitly create these through API calls
+- These resources are prerequisites for other operations
+- Example: Cannot comment on an article that doesn't exist → Must create article first
+
 **System-Generated Data (NEVER Include)**:
 - Audit logs (created automatically during operations)
 - Analytics events (tracked by system)
 - Performance metrics (collected internally)
 - System timestamps (created_at, updated_at)
+
+**Why these are excluded:**
+- Created automatically by the system, not by user actions
+- Users never call "POST /audit-logs" directly
+- Including these creates unrealistic test scenarios
+- These are implementation details, not API operations
 
 **Example - What NOT to Do**:
 ```json
@@ -229,7 +448,10 @@ describe('Wrong Pattern', () => {
     { "endpoint": { "method": "post", "path": "/audit-logs" } }  // NEVER!
   ]
 }
+```
+**Why this is wrong**: Audit logs are created by the system whenever a resource operation occurs. Users don't explicitly create audit logs - they create articles, and the system logs that action automatically.
 
+```json
 // ✅ CORRECT - System creates audit logs automatically
 {
   "dependencies": [
@@ -238,8 +460,9 @@ describe('Wrong Pattern', () => {
   ]
 }
 ```
+**Why this is correct**: The test creates an article (user action), and the system handles audit logging internally. This reflects real-world API usage.
 
-### 2.5. User Context: The Golden Rule
+### 2.6. User Context: The Golden Rule
 
 **🏆 THE GOLDEN RULE OF USER CONTEXT**:
 
@@ -565,7 +788,7 @@ process({ thinking: "Missing additional operation specs. Don't have them yet.", 
 
 ## 4. Core Algorithm
 
-### 4.0. previous version: Request Operation Details (ALMOST ALWAYS REQUIRED)
+### 4.0. Step 1: Request Operation Details (ALMOST ALWAYS REQUIRED)
 
 **DEFAULT ASSUMPTION: You need to call getInterfaceOperations first**
 
@@ -579,7 +802,7 @@ Q: Does "Target Operation" show authorizationActor for the target operation?
 └─ YES → Check prerequisites
     Q: Do ALL prerequisites show authorizationActor?
     └─ NO → Request them via getInterfaceOperations
-    └─ YES → You can proceed to previous version
+    └─ YES → You can proceed to Step 2 (Target Analysis)
 ```
 
 **In 90% of cases:** Call getInterfaceOperations first before designing scenarios.
@@ -623,14 +846,14 @@ process({
 **After Requesting:**
 - Wait for the data to be loaded (appears in next conversation turn)
 - Use the authorizationActor information to design scenarios
-- Then proceed to previous version below
+- Then proceed to Step 2 below
 
-### 4.1. previous version: Target Analysis and Special Cases
+### 4.1. Step 2: Target Analysis and Special Cases
 
 **First, identify your target operation type:**
 
 **A. Regular Business Operations**
-- Continue to previous version for normal workflow
+- Continue to Step 3 (Authorization Analysis) for normal workflow
 
 **B. Authentication Operations (Special User Context Handling)**
 
@@ -673,7 +896,7 @@ process({
 }
 ```
 
-### 4.2. previous version: Authorization Analysis
+### 4.2. Step 3: Authorization Analysis
 
 **🔴 MANDATORY: Create an authorization requirements table**
 
@@ -700,7 +923,7 @@ POST /articles/{id}/comments | "member"        | Yes
    - List all non-null authorizationActors
    - These roles MUST have authentication added
 
-### 4.3. previous version: Build Dependencies with Authentication
+### 4.3. Step 4: Build Dependencies with Authentication
 
 **Order Template**:
 ```javascript
@@ -735,7 +958,7 @@ dependencies = [
 ]
 ```
 
-### 4.4. previous version: Generate Complete Scenario
+### 4.4. Step 5: Generate Complete Scenario
 
 **Required Components**:
 
@@ -758,9 +981,11 @@ dependencies = [
 ## 5. Common Anti-Patterns and Solutions
 
 ### 5.1. ❌ ANTI-PATTERN: Missing Authentication Check
+
 **Problem**: Not checking prerequisite authorizationActors
+
 ```json
-// Wrong - Didn't check if POST /resources needs auth
+// ❌ Wrong - Didn't check if POST /resources needs auth
 {
   "dependencies": [
     { "endpoint": { "method": "post", "path": "/resources" } }
@@ -768,9 +993,22 @@ dependencies = [
 }
 ```
 
+**Why this is wrong**:
+- You assumed POST /resources is public without verification
+- In reality, it requires "user" role authentication
+- This test will fail at runtime with 401 Unauthorized error
+- You didn't follow the mandatory verification process (Section 2.2)
+
+**What went wrong in reasoning**:
+1. Saw the endpoint in prerequisites
+2. Added it to dependencies without checking authorizationActor
+3. Skipped the critical step: "Look up authorizationActor in API Operations"
+4. Created an incomplete test scenario
+
 **✅ SOLUTION**: Always check authorizationActor
+
 ```json
-// Correct - Checked and added required auth
+// ✅ Correct - Checked and added required auth
 {
   "dependencies": [
     { "endpoint": { "method": "post", "path": "/auth/user/join" } },
@@ -779,8 +1017,16 @@ dependencies = [
 }
 ```
 
+**Why this is correct**:
+- Looked up POST /resources in API Operations
+- Found authorizationActor: "user"
+- Added authentication BEFORE the operation that needs it
+- Test now follows correct real-world flow: authenticate first, then create resource
+
 ### 5.2. ❌ ANTI-PATTERN: Mixed User Context Types
+
 **Problem**: Mixing new user context (join) with existing user context (login)
+
 ```json
 {
   "dependencies": [
@@ -790,7 +1036,21 @@ dependencies = [
 }
 ```
 
+**Why this is wrong**:
+- join creates a NEW admin user (fresh account)
+- login expects an EXISTING member user (already in database)
+- But where does the member user come from? It doesn't exist yet!
+- This test will fail with "Invalid credentials" because member login has no account to authenticate
+- Violates the Golden Rule (Section 2.6): Never mix join and login
+
+**What went wrong in reasoning**:
+1. Needed admin and member roles
+2. Used join for admin (correct for new user)
+3. Switched to login for member (incorrect - creates inconsistency)
+4. Forgot that login requires pre-existing user
+
 **✅ SOLUTION**: Use ONLY join for new user contexts
+
 ```json
 {
   "dependencies": [
@@ -800,13 +1060,21 @@ dependencies = [
 }
 ```
 
-**Remember**: 
-- New User Context = join ONLY
+**Why this is correct**:
+- Both users are created fresh for this test
+- No dependency on pre-existing data
+- Test is self-contained and can run independently
+- Follows the 99% rule: use join for all normal business tests
+
+**Remember**:
+- New User Context = join ONLY (99% of scenarios)
 - Existing User Context = login ONLY (rare, only when testing login itself)
 - NEVER mix them in one scenario
 
 ### 5.3. ❌ ANTI-PATTERN: Wrong Execution Order
+
 **Problem**: Operation before required authentication
+
 ```json
 {
   "dependencies": [
@@ -816,7 +1084,22 @@ dependencies = [
 }
 ```
 
+**Why this is wrong**:
+- POST /articles requires member authentication (authorizationActor: "member")
+- But authentication comes AFTER the article creation attempt
+- In real execution, this will fail with 401 Unauthorized
+- The API cannot create an article without knowing who the user is
+
+**What went wrong in reasoning**:
+1. Correctly identified both required operations
+2. Correctly checked that POST /articles needs authentication
+3. But placed them in wrong order (perhaps alphabetically?)
+4. Forgot that dependencies execute sequentially from top to bottom
+
+**Real-world analogy**: This is like trying to enter a building before showing your ID card. The guard stops you at the door because you haven't authenticated yet.
+
 **✅ SOLUTION**: Authentication first
+
 ```json
 {
   "dependencies": [
@@ -826,8 +1109,16 @@ dependencies = [
 }
 ```
 
+**Why this is correct**:
+- Authentication happens first, establishing user identity
+- Then, with valid credentials, the authenticated user can create articles
+- Follows real-world API usage: log in, then perform actions
+- Matches the execution rule: Authentication BEFORE operations that need it
+
 ### 5.4. ❌ ANTI-PATTERN: Validation Error Testing
+
 **Problem**: Testing framework-level validations
+
 ```json
 {
   "functionName": "test_api_article_creation_missing_title",  // Wrong focus
@@ -835,13 +1126,34 @@ dependencies = [
 }
 ```
 
+**Why this is wrong**:
+- This tests whether NestJS DTO validation works (it does, guaranteed)
+- Missing required field → TypeScript compilation error + runtime validation error
+- You're testing the framework, not your business logic
+- As explained in Section 2.1, this is absolutely forbidden
+
+**What went wrong in reasoning**:
+1. Thought "I should test error cases"
+2. Decided to test missing required fields
+3. Didn't recognize this is framework validation, not business logic
+4. Created a scenario that tests infrastructure guarantees
+
+**Real-world analogy**: This is like testing whether your car's seatbelt warning light works instead of testing whether your car can drive to the destination.
+
 **✅ SOLUTION**: Test business logic
+
 ```json
 {
   "functionName": "test_api_article_creation_by_member",
   "draft": "Test successful article creation workflow including proper categorization and tag assignment"
 }
 ```
+
+**Why this is correct**:
+- Tests real user workflow: member creates article with business data
+- Validates that categorization works (business rule)
+- Validates that tag assignment works (business feature)
+- Focuses on what makes your application unique, not framework behavior
 
 ## 6. Decision Framework
 
@@ -950,6 +1262,8 @@ export interface AutoBeTestScenario {
 
 ### 8.1. Example: Public Read with Private Prerequisites
 
+This example demonstrates a common pattern: a public endpoint that requires private data to be created first.
+
 **Given**:
 ```json
 // From "Target Operation"
@@ -970,16 +1284,33 @@ export interface AutoBeTestScenario {
 }
 ```
 
-**previous version**: Check each authorizationActor
-- GET /banners/{id}: null (public)
-- POST /communities: "member" (needs auth)
-- POST /communities/{id}/banners: "member" (needs auth)
+**Step 1: Check each authorizationActor**
 
-**previous version**: Determine User Context
-- Need "member" role → Use join for NEW user context
+We must look up EACH operation in "API Operations" to find its authorizationActor:
+- GET /banners/{id}: null (public) → No auth needed for target
+- POST /communities: "member" (needs auth) → Auth needed for prerequisite
+- POST /communities/{id}/banners: "member" (needs auth) → Auth needed for prerequisite
+
+**Key insight**: Even though the target operation is public, we still need authentication because the prerequisites require it. We must create the test data (banner) before we can retrieve it publicly.
+
+**Step 2: Determine User Context**
+
+Analysis:
+- Need "member" role for creating communities and banners
+- This is a normal business test (not testing login itself)
+- Decision: Use join for NEW user context (Section 2.4)
 - Never use login unless testing login itself
 
-**previous version**: Build dependencies
+**Why join, not login**: This test should be self-contained. We create a fresh member user, that user creates the banner, then we verify anyone can retrieve it publicly.
+
+**Step 3: Build dependencies**
+
+Execution order:
+1. **Authentication first**: Member join to create user identity
+2. **Parent resource**: Create community (required by banners)
+3. **Child resource**: Create banner within community
+4. **Target**: Retrieve banner publicly (no auth needed for this step)
+
 ```json
 {
   "endpoint": { "method": "get", "path": "/banners/{id}" },
@@ -1004,7 +1335,19 @@ export interface AutoBeTestScenario {
 }
 ```
 
+**Why this order is correct**:
+1. **Member join first**: Must authenticate before creating any resources
+2. **Community before banner**: Banners belong to communities (parent-child relationship)
+3. **No auth in dependency list for GET**: Target operation is public, so it doesn't need authentication in the test execution
+
+**What this test validates**:
+- Business rule: Members can create banners
+- Business rule: Anyone can view banners without authentication (public accessibility)
+- Data visibility: Banner content is correctly exposed through public API
+
 ### 8.2. Example: Multi-Role Complex Workflow
+
+This example demonstrates multi-role workflows where different users with different permissions interact in sequence.
 
 **Given**:
 ```json
@@ -1025,10 +1368,35 @@ export interface AutoBeTestScenario {
 }
 ```
 
-**Authorization Analysis**:
-- PATCH /orders/{id}/status: "staff"
-- POST /products: "admin"
-- POST /orders: "customer"
+**Step 1: Authorization Analysis**
+
+We look up EACH operation to find its authorizationActor:
+- PATCH /orders/{id}/status: "staff" → Staff role needed
+- POST /products: "admin" → Admin role needed
+- POST /orders: "customer" → Customer role needed
+
+**Key insight**: This workflow involves THREE different roles. This reflects real e-commerce scenarios:
+- Admin manages product catalog
+- Customer places orders
+- Staff processes and updates order status
+
+**Step 2: Determine User Context**
+
+Analysis:
+- Need admin, customer, and staff roles
+- This is a normal business test (not testing login)
+- Decision: Use join for ALL THREE roles (Section 2.4)
+- Create fresh users for each role to ensure test isolation
+
+**Why three join operations**: Each role represents a different user in the real system. We create all three users to simulate realistic multi-actor workflow.
+
+**Step 3: Build dependencies with proper role sequencing**
+
+Execution order:
+1. **Admin auth + operations**: Admin joins, creates product
+2. **Customer auth + operations**: Customer joins, creates order with the product
+3. **Staff auth**: Staff joins (will update order status in target operation)
+4. **Target**: Staff updates order status
 
 **Generated Scenario**:
 ```json
@@ -1062,6 +1430,26 @@ export interface AutoBeTestScenario {
   }]
 }
 ```
+
+**Why this order is correct**:
+1. **Admin role block**: Admin joins → Admin creates product
+   - Groups authentication with operations that need it
+   - Admin's work is complete after creating product
+2. **Customer role block**: Customer joins → Customer creates order
+   - Customer needs the product created by admin
+   - Order references the product (dependency chain)
+3. **Staff role block**: Staff joins → (Target operation will update order)
+   - Staff needs the order created by customer
+   - Staff will perform the target operation (update order status)
+
+**Role sequencing pattern**: Auth for RoleX → Operations needing RoleX → Auth for RoleY → Operations needing RoleY
+
+**What this test validates**:
+- Business rule: Only admins can create products
+- Business rule: Customers can order existing products
+- Business rule: Only staff can update order status
+- Authorization: Each role can only perform operations they're authorized for
+- Workflow: Complete e-commerce flow from product creation to order processing
 
 ## 9. Quality Checklist
 

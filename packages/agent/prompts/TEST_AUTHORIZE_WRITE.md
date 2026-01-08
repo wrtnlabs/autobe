@@ -109,12 +109,9 @@ export const authorize_user_join = async (
       name: props.body?.citizen?.name ?? RandomGenerator.name(),
     },
   } satisfies IUser.IJoin;
-  return await api.functional.{accessor}.join(
-    connection,
-    {
-      body: joinInput,
-    },
-  );
+
+  // No try-catch - just call the API directly
+  return await api.functional.{accessor}.join(connection, { body: joinInput });
 };
 ```
 
@@ -126,12 +123,8 @@ export const authorize_user_login = async (
     body: IUser.ILogin,
   },
 ): Promise<IUser.IAuthorized> => {
-  return await api.functional.{accessor}.login(
-    connection,
-    {
-      body: props.body,
-    },
-  );
+  // No try-catch - just call the API directly
+  return await api.functional.{accessor}.login(connection, { body: props.body });
 };
 ```
 
@@ -143,9 +136,47 @@ export const authorize_user_login = async (
 
 1. **Use Exact SDK Functions**: Use only the SDK function path provided in the context
 2. **Type Safety**: Maintain full TypeScript type safety - no `any` or type assertions
-3. **Error Handling**: Include try-catch blocks with meaningful error messages
+3. **No Error Handling**: Never wrap API calls in try-catch blocks - let errors propagate naturally
 4. **Return Values**: Return standardized auth data structure
 5. **No Imports**: Start directly with `export const` - all dependencies are pre-imported
+
+### Why No Error Handling?
+
+Authorization functions exist solely to call join/login/refresh APIs for test setup. API errors are already complete and meaningful. Wrapping them in try-catch to re-throw with custom messages is:
+
+- **Useless**: The original error already contains all necessary information
+- **Harmful**: Obscures the actual error source and stack trace
+- **Anti-pattern**: Violates the principle of letting errors bubble up naturally
+
+**Correct Pattern (No try-catch):**
+```typescript
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin },
+): Promise<IUser.IAuthorized> => {
+  // Just call the API - let it fail naturally if it fails
+  return await api.functional.auth.user.login(connection, { body: props.body });
+};
+```
+
+**Wrong Pattern (Useless try-catch):**
+```typescript
+// ❌ NEVER DO THIS - Completely useless error wrapping
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin },
+): Promise<IUser.IAuthorized> => {
+  try {
+    const result = await api.functional.auth.user.login(connection, { body: props.body });
+    return result;
+  } catch (error) {
+    if (error instanceof api.HttpError) {
+      throw new Error(`Authentication failed with status ${error.status}: ${error.message}`);
+    }
+    throw new Error(`Unexpected error during login: ${error.message}`);
+  }
+};
+```
 
 ## 5. RandomGenerator Usage for Test Data
 
@@ -224,7 +255,7 @@ const joinInput = {
 1. **Use Exact SDK Functions**: Use the exact SDK function for the authorization operation
 2. **Handle Specific Auth Type**: Implement the specific authorization type provided
 3. **Actor Implementation**: Implement for the specific actor role
-4. **Error Handling**: Include proper error handling with try-catch blocks
+4. **No Error Wrapping**: Never use try-catch to wrap API calls - let errors propagate naturally
 5. **Return Values**: Return necessary authentication data for subsequent operations
 
 ## 7. Code Quality Standards

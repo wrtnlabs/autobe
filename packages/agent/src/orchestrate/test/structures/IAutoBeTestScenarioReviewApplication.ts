@@ -95,13 +95,25 @@ export namespace IAutoBeTestScenarioReviewApplication {
     review: string;
 
     /**
-     * The improved test scenario, or null if no improvements needed.
+     * The review result: improved scenario, deletion flag, or null.
      *
-     * Decision logic:
+     * Decision logic (THREE possible outcomes):
      *
-     * - If ANY improvements were made (auth fixes, dependency corrections,
+     * - If scenario VIOLATES ABSOLUTE PROHIBITIONS (tests HTTP 400 validation
+     *   errors, invalid types, missing fields, etc.) → Return "erase" to delete
+     *   the entire scenario
+     * - If scenario needs improvements (auth fixes, dependency corrections,
      *   reordering) → Return the complete improved AutoBeTestScenario
      * - If scenario is already perfect with no issues → Return null
+     *
+     * When returning "erase":
+     *
+     * - Scenario tests framework-level validations (forbidden per Section 2.1
+     *   of TEST_SCENARIO.md)
+     * - Scenario tests type mismatches, missing fields, invalid formats, or any
+     *   HTTP 400 validation errors
+     * - These scenarios are fundamentally wrong and must be completely removed
+     * - Document in review field WHY the scenario was erased
      *
      * When returning improved scenario:
      *
@@ -109,7 +121,13 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * - FunctionName MUST match the original (same name)
      * - Draft can be improved if needed
      * - Dependencies should be corrected and properly ordered
+     *
+     * When returning null:
+     *
+     * - Scenario is correct and implementable as-is
+     * - No authentication issues, dependency problems, or ordering errors
+     * - Tests business logic, not framework validations
      */
-    content: AutoBeTestScenario | null;
+    content: AutoBeTestScenario | "erase" | null;
   }
 }

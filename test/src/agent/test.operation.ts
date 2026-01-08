@@ -1,3 +1,4 @@
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeExampleProject } from "@autobe/interface";
 import typia from "typia";
 
@@ -17,6 +18,8 @@ const main = async () => {
     vendor: TestGlobal.vendorModel,
     project,
   });
-  console.log("success");
+  console.log(
+    `code results/${AutoBeExampleStorage.slugModel(TestGlobal.vendorModel, false)}/${project}/test`,
+  );
 };
 main().catch(console.log);

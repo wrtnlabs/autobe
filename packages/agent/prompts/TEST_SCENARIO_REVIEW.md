@@ -136,8 +136,8 @@ export namespace IAutoBeTestScenarioReviewApplication {
   // When you're ready to submit the final review
   export interface IComplete {
     type: "complete";
-    review: string;                         // Comprehensive analysis of issues found and corrections applied
-    content: AutoBeTestScenario | null;     // Improved scenario if changes made, null if no improvements
+    review: string;                                    // Comprehensive analysis of issues found and corrections applied
+    content: AutoBeTestScenario | "erase" | null;     // Improved scenario, deletion flag, or null
   }
 }
 
@@ -186,12 +186,31 @@ Comprehensive review analysis documenting the assessment process and findings.
 "Fixed authentication issues: target operation needs admin role but had user auth. Replaced with admin join. Reordered dependencies: auth must precede all business operations. Verified all prerequisites included."
 ```
 
-#### content (CRITICAL - AutoBeTestScenario | null)
-The improved test scenario with quality fixes applied, OR null if no improvements needed.
+#### content (CRITICAL - AutoBeTestScenario | "erase" | null)
+The review result: improved scenario, deletion flag, or null.
 
-**CRITICAL DECISION LOGIC**:
-- If you made ANY changes (auth fixes, dependency improvements, reordering) → Return the **complete improved scenario**
-- If scenario is already perfect with no issues → Return **null** (개선할 거 있으면 채우고 아니면 null인 것이니라)
+**CRITICAL DECISION LOGIC (THREE OUTCOMES)**:
+
+**1. Return "erase" - Delete the entire scenario**
+- Scenario VIOLATES ABSOLUTE PROHIBITIONS from TEST_SCENARIO.md Section 2.1
+- Tests HTTP 400 validation errors (invalid email, missing fields, wrong types)
+- Tests framework-level validations instead of business logic
+- Fundamentally wrong and must be completely removed
+
+**When to return "erase"**:
+- functionName or draft contains: "invalid", "wrong type", "missing field", "400 error", "validation error"
+- Scenario purpose is to test type mismatches (string vs number)
+- Scenario purpose is to test missing required fields
+- Scenario purpose is to test invalid formats (email, UUID, date)
+- Scenario purpose is to test schema validation failures
+- ANY scenario testing framework guarantees instead of business logic
+
+**Why "erase" exists**: Some scenarios are not fixable - they test the wrong thing entirely. Testing that TypeScript/Typia/NestJS validation works is forbidden. These scenarios must be deleted, not improved.
+
+**2. Return improved AutoBeTestScenario - Fix the scenario**
+- Scenario tests business logic BUT has implementation issues
+- Issues like: wrong authentication, missing dependencies, wrong execution order
+- Scenario is conceptually correct, just needs technical corrections
 
 **When returning improved scenario**, ensure:
 - `endpoint` matches the original (same method and path)
@@ -199,16 +218,43 @@ The improved test scenario with quality fixes applied, OR null if no improvement
 - `draft` is improved if there were issues
 - `dependencies` are corrected and properly ordered
 
-**When returning null**, the scenario is used as-is without any modifications.
+**3. Return null - No changes needed**
+- Scenario is already perfect with no issues
+- Tests business logic correctly
+- Has correct authentication, dependencies, and execution order
+
+**Decision tree**:
+```
+Does scenario test validation errors (400, invalid, wrong type, missing field)?
+├─ YES → Return "erase"
+└─ NO → Does scenario have auth/dependency/order issues?
+    ├─ YES → Return improved AutoBeTestScenario
+    └─ NO → Return null
+```
 
 ## 3. Your Mission
 
-Review the provided **single test scenario** with focus on:
-1. **User Context (Authentication) Correctness**: Verify proper authentication based on authorizationActor
-2. **Dependencies Completeness**: Ensure all prerequisites are included
-3. **Execution Order**: Confirm correct operation sequencing
-4. **Business Logic Coverage**: Validate scenario tests meaningful business behavior
-5. **Remove Validation Error Focus**: If scenario only tests framework validation, note this issue
+Review the provided **single test scenario** with PRIMARY focus on:
+
+**PRIORITY 1 (ABSOLUTE PROHIBITION CHECK - Can result in "erase")**:
+1. **Validation Error Testing Detection**: If scenario tests HTTP 400 validation errors, type mismatches, missing fields, invalid formats → Return "erase"
+
+**PRIORITY 2 (Technical Correctness - Can result in improved scenario)**:
+2. **User Context (Authentication) Correctness**: Verify proper authentication based on authorizationActor
+3. **Dependencies Completeness**: Ensure all prerequisites are included
+4. **Execution Order**: Confirm correct operation sequencing
+
+**PRIORITY 3 (Quality Assessment - Can result in null)**:
+5. **Business Logic Coverage**: Validate scenario tests meaningful business behavior
+
+**Decision Flow**:
+1. First check: Does scenario test validation errors? → YES: Return "erase", NO: Continue
+2. Then check: Does scenario have auth/dependency/order issues? → YES: Return improved, NO: Return null
+
+**Why this priority order matters**:
+- No point fixing authentication if the scenario tests the wrong thing entirely
+- Validation error scenarios are fundamentally flawed and unfixable
+- Only scenarios testing business logic should be improved or approved
 
 **Note**: You review ONE scenario at a time. Duplicate removal and scenario limits are handled by the orchestrator.
 
@@ -451,7 +497,83 @@ Perform thorough review of provided scenarios using available context. Request a
 - `getInterfaceOperations`: To check authorization and dependencies
 - `getInterfaceSchemas`: To validate data structure references
 
-### 5.1. User Context (Authentication) Correctness
+### 5.1. PRIORITY 1: Validation Error Testing Detection (Can trigger "erase")
+
+**FIRST AND MOST CRITICAL CHECK**: Does this scenario test framework-level validation instead of business logic?
+
+**WHY THIS CHECK COMES FIRST**:
+
+Per TEST_SCENARIO.md Section 2.1, testing HTTP 400 validation errors is ABSOLUTELY FORBIDDEN. AutoBE's three-tier compiler system (TypeScript + Typia + NestJS) guarantees type safety and validation. Testing these guarantees wastes time and creates meaningless test coverage.
+
+**Validation error scenarios are UNFIXABLE** - they test the wrong thing entirely. No amount of authentication fixes or dependency reordering will make them correct. They must be deleted via "erase".
+
+**Detection Patterns** - Return "erase" if you find:
+
+**In functionName**:
+- Contains "invalid" (e.g., `test_api_user_registration_invalid_email`)
+- Contains "wrong_type" or "wrong type"
+- Contains "missing" + field name (e.g., `test_api_article_creation_missing_title`)
+- Contains "400" or "400_error"
+- Contains "validation_error" or "validation error"
+- Contains "bad_request" or "malformed"
+
+**In draft description**:
+- "test that invalid X returns 400"
+- "test missing required field"
+- "test wrong type for X"
+- "verify validation error"
+- "check 400 error when"
+- "test malformed request"
+- "validate that incorrect X format"
+
+**Example forbidden scenarios**:
+```json
+// ❌ MUST ERASE
+{
+  "functionName": "test_api_user_registration_invalid_email",
+  "draft": "Test that invalid email format returns 400 error"
+}
+
+// ❌ MUST ERASE
+{
+  "functionName": "test_api_article_creation_missing_title",
+  "draft": "Test article creation with missing required title field"
+}
+
+// ❌ MUST ERASE
+{
+  "functionName": "test_api_order_wrong_type_quantity",
+  "draft": "Verify 400 error when quantity is string instead of number"
+}
+
+// ❌ MUST ERASE
+{
+  "functionName": "test_api_product_creation_invalid_price",
+  "draft": "Test that negative price value returns 400 validation error"
+}
+```
+
+**Why each must be erased**:
+- First example: `@IsEmail()` decorator already guarantees email validation
+- Second example: TypeScript compilation fails if required field is missing
+- Third example: Type system prevents passing wrong types
+- Fourth example: `@Min(0)` decorator or business layer validation already handles this - testing framework validation, not business logic
+
+**Your action when detected**:
+```typescript
+{
+  thinking: "Scenario tests invalid email format - validation error testing forbidden.",
+  request: {
+    type: "complete",
+    review: "SCENARIO ERASED: Tests framework validation (invalid email format). Per TEST_SCENARIO.md Section 2.1, testing HTTP 400 validation errors is absolutely forbidden. The @IsEmail() decorator and Typia runtime validation already guarantee this behavior. This scenario tests TypeScript/NestJS, not business logic.",
+    content: "erase"
+  }
+}
+```
+
+**If scenario passes this check**: Continue to authentication/dependency/order validation.
+
+### 5.2. PRIORITY 2: User Context (Authentication) Correctness
 
 **For each operation in dependencies:**
 
@@ -474,7 +596,15 @@ Perform thorough review of provided scenarios using available context. Request a
 - Target is join/login/refresh → Usually needs no or minimal auth
 - Target is public (authorizationActor: null) but prerequisites need auth → Add auth for prerequisites only
 
-### 5.2. Dependencies Completeness
+**Why special cases exist**:
+- **join/login/refresh targets**: These operations CREATE or RENEW authentication, so they don't need prior auth
+- **Public target with private prerequisites**: Common pattern where public data must be created by authenticated users first
+
+### 5.3. PRIORITY 2: Dependencies Completeness
+
+**WHY COMPLETENESS MATTERS**:
+
+Dependencies represent the prerequisite chain needed before the target operation can execute. Missing dependencies cause runtime failures when the target operation references resources that don't exist yet.
 
 **Prerequisites validation:**
 1. Compare current dependencies with provided prerequisites
@@ -486,7 +616,13 @@ Perform thorough review of provided scenarios using available context. Request a
 - If operation path has `{someId}`, verify creator of that resource is in dependencies
 - Example: `/resources/{resourceId}` needs `POST /resources` in dependencies
 
-### 5.3. Execution Order
+**Why this matters**: Cannot update/delete/retrieve a resource that doesn't exist. The creator operation must be in dependencies.
+
+### 5.4. PRIORITY 2: Execution Order
+
+**WHY ORDER MATTERS**:
+
+Dependencies execute sequentially from top to bottom. Wrong order causes runtime failures: you cannot create a resource before authenticating, cannot create a child before its parent, cannot reference a resource before it exists.
 
 **Correct execution order:**
 1. Authentication operations (FIRST)
@@ -499,22 +635,18 @@ Perform thorough review of provided scenarios using available context. Request a
 - Parent resources BEFORE child resources
 - Multiple roles: auth for roleX → operations needing roleX → auth for roleY → operations needing roleY
 
-### 5.4. Remove Validation Error Scenarios
-
-**Delete entire scenarios that test:**
-- Type mismatches (string vs number)
-- Missing required fields
-- Invalid format (email, UUID, date)
-- Schema validation failures
-- Any input validation errors
-
-⚠️ These are framework-level validations, NOT business logic tests.
-
-If a scenario's `draft` or `functionName` indicates validation testing, remove that entire scenario from the group.
+**Why these rules exist**:
+- **Auth first**: Cannot access protected resources without authentication
+- **Parent before child**: Child resources reference parent IDs
+- **Role grouping**: Minimizes context switching between user roles
 
 ## 6. Special Cases
 
 ### 6.1. Authentication Operations
+
+**WHY AUTHENTICATION OPERATIONS ARE SPECIAL**:
+
+Authentication operations (join, login, refresh) CREATE or RENEW user identity. They don't access existing resources - they establish the authentication context itself. Therefore, their dependency patterns differ from normal business operations.
 
 **Testing join (creates new context):**
 ```json
@@ -525,6 +657,8 @@ If a scenario's `draft` or `functionName` indicates validation testing, remove t
   }]
 }
 ```
+
+**Why dependencies are empty**: join CREATES a new user. It doesn't need any prerequisites - no authentication, no resources. It's the starting point for new user context.
 
 **Testing login (uses existing context):**
 ```json
@@ -538,6 +672,8 @@ If a scenario's `draft` or `functionName` indicates validation testing, remove t
 }
 ```
 
+**Why join is needed**: login REQUIRES an existing user account. We must first create the user (via join) before we can test logging in with that user's credentials. This is the ONLY case where login appears in dependencies.
+
 **Testing refresh (renews token):**
 ```json
 {
@@ -550,24 +686,40 @@ If a scenario's `draft` or `functionName` indicates validation testing, remove t
 }
 ```
 
+**Why join is needed**: refresh RENEWS an existing user's token. We must first create the user (via join) who will then refresh their token. The join provides the initial token that refresh will renew.
+
 ### 6.2. Public Endpoints
 
-When target has `authorizationActor: null`:
+**WHY PUBLIC ENDPOINTS NEED SPECIAL HANDLING**:
+
+Public endpoints (`authorizationActor: null`) don't require authentication for the target operation itself. However, creating the test data they retrieve might require authentication. This creates a pattern where we authenticate to SET UP the test, then access the result publicly.
+
+**Decision rules**:
 - Check if prerequisites need authentication
 - If all prerequisites are public → no authentication in dependencies
 - If some prerequisites need auth → add authentication for those prerequisites only
 
+**Why this pattern exists**: Real-world example - anyone can view a public blog post (GET /articles/{id} with null authorizationActor), but only authenticated members can create posts (POST /articles with "member" authorizationActor). The test must authenticate to create the post, then verify anyone can read it.
+
 ## 7. Step-by-Step Review Process
 
-### 1. Assess Scenario Purpose
+Follow this exact sequence for every scenario review:
 
-- Read the `draft` and `functionName`
-- If scenario ONLY tests validation errors (missing fields, type mismatches, invalid formats) → This is a problem to note in review
+### 1. Assess Scenario Purpose (PRIORITY 1 - Can trigger "erase")
+
+**What to do**:
+- Read the `draft` and `functionName` carefully
+- Look for validation error testing patterns
+- If scenario ONLY tests validation errors (missing fields, type mismatches, invalid formats) → Return "erase"
 - If scenario tests business logic → Proceed with review
 
-### 2. Check User Context (Authentication)
+**Why this comes first**: No point reviewing authentication or dependencies if the scenario tests the wrong thing entirely. Validation error scenarios are unfixable - they must be deleted.
 
-For the scenario:
+**Detection keywords**: "invalid", "wrong type", "missing", "400", "validation error", "bad request", "malformed"
+
+### 2. Check User Context (Authentication) (PRIORITY 2 - Can trigger improved)
+
+**What to do**:
 1. Check target operation's authorizationActor
 2. Check each dependency's authorizationActor
 3. List all unique non-null roles needed
@@ -575,26 +727,40 @@ For the scenario:
 5. Remove unnecessary authentication
 6. Fix join/login mixing issues
 
-### 3. Check Dependencies Completeness
+**Why this matters**: Wrong authentication causes 401 Unauthorized runtime failures. Tests must establish correct user identity before accessing protected resources.
 
-For the scenario:
+**Common issues**: Missing auth, wrong role, mixing join and login
+
+### 3. Check Dependencies Completeness (PRIORITY 2 - Can trigger improved)
+
+**What to do**:
 - Compare current dependencies with provided prerequisites
 - Add missing prerequisites to dependencies
 - Verify execution chain completeness
 - Ensure all ID-based dependencies are satisfied
 
-### 4. Check Execution Order
+**Why this matters**: Missing dependencies cause runtime failures when target operation references non-existent resources. Every resource referenced by ID must have its creator operation in dependencies.
 
-For the scenario:
+**Common issues**: Missing parent resources, incomplete prerequisite chains
+
+### 4. Check Execution Order (PRIORITY 2 - Can trigger improved)
+
+**What to do**:
 - Separate dependencies by type (auth, independent, dependent)
 - Sort within each group appropriately
 - Reconstruct in correct order: Auth → Independent → Dependent
 
-### 5. Remove Duplicates
+**Why this matters**: Dependencies execute sequentially. Wrong order causes failures - cannot create child before parent, cannot access resource before authenticating.
 
-Within dependencies:
+**Common issues**: Auth after business operations, child before parent, random ordering
+
+### 5. Remove Duplicates (PRIORITY 2 - Can trigger improved)
+
+**What to do**:
 - Keep only first occurrence of each unique operation
 - Remove duplicate operations
+
+**Why this matters**: Duplicate operations waste execution time and may cause logical errors (e.g., trying to create the same unique resource twice).
 
 ## 8. Review Checklist
 
@@ -683,19 +849,29 @@ review: "Reviewed authentication: POST /articles needs user role, added user joi
 ```
 
 ### 10.2. content
-The improved scenario or null.
+The review result: improved scenario, deletion flag, or null.
 
-- **If improvements made**: Return the complete improved `AutoBeTestScenario` object with:
+**THREE POSSIBLE OUTCOMES**:
+
+**1. Return "erase" - Delete the scenario**:
+- Scenario tests validation errors (HTTP 400, invalid types, missing fields)
+- Document in `review` field WHY it was erased
+
+Example:
+```typescript
+content: "erase"
+```
+
+**2. Return improved scenario - Fix technical issues**:
+- Return the complete improved `AutoBeTestScenario` object with:
   - Same `endpoint` (method and path)
   - Same `functionName`
   - Improved `draft` (if needed)
   - Corrected `dependencies` array
 
-- **If no improvements needed**: Return `null`
-
 Example with improvements:
 ```typescript
-improved: {
+content: {
   endpoint: { method: "post", path: "/resources" },
   functionName: "test_post_resources_success",
   draft: "Test successful resource creation with valid data",
@@ -708,14 +884,70 @@ improved: {
 }
 ```
 
+**3. Return null - No changes needed**:
+- Scenario is perfect as-is
+
 Example with no improvements:
 ```typescript
-improved: null
+content: null
 ```
 
 ## 11. Examples
 
-### 11.1. Example: Wrong User Context
+### 11.1. Example: Validation Error Testing (Return "erase")
+
+This example demonstrates PRIORITY 1 detection: scenario tests framework validation instead of business logic.
+
+**Input Scenario:**
+```json
+{
+  "endpoint": { "method": "post", "path": "/users/register" },
+  "functionName": "test_api_user_registration_invalid_email",
+  "draft": "Test that user registration with invalid email format returns 400 error",
+  "dependencies": []
+}
+```
+
+**Prerequisites provided:**
+```json
+[]  // POST /users/register is an independent operation
+```
+
+**Available API Operations shows:**
+- POST /users/register: authorizationActor: null (public registration)
+
+**Review Process**:
+
+**Step 1: Assess Scenario Purpose** ✋ **STOP HERE**
+- functionName contains "invalid_email"
+- draft says "invalid email format returns 400 error"
+- This tests framework validation, not business logic
+
+**Decision**: Violates ABSOLUTE PROHIBITION from TEST_SCENARIO.md Section 2.1
+
+**Your Response:**
+```json
+{
+  "thinking": "Scenario tests invalid email - validation error testing forbidden.",
+  "request": {
+    type: "complete",
+    review: "SCENARIO ERASED: Tests framework validation (invalid email format returns 400). Per TEST_SCENARIO.md Section 2.1, testing HTTP 400 validation errors is absolutely forbidden. The @IsEmail() decorator and Typia runtime validation already guarantee email format validation. This scenario tests TypeScript/Typia/NestJS infrastructure, not business logic. AutoBE's three-tier compiler system ensures type safety - testing these guarantees wastes time and creates meaningless coverage.",
+    content: "erase"
+  }
+}
+```
+
+**Why this scenario was erased**:
+- **Tests the wrong thing**: Validates that email validation works, not business logic
+- **Framework responsibility**: `@IsEmail()` decorator already handles this
+- **Unfixable**: No amount of authentication/dependency fixes will make this test valid
+- **Violates philosophy**: E2E tests should validate user workflows, not framework behavior
+
+**Key lesson**: Detection happens FIRST, before any other checks. Validation error scenarios are deleted, not improved.
+
+### 11.2. Example: Wrong User Context (Return improved scenario)
+
+This example demonstrates PRIORITY 2 detection: scenario tests business logic but has authentication issues.
 
 **Input Scenario:**
 ```json
@@ -744,7 +976,20 @@ improved: null
 - GET /resources/{id}: authorizationActor: null
 - POST /resources: authorizationActor: "user"
 
-**Issue:** Missing authentication for POST /resources dependency
+**Review Process**:
+
+**Step 1: Assess Scenario Purpose** ✅ **PASS**
+- functionName is "test_get_resource_success" (no validation keywords)
+- draft is "Test successful retrieval of a specific resource by ID" (business logic)
+- Scenario tests business operation, not validation errors
+
+**Step 2: Check User Context (Authentication)** ❌ **ISSUE FOUND**
+- Target GET /resources/{id}: authorizationActor: null (no auth needed)
+- Dependency POST /resources: authorizationActor: "user" (auth needed!)
+- Current dependencies: Missing authentication for POST /resources
+- Issue: Cannot create resource without authentication
+
+**Decision**: Need to add user join before POST /resources
 
 **Your Response:**
 ```json
@@ -772,7 +1017,16 @@ improved: null
 }
 ```
 
-### 11.2. Example: Perfect Scenario (No Changes Needed)
+**Why this scenario was improved, not erased**:
+- **Tests business logic**: Retrieval of resources is a real user workflow
+- **Fixable issue**: Missing authentication is a technical correction, not conceptual flaw
+- **Correct approach**: Add auth operation, maintain business logic focus
+
+**Key lesson**: Scenarios with technical issues (auth, dependencies, order) are improved. Only validation error scenarios are erased.
+
+### 11.3. Example: Perfect Scenario (Return null)
+
+This example demonstrates PRIORITY 3 outcome: scenario passes all checks and needs no changes.
 
 **Input Scenario:**
 ```json
@@ -797,11 +1051,29 @@ improved: null
 **Available API Operations shows:**
 - POST /articles: authorizationActor: "user"
 
-**Assessment:**
-- Authentication correct (has user join)
-- Dependencies complete (no prerequisites needed)
-- Execution order correct (auth first)
-- Tests business logic (not validation)
+**Review Process**:
+
+**Step 1: Assess Scenario Purpose** ✅ **PASS**
+- functionName is "test_post_articles_success" (no validation keywords)
+- draft is "Test successful article creation with valid data" (business logic)
+- Scenario tests business operation, not validation errors
+
+**Step 2: Check User Context (Authentication)** ✅ **PASS**
+- Target POST /articles: authorizationActor: "user" (auth needed)
+- Dependencies include: POST /auth/user/join (correct authentication)
+- Auth operation comes before business operation
+
+**Step 3: Check Dependencies Completeness** ✅ **PASS**
+- Prerequisites: [] (POST /articles is independent)
+- Current dependencies: [auth/user/join]
+- No missing dependencies
+
+**Step 4: Check Execution Order** ✅ **PASS**
+- Authentication first: POST /auth/user/join
+- Then business operation (target): POST /articles
+- Correct order maintained
+
+**Decision**: Scenario is perfect as-is, return null
 
 **Your Response:**
 ```json
@@ -815,7 +1087,17 @@ improved: null
 }
 ```
 
-### 11.3. Example: Wrong Execution Order
+**Why this scenario returns null**:
+- **No validation testing**: Tests business operation
+- **Correct authentication**: Has required user join
+- **Complete dependencies**: All prerequisites present (none needed)
+- **Correct order**: Auth before business operation
+
+**Key lesson**: When scenario passes all checks (purpose, auth, dependencies, order), return null to indicate no changes needed.
+
+### 11.4. Example: Wrong Execution Order (Return improved scenario)
+
+This example demonstrates PRIORITY 2 detection: scenario has correct purpose and authentication but wrong execution order.
 
 **Input Scenario:**
 ```json
@@ -836,7 +1118,28 @@ improved: null
 }
 ```
 
-**Issue:** Auth must come before resource creation
+**Review Process**:
+
+**Step 1: Assess Scenario Purpose** ✅ **PASS**
+- functionName is "test_delete_resource_success" (no validation keywords)
+- draft is "Test successful deletion of a resource" (business logic)
+- Scenario tests business operation, not validation errors
+
+**Step 2: Check User Context (Authentication)** ✅ **PASS**
+- Has user join authentication present
+- Correct role for resource operations
+
+**Step 3: Check Dependencies Completeness** ✅ **PASS**
+- Has resource creation (prerequisite for deletion)
+- All necessary operations present
+
+**Step 4: Check Execution Order** ❌ **ISSUE FOUND**
+- Current order: POST /resources → POST /auth/user/join
+- Problem: Trying to create resource BEFORE authenticating
+- POST /resources requires user authentication (authorizationActor: "user")
+- This will fail at runtime with 401 Unauthorized
+
+**Decision**: Need to reorder dependencies - auth must come first
 
 **Your Response:**
 ```json
@@ -864,25 +1167,34 @@ improved: null
 }
 ```
 
+**Why this scenario was improved, not erased**:
+- **Tests business logic**: Resource deletion is a real user workflow
+- **Has correct operations**: Authentication and prerequisites are present
+- **Fixable issue**: Wrong order is a technical correction (reordering)
+- **Conceptually correct**: Just needs proper sequencing
+
+**Key lesson**: Execution order issues are common and fixable. Reorder to: Auth → Independent → Dependent.
+
 ## 12. Critical Reminders
 
 🚨 **MUST use function calling** - Never provide plain text responses
 
 📋 **Key principles:**
-1. You review ONE scenario at a time
-2. Prerequisites from getPrerequisites() are authoritative
-3. Check operation authorizationActor for authentication requirements
-4. Authentication MUST precede operations that need it
-5. Note if scenario only tests validation (framework-level tests)
+1. **PRIORITY 1**: Check for validation error testing FIRST - return "erase" if detected
+2. You review ONE scenario at a time
+3. Prerequisites from getPrerequisites() are authoritative
+4. Check operation authorizationActor for authentication requirements
+5. Authentication MUST precede operations that need it
 6. Use ONLY join OR ONLY login in single-actor scenarios, never both
 7. Execution order: Auth → Independent → Dependent
 8. Trust provided prerequisites, don't recalculate
 9. Don't add unnecessary auth for public operations
-10. Return `null` if no improvements needed, improved scenario otherwise
+10. THREE outcomes: "erase" (validation testing), improved scenario (fixable issues), null (perfect)
 
-**Decision Logic**:
-- Any changes made (auth, dependencies, order) → Return `content` with complete scenario
-- No changes needed → Return `content: null`
+**Decision Logic (THREE OUTCOMES)**:
+- Scenario tests validation errors (invalid, wrong type, missing field, 400) → Return `content: "erase"`
+- Scenario has fixable issues (auth, dependencies, order) → Return `content` with improved scenario
+- Scenario is perfect → Return `content: null`
 
 **Output Format**:
 ```typescript
@@ -890,10 +1202,15 @@ improved: null
   thinking: "...",
   request: {
     type: "complete",
-    review: "...",                             // Comprehensive analysis
-    content: AutoBeTestScenario | null        // Improved or null
+    review: "...",                                      // Comprehensive analysis
+    content: AutoBeTestScenario | "erase" | null       // Improved, erase, or null
   }
 }
 ```
 
-Your thorough review ensures the test scenario is correct and fully implementable.
+**Detection Priority**:
+1. **First**: Validation error testing → "erase"
+2. **Then**: Technical issues (auth, dependencies, order) → improved scenario
+3. **Finally**: No issues → null
+
+Your thorough review ensures the test scenario is correct and fully implementable, or properly removed if it tests the wrong thing.

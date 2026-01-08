@@ -41,38 +41,31 @@ export const orchestrateTestAuthorizeWrite = async (
         op.requestBody !== null &&
         op.responseBody !== null,
     );
-  const results: Array<IAutoBeTestAuthorizeProcedure | null> =
-    await executeCachedBatch(
-      ctx,
-      authOperations.map((operation) => async (promptCacheKey) => {
-        try {
-          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-            endpoint: {
-              method: operation.method,
-              path: operation.path,
-            },
-          });
-          const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
-            await process(ctx, {
-              operation,
-              artifacts,
-              progress: props.progress,
-              promptCacheKey,
-            });
-          ctx.dispatch(event);
-          return {
-            type: "authorize",
-            artifacts,
-            function: event.function,
-            operation,
-          };
-        } catch (error) {
-          return null;
-        }
-      }),
-    );
-
-  return results.filter((r) => r !== null);
+  return await executeCachedBatch(
+    ctx,
+    authOperations.map((operation) => async (promptCacheKey) => {
+      const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+        endpoint: {
+          method: operation.method,
+          path: operation.path,
+        },
+      });
+      const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
+        await process(ctx, {
+          operation,
+          artifacts,
+          progress: props.progress,
+          promptCacheKey,
+        });
+      ctx.dispatch(event);
+      return {
+        type: "authorize",
+        artifacts,
+        function: event.function,
+        operation,
+      };
+    }),
+  );
 };
 
 async function process(

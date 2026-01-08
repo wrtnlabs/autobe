@@ -312,27 +312,49 @@ export const generate_random_article = async (
 };
 ```
 
-### With Error Handling:
+### 10. **Useless Try-Catch Blocks**
+
+**CRITICAL: Generation Functions Must NOT Use Try-Catch**
+
+Generation functions exist to create test resources by calling API endpoints. API errors are already complete and meaningful. Wrapping them in try-catch to re-throw is a useless anti-pattern.
+
+**Error**: Adding try-catch blocks
 ```typescript
+// ❌ WRONG: Completely useless error wrapping
 export const generate_random_order = async (
   connection: api.IConnection,
-  props: {
-    body?: DeepPartial<IOrder.ICreate>
-  }
+  props: { body?: DeepPartial<IOrder.ICreate> }
 ): Promise<IOrder> => {
   try {
     const prepared = prepare_random_order(props.body);
-    const result = await api.functional.orders.create(
-      connection,
-      { body: prepared }
-    );
+    const result = await api.functional.orders.create(connection, { body: prepared });
     return result;
   } catch (error) {
-    // Re-throw with context
-    throw new Error(`Failed to generate order: ${error.message}`);
+    throw new Error(`Failed to generate order: ${error.message}`);  // Useless re-wrap
   }
 };
+
+// ✅ CORRECT: No try-catch - just call the API directly
+export const generate_random_order = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IOrder.ICreate> }
+): Promise<IOrder> => {
+  const prepared = prepare_random_order(props.body);
+  const result = await api.functional.orders.create(connection, { body: prepared });
+  return result;
+};
 ```
+
+**Why Try-Catch is Harmful:**
+- The original API error already contains all necessary information
+- Re-wrapping obscures the actual error source and stack trace
+- Violates the principle of letting errors bubble up naturally
+- Adds zero value while making code longer and harder to read
+
+**Correction Strategy:**
+1. **Remove all try-catch blocks** from generation functions
+2. **Let API calls fail naturally** - the error will propagate with full context
+3. **Never re-throw errors** with custom messages
 
 ## Output Requirements
 
@@ -384,7 +406,8 @@ Compilation Error in Generation Function?
 ├── SDK function calls
 ├── Return type issues
 ├── Async/await syntax
-└── Connection passing
+├── Connection passing
+└── Useless try-catch blocks (REMOVE THEM)
 ```
 
 Remember: Generation functions bridge prepare functions and API calls - ensure both connections are type-safe and the data flows correctly from input → prepare → API → response.

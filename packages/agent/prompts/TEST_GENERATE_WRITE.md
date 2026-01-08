@@ -114,7 +114,7 @@ Perform a thorough review checking for:
 
 **Code Quality:**
 - Clear function naming following generate_random_{resource} pattern
-- Proper error handling with try-catch if needed
+- No try-catch blocks - let API errors propagate naturally
 - No use of 'any' type
 - Clean, readable code structure
 
@@ -367,23 +367,47 @@ if (isSpecialCase) {
 
 Remember: Immutability is not a constraint—it's a design principle that leads to more robust and maintainable code.
 
-## 5. Error Handling
+## 5. No Error Handling Required
 
-While not always required, consider adding error handling for critical resources:
+**CRITICAL: Generation Functions Must NOT Use Try-Catch**
 
+Generation functions exist to create test resources by calling API endpoints. API errors are already complete and meaningful. Wrapping them in try-catch to re-throw with custom messages is useless and harmful.
+
+**Why No Try-Catch:**
+- The original API error already contains all necessary information (status, message, stack trace)
+- Re-wrapping obscures the actual error source
+- It violates the principle of letting errors bubble up naturally
+- It adds zero value while making the code longer
+
+**Correct Pattern (No try-catch):**
 ```typescript
-try {
-  const result: ISomeResponseType = await api.functional.resource.create(
-    connection,
-    {
-      body: prepared,
-    },
-  );
+// ✅ CORRECT: Just call the API directly - let it fail naturally if it fails
+export const generate_random_article = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IArticle.ICreate> }
+): Promise<IArticle> => {
+  const prepared = prepare_random_article(props.body);
+  const result = await api.functional.articles.create(connection, { body: prepared });
   return result;
-} catch (error) {
-  console.error(`Failed to generate ${resourceName}:`, error);
-  throw error;
-}
+};
+```
+
+**Wrong Pattern (Useless try-catch):**
+```typescript
+// ❌ NEVER DO THIS - Completely useless error wrapping
+export const generate_random_article = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IArticle.ICreate> }
+): Promise<IArticle> => {
+  try {
+    const prepared = prepare_random_article(props.body);
+    const result = await api.functional.articles.create(connection, { body: prepared });
+    return result;
+  } catch (error) {
+    console.error(`Failed to generate article:`, error);
+    throw error;  // Pointless re-throw
+  }
+};
 ```
 
 ## 6. Note on Authentication

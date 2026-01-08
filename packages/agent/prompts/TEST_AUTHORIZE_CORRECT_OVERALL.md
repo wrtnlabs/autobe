@@ -188,20 +188,49 @@ Authorization: `bearer ${token}`  // Wrong case
 Authorization: `Bearer ${token}`
 ```
 
-### 7. **Error Handling Type Issues**
+### 7. **Useless Try-Catch Blocks**
 
-**Error**: Catch block type errors
+**CRITICAL: Authorization Functions Must NOT Use Try-Catch**
+
+Authorization functions exist solely to call authentication APIs (join, login, refresh). The API errors are already complete and meaningful. Wrapping them in try-catch to re-throw with custom messages is a common but completely useless anti-pattern.
+
+**Error**: Adding try-catch blocks
 ```typescript
-// ❌ WRONG
-} catch (err: Error) {  // Cannot use type annotation in catch
-
-// ✅ CORRECT
-} catch (err) {
-  if (err instanceof Error) {
-    // Handle error
+// ❌ WRONG: Completely useless error wrapping
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> => {
+  try {
+    const result = await api.functional.auth.user.login(connection, { body: props.body });
+    return result;
+  } catch (error) {
+    if (error instanceof api.HttpError) {
+      throw new Error(`Authentication failed with status ${error.status}: ${error.message}`);
+    }
+    throw new Error(`Unexpected error during login: ${error.message}`);
   }
-}
+};
+
+// ✅ CORRECT: No try-catch - just call the API directly
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> => {
+  return await api.functional.auth.user.login(connection, { body: props.body });
+};
 ```
+
+**Why Try-Catch is Harmful Here:**
+- The original API error already contains all necessary information (status, message, stack trace)
+- Re-wrapping obscures the actual error source
+- It violates the principle of letting errors bubble up naturally
+- It adds zero value while making the code longer and harder to read
+
+**Correction Strategy:**
+1. **Remove all try-catch blocks** from authorization functions
+2. **Let API calls fail naturally** - the error will propagate with full context
+3. **Never re-throw errors** with custom messages in auth functions
 
 ### 8. **Cookie/Session Update Errors**
 
@@ -342,7 +371,7 @@ When you receive a compilation error:
 - Always validate token existence before using
 - Maintain proper Bearer token format
 - Don't expose sensitive data in error messages
-- Preserve try-catch blocks for auth failures
+- Never add try-catch blocks - let API errors propagate naturally
 - Keep fallback logic for JOIN → LOGIN scenarios
 
 ## Output Requirements
@@ -404,6 +433,7 @@ Compilation Error in Authorization Function?
 ├── Token handling
 ├── Return type mismatches
 ├── Input parameter types
+├── Useless try-catch blocks (REMOVE THEM)
 └── Auth-specific patterns
 ```
 

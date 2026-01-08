@@ -26,6 +26,7 @@ export namespace AutoBeExampleArchiver {
   export interface IContext {
     vendor: string;
     project: AutoBeExampleProject;
+    imagePath?: string;
     agent: (props: IAgentProps) => Promise<IAutoBeAgent>;
     on: (snapshot: AutoBeEventSnapshot) => void;
   }
@@ -44,6 +45,7 @@ export namespace AutoBeExampleArchiver {
           await AutoBeExampleStorage.getUserMessage({
             project: ctx.project,
             phase: "analyze",
+            imagePath: ctx.imagePath,
           }),
         )) ||
         (await conversate(
