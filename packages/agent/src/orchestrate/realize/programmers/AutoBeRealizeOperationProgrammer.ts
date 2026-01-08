@@ -2,7 +2,6 @@ import {
   AutoBeOpenApi,
   AutoBeRealizeAuthorization,
   AutoBeRealizeCollectorFunction,
-  AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -37,7 +36,6 @@ export namespace AutoBeRealizeOperationProgrammer {
   }
 
   export function getAdditional(props: {
-    functions: AutoBeRealizeOperationFunction[];
     authorizations: AutoBeRealizeAuthorization[];
     collectors: AutoBeRealizeCollectorFunction[];
     transformers: AutoBeRealizeTransformerFunction[];

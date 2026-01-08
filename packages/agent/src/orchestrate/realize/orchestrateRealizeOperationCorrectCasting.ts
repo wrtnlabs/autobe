@@ -55,12 +55,11 @@ export const orchestrateRealizeOperationCorrectCasting = async (
           },
         );
       },
-      additional: (functions) =>
+      additional: () =>
         AutoBeRealizeOperationProgrammer.getAdditional({
           authorizations: props.authorizations,
           collectors: props.collectors,
           transformers: props.transformers,
-          functions,
         }),
       location: "src/providers",
     },

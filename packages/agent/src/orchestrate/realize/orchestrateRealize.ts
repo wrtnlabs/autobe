@@ -7,7 +7,7 @@ import {
   AutoBeRealizeHistory,
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
-  IAutoBeCompiler,
+  AutoBeRealizeValidateEvent,
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
@@ -19,7 +19,9 @@ import { orchestrateRealizeCollector } from "./orchestrateRealizeCollector";
 import { orchestrateRealizeOperation } from "./orchestrateRealizeOperation";
 import { orchestrateRealizeTransformer } from "./orchestrateRealizeTransformer";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
+import { compileRealizeFiles } from "./programmers/compileRealizeFiles";
 
 export const orchestrateRealize =
   (ctx: AutoBeContext) =>
@@ -76,6 +78,7 @@ export const orchestrateRealize =
       total: 0,
     };
 
+    // RE-USABLE FUNCTIONS
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorizationWrite(ctx);
     const collectors: AutoBeRealizeCollectorFunction[] =
@@ -90,7 +93,44 @@ export const orchestrateRealize =
         writeProgress,
         correctProgress,
       });
-    const operations: AutoBeRealizeOperationFunction[] =
+
+    const compile = (operations: AutoBeRealizeOperationFunction[]) =>
+      compileRealizeFiles(ctx, {
+        functions: [...collectors, ...transformers, ...operations],
+        additional: AutoBeRealizeOperationProgrammer.getAdditional({
+          authorizations,
+          collectors,
+          transformers,
+        }),
+      });
+    const out = (next: {
+      event: AutoBeRealizeValidateEvent;
+      operations: AutoBeRealizeOperationFunction[];
+      controllers: Record<string, string>;
+    }) =>
+      ctx.dispatch({
+        type: "realizeComplete",
+        id: v7(),
+        functions: [...collectors, ...transformers, ...next.operations],
+        authorizations,
+        controllers: next.controllers,
+        compiled: next.event.result,
+        aggregates: ctx.getCurrentAggregates("realize"),
+        step: ctx.state().analyze?.step ?? 0,
+        elapsed: new Date().getTime() - start.getTime(),
+        created_at: new Date().toISOString(),
+      });
+
+    const assetCompiled: AutoBeRealizeValidateEvent = await compile([]);
+    if (assetCompiled.result.type === "failure")
+      return out({
+        event: assetCompiled,
+        operations: [],
+        controllers: {},
+      });
+
+    // FIAL OPERATIONS
+    const finalOperations: AutoBeRealizeOperationFunction[] =
       await orchestrateRealizeOperation(ctx, {
         authorizations,
         collectors,
@@ -98,26 +138,15 @@ export const orchestrateRealize =
         writeProgress,
         correctProgress,
       });
-
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    const controllers: Record<string, string> =
-      await compiler.realize.controller({
+    return out({
+      operations: finalOperations,
+      controllers: await (
+        await ctx.compiler()
+      ).realize.controller({
         document: ctx.state().interface!.document,
-        functions: operations,
+        functions: finalOperations,
         authorizations,
-      });
-    return ctx.dispatch({
-      type: "realizeComplete",
-      id: v7(),
-      functions: [...collectors, ...transformers, ...operations],
-      authorizations,
-      controllers,
-      compiled: {
-        type: "success", // @todo fake
-      },
-      aggregates: ctx.getCurrentAggregates("realize"),
-      step: ctx.state().analyze?.step ?? 0,
-      elapsed: new Date().getTime() - start.getTime(),
-      created_at: new Date().toISOString(),
+      }),
+      event: await compile(finalOperations),
     });
   };
