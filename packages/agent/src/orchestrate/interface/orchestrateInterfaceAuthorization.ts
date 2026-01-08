@@ -217,7 +217,7 @@ function createController(props: {
           errors.push({
             path: `$input.request.operations[${i}].requestBody`,
             expected: "Request body with appropriate type is required",
-            value: `AutoBeOpenApi.IRequestBody<\`\${string}${expected}\`>`,
+            value: op.requestBody,
             description: StringUtil.trim`
               Request body is required for authentication ${op.authorizationType} operation.
 
