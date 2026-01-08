@@ -38,7 +38,7 @@ export const assert_test_compilation = async (props: {
         AutoBeExampleStorage.TEST_ROOT
       }/results/${AutoBeExampleStorage.slugModel(props.vendor, false)}/${
         props.project
-      }/test-authorization-failure`,
+      }/test-${props.type}-failure`,
       files: {
         ...(await props.agent.getFiles()),
         ...Object.fromEntries(
