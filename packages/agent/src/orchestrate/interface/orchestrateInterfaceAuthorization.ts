@@ -18,6 +18,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceAuthorization(
   ctx: AutoBeContext,
@@ -176,7 +177,10 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete")
+        if (next.request.type === "complete") {
+          for (const o of next.request.operations)
+            for (const p of o.parameters)
+              AutoBeJsonSchemaFactory.fixSchema(p.schema);
           props.build(
             next.request.operations.filter((operation) =>
               AutoBeInterfaceAuthorizationProgrammer.filter({
@@ -185,6 +189,7 @@ function createController(props: {
               }),
             ),
           );
+        }
       },
     } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };

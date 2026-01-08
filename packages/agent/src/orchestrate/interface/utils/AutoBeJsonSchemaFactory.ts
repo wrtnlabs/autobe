@@ -3,6 +3,7 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import typia, { tags } from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
@@ -244,19 +245,19 @@ export namespace AutoBeJsonSchemaFactory {
   /* -----------------------------------------------------------
     PLUGIN
   ----------------------------------------------------------- */
-  export const fixSchema = (
-    key: string,
-    value: AutoBeOpenApi.IJsonSchemaDescriptive,
-  ): AutoBeOpenApi.IJsonSchemaDescriptive => {
-    const emended: AutoBeOpenApi.IJsonSchemaDescriptive = (
+  export const fixSchema = <Schema extends AutoBeOpenApi.IJsonSchema>(
+    value: Schema,
+  ): Schema => {
+    const id: string = v7();
+    const emended: AutoBeOpenApi.IJsonSchema = (
       ((
         OpenApiV3_1Emender.convertComponents({
           schemas: {
-            [key]: value,
+            [id]: value,
           },
         }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
-    )[key];
+      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchema>
+    )[id];
     AutoBeOpenApiTypeChecker.visit({
       components: {
         authorizations: [],
@@ -273,7 +274,7 @@ export namespace AutoBeJsonSchemaFactory {
           else if (k.startsWith("x-")) delete (next as any)[k];
       },
     });
-    return emended;
+    return emended as Schema;
   };
 }
 

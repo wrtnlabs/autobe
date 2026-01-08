@@ -19,6 +19,7 @@ import { transformInterfaceOperationHistory } from "./histories/transformInterfa
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
@@ -124,6 +125,8 @@ async function process(
         actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
         build: (op) => {
           pointer.value ??= [];
+          for (const p of op.parameters)
+            AutoBeJsonSchemaFactory.fixSchema(p.schema);
           const matrix: AutoBeOpenApi.IOperation[] =
             op.authorizationActors.length === 0
               ? [

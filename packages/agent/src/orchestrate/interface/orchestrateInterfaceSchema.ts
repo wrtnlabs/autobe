@@ -157,7 +157,7 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      AutoBeJsonSchemaFactory.fixSchema(props.typeName, pointer.value);
+      AutoBeJsonSchemaFactory.fixSchema(pointer.value);
 
     ctx.dispatch({
       type: SOURCE,
