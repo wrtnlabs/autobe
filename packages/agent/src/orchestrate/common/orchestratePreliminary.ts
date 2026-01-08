@@ -486,7 +486,7 @@ const orchestrateInterfaceSchemas = (
       closure: (next) => {
         if (OpenApiTypeChecker.isReference(next)) {
           const last: string = next.$ref.split("/").pop()!;
-          collected[last] = props.all[last];
+          if (props.all[last] !== undefined) collected[last] = props.all[last];
         }
       },
     });
