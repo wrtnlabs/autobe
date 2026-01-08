@@ -42,27 +42,23 @@ export async function orchestrateTestCorrectOverall<
   const results: Array<Procedure | null> = await executeCachedBatch(
     ctx,
     props.procedures.map((procedure) => async (promptCacheKey) => {
-      try {
-        const event: AutoBeTestValidateEvent<Procedure["function"]> =
-          await predicate(
-            ctx,
-            {
-              programmer: props.programmer,
-              procedure,
-              failures: [],
-              validate: await props.programmer.compile(procedure),
-              promptCacheKey,
-              instruction: props.instruction,
-            },
-            ctx.retry,
-          );
-        return {
-          ...procedure,
-          function: event.function,
-        };
-      } catch {
-        return null;
-      }
+      const event: AutoBeTestValidateEvent<Procedure["function"]> =
+        await predicate(
+          ctx,
+          {
+            programmer: props.programmer,
+            procedure,
+            failures: [],
+            validate: await props.programmer.compile(procedure),
+            promptCacheKey,
+            instruction: props.instruction,
+          },
+          ctx.retry,
+        );
+      return {
+        ...procedure,
+        function: event.function,
+      };
     }),
   );
   return results.filter((r) => r !== null);
