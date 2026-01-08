@@ -106,7 +106,6 @@ const main = async (): Promise<void> => {
       systemPrompt: {
         execute: () => getStateMessage(currentPhase.value),
       },
-      throw: true,
     },
     controllers: [controller],
   });
