@@ -50,7 +50,26 @@ export const transformPrismaGroupHistory = (
         `,
       },
     ],
-    userMessage:
-      "Organize database components into logical groups from the given requirement analysis documents.",
+    userMessage: StringUtil.trim`
+      ## Your Task: Organize Database Components into Logical Groups
+
+      **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via 
+      \`getAnalysisFiles\` to identify all business domains.
+
+      **MANDATORY STEPS**:
+      1. **FIRST**: Call \`getAnalysisFiles\` to load requirement documents
+         - If you received a table of contents file → Load ALL requirement files listed in it
+         - NEVER skip this step - Requirements are the ONLY valid source for domain identification
+      2. **THEN**: Analyze the LOADED requirements to identify all business domains and entities
+      3. **FINALLY**: Generate complete component groups covering ALL domains found in requirements
+
+      **ABSOLUTE PROHIBITIONS**:
+
+      - ❌ NEVER generate component groups without loading requirement documents first
+      - ❌ NEVER work from assumptions, imagination, or "typical patterns"
+      - ❌ NEVER skip loading requirements under any circumstances
+
+      Begin by calling \`getAnalysisFiles\` to load the requirement documents you need to analyze.
+    `,
   };
 };
