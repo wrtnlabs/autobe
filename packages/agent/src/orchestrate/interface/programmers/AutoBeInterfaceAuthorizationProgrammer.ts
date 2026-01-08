@@ -27,25 +27,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
     });
 
     // check authorization type
-    if (props.operation.authorizationType === null)
-      props.errors.push({
-        path: `${props.accessor}.authorizationType`,
-        expected: StringUtil.trim`
-          {
-            ...(AutoBeOpenApi.IOperation data),
-            authorizationType: "login" | "join" | "refresh"
-          }`,
-        value: props.operation.authorizationType,
-        description: StringUtil.trim`
-          For authentication operations, the authorizationType field must 
-          be defined. It indicates the type of authorization activity the 
-          operation performs, such as "login", "join", or "refresh".
-
-          Leaving authorizationType as null is not allowed for authentication 
-          operations. If you intend to create a non-authentication operation,
-          please remove the operation from the list.
-        `,
-      });
+    if (props.operation.authorizationType === null) return;
 
     // path parameters must be empty
     if (props.operation.parameters.length !== 0)
@@ -82,7 +64,10 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       });
 
     // validate request body
-    if (props.operation.authorizationType !== "refresh") {
+    if (
+      props.operation.authorizationType === "join" ||
+      props.operation.authorizationType === "login"
+    ) {
       const expected: string =
         props.operation.authorizationType === "login" ? "ILogin" : "IJoin";
       if (props.operation.requestBody === null)
