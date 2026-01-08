@@ -30,7 +30,7 @@ export type AutoBeEvent =
   | AutoBeDatabaseComponentEvent
   | AutoBeDatabaseSchemaEvent
   | AutoBeDatabaseInsufficientEvent
-  | AutoBeDatabaseReviewEvent
+  | AutoBeDatabaseSchemaReviewEvent
   | AutoBeDatabaseValidateEvent
   | AutoBeDatabaseCorrectEvent
   | AutoBeDatabaseCompleteEvent

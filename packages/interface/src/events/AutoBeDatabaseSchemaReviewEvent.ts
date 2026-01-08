@@ -5,7 +5,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Database agent reviews and validates a single table
- * model during the database design process.
+ * model during the database schema design process.
  *
  * This event occurs when the Database agent has completed a comprehensive
  * review of a single database table model, validating it against best
@@ -22,9 +22,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeDatabaseReviewEvent
+export interface AutoBeDatabaseSchemaReviewEvent
   extends
-    AutoBeEventBase<"databaseReview">,
+    AutoBeEventBase<"databaseSchemaReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**

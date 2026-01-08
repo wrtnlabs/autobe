@@ -3,11 +3,11 @@ import {
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseGroup,
   AutoBeDatabaseHistory,
-  AutoBeDatabaseReviewEvent,
   AutoBeDatabaseSchemaEvent,
+  AutoBeDatabaseSchemaReviewEvent,
   IAutoBeCompiler,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
@@ -17,11 +17,12 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
-import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
+import { orchestratePrismaComponent } from "./orchestratePrismaComponent";
 import { orchestratePrismaComponentReview } from "./orchestratePrismaComponentReview";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
-import { orchestratePrismaReview } from "./orchestratePrismaReview";
+import { orchestratePrismaGroup } from "./orchestratePrismaGroup";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
+import { orchestratePrismaSchemaReview } from "./orchestratePrismaSchemaReview";
 
 export const orchestratePrisma = async (
   ctx: AutoBeContext,
@@ -49,16 +50,22 @@ export const orchestratePrisma = async (
     step: ctx.state().analyze?.step ?? 0,
   });
 
-  // COMPONENTS
-  const componentEvent: AutoBeDatabaseComponentEvent =
-    await orchestratePrismaComponents(ctx, props.instruction);
-  ctx.dispatch(componentEvent);
+  // GROUPS
+  const groups: AutoBeDatabaseGroup[] = await orchestratePrismaGroup(
+    ctx,
+    props.instruction,
+  );
+  const components: AutoBeDatabaseComponent[] =
+    await orchestratePrismaComponent(ctx, {
+      instruction: props.instruction,
+      groups,
+    });
 
   // COMPONENT REVIEW (each event is dispatched inside)
   const componentReviewEvents: AutoBeDatabaseComponentReviewEvent[] =
     await orchestratePrismaComponentReview(ctx, {
       instruction: props.instruction,
-      components: componentEvent.components,
+      components,
     });
 
   // Extract reviewed components from all events
@@ -80,8 +87,8 @@ export const orchestratePrisma = async (
   };
 
   // REVIEW
-  const reviewEvents: AutoBeDatabaseReviewEvent[] =
-    await orchestratePrismaReview(ctx, application, finalComponents);
+  const reviewEvents: AutoBeDatabaseSchemaReviewEvent[] =
+    await orchestratePrismaSchemaReview(ctx, application, finalComponents);
   for (const event of reviewEvents) {
     if (event.content === null) continue;
 
@@ -100,7 +107,7 @@ export const orchestratePrisma = async (
     ctx,
     application,
   );
-  const finalSchemas: Record<string, string> = writePrismaApplication({
+  const prismaSchemaFiles: Record<string, string> = writePrismaApplication({
     dbms: "postgres",
     application: result.data,
   });
@@ -111,9 +118,9 @@ export const orchestratePrisma = async (
     type: "databaseComplete",
     id: v7(),
     result,
-    schemas: finalSchemas,
+    schemas: prismaSchemaFiles,
     compiled: await compiler.database.compilePrismaSchemas({
-      files: finalSchemas,
+      files: prismaSchemaFiles,
     }),
     aggregates: ctx.getCurrentAggregates("database"),
     step: ctx.state().analyze?.step ?? 0,

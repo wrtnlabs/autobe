@@ -49,6 +49,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Review",
           description: "Reviewing the analysis results",
         };
+      case "databaseComponent":
+        return {
+          title: "Database Components",
+          description: "Generating database component schemas",
+        };
       case "databaseComponentReview":
         return {
           title: "Prisma Components Review",
@@ -59,7 +64,7 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Prisma Schemas",
           description: "Designing Database schemas",
         };
-      case "databaseReview":
+      case "databaseSchemaReview":
         return {
           title: "Prisma Review",
           description: "Reviewing the Prisma schemas",

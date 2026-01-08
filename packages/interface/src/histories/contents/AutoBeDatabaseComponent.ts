@@ -1,16 +1,17 @@
 import { tags } from "typia";
 
 import { AutoBeDatabaseComponentTableDesign } from "./AutoBeDatabaseComponentTableDesign";
+import { AutoBeDatabaseGroup } from "./AutoBeDatabaseGroup";
 
 /**
  * Interface representing a logical grouping of database tables organized by
  * business domain for schema file generation.
  *
- * Components provide a systematic way to organize database tables into
- * coherent groups following domain-driven design principles. Each component
- * represents a specific business domain or functional area that will be
- * generated as a separate Prisma schema file, ensuring maintainable and
- * logically structured database architecture.
+ * Components provide a systematic way to organize database tables into coherent
+ * groups following domain-driven design principles. Each component represents a
+ * specific business domain or functional area that will be generated as a
+ * separate Prisma schema file, ensuring maintainable and logically structured
+ * database architecture.
  *
  * This interface is primarily used during the database design phase when the
  * Database agent analyzes requirements and determines the complete scope of
@@ -53,70 +54,21 @@ import { AutoBeDatabaseComponentTableDesign } from "./AutoBeDatabaseComponentTab
  * namespace, tables) is used to structure the actual Prisma schema file with
  * proper models, relationships, and indexes.
  *
+ * @author Samchon
  * @see AutoBeDatabase.IFile For the actual schema file structure generated from
  *   components
  * @see AutoBeDatabaseComponentEvent For the event that delivers component
  *   organization results
- * @author Samchon
  */
-export interface AutoBeDatabaseComponent {
-  /**
-   * Target filename for the Prisma schema file containing this component's
-   * tables.
-   *
-   * Follows the naming convention `schema-{number}-{domain}.prisma` where the
-   * number indicates dependency order and domain represents the business
-   * area.
-   */
-  filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
-
-  /**
-   * Business domain namespace that groups related models.
-   *
-   * Used in Prisma documentation comments as "@\namespace directive".
-   * Examples from uploaded schemas: "Systematic", "Actors", "Sales", "Carts",
-   * "Orders", "Coupons", "Coins", "Inquiries", "Favorites", "Articles"
-   */
-  namespace: string;
-
-  /**
-   * Initial thoughts on why these tables belong together.
-   *
-   * **Example:**
-   *
-   *     "These tables all relate to user management and authentication.
-   *     They share common patterns like user identification and access control."
-   */
-  thinking: string;
-
-  /**
-   * Review considerations for this component grouping.
-   *
-   * **Example:**
-   *
-   *     "Reviewed relationships with other domains. While customers create orders,
-   *     the customer entity itself is fundamentally about user identity, not sales."
-   */
-  review: string;
-
-  /**
-   * Final rationale for this component's composition.
-   *
-   * **Example:**
-   *
-   *     "This component groups all actor-related tables to maintain a clear
-   *     separation between identity management and business transactions."
-   */
-  rationale: string;
-
+export interface AutoBeDatabaseComponent extends AutoBeDatabaseGroup {
   /**
    * Array of table designs that will be included in this component's schema
    * file.
    *
-   * Contains all database tables that belong to this business domain,
-   * each with a name and description explaining its purpose. This ensures
-   * logical grouping, proper organization, and clear documentation of
-   * related data structures.
+   * Contains all database tables that belong to this business domain, each with
+   * a name and description explaining its purpose. This ensures logical
+   * grouping, proper organization, and clear documentation of related data
+   * structures.
    */
   tables: Array<AutoBeDatabaseComponentTableDesign> & tags.MinItems<1>;
 }

@@ -9,8 +9,9 @@ import {
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseCorrectEvent,
-  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseGroupEvent,
   AutoBeDatabaseSchemaEvent,
+  AutoBeDatabaseSchemaReviewEvent,
   AutoBeDatabaseStartEvent,
   AutoBeDatabaseValidateEvent,
   AutoBeImageDescribeCompleteEvent,
@@ -198,6 +199,8 @@ export interface IAutoBeRpcListener {
    */
   databaseStart?(event: AutoBeDatabaseStartEvent): Promise<void>;
 
+  databaseGroup?(event: AutoBeDatabaseGroupEvent): Promise<void>;
+
   /**
    * Optional handler for database component organization events.
    *
@@ -242,7 +245,7 @@ export interface IAutoBeRpcListener {
    * data integrity, and aligns with the overall project goals and
    * requirements.
    */
-  databaseReview?(event: AutoBeDatabaseReviewEvent): Promise<void>;
+  databaseSchemaReview?(event: AutoBeDatabaseSchemaReviewEvent): Promise<void>;
 
   /**
    * Optional handler for database schema validation events.

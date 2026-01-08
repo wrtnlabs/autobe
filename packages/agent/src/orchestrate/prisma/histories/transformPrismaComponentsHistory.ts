@@ -1,3 +1,4 @@
+import { AutoBeDatabaseGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
@@ -15,6 +16,7 @@ export const transformPrismaComponentsHistory = (
     preliminary: AutoBePreliminaryController<
       "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
     >;
+    group: AutoBeDatabaseGroup;
   },
 ): IAutoBeOrchestrateHistory => {
   if (state.analyze === null)
@@ -35,6 +37,23 @@ export const transformPrismaComponentsHistory = (
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
+          ## Database Component Skeleton
+
+          You are designing database tables for the following component:
+
+          **Filename**: \`${props.group.filename}\`
+          **Namespace**: \`${props.group.namespace}\`
+
+          **Component Reasoning**:
+          - **Thinking**: ${props.group.thinking}
+          - **Review**: ${props.group.review}
+          - **Rationale**: ${props.group.rationale}
+
+          Your task is to extract the detailed table names for THIS SINGLE COMPONENT ONLY.
+
+          **CRITICAL**: Use the EXACT filename and namespace provided above.
+          You are filling in the \`tables\` field to complete this component skeleton.
+
           ## Prefix
           
           - Prefix provided by the user: ${props.prefix}

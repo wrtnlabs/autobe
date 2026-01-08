@@ -1,87 +1,50 @@
 import { AutoBeDatabaseComponent } from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Database agent organizes database tables into categorized
- * groups during the database design process.
+ * Event fired when the Database agent completes table design for a single
+ * database component during the database design process.
  *
- * This event occurs when the Database agent has analyzed the requirements and
- * determined the complete scope of database tables needed, organizing them into
- * logical groups based on business domains and functional relationships. The
- * component organization follows domain-driven design principles to ensure
- * maintainable and coherent database architecture.
+ * This event occurs when the Database agent has taken a component skeleton
+ * (namespace and filename already determined by the DATABASE_GROUP phase) and
+ * filled in all the table designs for that specific component. Each event
+ * represents the completion of ONE component's table design.
  *
- * The categorized components provide a clear roadmap for the schema generation
- * process, enabling systematic development of related tables while maintaining
- * proper dependencies and relationships across the database design.
+ * Multiple events of this type are emitted in sequence as the Database agent
+ * processes each component skeleton from the group, enabling real-time progress
+ * tracking for component-by-component table generation.
  *
  * @author Samchon
  */
 export interface AutoBeDatabaseComponentEvent
-  extends AutoBeEventBase<"databaseComponent">, AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseComponent">,
+    AutoBeAggregateEventBase,
+    AutoBeProgressEventBase {
   /**
-   * Initial thoughts on namespace classification criteria.
+   * The completed database component with its table designs.
    *
-   * Contains the AI agent's initial analysis and reasoning about how to
-   * organize tables into different business domains/namespaces.
+   * Contains the single database component that was completed in this event.
+   * The component skeleton (namespace, filename, thinking, review, rationale)
+   * was provided by the DATABASE_GROUP phase, and this event represents the
+   * completion of filling in the tables array for that component.
    *
-   * **Example:**
+   * The component includes:
    *
-   *     "Based on the business requirements, I identify several key domains:
-   *     - User-related entities should be grouped under 'Actors' namespace
-   *     - Product and sales information under 'Sales' namespace
-   *     - System configuration under 'Systematic' namespace"
+   * - namespace: Business domain namespace (from skeleton)
+   * - filename: Prisma schema filename (from skeleton)
+   * - thinking: Initial reasoning about component purpose (from skeleton)
+   * - review: Review of component scope (from skeleton)
+   * - rationale: Final justification for component (from skeleton)
+   * - tables: Array of complete table designs (FILLED IN by this agent)
+   *
+   * Each table in the tables array includes:
+   * - name: snake_case plural table name
+   * - description: Purpose and contents of the table
    */
-  thinking: string;
-
-  /**
-   * Review and refinement of the namespace classification.
-   *
-   * Contains the AI agent's review process, considering relationships between
-   * tables and potential improvements to the initial classification.
-   *
-   * **Example:**
-   *
-   *     "Upon review, I noticed that 'shopping_channel_categories' has strong
-   *     relationships with both channels and sales. However, since it primarily
-   *     defines the channel structure, it should remain in 'Systematic' namespace."
-   */
-  review: string;
-
-  /**
-   * Final decision on namespace classification.
-   *
-   * Contains the AI agent's final reasoning and rationale for the chosen
-   * namespace organization, explaining why this structure best serves the
-   * business requirements.
-   *
-   * **Example:**
-   *
-   *     "Final decision: Organize tables into 3 main namespaces:
-   *     1. Systematic - for channel and system configuration
-   *     2. Actors - for all user types (customers, citizens, administrators)
-   *     3. Sales - for product sales and related transactional data
-   *     This structure provides clear separation of concerns and follows DDD principles."
-   */
-  decision: string;
-
-  /**
-   * Array of component groups organizing tables by business domain and
-   * functional relationships.
-   *
-   * Each component represents a logical grouping of database tables that belong
-   * to the same business domain or functional area. The grouping follows
-   * domain-driven design principles where related tables are organized together
-   * to maintain coherent schema files and enable systematic development.
-   *
-   * Each component includes the target filename for the schema file and the
-   * list of table names that will be included in that domain. This organization
-   * ensures that the generated Prisma schema files are logically structured and
-   * maintainable, with clear separation of concerns across different business
-   * areas.
-   */
-  components: AutoBeDatabaseComponent[];
+  component: AutoBeDatabaseComponent;
 
   /**
    * Iteration number of the requirements analysis this component organization

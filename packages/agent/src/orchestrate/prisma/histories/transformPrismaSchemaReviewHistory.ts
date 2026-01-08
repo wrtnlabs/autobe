@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformPrismaReviewHistory = (props: {
+export const transformPrismaSchemaReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -27,7 +27,7 @@ export const transformPrismaReviewHistory = (props: {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.DATABASE_REVIEW,
+      text: AutoBeSystemPromptConstant.DATABASE_SCHEMA_REVIEW,
     },
     ...props.preliminary.getHistories(),
     {

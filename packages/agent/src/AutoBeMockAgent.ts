@@ -195,10 +195,11 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   analyzeComplete: 1_000,
   // PRISMA
   databaseStart: 1_000,
+  databaseGroup: 1_000,
   databaseComponent: 1_000,
   databaseComponentReview: 500,
   databaseSchema: 500,
-  databaseReview: 500,
+  databaseSchemaReview: 500,
   databaseValidate: 2_000,
   databaseCorrect: 500,
   databaseComplete: 1_000,

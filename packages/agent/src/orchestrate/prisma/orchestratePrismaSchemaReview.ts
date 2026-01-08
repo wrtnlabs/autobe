@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseSchemaReviewEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -15,14 +15,14 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformPrismaReviewHistory } from "./histories/transformPrismaReviewHistory";
-import { IAutoBeDatabaseReviewApplication } from "./structures/IAutoBeDatabaseReviewApplication";
+import { transformPrismaSchemaReviewHistory } from "./histories/transformPrismaSchemaReviewHistory";
+import { IAutoBeDatabaseSchemaReviewApplication } from "./structures/IAutoBeDatabaseSchemaReviewApplication";
 
-export async function orchestratePrismaReview(
+export async function orchestratePrismaSchemaReview(
   ctx: AutoBeContext,
   application: AutoBeDatabase.IApplication,
   componentList: AutoBeDatabaseComponent[],
-): Promise<AutoBeDatabaseReviewEvent[]> {
+): Promise<AutoBeDatabaseSchemaReviewEvent[]> {
   // Flatten component list into individual table tasks
   const tableTasks: Array<{
     component: AutoBeDatabaseComponent;
@@ -77,7 +77,7 @@ async function step(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeDatabaseReviewEvent> {
+): Promise<AutoBeDatabaseSchemaReviewEvent> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -85,7 +85,7 @@ async function step(
     | "previousAnalysisFiles"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeDatabaseReviewApplication>(),
+    application: typia.json.application<IAutoBeDatabaseSchemaReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -105,7 +105,7 @@ async function step(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -121,7 +121,7 @@ async function step(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformPrismaReviewHistory({
+      ...transformPrismaSchemaReviewHistory({
         component: props.component,
         model: props.model,
         preliminary,
@@ -129,7 +129,7 @@ async function step(
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeDatabaseReviewEvent = {
+    const event: AutoBeDatabaseSchemaReviewEvent = {
       type: SOURCE,
       id: v7(),
       created_at: start.toISOString(),
@@ -156,15 +156,15 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: IAutoBeDatabaseReviewApplication.IComplete) => void;
+  build: (next: IAutoBeDatabaseSchemaReviewApplication.IComplete) => void;
   targetComponent: AutoBeDatabaseComponent;
   targetTable: string;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeDatabaseReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeDatabaseReviewApplication.IProps> =
-      typia.validate<IAutoBeDatabaseReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeDatabaseSchemaReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeDatabaseSchemaReviewApplication.IProps> =
+      typia.validate<IAutoBeDatabaseSchemaReviewApplication.IProps>(input);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
@@ -208,7 +208,7 @@ function createController(props: {
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeDatabaseReviewApplication>({
+    typia.llm.application<IAutoBeDatabaseSchemaReviewApplication>({
       validate: {
         process: validate,
       },
@@ -222,8 +222,8 @@ function createController(props: {
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeDatabaseReviewApplication,
+    } satisfies IAutoBeDatabaseSchemaReviewApplication,
   };
 }
 
-const SOURCE = "databaseReview" satisfies AutoBeEventSource;
+const SOURCE = "databaseSchemaReview" satisfies AutoBeEventSource;

@@ -4,8 +4,9 @@ import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
-import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
+import { AutoBeDatabaseGroupEvent } from "./AutoBeDatabaseGroupEvent";
 import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
+import { AutoBeDatabaseSchemaReviewEvent } from "./AutoBeDatabaseSchemaReviewEvent";
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
@@ -71,10 +72,11 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeWriteEvent["type"]
   | AutoBeAnalyzeReviewEvent["type"]
   // database
+  | AutoBeDatabaseGroupEvent["type"]
   | AutoBeDatabaseComponentEvent["type"]
   | AutoBeDatabaseComponentReviewEvent["type"]
   | AutoBeDatabaseSchemaEvent["type"]
-  | AutoBeDatabaseReviewEvent["type"]
+  | AutoBeDatabaseSchemaReviewEvent["type"]
   | AutoBeDatabaseCorrectEvent["type"]
   // interface
   | AutoBeInterfaceAuthorizationEvent["type"]

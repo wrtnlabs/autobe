@@ -17,7 +17,7 @@ orchestrateAnalyze
 orchestratePrisma
 ├─ orchestratePrismaScenario
 ├─ orchestratePrismaSchemas (batched)
-├─ orchestratePrismaReview (batched)
+├─ orchestratePrismaSchemaReview (batched)
 └─ orchestratePrismaCorrect (self-healing loop)
 
 orchestrateInterface

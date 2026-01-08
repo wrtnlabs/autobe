@@ -1,5 +1,4 @@
-import { AutoBeDatabaseComponent } from "@autobe/interface";
-import { tags } from "typia";
+import { AutoBeDatabaseComponentTableDesign } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
@@ -7,14 +6,19 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseComponentApplication {
   /**
-   * Process component extraction task or preliminary data requests.
+   * Process table design task for a single component skeleton or preliminary
+   * data requests.
    *
-   * Organizes database tables into domain-based components for database schema
-   * generation. Processes extraction with incremental context loading to ensure
-   * comprehensive domain organization.
+   * Receives a component skeleton (namespace, filename, thinking, review,
+   * rationale already determined by DATABASE_GROUP phase) and fills in the
+   * tables field with complete table designs for that single component.
+   *
+   * This is NOT about creating or organizing multiple components. The component
+   * identity is fixed. This agent ONLY designs the tables that belong to the
+   * provided component skeleton.
    *
    * @param props Request containing either preliminary data request or complete
-   *   task
+   *   table design
    */
   process(props: IAutoBeDatabaseComponentApplication.IProps): void;
 }
@@ -49,9 +53,9 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final component
-     * extraction (complete). When preliminary returns empty array, that type is
-     * removed from the union, physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
+     * or final table design (complete). When preliminary returns empty array,
+     * that type is removed from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -61,9 +65,15 @@ export namespace IAutoBeDatabaseComponentApplication {
   }
 
   /**
-   * Request to extract domain components from database tables.
+   * Request to complete the database component by filling in table designs.
    *
-   * Executes component extraction to organize tables into logical domains.
+   * Takes a component skeleton (namespace, filename already determined by
+   * DATABASE_GROUP phase) and fills in the tables field by designing all
+   * necessary database tables for this single component.
+   *
+   * This is NOT about creating multiple components - the component identity is
+   * already fixed. This is ONLY about designing the tables that belong to this
+   * single component.
    */
   export interface IComplete {
     /**
@@ -76,113 +86,31 @@ export namespace IAutoBeDatabaseComponentApplication {
     type: "complete";
 
     /**
-     * Initial thoughts on namespace classification criteria.
+     * Array of table designs for THIS SINGLE component.
      *
-     * Contains the AI agent's initial analysis and reasoning about how to
-     * organize tables into different business domains/namespaces.
+     * Contains all database tables that belong to the component skeleton
+     * received as input. Each table design includes table name (snake_case,
+     * plural) and description explaining the table's purpose and contents.
      *
-     * **Example:**
+     * The AI agent must design tables based on:
      *
-     *     "Based on the business requirements, I identify several key domains:
-     *     - User-related entities should be grouped under 'Actors' namespace
-     *     - Product and sales information under 'Sales' namespace
-     *     - System configuration under 'Systematic' namespace"
+     * - The component's namespace and intended domain (from skeleton)
+     * - Business requirements from analysis files
+     * - Previous database schemas for consistency
+     * - Normalization principles (3NF)
+     * - Relationship integrity
+     *
+     * CRITICAL CONSTRAINTS:
+     *
+     * - The namespace and filename are ALREADY DETERMINED by the component
+     *   skeleton
+     * - Do NOT create multiple components or reorganize component boundaries
+     * - Do NOT include thinking, review, decision, or rationale - those are
+     *   already in the skeleton
+     * - ALL tables generated here belong to THE SINGLE component skeleton
+     *   provided
+     * - ONLY provide the tables array - nothing else
      */
-    thinking: string;
-
-    /**
-     * Review and refinement of the namespace classification.
-     *
-     * Contains the AI agent's review process, considering relationships between
-     * tables and potential improvements to the initial classification.
-     *
-     * **Example:**
-     *
-     *     "Upon review, I noticed that 'shopping_channel_categories' has strong
-     *     relationships with both channels and sales. However, since it primarily
-     *     defines the channel structure, it should remain in 'Systematic' namespace."
-     */
-    review: string;
-
-    /**
-     * Final decision on namespace classification.
-     *
-     * Contains the AI agent's final reasoning and rationale for the chosen
-     * namespace organization, explaining why this structure best serves the
-     * business requirements.
-     *
-     * **Example:**
-     *
-     *     "Final decision: Organize tables into 3 main namespaces:
-     *     1. Systematic - for channel and system configuration
-     *     2. Actors - for all user types (customers, citizens, administrators)
-     *     3. Sales - for product sales and related transactional data
-     *     This structure provides clear separation of concerns and follows DDD principles."
-     */
-    decision: string;
-
-    /**
-     * Array of domain components that group related database tables.
-     *
-     * Each component represents a business domain and becomes one database schema
-     * file. Common domains include: Actors (users), Sales (products), Orders,
-     * Carts, etc.
-     *
-     * **Example:**
-     *
-     * ```typescript
-     * {
-     *   "components": [
-     *     {
-     *       "filename": "schema-02-systematic.prisma",
-     *       "namespace": "Systematic",
-     *       "thinking": "These tables all relate to system configuration and channel management. They form the foundation of the platform.",
-     *       "review": "Considering the relationships, shopping_channel_categories connects channels and sales, but it fundamentally defines channel structure.",
-     *       "rationale": "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference.",
-     *       "tables": [
-     *         { "name": "shopping_channels", "description": "Represents sales channels (e.g., online store, mobile app) with branding and configuration." },
-     *         { "name": "shopping_sections", "description": "Sections within a channel for organizing content and products hierarchically." },
-     *         { "name": "shopping_channel_categories", "description": "Product categories specific to each channel for navigation and filtering." }
-     *       ]
-     *     },
-     *     {
-     *       "filename": "schema-03-actors.prisma",
-     *       "namespace": "Actors",
-     *       "thinking": "All user-related entities should be grouped together as they share authentication and identity patterns.",
-     *       "review": "While customers interact with sales, the customer entity itself is about identity, not transactions.",
-     *       "rationale": "This component groups all actor-related tables to maintain separation between identity management and business transactions.",
-     *       "tables": [
-     *         { "name": "shopping_customers", "description": "Customer accounts with authentication credentials and profile information." },
-     *         { "name": "shopping_citizens", "description": "Verified citizen information linked to customer accounts for identity verification." },
-     *         { "name": "shopping_administrators", "description": "Admin users with elevated privileges for platform management." }
-     *       ]
-     *     },
-     *     {
-     *       "filename": "schema-04-sales.prisma",
-     *       "namespace": "Sales",
-     *       "thinking": "Product catalog and sales-related tables belong together as they form the core commerce functionality.",
-     *       "review": "Sales snapshots are integral to the sales domain for tracking product history and price changes.",
-     *       "rationale": "Consolidating all sales-related tables enables coherent management of the entire product lifecycle.",
-     *       "tables": [
-     *         { "name": "shopping_sales", "description": "Products or services available for purchase with pricing and inventory." },
-     *         { "name": "shopping_sale_snapshots", "description": "Point-in-time snapshots of sale data for audit trails and version history." },
-     *         { "name": "shopping_sale_units", "description": "Purchasable units within a sale (e.g., size variants, package options)." },
-     *         { "name": "shopping_sale_unit_options", "description": "Configurable options for sale units (e.g., color, material choices)." }
-     *       ]
-     *     }
-     *   ]
-     * }
-     * ```
-     *
-     * **Notes:**
-     *
-     * - Table names must follow snake_case convention with domain prefix (e.g.,
-     *   `shopping_customers`)
-     * - Each table must include a description explaining its purpose
-     * - Each component becomes one `.prisma` file containing related models
-     * - Filename numbering indicates dependency order for schema generation
-     * - Namespace is used for documentation organization and domain grouping
-     */
-    components: AutoBeDatabaseComponent[] & tags.MinItems<1>;
+    tables: AutoBeDatabaseComponentTableDesign[];
   }
 }

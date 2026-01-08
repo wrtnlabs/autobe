@@ -5,7 +5,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
-export interface IAutoBeDatabaseReviewApplication {
+export interface IAutoBeDatabaseSchemaReviewApplication {
   /**
    * Process schema review task or preliminary data requests.
    *
@@ -15,9 +15,9 @@ export interface IAutoBeDatabaseReviewApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeDatabaseReviewApplication.IProps): void;
+  process(props: IAutoBeDatabaseSchemaReviewApplication.IProps): void;
 }
-export namespace IAutoBeDatabaseReviewApplication {
+export namespace IAutoBeDatabaseSchemaReviewApplication {
   export interface IProps {
     /**
      * Think before you act.

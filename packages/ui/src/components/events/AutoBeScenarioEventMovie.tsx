@@ -1,6 +1,6 @@
 import {
   AutoBeAnalyzeScenarioEvent,
-  AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseGroupEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeRealizeTestResetEvent,
 } from "@autobe/interface";
@@ -11,7 +11,7 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
-    | AutoBeDatabaseComponentEvent
+    | AutoBeDatabaseGroupEvent
     | AutoBeInterfaceGroupEvent
     | AutoBeRealizeTestResetEvent;
 }
@@ -49,24 +49,18 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
           </>
         ),
       };
-    case "databaseComponent":
+    case "databaseGroup":
       return {
-        title: "Prisma Components",
+        title: "Database Group",
         description: (
           <>
-            Generating Prisma components.
+            Generating Database groups.
             <br />
             <br />
-            Number of Prisma schemas would be:
+            Number of Database groups would be:
             <br />
             <ul>
-              <li>namespaces: #{event.components.length}</li>
-              <li>
-                tables: #
-                {event.components
-                  .map((c) => c.tables.length)
-                  .reduce((a, b) => a + b, 0)}
-              </li>
+              <li>namespaces: #{event.groups.length}</li>
             </ul>
           </>
         ),

@@ -24,6 +24,7 @@ export * from "./AutoBeDatabaseComponentTableRevise";
 export * from "./AutoBeDatabaseComponentTableCreate";
 export * from "./AutoBeDatabaseComponentTableUpdate";
 export * from "./AutoBeDatabaseComponentTableErase";
+export * from "./AutoBeDatabaseGroup";
 
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestPrepareMapping";

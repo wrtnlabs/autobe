@@ -71,12 +71,16 @@ export class AutoBeListener {
 
       // PRISMA
       databaseStart: async (event) => {
+        this.dict_.delete("databaseComponent");
         this.dict_.delete("databaseSchema");
-        this.dict_.delete("databaseReview");
+        this.dict_.delete("databaseSchemaReview");
+        this.insert(event);
+      },
+      databaseGroup: async (event) => {
         this.insert(event);
       },
       databaseComponent: async (event) => {
-        this.insert(event);
+        this.accumulate(event);
       },
       databaseComponentReview: async (event) => {
         this.accumulate(event);
@@ -84,7 +88,7 @@ export class AutoBeListener {
       databaseSchema: async (event) => {
         this.accumulate(event);
       },
-      databaseReview: async (event) => {
+      databaseSchemaReview: async (event) => {
         this.accumulate(event);
       },
       databaseValidate: async (event) => {
@@ -94,8 +98,9 @@ export class AutoBeListener {
         this.insert(event);
       },
       databaseComplete: async (event) => {
+        this.dict_.delete("databaseComponent");
         this.dict_.delete("databaseSchema");
-        this.dict_.delete("databaseReview");
+        this.dict_.delete("databaseSchemaReview");
         this.state_.setDatabase(event);
         this.insert(event);
       },

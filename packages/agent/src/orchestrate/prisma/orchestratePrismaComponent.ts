@@ -1,7 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeDatabaseComponentEvent,
+  AutoBeDatabaseComponent,
+  AutoBeDatabaseGroup,
   AutoBeEventSource,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -9,16 +11,49 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { IAutoBeDatabaseComponentApplication } from "./structures/IAutoBeDatabaseComponentApplication";
 
-export async function orchestratePrismaComponents(
+export async function orchestratePrismaComponent(
   ctx: AutoBeContext,
-  instruction: string,
-): Promise<AutoBeDatabaseComponentEvent> {
-  const start: Date = new Date();
+  props: {
+    instruction: string;
+    groups: AutoBeDatabaseGroup[];
+  },
+): Promise<AutoBeDatabaseComponent[]> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
+  const progress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: props.groups.length,
+  };
+
+  return await executeCachedBatch(
+    ctx,
+    props.groups.map((group) => async (promptCacheKey) => {
+      const component: AutoBeDatabaseComponent = await process(ctx, {
+        group,
+        instruction: props.instruction,
+        prefix,
+        progress,
+        promptCacheKey,
+      });
+      return component;
+    }),
+  );
+}
+
+async function process(
+  ctx: AutoBeContext,
+  props: {
+    group: AutoBeDatabaseGroup;
+    instruction: string;
+    prefix: string | null;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
+): Promise<AutoBeDatabaseComponent> {
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
@@ -37,6 +72,7 @@ export async function orchestratePrismaComponents(
       analysisFiles: [],
     },
   });
+
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null> =
       {
@@ -49,27 +85,34 @@ export async function orchestratePrismaComponents(
         preliminary,
       }),
       enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
       ...transformPrismaComponentsHistory(ctx.state(), {
-        instruction,
-        prefix,
+        instruction: props.instruction,
+        prefix: props.prefix,
         preliminary,
+        group: props.group,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeDatabaseComponentEvent = {
+    // Build complete component from group skeleton + tables
+    const component: AutoBeDatabaseComponent = {
+      ...props.group,
+      tables: pointer.value.tables,
+    };
+
+    ctx.dispatch({
       type: SOURCE,
       id: v7(),
-      created_at: start.toISOString(),
-      thinking: pointer.value.thinking,
-      review: pointer.value.review,
-      decision: pointer.value.decision,
-      components: pointer.value.components,
+      created_at: new Date().toISOString(),
+      component,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
-    };
-    return out(result)(event);
+      total: props.progress.total,
+      completed: ++props.progress.completed,
+    });
+    return out(result)(component);
   });
 }
 

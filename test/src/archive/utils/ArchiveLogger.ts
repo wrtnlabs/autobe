@@ -98,9 +98,12 @@ export namespace ArchiveLogger {
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
     // GENERATIONS
+    else if (event.type === "databaseGroup")
+      content.push(`  - groups: ${event.groups.length}`);
     else if (event.type === "databaseComponent")
       content.push(
-        `  - tables: ${event.components.map((c) => c.tables).flat().length}`,
+        `  - namespace: ${event.component.namespace}`,
+        `  - tables: ${event.component.tables.length}`,
       );
     else if (event.type === "databaseComponentReview")
       content.push(

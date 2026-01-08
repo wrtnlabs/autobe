@@ -9,7 +9,8 @@ import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
-import { AutoBeDatabaseReviewEvent } from "./AutoBeDatabaseReviewEvent";
+import { AutoBeDatabaseGroupEvent } from "./AutoBeDatabaseGroupEvent";
+import { AutoBeDatabaseSchemaReviewEvent } from "./AutoBeDatabaseSchemaReviewEvent";
 import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
 import { AutoBeDatabaseStartEvent } from "./AutoBeDatabaseStartEvent";
 import { AutoBeDatabaseValidateEvent } from "./AutoBeDatabaseValidateEvent";
@@ -102,6 +103,16 @@ export type AutoBeEvent =
   | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
+  // DATABASE
+  | AutoBeDatabaseStartEvent
+  | AutoBeDatabaseGroupEvent
+  | AutoBeDatabaseComponentEvent
+  | AutoBeDatabaseComponentReviewEvent
+  | AutoBeDatabaseSchemaEvent
+  | AutoBeDatabaseSchemaReviewEvent
+  | AutoBeDatabaseValidateEvent
+  | AutoBeDatabaseCorrectEvent
+  | AutoBeDatabaseCompleteEvent
   // INTERFACE
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceGroupEvent
@@ -116,15 +127,6 @@ export type AutoBeEvent =
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBeInterfacePrerequisiteEvent
-  // PRISMA
-  | AutoBeDatabaseStartEvent
-  | AutoBeDatabaseComponentEvent
-  | AutoBeDatabaseComponentReviewEvent
-  | AutoBeDatabaseSchemaEvent
-  | AutoBeDatabaseReviewEvent
-  | AutoBeDatabaseValidateEvent
-  | AutoBeDatabaseCorrectEvent
-  | AutoBeDatabaseCompleteEvent
   // TEST
   | AutoBeTestStartEvent
   | AutoBeTestScenarioEvent

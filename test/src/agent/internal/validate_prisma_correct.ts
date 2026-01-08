@@ -3,16 +3,16 @@ import { orchestratePrismaCorrect } from "@autobe/agent/src/orchestrate/prisma/o
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeDatabase,
-  AutoBeDatabaseComponentEvent,
-  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseSchemaEvent,
+  AutoBeDatabaseSchemaReviewEvent,
   AutoBeExampleProject,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
 import { validate_prisma_component } from "./validate_prisma_component";
-import { validate_prisma_review } from "./validate_prisma_review";
+import { validate_prisma_schema_review } from "./validate_prisma_review";
 import { validate_prisma_schema } from "./validate_prisma_schema";
 
 export const validate_prisma_correct = async (props: {
@@ -20,7 +20,7 @@ export const validate_prisma_correct = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<void> => {
-  const componentEvent: AutoBeDatabaseComponentEvent =
+  const components: AutoBeDatabaseComponent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
@@ -32,15 +32,15 @@ export const validate_prisma_correct = async (props: {
       project: props.project,
       file: "prisma.schema.json",
     })) ?? (await validate_prisma_schema(props));
-  const reviewEvents: AutoBeDatabaseReviewEvent[] =
+  const reviewEvents: AutoBeDatabaseSchemaReviewEvent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
       file: "prisma.review.json",
-    })) ?? (await validate_prisma_review(props));
+    })) ?? (await validate_prisma_schema_review(props));
 
   const application: AutoBeDatabase.IApplication = {
-    files: componentEvent.components.map((comp) => ({
+    files: components.map((comp) => ({
       filename: comp.filename,
       namespace: comp.namespace,
       models: writeEvents

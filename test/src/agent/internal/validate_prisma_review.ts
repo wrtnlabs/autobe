@@ -1,23 +1,23 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { orchestratePrismaReview } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaReview";
+import { orchestratePrismaSchemaReview } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchemaReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeDatabase,
-  AutoBeDatabaseComponentEvent,
-  AutoBeDatabaseReviewEvent,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseSchemaEvent,
+  AutoBeDatabaseSchemaReviewEvent,
   AutoBeExampleProject,
 } from "@autobe/interface";
 
 import { validate_prisma_component } from "./validate_prisma_component";
 import { validate_prisma_schema } from "./validate_prisma_schema";
 
-export const validate_prisma_review = async (props: {
+export const validate_prisma_schema_review = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<AutoBeDatabaseReviewEvent[]> => {
-  const component: AutoBeDatabaseComponentEvent =
+}): Promise<AutoBeDatabaseSchemaReviewEvent[]> => {
+  const components: AutoBeDatabaseComponent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
@@ -30,19 +30,20 @@ export const validate_prisma_review = async (props: {
       file: "prisma.schema.json",
     })) ?? (await validate_prisma_schema(props));
 
-  const events: AutoBeDatabaseReviewEvent[] = await orchestratePrismaReview(
-    props.agent.getContext(),
-    {
-      files: component.components.map((c) => ({
-        filename: c.filename,
-        namespace: c.namespace,
-        models: writeEvents
-          .filter((we) => we.namespace === c.namespace)
-          .map((we) => we.model),
-      })),
-    } satisfies AutoBeDatabase.IApplication,
-    component.components,
-  );
+  const events: AutoBeDatabaseSchemaReviewEvent[] =
+    await orchestratePrismaSchemaReview(
+      props.agent.getContext(),
+      {
+        files: components.map((c) => ({
+          filename: c.filename,
+          namespace: c.namespace,
+          models: writeEvents
+            .filter((we) => we.namespace === c.namespace)
+            .map((we) => we.model),
+        })),
+      } satisfies AutoBeDatabase.IApplication,
+      components,
+    );
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
