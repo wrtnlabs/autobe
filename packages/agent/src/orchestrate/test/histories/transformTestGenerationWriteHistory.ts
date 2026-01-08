@@ -5,6 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { AutoBeTestGenerateProgrammer } from "../programmers/AutoBeTestGenerateProgrammer";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
@@ -92,6 +93,14 @@ export async function transformTestGenerateWriteHistory(
 
           \`\`\`json
           ${JSON.stringify(props.artifacts.e2e)}
+          \`\`\`
+
+          ## External Definitions
+          
+          Here is the external declaration files (d.ts) you can reference.
+
+          \`\`\`json
+          ${JSON.stringify(await getTestExternalDeclarations(ctx))}
           \`\`\`
 
           ## Template Code

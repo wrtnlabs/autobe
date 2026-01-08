@@ -159,6 +159,7 @@ export async function transformTestOperationWriteHistory(
             .join("\n\n")}
 
           ### Generation Functions
+          
           Use these to create test resources. They handle data preparation and API calls internally.
           **Pass actor-specific connection** (e.g., \`userConnection\`), NOT base \`connection\`.
 
