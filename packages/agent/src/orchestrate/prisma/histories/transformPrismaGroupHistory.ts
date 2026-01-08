@@ -58,7 +58,6 @@ export const transformPrismaGroupHistory = (
 
       **MANDATORY STEPS**:
       1. **FIRST**: Call \`getAnalysisFiles\` to load requirement documents
-         - If you received a table of contents file → Load ALL requirement files listed in it
          - NEVER skip this step - Requirements are the ONLY valid source for domain identification
       2. **THEN**: Analyze the LOADED requirements to identify all business domains and entities
       3. **FINALLY**: Generate complete component groups covering ALL domains found in requirements

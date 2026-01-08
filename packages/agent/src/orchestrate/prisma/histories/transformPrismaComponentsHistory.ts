@@ -125,7 +125,6 @@ export const transformPrismaComponentsHistory = (
       **MANDATORY STEPS**:
       
       1. **FIRST**: Call \`getAnalysisFiles\` to load requirement documents
-         - If you received a table of contents file → Load ALL requirement files listed in it
          - NEVER skip this step - Requirements are the ONLY valid source for entity identification
       2. **THEN**: Analyze the LOADED requirements to identify all entities belonging to this component
       3. **FINALLY**: Generate complete table definitions covering ALL entities found in requirements
