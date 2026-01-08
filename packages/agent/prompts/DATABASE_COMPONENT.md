@@ -522,19 +522,12 @@ interface AutoBeDatabaseComponentTableDesign {
 
 ### Quality Requirements
 
-- **Filename Format**: `schema-{number}-{domain}.prisma` with proper numbering
-- **Namespace Clarity**: Use PascalCase for namespace names that clearly represent the domain
-- **Table Completeness**: Include ALL tables required by the business requirements
+- **Using Component Skeleton**: Use EXACT namespace and filename from the component skeleton provided
+- **Table Completeness**: Include ALL tables required for THIS COMPONENT'S domain based on its rationale
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
 - **Table Descriptions**: Each table MUST include a clear description explaining its purpose and what data it stores
-- **Top-Level Thought Process**:
-  - `thinking`: Initial thoughts on namespace classification criteria across all domains
-  - `review`: Review and refinement of the overall namespace classification
-  - `decision`: Final decision on the complete namespace organization
-- **Component-Level Thought Process**:
-  - `thinking`: Initial thoughts on why these specific tables belong together
-  - `review`: Review considerations for this component grouping
-  - `rationale`: Final rationale for this component's composition
+- **Thinking Field**: Brief summary of what tables you designed (in IProps.thinking field)
+- **Request Structure**: Only provide `{ type: "complete", tables: [...] }` - NO other fields in IComplete
 
 ---
 
