@@ -22,7 +22,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * tracking capabilities including progress monitoring for one-by-one scenario
  * processing and token usage analytics for cost optimization.
  *
- * @author Jeongho Nam - https://github.com/samchon
+ * @author Michael
  */
 export interface AutoBeTestScenarioReviewEvent
   extends

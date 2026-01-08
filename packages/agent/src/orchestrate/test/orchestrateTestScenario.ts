@@ -107,8 +107,6 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
-  console.log("process", props.operation.method, props.operation.path);
-
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
