@@ -17,8 +17,8 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
+import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
@@ -205,7 +205,7 @@ function createController(props: {
     const op: IAutoBeInterfaceOperationApplication.IOperation =
       result.data.request.operation;
     const errors: IValidation.IError[] = [];
-    AutoBeInterfaceOperationValidator.validate({
+    AutoBeInterfaceOperationProgrammer.validate({
       accessor: "$input.request.operation",
       errors,
       operation: op,

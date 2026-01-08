@@ -17,8 +17,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
+import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
-import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
 
 export async function orchestrateInterfaceAuthorization(
   ctx: AutoBeContext,
@@ -148,7 +148,7 @@ function createController(props: {
 
     const errors: IValidation.IError[] = [];
     result.data.request.operations.forEach((op, i) => {
-      AutoBeInterfaceOperationValidator.validate({
+      AutoBeInterfaceOperationProgrammer.validate({
         accessor: `$input.request.operations[${i}]`,
         errors,
         operation: op,

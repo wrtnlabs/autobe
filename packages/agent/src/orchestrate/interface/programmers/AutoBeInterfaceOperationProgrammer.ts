@@ -3,9 +3,9 @@ import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
+import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 
-export namespace AutoBeInterfaceOperationValidator {
+export namespace AutoBeInterfaceOperationProgrammer {
   export const validate = (props: {
     errors: IValidation.IError[];
     accessor: string;
