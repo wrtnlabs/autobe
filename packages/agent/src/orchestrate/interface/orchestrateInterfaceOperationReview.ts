@@ -152,7 +152,7 @@ function createReviewController(props: {
     const errors: IValidation.IError[] = [];
     if (result.data.request.content !== null)
       AutoBeInterfaceOperationValidator.validate({
-        path: "$input.request.content",
+        accessor: "$input.request.content",
         operation: {
           ...props.operation,
           description: result.data.request.content.description,

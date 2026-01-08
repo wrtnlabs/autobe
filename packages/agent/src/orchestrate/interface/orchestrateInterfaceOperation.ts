@@ -206,7 +206,7 @@ function createController(props: {
       result.data.request.operation;
     const errors: IValidation.IError[] = [];
     AutoBeInterfaceOperationValidator.validate({
-      path: "$input.request.operation",
+      accessor: "$input.request.operation",
       errors,
       operation: op,
     });
@@ -220,12 +220,12 @@ function createController(props: {
           path: `$input.request.operation.authorizationActors[${j}]`,
           expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
           description: StringUtil.trim`
-              Actor "${actor}" is not defined in the roles list.
+            Actor "${actor}" is not defined in the roles list.
 
-              Please select one of them below, or do not define (\`null\`):
+            Please select one of them below, or do not define (\`null\`):
 
-              ${props.actors.map((role) => `- ${role}`).join("\n")}
-            `,
+            ${props.actors.map((role) => `- ${role}`).join("\n")}
+          `,
           value: actor,
         });
       });

@@ -18,6 +18,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
+import { AutoBeInterfaceOperationValidator } from "./utils/AutoBeInterfaceOperationValidator";
 
 export async function orchestrateInterfaceAuthorization(
   ctx: AutoBeContext,
@@ -147,16 +148,20 @@ function createController(props: {
 
     const errors: IValidation.IError[] = [];
     result.data.request.operations.forEach((op, i) => {
-      // validate authorizationActor
+      AutoBeInterfaceOperationValidator.validate({
+        accessor: `$input.request.operations[${i}]`,
+        errors,
+        operation: op,
+      });
       if (op.authorizationActor !== null) {
         op.authorizationActor = props.actor.name;
       }
+      if (op.authorizationType === null) return;
 
       // validate responseBody.typeName -> must be ~.IAuthorized
-      if (op.authorizationType === null) return;
-      else if (op.responseBody === null)
+      if (op.responseBody === null)
         errors.push({
-          path: `$input.request.operations.${i}.responseBody`,
+          path: `$input.request.operations[${i}].responseBody`,
           expected:
             "Response body with I{RoleName(PascalCase)}.IAuthorized type is required",
           value: op.responseBody,
@@ -168,9 +173,9 @@ function createController(props: {
             description must be a detailed description of the response body.
           `,
         });
-      else if (!op.responseBody.typeName.endsWith(".IAuthorized"))
+      else if (op.responseBody.typeName.endsWith(".IAuthorized") === false)
         errors.push({
-          path: `$input.request.operations.${i}.responseBody.typeName`,
+          path: `$input.request.operations[${i}].responseBody.typeName`,
           expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
           value: op.responseBody?.typeName,
           description: StringUtil.trim`
@@ -182,6 +187,46 @@ function createController(props: {
             The actor name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).
           `,
         });
+
+      // validate requestBody.typeName
+      if (op.authorizationType !== "refresh") {
+        const expected: string =
+          op.authorizationType === "login" ? "ILogin" : "IJoin";
+        if (op.requestBody === null)
+          errors.push({
+            path: `$input.request.operations[${i}].requestBody`,
+            expected: "Request body with appropriate type is required",
+            value: `AutoBeOpenApi.IRequestBody<\`\${string}${expected}\`>`,
+            description: StringUtil.trim`
+              Request body is required for authentication ${op.authorizationType} operation.
+
+              Define it with typeName and description fields.
+
+              Note that, the typeName must be end with ".${expected}" 
+              
+              (e.g., IUser.${expected}, IAdmin.${expected}).
+          `,
+          });
+        else if (op.requestBody.typeName.endsWith(`.${expected}`) === false)
+          errors.push({
+            path: `$input.request.operations[${i}].requestBody.typeName`,
+            expected: `Type name must be I{RoleName(PascalCase)}.${expected}`,
+            value: op.requestBody?.typeName,
+            description: StringUtil.trim`
+              Wrong request body type name: ${op.requestBody?.typeName}
+
+              For authentication ${op.authorizationType} operation, 
+              the request body type name must follow the convention 
+              "I{RoleName}.${expected}".
+
+              This standardized naming convention ensures consistency across all authentication 
+              endpoints and clearly identifies ${op.authorizationType} request types.
+              The actor name should be in PascalCase format 
+              
+              (e.g., IUser.${expected}, IAdmin.${expected}, ISeller.${expected}).
+            `,
+          });
+      }
     });
 
     // validate authorization types' existence
