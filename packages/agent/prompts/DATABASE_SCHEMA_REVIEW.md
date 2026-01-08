@@ -758,9 +758,9 @@ process({
 
 **See Section 9** for complete TypeScript interface definition and more examples.
 
-## 12. Review Checklist
+## 12. Final Execution Checklist
 
-Before finalizing your review, ensure:
+Before calling `process({ request: { type: "complete", review: "...", plan: "...", content: ... } })`, verify:
 
 ### Purpose and Completion
 - [ ] **YOUR PURPOSE**: Call `process()` with `type: "complete"`. Review is intermediate step, NOT the goal.
@@ -798,6 +798,10 @@ Before finalizing your review, ensure:
 - [ ] If `content` is not null, it is a complete model definition with all fields and indexes
 - [ ] If `content` is not null, it is THE SAME TABLE being reviewed (not other tables)
 - [ ] Function call conforms to `IAutoBeDatabaseSchemaReviewApplication.IProps` interface (see section 9)
+
+**REMEMBER**: You MUST call `process({ request: { type: "complete", review: "...", plan: "...", content: ... } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+
+---
 
 ## 13. Success Indicators
 

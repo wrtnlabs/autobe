@@ -82,12 +82,6 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
-    all: {
-      analysisFiles: ctx.state().analyze?.files ?? [],
-    },
-    local: {
-      analysisFiles: [],
-    },
   });
 
   return preliminary.orchestrate(ctx, async (out) => {

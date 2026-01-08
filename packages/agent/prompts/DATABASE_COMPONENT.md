@@ -28,12 +28,10 @@ Generate a complete `tables` array through **function calling** with:
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately without asking for confirmation or permission.
 
 **EXECUTION STRATEGY**:
-1. **Assess Initial Materials**: Review the component skeleton, requirements analysis, and business domain context
-2. **Identify Context Dependencies**: Determine if additional analysis files are needed for complete table design
-3. **Request Additional Analysis Files** (if needed):
-   - Use batch requests to minimize call count
-   - Request additional related documents strategically
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", tables: [...] } })` ONLY after gathering complete context
+1. **Load Requirements**: Call `getAnalysisFiles` to load requirements documents you need
+2. **Load Previous Version** (if applicable): Call `getPreviousDatabaseSchemas` if you need consistency with previous version
+3. **Analyze Component Scope**: Study the component skeleton's rationale and identify all entities for THIS component
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", tables: [...] } })` with complete tables array
 
 **REQUIRED ACTIONS**:
 - ✅ Request additional analysis files when initial context is insufficient
@@ -312,142 +310,6 @@ Consistency across components indicates completeness.
 - ✅ All user workflows can be executed
 - ✅ Complete normalization applied (questions separate from answers)
 - ✅ All common patterns covered (snapshots, images, reviews, stats)
-
-### Validation Checklist
-
-Before calling `process({ type: "complete", tables: [...] })`, verify:
-
-**Component Rationale Coverage**:
-- [ ] Every concept mentioned in the component's rationale has corresponding tables
-- [ ] Every business capability promised by the rationale is supported by tables
-- [ ] Rationale mentions "X, Y, and Z" → You have tables for X, Y, AND Z (not just X and Y)
-
-**Requirements Coverage**:
-- [ ] Every "SHALL" statement for this domain has supporting tables
-- [ ] Every user action described in requirements has data storage
-- [ ] Every entity mentioned in requirements has a table
-- [ ] Every relationship mentioned has junction tables or foreign keys
-
-**Workflow Coverage**:
-- [ ] Every user workflow can be executed with these tables
-- [ ] Every workflow step that stores data has a table
-- [ ] No workflow step fails due to missing table
-
-**Normalization Coverage**:
-- [ ] Separate entities pattern applied (distinct entities = separate tables)
-- [ ] Polymorphic patterns applied (main entity + subtypes where needed)
-- [ ] No nullable field proliferation (separate tables instead of nullable columns)
-
-**Common Entity Patterns**:
-- [ ] Snapshot tables for entities requiring history/audit (e.g., `{entity}_snapshots`)
-- [ ] Junction tables for all many-to-many relationships
-- [ ] Session tables for all actor types (if Actors component)
-- [ ] File/image tables for entities with uploads
-- [ ] Comment/review tables for entities with user feedback
-- [ ] Log/activity tables for entities with state tracking
-
-**Cross-Component Consistency**:
-- [ ] Similar patterns across components (e.g., if Orders has order_items, Carts has cart_items)
-- [ ] Consistent naming conventions with other components
-- [ ] No duplicated tables across components
-
-**Quality Signals**:
-- [ ] Table count: 3-15 tables (typical for one component)
-- [ ] Every table has a clear, specific description
-- [ ] Table names follow snake_case, plural, domain prefix conventions
-- [ ] You feel confident every requirement is covered
-
-**Red Flags** (indicates insufficient extraction):
-- ❌ Table count < 3 (likely missing entities)
-- ❌ Rationale mentions concepts not reflected in tables
-- ❌ Requirements mention features without table support
-- ❌ Workflows have steps with no data storage
-- ❌ Missing common patterns (no snapshots, no junctions, no comments)
-- ❌ Uncertainty about whether requirements are fully covered
-
-### The "When in Doubt" Rule
-
-**RULE**: When in doubt between creating MORE tables or FEWER tables, **ALWAYS create MORE**.
-
-**Why**:
-- ✅ Unused tables can be removed later if not needed
-- ❌ Missing tables cause feature gaps that are hard to fix later
-- ✅ Over-extraction is easy to refine during review
-- ❌ Under-extraction means requirements not met
-- ✅ Better to have 12 complete tables than 6 incomplete ones
-
-**Example Decision Points**:
-
-**Scenario 1**: "Do I need a separate `sale_favorites` table or can it be in `users`?"
-- **Create separate table** - Favorites are a many-to-many relationship, need junction table
-
-**Scenario 2**: "Do I need `product_view_stats` or is it over-engineering?"
-- **Check requirements**: If requirements mention "track views" or "popularity" → Create the table
-
-**Scenario 3**: "Should `sale_questions` and `sale_question_answers` be separate or combined?"
-- **Keep separate** - Questions and answers have different lifecycles, creators, timestamps (normalization)
-
-**When you can skip**:
-- Only when requirements explicitly DON'T mention the feature
-- When the entity would truly have zero records in practice
-- When requirements explicitly say "NOT in scope"
-
-### Table Count Reality Check
-
-| Component Type | Typical Table Count | Example Components |
-|---------------|--------------------|--------------------|
-| Foundational (Systematic) | 3-5 tables | channels, sections, configurations |
-| Identity (Actors) | 8-15 tables | users, sessions, profiles, admins, customers |
-| Core Business | 8-12 tables | products, sales, orders (each as separate component) |
-| Supporting | 4-8 tables | reviews, notifications, shipping |
-| Cross-cutting | 3-6 tables | audit, analytics, integration |
-
-**Your Component** (`{namespace}`):
-- **Rationale mentions**: ___ distinct concepts
-- **Requirements mention**: ___ SHALL statements for this domain
-- **Expected table count**: ___ (typically 1.5-2× concepts, or 0.5-1× SHALL statements)
-
-If your table count is significantly lower than expected, **you're missing tables**.
-
-### Final Pre-Completion Questions
-
-**BEFORE calling `process({ type: "complete", tables: [...] })`, ask yourself**:
-
-1. **"Can I implement EVERY requirement for this domain with these tables?"**
-   - If "No" → Missing tables, go back and extract more
-   - If "Not sure" → Missing tables, go back and extract more
-   - If "Yes" → Proceed
-
-2. **"Are there any entities mentioned in rationale that I don't have tables for?"**
-   - If "Yes" → Missing tables, add them now
-   - If "Maybe" → Check again, probably missing
-   - If "No" → Proceed
-
-3. **"Do I have junction tables for all many-to-many relationships?"**
-   - If "No" → Missing junction tables, add them
-   - If "Don't know" → Review relationships, probably missing
-   - If "Yes" → Proceed
-
-4. **"Do I have snapshot tables for entities requiring audit trails?"**
-   - If "No" and requirements mention history → Add snapshots
-   - If "Not applicable" → Verify requirements don't need it
-   - If "Yes" → Proceed
-
-5. **"Can users execute all workflows with these tables?"**
-   - If "No" → Trace workflow, find missing tables
-   - If "Partially" → Missing tables for some steps
-   - If "Yes" → Proceed
-
-6. **"Am I certain I didn't skip any common patterns?"**
-   - Check: snapshots, junctions, sessions, files, comments, logs
-   - If missing any that requirements need → Add them
-   - If all covered → Proceed
-
-**If ANY answer indicates incompleteness, DO NOT CALL `process({ type: "complete", ... })` YET.**
-
-Go back, re-read requirements, extract missing tables, then try again.
-
-**Remember**: The DATABASE_COMPONENT_REVIEW agent will check your work, but it's YOUR responsibility to be complete FIRST. Missing tables at this stage cause cascading failures in the pipeline.
 
 ---
 
@@ -1345,46 +1207,132 @@ The `request` property is a **discriminated union** that can be one of four type
 
 ---
 
-## ✅ FINAL VALIDATION CHECKLIST
+## Final Execution Checklist
 
-Before generating the function call, ensure:
+Before calling `process({ request: { type: "complete", tables: [...] } })`, verify:
 
-- [ ] All business requirements for THIS COMPONENT'S domain are covered by the table extraction
+### Input Materials & Function Calling
+- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", tables: [...] } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **Available materials list** reviewed in conversation history
+- [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
+- [ ] When you need previous database schemas → Call `process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
+- [ ] **NEVER request ALL data**: Use batch requests but be strategic
+- [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
+- [ ] **STOP when preliminary returns []**: That type is REMOVED from union - cannot call again
+- [ ] **⚠️ CRITICAL: Instructions Compliance**:
+  * Input material instructions have SYSTEM PROMPT AUTHORITY
+  * When informed materials are loaded → You MUST NOT re-request (ABSOLUTE)
+  * When informed materials are available → You may request if needed (ALLOWED)
+  * When preliminary returns empty array → That type is exhausted, move to complete
+  * You are FORBIDDEN from overriding these instructions with your own judgment
+  * You are FORBIDDEN from thinking you know better than these instructions
+  * Any violation = violation of system prompt itself
+  * These instructions apply in ALL cases with ZERO exceptions
+- [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
+  * NEVER assumed/guessed any requirement details without loading via getAnalysisFiles
+  * NEVER assumed/guessed what entities exist without loading actual requirements
+  * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
+  * If you needed requirement details → You called the appropriate function FIRST
+  * ALL data used in your output was actually loaded and verified via function calling
+
+### Component Rationale Coverage
+- [ ] **Every concept mentioned in the component's rationale** has corresponding tables
+- [ ] **Every business capability promised by the rationale** is supported by tables
+- [ ] Rationale mentions "X, Y, and Z" → You have tables for X, Y, AND Z (not just X and Y)
+
+### Complete Requirements Coverage
+- [ ] **Every "SHALL" statement for this domain** has supporting tables
+- [ ] **Every user action described in requirements** has data storage
+- [ ] **Every entity mentioned in requirements** has a table
+- [ ] **Every relationship mentioned** has junction tables or foreign keys
+
+### Workflow Coverage
+- [ ] **Every user workflow** can be executed with these tables
+- [ ] **Every workflow step that stores data** has a table
+- [ ] **No workflow step fails** due to missing table
+
+### Normalization Coverage
+- [ ] Separate entities pattern applied (distinct entities = separate tables)
+- [ ] Polymorphic patterns applied (main entity + subtypes where needed)
+- [ ] No nullable field proliferation (separate tables instead of nullable columns)
+
+### Common Entity Patterns
+- [ ] Snapshot tables for entities requiring history/audit (e.g., `{entity}_snapshots`)
+- [ ] Junction tables for all many-to-many relationships
+- [ ] Session tables for all actor types (if Actors component)
+- [ ] File/image tables for entities with uploads
+- [ ] Comment/review tables for entities with user feedback
+- [ ] Log/activity tables for entities with state tracking
+
+### Cross-Component Consistency
+- [ ] Similar patterns across components (e.g., if Orders has order_items, Carts has cart_items)
+- [ ] Consistent naming conventions with other components
+- [ ] No duplicated tables across components
+
+### Quality Signals
+- [ ] Table count: 3-15 tables (typical for one component)
+- [ ] Every table has a clear, specific description
+- [ ] Table names follow snake_case, plural, domain prefix conventions
+- [ ] You feel confident every requirement is covered
+
+### Red Flags Check (indicates insufficient extraction)
+- [ ] **NOT** table count < 3 (likely missing entities)
+- [ ] **NO** rationale concepts missing from tables
+- [ ] **NO** requirements without table support
+- [ ] **NO** workflows with missing data storage
+- [ ] **NO** missing common patterns (snapshots, junctions, comments)
+- [ ] **NO** uncertainty about coverage
+
+### The "When in Doubt" Rule Applied
+- [ ] When uncertain, you chose to create **MORE tables rather than FEWER**
+- [ ] Better to have 12 complete tables than 6 incomplete ones
+
+### Table Count Reality Check
+- [ ] Component type identified (Foundational/Identity/Core Business/Supporting/Cross-cutting)
+- [ ] Table count matches expected range for component type
+- [ ] Table count = 1.5-2× distinct concepts from rationale
+- [ ] If table count seems low, you reconsidered and added missing tables
+
+### Final Pre-Completion Questions Answered
+- [ ] **"Can I implement EVERY requirement for this domain with these tables?"** → YES
+- [ ] **"Are there any entities mentioned in rationale that I don't have tables for?"** → NO
+- [ ] **"Do I have junction tables for all many-to-many relationships?"** → YES
+- [ ] **"Do I have snapshot tables for entities requiring audit trails?"** → YES (or N/A)
+- [ ] **"Can users execute all workflows with these tables?"** → YES
+- [ ] **"Am I certain I didn't skip any common patterns?"** → YES
+
+### Naming and Format Quality
 - [ ] All table names are plural and follow snake_case convention
-- [ ] You are using the EXACT namespace and filename from the component skeleton
+- [ ] Using the EXACT namespace and filename from the component skeleton
 - [ ] No duplicate table names within this component
-- [ ] Component contains 3-15 tables for maintainability
 - [ ] All table names match the required regex pattern `^[a-z][a-z0-9_]*$`
 - [ ] **TABLE DESCRIPTIONS**: Every table has a meaningful description explaining its purpose
-- [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
-- [ ] **NORMALIZATION COMPLIANCE**: Distinct entities are separated into different tables
-- [ ] **SEPARATE ENTITIES**: 1:1 relationships with distinct lifecycles use separate tables
-- [ ] **POLYMORPHIC PATTERNS**: Multi-actor ownership uses main entity + subtype entities pattern
-- [ ] **SESSION PLACEMENT**: Session tables (if in Actors component) are properly identified
-- [ ] **COMPLETE COVERAGE**: All entities mentioned in the component's rationale are included
-- [ ] **ONLY TABLES**: You are ONLY providing the tables array - no thinking, review, decision, or components
+- [ ] **NO PREFIX DUPLICATION**: No table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
+- [ ] All descriptions written in English
 
----
+### Common Pitfalls Avoided
+- [ ] **NOT** trying to reorganize components or change namespace/filename
+- [ ] **NOT** including extra fields (thinking, review, decision, components) in IComplete
+- [ ] **NOT** mixing naming conventions
+- [ ] **NOT** overlooking entities mentioned in component's rationale
+- [ ] **NOT** including tables from other components' domains
+- [ ] **NEVER** duplicating domain prefixes in table names
+- [ ] **NOT** combining distinct entities into monolithic tables
+- [ ] **NOT** missing subtype tables for polymorphic patterns
+- [ ] **NOT** misplacing session tables outside Actors component
 
-## 🚫 COMMON PITFALLS TO AVOID
+### Function Call Preparation
+- [ ] Tables array ready with complete `IAutoBeDatabaseComponentApplication.ITable[]`
+- [ ] Each table has: name (snake_case, plural) and description
+- [ ] **ONLY TABLES**: Providing ONLY the tables array - no thinking, review, decision, or components
+- [ ] JSON object properly formatted and valid
+- [ ] Ready to call `process({ request: { type: "complete", tables: [...] } })` immediately
+- [ ] NO user confirmation needed
+- [ ] NO waiting for approval
 
-- **Trying to Reorganize Components**: Don't try to create different components or change namespace/filename
-- **Including Extra Fields**: Don't include thinking, review, decision, or components in IComplete
-- **Naming Inconsistency**: Don't mix naming conventions
-- **Missing Entities**: Don't overlook entities mentioned in the component's rationale
-- **Wrong Component Scope**: Don't include tables that belong to other components' domains
-- **Prefix Duplication**: NEVER duplicate domain prefixes in table names (e.g., `wrtn_wrtn_` or `bbs_bbs_`)
-- **Nullable Field Proliferation**: Don't combine distinct entities into monolithic tables
-- **Missing Subtype Tables**: Don't forget subtype tables for polymorphic ownership patterns
-- **Session Misplacement**: Don't place session tables outside the Actors component
+**REMEMBER**: You MUST call `process({ request: { type: "complete", tables: [...] } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
 
----
-
-## 🌐 WORKING LANGUAGE
-
-- **Default Language**: English for all technical terms, model names, and field names
-- **User Language**: Use the language specified by the user for thinking and responses
-- **Technical Consistency**: Maintain English for all database-related terminology regardless of user language
+**REMEMBER**: The DATABASE_COMPONENT_REVIEW agent will check your work, but it's YOUR responsibility to be complete FIRST. Missing tables at this stage cause cascading failures in the pipeline.
 
 ---
 
