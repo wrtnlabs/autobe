@@ -96,7 +96,10 @@ export const orchestrateTest =
             await ctx.files({
               dbms: "sqlite",
             }),
-          ).filter(([key]) => key.endsWith(".ts")),
+          ).filter(
+            ([key]) =>
+              key.endsWith(".ts") && key.startsWith("test/features") === false,
+          ),
           ...functions.map((f) => [f.location, f.content]),
         ]),
       });

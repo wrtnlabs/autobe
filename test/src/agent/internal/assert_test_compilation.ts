@@ -18,16 +18,21 @@ export const assert_test_compilation = async (props: {
 }): Promise<IAutoBeTypeScriptCompileResult> => {
   const ctx: AutoBeContext = props.agent.getContext();
   const compiler: IAutoBeCompiler = await ctx.compiler();
+  const files: Record<string, string> = Object.fromEntries([
+    ...Object.entries(
+      await ctx.files({
+        dbms: "sqlite",
+      }),
+    ).filter(
+      ([key]) =>
+        key.endsWith(".ts") && key.startsWith("test/features") === false,
+    ),
+    ...props.functions.map((f) => [f.location, f.content]),
+  ]);
+
   const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
-      files: Object.fromEntries([
-        ...Object.entries(
-          await ctx.files({
-            dbms: "sqlite",
-          }),
-        ).filter(([key]) => key.endsWith(".ts")),
-        ...props.functions.map((f) => [f.location, f.content]),
-      ]),
+      files,
     });
   if (result.type === "success") return result;
 
@@ -40,10 +45,7 @@ export const assert_test_compilation = async (props: {
         props.project
       }/test-${props.type}-failure`,
       files: {
-        ...(await props.agent.getFiles()),
-        ...Object.fromEntries(
-          props.functions.map((f) => [f.location, f.content]),
-        ),
+        ...files,
         "pnpm-workspace.yaml": "",
       },
     });
