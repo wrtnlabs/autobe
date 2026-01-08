@@ -18,9 +18,11 @@ export interface AutoBeDatabaseComponentTableUpdate {
   type: "update";
 
   /**
-   * Reason for this update.
+   * Brief, concise reason for this update.
    *
    * Explain what naming issue this fixes and why the new name is better.
+   *
+   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    *
    * @example
    *   "Table name 'orderCancel' violates snake_case convention and
@@ -43,9 +45,11 @@ export interface AutoBeDatabaseComponentTableUpdate {
   updated: string & SnakeCasePattern;
 
   /**
-   * Updated description of what this table stores.
+   * Brief, concise updated description of what this table stores.
    *
    * Provide a clear description for the renamed table.
+   *
+   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    *
    * @example
    *   "Stores order cancellation records including cancellation reason,

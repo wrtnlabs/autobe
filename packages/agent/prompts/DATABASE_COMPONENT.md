@@ -707,7 +707,7 @@ Each table must follow the `AutoBeDatabaseComponentTableDesign` structure:
 ```typescript
 interface AutoBeDatabaseComponentTableDesign {
   name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;  // snake_case, plural
-  description: string;  // Why this table is needed and what it stores
+  description: string;  // Brief, concise explanation of why this table is needed and what it stores
 }
 ```
 
@@ -716,7 +716,7 @@ interface AutoBeDatabaseComponentTableDesign {
 - **Using Component Skeleton**: Use EXACT namespace and filename from the component skeleton provided
 - **Table Completeness**: Include ALL tables required for THIS COMPONENT'S domain based on its rationale
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
-- **Table Descriptions**: Each table MUST include a clear description explaining its purpose and what data it stores
+- **Table Descriptions**: Each table MUST include a clear and **concise** description explaining its purpose and what data it stores (keep it brief - one or two sentences maximum)
 - **Thinking Field**: Brief summary of what tables you designed (in IProps.thinking field)
 - **Request Structure**: Only provide `{ type: "complete", tables: [...] }` - NO other fields in IComplete
 

@@ -17,15 +17,7 @@ import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
  */
 export interface AutoBeDatabaseComponentTableDesign {
   /**
-   * Name of the database table.
-   *
-   * Must follow snake_case naming convention with appropriate domain prefix.
-   * Examples: `shopping_customers`, `bbs_articles`, `order_items`
-   */
-  name: string & SnakeCasePattern;
-
-  /**
-   * Description of what this table stores and why it's needed.
+   * Brief, concise description of what this table stores and why it's needed.
    *
    * Should explain:
    *
@@ -33,11 +25,21 @@ export interface AutoBeDatabaseComponentTableDesign {
    * - What data it stores
    * - Why this table is necessary for the component's domain
    *
-   * **IMPORTANT**: Description must be written in English.
+   * **IMPORTANT**:
+   * - Keep it **concise** - one or two sentences maximum
+   * - Description must be written in English
    *
    * @example
    *   "Stores customer profile information including authentication
    *   credentials, contact details, and preferences for the shopping platform."
    */
   description: string;
+
+  /**
+   * Name of the database table.
+   *
+   * Must follow snake_case naming convention with appropriate domain prefix.
+   * Examples: `shopping_customers`, `bbs_articles`, `order_items`
+   */
+  name: string & SnakeCasePattern;
 }

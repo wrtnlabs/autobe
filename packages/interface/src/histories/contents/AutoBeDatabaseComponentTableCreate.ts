@@ -18,10 +18,12 @@ export interface AutoBeDatabaseComponentTableCreate {
   type: "create";
 
   /**
-   * Reason for creating this table.
+   * Brief, concise reason for creating this table.
    *
    * Explain which requirement this table fulfills and why it was missing from
    * the initial generation.
+   *
+   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    *
    * @example
    *   "Requirement 3.2 specifies order cancellation tracking, but no
@@ -37,9 +39,11 @@ export interface AutoBeDatabaseComponentTableCreate {
   table: string & SnakeCasePattern;
 
   /**
-   * Description of what this table stores.
+   * Brief, concise description of what this table stores.
    *
    * Explain the business purpose and what data this table will contain.
+   *
+   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    *
    * @example
    *   "Stores order cancellation records including cancellation reason,

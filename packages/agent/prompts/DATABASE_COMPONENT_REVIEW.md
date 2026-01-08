@@ -313,9 +313,9 @@ Use when a table is needed to fulfill requirements but doesn't exist:
 ```typescript
 {
   type: "create",
-  reason: "Requirement 3.2 specifies order cancellation tracking, but no table exists",
+  reason: "Requirement 3.2 specifies order cancellation tracking, but no table exists",  // Keep concise
   table: "shopping_order_cancellations",
-  description: "Stores cancellation records with reasons, timestamps, and refund status"
+  description: "Stores cancellation records with reasons, timestamps, and refund status"  // Keep concise
 }
 ```
 
@@ -331,10 +331,10 @@ Use when a table has naming convention issues:
 ```typescript
 {
   type: "update",
-  reason: "Table name violates snake_case convention and missing domain prefix",
+  reason: "Table name violates snake_case convention and missing domain prefix",  // Keep concise
   original: "orderCancel",
   updated: "shopping_order_cancellations",
-  description: "Stores cancellation records with reasons, timestamps, and refund status"
+  description: "Stores cancellation records with reasons, timestamps, and refund status"  // Keep concise
 }
 ```
 
@@ -351,7 +351,7 @@ Use when a table should be removed from this component:
 ```typescript
 {
   type: "erase",
-  reason: "Table belongs to Actors component, not Orders - contains customer identity data",
+  reason: "Table belongs to Actors component, not Orders - contains customer identity data",  // Keep concise
   table: "shopping_customers"
 }
 ```
@@ -566,8 +566,8 @@ A successful review demonstrates:
 
 1. **Requirements Coverage**: Every feature has corresponding tables
 2. **Thorough Analysis**: No implicit data storage needs missed
-3. **Clear Justification**: Each revision has a requirement-based reason
-4. **Proper Descriptions**: Each created/updated table has a clear description
+3. **Clear Justification**: Each revision has a requirement-based reason (keep concise - one or two sentences maximum)
+4. **Proper Descriptions**: Each created/updated table has a clear and concise description (keep brief - one or two sentences maximum)
 5. **Correct Operations**: Create, update, erase used appropriately
 
 ---
@@ -642,10 +642,10 @@ Before calling `process({ request: { type: "complete", review: "...", revises: [
 
 ### Review Quality
 - [ ] Review field contains comprehensive analysis of the component
-- [ ] Each revision has clear, requirement-based reason
-- [ ] Each CREATE revision has meaningful table description
-- [ ] Each UPDATE revision specifies both original and updated names
-- [ ] Each ERASE revision explains why table doesn't belong
+- [ ] Each revision has clear, requirement-based **concise** reason (one or two sentences maximum)
+- [ ] Each CREATE revision has meaningful **concise** table description (one or two sentences maximum)
+- [ ] Each UPDATE revision specifies both original and updated names with **concise** description (one or two sentences maximum)
+- [ ] Each ERASE revision explains why table doesn't belong with **concise** reason (one or two sentences maximum)
 - [ ] All table names follow snake_case, plural, domain prefix conventions
 - [ ] All descriptions written in English
 

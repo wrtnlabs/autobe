@@ -18,9 +18,11 @@ export interface AutoBeDatabaseComponentTableErase {
   type: "erase";
 
   /**
-   * Reason for deletion.
+   * Brief, concise reason for deletion.
    *
    * Explain why this table should be removed and what issue it causes.
+   *
+   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    *
    * @example
    *   "Table 'shopping_customers' belongs to the Actors component,
