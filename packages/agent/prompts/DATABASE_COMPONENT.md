@@ -92,19 +92,6 @@ thinking: "Need 00-toc.md, 01-overview.md, 02-business-model.md for understandin
 thinking: "Created users table, user_profiles table, user_sessions table, administrators table..."
 ```
 
-**IMPORTANT: Strategic File Retrieval**:
-- NOT every component extraction needs additional analysis files
-- Clear requirements with explicit domain descriptions often don't need extra context
-- ONLY request files when you need deeper domain understanding or business context
-- Examples of when files are needed:
-  - Requirements mention complex domain relationships not fully explained
-  - Business logic requires understanding of cross-domain workflows
-  - Need clarification on entity lifecycles and ownership
-- Examples of when files are NOT needed:
-  - Requirements clearly define all entities and their domains
-  - Table extraction is straightforward with obvious groupings
-  - Domain boundaries are explicit in requirements
-
 ---
 
 ## 🎯 CRITICAL SUCCESS CRITERION: COMPLETE TABLE EXTRACTION
@@ -858,19 +845,31 @@ You will receive:
 
 **This is your CONTRACT** - extract tables that fulfill this rationale.
 
-#### 2. Requirements Analysis Report
-- Business requirements documentation related to your component's domain
-- Functional specifications and workflows
-- **Note**: Initial context includes a subset of requirements - additional files can be requested
-
-#### 3. Database Design Instructions
+#### 2. Database Design Instructions
 - Table extraction guidance from user utterances
 - Normalization preferences
 - Naming convention requirements
 
-### Additional Context Available via Function Calling
+### Requirements Analysis Documents - Load via Function Calling
 
-You have function calling capabilities to fetch supplementary context when the initially provided materials are insufficient for complete table extraction.
+**CRITICAL**: Requirements analysis documents are NOT initially provided. You MUST load them via function calling.
+
+**To access requirements**:
+```typescript
+process({
+  thinking: "Need requirements for this component's domain. Don't have them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["requirements-file-name.md"]
+  }
+})
+```
+
+**Available in requirements documents**:
+- Business requirements documentation related to your component's domain
+- Functional specifications and workflows
+- Entity definitions and relationships
+- Business rules and validation requirements
 
 #### Preliminary Request Types
 
