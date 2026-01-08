@@ -60,27 +60,35 @@ export const orchestrateTestPrepareWrite = async (
       });
 
   // Generate prepare functions using LLM in parallel with prompt caching
-  return await executeCachedBatch(
-    ctx,
-    createTypes.map((entry) => async (promptCacheKey) => {
-      const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
-        await process(ctx, {
-          document: props.document,
-          typeName: entry.key,
-          schema: entry.value,
-          instruction: props.instruction,
-          promptCacheKey,
-          progress: props.progress,
-        });
-      ctx.dispatch(event);
-      return {
-        type: "prepare",
-        typeName: entry.key,
-        schema: entry.value,
-        function: event.function,
-      };
-    }),
-  );
+  const result: Array<IAutoBeTestPrepareProcedure | null> =
+    await executeCachedBatch(
+      ctx,
+      createTypes.map((entry) => async (promptCacheKey) => {
+        try {
+          const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
+            await process(ctx, {
+              document: props.document,
+              typeName: entry.key,
+              schema: entry.value,
+              instruction: props.instruction,
+              promptCacheKey,
+              progress: props.progress,
+            });
+          ctx.dispatch(event);
+          return {
+            type: "prepare",
+            typeName: entry.key,
+            schema: entry.value,
+            function: event.function,
+          };
+        } catch {
+          return null;
+        }
+      }),
+    );
+
+  // Filter out null results and return successful generations
+  return result.filter((r) => r !== null);
 };
 
 /** Processes the generation of a single prepare function using LLM. */
