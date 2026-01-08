@@ -6,6 +6,7 @@ import {
   AutoBeProcessAggregateCollection,
   AutoBeRealizeHistory,
   AutoBeTestHistory,
+  AutoBeUserMessageTextContent,
   IAutoBeCompiler,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
@@ -61,6 +62,20 @@ export async function getAutoBeGenerated(props: {
       props.state.analyze.files.map((file) => [
         `docs/analysis/${file.filename.split("/").at(-1)}`,
         file.content,
+      ]),
+    ),
+  );
+  // ANALYZE - USER MESSAGES
+  const contents: AutoBeUserMessageTextContent[] = props.histories
+    .filter((h) => h.type === "userMessage")
+    .flatMap((h) => h.contents)
+    .filter((c) => c.type === "text");
+  Object.assign<Record<string, string>, Record<string, string>>(
+    ret,
+    Object.fromEntries(
+      contents.map((c, i) => [
+        `docs/user-message/user.message.${i + 1}.md`,
+        c.text,
       ]),
     ),
   );
