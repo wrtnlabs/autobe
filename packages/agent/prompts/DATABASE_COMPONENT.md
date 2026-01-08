@@ -540,41 +540,60 @@ interface AutoBeDatabaseComponentTableDesign {
 
 ## 📤 OUTPUT FORMAT EXAMPLE
 
+### Example: Systematic Component (System Configuration)
+
+When you receive a component skeleton for the Systematic domain, your output should look like this:
+
 ```typescript
-const componentExtraction: IAutoBeDatabaseComponentApplication.IProps = {
-  thinking: "Based on the business requirements, I identify several key domains: user management, product catalog, order processing, and content management. I detected question-answer patterns requiring separate tables and polymorphic ownership in issue reporting.",
-  review: "Upon review, I ensured all 1:1 relationships are properly separated into distinct tables. For polymorphic patterns, I added main entity + subtype tables. Session tables are correctly placed in the Actors component.",
-  decision: "Final decision: Organize tables into 10 main namespaces following domain-driven design and normalization principles. This structure provides clear separation of concerns, maintainable code organization, and supports future scalability.",
-  components: [
-    {
-      filename: "schema-01-systematic.prisma",
-      namespace: "Systematic",
-      thinking: "These tables all relate to system configuration and channel management. They form the foundation of the platform.",
-      review: "Considering the relationships, configurations table has connections to multiple domains but fundamentally defines system behavior.",
-      rationale: "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference.",
-      tables: [
-        { name: "channels", description: "Sales channels (e.g., online store, mobile app) with branding and configuration." },
-        { name: "sections", description: "Sections within a channel for organizing content and products hierarchically." },
-        { name: "configurations", description: "System-wide configuration settings and feature flags." }
-      ]
-    },
-    {
-      filename: "schema-02-actors.prisma",
-      namespace: "Actors",
-      thinking: "All user-related entities and their session tables should be grouped together as they share authentication and identity patterns.",
-      review: "While customers interact with orders and sales, the customer entity itself is about identity, not transactions. Session tables must be here for all authenticated actors.",
-      rationale: "This component groups all actor-related tables and their sessions to maintain separation between identity management and business transactions.",
-      tables: [
-        { name: "users", description: "Platform users with authentication credentials and profile information." },
-        { name: "user_sessions", description: "Authentication sessions for users, tracking login state and tokens." },
-        { name: "administrators", description: "Admin users with elevated privileges for platform management." },
-        { name: "administrator_sessions", description: "Authentication sessions for administrators." },
-        { name: "shopping_customers", description: "Customer accounts for the shopping platform with profile data." },
-        { name: "shopping_customer_sessions", description: "Authentication sessions for shopping customers." }
-      ]
-    }
-    // ... more components
-  ]
+// Component skeleton you receive (INPUT):
+const componentSkeleton: AutoBeDatabaseGroup = {
+  filename: "schema-01-systematic.prisma",
+  namespace: "Systematic",
+  thinking: "These tables all relate to system configuration and channel management. They form the foundation of the platform.",
+  review: "Considering the relationships, configurations table has connections to multiple domains but fundamentally defines system behavior.",
+  rationale: "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference."
+};
+
+// Your function call (OUTPUT):
+const output: IAutoBeDatabaseComponentApplication.IProps = {
+  thinking: "Designed complete table set for the Systematic component covering all system configuration entities.",
+  request: {
+    type: "complete",
+    tables: [
+      { name: "channels", description: "Sales channels (e.g., online store, mobile app) with branding and configuration." },
+      { name: "sections", description: "Sections within a channel for organizing content and products hierarchically." },
+      { name: "configurations", description: "System-wide configuration settings and feature flags." }
+    ]
+  }
+};
+```
+
+### Example: Actors Component (Identity & Authentication)
+
+```typescript
+// Component skeleton you receive (INPUT):
+const componentSkeleton: AutoBeDatabaseGroup = {
+  filename: "schema-02-actors.prisma",
+  namespace: "Actors",
+  thinking: "All user-related entities and their session tables should be grouped together as they share authentication and identity patterns.",
+  review: "While customers interact with orders and sales, the customer entity itself is about identity, not transactions. Session tables must be here for all authenticated actors.",
+  rationale: "This component groups all actor-related tables and their sessions to maintain separation between identity management and business transactions."
+};
+
+// Your function call (OUTPUT):
+const output: IAutoBeDatabaseComponentApplication.IProps = {
+  thinking: "Designed 6 tables for the Actors component including all user types and their authentication sessions.",
+  request: {
+    type: "complete",
+    tables: [
+      { name: "users", description: "Platform users with authentication credentials and profile information." },
+      { name: "user_sessions", description: "Authentication sessions for users, tracking login state and tokens." },
+      { name: "administrators", description: "Admin users with elevated privileges for platform management." },
+      { name: "administrator_sessions", description: "Authentication sessions for administrators." },
+      { name: "shopping_customers", description: "Customer accounts for the shopping platform with profile data." },
+      { name: "shopping_customer_sessions", description: "Authentication sessions for shopping customers." }
+    ]
+  }
 };
 ```
 
@@ -637,7 +656,10 @@ You must return a structured output following the `IAutoBeDatabaseComponentAppli
 export namespace IAutoBeDatabaseComponentApplication {
   export interface IProps {
     /**
-     * Think before you act - reflection on your current state and reasoning
+     * Think before you act - reflection on your current state and reasoning.
+     *
+     * For preliminary requests: State what's MISSING that you don't have.
+     * For completion: Summarize what tables you designed for this component.
      */
     thinking: string;
 
@@ -645,15 +667,22 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final component
-     * extraction (complete). When preliminary returns empty array, that type is
-     * removed from the union, physically preventing repeated calls.
+     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
+     * or final table design (complete).
      */
     request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   /**
-   * Request to extract domain components from database tables.
+   * Complete the table design for THIS SINGLE component.
+   *
+   * CRITICAL CONSTRAINTS:
+   * - You receive a component skeleton (namespace, filename, thinking, review, rationale)
+   * - Your ONLY job is to fill in the tables array
+   * - Do NOT create multiple components
+   * - Do NOT reorganize component boundaries
+   * - Do NOT include thinking, review, decision, or components fields
+   * - ALL tables generated here belong to THE SINGLE component skeleton provided
    */
   export interface IComplete {
     /**
@@ -662,24 +691,13 @@ export namespace IAutoBeDatabaseComponentApplication {
     type: "complete";
 
     /**
-     * Initial thoughts on namespace classification criteria
+     * Array of table designs for THIS SINGLE component.
+     *
+     * Contains all database tables that belong to the component skeleton
+     * received as input. The namespace and filename are ALREADY DETERMINED
+     * by the component skeleton. You are ONLY providing the tables array.
      */
-    thinking: string;
-
-    /**
-     * Review and refinement of the namespace classification
-     */
-    review: string;
-
-    /**
-     * Final decision on namespace classification
-     */
-    decision: string;
-
-    /**
-     * Array of domain components that group related database tables
-     */
-    components: AutoBeDatabaseComponent[];
+    tables: AutoBeDatabaseComponentTableDesign[];
   }
 }
 
@@ -709,7 +727,7 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
  * regenerating due to user modifications to reference the previous version.
  *
  * IMPORTANT: This type is ONLY available when a previous version exists.
- * NOT available during initial generation (initial generation).
+ * NOT available during initial generation.
  */
 export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
   /**
@@ -725,13 +743,30 @@ export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
    */
   fileNames: string[];
 }
+
+/**
+ * Request to load database schemas from the previous version.
+ *
+ * Loads database schemas that were generated in the **previous version
+ * iteration** of the AutoBE generation pipeline. Used for maintaining
+ * naming consistency when regenerating.
+ *
+ * IMPORTANT: This type is ONLY available when a previous version exists.
+ * NOT available during initial generation.
+ */
+export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
+  /**
+   * Type discriminator for loading previous version schemas.
+   */
+  type: "getPreviousDatabaseSchemas";
+}
 ```
 
 ### Field Descriptions
 
 #### request (Discriminated Union)
 
-The `request` property is a **discriminated union** that can be one of three types:
+The `request` property is a **discriminated union** that can be one of four types:
 
 **1. IAutoBePreliminaryGetAnalysisFiles** - Retrieve NEW analysis files:
 - **type**: `"getAnalysisFiles"` - Discriminator indicating preliminary data request
@@ -757,7 +792,7 @@ The `request` property is a **discriminated union** that can be one of three typ
 **4. IComplete** - Complete the table design for this component:
 - **type**: `"complete"` - Discriminator indicating final task execution
 - **tables**: Array of table designs (name + description) for THIS SINGLE component
-- **CRITICAL**: Do NOT include thinking, review, decision, or components - only tables array
+- **CRITICAL**: Only provide the tables array - nothing else. The component skeleton (namespace, filename, thinking, review, rationale) is already determined by DATABASE_GROUP phase
 
 ---
 
