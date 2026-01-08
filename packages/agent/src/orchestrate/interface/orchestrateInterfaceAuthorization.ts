@@ -223,7 +223,7 @@ function createController(props: {
 
               Define it with typeName and description fields.
 
-              Note that, the typeName must be end with ".${expected}" 
+              Note that, the typeName must end with ".${expected}" 
               
               (e.g., IUser.${expected}, IAdmin.${expected}).
           `,
