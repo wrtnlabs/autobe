@@ -29,7 +29,7 @@ import { AutoBeContext } from "../context/AutoBeContext";
  * @returns Array of task results in original order
  */
 export const executeCachedBatch = async <T>(
-  ctx: AutoBeContext,
+  ctx: AutoBeContext | number,
   taskList: Task<T>[],
   promptCacheKey?: string,
 ): Promise<T[]> => {
@@ -38,9 +38,11 @@ export const executeCachedBatch = async <T>(
   promptCacheKey ??= v7();
   const first: T = await taskList[0]!(promptCacheKey);
   const semaphore: number =
-    ctx.vendor.semaphore && ctx.vendor.semaphore instanceof Semaphore
-      ? ctx.vendor.semaphore.max()
-      : (ctx.vendor.semaphore ?? AutoBeConfigConstant.SEMAPHORE);
+    typeof ctx === "number"
+      ? ctx
+      : ctx.vendor.semaphore && ctx.vendor.semaphore instanceof Semaphore
+        ? ctx.vendor.semaphore.max()
+        : (ctx.vendor.semaphore ?? AutoBeConfigConstant.SEMAPHORE);
 
   const remained: Array<Pair<Task<T>, number>> = taskList
     .slice(1)
