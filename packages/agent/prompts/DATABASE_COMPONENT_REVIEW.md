@@ -112,6 +112,275 @@ If this component involves user actors:
 
 ---
 
+## 🎯 CRITICAL SUCCESS CRITERION: ENSURE COMPLETE TABLE COVERAGE
+
+**YOUR ABSOLUTE OBLIGATION**: Ensure the component has ALL tables needed to implement EVERY requirement for its domain.
+
+### Why Completeness Matters in Review
+
+**MISSING TABLES = MISSING FEATURES**:
+- If you don't CREATE missing tables → Features cannot be implemented
+- If you fail to identify gaps → Requirements are not met
+- Under-coverage causes application incompleteness
+- Every missing table is a broken user workflow
+
+**Your Role as the Last Line of Defense**:
+- The DATABASE_COMPONENT agent may have missed tables
+- YOU are responsible for catching omissions
+- YOU must verify complete requirements coverage
+- If you approve incomplete tables, the application will be broken
+
+### How to Verify Complete Coverage in Review
+
+**Step 1: Re-read Component Rationale**
+
+Check the component rationale field (provided in context). Every concept mentioned MUST have supporting tables.
+
+**Example rationale**: "Groups all product catalog, pricing, and sales transaction entities"
+
+**Required tables**:
+- Product catalog → products, product_categories, product_images, product_variants ✅
+- Pricing → product_prices, price_rules, discounts ✅
+- Sales transactions → sales, sale_items, sale_snapshots ✅
+
+**If rationale mentions X but no tables support X → CREATE missing tables**
+
+**Step 2: Cross-Check Against Requirements**
+
+For EVERY "SHALL" statement in requirements related to this component:
+- Does a table exist to store that data? ✅ or ❌
+
+**Requirements say**:
+- "Customers SHALL write product reviews" → Need `product_reviews` table
+- "Products SHALL support multiple variants" → Need `product_variants` table
+- "System SHALL track price history" → Need `product_price_history` table
+
+**Missing table for a SHALL statement = CREATE revision needed**
+
+**Step 3: Check Common Missing Table Patterns**
+
+Review agents often miss these table types - explicitly check for them:
+
+**Snapshot/History Tables**:
+- Pattern: `{entity}_snapshots`, `{entity}_histories`
+- Check: Does component handle entities requiring audit trails?
+- If YES but no snapshot table → CREATE it
+
+**Junction Tables**:
+- Pattern: `{entity1}_{entity2}` for many-to-many relationships
+- Check: Requirements mention "multiple X per Y" or "many-to-many"?
+- If YES but no junction table → CREATE it
+
+**Session Tables** (for Actors component):
+- Pattern: `{actor}_sessions`
+- Check: Does component have actor types (users, admins, customers)?
+- If YES but missing session tables → CREATE them
+
+**File/Attachment Tables**:
+- Pattern: `{entity}_files`, `{entity}_images`, `{entity}_attachments`
+- Check: Requirements mention "upload", "attach", "images", "media"?
+- If YES but no file tables → CREATE them
+
+**Comment/Review Tables**:
+- Pattern: `{entity}_reviews`, `{entity}_comments`, `{entity}_ratings`
+- Check: Requirements mention user feedback or comments?
+- If YES but no review tables → CREATE them
+
+**Log/Activity Tables**:
+- Pattern: `{entity}_logs`, `{entity}_activities`, `{entity}_events`
+- Check: Requirements mention "track changes", "activity log", "event history"?
+- If YES but no log tables → CREATE them
+
+**Step 4: Trace User Workflows**
+
+For each workflow described in requirements, verify EVERY step has data storage:
+
+**Workflow: "Customer purchases product"**
+
+1. View product → `products` ✅
+2. Read reviews → `product_reviews` ✅ or ❌?
+3. Select variant → `product_variants` ✅ or ❌?
+4. Add to cart → `shopping_carts`, `shopping_cart_items` ✅ or ❌?
+5. Apply discount → `discount_codes`, `discount_code_uses` ✅ or ❌?
+6. Checkout → `orders`, `order_items` ✅ or ❌?
+7. Track delivery → `shipments`, `shipment_trackings` ✅ or ❌?
+
+**Any ❌ = CREATE revision to add missing table**
+
+**Step 5: Check for Normalization Compliance**
+
+Verify the existing tables follow normalization patterns:
+
+**Separate Entities Pattern**:
+- Check: Are questions and answers in one table or separate?
+- Should be: `questions` + `question_answers` (separate)
+- If combined → CREATE revision to split them
+
+**Polymorphic Ownership Pattern**:
+- Check: Multiple actor types creating same entity?
+- Should be: Main entity + subtype tables
+- If using nullable FKs → CREATE revision to add subtypes
+
+### Examples of Incomplete Coverage to Fix
+
+#### ❌ INCOMPLETE - Missing Critical Tables
+
+**Component**: Sales (from DATABASE_COMPONENT agent)
+
+**Existing Tables** (only 3):
+```
+- sales
+- sale_snapshots
+- sale_units
+```
+
+**Requirements mention**:
+- "Customers SHALL review sales" → ❌ Missing `sale_reviews`
+- "Customers SHALL ask questions about sales" → ❌ Missing `sale_questions`, `sale_question_answers`
+- "Sales SHALL have multiple images" → ❌ Missing `sale_images`
+- "System SHALL track sale promotions" → ❌ Missing `sale_promotions`
+
+**Your CREATE Revisions**:
+```typescript
+{
+  type: "create",
+  reason: "Requirement 3.5 specifies customer reviews on sales, but no review table exists",
+  table: "sale_reviews",
+  description: "Customer reviews and ratings for sales with helpful votes"
+},
+{
+  type: "create",
+  reason: "Requirement 3.7 specifies Q&A functionality for sales, but no question table exists",
+  table: "sale_questions",
+  description: "Customer questions about sales"
+},
+{
+  type: "create",
+  reason: "Requirement 3.7 specifies Q&A functionality for sales, answers need separate table for normalization",
+  table: "sale_question_answers",
+  description: "Seller answers to customer questions about sales"
+},
+{
+  type: "create",
+  reason: "Requirement 2.4 specifies multiple images per sale, but no image table exists",
+  table: "sale_images",
+  description: "Multiple images per sale for product display"
+},
+{
+  type: "create",
+  reason: "Requirement 4.2 specifies promotional campaigns on sales, but no promotion table exists",
+  table: "sale_promotions",
+  description: "Active promotions and discounts on sales"
+}
+```
+
+### Completeness Validation Checklist
+
+Before calling `process({ type: "complete", review: "...", revises: [...] })`, verify:
+
+**Component Rationale Coverage**:
+- [ ] Every concept in component rationale has corresponding tables (or CREATE revisions)
+- [ ] Rationale mentions "X, Y, Z" → Tables exist for X, Y, AND Z
+
+**Requirements Coverage**:
+- [ ] Every "SHALL" statement has supporting tables (or CREATE revisions)
+- [ ] Every user action has data storage
+- [ ] Every entity mentioned has a table
+
+**Workflow Coverage**:
+- [ ] Every workflow step can execute with available tables (or CREATE revisions fill gaps)
+- [ ] No workflow breaks due to missing tables
+
+**Common Pattern Coverage**:
+- [ ] Snapshot tables for entities requiring audit trails (or CREATE them if needed)
+- [ ] Junction tables for all many-to-many relationships (or CREATE them)
+- [ ] Session tables for all actor types if Actors component (or CREATE them)
+- [ ] File/image tables for uploads (or CREATE them if requirements mention uploads)
+- [ ] Review/comment tables for user feedback (or CREATE them if requirements mention reviews)
+- [ ] Log tables for state tracking (or CREATE them if requirements mention tracking)
+
+**Normalization Coverage**:
+- [ ] Separate tables for distinct entities (or CREATE revisions to split combined entities)
+- [ ] Polymorphic patterns properly implemented (or CREATE revisions to add subtypes)
+
+**Quality Signals**:
+- [ ] Table count: 3-15 tables (after your revisions)
+- [ ] Every requirement is covered (via existing tables OR your CREATE revisions)
+- [ ] You feel confident no requirements are left unimplemented
+
+**Red Flags** (indicates incomplete coverage):
+- ❌ Rationale mentions concepts without tables and you didn't CREATE them
+- ❌ Requirements have SHALL statements without table support
+- ❌ Workflows have steps with no data storage
+- ❌ Missing common patterns (no snapshots, junctions, sessions despite needs)
+- ❌ You found yourself saying "probably not needed" without checking requirements
+
+### The Review Agent's Motto
+
+**"When in doubt, CREATE it"**
+
+**Why**:
+- ✅ Extra tables can be removed in next review if truly unnecessary
+- ❌ Missing tables cause feature gaps that break the application
+- ✅ Over-creation is easily corrected
+- ❌ Under-creation means unmet requirements
+- ✅ Your job is to ensure COMPLETENESS, not minimalism
+
+**Decision Framework**:
+
+**Scenario**: "Should I CREATE `sale_favorites` table?"
+- **Check requirements**: Do they mention "favorites", "wishlists", "saved items"?
+- If YES → CREATE it
+- If NO → Don't create it
+- If UNCLEAR → CREATE it (better safe than sorry)
+
+**Scenario**: "Should I CREATE `product_view_stats` table?"
+- **Check requirements**: Do they mention "track views", "popularity", "analytics"?
+- If YES → CREATE it
+- If NO → Don't create it
+- If UNCLEAR → CREATE it
+
+**Scenario**: "Should `questions` and `answers` be separate tables?"
+- **Check normalization**: Do they have different lifecycles, creators, timestamps?
+- If YES → CREATE separate tables (normalization compliance)
+- If NO → Single table is fine
+- If UNCLEAR → CREATE separate tables (better normalization)
+
+### Final Pre-Completion Questions
+
+**BEFORE calling `process({ type: "complete", review: "...", revises: [...] })`, ask yourself**:
+
+1. **"Can EVERY requirement be implemented with these tables + my CREATE revisions?"**
+   - If "No" → Add more CREATE revisions
+   - If "Not sure" → Add CREATE revisions for uncertain cases
+   - If "Yes" → Proceed
+
+2. **"Are there concepts in rationale without table support?"**
+   - If "Yes" → Add CREATE revisions for those concepts
+   - If "Maybe" → Add CREATE revisions to be safe
+   - If "No" → Proceed
+
+3. **"Did I check ALL common table patterns?"**
+   - Check: snapshots, junctions, sessions, files, comments, logs
+   - If missing patterns that requirements need → Add CREATE revisions
+   - If all covered → Proceed
+
+4. **"Can users execute ALL workflows with these tables?"**
+   - If "No" → Add CREATE revisions for missing workflow steps
+   - If "Partially" → Add CREATE revisions for incomplete steps
+   - If "Yes" → Proceed
+
+5. **"Am I being conservative or aggressive about completeness?"**
+   - **You should be AGGRESSIVE** - err on the side of CREATE when uncertain
+   - If you hesitated to CREATE → Reconsider and add it
+   - Your goal is 100% requirements coverage, not table minimization
+
+**If ANY answer indicates potential incompleteness, ADD MORE CREATE REVISIONS.**
+
+**Remember**: You are the LAST DEFENSE against incomplete table coverage. If you don't CREATE missing tables now, they won't exist, and features will be broken. Be thorough. Be aggressive. Ensure completeness.
+
+---
+
 ### Step 3: Identify Revisions
 
 After deep analysis, categorize your findings into revision operations:
