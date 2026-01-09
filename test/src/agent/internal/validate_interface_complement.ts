@@ -77,10 +77,7 @@ export const validate_interface_complement = async (props: {
         new Set(Object.keys(document.components.schemas)),
       ),
     );
-    AutoBeJsonSchemaNamingConvention.schemas(
-      document.operations,
-      document.components.schemas,
-    );
+    AutoBeJsonSchemaNamingConvention.normalize(document);
     AutoBeJsonSchemaFactory.finalize({
       document,
       application: props.agent.getContext().state().database!.result.data,

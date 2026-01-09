@@ -39,7 +39,13 @@ export const test_json_schema_operation_convention = () => {
         },
       }) satisfies AutoBeOpenApi.IOperation,
   );
-  AutoBeJsonSchemaNamingConvention.operations(operations);
+  AutoBeJsonSchemaNamingConvention.normalize({
+    operations,
+    components: {
+      authorizations: [],
+      schemas: {},
+    },
+  });
 
   const typeNames: Set<string> = new Set();
   for (const op of operations) {

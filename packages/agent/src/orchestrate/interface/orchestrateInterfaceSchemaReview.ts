@@ -16,7 +16,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
-import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -73,7 +72,6 @@ export async function orchestrateInterfaceSchemaReview(
       }
     }),
   );
-  AutoBeJsonSchemaNamingConvention.schemas(props.document.operations, x);
   return x;
 }
 

@@ -1,11 +1,10 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import { MapUtil } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { AutoBeOpenApiTypeChecker, MapUtil } from "@autobe/utils";
 
 export namespace AutoBeJsonSchemaNamingConvention {
-  export const operations = (operations: AutoBeOpenApi.IOperation[]): void => {
+  export const normalize = (document: AutoBeOpenApi.IDocument): void => {
     const convention: Convention = new Convention();
-    for (const op of operations) {
+    for (const op of document.operations) {
       if (op.requestBody !== null)
         convention.emplace(op.requestBody.typeName, (v) => {
           if (op.requestBody !== null) op.requestBody.typeName = v;
@@ -15,46 +14,23 @@ export namespace AutoBeJsonSchemaNamingConvention {
           if (op.responseBody !== null) op.responseBody.typeName = v;
         });
     }
-    convention.execute();
-  };
-
-  export const schemas = (
-    operations: AutoBeOpenApi.IOperation[],
-    ...componentSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[]
-  ): void => {
-    const convention: Convention = new Convention();
-    for (const op of operations) {
-      if (op.requestBody !== null)
-        convention.emplace(op.requestBody.typeName, (v) => {
-          if (op.requestBody !== null) op.requestBody.typeName = v;
-        });
-      if (op.responseBody !== null)
-        convention.emplace(op.responseBody.typeName, (v) => {
-          if (op.responseBody !== null) op.responseBody.typeName = v;
-        });
-    }
-    for (const schema of componentSchemas) {
-      for (const key of Object.keys(schema)) {
-        convention.emplace(key, (v) => {
-          if (key === v) return;
-          schema[v] = schema[key]!;
-          delete schema[key];
-        });
-        for (const value of Object.values(schema))
-          OpenApiTypeChecker.visit({
-            components: { schemas: schema },
-            schema: value,
-            closure: (s) => {
-              if (OpenApiTypeChecker.isReference(s) === false) return;
-              const key: string = s.$ref.split("/").pop()!;
-              convention.emplace(
-                key,
-                (v) => (s.$ref = `#/components/schemas/${v}`),
-              );
-            },
-          });
-      }
-      convention.execute();
+    for (const [key, value] of Object.entries(document.components.schemas)) {
+      convention.emplace(key, (newKey) => {
+        document.components.schemas[newKey] = value;
+        delete document.components.schemas[key];
+      });
+      AutoBeOpenApiTypeChecker.visit({
+        components: document.components,
+        schema: value,
+        closure: (s) => {
+          if (AutoBeOpenApiTypeChecker.isReference(s) === false) return;
+          const key: string = s.$ref.split("/").pop()!;
+          convention.emplace(
+            key,
+            (v) => (s.$ref = `#/components/schemas/${v}`),
+          );
+        },
+      });
     }
   };
 }

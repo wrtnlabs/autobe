@@ -149,6 +149,7 @@ export const orchestrateInterface =
         schemas: {},
       },
     };
+    AutoBeJsonSchemaNamingConvention.normalize(document);
 
     //------------------------------------------------
     // DTO SCHEMAS
@@ -167,10 +168,7 @@ export const orchestrateInterface =
           new Set(Object.keys(document.components.schemas)),
         ),
       );
-      AutoBeJsonSchemaNamingConvention.schemas(
-        document.operations,
-        document.components.schemas,
-      );
+      AutoBeJsonSchemaNamingConvention.normalize(document);
       AutoBeJsonSchemaFactory.finalize({
         document,
         application: ctx.state().database!.result.data,

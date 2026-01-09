@@ -16,7 +16,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
-import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -28,9 +27,6 @@ export async function orchestrateInterfaceSchema(
     instruction: string;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  // fix operation type names
-  AutoBeJsonSchemaNamingConvention.operations(props.operations);
-
   // gather type names
   const collection: Set<string> = new Set();
   const gather = (key: string): void => {

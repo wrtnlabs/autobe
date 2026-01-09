@@ -20,6 +20,7 @@ import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOpera
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
@@ -83,7 +84,17 @@ export async function orchestrateInterfaceOperation(
       },
       r,
     );
-  return unique.toJSON().map((it) => it.second);
+  const operations: AutoBeOpenApi.IOperation[] = unique
+    .toJSON()
+    .map((it) => it.second);
+  AutoBeJsonSchemaNamingConvention.normalize({
+    operations,
+    components: {
+      authorizations: [],
+      schemas: {},
+    },
+  });
+  return operations;
 }
 
 async function process(

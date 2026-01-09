@@ -21,7 +21,13 @@ export const test_json_schema_convention = () => {
       description: "Test description",
     },
   };
-  AutoBeJsonSchemaNamingConvention.schemas([], schemas);
+  AutoBeJsonSchemaNamingConvention.normalize({
+    operations: [],
+    components: {
+      authorizations: [],
+      schemas,
+    },
+  });
   TestValidator.equals("convention", schemas, {
     ShoppingOrderGoodRevert: {
       type: "string",
