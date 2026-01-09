@@ -52,6 +52,7 @@ export namespace AutoBeJsonSchemaValidator {
     validateDatabaseSchema(props);
     validateRecursive(props);
     validateReferenceId(props);
+    validatePropertyNames(props);
 
     validateKey({
       errors: props.errors,
@@ -545,6 +546,53 @@ export namespace AutoBeJsonSchemaValidator {
             just follow the rule without any resistance.
 
             Note that, this is not a recommendation, but an instruction you 
+            must follow.
+          `,
+        });
+    }
+  };
+
+  const validatePropertyNames = (props: {
+    errors: IValidation.IError[];
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    path: string;
+  }): void => {
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    for (const key of Object.keys(props.schema.properties)) {
+      if (Escaper.reserved(key))
+        props.errors.push({
+          path: `${props.path}.properties${Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
+          expected: `none system reserved word`,
+          value: key,
+          description: StringUtil.trim`
+            Property name ${JSON.stringify(key)} is a system reserved word.
+
+            Avoid using system reserved words as property names to prevent
+            potential conflicts and ensure clarity in your API design.
+
+            Change the property name ${JSON.stringify(key)} to a non-reserved
+            word at the next time.
+
+            Note that, this is not a recommendation, but an instruction you
+            must follow.
+          `,
+        });
+      else if (Escaper.variable(key) === false)
+        props.errors.push({
+          path: `${props.path}.properties${Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
+          expected: `valid variable name`,
+          value: key,
+          description: StringUtil.trim`
+            Property name ${JSON.stringify(key)} must be a valid variable name.
+
+            Valid variable names start with a letter, underscore (_), or dollar sign ($),
+            followed by letters, digits, underscores, or dollar signs. They cannot
+            contain spaces or special characters.
+
+            Change the property name ${JSON.stringify(key)} to a valid variable
+            name at the next time.
+
+            Note that, this is not a recommendation, but an instruction you
             must follow.
           `,
         });

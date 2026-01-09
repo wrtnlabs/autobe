@@ -1,5 +1,5 @@
 import { AutoBeDatabase, IAutoBeDatabaseValidation } from "@autobe/interface";
-import { MapUtil, StringUtil } from "@autobe/utils";
+import { AutoBeEscaper, MapUtil, StringUtil } from "@autobe/utils";
 import { HashMap, hash } from "tstl";
 
 export function validateDatabaseApplication(
@@ -33,6 +33,7 @@ export function validateDatabaseApplication(
           return [
             ...validateDuplicatedFields(dict, model, accessor),
             ...validateDuplicatedIndexes(model, accessor),
+            ...validateValidNames(model, accessor),
             ...validateIndexes(model, accessor),
             ...validateReferences(model, accessor, dict),
           ];
@@ -433,6 +434,79 @@ function validateDuplicatedIndexes(
 /* -----------------------------------------------------------
   VALIDATIONS
 ----------------------------------------------------------- */
+function validateValidNames(
+  model: AutoBeDatabase.IModel,
+  accessor: string,
+): IAutoBeDatabaseValidation.IError[] {
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
+  const validate = (props: {
+    value: string;
+    accessor: string;
+    field: string | null;
+  }): void => {
+    if (AutoBeEscaper.reserved(props.value))
+      errors.push({
+        path: props.accessor,
+        table: model.name,
+        field: props.field,
+        message: StringUtil.trim`
+        The name "${props.value}" is a system reserved keyword and cannot be used.
+      `,
+      });
+    else if (AutoBeEscaper.variable(props.value) === false)
+      errors.push({
+        path: props.accessor,
+        table: model.name,
+        field: props.field,
+        message: StringUtil.trim`
+        The name "${props.value}" is not a valid identifier.
+
+        Change to a valid identifier which can be a variable name in programming languages.
+      `,
+      });
+  };
+
+  // TABLE NAME
+  validate({
+    value: model.name,
+    accessor: `${accessor}.name`,
+    field: null,
+  });
+
+  // FIELDS
+  validate({
+    value: model.primaryField.name,
+    accessor: `${accessor}.primaryField.name`,
+    field: model.primaryField.name,
+  });
+  model.foreignFields.forEach((ff, i) => {
+    validate({
+      value: ff.name,
+      accessor: `${accessor}.foreignFields[${i}].name`,
+      field: ff.name,
+    });
+    validate({
+      value: ff.relation.name,
+      accessor: `${accessor}.foreignFields[${i}].relation.name`,
+      field: ff.name,
+    });
+    if (ff.relation.mappingName)
+      validate({
+        value: ff.relation.mappingName,
+        accessor: `${accessor}.foreignFields[${i}].relation.mappingName`,
+        field: ff.name,
+      });
+  });
+  model.plainFields.forEach((pf, i) =>
+    validate({
+      value: pf.name,
+      accessor: `${accessor}.plainFields[${i}].name`,
+      field: pf.name,
+    }),
+  );
+  return errors;
+}
+
 function validateIndexes(
   model: AutoBeDatabase.IModel,
   accessor: string,
