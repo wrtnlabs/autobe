@@ -32,6 +32,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
         },
       });
     }
+    convention.execute();
   };
 }
 
