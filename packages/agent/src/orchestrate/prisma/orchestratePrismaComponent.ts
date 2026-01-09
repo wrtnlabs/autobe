@@ -15,6 +15,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { IAutoBeDatabaseComponentApplication } from "./structures/IAutoBeDatabaseComponentApplication";
+import { removeDuplicatedTable } from "./utils/removeDuplicatedTable";
 
 export async function orchestratePrismaComponent(
   ctx: AutoBeContext,
@@ -29,7 +30,7 @@ export async function orchestratePrismaComponent(
     total: props.groups.length,
   };
 
-  return await executeCachedBatch(
+  const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.groups.map((group) => async (promptCacheKey) => {
       const component: AutoBeDatabaseComponent = await process(ctx, {
@@ -42,6 +43,7 @@ export async function orchestratePrismaComponent(
       return component;
     }),
   );
+  return removeDuplicatedTable(components);
 }
 
 async function process(

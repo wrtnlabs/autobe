@@ -17,6 +17,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentReviewHistory } from "./histories/transformPrismaComponentReviewHistory";
 import { IAutoBeDatabaseComponentReviewApplication } from "./structures/IAutoBeDatabaseComponentReviewApplication";
+import { removeDuplicatedTable } from "./utils/removeDuplicatedTable";
 
 export async function orchestratePrismaComponentReview(
   ctx: AutoBeContext,
@@ -24,7 +25,7 @@ export async function orchestratePrismaComponentReview(
     instruction: string;
     components: AutoBeDatabaseComponent[];
   },
-): Promise<AutoBeDatabaseComponentReviewEvent[]> {
+): Promise<AutoBeDatabaseComponent[]> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const allTableNames: string[] = props.components.flatMap((c) =>
     c.tables.map((t) => t.name),
@@ -34,7 +35,7 @@ export async function orchestratePrismaComponentReview(
     total: props.components.length,
   };
 
-  return await executeCachedBatch(
+  const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
       const otherTableNames: Set<string> = new Set(
@@ -53,9 +54,10 @@ export async function orchestratePrismaComponentReview(
         promptCacheKey,
       });
       ctx.dispatch(event);
-      return event;
+      return event.modification;
     }),
   );
+  return removeDuplicatedTable(components);
 }
 
 async function process(
