@@ -212,17 +212,17 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * controller's `all`/`local` collections.
    *
    * @param application LLM application to modify (mutated in-place).
-   * @param operable Whether to include API operations
+   * @param enumerable Whether to change JSON schema to enum type of available
    */
   public fixApplication(
     application: ILlmApplication,
-    operable: boolean = false,
+    enumerable: boolean = false,
   ): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
       application,
-      operable,
+      enumerable,
     });
     return application;
   }
