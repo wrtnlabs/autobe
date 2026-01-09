@@ -854,7 +854,138 @@ interface IBbsArticle.IUpdate {
 
 This matrix becomes our guiding principle for all FK transformations throughout the API.
 
-#### 3.3.3. CRITICAL: Prefer Unique Code Fields Over UUID IDs in Request DTOs
+#### 3.3.3. CRITICAL: The DTO Transformation Direction Rule
+
+**ABSOLUTE RULE**: FK transformation rules are OPPOSITE for Response vs Request DTOs.
+
+##### Response DTOs (Read Operations) - FK to Object Transformation
+
+**Rule**: Transform foreign key fields to full object references using `.ISummary`.
+
+**Field Name Transformation**:
+- **REMOVE `_id` suffix** when creating the object field
+- Database FK: `author_id` → Response DTO: `author: IBbsMember.ISummary`
+- Database FK: `category_id` → Response DTO: `category: IBbsCategory.ISummary`
+- Database FK: `shopping_seller_id` → Response DTO: `seller: IShoppingSeller.ISummary`
+
+**Critical Pattern**:
+```typescript
+// Database schema has:
+// - author_id: String (FK to members)
+// - category_id: String (FK to categories)
+// - parent_id: String? (FK to self, nullable)
+
+// ✅ CORRECT Response DTO - Object references with _id suffix REMOVED:
+interface IBbsArticle {
+  id: string;
+  title: string;
+
+  author: IBbsMember.ISummary;      // author_id → author (suffix removed)
+  category: IBbsCategory.ISummary;  // category_id → category (suffix removed)
+  parent?: IBbsArticle.ISummary;    // parent_id → parent (suffix removed, nullable)
+
+  // NO raw FK fields - COMPLETELY ELIMINATED:
+  // ❌ author_id: string;    // REMOVED
+  // ❌ category_id: string;  // REMOVED
+  // ❌ parent_id?: string;   // REMOVED
+}
+```
+
+**Why Remove `_id` Suffix?**:
+1. **Semantic Clarity**: `author` clearly represents the author entity, not just an ID
+2. **Type System Consistency**: The field now contains the full object, not a scalar ID
+3. **API Usability**: Clients access `article.author.name` instead of needing `article.author_id` + separate lookup
+4. **Convention**: Standard DTO pattern across all frameworks (Django, Rails, etc.)
+
+##### Request DTOs (Create/Update Operations) - NO Transformation
+
+**ABSOLUTE PROHIBITION**: NEVER transform FK fields to object references in Create/Update DTOs.
+
+**Rule**: Keep foreign key fields as scalar ID/code fields using `*_id` or `*_code` suffix.
+
+**Critical Pattern**:
+```typescript
+// ✅ CORRECT Create DTO - Keep FK fields as scalars:
+interface IBbsArticle.ICreate {
+  title: string;
+  content: string;
+
+  category_id: string;    // ✅ Keep as scalar ID
+  parent_id?: string;     // ✅ Keep as scalar ID (nullable for replies)
+
+  // NEVER transform to objects:
+  // ❌ category: IBbsCategory.ISummary;        // FORBIDDEN
+  // ❌ parent?: IBbsArticle.ISummary;          // FORBIDDEN
+  // ❌ parent?: IBbsArticle;                   // FORBIDDEN
+  // ❌ parent_id?: IBbsArticle | null;         // FORBIDDEN
+}
+
+// ✅ CORRECT Update DTO - Keep FK fields as scalars:
+interface IBbsArticle.IUpdate {
+  title?: string;
+  content?: string;
+
+  category_id?: string;   // ✅ Keep as scalar ID (can change category)
+  parent_id?: string;     // ✅ Keep as scalar ID (can change parent)
+
+  // NEVER transform to objects:
+  // ❌ category?: IBbsCategory.ISummary;       // FORBIDDEN
+  // ❌ parent?: IBbsArticle.ISummary;          // FORBIDDEN
+}
+```
+
+**Why NO Transformation for Create/Update DTOs?**:
+1. **Client Simplicity**: Clients only need to provide IDs, not fetch full objects
+2. **Validation Efficiency**: Backend validates ID existence, doesn't need full object
+3. **Request Payload Size**: IDs are small (36 bytes for UUID), objects are large
+4. **API Convention**: Standard REST pattern - POST/PATCH accepts IDs, GET returns objects
+5. **Type Safety**: Scalar IDs prevent nested object complexity in request validation
+
+##### The AI's Common Mistake Pattern
+
+**CATASTROPHIC VIOLATION** - What AI agents often incorrectly generate:
+
+```typescript
+// ❌ WRONG - AI mistakenly applies Response DTO transformation to Create DTO:
+interface IDiscussionBoardComment.ICreate {
+  content: string;
+  parent_id?: IDiscussionBoardComment | null | undefined;  // ❌ FORBIDDEN!
+}
+
+// Why this is wrong:
+// 1. Client must provide full parent object (nonsense)
+// 2. Circular type reference (IDiscussionBoardComment references itself)
+// 3. Violates request DTO convention
+// 4. Fails validateReferenceId() compiler check
+
+// ✅ CORRECT - Keep as scalar ID:
+interface IDiscussionBoardComment.ICreate {
+  content: string;
+  parent_id?: string;  // ✅ Simple UUID string
+}
+```
+
+**Validation Enforcement**:
+- `AutoBeJsonSchemaValidator.validateReferenceId()` enforces this rule at compile time
+- Properties named `id` or `*_id` MUST be `string & Format<"uuid">` or nullable variant
+- NEVER `$ref` to object types
+
+##### Summary Table
+
+| Aspect | Response DTO | Create/Update DTO |
+|--------|--------------|-------------------|
+| **FK Field** | Transform to object | Keep as scalar |
+| **Field Name** | Remove `_id` suffix | Keep `_id` suffix |
+| **Type** | `IEntity.ISummary` | `string` (UUID or code) |
+| **Example** | `author: IBbsMember.ISummary` | `author_id: string` |
+| **Rationale** | Complete context for display | Simple reference for submission |
+
+**ABSOLUTE RULE TO REMEMBER**:
+- **Response DTO**: FK → Object (remove suffix, add `.ISummary`)
+- **Request DTO**: FK → FK (keep suffix, keep scalar)
+- **NEVER MIX THESE PATTERNS**
+
+#### 3.3.4. CRITICAL: Prefer Unique Code Fields Over UUID IDs in Request DTOs
 
 **MANDATORY RULE**: When creating or updating entities that reference other entities, use unique code fields instead of UUID IDs whenever the target entity has one.
 
@@ -2219,11 +2350,16 @@ interface IChild {
 
 **Universal Rule**: If it's a foreign key to an independent entity (BELONGS-TO), use `.ISummary`. No exceptions, no case-by-case judgment.
 
-#### 5.1.3.5. The Foreign Key Elimination Principle
+#### 5.1.3.5. The Foreign Key Elimination Principle (Response DTOs ONLY)
 
-**CRITICAL PRINCIPLE**: When you transform a foreign key field to a reference object, the original FK field becomes REDUNDANT and MUST be completely removed.
+**CRITICAL PRINCIPLE**: When you transform a foreign key field to a reference object in **Response DTOs**, the original FK field becomes REDUNDANT and MUST be completely removed.
 
-**Why This Matters**:
+**⚠️ APPLIES TO RESPONSE DTOs ONLY**:
+- ✅ This rule applies to: Read DTOs (IEntity, IEntity.ISummary, IEntity.IInvert)
+- ❌ This rule does NOT apply to: Create/Update DTOs (IEntity.ICreate, IEntity.IUpdate)
+- Create/Update DTOs ALWAYS keep FK fields as scalars - NEVER transform to objects
+
+**Why This Matters** (for Response DTOs):
 
 1. **Data Redundancy Violation**: Having both `shopping_seller_id: string` AND `seller: IShoppingSeller.ISummary` serves the exact same purpose - identifying the seller. This violates the principle of single source of truth.
 
@@ -2473,22 +2609,63 @@ interface IShoppingSale.ISummary {
 
 **FUNDAMENTAL PRINCIPLE**: Create/Update DTOs handle relations differently based on ownership and lifecycle.
 
+**ABSOLUTE PROHIBITION - NEVER Transform FK to Object in Request DTOs**:
+
+```typescript
+// ❌ CATASTROPHIC VIOLATION - Object references in Create/Update DTOs:
+interface IBbsArticle.ICreate {
+  category: IBbsCategory.ISummary;        // ❌ FORBIDDEN - use category_id
+  parent?: IBbsArticle.ISummary;          // ❌ FORBIDDEN - use parent_id
+  author: IBbsMember.ISummary;            // ❌ FORBIDDEN - auth handles this
+}
+
+// ✅ CORRECT - Scalar ID/code fields only:
+interface IBbsArticle.ICreate {
+  category_id: string;                    // ✅ Scalar ID
+  parent_id?: string;                     // ✅ Scalar ID (nullable)
+  // NO author_id - auth context provides this
+}
+```
+
+**Why This Prohibition Exists**:
+1. **Request DTOs are INPUT contracts** - clients submit simple IDs, not full objects
+2. **Backend responsibility** - server fetches/validates full objects from IDs
+3. **Payload efficiency** - UUID (36 bytes) vs full object (hundreds of bytes)
+4. **Type safety** - prevents circular type references in request validation
+5. **REST convention** - POST/PATCH accepts IDs, GET returns objects
+
+**Compiler Enforcement**:
+- `AutoBeJsonSchemaValidator.validateReferenceId()` REJECTS `$ref` in `*_id` fields
+- Properties ending with `_id` MUST be `string & Format<"uuid">` or code string
+- Violation = compilation failure
+
 #### 5.2.1. Create DTOs - Establishing Relations
 
 ##### A. Reference Relations (Association/Aggregation)
 
-**Rule**: Use ID fields for selecting existing entities.
+**Rule**: Use ID/code fields for selecting existing entities - NEVER object references.
 
 ```typescript
 interface IBbsArticle.ICreate {
-  // Reference existing entities via IDs:
-  category_id: string;               // Select existing category
-  parent_id?: string;                // Select parent article
-  
+  // Reference existing entities via scalar IDs:
+  category_id: string;               // ✅ Select existing category by ID
+  parent_id?: string;                // ✅ Select parent article by ID (nullable for top-level posts)
+
+  // NEVER transform to objects:
+  // ❌ category: IBbsCategory.ISummary;        // FORBIDDEN
+  // ❌ parent?: IBbsArticle.ISummary;          // FORBIDDEN
+  // ❌ parent_id?: IBbsArticle | null;         // FORBIDDEN
+
   // NEVER include actor IDs (security handles this):
   // ❌ author_id - handled by authentication context
 }
 ```
+
+**Critical Understanding**:
+- `parent_id?: string` means "optionally reference parent by its UUID"
+- NOT "optionally include full parent object"
+- Client sends: `{ "title": "Reply", "parent_id": "123e4567-e89b-12d3-a456-426614174000" }`
+- Server validates UUID exists, fetches parent internally
 
 ##### B. Composition Relations (Has Relationship)
 
@@ -3797,13 +3974,15 @@ Repeat these as you review:
 
 1. **"Validate `x-autobe-database-schema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
 2. **"Every object needs a name and $ref - no inline objects ever"**
-3. **"Foreign keys become objects in responses for complete information"**
-4. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
-5. **"Detail DTOs include everything - belongs-to AND has-many"**
-6. **"Summary DTOs include belongs-to only - has-many excluded"**
-7. **"Actors never contain entity arrays - only bounded compositions"**
-8. **"Same transaction = composition, different actor = aggregation"**
-9. **"IInvert provides context without circular references"**
+3. **"RESPONSE DTOs: Foreign keys become objects (remove `_id` suffix, add `.ISummary`)"**
+4. **"CREATE/UPDATE DTOs: Foreign keys STAY as scalars (keep `*_id` suffix, NEVER transform to objects)"**
+5. **"BELONGS-TO uses .ISummary, HAS-MANY/HAS-ONE use detail types"**
+6. **"Detail DTOs include everything - belongs-to AND has-many"**
+7. **"Summary DTOs include belongs-to only - has-many excluded"**
+8. **"Actors never contain entity arrays - only bounded compositions"**
+9. **"Same transaction = composition, different actor = aggregation"**
+10. **"IInvert provides context without circular references"**
+11. **"NEVER EVER transform `parent_id` to `parent: IEntity.ISummary` in Create/Update DTOs"**
 
 ---
 
@@ -3882,7 +4061,11 @@ Repeat these as you review:
 - [ ] **NO back-references or reverse relations** in Summary types
 
 ### 13.6. Request DTO Relations
-- [ ] Create DTOs: Reference relations use ID fields (xxx_id)
+- [ ] **ABSOLUTE: NEVER transform FK to object in Create/Update DTOs**
+- [ ] **ABSOLUTE: NO `.ISummary` references in Create/Update DTOs**
+- [ ] **ABSOLUTE: NO full type references (e.g., `parent?: IBbsArticle`) in Create/Update DTOs**
+- [ ] Create DTOs: Reference relations use ID/code fields (`*_id` or `*_code`) - SCALAR ONLY
+- [ ] Create DTOs: `parent_id?: string` NOT `parent?: IEntity.ISummary` or `parent_id?: IEntity`
 - [ ] Create DTOs: Composition relations use nested ICreate objects
 - [ ] Create DTOs: NO actor IDs (auth handles these)
 - [ ] **CRITICAL: NO path parameter duplication in request DTOs**:
@@ -3890,6 +4073,7 @@ Repeat these as you review:
   - Path parameters already provide context - DO NOT duplicate in body
   - Check endpoint path before validating DTO fields
   - External references (not in path) still need ID fields for composite unique
+- [ ] Update DTOs: Reference relations use ID/code fields - SCALAR ONLY (same as Create)
 - [ ] Update DTOs: Only changeable references included
 - [ ] Update DTOs: Ownership relations excluded (immutable)
 - [ ] Update DTOs: Structural relations excluded (immutable)

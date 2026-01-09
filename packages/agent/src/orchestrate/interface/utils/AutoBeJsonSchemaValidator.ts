@@ -51,6 +51,7 @@ export namespace AutoBeJsonSchemaValidator {
     validateAuthorization(props);
     validateDatabaseSchema(props);
     validateRecursive(props);
+    validateReferenceId(props);
 
     validateKey({
       errors: props.errors,
@@ -501,5 +502,52 @@ export namespace AutoBeJsonSchemaValidator {
           `,
         });
     };
+  };
+
+  const validateReferenceId = (props: {
+    errors: IValidation.IError[];
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    path: string;
+  }): void => {
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    for (const [key, value] of Object.entries(props.schema.properties)) {
+      if (key !== "id" && key.endsWith("_id") === false) continue;
+
+      const accessor: string = `${props.path}.properties${
+        Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+      }`;
+      const inspect = (schema: AutoBeOpenApi.IJsonSchema): boolean =>
+        (AutoBeOpenApiTypeChecker.isString(schema) &&
+          schema.format === "uuid") ||
+        AutoBeOpenApiTypeChecker.isNull(schema) ||
+        (AutoBeOpenApiTypeChecker.isOneOf(schema) &&
+          schema.oneOf.every((v) => inspect(v)));
+      if (inspect(value) === false)
+        props.errors.push({
+          path: accessor,
+          expected: StringUtil.trim`
+            | { type: "string"; format: "uuid"; description: string; } 
+            | {
+                oneOf: [
+                  { type: "string"; format: "uuid"; },
+                  { type: "null"; },
+                ];
+                description: string;
+              }`,
+          value,
+          description: StringUtil.trim`
+            Property names "id" or ending with "_id" must be defined as 
+            UUID string type, or nullable UUID string type.
+
+            This is the rule enforced to ensure consistent identification of 
+            resources across the API. Even though you think that defining a 
+            different type is more convenient for your specific use case,
+            just follow the rule without any resistance.
+
+            Note that, this is not a recommendation, but an instruction you 
+            must follow.
+          `,
+        });
+    }
   };
 }

@@ -1865,6 +1865,47 @@ interface IEnterpriseEmployee {
 | **Aggregation** | Not included (counts only) | Not applicable | Not applicable |
 | **Actor Relations** | Never included from auth | Never accept IDs | Never allow changes |
 
+##### CRITICAL: The DTO Transformation Direction Rule
+
+**ABSOLUTE RULE**: FK transformation rules are OPPOSITE for Response vs Request DTOs.
+
+**Response DTOs (Read) - Transform FK to Object**:
+```typescript
+// Database has: author_id, category_id, parent_id
+// ✅ CORRECT Response DTO - Objects with _id suffix REMOVED:
+interface IBbsArticle {
+  author: IBbsMember.ISummary;      // author_id → author
+  category: IBbsCategory.ISummary;  // category_id → category
+  parent?: IBbsArticle.ISummary;    // parent_id → parent
+}
+```
+
+**Request DTOs (Create/Update) - Keep FK as Scalar**:
+```typescript
+// ✅ CORRECT Create DTO - Keep FK fields as scalars:
+interface IBbsArticle.ICreate {
+  category_id: string;    // ✅ Scalar ID
+  parent_id?: string;     // ✅ Scalar ID (nullable)
+
+  // NEVER transform to objects:
+  // ❌ category: IBbsCategory.ISummary;        // FORBIDDEN
+  // ❌ parent?: IBbsArticle.ISummary;          // FORBIDDEN
+  // ❌ parent_id?: IBbsArticle | null;         // FORBIDDEN
+}
+```
+
+**Why This Distinction Matters**:
+- **Response DTOs**: Provide complete context → transform FK to `.ISummary` objects
+- **Request DTOs**: Accept simple references → keep as scalar `*_id` fields
+- **Violating this rule**: Causes `validateReferenceId()` compiler errors
+
+**Summary**:
+| Aspect | Response DTO | Create/Update DTO |
+|--------|--------------|-------------------|
+| **FK Field** | Transform to object | Keep as scalar |
+| **Field Name** | Remove `_id` suffix | Keep `_id` suffix |
+| **Type** | `IEntity.ISummary` | `string` (UUID or code) |
+
 #### 4.4.2. The Atomic Operation Principle
 
 **FUNDAMENTAL RULE**: DTOs must enable complete operations in a single API call.
@@ -3037,6 +3078,27 @@ Is the referenced entity in the endpoint path?
             Body: { ..., enterprise_code, team_code }
 ```
 
+**ABSOLUTE PROHIBITION for Create/Update DTOs**:
+
+❌ **NEVER transform FK fields to object references in Create/Update DTOs**
+❌ **NEVER use `.ISummary` types in Create/Update DTOs**
+❌ **NEVER use full type references (e.g., `parent?: IEntity`) in Create/Update DTOs**
+
+```typescript
+// ❌ CATASTROPHIC VIOLATION:
+interface IBbsArticle.ICreate {
+  parent?: IBbsArticle.ISummary;          // FORBIDDEN
+  parent_id?: IBbsArticle | null;         // FORBIDDEN
+  category: IBbsCategory.ISummary;        // FORBIDDEN
+}
+
+// ✅ CORRECT - Keep FK as scalar:
+interface IBbsArticle.ICreate {
+  parent_id?: string;     // ✅ Scalar UUID
+  category_id: string;    // ✅ Scalar UUID
+}
+```
+
 **Three Patterns for Relations in Create DTOs**:
 
 1. **Parent Context from Path**: DO NOT duplicate in body
@@ -3044,8 +3106,10 @@ Is the referenced entity in the endpoint path?
    - Server extracts automatically
    - Example: `/enterprises/{enterpriseCode}/teams` → NO `enterprise_code` in body
 
-2. **Reference Relations (Association/Aggregation)**: Use code fields (or ID if no code)
+2. **Reference Relations (Association/Aggregation)**: Use scalar code/ID fields ONLY
    - Selecting existing entities NOT in path
+   - **ALWAYS scalar**: `*_id: string` or `*_code: string`
+   - **NEVER objects**: NO `.ISummary`, NO full type references
    - Check target's `@@unique` constraint
    - Global unique: single code field
    - Composite unique: parent code + child code
@@ -3920,7 +3984,13 @@ Each DTO type serves a specific purpose with distinct restrictions on what prope
     // DTO uses different field name:
     interface IUser.ICreate { password: string }  // NOT password_hashed
     ```
-- Foreign keys for "belongs to" relations are allowed (category_id, group_id)
+- **Foreign Key References - MUST BE SCALAR**:
+  - ✅ **ALLOWED**: Scalar FK fields like `category_id: string`, `parent_id?: string`, `group_id: string`
+  - ❌ **FORBIDDEN**: Object references like `category: IBbsCategory.ISummary`, `parent?: IBbsArticle.ISummary`
+  - ❌ **FORBIDDEN**: Full type references like `parent_id?: IBbsArticle | null`
+  - **ABSOLUTE RULE**: Create/Update DTOs ALWAYS use scalar `*_id` or `*_code` fields for references
+  - **NEVER transform FK to object in request DTOs** - this is ONLY for response DTOs
+  - **Compiler enforcement**: `validateReferenceId()` will REJECT non-scalar `*_id` fields
 - Default values should be handled by database, not required in DTO
 
 **Example**:
@@ -4967,8 +5037,12 @@ Before completing the schema generation, verify ALL of the following items:
   - **NEVER duplicate path parameters in request body** - If `enterpriseCode` in path, don't add it to DTO
 
 ### ✅ Relation Rules
-- [ ] **ALL BELONGS-TO (reference) relations use `.ISummary`** - no exceptions
-- [ ] **ALL HAS-MANY/HAS-ONE (composition) relations use detail types** (base interface)
+- [ ] **Response DTOs: ALL BELONGS-TO relations use `.ISummary`** - transform FK to object, remove `_id` suffix
+- [ ] **Response DTOs: ALL HAS-MANY/HAS-ONE (composition) relations use detail types** (base interface)
+- [ ] **Request DTOs: ALL reference relations use SCALAR `*_id` or `*_code` fields** - NEVER transform to objects
+- [ ] **Request DTOs: NEVER use `.ISummary` types** - ABSOLUTE PROHIBITION
+- [ ] **Request DTOs: NEVER use full type references** (e.g., `parent?: IEntity`) - ABSOLUTE PROHIBITION
+- [ ] **Request DTOs: `parent_id?: string` NOT `parent?: IEntity.ISummary`** - scalar only
 - [ ] **Detail DTOs include both BELONGS-TO and HAS-MANY** relations
 - [ ] **Summary DTOs include BELONGS-TO only, exclude HAS-MANY** relations
 - [ ] **NO circular references** (all cross-references use `.ISummary`)
