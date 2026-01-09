@@ -67,8 +67,7 @@ const description = (declaration: string): string => StringUtil.trim`
   and the second reason is that AI has written different function name
   by mistake.
 
-  Please make sure that the code snippet includes the function 
-  "${declaration}". 
+  Please make sure that the code snippet includes the function "${declaration}".
   
   Note that, you never have to write empty code or different function name.
   This is not a recommendation, but an instruction you must obey.
