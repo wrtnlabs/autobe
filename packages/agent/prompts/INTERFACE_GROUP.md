@@ -344,29 +344,162 @@ Before finalizing `databaseSchemas`, verify:
 - [ ] No system-internal or cache tables included
 - [ ] List is comprehensive for complete workflow support
 
+## 🚨 CRITICAL RULE: COMPLETE COVERAGE IS MANDATORY
+
+**YOUR ABSOLUTE OBLIGATION**: Generate enough API endpoint groups to cover EVERY SINGLE business domain and functional area mentioned in requirements.
+
+### Why Completeness Matters for API Groups
+
+**INSUFFICIENT GROUPING = GENERATION FAILURE**:
+- If you create too few groups → Some API functionalities won't be properly organized
+- Missing groups = API endpoint generation overload (one agent handling 50+ endpoints is impossible)
+- Under-grouping causes cognitive overload in subsequent endpoint generation
+- **WORST**: Creating only 1-2 mega-groups for 120+ database tables is COMPLETELY UNACCEPTABLE
+
+**Real World Example - The Disaster Scenario**:
+```
+❌ CATASTROPHIC FAILURE:
+Database: 120 tables for e-commerce platform
+Your Groups: 1 group named "shoppingMall"
+Result: Endpoint generator receives 120 tables at once, completely overwhelmed, fails to generate comprehensive endpoints
+
+✅ CORRECT APPROACH:
+Database: 120 tables for e-commerce platform
+Your Groups: 12-15 groups (Products, Sales, Orders, Carts, Reviews, Shipping, Inventory, Analytics, Users, etc.)
+Result: Each endpoint generator receives 8-12 related tables, generates complete, focused endpoints
+```
+
+**Minimum Group Count Guidelines**:
+- 20-40 tables total → 4-6 groups minimum
+- 40-80 tables total → 8-12 groups minimum
+- 80-120 tables total → 12-18 groups minimum
+- 120+ tables total → 15-20+ groups minimum
+
+**When in doubt, create MORE groups rather than fewer.** It's better to have well-organized small groups than overwhelmingly large mega-groups.
+
 ## Group Generation Principles
 
-### Schema-First Organization
+### Database Group Reference-First Organization
 
-**CRITICAL**: Groups MUST be derived from the database schema structure, NOT arbitrary business domains.
+**CRITICAL INSIGHT**: API endpoint groups should **START** with database schema groups as a reference, but **ARE NOT BOUND** by them.
 
-**Primary Group Sources (in priority order):**
-1. **Database Schema Namespaces**: If schema uses `namespace Shopping`, `namespace BBS`, etc.
-2. **Schema File Names**: If multiple files like `shopping.prisma`, `bbs.prisma`, `user.prisma`
-3. **Table Prefix Patterns**: If tables use consistent prefixes like `shopping_orders`, `bbs_articles`
-4. **Schema Comments/Annotations**: Organizational comments indicating logical groupings
+**Why Database Groups are Your Starting Point**:
+- Database groups represent thoughtfully organized business domains
+- They provide proven entity clustering based on actual data relationships
+- They reflect the user's mental model of their business structure
+- Using them as a baseline ensures consistency across the stack
+
+**Why API Groups Can Differ from Database Groups**:
+- **APIs combine multiple database entities**: One API endpoint might JOIN across 3-4 database schemas
+- **APIs don't always need database**: Some endpoints are pure computation, external integrations, or cached aggregations
+- **API organization follows user workflows**: Database is normalized for storage, API is organized for use cases
+- **Cross-cutting API concerns**: Analytics, dashboards, search span multiple database domains
+
+**The Balanced Approach**:
+```
+Step 1: Reference database groups as baseline structure
+Step 2: Analyze API requirements and user workflows
+Step 3: Adjust grouping where API needs diverge from database organization
+Step 4: Ensure complete coverage of all functional areas
+```
+
+**Primary Group Sources (in priority order)**:
+1. **Database Schema Groups (PROVIDED)**: You will receive belonged namespace information for each database table - USE THIS as your primary reference
+2. **API-Specific Requirements**: User workflows, cross-cutting concerns, integration needs that don't map 1:1 to database
+3. **Functional Groupings**: Analytics, dashboards, search, webhooks that span multiple database schemas
+4. **Business Domain Logic**: Requirements may specify API organization different from database organization
+
+### When to Follow Database Groups vs When to Diverge
+
+**✅ Follow Database Groups (1:1 Mapping) When**:
+- API operations directly map to single database schema entities
+- CRUD operations on database tables
+- Database group represents cohesive API domain
+- No cross-cutting concerns or multi-schema aggregations needed
+
+**Example - Direct Mapping**:
+```
+Database Group: "Products" (products, product_images, product_variants, product_categories)
+API Group: "Products" (same scope - product catalog management)
+Rationale: Product APIs directly operate on Product schema entities
+```
+
+**🔄 Diverge from Database Groups (Custom Grouping) When**:
+- **Cross-Schema Analytics**: API needs aggregated data from multiple database schemas
+- **Workflow-Based APIs**: User workflows span multiple database domains
+- **External Integrations**: APIs interfacing with third-party services (no direct database mapping)
+- **Pure Computation**: APIs performing calculations without persistent storage
+- **Unified Search**: Search across heterogeneous entities from different database schemas
+
+**Example - Divergence for Analytics**:
+```
+Database Groups:
+- "Sales" (shopping_sales, shopping_sale_snapshots)
+- "Products" (shopping_products, shopping_product_categories)
+- "Customers" (shopping_customers, shopping_customer_addresses)
+
+API Groups:
+- "Sales" (sales CRUD operations)
+- "Products" (product CRUD operations)
+- "Customers" (customer CRUD operations)
+- "Analytics" (NEW - sales trends, customer behavior, product performance analysis)
+  ↳ This group JOINs across Sales, Products, Customers database schemas
+  ↳ Provides aggregated insights not tied to single database schema
+```
+
+**Example - Divergence for Workflows**:
+```
+Database Groups:
+- "Carts" (shopping_carts, shopping_cart_items)
+- "Orders" (shopping_orders, shopping_order_goods)
+- "Payments" (shopping_payments, shopping_payment_histories)
+
+API Groups:
+- "Carts" (cart management)
+- "Orders" (order management)
+- "Payments" (payment processing)
+- "Checkout" (NEW - orchestrates cart → order → payment workflow)
+  ↳ This group provides checkout APIs that span Carts, Orders, Payments
+  ↳ Represents user workflow, not database structure
+```
+
+**Decision Framework**:
+```
+For each potential API group, ask:
+
+1. Does this directly correspond to a database group?
+   YES → Use same group name and scope (e.g., "Products", "Sales")
+   NO → Continue to question 2
+
+2. Does this require data from multiple database groups?
+   YES → Create new API-specific group (e.g., "Analytics", "Dashboard")
+   NO → Continue to question 3
+
+3. Does this represent a user workflow spanning multiple schemas?
+   YES → Create workflow-based group (e.g., "Checkout", "Onboarding")
+   NO → Map to closest database group
+
+4. Is this an external integration or pure computation?
+   YES → Create integration/computation group (e.g., "Webhooks", "Calculator")
+   NO → Should map to existing database group
+```
 
 ### Group Naming Rules
 
 - Use PascalCase format (e.g., "Shopping", "BBS", "UserManagement")
-- Names must directly reflect database schema structure
-- Avoid arbitrary business domain names
+- **Prefer database group names** when API scope matches database scope
+- Create **new descriptive names** when API scope differs (e.g., "Analytics", "Dashboard", "Checkout")
 - Keep names concise (3-50 characters)
 
-**Examples:**
-- Database `namespace Shopping` → Group name: "Shopping"
-- Schema file `bbs.prisma` → Group name: "BBS"
-- Table prefix `user_management_` → Group name: "UserManagement"
+**Examples for Database-Aligned Groups:**
+- Database `namespace Shopping` → API Group: "Shopping" (when scope matches)
+- Database `namespace BBS` → API Group: "BBS" (when scope matches)
+- Database `namespace UserManagement` → API Group: "UserManagement" (when scope matches)
+
+**Examples for API-Specific Groups:**
+- Cross-schema analytics → API Group: "Analytics" (not a database group)
+- Multi-schema search → API Group: "Search" (not a database group)
+- External webhooks → API Group: "Webhooks" (not a database group)
 
 ### Beyond Schema-Based Groups: Analytics and Computed Operations
 
@@ -488,24 +621,53 @@ Groups Created:
 
 ### When to Create New Groups
 
-Create new groups in these scenarios:
+**Starting Point: Database Groups (PRIMARY)**:
+1. **Review provided database group information** - You will receive belonged namespace for each table
+2. **Map API requirements to database groups** - Most API groups should align with database groups
+3. **Identify 1:1 mappings** - Create API groups matching database groups when scope aligns
 
-**Schema-Based Groups** (Primary approach):
-- Database schema has clear namespaces, file separation, or table prefixes
-- Entities naturally cluster around business domains
-- Most groups should be schema-based
+**Example - Database-Aligned Groups**:
+```
+Database Groups (provided):
+- Systematic (mv_channels, mv_sections, ...)
+- Actors (mv_users, mv_customers, mv_administrators, ...)
+- Products (shopping_products, shopping_product_images, ...)
+- Sales (shopping_sales, shopping_sale_snapshots, ...)
 
-**Functional Groups** (Secondary approach):
-- Cross-cutting concerns spanning multiple schema areas (analytics, dashboards)
-- Requirements explicitly need aggregated/computed operations
-- System-level operations not mapped to specific entities (webhooks, integrations)
-- Unified functionality across heterogeneous entities (global search)
+API Groups (you create):
+- Systematic ✅ (matches database group)
+- Actors ✅ (matches database group)
+- Products ✅ (matches database group)
+- Sales ✅ (matches database group)
+```
+
+**When to Create Additional API-Specific Groups (SECONDARY)**:
+- **Cross-cutting concerns** spanning multiple database groups (analytics, dashboards)
+- **Workflow-based APIs** orchestrating multiple database domains (checkout, onboarding)
+- **External integrations** not tied to specific database schemas (webhooks, third-party APIs)
+- **Unified functionality** across heterogeneous entities (global search, notifications)
+- **Requirements explicitly specify** these functional groupings
+
+**Example - Adding API-Specific Groups**:
+```
+Database Groups (provided):
+- Products, Sales, Customers, Orders
+
+API Groups (you create):
+- Products ✅ (from database)
+- Sales ✅ (from database)
+- Customers ✅ (from database)
+- Orders ✅ (from database)
+- Analytics ✅ (NEW - cross-cutting, spans Products + Sales + Customers)
+- Checkout ✅ (NEW - workflow, spans Carts + Orders + Payments)
+```
 
 **DO NOT Create Groups For**:
 - ❌ Single operations (use existing group instead)
 - ❌ "Nice to have" features without clear requirements
 - ❌ Speculative analytics without business need
 - ❌ Premature organization (combine with related group first)
+- ❌ Creating mega-groups that ignore database group boundaries (e.g., "ShoppingMall" for 120 tables)
 
 ### Group Description Requirements
 
@@ -530,21 +692,35 @@ Each group description must be concise and focused:
 
 ## Group Generation Strategy
 
-1. **Analyze Database Schema Structure**:
-   - Identify namespaces, file organization, table prefixes
-   - Map entities to natural schema-based groupings
-   - Note any organizational patterns or comments
+1. **Review Database Group Information (MANDATORY FIRST STEP)**:
+   - You will receive a table with: Belonged Namespace | Table Name | Stance | Summary
+   - **This is your PRIMARY reference** for understanding domain organization
+   - Identify all unique database namespaces (e.g., Systematic, Actors, Products, Sales, ...)
+   - Note which tables belong to which database group
 
-2. **Create Schema-Based Groups**:
-   - Prioritize schema namespaces and file structure
-   - Group related tables within same schema areas
-   - Maintain consistency with schema organization
+2. **Map Database Groups to API Groups (1:1 Baseline)**:
+   - **Start with 1:1 mapping**: Create one API group for each database group
+   - Use same namespace names when API scope matches database scope
+   - Example: Database "Products" → API "Products", Database "Sales" → API "Sales"
+   - **This ensures you don't create mega-groups that ignore database organization**
 
-3. **Verify Complete Coverage**:
-   - Ensure all database entities are assigned
-   - Check that all requirements can be mapped to groups
-   - Confirm no overlapping entity assignments
+3. **Analyze API Requirements for Divergence**:
+   - Review requirements for cross-cutting concerns (analytics, dashboards, search)
+   - Identify workflow-based APIs spanning multiple database groups (checkout, onboarding)
+   - Note external integrations or computation-only APIs
+   - **Only create additional groups when requirements clearly need them**
 
-4. **Function Call**: Call `makeGroups()` with complete group array
+4. **Create Additional API-Specific Groups (If Needed)**:
+   - Add groups for analytics, dashboards, workflows, integrations
+   - Ensure these groups have clear purpose beyond single database schema
+   - Document which database groups they draw from
 
-Your group generation MUST be COMPLETE and follow the database schema structure faithfully, ensuring efficient organization for subsequent endpoint generation processes.
+5. **Verify Complete Coverage**:
+   - **Every database group** should have corresponding API group (or be merged into related API group with clear rationale)
+   - **Every requirement** should be mappable to an API group
+   - **No mega-groups**: Avoid creating 1-2 massive groups for 50+ tables
+   - **Proper granularity**: Each group handles manageable scope (typically 5-20 endpoints worth)
+
+6. **Function Call**: Call `process({ request: { type: "complete", groups: [...] } })` with complete group array
+
+**Golden Rule**: Start with database groups, adjust for API needs, ensure complete coverage. Database groups are your **baseline**, not your **constraint**.
