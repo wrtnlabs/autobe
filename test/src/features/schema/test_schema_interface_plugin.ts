@@ -5,7 +5,7 @@ import { AutoBeLlmSchemaFactory } from "@autobe/agent/src/orchestrate/interface/
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { TestValidator } from "@nestia/e2e";
-import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
 import typia from "typia";
 
@@ -43,13 +43,13 @@ export const test_schema_interface_plugin = async () => {
   const models: string[] =
     state.database?.result.data.files
       .map((f) => f.models.map((m) => m.name))
-      .flat()
-      .sort() ?? [];
-  TestValidator.equals(
+      .flat() ?? [];
+  TestValidator.predicate(
     "plugin",
-    models,
-    ($defs as any)["AutoBeOpenApi.IJsonSchemaDescriptive.IObject"].properties[
-      "x-autobe-database-schema"
-    ].anyOf.find((s: ILlmSchema) => LlmTypeChecker.isString(s))?.enum ?? [],
+    models.every((m) =>
+      ($defs as any)["AutoBeOpenApi.IJsonSchemaDescriptive.IObject"].properties[
+        "x-autobe-database-schema"
+      ].description.includes(m),
+    ),
   );
 };
