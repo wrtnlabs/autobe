@@ -846,12 +846,12 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 // If a DB schema only has: id, email, name, created_at
 {
   "type": "object",
-  "description": "Shopping customer entity with basic profile information.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "Customer unique identifier" },
-    "email": { "type": "string", "description": "Customer email address" },
-    "name": { "type": "string", "description": "Customer name" },
-    "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
   "required": ["id", "email", "name", "createdAt"],
@@ -877,9 +877,9 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
 {
   "type": "object",
   "properties": {
-    "id": { "type": "string", "description": "User ID" },
-    "email": { "type": "string", "description": "User email" },
-    "description": "User entity",             // ❌ WRONG: This is metadata, not a field!
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "description": "<DETAILED_DESCRIPTION>",                     // ❌ WRONG: This is metadata, not a field!
     "required": ["id", "email"],              // ❌ WRONG: This is metadata, not a field!
     "x-autobe-database-schema": "users"        // ❌ WRONG: This is metadata, not a field!
   }
@@ -891,11 +891,11 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
 // Schema: IUser
 {
   "type": "object",
-  "description": "User entity",               // ✅ CORRECT: Metadata at object level
+  "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "type": "string", "description": "User ID" },
-    "email": { "type": "string", "description": "User email" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -971,12 +971,12 @@ model User {
 ```json
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "..." },
-    "email": { "type": "string", "description": "..." },
-    "bio": { "type": "string", "description": "..." },        // ❌ Should allow null!
-    "expiredAt": { "type": "string", "description": "..." }   // ❌ Should allow null!
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },        // ❌ Should allow null!
+    "expiredAt": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }   // ❌ Should allow null!
   },
   "required": ["id", "email", "bio", "expiredAt"]
 }
@@ -986,23 +986,23 @@ model User {
 ```json
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "..." },
-    "email": { "type": "string", "description": "..." },
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
     "bio": {
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
       ],
-      "description": "..."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
       ],
-      "description": "..."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
@@ -1039,11 +1039,11 @@ model User {
 ```json
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "email": { "type": "string", "description": "..." },
-    "bio": { "type": "string", "description": "..." },
-    "role": { "type": "string", "description": "..." }
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["email"]  // ✅ Only non-nullable, non-default fields required
 }
@@ -1093,19 +1093,19 @@ model Session {
 ```json
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "createdAt": {
       "type": "string",
       "format": "date-time",
-      "description": "..."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
       ],
-      "description": "..."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["createdAt", "expiredAt"]  // ✅ Both present, expiredAt may be null
@@ -1123,16 +1123,16 @@ model Session {
 // ❌ WRONG
 {
   "type": "object",
-  "description": "...",
-  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." } },
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" } },
   "required": []  // ❌ Field is always present in response!
 }
 
 // ✅ CORRECT
 {
   "type": "object",
-  "description": "...",
-  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." } },
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" } },
   "required": ["bio"]  // ✅ Field present, value may be null
 }
 ```
@@ -1142,17 +1142,17 @@ model Session {
 // ❌ WRONG - bio is nullable in DB
 {
   "type": "object",
-  "description": "...",
-  "properties": { "bio": { "type": "string", "description": "..." } },
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": { "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
   "required": ["bio"]
 }
 
 // ✅ CORRECT
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." }
+    "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["bio"]
 }
@@ -1163,16 +1163,16 @@ model Session {
 // ❌ WRONG - bio is nullable, should be optional
 {
   "type": "object",
-  "description": "...",
-  "properties": { "email": { "type": "string", "description": "..." }, "bio": { "type": "string", "description": "..." } },
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
   "required": ["email", "bio"]
 }
 
 // ✅ CORRECT
 {
   "type": "object",
-  "description": "...",
-  "properties": { "email": { "type": "string", "description": "..." }, "bio": { "type": "string", "description": "..." } },
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
   "required": ["email"]
 }
 ```
@@ -1255,20 +1255,20 @@ An **inline object type** occurs when you define an object's complete structure 
 // Schema: IBbsArticle.ICreate
 {
   "type": "object",
-  "description": "Request DTO for creating a new BBS article. Contains title, content, attachments, and metadata.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "title": { "type": "string", "description": "Article title. Must be concise and descriptive." },
-    "content": { "type": "string", "description": "Article content in markdown format." },
+    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
     "attachments": {
       "type": "array",
-      "description": "List of file attachments for the article.",
+      "description": "<DETAILED_DESCRIPTION>",
       "items": {
         "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
       }
     },
     "metadata": {
       "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
-      "description": "Additional metadata for the article including tags and priority."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   }
 }
@@ -1278,11 +1278,11 @@ An **inline object type** occurs when you define an object's complete structure 
 // Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments
 {
   "type": "object",
-  "description": "Request DTO for creating article attachment. References pre-uploaded file URL.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "url": { "type": "string", "format": "uri", "description": "Pre-uploaded file URL from storage service." },
-    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "Original file name with extension." },
-    "size": { "type": "integer", "minimum": 0, "description": "File size in bytes." }
+    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>" },
+    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["url", "name", "size"]
 }
@@ -1292,17 +1292,17 @@ An **inline object type** occurs when you define an object's complete structure 
 // Schema: IBbsArticleMetadata - Supporting type for metadata
 {
   "type": "object",
-  "description": "Article metadata containing classification and priority information.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "tags": {
       "type": "array",
-      "description": "List of tags for article categorization.",
-      "items": { "type": "string", "description": "Individual tag value." }
+      "description": "<DETAILED_DESCRIPTION>",
+      "items": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
     },
     "priority": {
       "type": "string",
       "enum": ["low", "medium", "high"],
-      "description": "Article priority level for display ordering."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   }
 }
@@ -1401,10 +1401,10 @@ Before ANY schema is accepted:
 // ❌ WRONG: Attempting to nest another schema definition
 {
   "type": "object",
-  "description": "Article entity",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "Article ID" },
-    "title": { "type": "string", "description": "Article title" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "IAuthor.ISummary": {  // ❌ CATASTROPHIC ERROR: Schema nested inside another schema!
     "type": "object",
@@ -1418,11 +1418,11 @@ Before ANY schema is accepted:
 // Your single schema should reference other types via $ref
 {
   "type": "object",
-  "description": "Article entity with author information.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "author": {
       "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-      "description": "Author who wrote this article."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   }
 }
@@ -1633,18 +1633,18 @@ All IPage types MUST follow this exact structure:
 ```json
 {
   "type": "object",
-  "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "pagination": {
       "$ref": "#/components/schemas/IPage.IPagination",
-      "description": "Pagination metadata including current page, total pages, and item counts."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "data": {
       "type": "array",
       "items": {
         "$ref": "#/components/schemas/<EntityType>"
       },
-      "description": "Array of records for the current page."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["pagination", "data"]
@@ -1671,23 +1671,22 @@ For authentication operations (login, join, refresh), the response type MUST fol
 
 **Example**:
 ```json
+// Schema: IUser.IAuthorized
 {
-  "IUser.IAuthorized": {
-    "type": "object",
-    "description": "Authenticated user response returned after successful login or registration.\n\nContains user identifier and JWT token for subsequent API authentication.",
-    "properties": {
-      "id": {
-        "type": "string",
-        "format": "uuid",
-        "description": "Unique identifier of the authenticated user."
-      },
-      "token": {
-        "$ref": "#/components/schemas/IAuthorizationToken",
-        "description": "JWT token information for API authentication."
-      }
+  "type": "object",
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "<DETAILED_DESCRIPTION>"
     },
-    "required": ["id", "token"]
-  }
+    "token": {
+      "$ref": "#/components/schemas/IAuthorizationToken",
+      "description": "<DETAILED_DESCRIPTION>"
+    }
+  },
+  "required": ["id", "token"]
 }
 ```
 
@@ -1789,33 +1788,33 @@ interface IUser.ICreate {
 ```json
 {
   "type": "object",
-  "description": "Login request DTO with session context fields.\n\nContains user credentials and connection metadata for session tracking and security audit.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "email": {
       "type": "string",
       "format": "email",
-      "description": "User email address for authentication."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "password": {
       "type": "string",
-      "description": "User password in plain text for verification."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "ip": {
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
       ],
-      "description": "Client IP address for session tracking. Optional - server can extract from request headers, but client may provide for SSR scenarios."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "href": {
       "type": "string",
       "format": "uri",
-      "description": "Current page URL where login was initiated. Required for session tracking."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "referrer": {
       "type": "string",
       "format": "uri",
-      "description": "Previous page URL before login page. Required for session tracking."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["email", "password", "href", "referrer"]
@@ -3948,29 +3947,28 @@ interface IBbsArticleAttachment.ICreate {
 }
 
 // JSON Schema representation
+// Schema: IBbsArticleAttachment.ICreate
 {
-  "IBbsArticleAttachment.ICreate": {
-    "type": "object",
-    "description": "Request DTO for creating article file attachment. Contains file metadata and pre-uploaded URL.",
-    "properties": {
-      "name": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 255,
-        "description": "Original file name without extension."
-      },
-      "extension": {
-        "type": "string",
-        "description": "File extension without dot (e.g., jpg, pdf, png)."
-      },
-      "url": {
-        "type": "string",
-        "format": "uri",
-        "description": "Pre-uploaded file URL from storage service. Must be a valid URI."
-      }
+  "type": "object",
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "<DETAILED_DESCRIPTION>"
     },
-    "required": ["name", "extension", "url"]
-  }
+    "extension": {
+      "type": "string",
+      "description": "<DETAILED_DESCRIPTION>"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "<DETAILED_DESCRIPTION>"
+    }
+  },
+  "required": ["name", "extension", "url"]
 }
 ```
 

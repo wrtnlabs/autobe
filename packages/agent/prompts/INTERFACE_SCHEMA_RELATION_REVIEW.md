@@ -3063,12 +3063,13 @@ if (property.type === "object" && property.properties) {
 
 **previous version: Create named type**
 ```json
-"INotificationSettings": {
+// Schema: INotificationSettings
+{
   "type": "object",
-  "description": "User notification preferences configuration.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "email": { "$ref": "#/components/schemas/IEmailSettings", "description": "Email notification settings." },
-    "push": { "$ref": "#/components/schemas/IPushSettings", "description": "Push notification settings." }
+    "email": { "$ref": "#/components/schemas/IEmailSettings", "description": "<DETAILED_DESCRIPTION>" },
+    "push": { "$ref": "#/components/schemas/IPushSettings", "description": "<DETAILED_DESCRIPTION>" }
   }
 }
 ```
@@ -3095,20 +3096,19 @@ if (property.type === "object" && property.properties) {
 }
 
 // ✅ CORRECT - Reference ISummary via $ref:
+// Schema: IArticle
 {
-  "IArticle": {
-    "type": "object",
-    "description": "Article entity with author reference.",
-    "properties": {
-      "author": {
-        "$ref": "#/components/schemas/IUser.ISummary",  // Reference to ISummary
-        "description": "Author who wrote this article."
-      }
+  "type": "object",
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": {
+    "author": {
+      "$ref": "#/components/schemas/IUser.ISummary",  // Reference to ISummary
+      "description": "<DETAILED_DESCRIPTION>"
     }
   }
-  // NOTE: Don't define IUser.ISummary yourself
-  // INTERFACE_COMPLEMENT will create it later
 }
+// NOTE: Don't define IUser.ISummary yourself
+// INTERFACE_COMPLEMENT will create it later
 ```
 
 ### 7.3. Naming Conventions
@@ -3150,25 +3150,24 @@ IOrderShippingInfo, IArticleMetadata
 
 **FIXED Structure (IMMUTABLE)**:
 ```json
+// Schema: IPageIUser
 {
-  "IPageIUser": {
-    "type": "object",
-    "description": "Paginated collection of user records.",
-    "properties": {
-      "pagination": {
-        "$ref": "#/components/schemas/IPage.IPagination",
-        "description": "Pagination metadata including current page and total counts."
-      },
-      "data": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/IUser"
-        },
-        "description": "Array of user records for the current page."
-      }
+  "type": "object",
+  "description": "<DETAILED_DESCRIPTION>",
+  "properties": {
+    "pagination": {
+      "$ref": "#/components/schemas/IPage.IPagination",
+      "description": "<DETAILED_DESCRIPTION>"
     },
-    "required": ["pagination", "data"]
-  }
+    "data": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/IUser"
+      },
+      "description": "<DETAILED_DESCRIPTION>"
+    }
+  },
+  "required": ["pagination", "data"]
 }
 ```
 

@@ -584,16 +584,16 @@ export namespace IShoppingSale {
 // Schema: IPageIEntityName
 {
   "type": "object",
-  "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "pagination": {
       "$ref": "#/components/schemas/IPage.IPagination",
-      "description": "Pagination metadata including current page, total pages, and item counts."
+      "description": "<DETAILED_DESCRIPTION>"
     },
     "data": {
       "type": "array",
       "items": { "$ref": "#/components/schemas/IEntityName" },
-      "description": "Array of records for the current page."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["pagination", "data"]
@@ -643,12 +643,12 @@ model Article {
 // Schema: IArticle
 {
   "type": "object",
-  "description": "Article entity with nullable and non-nullable fields.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "title": { "type": "string", "description": "Article title. Required field." },
-    "subtitle": { "type": "string", "description": "Optional subtitle." },
-    "content": { "type": "string", "description": "Article content. Required field." },
-    "summary": { "type": "string", "description": "Optional summary." }
+    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "subtitle": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "summary": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["title", "content"]        // Only non-nullable fields
 }
@@ -665,12 +665,11 @@ enum UserRole {
 ```
 
 ```json
+// Schema: EUserRole
 {
-  "EUserRole": {
-    "type": "string",
-    "enum": ["USER", "ADMIN", "MODERATOR"],
-    "description": "User role within the system. Determines access permissions and capabilities."
-  }
+  "type": "string",
+  "enum": ["USER", "ADMIN", "MODERATOR"],
+  "description": "<DETAILED_DESCRIPTION>"
 }
 ```
 
@@ -1090,12 +1089,12 @@ model Session {
 // ❌ WRONG - nullable field without oneOf
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "..." },
-    "userId": { "type": "string", "description": "..." },
-    "createdAt": { "type": "string", "format": "date-time", "description": "..." },
-    "expiredAt": { "type": "string", "format": "date-time", "description": "..." }  // ❌ Should allow null!
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "userId": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" },
+    "expiredAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" }  // ❌ Should allow null!
   },
   "required": ["id", "userId", "createdAt", "expiredAt"]
 }
@@ -1104,17 +1103,17 @@ model Session {
 // ✅ CORRECT - nullable field with oneOf + in required array
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "..." },
-    "userId": { "type": "string", "description": "..." },
-    "createdAt": { "type": "string", "format": "date-time", "description": "..." },
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "userId": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
       ],
-      "description": "..."
+      "description": "<DETAILED_DESCRIPTION>"
     }
   },
   "required": ["id", "userId", "createdAt", "expiredAt"]  // ✅ All fields present
@@ -1165,11 +1164,11 @@ model User {
 // ❌ WRONG - includes nullable/default fields in required
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "email": { "type": "string", "description": "..." },
-    "bio": { "type": "string", "description": "..." },
-    "role": { "type": "string", "description": "..." }
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["email", "bio", "role"]  // ❌ bio and role should NOT be required
 }
@@ -1178,11 +1177,11 @@ model User {
 // ✅ CORRECT - only non-nullable, non-default fields required
 {
   "type": "object",
-  "description": "...",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "email": { "type": "string", "description": "..." },
-    "bio": { "type": "string", "description": "..." },
-    "role": { "type": "string", "description": "..." }
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["email"]  // ✅ Only email is required
 }
@@ -1310,13 +1309,13 @@ model Product {
 // ❌ BEFORE - Missing fields:
 {
   "type": "object",
-  "description": "Product entity in the catalog.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "Product ID" },
-    "name": { "type": "string", "description": "Product name" },
-    "description": { "type": "string", "description": "Product description" },
-    "price": { "type": "number", "description": "Product price" },
-    "category": { "$ref": "#/components/schemas/ICategory", "description": "Product category" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "description": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "price": { "type": "number", "description": "<DETAILED_DESCRIPTION>" },
+    "category": { "$ref": "#/components/schemas/ICategory", "description": "<DETAILED_DESCRIPTION>" }
   },
   "required": ["id", "name", "price", "category"]
 }
@@ -1325,17 +1324,17 @@ model Product {
 // ✅ AFTER - Complete fields:
 {
   "type": "object",
-  "description": "Product entity in the catalog.",
+  "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "Product ID" },
-    "name": { "type": "string", "description": "Product name" },
-    "description": { "type": "string", "description": "Product description" },
-    "price": { "type": "number", "description": "Product price" },
-    "stock": { "type": "integer", "description": "Available stock quantity" },          // Added missing field
-    "category": { "$ref": "#/components/schemas/ICategory", "description": "Product category" },
-    "featured": { "type": "boolean", "description": "Featured product flag" },      // Added missing field
-    "discount": { "type": "number", "description": "Discount percentage" },       // Added missing optional field
-    "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }  // Added timestamp
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "description": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "price": { "type": "number", "description": "<DETAILED_DESCRIPTION>" },
+    "stock": { "type": "integer", "description": "<DETAILED_DESCRIPTION>" },          // Added missing field
+    "category": { "$ref": "#/components/schemas/ICategory", "description": "<DETAILED_DESCRIPTION>" },
+    "featured": { "type": "boolean", "description": "<DETAILED_DESCRIPTION>" },      // Added missing field
+    "discount": { "type": "number", "description": "<DETAILED_DESCRIPTION>" },       // Added missing optional field
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" }  // Added timestamp
   },
   "required": ["id", "name", "price", "stock", "category", "featured", "createdAt"]
 }
