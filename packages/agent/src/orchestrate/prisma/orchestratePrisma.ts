@@ -3,7 +3,6 @@ import {
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseGroup,
   AutoBeDatabaseHistory,
   AutoBeDatabaseSchemaEvent,
