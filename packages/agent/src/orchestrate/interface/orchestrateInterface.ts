@@ -161,7 +161,6 @@ export const orchestrateInterface =
         Object.entries(schemas).filter(([_k, v]) => v !== undefined),
       );
       Object.assign(document.components.schemas, schemas);
-      AutoBeJsonSchemaFactory.authorize(document.components.schemas);
       Object.assign(
         document.components.schemas,
         AutoBeJsonSchemaFactory.presets(
@@ -169,6 +168,7 @@ export const orchestrateInterface =
         ),
       );
       AutoBeJsonSchemaNamingConvention.normalize(document);
+      AutoBeJsonSchemaFactory.authorize(document.components.schemas);
       AutoBeJsonSchemaFactory.finalize({
         document,
         application: ctx.state().database!.result.data,
