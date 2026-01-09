@@ -130,7 +130,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      *
      * ## Constraints:
      *
-     * - CANNOT create tables that exist in OTHER components
+     * - Only CREATE tables that CLEARLY belong to THIS component's domain
+     * - If uncertain about domain ownership → DO NOT CREATE
      * - Each operation must have a clear, requirement-based reason
      * - Empty array is valid if no modifications are needed
      *

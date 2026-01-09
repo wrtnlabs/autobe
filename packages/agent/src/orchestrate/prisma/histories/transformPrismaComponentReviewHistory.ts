@@ -49,9 +49,9 @@ export const transformPrismaComponentReviewHistory = (props: {
 
         ${JSON.stringify(props.component.tables, null, 2)}
 
-        ### All Tables in System (Other Components)
+        ### Tables in Other Components (For Reference)
 
-        These table names exist in other components. You CANNOT create tables with these names:
+        These tables belong to OTHER components' domains. Focus on YOUR domain only:
 
         ${JSON.stringify(props.allTableNames.filter((t) => !props.component.tables.some((ct) => ct.name === t)).sort())}
 
@@ -64,12 +64,16 @@ export const transformPrismaComponentReviewHistory = (props: {
   userMessage: StringUtil.trim`
     Review the "${props.component.namespace}" component's table list and apply necessary revisions.
 
+    **IMPORTANT - Domain Boundary Rule**:
+    Only CREATE tables that CLEARLY belong to the "${props.component.namespace}" domain.
+    If a table could belong to another domain → DO NOT CREATE (let that domain's agent handle it).
+
     1. First, fetch analysis files using \`getAnalysisFiles\` to understand requirements
     2. Identify issues: missing tables, naming problems, or misplaced tables
     3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
 
     Use revises to:
-    - **Create**: Add missing tables that requirements need
+    - **Create**: Add missing tables that CLEARLY belong to THIS component's domain
     - **Update**: Rename tables with naming convention issues
     - **Erase**: Remove tables that belong to other components
 
