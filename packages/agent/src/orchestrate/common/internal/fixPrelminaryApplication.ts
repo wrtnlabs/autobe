@@ -33,6 +33,7 @@ export const fixPreliminaryApplication = <
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
   application: ILlmApplication;
+  enumerable: boolean;
 }): void => {
   if (
     props.preliminary.getKinds().some((k) => k.includes("previous")) === false
@@ -92,6 +93,12 @@ export const fixPreliminaryApplication = <
           })()
         : kind
     ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+    if (
+      props.enumerable === false &&
+      accessor !== "analysisFiles" &&
+      accessor !== "databaseSchemas"
+    )
+      continue;
     ApplicationFixer[accessor]({
       $defs: func.parameters.$defs,
       controller: props.preliminary as any,

@@ -213,11 +213,15 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @param application LLM application to modify (mutated in-place)
    */
-  public fixApplication(application: ILlmApplication): ILlmApplication {
+  public fixApplication(
+    application: ILlmApplication,
+    enumerable: boolean = false,
+  ): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
       application,
+      enumerable,
     });
     return application;
   }

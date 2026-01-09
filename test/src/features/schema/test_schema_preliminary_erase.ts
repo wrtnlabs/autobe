@@ -60,7 +60,7 @@ export const test_schema_preliminary_erase = async () => {
     ],
     state: agent.getContext().state(),
   });
-  preliminary.fixApplication(application);
+  preliminary.fixApplication(application, true);
 
   const request: ILlmSchema.IAnyOf = application.functions[0].parameters
     .properties.request as ILlmSchema.IAnyOf;
