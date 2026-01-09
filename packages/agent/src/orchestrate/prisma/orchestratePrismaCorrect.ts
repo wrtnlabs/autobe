@@ -28,7 +28,7 @@ export function orchestratePrismaCorrect(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return iterate(ctx, application, Math.max(ctx.retry, 8));
+  return iterate(ctx, application, 15);
 }
 
 async function iterate(

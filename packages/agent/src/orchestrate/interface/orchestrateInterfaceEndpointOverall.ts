@@ -59,25 +59,27 @@ export const orchestrateInterfaceEndpointOverall = async (
         (e) => AutoBeOpenApiEndpointComparator.hashCode(e),
         (a, b) => AutoBeOpenApiEndpointComparator.equals(a, b),
       );
-      for (const revise of await props.programmer.review({
-        group,
-        designs,
-        promptCacheKey: promptCacheKey + "_review",
-      })) {
-        if (revise.type === "create")
-          dict.set(revise.endpoint, {
-            endpoint: revise.endpoint,
-            description: revise.description,
-          });
-        else if (revise.type === "update") {
-          dict.erase(revise.original);
-          dict.set(revise.updated, {
-            endpoint: revise.updated,
-            description: revise.description,
-          });
-        } else if (revise.type === "erase") dict.erase(revise.endpoint);
-        else revise satisfies never;
-      }
+      try {
+        for (const revise of await props.programmer.review({
+          group,
+          designs,
+          promptCacheKey: promptCacheKey + "_review",
+        })) {
+          if (revise.type === "create")
+            dict.set(revise.endpoint, {
+              endpoint: revise.endpoint,
+              description: revise.description,
+            });
+          else if (revise.type === "update") {
+            dict.erase(revise.original);
+            dict.set(revise.updated, {
+              endpoint: revise.updated,
+              description: revise.description,
+            });
+          } else if (revise.type === "erase") dict.erase(revise.endpoint);
+          else revise satisfies never;
+        }
+      } catch {}
       return dict.toJSON().map((it) => it.first);
     }),
   );
