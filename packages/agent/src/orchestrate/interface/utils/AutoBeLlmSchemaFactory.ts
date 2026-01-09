@@ -1,3 +1,4 @@
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -20,7 +21,7 @@ export namespace AutoBeLlmSchemaFactory {
         return;
 
       property.description += "\n\n";
-      property.description += `
+      property.description += StringUtil.trim`
         Here is the list of database schemas available for association:
 
         ${models.map((m) => `- \`${m}\``).join("\n")}
