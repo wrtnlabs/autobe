@@ -3,7 +3,6 @@ import { orchestratePrismaComponentReview } from "@autobe/agent/src/orchestrate/
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentReviewEvent,
   AutoBeExampleProject,
 } from "@autobe/interface";
 
@@ -13,7 +12,7 @@ export const validate_prisma_component_review = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<AutoBeDatabaseComponentReviewEvent[]> => {
+}): Promise<AutoBeDatabaseComponent[]> => {
   const components: AutoBeDatabaseComponent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
@@ -21,7 +20,7 @@ export const validate_prisma_component_review = async (props: {
       file: "prisma.component.json",
     })) ?? (await validate_prisma_component(props));
 
-  const event: AutoBeDatabaseComponentReviewEvent[] =
+  const reviewedComponents: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponentReview(props.agent.getContext(), {
       components,
       instruction: "",
@@ -30,8 +29,8 @@ export const validate_prisma_component_review = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      ["prisma.component.review.json"]: JSON.stringify(event),
+      ["prisma.component.review.json"]: JSON.stringify(reviewedComponents),
     },
   });
-  return event;
+  return reviewedComponents;
 };
