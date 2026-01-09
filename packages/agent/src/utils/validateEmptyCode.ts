@@ -28,11 +28,9 @@ export const validateEmptyCode = (props: {
   };
 }): IValidation.IError[] => {
   const errors: IValidation.IError[] = [];
-  const declaration: string = [
-    "export",
-    props.asynchronous === true ? "async" : null,
-    `function ${props.name}(`,
-  ].join(" ");
+  const declaration: string = props.asynchronous === true
+    ? `export async function ${props.name}(`
+    : `export function ${props.name}(`;
 
   if (props.draft.includes(declaration) === false)
     errors.push({
@@ -67,8 +65,7 @@ const description = (declaration: string): string => StringUtil.trim`
   and the second reason is that AI has written different function name
   by mistake.
 
-  Please make sure that the code snippet includes the function 
-  "${declaration}". 
+  Please make sure that the code snippet includes the function "${declaration}".
   
   Note that, you never have to write empty code or different function name.
   This is not a recommendation, but an instruction you must obey.
