@@ -148,6 +148,54 @@ await MyGlobal.prisma.shopping_seller_sessions.update({
 
 **CRITICAL**: The refresh operation does NOT create a new session. It reuses the existing `session_id` from the decoded token. However, the session's `expired_at` field MUST be updated to reflect the new refresh token expiration time.
 
+**Session `expired_at` Update Handling**:
+
+When updating the session's `expired_at` field during token refresh:
+
+1. **If Database Schema is NOT NULL** (`expired_at DateTime`):
+   - **ALWAYS provide a value** when updating the session
+   - Set to new refresh token expiration time (e.g., 7 days)
+   - Example: `expired_at: refreshExpires`
+
+2. **If Database Schema is Nullable** (`expired_at DateTime?`):
+   - **Option A (Recommended)**: Update to new expiration time for security
+     - `expired_at: refreshExpires` (extended limited session)
+   - **Option B (If explicitly required by user)**: Maintain unlimited session
+     - `expired_at: null` (no expiration - SECURITY RISK!)
+   - **CRITICAL**: Unlimited sessions (NULL) are a security vulnerability
+   - Only use NULL if the original session was created with NULL and user explicitly requires unlimited sessions
+
+```typescript
+// Example: expired_at update based on database schema
+
+// Database: expired_at DateTime (NOT NULL)
+await MyGlobal.prisma.user_sessions.update({
+  where: { id: decoded.session_id },
+  data: {
+    expired_at: refreshExpires,  // ✅ REQUIRED - NOT NULL
+  },
+});
+
+// Database: expired_at DateTime? (Nullable)
+// Option A (Recommended): Update to new expiration time
+await MyGlobal.prisma.user_sessions.update({
+  where: { id: decoded.session_id },
+  data: {
+    expired_at: refreshExpires,  // ✅ Recommended - extended limited session
+  },
+});
+
+// Option B (Only if explicitly required): Maintain unlimited session
+await MyGlobal.prisma.user_sessions.update({
+  where: { id: decoded.session_id },
+  data: {
+    expired_at: null,  // ⚠️ SECURITY RISK - unlimited session (only if explicitly required)
+  },
+});
+```
+
+**Note**: If the session was created with NULL `expired_at` (unlimited session) and you want to maintain that behavior during refresh, you can keep it NULL. However, this is a security risk and should only be done if explicitly required by the user.
+
 ### Database Schema Pattern
 
 Refresh operations interact with session and actor tables:

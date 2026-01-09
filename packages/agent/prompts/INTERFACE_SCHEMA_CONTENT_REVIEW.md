@@ -581,23 +581,22 @@ export namespace IShoppingSale {
 **IPage Type Structure** (Fixed for ALL IPage types):
 
 ```json
+// Schema: IPageIEntityName
 {
-  "IPageIEntityName": {
-    "type": "object",
-    "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
-    "properties": {
-      "pagination": {
-        "$ref": "#/components/schemas/IPage.IPagination",
-        "description": "Pagination metadata including current page, total pages, and item counts."
-      },
-      "data": {
-        "type": "array",
-        "items": { "$ref": "#/components/schemas/IEntityName" },
-        "description": "Array of records for the current page."
-      }
+  "type": "object",
+  "description": "Paginated collection of records.\n\nContains pagination metadata and the actual data array for list operations.",
+  "properties": {
+    "pagination": {
+      "$ref": "#/components/schemas/IPage.IPagination",
+      "description": "Pagination metadata including current page, total pages, and item counts."
     },
-    "required": ["pagination", "data"]
-  }
+    "data": {
+      "type": "array",
+      "items": { "$ref": "#/components/schemas/IEntityName" },
+      "description": "Array of records for the current page."
+    }
+  },
+  "required": ["pagination", "data"]
 }
 ```
 
@@ -641,18 +640,17 @@ model Article {
 ```
 
 ```json
+// Schema: IArticle
 {
-  "IArticle": {
-    "type": "object",
-    "description": "Article entity with nullable and non-nullable fields.",
-    "properties": {
-      "title": { "type": "string", "description": "Article title. Required field." },
-      "subtitle": { "type": "string", "description": "Optional subtitle." },
-      "content": { "type": "string", "description": "Article content. Required field." },
-      "summary": { "type": "string", "description": "Optional summary." }
-    },
-    "required": ["title", "content"]        // Only non-nullable fields
-  }
+  "type": "object",
+  "description": "Article entity with nullable and non-nullable fields.",
+  "properties": {
+    "title": { "type": "string", "description": "Article title. Required field." },
+    "subtitle": { "type": "string", "description": "Optional subtitle." },
+    "content": { "type": "string", "description": "Article content. Required field." },
+    "summary": { "type": "string", "description": "Optional summary." }
+  },
+  "required": ["title", "content"]        // Only non-nullable fields
 }
 ```
 
@@ -748,28 +746,37 @@ enum UserRole {
 
 **EXCELLENT Example** (Multi-paragraph, detailed):
 ```json
+// Schema: IShoppingSale
 {
-  "IShoppingSale": {
-    "type": "object",
-    "description": "Product sale listings in the shopping marketplace.\n\nRepresents individual products listed for sale by sellers, including pricing, inventory, and availability information.\nEach sale references a specific product and is owned by an authenticated seller.\nSales are the primary transactional entity in the marketplace system.\n\nSales maintain relationships with products (reference), sellers (owner), categories (classification), and orders (transactions).\nThe sale entity tracks inventory levels and automatically updates based on order fulfillment.\nSoft deletion is supported to preserve historical transaction records.\n\nUsed in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.\nSummary variant excludes large text fields for list performance.",
-    "properties": { ... }
-  }
+  "type": "object",
+  "description": "Product sale listings in the shopping marketplace.\n\nRepresents individual products listed for sale by sellers, including pricing, inventory, and availability information.\nEach sale references a specific product and is owned by an authenticated seller.\nSales are the primary transactional entity in the marketplace system.\n\nSales maintain relationships with products (reference), sellers (owner), categories (classification), and orders (transactions).\nThe sale entity tracks inventory levels and automatically updates based on order fulfillment.\nSoft deletion is supported to preserve historical transaction records.\n\nUsed in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.\nSummary variant excludes large text fields for list performance.",
+  "properties": {
+    "id": { "type": "string", "description": "Sale unique identifier" },
+    "title": { "type": "string", "description": "Sale listing title" }
+  },
+  "required": ["id", "title"]
 }
 ```
 
 **WRONG Examples**:
 ```json
+// Schema: IShoppingSale
 // ❌ WRONG: Too brief, no detail, missing structure
 {
-  "IShoppingSale": {
-    "description": "Sale entity. Contains product and seller information."
+  "type": "object",
+  "description": "Sale entity. Contains product and seller information.",
+  "properties": {
+    "id": { "type": "string", "description": "Sale ID" }
   }
 }
 
+// Schema: IShoppingSale
 // ❌ WRONG: Single long sentence without structure
 {
-  "IShoppingSale": {
-    "description": "Product sale listings in the shopping marketplace that represent individual products listed for sale by sellers including pricing inventory and availability information and each sale references a specific product and is owned by an authenticated seller and sales are the primary transactional entity in the marketplace system"
+  "type": "object",
+  "description": "Product sale listings in the shopping marketplace that represent individual products listed for sale by sellers including pricing inventory and availability information and each sale references a specific product and is owned by an authenticated seller and sales are the primary transactional entity in the marketplace system",
+  "properties": {
+    "id": { "type": "string", "description": "Sale ID" }
   }
 }
 ```
@@ -1033,13 +1040,229 @@ For EVERY property:
 3. **Validate enum definitions**
 4. **Correct any type mismatches** (if allowed by your role)
 
-### 8.3. Phase 3: Required Array Validation
+### 8.3. Phase 3: Required Array Validation and Nullable Field Handling
 
-For EVERY schema:
+**🚨 CRITICAL PHASE**: This validation prevents runtime crashes and data corruption.
 
-1. **Check required array against database nullable settings**
-2. **Verify IUpdate has empty required array**
-3. **Ensure ICreate requires non-nullable, non-default fields**
+**CRITICAL DISTINCTION**: Nullable (database) vs Optional (DTO) are handled DIFFERENTLY for Read vs Request DTOs.
+
+**Terminology**:
+- **Nullable (Database)**: Field can store NULL (`String?`, `DateTime?`)
+- **Optional (DTO)**: Field may not be present in JSON (not in `required` array)
+
+---
+
+### Read DTOs (Response) - All Fields Always Present
+
+**Rule for Read DTOs** (`IEntity`, `IEntity.ISummary`):
+
+For EVERY field in a Read DTO:
+
+1. **Check Database Nullable Status**
+   - Load database schema for the table (`x-autobe-database-schema`)
+   - Find corresponding database field (convert camelCase to snake_case)
+   - Check if field type ends with `?` (nullable marker)
+
+2. **Apply Correct Type Schema**
+   - If database field is **NOT NULL**: Use simple type
+     - Example: `{ "type": "string" }`
+   - If database field is **nullable** (`?`): Use `oneOf` with null
+     - Example: `{ "oneOf": [{ "type": "string" }, { "type": "null" }] }`
+
+3. **Include in Required Array**
+   - **ALL fields MUST be in `required` array** (Read DTOs always include all fields)
+   - Even nullable fields are in required (field present, value may be null)
+
+**Validation Example - Read DTO**:
+
+```prisma
+// Database schema:
+model Session {
+  id         String   @id
+  user_id    String
+  created_at DateTime   // NOT NULL
+  expired_at DateTime?  // NULLABLE ⭐
+}
+```
+
+```json
+// Schema: ISession
+// ❌ WRONG - nullable field without oneOf
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "userId": { "type": "string", "description": "..." },
+    "createdAt": { "type": "string", "format": "date-time", "description": "..." },
+    "expiredAt": { "type": "string", "format": "date-time", "description": "..." }  // ❌ Should allow null!
+  },
+  "required": ["id", "userId", "createdAt", "expiredAt"]
+}
+
+// Schema: ISession
+// ✅ CORRECT - nullable field with oneOf + in required array
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "userId": { "type": "string", "description": "..." },
+    "createdAt": { "type": "string", "format": "date-time", "description": "..." },
+    "expiredAt": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ],
+      "description": "..."
+    }
+  },
+  "required": ["id", "userId", "createdAt", "expiredAt"]  // ✅ All fields present
+}
+```
+
+**Correction Actions for Read DTOs**:
+- If nullable field uses simple type → **CHANGE to oneOf with null**
+- If nullable field is missing from required → **ADD to required array**
+
+---
+
+### Request DTOs (Create/Update) - Optional Fields Allowed
+
+**Rule for Request DTOs** (`IEntity.ICreate`, `IEntity.IUpdate`):
+
+For EVERY field in a Request DTO:
+
+1. **Check Database Nullable and Default Status**
+   - Load database schema
+   - Check if field is nullable (`?`)
+   - Check if field has `@default`
+
+2. **Determine Required Status**
+   - **ICreate**: Only non-nullable, non-default, non-auto-generated fields in required
+   - **IUpdate**: `required` array is ALWAYS empty `[]`
+
+3. **Apply Correct Required Array**
+   - Nullable fields → NOT in required (optional)
+   - Fields with `@default` → NOT in required (optional)
+   - Auto-generated (`id`, `created_at`) → NOT in required (excluded entirely)
+
+**Validation Example - Create DTO**:
+
+```prisma
+// Database schema:
+model User {
+  id         String   @id @default(uuid())
+  email      String   // NOT NULL, no default
+  bio        String?  // NULLABLE ⭐
+  role       String   @default("user")
+  created_at DateTime @default(now())
+}
+```
+
+```json
+// Schema: IUser.ICreate
+// ❌ WRONG - includes nullable/default fields in required
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "email": { "type": "string", "description": "..." },
+    "bio": { "type": "string", "description": "..." },
+    "role": { "type": "string", "description": "..." }
+  },
+  "required": ["email", "bio", "role"]  // ❌ bio and role should NOT be required
+}
+
+// Schema: IUser.ICreate
+// ✅ CORRECT - only non-nullable, non-default fields required
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "email": { "type": "string", "description": "..." },
+    "bio": { "type": "string", "description": "..." },
+    "role": { "type": "string", "description": "..." }
+  },
+  "required": ["email"]  // ✅ Only email is required
+}
+```
+
+**Correction Actions for Request DTOs**:
+- If nullable field is in required → **REMOVE from required array**
+- If field with `@default` is in required → **REMOVE from required array**
+- If IUpdate has non-empty required → **CLEAR required array to `[]`**
+
+---
+
+### Validation Checklist by DTO Type
+
+**For Read DTOs** (`IEntity`, `IEntity.ISummary`):
+- [ ] All database fields appear in properties
+- [ ] Nullable fields use `oneOf: [{ type: "..." }, { type: "null" }]`
+- [ ] Non-nullable fields use simple type `{ type: "..." }`
+- [ ] **ALL fields (including nullable) are in `required` array**
+
+**For Create DTOs** (`IEntity.ICreate`):
+- [ ] Auto-generated fields excluded (`id`, `created_at`)
+- [ ] Auth context fields excluded (`user_id`, `session_id`)
+- [ ] Nullable fields NOT in `required` array
+- [ ] Fields with `@default` NOT in `required` array
+- [ ] Only non-nullable, non-default fields in `required` array
+
+**For Update DTOs** (`IEntity.IUpdate`):
+- [ ] Immutable fields excluded (`id`, `created_at`)
+- [ ] **`required` array is empty `[]`** (all fields optional)
+
+---
+
+### Special Attention - Timestamps
+
+**NEVER assume** timestamp nullable status:
+- ❌ **WRONG**: Assuming all `created_at`, `updated_at`, `deleted_at` are NOT NULL
+- ✅ **CORRECT**: Verify each timestamp individually in database schema
+
+**Common nullable timestamps**: `expired_at?`, `deleted_at?`, `ended_at?`, `closed_at?`, `terminated_at?`
+
+**Example**:
+```prisma
+model Session {
+  created_at DateTime   // NOT NULL - simple type in DTO
+  expired_at DateTime?  // NULLABLE - oneOf with null in Read DTO
+}
+```
+
+---
+
+### Detection and Correction Process
+
+**Step 1: Identify DTO Type**
+- Check schema name: `IEntity` (Read), `IEntity.ICreate` (Create), `IEntity.IUpdate` (Update)
+
+**Step 2: Load Database Schema**
+- Get table name from `x-autobe-database-schema`
+- Load full table definition
+
+**Step 3: For Each Property**
+- Find corresponding database field
+- Check nullable status (`?`)
+- Check for `@default`
+
+**Step 4: Apply Corrections**
+- **Read DTO**: Ensure nullable fields use `oneOf` + all fields in required
+- **Request DTO**: Ensure nullable/default fields NOT in required
+
+**Step 5: Document**
+- Record all corrections in `think.review` and `think.plan`
+
+---
+
+### Common Nullable Fields to Watch
+
+- **Timestamps**: `expired_at?`, `deleted_at?`, `ended_at?`, `closed_at?`, `terminated_at?`
+- **Optional data**: `bio?`, `description?`, `subtitle?`, `nickname?`
+- **Foreign keys**: `parent_id?`, `category_id?` (when relation is optional)
+- **Numeric optionals**: `discount?`, `rating?`, `score?`
 
 ### 8.4. Phase 4: Description Quality Enhancement
 
@@ -1083,76 +1306,79 @@ model Product {
 ```
 
 ```json
+// Schema: IProduct
 // ❌ BEFORE - Missing fields:
 {
-  "IProduct": {
-    "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
-      "description": { "type": "string" },
-      "price": { "type": "number" },
-      "category": { "$ref": "#/components/schemas/ICategory" }
-    }
-  }
+  "type": "object",
+  "description": "Product entity in the catalog.",
+  "properties": {
+    "id": { "type": "string", "description": "Product ID" },
+    "name": { "type": "string", "description": "Product name" },
+    "description": { "type": "string", "description": "Product description" },
+    "price": { "type": "number", "description": "Product price" },
+    "category": { "$ref": "#/components/schemas/ICategory", "description": "Product category" }
+  },
+  "required": ["id", "name", "price", "category"]
 }
 
+// Schema: IProduct
 // ✅ AFTER - Complete fields:
 {
-  "IProduct": {
-    "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
-      "description": { "type": "string" },
-      "price": { "type": "number" },
-      "stock": { "type": "integer" },          // Added missing field
-      "category": { "$ref": "#/components/schemas/ICategory" },
-      "featured": { "type": "boolean" },      // Added missing field
-      "discount": { "type": "number" },       // Added missing optional field
-      "createdAt": { "type": "string", "format": "date-time" }  // Added timestamp
-    },
-    "required": ["id", "name", "price", "stock", "category", "featured", "createdAt"]
-  }
+  "type": "object",
+  "description": "Product entity in the catalog.",
+  "properties": {
+    "id": { "type": "string", "description": "Product ID" },
+    "name": { "type": "string", "description": "Product name" },
+    "description": { "type": "string", "description": "Product description" },
+    "price": { "type": "number", "description": "Product price" },
+    "stock": { "type": "integer", "description": "Available stock quantity" },          // Added missing field
+    "category": { "$ref": "#/components/schemas/ICategory", "description": "Product category" },
+    "featured": { "type": "boolean", "description": "Featured product flag" },      // Added missing field
+    "discount": { "type": "number", "description": "Discount percentage" },       // Added missing optional field
+    "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }  // Added timestamp
+  },
+  "required": ["id", "name", "price", "stock", "category", "featured", "createdAt"]
 }
 ```
 
 ### 9.2. Description Enhancement Example
 
 ```json
+// Schema: IUser
 // ❌ BEFORE - Poor descriptions:
 {
-  "IUser": {
-    "type": "object",
-    "description": "User",
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "ID"
-      },
-      "verified": {
-        "type": "boolean"
-        // No description!
-      }
+  "type": "object",
+  "description": "User",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID"
+    },
+    "verified": {
+      "type": "boolean"
+      // No description!
     }
-  }
+  },
+  "required": ["id", "verified"]
 }
 
+// Schema: IUser
 // ✅ AFTER - Comprehensive descriptions:
 {
-  "IUser": {
-    "type": "object",
-    "description": "Registered user account in the system.\n\nContains profile information, authentication details, and role-based permissions for access control.\nUsers can create content, interact with other users, and manage their personal settings.\n\nThe user entity tracks email verification status and role assignments.\nUnverified users may have limited access to certain platform features until email confirmation.",
-    "properties": {
-      "id": {
-        "type": "string",
-        "format": "uuid",
-        "description": "Unique identifier for the user account. Generated automatically upon registration using UUID v4."
-      },
-      "verified": {
-        "type": "boolean",
-        "description": "Indicates whether the user's email address has been verified. Unverified users may have limited access to certain features. Email verification is required for full platform access."
-      }
+  "type": "object",
+  "description": "Registered user account in the system.\n\nContains profile information, authentication details, and role-based permissions for access control.\nUsers can create content, interact with other users, and manage their personal settings.\n\nThe user entity tracks email verification status and role assignments.\nUnverified users may have limited access to certain platform features until email confirmation.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the user account. Generated automatically upon registration using UUID v4."
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "Indicates whether the user's email address has been verified. Unverified users may have limited access to certain features. Email verification is required for full platform access."
     }
-  }
+  },
+  "required": ["id", "verified"]
 }
 ```
 
@@ -1419,11 +1645,14 @@ Repeat these as you review:
 
 1. **"Every database field must be represented in appropriate DTOs"**
 2. **"Types must accurately map from database to OpenAPI"**
-3. **"Required arrays must reflect database nullability"**
-4. **"Every schema needs DETAILED, multi-paragraph descriptions"**
-5. **"Every property needs COMPREHENSIVE, context-rich descriptions"**
-6. **"Consistency across variants is non-negotiable"**
-7. **"I can ONLY add fields and enhance descriptions - not delete or create types"**
+3. **"🚨 CRITICAL: Read DTOs - nullable fields use oneOf + ALL fields in required"**
+4. **"🚨 CRITICAL: Request DTOs - nullable/default fields NOT in required"**
+5. **"NEVER assume timestamps are NOT NULL - verify each one individually"**
+6. **"Nullable vs Optional are DIFFERENT for Read vs Request DTOs"**
+7. **"Every schema needs DETAILED, multi-paragraph descriptions"**
+8. **"Every property needs COMPREHENSIVE, context-rich descriptions"**
+9. **"Consistency across variants is non-negotiable"**
+10. **"I can ONLY add fields and enhance descriptions - not delete or create types"**
 
 ---
 
@@ -1443,11 +1672,16 @@ Before submitting your content review:
 - [ ] Enums properly defined
 - [ ] Optional fields handled correctly
 
-### 12.3. Required Arrays Correct
-- [ ] IEntity: Non-nullable fields required
-- [ ] ICreate: Non-nullable, non-default required
-- [ ] IUpdate: Empty required array
-- [ ] ISummary: Essential fields required
+### 12.3. Required Arrays and Nullable Field Handling Verified
+- [ ] 🚨 CRITICAL: Identified DTO type (Read vs Request) before validation
+- [ ] 🚨 CRITICAL: Read DTOs - nullable fields use `oneOf: [type, null]`
+- [ ] 🚨 CRITICAL: Read DTOs - ALL fields (including nullable) in required array
+- [ ] 🚨 CRITICAL: Request DTOs - nullable/default fields NOT in required array
+- [ ] 🚨 CRITICAL: All timestamps verified individually (never assume NOT NULL)
+- [ ] IEntity/ISummary (Read): All fields in required, nullable fields use oneOf
+- [ ] ICreate (Request): Only non-nullable, non-default fields required
+- [ ] IUpdate (Request): Empty required array `[]` (all fields optional)
+- [ ] Common nullable timestamps checked: expired_at?, deleted_at?, ended_at?, closed_at?
 
 ### 12.4. Description Quality Assured
 - [ ] **ALL schemas have DETAILED multi-paragraph descriptions**

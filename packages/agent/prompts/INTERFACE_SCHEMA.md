@@ -842,20 +842,20 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 
 **Example**:
 ```json
+// Schema: IShoppingCustomer
 // If a DB schema only has: id, email, name, created_at
 {
-  "IShoppingCustomer": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" },
-      "name": { "type": "string" },
-      "created_at": { "type": "string" },
-      "updated_at": { "type": "string" },  // ❌ DELETE THIS - not in database schema
-      "deleted_at": { "type": "string" }   // ❌ DELETE THIS - not in database schema
-    },
-    "x-autobe-database-schema": "shopping_customers"
-  }
+  "type": "object",
+  "description": "Shopping customer entity with basic profile information.",
+  "properties": {
+    "id": { "type": "string", "description": "Customer unique identifier" },
+    "email": { "type": "string", "description": "Customer email address" },
+    "name": { "type": "string", "description": "Customer name" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+    // ❌ WRONG: updated_at, deleted_at - not in database schema
+  },
+  "required": ["id", "email", "name", "createdAt"],
+  "x-autobe-database-schema": "shopping_customers"
 }
 ```
 
@@ -873,33 +873,31 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
 
 **❌ WRONG - Metadata inside properties**:
 ```json
+// Schema: IUser
 {
-  "IUser": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" },
-      "description": "User entity",             // ❌ WRONG: This is metadata, not a field!
-      "required": ["id", "email"],              // ❌ WRONG: This is metadata, not a field!
-      "x-autobe-database-schema": "users"        // ❌ WRONG: This is metadata, not a field!
-    }
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "description": "User ID" },
+    "email": { "type": "string", "description": "User email" },
+    "description": "User entity",             // ❌ WRONG: This is metadata, not a field!
+    "required": ["id", "email"],              // ❌ WRONG: This is metadata, not a field!
+    "x-autobe-database-schema": "users"        // ❌ WRONG: This is metadata, not a field!
   }
 }
 ```
 
 **✅ CORRECT - Metadata at object type level**:
 ```json
+// Schema: IUser
 {
-  "IUser": {
-    "type": "object",
-    "description": "User entity",               // ✅ CORRECT: Metadata at object level
-    "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
-    "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" }
-    },
-    "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
-  }
+  "type": "object",
+  "description": "User entity",               // ✅ CORRECT: Metadata at object level
+  "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
+  "properties": {
+    "id": { "type": "string", "description": "User ID" },
+    "email": { "type": "string", "description": "User email" }
+  },
+  "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
 ```
 
@@ -939,6 +937,261 @@ Examples:
 - Schema metadata describes the schema itself, not the data
 - The `properties` object is ONLY for data that the API actually transmits
 - Always place metadata at the same level as `type` and `properties`, never inside `properties`
+
+#### 2.2.4. Database Nullable Field Handling - Nullable vs Optional
+
+**🚨 CRITICAL DISTINCTION**: Understand the difference between **nullable** (database) and **optional** (DTO).
+
+**Terminology Clarity**:
+- **Nullable (Database)**: Field can store NULL value (`String?`, `DateTime?` in Prisma)
+- **Optional (DTO)**: Field may not be present in JSON (not in `required` array, TypeScript `?`)
+
+**The Key Insight**: These concepts apply DIFFERENTLY to Read vs Request DTOs.
+
+---
+
+### Read DTOs (Response) - All Fields Always Present
+
+**Rule for Read DTOs** (`IEntity`, `IEntity.ISummary`):
+- **All fields are ALWAYS present in response JSON** (no optional fields)
+- Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]` to allow null values
+- **All fields MUST be in `required` array** (field always present, value may be null)
+
+**Database Schema**:
+```prisma
+model User {
+  id         String    @id
+  email      String    // NOT NULL
+  bio        String?   // NULLABLE ⭐
+  expired_at DateTime? // NULLABLE ⭐
+}
+```
+
+**❌ WRONG - Read DTO with nullable as non-null type**:
+```json
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "email": { "type": "string", "description": "..." },
+    "bio": { "type": "string", "description": "..." },        // ❌ Should allow null!
+    "expiredAt": { "type": "string", "description": "..." }   // ❌ Should allow null!
+  },
+  "required": ["id", "email", "bio", "expiredAt"]
+}
+```
+
+**✅ CORRECT - Read DTO respecting database nullability**:
+```json
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "email": { "type": "string", "description": "..." },
+    "bio": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ],
+      "description": "..."
+    },
+    "expiredAt": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ],
+      "description": "..."
+    }
+  },
+  "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
+}
+```
+
+**Why Read DTOs Include All Fields**:
+- Response always includes all columns from database query
+- Missing fields would require complex conditional logic in transformers
+- Client can distinguish between "field doesn't exist" vs "field is null"
+
+---
+
+### Request DTOs (Create/Update) - Optional Fields Allowed
+
+**Rule for Request DTOs** (`IEntity.ICreate`, `IEntity.IUpdate`):
+- **Optional fields CAN be omitted** (not in `required` array)
+- Database nullable (`?`) → Usually optional in request (client doesn't have to provide)
+- Database with `@default` → Usually optional in request (database provides default)
+- **Optional fields are NOT in `required` array**
+
+**Database Schema**:
+```prisma
+model User {
+  id         String    @id @default(uuid())
+  email      String    // NOT NULL, no default
+  bio        String?   // NULLABLE ⭐
+  role       String    @default("user")  // NOT NULL, but has default
+  created_at DateTime  @default(now())
+}
+```
+
+**✅ CORRECT - Create DTO with optional fields**:
+```json
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "email": { "type": "string", "description": "..." },
+    "bio": { "type": "string", "description": "..." },
+    "role": { "type": "string", "description": "..." }
+  },
+  "required": ["email"]  // ✅ Only non-nullable, non-default fields required
+}
+```
+
+**Why Request DTOs Have Optional Fields**:
+- Client may not provide nullable fields (server stores NULL)
+- Client may not provide fields with defaults (server uses default)
+- `id`, `created_at` are auto-generated (never in request DTO)
+
+---
+
+### Validation Rules by DTO Type
+
+**Read DTOs** (`IEntity`, `IEntity.ISummary`):
+1. ✅ All database fields appear in `properties`
+2. ✅ Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]`
+3. ✅ Database NOT NULL → Use simple type `{ type: "..." }`
+4. ✅ **All fields in `required` array** (fields always present, values may be null)
+
+**Create DTOs** (`IEntity.ICreate`):
+1. ✅ Exclude auto-generated fields (`id`, `created_at`)
+2. ✅ Exclude auth context fields (`user_id`, `session_id`)
+3. ✅ Database nullable (`?`) → NOT in `required` array (optional)
+4. ✅ Database with `@default` → NOT in `required` array (optional)
+5. ✅ **Only non-nullable, non-default fields in `required` array**
+
+**Update DTOs** (`IEntity.IUpdate`):
+1. ✅ Exclude immutable fields (`id`, `created_at`)
+2. ✅ All fields are optional (partial update pattern)
+3. ✅ **`required` array is ALWAYS empty `[]`**
+
+---
+
+### Special Case - Timestamps
+
+Timestamps require careful attention to nullable status:
+
+```prisma
+model Session {
+  created_at DateTime   // NOT NULL
+  expired_at DateTime?  // NULLABLE ⭐
+}
+```
+
+**Read DTO (Response)**:
+```json
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "..."
+    },
+    "expiredAt": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ],
+      "description": "..."
+    }
+  },
+  "required": ["createdAt", "expiredAt"]  // ✅ Both present, expiredAt may be null
+}
+```
+
+**Create DTO (Request)** - typically doesn't include timestamps (auto-generated)
+
+---
+
+### Common Mistakes
+
+❌ **Read DTO - Omitting nullable fields from required array**:
+```json
+// ❌ WRONG
+{
+  "type": "object",
+  "description": "...",
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." } },
+  "required": []  // ❌ Field is always present in response!
+}
+
+// ✅ CORRECT
+{
+  "type": "object",
+  "description": "...",
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." } },
+  "required": ["bio"]  // ✅ Field present, value may be null
+}
+```
+
+❌ **Read DTO - Using simple type for nullable field**:
+```json
+// ❌ WRONG - bio is nullable in DB
+{
+  "type": "object",
+  "description": "...",
+  "properties": { "bio": { "type": "string", "description": "..." } },
+  "required": ["bio"]
+}
+
+// ✅ CORRECT
+{
+  "type": "object",
+  "description": "...",
+  "properties": {
+    "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "..." }
+  },
+  "required": ["bio"]
+}
+```
+
+❌ **Create DTO - Requiring nullable or default fields**:
+```json
+// ❌ WRONG - bio is nullable, should be optional
+{
+  "type": "object",
+  "description": "...",
+  "properties": { "email": { "type": "string", "description": "..." }, "bio": { "type": "string", "description": "..." } },
+  "required": ["email", "bio"]
+}
+
+// ✅ CORRECT
+{
+  "type": "object",
+  "description": "...",
+  "properties": { "email": { "type": "string", "description": "..." }, "bio": { "type": "string", "description": "..." } },
+  "required": ["email"]
+}
+```
+
+---
+
+### Summary Table
+
+| Database Field | Read DTO (Response) | Create DTO (Request) |
+|---------------|-------------------|-------------------|
+| `String` (NOT NULL) | `{ type: "string" }` + in required | `{ type: "string" }` + in required |
+| `String?` (nullable) | `{ oneOf: [string, null] }` + in required | `{ type: "string" }` + NOT in required |
+| `String @default(...)` | `{ type: "string" }` + in required | `{ type: "string" }` + NOT in required |
+| `DateTime` (NOT NULL) | `{ type: "string", format: "date-time" }` + in required | Usually excluded (auto) |
+| `DateTime?` (nullable) | `{ oneOf: [datetime, null] }` + in required | Usually excluded (auto) |
+
+**REMEMBER**:
+- **Read DTOs**: All fields present, use `oneOf` for nullable values
+- **Request DTOs**: Optional fields omitted from `required` array
 
 ### 2.3. Named Types and $ref Principle
 
@@ -997,53 +1250,59 @@ An **inline object type** occurs when you define an object's complete structure 
 ```
 
 **✅ THE ONLY CORRECT APPROACH**:
+
 ```json
+// Schema: IBbsArticle.ICreate
 {
-  "IBbsArticle.ICreate": {
-    "type": "object",
-    "description": "Request DTO for creating a new BBS article. Contains title, content, attachments, and metadata.",
-    "properties": {
-      "title": { "type": "string", "description": "Article title. Must be concise and descriptive." },
-      "content": { "type": "string", "description": "Article content in markdown format." },
-      "attachments": {
-        "type": "array",
-        "description": "List of file attachments for the article.",
-        "items": {
-          "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
-        }
-      },
-      "metadata": {
-        "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
-        "description": "Additional metadata for the article including tags and priority."
+  "type": "object",
+  "description": "Request DTO for creating a new BBS article. Contains title, content, attachments, and metadata.",
+  "properties": {
+    "title": { "type": "string", "description": "Article title. Must be concise and descriptive." },
+    "content": { "type": "string", "description": "Article content in markdown format." },
+    "attachments": {
+      "type": "array",
+      "description": "List of file attachments for the article.",
+      "items": {
+        "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
       }
-    }
-  },
-
-  "IBbsArticleAttachment.ICreate": {  // ✅ PROPERLY NAMED TYPE
-    "type": "object",
-    "description": "Request DTO for creating article attachment. References pre-uploaded file URL.",
-    "properties": {
-      "url": { "type": "string", "format": "uri", "description": "Pre-uploaded file URL from storage service." },
-      "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "Original file name with extension." },
-      "size": { "type": "integer", "minimum": 0, "description": "File size in bytes." }
     },
-    "required": ["url", "name", "size"]
-  },
+    "metadata": {
+      "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
+      "description": "Additional metadata for the article including tags and priority."
+    }
+  }
+}
+```
 
-  "IBbsArticleMetadata": {  // ✅ PROPERLY NAMED TYPE
-    "type": "object",
-    "description": "Article metadata containing classification and priority information.",
-    "properties": {
-      "tags": {
-        "type": "array",
-        "description": "List of tags for article categorization.",
-        "items": { "type": "string", "description": "Individual tag value." }
-      },
-      "priority": {
-        "type": "string",
-        "enum": ["low", "medium", "high"],
-        "description": "Article priority level for display ordering."
-      }
+```json
+// Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments
+{
+  "type": "object",
+  "description": "Request DTO for creating article attachment. References pre-uploaded file URL.",
+  "properties": {
+    "url": { "type": "string", "format": "uri", "description": "Pre-uploaded file URL from storage service." },
+    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "Original file name with extension." },
+    "size": { "type": "integer", "minimum": 0, "description": "File size in bytes." }
+  },
+  "required": ["url", "name", "size"]
+}
+```
+
+```json
+// Schema: IBbsArticleMetadata - Supporting type for metadata
+{
+  "type": "object",
+  "description": "Article metadata containing classification and priority information.",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "description": "List of tags for article categorization.",
+      "items": { "type": "string", "description": "Individual tag value." }
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Article priority level for display ordering."
     }
   }
 }
@@ -1138,12 +1397,18 @@ Before ANY schema is accepted:
 
 **❌ CATASTROPHIC ERROR - Nested Schema Definition**:
 ```json
-// This would be wrong if you were generating multiple schemas
+// Schema: IArticle
+// ❌ WRONG: Attempting to nest another schema definition
 {
-  "IArticle": {
+  "type": "object",
+  "description": "Article entity",
+  "properties": {
+    "id": { "type": "string", "description": "Article ID" },
+    "title": { "type": "string", "description": "Article title" }
+  },
+  "IAuthor.ISummary": {  // ❌ CATASTROPHIC ERROR: Schema nested inside another schema!
     "type": "object",
-    "properties": {...},
-    "IAuthor.ISummary": {...}  // ❌ WRONG: Nested inside IArticle
+    "properties": { ... }
   }
 }
 ```
@@ -4662,11 +4927,11 @@ export interface IObject {
 **Style Examples:**
 
 ```typescript
+// Schema: IShoppingSale
 // EXCELLENT: Detailed schema description with proper spacing
 {
-  "IShoppingSale": {
-    "type": "object",
-    "description": `Product sale listings in the shopping marketplace.
+  "type": "object",
+  "description": `Product sale listings in the shopping marketplace.
 
 Represents individual products listed for sale by sellers, including pricing, inventory, and availability information.
 Each sale references a specific product and is owned by an authenticated seller.
@@ -4678,16 +4943,21 @@ Soft deletion is supported to preserve historical transaction records.
 
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
-    "properties": { ... }
-  }
+  "properties": {
+    "id": { "type": "string", "description": "Sale unique identifier" },
+    "title": { "type": "string", "description": "Sale listing title" }
+  },
+  "required": ["id", "title"]
 }
 
+// Schema: IShoppingSale
 // WRONG: Too brief, no detail, missing structure
 {
-  "IShoppingSale": {
-    "type": "object",
-    "description": "Sale entity. Contains product and seller information.",
-    "properties": { ... }
+  "type": "object",
+  "description": "Sale entity. Contains product and seller information.",
+  "properties": {
+    "id": { "type": "string", "description": "Sale ID" },
+    "title": { "type": "string", "description": "Title" }
   }
 }
 ```

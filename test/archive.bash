@@ -31,7 +31,7 @@ pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping
 ######################################################
 # GLM
 ######################################################
-# z-ai/glm-4.7 (0.16)
+# z-ai/glm-4.7 (0.4)
 pnpm run archive:go --vendor z-ai/glm-4.7 --project todo > archive.z-ai-glm-4.7.todo.log
 pnpm run archive:go --vendor z-ai/glm-4.7 --project bbs > archive.z-ai-glm-4.7.bbs.log
 pnpm run archive:go --vendor z-ai/glm-4.7 --project reddit > archive.z-ai-glm-4.7.reddit.log
@@ -46,7 +46,7 @@ pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project bbs > archive.moo
 pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project reddit > archive.moonshotai-kimi-k2-0905.reddit.log
 pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project shopping > archive.moonshotai-kimi-k2-0905.shopping.log
 
-# moonshotai/kimi-k2-thinking (0.32)
+# moonshotai/kimi-k2-thinking (0.40)
 pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project todo > archive.moonshotai-kimi-k2-thinking.todo.log
 pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project bbs > archive.moonshotai-kimi-k2-thinking.bbs.log
 pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project reddit > archive.moonshotai-kimi-k2-thinking.reddit.log

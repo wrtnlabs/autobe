@@ -65,6 +65,67 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 
 **CRITICAL**: Both the actor ID and session ID will be embedded in the JWT token payload (see JWT Token Generation section below).
 
+**Session `expired_at` Field Handling**:
+
+The `expired_at` field in session tables represents the session's expiration time:
+
+1. **If Database Schema is NOT NULL** (`expired_at DateTime`):
+   - **ALWAYS provide a value** when creating the session
+   - Typically set to access token expiration time (e.g., 1 hour)
+   - Example: `expired_at: toISOStringSafe(accessExpires)`
+
+2. **If Database Schema is Nullable** (`expired_at DateTime?`):
+   - **Option A (Recommended)**: Provide expiration time for security
+     - `expired_at: toISOStringSafe(accessExpires)` (limited session)
+   - **Option B (If explicitly required by user)**: Allow unlimited sessions
+     - `expired_at: null` (no expiration - SECURITY RISK!)
+   - **CRITICAL**: Unlimited sessions (NULL) are a security vulnerability
+   - Only use NULL if user explicitly requires unlimited sessions
+
+```typescript
+// Example: expired_at handling based on database schema
+
+// Database: expired_at DateTime (NOT NULL)
+const session = await MyGlobal.prisma.user_sessions.create({
+  data: {
+    id: v4(),
+    user_id: user.id,
+    ip: props.body.ip ?? props.ip,
+    href: props.body.href,
+    referrer: props.body.referrer,
+    created_at: new Date().toISOString(),
+    expired_at: toISOStringSafe(accessExpires),  // ✅ REQUIRED - NOT NULL
+  }
+});
+
+// Database: expired_at DateTime? (Nullable)
+// Option A (Recommended): Limited session
+const session = await MyGlobal.prisma.user_sessions.create({
+  data: {
+    id: v4(),
+    user_id: user.id,
+    ip: props.body.ip ?? props.ip,
+    href: props.body.href,
+    referrer: props.body.referrer,
+    created_at: new Date().toISOString(),
+    expired_at: toISOStringSafe(accessExpires),  // ✅ Recommended - limited session
+  }
+});
+
+// Option B (Only if explicitly required): Unlimited session
+const session = await MyGlobal.prisma.user_sessions.create({
+  data: {
+    id: v4(),
+    user_id: user.id,
+    ip: props.body.ip ?? props.ip,
+    href: props.body.href,
+    referrer: props.body.referrer,
+    created_at: new Date().toISOString(),
+    expired_at: null,  // ⚠️ SECURITY RISK - unlimited session (only if explicitly required)
+  }
+});
+```
+
 #### Additional Business Logic (Optional)
 Between or after the mandatory phases above, you may implement additional business logic as specified in the API requirements. Examples include:
 - Creating related records in other tables (e.g., user profiles, preferences, initial data)

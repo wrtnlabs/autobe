@@ -712,6 +712,11 @@ When an actor requires login/authentication (e.g., users, administrators, custom
 - Temporal:
   - `created_at: datetime` — Session creation time
   - `expired_at: datetime` — Session end time
+    - **DEFAULT: NOT NULL** (sessions must have expiration for security)
+    - **If user explicitly requests nullable**: `expired_at: datetime?` (nullable)
+      - When NULL: Represents "no expiration" / "unlimited session" (security risk)
+      - ONLY allow nullable if user specifically requires unlimited sessions
+    - **CRITICAL**: Unlimited sessions are a security vulnerability. Default to NOT NULL unless explicitly requested.
 
 **NO OTHER FIELDS ARE ALLOWED** for session tables. Do not add token hashes, device info, user agent, updated_at, or deleted_at.
 
@@ -720,7 +725,7 @@ When an actor requires login/authentication (e.g., users, administrators, custom
 - Composite index: `[{actor_table}_id, created_at]`
 - Do not create other indexes on session tables.
 
-**Example:**
+**Example (DEFAULT - NOT NULL):**
 
 ```prisma
 model user_sessions {
@@ -730,7 +735,23 @@ model user_sessions {
   href       String   // Connection URL
   referrer   String   // Referrer URL
   created_at DateTime
-  expired_at DateTime?
+  expired_at DateTime  // NOT NULL - sessions must expire
+
+  @@index([user_id, created_at])
+}
+```
+
+**Example (If user explicitly requests unlimited sessions):**
+
+```prisma
+model user_sessions {
+  id         String   @id @uuid
+  user_id    String   @uuid
+  ip         String   // IP address
+  href       String   // Connection URL
+  referrer   String   // Referrer URL
+  created_at DateTime
+  expired_at DateTime?  // Nullable - allows unlimited sessions (SECURITY RISK!)
 
   @@index([user_id, created_at])
 }

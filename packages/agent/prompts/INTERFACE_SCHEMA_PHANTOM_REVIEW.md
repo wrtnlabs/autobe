@@ -114,37 +114,38 @@ model User {
   // NO deleted_at
 }
 
+// Schema: IUser
 // ❌ WRONG: OpenAPI schema with phantom timestamps
 {
-  "IUser": {
-    "type": "object",
-    "x-autobe-database-schema": "User",
-    "properties": {
-      "id": { "type": "string" },
-      "email": { "type": "string" },
-      "name": { "type": "string" },
-      "created_at": { "type": "string" },
-      "updated_at": { "type": "string" },  // 🔴 PHANTOM - doesn't exist in database!
-      "deleted_at": { "type": "string" }   // 🔴 PHANTOM - doesn't exist in database!
-    }
-  }
+  "type": "object",
+  "description": "...",
+  "x-autobe-database-schema": "User",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "email": { "type": "string", "description": "..." },
+    "name": { "type": "string", "description": "..." },
+    "createdAt": { "type": "string", "format": "date-time", "description": "..." },
+    "updatedAt": { "type": "string", "format": "date-time", "description": "..." },  // 🔴 PHANTOM - doesn't exist in database!
+    "deletedAt": { "type": "string", "format": "date-time", "description": "..." }   // 🔴 PHANTOM - doesn't exist in database!
+  },
+  "required": ["id", "email", "name", "createdAt"]
 }
 
+// Schema: IUser
 // ✅ CORRECT: Only fields that exist in database
 {
-  "IUser": {
-    "type": "object",
-    "description": "User entity with only verified database fields.",
-    "x-autobe-database-schema": "User",
-    "properties": {
-      "id": { "type": "string", "description": "Unique user identifier." },
-      "email": { "type": "string", "description": "User email address." },
-      "name": { "type": "string", "description": "User display name." },
-      "created_at": { "type": "string", "description": "Account creation timestamp." }
-      // No updated_at - doesn't exist in database
-      // No deleted_at - doesn't exist in database
-    }
-  }
+  "type": "object",
+  "description": "...",
+  "x-autobe-database-schema": "User",
+  "properties": {
+    "id": { "type": "string", "description": "..." },
+    "email": { "type": "string", "description": "..." },
+    "name": { "type": "string", "description": "..." },
+    "createdAt": { "type": "string", "format": "date-time", "description": "..." }
+    // No updatedAt - doesn't exist in database
+    // No deletedAt - doesn't exist in database
+  },
+  "required": ["id", "email", "name", "createdAt"]
 }
 ```
 

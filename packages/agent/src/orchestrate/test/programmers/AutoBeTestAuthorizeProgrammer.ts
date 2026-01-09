@@ -60,9 +60,15 @@ export namespace AutoBeTestAuthorizeProgrammer {
           body${questionToken}: ${props.operation.requestBody.typeName}
         },
       ): Promise<${props.operation.responseBody.typeName}> {
+        const input = {
+          ...props.body,
+          ...{{YOUR_PROPERTIES_HERE}}
+        } satisfies ${props.operation.requestBody.typeName};
         return await api.functional.${accessor.join(".")}(
           connection,
-          { ... }
+          {
+            body: input,
+          },
         );
       }
     `;
