@@ -67,6 +67,7 @@ export async function orchestrateTestOperation(
     programmer: {
       compile,
       replaceImportStatements,
+      asynchronous: true,
     },
     procedures,
     progress: props.writeProgress,

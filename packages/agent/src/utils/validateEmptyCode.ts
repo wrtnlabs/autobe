@@ -20,41 +20,56 @@ import { IValidation } from "typia";
  */
 export const validateEmptyCode = (props: {
   path: string;
-  functionName: string;
+  asynchronous: boolean;
+  name: string;
   draft: string;
   revise: {
     final: string | null;
   };
 }): IValidation.IError[] => {
   const errors: IValidation.IError[] = [];
-  if (props.draft.includes(props.functionName) === false)
+  const declaration: string = [
+    "export",
+    props.asynchronous === true ? "async" : null,
+    `function ${props.name}(`,
+  ].join(" ");
+
+  if (props.draft.includes(declaration) === false)
     errors.push({
       path: `${props.path}.draft`,
-      expected: `string (including function named '${props.functionName}')`,
+      expected: `string (including function declaration starting with '${props.name}')`,
       value: props.draft,
-      description: description(props.functionName),
+      description: description(declaration),
     });
   if (
     props.revise.final !== null &&
-    props.revise.final.includes(props.functionName) === false
+    props.revise.final.includes(declaration) === false
   )
     errors.push({
       path: `${props.path}.revise.final`,
-      expected: `string (including function named '${props.functionName}')`,
+      expected: `string (including function declaration starting with '${props.name}')`,
       value: props.revise.final,
-      description: description(props.functionName),
+      description: description(declaration),
     });
   return errors;
 };
 
 /** Generates detailed error description for missing function. */
-const description = (func: string): string => StringUtil.trim`
-  The function ${func} does not exist in the provided code snippet.
+const description = (declaration: string): string => StringUtil.trim`
+  \`\`\`
+  ${declaration}
+  \`\`\`
+
+  The above function declaration does not exist in the provided code snippet.
+  You have to declare the function exactly starting with the above line.
 
   The first reason of the non-existence is that the code snippet is empty,
   and the second reason is that AI has written different function name
   by mistake.
 
-  Please make sure that the code snippet includes the function ${func}.
+  Please make sure that the code snippet includes the function 
+  "${declaration}". 
+  
   Note that, you never have to write empty code or different function name.
+  This is not a recommendation, but an instruction you must obey.
 `;

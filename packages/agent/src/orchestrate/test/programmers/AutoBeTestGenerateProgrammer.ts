@@ -147,8 +147,8 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
   }
 
   /* ----------------------------------------------------------------
-      VALIDATE
-    ---------------------------------------------------------------- */
+    VALIDATE
+  ---------------------------------------------------------------- */
   export function validate(props: {
     procedure: IAutoBeTestGenerateProcedure;
     draft: string;
@@ -158,7 +158,8 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
   }): IValidation.IError[] {
     return validateEmptyCode({
       path: "$input",
-      functionName: props.procedure.function.name,
+      asynchronous: true,
+      name: props.procedure.function.name,
       draft: props.draft,
       revise: props.revise,
     });

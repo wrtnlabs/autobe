@@ -50,6 +50,7 @@ export async function orchestrateTestAuthorize(
     programmer: {
       compile,
       replaceImportStatements,
+      asynchronous: true,
     },
     procedures,
     progress: props.correctProgress,

@@ -15,6 +15,7 @@ interface IProgrammer<Procedure extends IAutoBeTestProcedure> {
   compile(
     props: Procedure,
   ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
+  asynchronous: boolean;
 }
 
 export const orchestrateTestCorrectCasting = <
@@ -38,6 +39,7 @@ export const orchestrateTestCorrectCasting = <
           ctx,
           {
             source: "testCorrect",
+            asynchronous: props.programmer.asynchronous,
             validate: (content) =>
               props.programmer.compile({
                 ...procedure,

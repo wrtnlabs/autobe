@@ -115,7 +115,8 @@ export namespace AutoBeTestAuthorizeProgrammer {
   }): IValidation.IError[] {
     return validateEmptyCode({
       path: "$input",
-      functionName: props.procedure.function.name,
+      asynchronous: true,
+      name: props.procedure.function.name,
       draft: props.draft,
       revise: props.revise,
     });

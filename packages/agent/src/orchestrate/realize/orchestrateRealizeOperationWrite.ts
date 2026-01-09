@@ -166,10 +166,11 @@ function createController(props: {
       });
 
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: props.functionName,
+      name: props.functionName,
       draft: result.data.request.draft,
       revise: result.data.request.revise,
       path: "$input.request",
+      asynchronous: true,
     });
     return errors.length
       ? {

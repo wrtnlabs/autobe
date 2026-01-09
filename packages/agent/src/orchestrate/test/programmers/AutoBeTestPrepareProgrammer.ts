@@ -175,7 +175,8 @@ ${Object.keys(props.schema.properties).map(
     // validate empty code
     const functionName: string = getFunctionName(props.typeName);
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: functionName,
+      name: functionName,
+      asynchronous: false,
       draft: props.draft,
       revise: props.revise,
       path: "$input",

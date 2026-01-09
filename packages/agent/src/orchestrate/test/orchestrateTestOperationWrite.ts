@@ -188,9 +188,10 @@ function createController(props: {
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: props.functionName,
+      name: props.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
+      asynchronous: true,
       path: "$input",
     });
     return errors.length

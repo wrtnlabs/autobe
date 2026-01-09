@@ -55,6 +55,7 @@ export async function orchestrateTestGenerate(
     programmer: {
       compile,
       replaceImportStatements,
+      asynchronous: true,
     },
     procedures,
     progress: props.correctProgress,

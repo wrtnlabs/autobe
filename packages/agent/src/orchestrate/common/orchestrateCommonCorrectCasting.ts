@@ -32,6 +32,7 @@ interface IFactoryProps<
   }): Promise<CorrectEvent>;
   script(event: ValidateEvent): string;
   source: "testCorrect" | "realizeCorrect";
+  asynchronous: boolean;
   functionName: string;
 }
 
@@ -87,7 +88,7 @@ const correct = async <
   const { metric, tokenUsage } = await ctx.conversate({
     source: factory.source,
     controller: createController({
-      functionName: factory.functionName,
+      factory: factory,
       then: (next) => {
         pointer.value = next;
       },
@@ -129,7 +130,7 @@ const correct = async <
 };
 
 const createController = (props: {
-  functionName: string;
+  factory: IFactoryProps<any, any>;
   then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
   reject: () => void;
 }): ILlmController => {
@@ -140,10 +141,11 @@ const createController = (props: {
       typia.validate<IAutoBeCommonCorrectCastingApplication.IProps>(input);
     if (result.success === false) return result;
     const errors: IValidation.IError[] = validateEmptyCode({
-      functionName: props.functionName,
+      name: props.factory.functionName,
       draft: result.data.draft,
       revise: result.data.revise,
       path: "$input",
+      asynchronous: props.factory.asynchronous,
     });
     return errors.length
       ? {
