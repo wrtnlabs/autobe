@@ -211,18 +211,13 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * `discriminator` mapping. Also erases corresponding `kinds` from
    * controller's `all`/`local` collections.
    *
-   * @param application LLM application to modify (mutated in-place).
-   * @param enumerable Whether to change JSON schema to enum type of available
+   * @param application LLM application to modify (mutated in-place)
    */
-  public fixApplication(
-    application: ILlmApplication,
-    enumerable: boolean = false,
-  ): ILlmApplication {
+  public fixApplication(application: ILlmApplication): ILlmApplication {
     fixPreliminaryApplication({
       state: this.state,
       preliminary: this,
       application,
-      enumerable,
     });
     return application;
   }

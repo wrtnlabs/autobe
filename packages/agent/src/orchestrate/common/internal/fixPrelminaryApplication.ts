@@ -4,6 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBePreliminaryKind,
 } from "@autobe/interface";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmFunction,
@@ -32,7 +33,6 @@ export const fixPreliminaryApplication = <
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<Kind>;
   application: ILlmApplication;
-  enumerable: boolean;
 }): void => {
   if (
     props.preliminary.getKinds().some((k) => k.includes("previous")) === false
@@ -83,22 +83,21 @@ export const fixPreliminaryApplication = <
       }
     }
 
-  if (props.enumerable === true)
-    for (const kind of props.preliminary.getKinds()) {
-      const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
-        kind.startsWith("previous")
-          ? (() => {
-              const value = kind.replace("previous", "");
-              return value[0].toLowerCase() + value.substring(1);
-            })()
-          : kind
-      ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
-      ApplicationFixer[accessor]({
-        $defs: func.parameters.$defs,
-        controller: props.preliminary as any,
-        previous: kind.startsWith("previous"),
-      });
-    }
+  for (const kind of props.preliminary.getKinds()) {
+    const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
+      kind.startsWith("previous")
+        ? (() => {
+            const value = kind.replace("previous", "");
+            return value[0].toLowerCase() + value.substring(1);
+          })()
+        : kind
+    ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
+    ApplicationFixer[accessor]({
+      $defs: func.parameters.$defs,
+      controller: props.preliminary as any,
+      previous: kind.startsWith("previous"),
+    });
+  }
 };
 
 const getUnionErasure = (props: {
@@ -150,10 +149,18 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisFiles>()
         : typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .fileNames as ILlmSchema.IArray;
-    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = analysisFiles.map((x) => x.filename);
+    describe(
+      type.properties.fileNames,
+      StringUtil.trim`
+        Here is the list of analysis files available for retrieval:
+
+        ${analysisFiles
+          .slice()
+          .sort((a, b) => a.filename.localeCompare(b.filename))
+          .map((f) => `- ${f.filename}`)
+          .join("\n")}
+        `,
+    );
   };
 
   export const databaseSchemas = (props: {
@@ -174,10 +181,17 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousDatabaseSchemas>()
         : typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .schemaNames as ILlmSchema.IArray;
-    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = schemas.map((x) => x.name);
+    describe(
+      type.properties.schemaNames,
+      StringUtil.trim`
+        Here is the list of database schemas available for retrieval:
+
+        ${schemas
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((s) => `- ${s.name}`)}
+      `,
+    );
   };
 
   export const interfaceOperations = (props: {
@@ -198,27 +212,20 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceOperations>()
         : typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .endpoints as ILlmSchema.IArray;
-    array.items = {
-      anyOf: operations.map(
-        (op) =>
-          ({
-            type: "object",
-            properties: {
-              path: {
-                type: "string",
-                enum: [op.path],
-              } satisfies ILlmSchema.IString,
-              method: {
-                type: "string",
-                enum: [op.method],
-              } satisfies ILlmSchema.IString,
-            },
-            required: ["path", "method"],
-          }) satisfies ILlmSchema.IObject,
-      ),
-    } satisfies ILlmSchema.IAnyOf;
+    describe(
+      type.properties.endpoints,
+      StringUtil.trim`
+        Here is the list of interface operations available for retrieval:
+
+        path | method
+        ---- | ------
+        ${operations
+          .slice()
+          .sort(AutoBeOpenApiEndpointComparator.compare)
+          .map((o) => ` ${o.path} | ${o.method}`)
+          .join("\n")}
+      `,
+    );
   };
 
   export const interfaceSchemas = (props: {
@@ -240,10 +247,18 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceSchemas>()
         : typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .typeNames as ILlmSchema.IArray;
-    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = dtoTypeNames;
+    describe(
+      type.properties.typeNames,
+      StringUtil.trim`
+        Here is the list of interface schemas available for retrieval:
+
+        ${dtoTypeNames
+          .slice()
+          .sort((a, b) => a.localeCompare(b))
+          .map((name) => `- ${name}`)
+          .join("\n")}
+      `,
+    );
   };
 
   export const realizeCollectors = (props: {
@@ -255,12 +270,19 @@ namespace ApplicationFixer {
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .dtoTypeNames as ILlmSchema.IArray;
-    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = props.controller
-      .getAll()
-      .realizeCollectors.map((x) => x.plan.dtoTypeName);
+    describe(
+      type.properties.dtoTypeNames,
+      StringUtil.trim`
+        Here is the list of DTO types available for realize collectors:
+
+        ${props.controller
+          .getAll()
+          .realizeCollectors.slice()
+          .sort((a, b) => a.plan.dtoTypeName.localeCompare(b.plan.dtoTypeName))
+          .map((x) => `- ${x.plan.dtoTypeName}`)
+          .join("\n")}
+      `,
+    );
   };
 
   export const realizeTransformers = (props: {
@@ -272,11 +294,24 @@ namespace ApplicationFixer {
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>()
     ] as ILlmSchema.IObject;
-    const array: ILlmSchema.IArray = type.properties
-      .dtoTypeNames as ILlmSchema.IArray;
-    const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-    items.enum = props.controller
-      .getAll()
-      .realizeTransformers.map((x) => x.plan.dtoTypeName);
+    describe(
+      type.properties.dtoTypeNames,
+      StringUtil.trim`
+        Here is the list of DTO types available for realize transformers:
+
+        ${props.controller
+          .getAll()
+          .realizeTransformers.slice()
+          .sort((a, b) => a.plan.dtoTypeName.localeCompare(b.plan.dtoTypeName))
+          .map((x) => `- ${x.plan.dtoTypeName}`)
+          .join("\n")}
+      `,
+    );
   };
 }
+
+const describe = (schema: ILlmSchema, content: string): void => {
+  schema.description ??= "";
+  if (schema.description.length > 0) schema.description += "\n\n";
+  schema.description += content;
+};

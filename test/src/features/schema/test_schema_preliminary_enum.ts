@@ -65,7 +65,7 @@ export const test_schema_preliminary_enum = async () => {
     ],
     state: agent.getContext().state(),
   });
-  preliminary.fixApplication(application, true);
+  preliminary.fixApplication(application);
 
   const state: AutoBeState = preliminary.getState();
   const $defs: Record<string, ILlmSchema> = application.functions.find(
@@ -84,13 +84,11 @@ const validateAnalysisFiles = (
   const type: ILlmSchema.IObject = $defs[
     typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
   ] as ILlmSchema.IObject;
-  const array: ILlmSchema.IArray = type.properties
-    .fileNames as ILlmSchema.IArray;
-  const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-  TestValidator.equals(
-    "analysisFiles",
-    (items.enum ?? []).slice().sort(),
-    (state.analyze?.files ?? []).map((f) => f.filename).sort(),
+  TestValidator.predicate(
+    "getAnalysisFiles",
+    (state.analyze?.files ?? []).every(
+      (f) => !!type.properties?.fileNames.description?.includes(f.filename),
+    ),
   );
 };
 
@@ -101,18 +99,14 @@ const validateDatabaseSchemas = (
   const type: ILlmSchema.IObject = $defs[
     typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>()
   ] as ILlmSchema.IObject;
-  const array: ILlmSchema.IArray = type.properties
-    .schemaNames as ILlmSchema.IArray;
-  const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-  TestValidator.equals(
-    "databaseSchemas",
-    (items.enum ?? []).slice().sort(),
-    (
-      state.database?.result.data.files
-        .map((f) => f.models)
-        .flat()
-        .map((m) => m.name) ?? []
-    ).sort(),
+  TestValidator.predicate(
+    "getDatabaseSchemas",
+    (state.database?.result.data.files ?? [])
+      .map((f) => f.models)
+      .flat()
+      .every(
+        (m) => !!type.properties?.schemaNames.description?.includes(m.name),
+      ),
   );
 };
 
@@ -123,28 +117,15 @@ const validateInterfaceOperations = (
   const type: ILlmSchema.IObject = $defs[
     typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>()
   ] as ILlmSchema.IObject;
-  const array: ILlmSchema.IArray = type.properties
-    .endpoints as ILlmSchema.IArray;
-  const items: ILlmSchema.IAnyOf = array.items as ILlmSchema.IAnyOf;
-  TestValidator.equals("interfaceOperations", items, {
-    anyOf: (state.interface?.document.operations ?? []).map(
-      (op) =>
-        ({
-          type: "object",
-          properties: {
-            path: {
-              type: "string",
-              enum: [op.path],
-            } satisfies ILlmSchema.IString,
-            method: {
-              type: "string",
-              enum: [op.method],
-            } satisfies ILlmSchema.IString,
-          },
-          required: ["path", "method"],
-        }) satisfies ILlmSchema.IObject,
+  TestValidator.predicate(
+    "interfaceOperations",
+    (state.interface?.document.operations ?? []).every(
+      (o) =>
+        !!type.properties?.endpoints.description?.includes(
+          `${o.path} | ${o.method}`,
+        ),
     ),
-  } satisfies ILlmSchema.IAnyOf);
+  );
 };
 
 const validateInterfaceSchemas = (
@@ -154,12 +135,10 @@ const validateInterfaceSchemas = (
   const type: ILlmSchema.IObject = $defs[
     typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>()
   ] as ILlmSchema.IObject;
-  const array: ILlmSchema.IArray = type.properties
-    .typeNames as ILlmSchema.IArray;
-  const items: ILlmSchema.IString = array.items as ILlmSchema.IString;
-  TestValidator.equals(
+  TestValidator.predicate(
     "interfaceSchemas",
-    (items.enum ?? []).slice().sort(),
-    Object.keys(state.interface?.document.components.schemas ?? {}).sort(),
+    Object.keys(state.interface?.document.components.schemas ?? {}).every(
+      (key) => !!type.properties?.typeNames.description?.includes(key),
+    ),
   );
 };
