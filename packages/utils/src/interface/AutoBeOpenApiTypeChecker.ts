@@ -42,6 +42,11 @@ export namespace AutoBeOpenApiTypeChecker {
   ): schema is AutoBeOpenApi.IJsonSchema.IString =>
     (schema as AutoBeOpenApi.IJsonSchema.IString).type === "string";
 
+  export const isNull = (
+    schema: AutoBeOpenApi.IJsonSchema,
+  ): schema is AutoBeOpenApi.IJsonSchema.INull =>
+    (schema as AutoBeOpenApi.IJsonSchema.INull).type === "null";
+
   export const visit = (props: {
     components: AutoBeOpenApi.IComponents;
     schema: AutoBeOpenApi.IJsonSchema;
