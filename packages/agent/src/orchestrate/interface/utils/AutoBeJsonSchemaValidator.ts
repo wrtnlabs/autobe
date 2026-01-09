@@ -511,7 +511,7 @@ export namespace AutoBeJsonSchemaValidator {
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
     for (const [key, value] of Object.entries(props.schema.properties)) {
-      if (key === "id" || key.endsWith("_id") === false) continue;
+      if (key !== "id" && key.endsWith("_id") === false) continue;
 
       const accessor: string = `${props.path}.properties${
         Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
