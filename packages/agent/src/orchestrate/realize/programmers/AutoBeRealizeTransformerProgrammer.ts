@@ -336,6 +336,7 @@ ${Object.keys(props.schema.properties)
     const imports: string[] = [
       `import { Prisma } from "@prisma/sdk";`,
       `import { ArrayUtil } from "@nestia/e2e";`,
+      `import typia, { tags } from "typia";`,
       "",
       ...Array.from(typeReferences).map(
         (ref) =>
