@@ -47,6 +47,12 @@ The `connection` parameter passed to your test function is a **BASE connection o
 3. **Each actor gets their OWN isolated connection**
 
 **MANDATORY Pattern:**
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function test_api_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
 export async function test_api_example(connection: api.IConnection) {
   // Step 1: Create actor-specific connections and authorize them

@@ -89,16 +89,109 @@ The system supports various authorization types beyond the common ones:
 
 **Important**: Do not assume a fixed set of auth types. Analyze the `authorizationType` field and implement appropriate logic for ANY type.
 
+## 🚨 CRITICAL: Function Declaration Syntax - NO Arrow Functions!
+
+**ABSOLUTE REQUIREMENT**: You MUST use `async function` declaration syntax. Arrow function syntax is FORBIDDEN and will cause validation failure.
+
+### ❌ WRONG - Arrow Function Syntax:
+```typescript
+// ❌ COMPILATION WILL FAIL - Arrow functions are NOT allowed!
+export const authorize_user_login = async (
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> => {
+  return await api.functional.auth.user.login(connection, { body: props.body });
+};
+
+// ❌ WRONG - Const with arrow async function
+export const authorize_admin_join = async (connection, props) => { ... };
+```
+
+### ✅ CORRECT - Async Function Declaration:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function authorize_user_login(
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> {
+  return await api.functional.auth.user.login(connection, { body: props.body });
+}
+
+// ✅ CORRECT - Async function declaration
+export async function authorize_admin_join(connection, props) { ... }
+```
+
+**WHY THIS MATTERS:**
+- The validation system checks for exact pattern: `"export async function authorize_xxx("`
+- Arrow functions (`=>`) will be rejected during validation
+- Async function declarations are required for proper code generation pipeline
+- This is NOT a style preference - it's a compilation requirement
+
+**REMEMBER:** Start with `export async function` - NEVER `export const ... = async`
+
+### ❌ DEADLY MISTAKE: Namespace or Class Wrapping
+
+**NEVER wrap your function in namespace or class - this will cause COMPILATION FAILURE:**
+
+```typescript
+// ❌ WRONG - Namespace wrapper (COMPILATION WILL FAIL!)
+export namespace AuthorizeUserLogin {
+  export async function authorize_user_login(
+    connection: api.IConnection,
+    props: { body: IUser.ILogin }
+  ): Promise<IUser.IAuthorized> {
+    return await api.functional.auth.user.login(connection, { body: props.body });
+  }
+}
+
+// ❌ WRONG - Class with static method (COMPILATION WILL FAIL!)
+export class AuthorizeUserLogin {
+  public static async authorize_user_login(
+    connection: api.IConnection,
+    props: { body: IUser.ILogin }
+  ): Promise<IUser.IAuthorized> {
+    return await api.functional.auth.user.login(connection, { body: props.body });
+  }
+}
+```
+
+### ✅ CORRECT - Direct Function Export:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function authorize_user_login(
+  connection: api.IConnection,
+  props: { body: IUser.ILogin }
+): Promise<IUser.IAuthorized> {
+  return await api.functional.auth.user.login(connection, { body: props.body });
+}
+```
+
+**WHY NAMESPACE/CLASS WRAPPING FAILS:**
+- The validation system expects: `"export async function authorize_user_login("`
+- With namespace: The actual pattern becomes `namespace AuthorizeUserLogin { export async function ...`
+- With class: The actual pattern becomes `class AuthorizeUserLogin { static async ...`
+- Both will be REJECTED by the validation system because the exact string `"export async function authorize_user_login("` does NOT appear at the start of the code
+- This is NOT about code style - the validation system literally searches for this exact string pattern
+
+**Context Pollution Warning:**
+You see many namespace patterns in this prompt (SDK functions, DTO types like `IUser.ILogin`, `IUser.IAuthorized`). These are for REFERENCE ONLY. Your generated authorization function MUST be a direct export without any wrapping.
+
 ## 3. Implementation Patterns
 
 ### For JOIN operations:
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function authorize_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
-export const authorize_user_join = async (
+export async function authorize_user_join(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IUser.IJoin>,
   },
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   const joinInput = {
     ...(props.body ?? {}),
     email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
@@ -112,20 +205,26 @@ export const authorize_user_join = async (
 
   // No try-catch - just call the API directly
   return await api.functional.{accessor}.join(connection, { body: joinInput });
-};
+}
 ```
 
 ### For LOGIN operations:
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function authorize_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
-export const authorize_user_login = async (
+export async function authorize_user_login(
   connection: api.IConnection,
   props: {
     body: IUser.ILogin,
   },
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   // No try-catch - just call the API directly
   return await api.functional.{accessor}.login(connection, { body: props.body });
-};
+}
 ```
 
 ### For CUSTOM operations:
@@ -150,22 +249,22 @@ Authorization functions exist solely to call join/login/refresh APIs for test se
 
 **Correct Pattern (No try-catch):**
 ```typescript
-export const authorize_user_login = async (
+export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin },
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   // Just call the API - let it fail naturally if it fails
   return await api.functional.auth.user.login(connection, { body: props.body });
-};
+}
 ```
 
 **Wrong Pattern (Useless try-catch):**
 ```typescript
 // ❌ NEVER DO THIS - Completely useless error wrapping
-export const authorize_user_login = async (
+export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin },
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   try {
     const result = await api.functional.auth.user.login(connection, { body: props.body });
     return result;
@@ -175,7 +274,7 @@ export const authorize_user_login = async (
     }
     throw new Error(`Unexpected error during login: ${error.message}`);
   }
-};
+}
 ```
 
 ## 5. RandomGenerator Usage for Test Data
@@ -288,10 +387,10 @@ Follow the **immutability-first programming** pattern throughout all authorizati
 
 ```typescript
 // ✅ CORRECT: Use const for all declarations
-export const authorize_user_login = async (
+export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin },
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   const result = await api.functional.auth.user.login(connection, { body: props.body });
 
   // If you need different auth tokens in different scenarios
@@ -299,13 +398,13 @@ export const authorize_user_login = async (
   const refreshToken = result.token.refresh;
 
   return result;
-};
+}
 
 // ✅ CORRECT: Multiple const declarations for conditional values
-export const authorize_admin_join = async (
+export async function authorize_admin_join(
   connection: api.IConnection,
   props: { body?: DeepPartial<IAdmin.IJoin> },
-): Promise<IAdmin.IAuthorized> => {
+): Promise<IAdmin.IAuthorized> {
   const joinInput = {
     ...(props.body ?? {}),
     email: props.body?.email ?? `admin-${RandomGenerator.alphaNumeric(8)}@example.com`,
@@ -319,7 +418,7 @@ export const authorize_admin_join = async (
   const adminProfile = joinResult.profile;
 
   return joinResult;
-};
+}
 ```
 
 **Prohibited Patterns:**

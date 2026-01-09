@@ -77,15 +77,15 @@ You MUST execute the following 3-step workflow through a single function call:
 - Generate the complete TypeScript function
 - Function structure MUST follow this pattern:
   ```typescript
-  export const generate_random_resource = async (
+  export async function generate_random_resource(
     connection: api.IConnection,
     props: {
       body?: DeepPartial<CreateType>,
       params?: { commentId: string }  // For URL parameters if needed
     }
-  ): Promise<[ResponseTypeName]> => {
+  ): Promise<[ResponseTypeName]> {
       // Implementation
-  };
+  }
   ```
   **CRITICAL**: Use the EXACT type name from operation.responseBody.typeName for return type
 - MUST use the same input type as the prepare function (DeepPartial type)
@@ -128,15 +128,15 @@ Perform a thorough review checking for:
 
 ### 2.1. Function Signature
 ```typescript
-export const generate_random_{resource} = async (
+export async function generate_random_{resource}(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<{ResourceType}.ICreate>,
     params?: { commentId: string }  // For URL parameters if needed
   }
-): Promise<{ResponseType}> => {
+): Promise<{ResponseType}> {
     // Implementation
-};
+}
 ```
 
 **IMPORTANT**: The input type MUST match the prepare function's input type exactly. Use DeepPartial with the same type that the prepare function accepts. Include params property with specific parameter types when the API operation requires URL parameters.
@@ -179,16 +179,117 @@ export const generate_random_{resource} = async (
 - The resource name should be extracted from the prepare function name
 - Example: `prepare_random_article` → `generate_random_article`
 
+## 🚨 CRITICAL: Function Declaration Syntax - NO Arrow Functions!
+
+**ABSOLUTE REQUIREMENT**: You MUST use `async function` declaration syntax. Arrow function syntax is FORBIDDEN and will cause validation failure.
+
+### ❌ WRONG - Arrow Function Syntax:
+```typescript
+// ❌ COMPILATION WILL FAIL - Arrow functions are NOT allowed!
+export const generate_random_user = async (
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IUser.ICreate> }
+): Promise<IUser> => {
+  const prepared = prepare_random_user(props.body);
+  return await api.functional.users.create(connection, { body: prepared });
+};
+
+// ❌ WRONG - Const with arrow async function
+export const generate_random_article = async (connection, props) => { ... };
+```
+
+### ✅ CORRECT - Async Function Declaration:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function generate_random_user(
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IUser.ICreate> }
+): Promise<IUser> {
+  const prepared = prepare_random_user(props.body);
+  return await api.functional.users.create(connection, { body: prepared });
+}
+
+// ✅ CORRECT - Async function declaration
+export async function generate_random_article(connection, props) { ... }
+```
+
+**WHY THIS MATTERS:**
+- The validation system checks for exact pattern: `"export async function generate_xxx("`
+- Arrow functions (`=>`) will be rejected during validation
+- Async function declarations are required for proper code generation pipeline
+- This is NOT a style preference - it's a compilation requirement
+
+**REMEMBER:** Start with `export async function` - NEVER `export const ... = async`
+
+### ❌ DEADLY MISTAKE: Namespace or Class Wrapping
+
+**NEVER wrap your function in namespace or class - this will cause COMPILATION FAILURE:**
+
+```typescript
+// ❌ WRONG - Namespace wrapper (COMPILATION WILL FAIL!)
+export namespace GenerateRandomUser {
+  export async function generate_random_user(
+    connection: api.IConnection,
+    props: { body?: DeepPartial<IUser.ICreate> }
+  ): Promise<IUser> {
+    const prepared = prepare_random_user(props.body);
+    const result = await api.functional.users.create(connection, { body: prepared });
+    return result;
+  }
+}
+
+// ❌ WRONG - Class with static method (COMPILATION WILL FAIL!)
+export class GenerateRandomUser {
+  public static async generate_random_user(
+    connection: api.IConnection,
+    props: { body?: DeepPartial<IUser.ICreate> }
+  ): Promise<IUser> {
+    const prepared = prepare_random_user(props.body);
+    const result = await api.functional.users.create(connection, { body: prepared });
+    return result;
+  }
+}
+```
+
+### ✅ CORRECT - Direct Function Export:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function generate_random_user(
+  connection: api.IConnection,
+  props: { body?: DeepPartial<IUser.ICreate> }
+): Promise<IUser> {
+  const prepared = prepare_random_user(props.body);
+  const result = await api.functional.users.create(connection, { body: prepared });
+  return result;
+}
+```
+
+**WHY NAMESPACE/CLASS WRAPPING FAILS:**
+- The validation system expects: `"export async function generate_random_user("`
+- With namespace: The actual pattern becomes `namespace GenerateRandomUser { export async function ...`
+- With class: The actual pattern becomes `class GenerateRandomUser { static async ...`
+- Both will be REJECTED by the validation system because the exact string `"export async function generate_random_user("` does NOT appear at the start of the code
+- This is NOT about code style - the validation system literally searches for this exact string pattern
+
+**Context Pollution Warning:**
+You see many namespace patterns in this prompt (SDK functions, DTO types like `IUser.ICreate`, prepare functions). These are for REFERENCE ONLY. Your generated generation function MUST be a direct export without any wrapping.
+
 ## 3. Common Patterns
 
 ### 3.1. Standard Generation Function (without URL parameters)
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function generate_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
-export const generate_random_bbs_article = async (
+export async function generate_random_bbs_article(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IBbsArticle.ICreate>
   }
-): Promise<IBbsArticle> => {
+): Promise<IBbsArticle> {
   const prepared = prepare_random_bbs_article(props.body);
   const result: IBbsArticle = await api.functional.bbs.articles.create(
     connection,
@@ -197,12 +298,18 @@ export const generate_random_bbs_article = async (
     },
   );
   return result;
-};
+}
 ```
 
 ### 3.2. Generation Function with URL parameters
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function generate_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
-export const generate_random_comment = async (
+export async function generate_random_comment(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IComment.ICreate>,
@@ -210,7 +317,7 @@ export const generate_random_comment = async (
       articleId: string,
     },
   },
-): Promise<IComment> => {
+): Promise<IComment> {
   const prepared: IComment.ICreate = prepare_random_comment(props.body);
   const result: IComment = await api.functional.articles.comments.create(
     connection,
@@ -220,18 +327,24 @@ export const generate_random_comment = async (
     },
   );
   return result;
-};
+}
 ```
 
 ### 3.3. Simple Example
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function generate_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
-export const generate_random_user = async (
+export async function generate_random_user(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IUser.ICreate>,
   },
-): Promise<IUser> => {
-  const prepared: IUser.ICreate = prepare_random_user(props.body);  
+): Promise<IUser> {
+  const prepared: IUser.ICreate = prepare_random_user(props.body);
   const result: IUser = await api.functional.users.create(
     connection,
     {
@@ -239,7 +352,7 @@ export const generate_random_user = async (
     },
   );
   return result;
-};
+}
 ```
 
 ## 4. Critical Rules
@@ -275,12 +388,12 @@ This immutability-first approach is a proven best practice in functional program
 
 ```typescript
 // ✅ CORRECT: All variables declared with const
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IArticle.ICreate>
   }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   const prepared = prepare_random_article(props.body);
   const result = await api.functional.articles.create(
     connection,
@@ -292,16 +405,16 @@ export const generate_random_article = async (
   const articleTitle = result.title;
 
   return result;
-};
+}
 
 // ✅ CORRECT: Conditional values with separate const declarations
-export const generate_random_product = async (
+export async function generate_random_product(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IProduct.ICreate>,
     params?: { categoryId: string }
   }
-): Promise<IProduct> => {
+): Promise<IProduct> {
   const prepared = prepare_random_product(props.body);
 
   // Use ternary for conditional const
@@ -315,7 +428,7 @@ export const generate_random_product = async (
     }
   );
   return result;
-};
+}
 ```
 
 **Prohibited Patterns:**
@@ -382,23 +495,23 @@ Generation functions exist to create test resources by calling API endpoints. AP
 **Correct Pattern (No try-catch):**
 ```typescript
 // ✅ CORRECT: Just call the API directly - let it fail naturally if it fails
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: { body?: DeepPartial<IArticle.ICreate> }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   const prepared = prepare_random_article(props.body);
   const result = await api.functional.articles.create(connection, { body: prepared });
   return result;
-};
+}
 ```
 
 **Wrong Pattern (Useless try-catch):**
 ```typescript
 // ❌ NEVER DO THIS - Completely useless error wrapping
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: { body?: DeepPartial<IArticle.ICreate> }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   try {
     const prepared = prepare_random_article(props.body);
     const result = await api.functional.articles.create(connection, { body: prepared });
@@ -407,7 +520,7 @@ export const generate_random_article = async (
     console.error(`Failed to generate article:`, error);
     throw error;  // Pointless re-throw
   }
-};
+}
 ```
 
 ## 6. Note on Authentication

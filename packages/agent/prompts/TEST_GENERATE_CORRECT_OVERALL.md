@@ -54,7 +54,7 @@ import { prepare_random_user } from "../prepare/user";  // Wrong path
 
 // ✅ CORRECT
 // No import needed - all functions are pre-imported in test environment
-export const generate_random_user = async (
+export async function generate_random_user(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IUser.ICreate>,
@@ -146,10 +146,10 @@ await api.functional.articles.create  // Correct plural form
 **Error**: Incorrect return type annotation
 ```typescript
 // ❌ WRONG
-): Promise<IArticle.ICreate> => {  // Wrong - should be response type
+): Promise<IArticle.ICreate> {  // Wrong - should be response type
 
 // ✅ CORRECT
-): Promise<IArticle> => {  // Use the response type from API
+): Promise<IArticle> {  // Use the response type from API
 ```
 
 **Error**: Not returning the API result
@@ -168,11 +168,11 @@ return result;
 **Error**: Missing async keyword
 ```typescript
 // ❌ WRONG
-export const generate_random_post = (props: {...}): Promise<IPost> => {
+export const generate_random_post = (props: {...}): Promise<IPost> {
   const result = await api.functional...  // await without async
 
 // ✅ CORRECT
-export const generate_random_post = async (props: {...}): Promise<IPost> => {
+export async function generate_random_post(props: {...}): Promise<IPost> {
   const result = await api.functional...
 ```
 
@@ -216,10 +216,10 @@ The **single assignment principle** (immutability-first programming) requires al
 **Error**: Using `let` declaration
 ```typescript
 // ❌ WRONG: Mutable variable declaration
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: { body?: DeepPartial<IArticle.ICreate> }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   let prepared;  // WRONG! Violates immutability
   prepared = prepare_random_article(props.body);
 
@@ -245,10 +245,10 @@ count = count + 1;
 **Solution**: Use `const` exclusively
 ```typescript
 // ✅ CORRECT: Immutable declarations with const
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: { body?: DeepPartial<IArticle.ICreate> }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   const prepared = prepare_random_article(props.body);
   const result = await api.functional.articles.create(connection, { body: prepared });
   return result;
@@ -297,12 +297,12 @@ When you receive a compilation error:
 
 ### Standard Generation Function Pattern:
 ```typescript
-export const generate_random_article = async (
+export async function generate_random_article(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IArticle.ICreate>
   }
-): Promise<IArticle> => {
+): Promise<IArticle> {
   const prepared = prepare_random_article(props.body);
   const result = await api.functional.articles.create(
     connection,
@@ -321,10 +321,10 @@ Generation functions exist to create test resources by calling API endpoints. AP
 **Error**: Adding try-catch blocks
 ```typescript
 // ❌ WRONG: Completely useless error wrapping
-export const generate_random_order = async (
+export async function generate_random_order(
   connection: api.IConnection,
   props: { body?: DeepPartial<IOrder.ICreate> }
-): Promise<IOrder> => {
+): Promise<IOrder> {
   try {
     const prepared = prepare_random_order(props.body);
     const result = await api.functional.orders.create(connection, { body: prepared });
@@ -335,10 +335,10 @@ export const generate_random_order = async (
 };
 
 // ✅ CORRECT: No try-catch - just call the API directly
-export const generate_random_order = async (
+export async function generate_random_order(
   connection: api.IConnection,
   props: { body?: DeepPartial<IOrder.ICreate> }
-): Promise<IOrder> => {
+): Promise<IOrder> {
   const prepared = prepare_random_order(props.body);
   const result = await api.functional.orders.create(connection, { body: prepared });
   return result;
@@ -376,12 +376,12 @@ Cannot find module '../prepare/prepare_random_user'
 ```typescript
 rewrite({
   think: "The error indicates an import issue. In the test environment, prepare functions are pre-imported. Need to remove the import and use the function directly.",
-  draft: `export const generate_random_user = async (
+  draft: `export async function generate_random_user(
   connection: api.IConnection,
   props: {
     body?: DeepPartial<IUser.ICreate>
   }
-): Promise<IUser> => {
+): Promise<IUser> {
   const prepared = prepare_random_user(props.body);
   const result = await api.functional.auth.users.create(
     connection,

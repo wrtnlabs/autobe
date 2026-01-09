@@ -358,6 +358,12 @@ process({
 ```
 
 **Phase 2: Generate final implementation** (after receiving all necessary context):
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export async function {operationName}(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
 process({
   thinking: "Implemented shopping sale creation with customer verification and category validation.",
@@ -387,6 +393,119 @@ export async function postShoppingSales(props: {
   }
 });
 ```
+
+---
+
+# 🚨 CRITICAL: Function Declaration Syntax - NO Arrow Functions!
+
+**ABSOLUTE REQUIREMENT**: You MUST use `async function` declaration syntax. Arrow function syntax is FORBIDDEN and will cause validation failure.
+
+## ❌ WRONG - Arrow Function Syntax:
+```typescript
+// ❌ COMPILATION WILL FAIL - Arrow functions are NOT allowed!
+export const postShoppingSales = async (props: {
+  customer: ActorPayload;
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> => {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({ ... }),
+  });
+  return await ShoppingSaleTransformer.transform(created);
+};
+
+// ❌ WRONG - Const with arrow async function
+export const getUserProfile = async (props) => { ... };
+```
+
+## ✅ CORRECT - Async Function Declaration:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function postShoppingSales(props: {
+  customer: ActorPayload;
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({ ... }),
+  });
+  return await ShoppingSaleTransformer.transform(created);
+}
+
+// ✅ CORRECT - Async function declaration
+export async function getUserProfile(props) { ... }
+```
+
+**WHY THIS MATTERS:**
+- The validation system checks for exact pattern: `"export async function {operationName}("`
+- Arrow functions (`=>`) will be rejected during validation
+- Async function declarations are required for proper code generation pipeline
+- This is NOT a style preference - it's a compilation requirement
+
+**REMEMBER:** Start with `export async function` - NEVER `export const ... = async`
+
+## ❌ DEADLY MISTAKE: Namespace or Class Wrapping
+
+**NEVER wrap your function in namespace or class - this will cause COMPILATION FAILURE:**
+
+```typescript
+// ❌ WRONG - Namespace wrapper (COMPILATION WILL FAIL!)
+export namespace ShoppingSalesOperations {
+  export async function postShoppingSales(props: {
+    customer: ActorPayload;
+    body: IShoppingSale.ICreate;
+  }): Promise<IShoppingSale> {
+    const created = await MyGlobal.prisma.shopping_sales.create({
+      data: await ShoppingSaleCollector.collect({
+        actor: props.customer,
+        input: props.body,
+      }),
+    });
+    return await ShoppingSaleTransformer.transform(created);
+  }
+}
+
+// ❌ WRONG - Class with static method (COMPILATION WILL FAIL!)
+export class ShoppingSalesOperations {
+  public static async postShoppingSales(props: {
+    customer: ActorPayload;
+    body: IShoppingSale.ICreate;
+  }): Promise<IShoppingSale> {
+    const created = await MyGlobal.prisma.shopping_sales.create({
+      data: await ShoppingSaleCollector.collect({
+        actor: props.customer,
+        input: props.body,
+      }),
+    });
+    return await ShoppingSaleTransformer.transform(created);
+  }
+}
+```
+
+## ✅ CORRECT - Direct Function Export:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export async function postShoppingSales(props: {
+  customer: ActorPayload;
+  body: IShoppingSale.ICreate;
+}): Promise<IShoppingSale> {
+  const created = await MyGlobal.prisma.shopping_sales.create({
+    data: await ShoppingSaleCollector.collect({
+      actor: props.customer,
+      input: props.body,
+    }),
+  });
+  return await ShoppingSaleTransformer.transform(created);
+}
+```
+
+**WHY NAMESPACE/CLASS WRAPPING FAILS:**
+- The validation system expects: `"export async function postShoppingSales("`
+- With namespace: The actual pattern becomes `namespace ShoppingSalesOperations { export async function ...`
+- With class: The actual pattern becomes `class ShoppingSalesOperations { static async ...`
+- Both will be REJECTED by the validation system because the exact string `"export async function postShoppingSales("` does NOT appear at the start of the code
+- This is NOT about code style - the validation system literally searches for this exact string pattern
+
+**Context Pollution Warning:**
+You see many namespace patterns in this prompt (DTO types like `IShoppingSale.ICreate`, Collector/Transformer classes). These are for REFERENCE ONLY. Your generated operation function MUST be a direct export without any wrapping.
 
 ---
 

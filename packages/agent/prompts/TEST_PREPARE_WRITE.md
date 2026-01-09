@@ -208,6 +208,108 @@ You will receive via assistant message:
 - The property list tells you exactly which properties need generation
 - External definitions show available utilities - use `typia.random<T>()` with proper tags for type-safe random generation
 
+## 🚨 CRITICAL: Function Declaration Syntax - NO Arrow Functions!
+
+**ABSOLUTE REQUIREMENT**: You MUST use function declaration syntax. Arrow function syntax is FORBIDDEN and will cause validation failure.
+
+### ❌ WRONG - Arrow Function Syntax:
+```typescript
+// ❌ COMPILATION WILL FAIL - Arrow functions are NOT allowed!
+export const prepare_random_user = (
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate => ({
+  email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+  password: input?.password ?? RandomGenerator.alphaNumeric(16),
+});
+
+// ❌ WRONG - Arrow function with explicit return
+export const prepare_random_order = (input?) => {
+  return { ... };
+};
+```
+
+### ✅ CORRECT - Function Declaration:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export function prepare_random_user(
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate {
+  return {
+    email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+    password: input?.password ?? RandomGenerator.alphaNumeric(16),
+  };
+}
+
+// ✅ CORRECT - Function declaration with return statement
+export function prepare_random_order(input?) {
+  return { ... };
+}
+```
+
+**WHY THIS MATTERS:**
+- The validation system checks for exact pattern: `"export function prepare_xxx("`
+- Arrow functions (`=>`) will be rejected during validation
+- Function declarations are required for proper code generation pipeline
+- This is NOT a style preference - it's a compilation requirement
+
+**REMEMBER:** Start with `export function` - NEVER `export const ... =`
+
+### ❌ DEADLY MISTAKE: Namespace or Class Wrapping
+
+**NEVER wrap your function in namespace or class - this will cause COMPILATION FAILURE:**
+
+```typescript
+// ❌ WRONG - Namespace wrapper (COMPILATION WILL FAIL!)
+export namespace PrepareRandomUser {
+  export function prepare_random_user(
+    input?: DeepPartial<IUser.ICreate>
+  ): IUser.ICreate {
+    return {
+      email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+      password: input?.password ?? RandomGenerator.alphaNumeric(16),
+      nickname: input?.nickname ?? RandomGenerator.name(),
+    };
+  }
+}
+
+// ❌ WRONG - Class with static method (COMPILATION WILL FAIL!)
+export class PrepareRandomUser {
+  public static prepare_random_user(
+    input?: DeepPartial<IUser.ICreate>
+  ): IUser.ICreate {
+    return {
+      email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+      password: input?.password ?? RandomGenerator.alphaNumeric(16),
+      nickname: input?.nickname ?? RandomGenerator.name(),
+    };
+  }
+}
+```
+
+### ✅ CORRECT - Direct Function Export:
+```typescript
+// ✅ THIS IS THE ONLY VALID PATTERN
+export function prepare_random_user(
+  input?: DeepPartial<IUser.ICreate>
+): IUser.ICreate {
+  return {
+    email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+    password: input?.password ?? RandomGenerator.alphaNumeric(16),
+    nickname: input?.nickname ?? RandomGenerator.name(),
+  };
+}
+```
+
+**WHY NAMESPACE/CLASS WRAPPING FAILS:**
+- The validation system expects: `"export function prepare_random_user("`
+- With namespace: The actual pattern becomes `namespace PrepareRandomUser { export function ...`
+- With class: The actual pattern becomes `class PrepareRandomUser { static ...`
+- Both will be REJECTED by the validation system because the exact string `"export function prepare_random_user("` does NOT appear at the start of the code
+- This is NOT about code style - the validation system literally searches for this exact string pattern
+
+**Context Pollution Warning:**
+You see many namespace patterns in this prompt (SDK functions, DTO types like `IUser.ICreate`, Collector/Transformer namespaces). These are for REFERENCE ONLY. Your generated prepare function MUST be a direct export without any wrapping.
+
 ## Property Classification Guidelines
 
 ### Test-Customizable Fields (Include in DeepPartial input)
@@ -306,20 +408,22 @@ The immutability principle is a cornerstone of functional programming and modern
 
 ```typescript
 // ✅ CORRECT: All const declarations
-export const prepare_random_user = (
+export function prepare_random_user(
   input?: DeepPartial<IUser.ICreate>
-): IUser.ICreate => ({
-  email: input?.email ?? typia.random<string & tags.Format<"email">>(),
-  password: input?.password ?? RandomGenerator.alphaNumeric(16),
-  name: input?.name ?? RandomGenerator.name(),
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-});
+): IUser.ICreate {
+  return {
+    email: input?.email ?? typia.random<string & tags.Format<"email">>(),
+    password: input?.password ?? RandomGenerator.alphaNumeric(16),
+    name: input?.name ?? RandomGenerator.name(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+}
 
 // ✅ CORRECT: Multiple const declarations for complex logic
-export const prepare_random_order = (
+export function prepare_random_order(
   input?: DeepPartial<IOrder.ICreate>
-): IOrder.ICreate => {
+): IOrder.ICreate {
   const itemCount = input?.items?.length ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>();
   const basePrice = typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<50000>>();
   const taxRate = 0.1;
@@ -333,12 +437,12 @@ export const prepare_random_order = (
     })),
     total: totalPrice,
   };
-};
+}
 
 // ✅ CORRECT: Ternary expressions for conditional values
-export const prepare_random_product = (
+export function prepare_random_product(
   input?: DeepPartial<IProduct.ICreate>
-): IProduct.ICreate => {
+): IProduct.ICreate {
   const categoryType = input?.category ?? RandomGenerator.pick(["electronics", "books", "clothing"] as const);
   const priceRange = categoryType === "electronics"
     ? { min: 10000, max: 500000 }
@@ -349,16 +453,16 @@ export const prepare_random_product = (
     category: categoryType,
     price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<typeof priceRange.min> & tags.Maximum<typeof priceRange.max>>(),
   };
-};
+}
 ```
 
 **Prohibited Anti-Patterns:**
 
 ```typescript
 // ❌ WRONG: Using let
-export const prepare_random_article = (
+export function prepare_random_article(
   input?: DeepPartial<IArticle.ICreate>
-): IArticle.ICreate => {
+): IArticle.ICreate {
   let title;  // FORBIDDEN!
   if (input?.title) {
     title = input.title;
@@ -367,17 +471,17 @@ export const prepare_random_article = (
   }
 
   return { title, /* ... */ };
-};
+}
 
 // ❌ WRONG: Deferred assignment with let
-export const prepare_random_comment = (
+export function prepare_random_comment(
   input?: DeepPartial<IComment.ICreate>
-): IComment.ICreate => {
+): IComment.ICreate {
   let content;  // FORBIDDEN!
   content = input?.content ?? RandomGenerator.content();
 
   return { content, /* ... */ };
-};
+}
 
 // ❌ WRONG: Reassignment pattern
 let counter = 0;
@@ -438,36 +542,42 @@ The `const`-only pattern isn't just a style preference—it's a fundamental prin
 const prepareAddress = () => ({...});  // WRONG!
 const prepareItems = () => ({...});    // WRONG!
 
-export const prepare_random_order = (...) => ({
-  address: prepareAddress(),  // WRONG!
-  items: prepareItems(),      // WRONG!
-});
+export function prepare_random_order(...) {
+  return {
+    address: prepareAddress(),  // WRONG!
+    items: prepareItems(),      // WRONG!
+  };
+}
 ```
 
 **WRONG** - Calling non-existent prepare functions:
 ```typescript
 // COMPILATION ERROR - These functions DO NOT EXIST
-export const prepare_random_order = (...) => ({
-  customer: prepare_random_customer(),      // WRONG! Function doesn't exist!
-  items: prepare_random_order_items(),      // WRONG! Function doesn't exist!
-});
+export function prepare_random_order(...) {
+  return {
+    customer: prepare_random_customer(),      // WRONG! Function doesn't exist!
+    items: prepare_random_order_items(),      // WRONG! Function doesn't exist!
+  };
+}
 ```
 
 **CORRECT** - All data generation inline:
 ```typescript
-export const prepare_random_order = (
+export function prepare_random_order(
   input?: DeepPartial<IOrder.ICreate>
-): IOrder.ICreate => ({
-  // Generate ALL nested data INLINE - no helper functions!
-  customer: input?.customer ? {
-    name: input.customer.name ?? RandomGenerator.name(),
-    email: input.customer.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
-  } : {
-    name: RandomGenerator.name(),
-    email: `${RandomGenerator.alphabets(8)}@example.com`,
-  },
-  // ...
-});
+): IOrder.ICreate {
+  return {
+    // Generate ALL nested data INLINE - no helper functions!
+    customer: input?.customer ? {
+      name: input.customer.name ?? RandomGenerator.name(),
+      email: input.customer.email ?? `${RandomGenerator.alphabets(8)}@example.com`,
+    } : {
+      name: RandomGenerator.name(),
+      email: `${RandomGenerator.alphabets(8)}@example.com`,
+    },
+    // ...
+  };
+}
 ```
 
 **REMEMBER**:
@@ -694,6 +804,12 @@ export namespace ITag {
 ```
 
 **Generated Function:**
+
+**🚨 CRITICAL OUTPUT FORMAT:**
+- MUST start with `export function prepare_xxx(`
+- NEVER wrap in namespace or class
+- NEVER use arrow function syntax
+
 ```typescript
 import { ArrayUtil, RandomGenerator } from "@nestia/e2e";
 import typia, { tags } from "typia";
@@ -702,41 +818,43 @@ import { DeepPartial } from "@ORGANIZATION/PROJECT-api/lib/typings/DeepPartial";
 import { IShoppingSale } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingSale";
 import { ITag } from "@ORGANIZATION/PROJECT-api/lib/structures/ITag";
 
-export const prepare_random_shopping_sale = (
+export function prepare_random_shopping_sale(
   input?: DeepPartial<IShoppingSale.ICreate>
-): IShoppingSale.ICreate => ({
-  // Test-customizable fields (use RandomGenerator for human-readable text)
-  title: input?.title ?? RandomGenerator.paragraph({
-    sentences: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<5>>(),
-    wordMin: 3,
-    wordMax: 7
-  }),
-  content: input?.content ?? RandomGenerator.content({
-    paragraphs: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<4>>(),
-    sentenceMin: 5,
-    sentenceMax: 10
-  }),
-  // Use typia.random for numbers with constraints
-  price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<999999>>(),
-  // Use typia.random for UUID-like identifiers
-  category_id: input?.category_id ?? typia.random<string & tags.Format<"uuid">>(),
+): IShoppingSale.ICreate {
+  return {
+    // Test-customizable fields (use RandomGenerator for human-readable text)
+    title: input?.title ?? RandomGenerator.paragraph({
+      sentences: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<5>>(),
+      wordMin: 3,
+      wordMax: 7
+    }),
+    content: input?.content ?? RandomGenerator.content({
+      paragraphs: typia.random<number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<4>>(),
+      sentenceMin: 5,
+      sentenceMax: 10
+    }),
+    // Use typia.random for numbers with constraints
+    price: input?.price ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1000> & tags.Maximum<999999>>(),
+    // Use typia.random for UUID-like identifiers
+    category_id: input?.category_id ?? typia.random<string & tags.Format<"uuid">>(),
 
-  // Array with nested objects
-  tags: input?.tags
-    ? input.tags.map(tag => ({
-        name: tag.name ?? RandomGenerator.alphabets(
-          typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()
-        ),
-      }))
-    : ArrayUtil.repeat(
-        typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
-        () => ({
-          name: RandomGenerator.alphabets(
+    // Array with nested objects
+    tags: input?.tags
+      ? input.tags.map(tag => ({
+          name: tag.name ?? RandomGenerator.alphabets(
             typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()
           ),
-        })
-      ),
-});
+        }))
+      : ArrayUtil.repeat(
+          typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+          () => ({
+            name: RandomGenerator.alphabets(
+              typia.random<number & tags.Type<"uint32"> & tags.Minimum<3> & tags.Maximum<10>>()
+            ),
+          })
+        ),
+  };
+}
 ```
 
 ## IMMEDIATE EXECUTION REQUIRED
