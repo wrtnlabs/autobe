@@ -1,8 +1,12 @@
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerListener } from "@autobe/interface";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
 import path from "path";
 import process from "process";
 
+import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
 
 async function main(): Promise<void> {
@@ -12,6 +16,30 @@ async function main(): Promise<void> {
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
+  const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
+  const factory: TestFactory = {
+    getTokenUsage: () => tokenUsage,
+    createAgent: (histories) =>
+      new AutoBeAgent({
+        vendor: TestGlobal.getVendorConfig(),
+        config: {
+          locale: "en-US",
+        },
+        compiler: (listener) => new AutoBeCompiler(listener),
+        histories,
+        tokenUsage,
+      }),
+    createCompiler: (
+      listener: IAutoBeCompilerListener = {
+        realize: {
+          test: {
+            onOperation: async () => {},
+            onReset: async () => {},
+          },
+        },
+      },
+    ) => new AutoBeCompiler(listener),
+  };
   const include: string[] = TestGlobal.getArguments("include") ?? [];
   const exclude: string[] = TestGlobal.getArguments("exclude") ?? [];
   const runsPerScenario: number = Number(
@@ -32,7 +60,7 @@ async function main(): Promise<void> {
       const report: DynamicExecutor.IReport = await DynamicExecutor.validate({
         prefix: "test_",
         location: path.join(__dirname, "features"),
-        parameters: () => [],
+        parameters: () => [factory],
         onComplete: (exec: DynamicExecutor.IExecution) => {
           const trace = (str: string) => {
             const success: number = scenarioResult.get(exec.name)?.success ?? 0;
