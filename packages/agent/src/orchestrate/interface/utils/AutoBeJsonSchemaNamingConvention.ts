@@ -16,6 +16,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
     }
     for (const [key, value] of Object.entries(document.components.schemas)) {
       convention.emplace(key, (newKey) => {
+        if (key === newKey) return;
         document.components.schemas[newKey] = value;
         delete document.components.schemas[key];
       });
