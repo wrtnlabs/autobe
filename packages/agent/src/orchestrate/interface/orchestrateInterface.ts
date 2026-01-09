@@ -231,6 +231,7 @@ export const orchestrateInterface =
       }
     }
     await orchestrateInterfaceSchemaRename(ctx, document);
+    AutoBeJsonSchemaNamingConvention.normalize(document);
 
     //------------------------------------------------
     // FINALIZATION
