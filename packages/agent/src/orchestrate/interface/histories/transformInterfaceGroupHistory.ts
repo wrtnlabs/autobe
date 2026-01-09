@@ -41,7 +41,7 @@ export const transformInterfaceGroupHistory = (props: {
         created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: StringUtil.trim`
-          Here is the database groupping information you can reference.
+          Here is the database grouping information you can reference.
 
           However, database groups are your **STARTING POINT**, not your **STRICT BOUNDARY**:
 
