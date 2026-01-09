@@ -1,10 +1,8 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
-// import { AutoBePlaygroundServer } from "@autobe/playground-server";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
-import fs from "fs";
 import path from "path";
 import process from "process";
 
@@ -18,7 +16,6 @@ async function main(): Promise<void> {
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
-  // const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     getTokenUsage: () => tokenUsage,
@@ -56,7 +53,6 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
-  // await backend.open(TestGlobal.PLAYGROUND_PORT);
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {
@@ -66,14 +62,6 @@ async function main(): Promise<void> {
         location: path.join(__dirname, "features"),
         parameters: () => [factory],
         onComplete: (exec: DynamicExecutor.IExecution) => {
-          fs.promises
-            .writeFile(
-              `${TestGlobal.ROOT}/tokenUsage.log`,
-              JSON.stringify(tokenUsage),
-              "utf8",
-            )
-            .catch(() => {});
-
           const trace = (str: string) => {
             const success: number = scenarioResult.get(exec.name)?.success ?? 0;
             console.log(
@@ -127,22 +115,6 @@ async function main(): Promise<void> {
 
       return [...prev, ...exceptions];
     }, Promise.resolve([]));
-
-  console.log("Token Usage");
-  console.table({
-    Total: tokenUsage.aggregate.total.toLocaleString("en-US"),
-    Input: tokenUsage.aggregate.input.total.toLocaleString("en-US"),
-    Output: tokenUsage.aggregate.output.total.toLocaleString("en-US"),
-    Facade: tokenUsage.facade.total.toLocaleString("en-US"),
-    Analyze: tokenUsage.analyze.total.toLocaleString("en-US"),
-    Database: tokenUsage.database.total.toLocaleString("en-US"),
-    Interface: tokenUsage.interface.total.toLocaleString("en-US"),
-    Test: tokenUsage.test.total.toLocaleString("en-US"),
-    Realize: tokenUsage.realize.total.toLocaleString("en-US"),
-  });
-  try {
-    // await backend.close();
-  } catch {}
   if (exceptions.length !== 0) process.exit(-1);
 }
 
