@@ -198,15 +198,25 @@ namespace PreliminaryTransformer {
             }
           : null,
       });
+
+    const db: AutoBeDatabase.IApplication | undefined = props.previous
+      ? props.state.previousDatabase?.result.data
+      : props.state.database?.result.data;
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA,
       previous: AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_PREVIOUS,
       available: StringUtil.trim`
-        Name | Stance | Summary
-        -----|--------|---------
+        Name | Belonged Group | Stance | Summary
+        -----|----------------|--------|---------
         ${newbie
           .map((m) =>
-            [m.name, m.stance, StringUtil.summary(m.description)].join(" | "),
+            [
+              m.name,
+              db?.files.find((f) => f.models.some((md) => md.name === m.name))
+                ?.namespace ?? "-",
+              m.stance,
+              StringUtil.summary(m.description),
+            ].join(" | "),
           )
           .join("\n")}
       `,

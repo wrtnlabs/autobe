@@ -116,6 +116,11 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseSchema")
       content.push(`  - model: ${event.model.name}`);
+    else if (event.type === "interfaceGroup")
+      content.push(
+        `  - groups: ${event.groups.length}`,
+        ...event.groups.map((g) => `    - ${g.name}`),
+      );
     else if (event.type === "interfaceEndpoint")
       content.push(
         `  - kind: ${event.kind}`,
