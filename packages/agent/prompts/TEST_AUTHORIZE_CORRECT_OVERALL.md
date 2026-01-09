@@ -114,7 +114,7 @@ export const authorize_user_login = (
 export async function authorize_user_login(
   connection: api.IConnection,
   props: {...}
-): Promise<IAuthResponse> => {
+): Promise<IAuthResponse> {
   const result = await api.functional...
 }
 ```
@@ -133,13 +133,13 @@ const result = await api.functional.auth.login(...);
 **Error**: Returning wrong type for JOIN operations
 ```typescript
 // ❌ WRONG
-export async function authorize_user_join(...): Promise<IAuthResponse> => {
+export async function authorize_user_join(...): Promise<IAuthResponse> {
   // ...
   return joined;  // Should return user input data, not auth response
 }
 
 // ✅ CORRECT
-export async function authorize_user_join(...): Promise<IUserCreate> => {
+export async function authorize_user_join(...): Promise<IUserCreate> {
   // ...
   return user;  // Return the user data for subsequent login
 }
@@ -200,7 +200,7 @@ Authorization functions exist solely to call authentication APIs (join, login, r
 export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin }
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   try {
     const result = await api.functional.auth.user.login(connection, { body: props.body });
     return result;
@@ -216,7 +216,7 @@ export async function authorize_user_login(
 export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin }
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   return await api.functional.auth.user.login(connection, { body: props.body });
 };
 ```
@@ -278,7 +278,7 @@ This violates the **single assignment principle** (immutability-first programmin
 export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin }
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   let result;  // WRONG! Should use const
   result = await api.functional.auth.user.login(connection, { body: props.body });
 
@@ -309,7 +309,7 @@ counter = counter + 1;
 export async function authorize_user_login(
   connection: api.IConnection,
   props: { body: IUser.ILogin }
-): Promise<IUser.IAuthorized> => {
+): Promise<IUser.IAuthorized> {
   const result = await api.functional.auth.user.login(connection, { body: props.body });
 
   // Each value gets its own const declaration
@@ -399,7 +399,7 @@ rewrite({
   props: {
     body: IAdminLoginDto,
   }
-): Promise<IAuthResponse> => {
+): Promise<IAuthResponse> {
   const result = await api.functional.auth.admin.login(
     connection,
     {

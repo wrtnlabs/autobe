@@ -343,7 +343,7 @@ import { TestValidator } from "@autobe/utils";
 import { api } from "./api";
 import { connection } from "./connection";
 
-export const test_api_user_create = async (): Promise<void> => {
+export async function test_api_user_create(): Promise<void> {
   const date: Date = new Date();
   const user = await api.functional.users.create(connection, {
     body: {
@@ -352,10 +352,10 @@ export const test_api_user_create = async (): Promise<void> => {
       email: "john@example.com"
     }
   });
-  
+
   const userId: string & tags.Format<"uuid"> = "123";  // Error: tag mismatch
   TestValidator.equals("user.id", user.id, userId);
-};
+}
 ```
 
 #### 2.3.2. Compile Errors

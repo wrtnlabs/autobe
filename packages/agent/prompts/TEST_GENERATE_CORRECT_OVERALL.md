@@ -59,7 +59,7 @@ export async function generate_random_user(
   props: {
     body?: DeepPartial<IUser.ICreate>,
   }
-) => {
+) {
   const prepared = prepare_random_user(props.body);
   // ...
 }
