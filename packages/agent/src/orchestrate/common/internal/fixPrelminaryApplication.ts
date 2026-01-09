@@ -189,7 +189,8 @@ namespace ApplicationFixer {
         ${schemas
           .slice()
           .sort((a, b) => a.name.localeCompare(b.name))
-          .map((s) => `- ${s.name}`)}
+          .map((s) => `- ${s.name}`)
+          .join("\n")}
       `,
     );
   };
