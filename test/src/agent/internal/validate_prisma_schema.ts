@@ -2,7 +2,7 @@ import { AutoBeAgent } from "@autobe/agent";
 import { orchestratePrismaSchema } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaSchema";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
-  AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseSchemaEvent,
   AutoBeExampleProject,
 } from "@autobe/interface";
@@ -14,7 +14,7 @@ export const validate_prisma_schema = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeDatabaseSchemaEvent[]> => {
-  const component: AutoBeDatabaseComponentReviewEvent[] =
+  const component: AutoBeDatabaseComponent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
@@ -24,7 +24,7 @@ export const validate_prisma_schema = async (props: {
   const events: AutoBeDatabaseSchemaEvent[] = await orchestratePrismaSchema(
     props.agent.getContext(),
     "",
-    component.map((e) => e.modification),
+    component,
   );
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
