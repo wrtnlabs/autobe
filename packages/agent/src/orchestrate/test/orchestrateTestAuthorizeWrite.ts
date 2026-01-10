@@ -103,10 +103,9 @@ async function process(
   }
 
   // Create the authorize function
-  const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName({
-    actor: pointer.value.actor,
-    operation: props.operation,
-  });
+  const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName(
+    props.operation,
+  );
   const authorizationFunction: AutoBeTestAuthorizeFunction = {
     type: "authorize",
     endpoint: {
@@ -145,10 +144,9 @@ function createController(props: {
       typia.validate<IAutoBeTestAuthorizationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName({
-      actor: result.data.actor,
-      operation: props.operation,
-    });
+    const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName(
+      props.operation,
+    );
     const errors: IValidation.IError[] = validateEmptyCode({
       name: functionName,
       draft: result.data.draft,

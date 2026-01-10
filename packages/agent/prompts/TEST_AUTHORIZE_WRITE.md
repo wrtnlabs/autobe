@@ -193,7 +193,6 @@ export async function authorize_user_join(
   },
 ): Promise<IUser.IAuthorized> {
   const joinInput = {
-    ...(props.body ?? {}),
     email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.com`,
     password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
     nickname: props.body?.nickname ?? RandomGenerator.name(),
@@ -313,14 +312,11 @@ zip_code: props.body?.zip_code ?? RandomGenerator.alphaNumeric(5)
 
 ```typescript
 const joinInput = {
-  // Apply additional custom inputs
-  ...(props.body ?? {}),  
-
   // Account Information
   email: props.body?.email ?? `${RandomGenerator.alphaNumeric(8)}@example.io`,
   password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
   username: props.body?.username ?? RandomGenerator.alphaNumeric(8),
-  
+
   // Personal Information
   profile: {
     firstName: props.body?.profile?.firstName ?? RandomGenerator.name(1),
@@ -328,13 +324,13 @@ const joinInput = {
     nickname: props.body?.profile?.nickname ?? RandomGenerator.name(),
     bio: props.body?.profile?.bio ?? RandomGenerator.paragraph({ sentences: randint(2, 4) }),
   },
-  
+
   // Contact Information
   contact: {
     mobile: props.body?.contact?.mobile ?? RandomGenerator.mobile(),
     alternateEmail: props.body?.contact?.alternateEmail ?? `${RandomGenerator.alphaNumeric(10)}@example.com`,
   },
-  
+
   // Settings (if applicable)
   settings: {
     language: props.body?.settings?.language ?? RandomGenerator.pick(["en", "ko", "ja"]),
@@ -406,7 +402,6 @@ export async function authorize_admin_join(
   props: { body?: DeepPartial<IAdmin.IJoin> },
 ): Promise<IAdmin.IAuthorized> {
   const joinInput = {
-    ...(props.body ?? {}),
     email: props.body?.email ?? `admin-${RandomGenerator.alphaNumeric(8)}@example.com`,
     password: props.body?.password ?? RandomGenerator.alphaNumeric(16),
   } satisfies IAdmin.IJoin;

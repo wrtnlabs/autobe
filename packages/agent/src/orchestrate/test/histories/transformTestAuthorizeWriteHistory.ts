@@ -6,6 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
+import { AutoBeTestAuthorizeProgrammer } from "../programmers/AutoBeTestAuthorizeProgrammer";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { transformTestOperationWriteHistory } from "./transformTestOperationWriteHistory";
 
@@ -55,6 +56,20 @@ export async function transformTestAuthorizeWriteHistory(
           \`\`\`json
           ${JSON.stringify(await getTestExternalDeclarations(ctx))}
           \`\`\`
+
+          ## Template Code
+
+          Here is the template code you have to implement.
+
+          Reference the template code, and implement the authorization utility function.
+
+          ${AutoBeTestAuthorizeProgrammer.writeTemplate({
+            operation: props.operation,
+            schema:
+              ctx.state().interface!.document.components.schemas[
+                props.operation.requestBody!.typeName
+              ],
+          })}
         `,
       },
     ],

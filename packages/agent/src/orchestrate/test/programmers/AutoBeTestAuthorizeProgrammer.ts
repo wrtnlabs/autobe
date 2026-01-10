@@ -4,8 +4,9 @@ import {
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
+import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
@@ -22,16 +23,16 @@ export namespace AutoBeTestAuthorizeProgrammer {
       .length;
   }
 
-  export function getFunctionName(props: {
-    actor: string;
-    operation: AutoBeOpenApi.IOperation;
-  }): string {
-    if (props.operation.authorizationType === null)
+  export function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
+    if (
+      operation.authorizationActor === null ||
+      operation.authorizationType === null
+    )
       throw new Error("Operation is not an authorization operation.");
     const elements: string[] = [
       "authorize",
-      props.actor,
-      props.operation.authorizationType,
+      operation.authorizationActor,
+      operation.authorizationType,
     ];
     return elements.map(NamingConvention.snake).join("_");
   }
@@ -40,34 +41,66 @@ export namespace AutoBeTestAuthorizeProgrammer {
     WRITERS
   ---------------------------------------------------------------- */
   export function writeTemplate(props: {
-    actor: string;
     operation: AutoBeOpenApi.IOperation;
+    schema: AutoBeOpenApi.IJsonSchema;
   }): string {
     if (props.operation.requestBody === null)
       throw new Error("Authorization operation needs request body.");
     else if (props.operation.responseBody === null)
       throw new Error("Authorization operation needs response body.");
 
-    const functionName: string = getFunctionName(props);
+    const functionName: string = getFunctionName(props.operation);
     const accessor: string[] = props.operation.accessor!;
-    const questionToken: string =
-      props.operation.authorizationType !== "refresh" ? "?" : "";
 
+    if (props.operation.authorizationActor !== "join")
+      return StringUtil.trim`
+        export async function ${functionName}(
+          connection: api.IConnection,
+          props: {
+            body: ${props.operation.requestBody.typeName}
+          },
+        ): Promise<${props.operation.responseBody.typeName}> {
+          return await api.functional.${accessor.join(".")}(
+            connection,
+            { ... },
+          );
+        }
+      `;
+    else if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false)
+      return StringUtil.trim`
+        export async function ${functionName}(
+          connection: api.IConnection,
+          props: {
+            body?: ${props.operation.requestBody.typeName}
+          },
+        ): Promise<${props.operation.responseBody.typeName}> {
+          const joinInput = {
+            ...{{YOUR_PROPERTIES_HERE}}
+          } satisfies ${props.operation.requestBody.typeName};
+          return await api.functional.${accessor.join(".")}(
+            connection,
+            {
+              body: joinInput,
+            },
+          );
+        }
+      `;
     return StringUtil.trim`
       export async function ${functionName}(
         connection: api.IConnection,
         props: {
-          body${questionToken}: ${props.operation.requestBody.typeName}
+          body?: ${props.operation.requestBody.typeName}
         },
       ): Promise<${props.operation.responseBody.typeName}> {
-        const input = {
-          ...props.body,
-          ...{{YOUR_PROPERTIES_HERE}}
+        const joinInput = {
+${Object.keys(props.schema.properties).map(
+  (k) => `    ${Escaper.variable(k) ? k : `[${JSON.stringify(k)}]`}: ...,`,
+)}
         } satisfies ${props.operation.requestBody.typeName};
         return await api.functional.${accessor.join(".")}(
           connection,
           {
-            body: input,
+            body: joinInput,
           },
         );
       }
