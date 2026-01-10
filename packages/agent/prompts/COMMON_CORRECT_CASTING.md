@@ -1585,6 +1585,170 @@ const config = {
 };
 ```
 
+### 3.15. Literal Type to Literal Type Assignment with Different Values
+
+**Error Pattern: `Type '"laptop" | "smartphone" | "watch"' is not assignable to type '"laptops" | "smartphones" | "watches"'`**
+
+**Root Cause: Mismatched literal values between source and target union types**
+
+When you have two literal union types with different but related values (e.g., singular vs plural forms, different naming conventions), TypeScript cannot automatically convert between them because the literal values don't match exactly.
+
+**Common Scenarios:**
+```typescript
+// ❌ ERROR: Singular to plural literal types
+const category: "laptop" | "smartphone" | "watch" = getCategory();
+const pluralCategory: "laptops" | "smartphones" | "watches" = category;
+// Type '"laptop" | "smartphone" | "watch"' is not assignable to type '"laptops" | "smartphones" | "watches"'
+
+// ❌ ERROR: Different naming conventions
+const status: "in_progress" | "completed" | "failed" = getStatus();
+const displayStatus: "InProgress" | "Completed" | "Failed" = status;
+// Type '"in_progress" | "completed" | "failed"' is not assignable to type '"InProgress" | "Completed" | "Failed"'
+
+// ❌ ERROR: Abbreviation to full form
+const size: "sm" | "md" | "lg" = getSize();
+const fullSize: "small" | "medium" | "large" = size;
+// Type '"sm" | "md" | "lg"' is not assignable to type '"small" | "medium" | "large"'
+```
+
+**Why This Happens:**
+
+TypeScript's literal types are **exact value matches**. Even if the values are semantically related (like "laptop" and "laptops"), TypeScript treats them as completely different types. There is no automatic pluralization, case conversion, or semantic mapping.
+
+**Solution: Create explicit mapping with type-safe Record**
+
+You must manually analyze the correspondence between source and target literal values and create a direct mapping:
+
+```typescript
+//----
+// Solution 1: Singular to plural mapping
+//----
+const category: "laptop" | "smartphone" | "watch" = getCategory();
+
+// Create type-safe mapping
+const categoryToPluralMap: Record<
+  "laptop" | "smartphone" | "watch",
+  "laptops" | "smartphones" | "watches"
+> = {
+  laptop: "laptops",
+  smartphone: "smartphones",
+  watch: "watches",
+} as const;
+
+const pluralCategory: "laptops" | "smartphones" | "watches" =
+  categoryToPluralMap[category];
+
+//----
+// Solution 2: Naming convention mapping
+//----
+const status: "in_progress" | "completed" | "failed" = getStatus();
+
+const statusToDisplayMap: Record<
+  "in_progress" | "completed" | "failed",
+  "InProgress" | "Completed" | "Failed"
+> = {
+  in_progress: "InProgress",
+  completed: "Completed",
+  failed: "Failed",
+} as const;
+
+const displayStatus: "InProgress" | "Completed" | "Failed" =
+  statusToDisplayMap[status];
+
+//----
+// Solution 3: Abbreviation to full form
+//----
+const size: "sm" | "md" | "lg" = getSize();
+
+const sizeMap: Record<"sm" | "md" | "lg", "small" | "medium" | "large"> = {
+  sm: "small",
+  md: "medium",
+  lg: "large",
+} as const;
+
+const fullSize: "small" | "medium" | "large" = sizeMap[size];
+
+//----
+// Solution 4: Inline mapping for simple cases
+//----
+const priority: "low" | "medium" | "high" = getPriority();
+const priorityLevel: 1 | 2 | 3 = {
+  low: 1,
+  medium: 2,
+  high: 3,
+}[priority];
+
+//----
+// Solution 5: Bidirectional mapping
+//----
+const directionMap = {
+  forward: "backwards",
+  backwards: "forward",
+} as const satisfies Record<"forward" | "backwards", "backwards" | "forward">;
+
+const direction: "forward" | "backwards" = "forward";
+const opposite: "backwards" | "forward" = directionMap[direction];
+```
+
+**Step-by-Step Analysis Process:**
+
+When you encounter this error:
+
+1. **Identify both literal type unions** from the error message
+   - Source type: `"laptop" | "smartphone" | "watch"`
+   - Target type: `"laptops" | "smartphones" | "watches"`
+
+2. **Analyze the correspondence** between each literal value
+   - "laptop" → "laptops"
+   - "smartphone" → "smartphones"
+   - "watch" → "watches"
+
+3. **Create explicit mapping** that TypeScript can verify
+   ```typescript
+   const mapping: Record<SourceType, TargetType> = {
+     sourceValue1: targetValue1,
+     sourceValue2: targetValue2,
+     // ... map all values
+   };
+   ```
+
+4. **Apply the mapping** to convert the value
+   ```typescript
+   const result: TargetType = mapping[sourceValue];
+   ```
+
+**Important Notes:**
+
+- **Exhaustiveness checking**: TypeScript will error if you miss any literal values in your mapping, ensuring complete coverage
+- **Type safety**: The `Record<SourceType, TargetType>` signature guarantees all source values map to valid target values
+- **No `typia.assert` needed**: This is not a validation problem but a type transformation problem
+- **Compile-time verification**: All mapping errors are caught at compile time, not runtime
+
+**When NOT to use this pattern:**
+
+```typescript
+// ❌ WRONG: Don't create mappings for semantically unrelated types
+const id: "user_123" | "admin_456" = getId();
+const color: "red" | "blue" = /* mapping from id */;  // Makes no sense!
+
+// ❌ WRONG: Don't map when you should generate new values
+const timestamp: "2024-01-01" | "2024-01-02" = getDate();
+const uuid: string & tags.Format<"uuid"> = /* mapping from timestamp */;  // Wrong!
+
+// ✅ CORRECT: Only map when there's clear semantic correspondence
+const category: "laptop" | "smartphone" = getCategory();
+const pluralCategory: "laptops" | "smartphones" = mapping[category];  // Clear relationship
+```
+
+**Key Takeaway:**
+
+When TypeScript reports that one literal union type is not assignable to another with different values, you must:
+1. **Manually compare** each literal value between source and target types
+2. **Create explicit mapping** showing the exact correspondence
+3. **Let TypeScript verify** the mapping is exhaustive and type-safe
+
+This ensures type safety while handling cases where TypeScript cannot infer the semantic relationship between literal values.
+
 ## 4. Final Verification Checklist
 
 Before submitting your correction, verify:
@@ -1601,6 +1765,7 @@ Before submitting your correction, verify:
     - [ ] Date to string conversion errors
     - [ ] Nullable/undefined type assignment errors
     - [ ] String to literal type assignment errors
+    - [ ] Literal type to literal type with different values (e.g., `"laptop"` vs `"laptops"`)
     - [ ] Optional chaining union type errors
     - [ ] Type narrowing "no overlap" errors
     - [ ] Escape sequence errors (unterminated string/regex literals)
@@ -1622,6 +1787,7 @@ Before submitting your correction, verify:
     - [ ] Exhaustive type narrowing for nullable/undefined types
     - [ ] `typia.assert` vs `typia.assertGuard` used correctly
     - [ ] `typia.assert<T>()` for literal type conversions
+    - [ ] `Record<SourceType, TargetType>` mapping for literal type to literal type with different values
     - [ ] `=== true` or `??` for optional chaining results
     - [ ] Removed redundant comparisons for "no overlap" errors
     - [ ] Double backslashes for escape sequences in JSON context
