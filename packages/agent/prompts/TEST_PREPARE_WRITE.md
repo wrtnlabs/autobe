@@ -178,6 +178,7 @@ This is **not a formality** - this is where you catch errors before they cause c
    - Will this code compile without errors?
    - Are all template literals properly closed (matching backticks)?
    - Is syntax correct (no mixed quote types)?
+   - **Object index access**: Any `OBJECT[dynamicKey]` patterns have `?? fallback` immediately after?
 
 **Identify specific issues and required changes.** If you find problems, note exactly what needs to be fixed and why. If everything is correct, explicitly confirm you verified each category.
 
@@ -604,6 +605,83 @@ filename: `${RandomGenerator.alphabets(5)}.txt",  // WRONG!
 // WRONG: Mixed quote types
 name: "user's name",  // Use escaping: "user\'s name" or 'user\'s name'
 ```
+
+### Object Index Access with Fallback - Critical Pattern
+
+**⚠️ CRITICAL ERROR PATTERN: Object mapping returns undefined for missing keys**
+
+When using object literals as key-value mappings, accessing with a key that doesn't exist returns `undefined`, not the fallback value in the outer ternary operator.
+
+**Compilation Error:**
+```bash
+Type 'string | undefined' is not assignable to type 'string'.
+```
+
+**Problem Example:**
+```typescript
+// ❌ WRONG: Missing key returns undefined, bypassing fallback
+mimetype: input?.mimetype ??
+  (input?.extension
+    ? {
+        jpg: "image/jpeg",
+        png: "image/png",
+        pdf: "application/pdf",
+      }[input.extension as string]  // ⚠️ Returns undefined for "txt"!
+    : "application/octet-stream"),
+
+// When input.extension = "txt":
+// 1. input?.extension = "txt" (truthy)
+// 2. mapping["txt"] = undefined (key doesn't exist)
+// 3. Ternary returns undefined ❌
+// 4. Outer fallback "application/octet-stream" is NOT used!
+```
+
+**Solution: Add nullish coalescing AFTER mapping access**
+```typescript
+// ✅ CORRECT: Add ?? after mapping to catch undefined
+mimetype: input?.mimetype ??
+  (input?.extension
+    ? ({
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        gif: "image/gif",
+        pdf: "application/pdf",
+        doc: "application/msword",
+        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        zip: "application/zip",
+      }[input.extension as string] ?? "application/octet-stream")  // ← Critical!
+    : "application/octet-stream"),
+
+// When input.extension = "txt":
+// 1. input?.extension = "txt" (truthy)
+// 2. mapping["txt"] = undefined
+// 3. Inner ?? catches undefined → "application/octet-stream" ✅
+// 4. Result: "application/octet-stream" ✅
+```
+
+**Why This Happens:**
+- JavaScript object property access `obj[key]` returns `undefined` for missing keys
+- Ternary operator's false branch only executes when condition is falsy
+- Mapping failure (undefined) is NOT detected by the outer ternary
+- **MUST add `?? fallback` immediately after the mapping access**
+
+**General Pattern:**
+```typescript
+// ❌ WRONG: Mapping failure returns undefined
+value: condition
+  ? MAPPING_OBJECT[key]
+  : fallback
+
+// ✅ CORRECT: Catch undefined from mapping
+value: condition
+  ? (MAPPING_OBJECT[key] ?? fallback)
+  : fallback
+```
+
+**Remember:** Object index access with unknown keys requires TWO layers of fallback:
+1. Inner `??` after mapping access (catches missing keys)
+2. Outer ternary or `??` (catches falsy conditions)
 
 ## Random Data Generation
 

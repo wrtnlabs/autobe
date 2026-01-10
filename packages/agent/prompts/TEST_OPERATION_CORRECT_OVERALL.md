@@ -1583,7 +1583,144 @@ TestValidator.equals("user ID matches", user.id, userSummary.id); // string = st
 TestValidator.equals("user name matches", user.name, userSummary.name); // string = string ✓
 ```
 
-### 4.16. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
+### 4.16. Object Index Access Returns `undefined` - Type Mismatch
+
+**Error Pattern: `Type 'string | undefined' is not assignable to type 'string'`**
+
+**Root Cause: Object property access with missing keys returns `undefined`**
+
+When using object literals as key-value mappings in test code, accessing a property that doesn't exist returns `undefined`. This is fundamental JavaScript behavior that causes TypeScript compilation errors.
+
+**Common Scenario in E2E Tests:**
+```typescript
+// File upload test with dynamic mimetype mapping
+const MIMETYPE_MAP = {
+  jpg: "image/jpeg",
+  png: "image/png",
+  pdf: "application/pdf",
+};
+
+// ❌ ERROR: Returns string | undefined, but DTO expects string
+const uploadBody = {
+  fileName: "test.txt",
+  mimeType: input?.mimeType ??
+    (input?.extension
+      ? MIMETYPE_MAP[input.extension as string]  // Returns undefined for "txt"!
+      : "application/octet-stream")
+} satisfies IFileUpload.ICreate;
+```
+
+**Why This Fails:**
+```typescript
+// When input.extension = "txt" (not in mapping):
+// 1. input?.mimeType → undefined (no mimetype provided)
+// 2. ?? operator checks right side
+// 3. input?.extension → "txt" (truthy)
+// 4. Ternary true branch executes:
+//    MIMETYPE_MAP["txt"] → undefined ⚠️
+// 5. Ternary returns undefined (false branch not reached!)
+// 6. Outer ?? already consumed, can't catch it
+// 7. Result: mimeType = undefined ❌ COMPILATION ERROR!
+```
+
+**The Logic Trap:**
+```typescript
+// MISCONCEPTION: "The outer ternary's false branch will catch mapping failures"
+(condition
+  ? MAPPING[key]       // ← Can return undefined!
+  : "fallback")        // ← Only runs if condition is FALSE
+
+// REALITY: Ternary false branch only executes when condition is falsy
+// It does NOT catch undefined returned from the true branch!
+```
+
+**Solution: Add nullish coalescing immediately after mapping access**
+
+```typescript
+// ✅ CORRECT: Inner ?? catches undefined from mapping
+const uploadBody = {
+  fileName: "test.txt",
+  mimeType: input?.mimeType ??
+    (input?.extension
+      ? ({
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+          gif: "image/gif",
+          pdf: "application/pdf",
+          doc: "application/msword",
+          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          zip: "application/zip",
+        }[input.extension as string] ?? "application/octet-stream")  // ← Critical!
+      : "application/octet-stream")
+} satisfies IFileUpload.ICreate;
+
+// Now with input.extension = "txt":
+// 1-4: Same as before → MAPPING["txt"] = undefined
+// 5: Inner ?? detects undefined → "application/octet-stream" ✅
+// 6: Result: mimeType = "application/octet-stream" ✅
+```
+
+**Pattern Recognition:**
+
+| Code Pattern | Returns | Catches Mapping Failure? |
+|--------------|---------|--------------------------|
+| `condition ? MAP[key] : fallback` | `T \| undefined` | ❌ No |
+| `condition ? (MAP[key] ?? fallback) : fallback` | `T` | ✅ Yes |
+
+**More E2E Test Examples:**
+
+```typescript
+// ❌ WRONG: API response status mapping
+const logBody = {
+  endpoint: response.endpoint,
+  statusText: response?.status
+    ? STATUS_CODE_MAP[response.status]  // undefined for unknown codes!
+    : "Unknown"
+} satisfies IApiLog.ICreate;
+
+// ✅ CORRECT: Catch undefined with inner ??
+const logBody = {
+  endpoint: response.endpoint,
+  statusText: response?.status
+    ? (STATUS_CODE_MAP[response.status] ?? "Unknown")
+    : "Unknown"
+} satisfies IApiLog.ICreate;
+
+// ❌ WRONG: User role to permissions mapping
+const permissionBody = {
+  userId: user.id,
+  permissions: user?.role
+    ? ROLE_PERMISSIONS[user.role]  // undefined for invalid role!
+    : []
+} satisfies IUserPermissions.ICreate;
+
+// ✅ CORRECT: Two-layer fallback
+const permissionBody = {
+  userId: user.id,
+  permissions: user?.role
+    ? (ROLE_PERMISSIONS[user.role] ?? [])
+    : []
+} satisfies IUserPermissions.ICreate;
+```
+
+**Key Takeaway:**
+
+Object index access with dynamic keys requires **TWO fallback layers**:
+
+1. **Inner `?? fallback`** (after `MAP[key]`): Catches `undefined` from **missing keys** (mapping failure)
+2. **Outer ternary/`??`**: Catches **no value to map** (condition is falsy)
+
+**Rule of Thumb:** Whenever you see `OBJECT[dynamicKey]` in test code and the key might not exist in the object, immediately add `?? fallback` after the access.
+
+**Common in E2E Tests:**
+- File type/extension mappings
+- HTTP status code to message mappings
+- User role to permission mappings
+- Configuration lookups
+- Any dynamic key-based transformations
+
+### 4.17. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
 
 **Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
 
@@ -2039,6 +2176,7 @@ Ensure all corrections follow the guidelines provided in [SYSTEM PROMPT: TEST_WR
 - [ ] **TestValidator.error:** async callback → has `await TestValidator.error()`?
 - [ ] **Non-existent properties:** NO references to properties that don't exist in DTOs?
 - [ ] **Type bypasses:** ZERO uses of `any`, `as any`, `@ts-ignore`, etc.?
+- [ ] **Object index access:** ALL `OBJECT[dynamicKey]` have `?? fallback` after to catch undefined?
 
 ### 6.2. Revise Step Verification
 **CONFIRM YOUR REVISE STEP WAS PROPERLY EXECUTED:**

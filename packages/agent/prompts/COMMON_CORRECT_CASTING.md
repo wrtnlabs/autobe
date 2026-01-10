@@ -1176,7 +1176,161 @@ if (/[\r\n]/.test(title)) { /* ... */ }
 
 **CRITICAL**: When escape sequences cause code corruption, focus on the FIRST error (usually "Unterminated string literal" or "Unterminated regular expression literal") as it identifies the root cause. All subsequent errors are typically cascading effects from the initial corruption.
 
-### 3.12. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
+### 3.12. Object Index Access Returns `undefined` - Type Mismatch
+
+**Error Pattern: `Type 'string | undefined' is not assignable to type 'string'`**
+
+**Root Cause: Object property access with missing keys returns `undefined`**
+
+When using object literals as key-value mappings, accessing a property that doesn't exist returns `undefined`. This is a fundamental JavaScript behavior that causes TypeScript compilation errors when the target type doesn't allow `undefined`.
+
+**Common Scenario:**
+```typescript
+// File upload with dynamic mimetype mapping
+const MIMETYPE_MAP = {
+  jpg: "image/jpeg",
+  png: "image/png",
+  pdf: "application/pdf",
+};
+
+// ❌ ERROR: Returns string | undefined, but mimetype expects string
+const mimetype: string = input?.mimetype ??
+  (input?.extension
+    ? MIMETYPE_MAP[input.extension as string]  // Returns undefined for "txt"!
+    : "application/octet-stream");
+```
+
+**Why This Fails:**
+```typescript
+// When input.extension = "txt" (not in mapping):
+// 1. input?.mimetype → undefined (no mimetype provided)
+// 2. ?? operator checks right side
+// 3. input?.extension → "txt" (truthy)
+// 4. Ternary true branch executes:
+//    MIMETYPE_MAP["txt"] → undefined ⚠️
+// 5. Ternary returns undefined (false branch not reached!)
+// 6. Outer ?? already consumed, can't catch it
+// 7. Result: mimetype = undefined ❌ COMPILATION ERROR!
+```
+
+**The Logic Trap:**
+```typescript
+// MISCONCEPTION: "The outer ternary's false branch will catch mapping failures"
+(condition
+  ? MAPPING[key]       // ← Can return undefined!
+  : "fallback")        // ← Only runs if condition is FALSE
+
+// REALITY: Ternary false branch only executes when condition is falsy
+// It does NOT catch undefined returned from the true branch!
+```
+
+**Solution: Add nullish coalescing immediately after mapping access**
+
+```typescript
+// ✅ CORRECT: Inner ?? catches undefined from mapping
+const mimetype: string = input?.mimetype ??
+  (input?.extension
+    ? ({
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        gif: "image/gif",
+        pdf: "application/pdf",
+        doc: "application/msword",
+        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        zip: "application/zip",
+      }[input.extension as string] ?? "application/octet-stream")  // ← Critical!
+    : "application/octet-stream");
+
+// Now with input.extension = "txt":
+// 1-4: Same as before → MAPPING["txt"] = undefined
+// 5: Inner ?? detects undefined → "application/octet-stream" ✅
+// 6: Result: mimetype = "application/octet-stream" ✅
+```
+
+**Pattern Recognition:**
+
+| Code Pattern | Returns | Catches Mapping Failure? |
+|--------------|---------|--------------------------|
+| `condition ? MAP[key] : fallback` | `T \| undefined` | ❌ No |
+| `condition ? (MAP[key] ?? fallback) : fallback` | `T` | ✅ Yes |
+
+**More Examples:**
+
+```typescript
+// ❌ WRONG: HTTP status code mapping
+const statusText: string = response?.status
+  ? STATUS_CODE_MAP[response.status]  // undefined for unknown codes!
+  : "Unknown";
+
+// ✅ CORRECT: Catch undefined with inner ??
+const statusText: string = response?.status
+  ? (STATUS_CODE_MAP[response.status] ?? "Unknown")
+  : "Unknown";
+
+// ❌ WRONG: File extension to language mapping
+const language: string = file?.ext
+  ? LANGUAGE_MAP[file.ext]  // undefined for ".foo"!
+  : "plaintext";
+
+// ✅ CORRECT: Two-layer fallback
+const language: string = file?.ext
+  ? (LANGUAGE_MAP[file.ext] ?? "plaintext")
+  : "plaintext";
+
+// ❌ WRONG: Role ID to name mapping
+const roleName: string = user?.roleId
+  ? ROLE_NAMES[user.roleId]  // undefined for invalid ID!
+  : "Guest";
+
+// ✅ CORRECT: Inner ?? for mapping failure
+const roleName: string = user?.roleId
+  ? (ROLE_NAMES[user.roleId] ?? "Guest")
+  : "Guest";
+```
+
+**Alternative Solutions:**
+
+```typescript
+// Option 1: Type-safe helper with Object.hasOwn
+const getMimetype = (ext: string): string => {
+  const map: Record<string, string> = {
+    jpg: "image/jpeg",
+    png: "image/png",
+    pdf: "application/pdf",
+  };
+  return Object.hasOwn(map, ext) ? map[ext] : "application/octet-stream";
+};
+
+const mimetype = input?.mimetype ?? getMimetype(input?.extension ?? "");
+
+// Option 2: Use Map instead of object literal
+const MIMETYPE_MAP = new Map([
+  ["jpg", "image/jpeg"],
+  ["png", "image/png"],
+  ["pdf", "application/pdf"],
+]);
+
+const mimetype: string = input?.mimetype ??
+  MIMETYPE_MAP.get(input?.extension ?? "") ?? "application/octet-stream";
+
+// Option 3: Extract to variable with explicit type
+const mappedMimetype: string | undefined = input?.extension
+  ? MIMETYPE_MAP[input.extension as string]
+  : undefined;
+const mimetype: string = input?.mimetype ?? mappedMimetype ?? "application/octet-stream";
+```
+
+**Key Takeaway:**
+
+Object index access with dynamic keys requires **TWO fallback layers**:
+
+1. **Inner `?? fallback`** (after `MAP[key]`): Catches `undefined` from **missing keys** (mapping failure)
+2. **Outer ternary/`??`**: Catches **no value to map** (condition is falsy)
+
+**Rule of Thumb:** Whenever you see `OBJECT[dynamicKey]` and the key might not exist in the object, immediately add `?? fallback` after the access.
+
+### 3.13. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
 
 **Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
 
@@ -1270,6 +1424,7 @@ Before submitting your correction, verify:
   - [ ] Optional chaining union type errors
   - [ ] Type narrowing "no overlap" errors
   - [ ] Escape sequence errors (unterminated string/regex literals)
+  - [ ] **Object index access returning `undefined`** (`Type 'string | undefined' is not assignable to type 'string'`)
 - [ ] Analyzed the code context to understand the type mismatch
 - [ ] Determined the appropriate fix strategy
 
@@ -1283,6 +1438,7 @@ Before submitting your correction, verify:
   - [ ] `=== true` or `??` for optional chaining results
   - [ ] Removed redundant comparisons for "no overlap" errors
   - [ ] Double backslashes for escape sequences in JSON context
+  - [ ] **Object index access**: Added `?? fallback` after `OBJECT[dynamicKey]` patterns
 - [ ] Used parentheses where necessary (e.g., nullish coalescing)
 - [ ] Preserved the original validation intent
 

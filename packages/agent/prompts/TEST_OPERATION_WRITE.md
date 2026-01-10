@@ -4072,6 +4072,123 @@ async function processData(input) { // Missing types!
 const value = possiblyNull!; // Runtime error waiting to happen
 ```
 
+### 4.8.4. Object Index Access with Dynamic Keys - Two-Layer Fallback Pattern
+
+**⚠️ CRITICAL ERROR PATTERN: Object mapping returns undefined for missing keys**
+
+When using object literals as key-value mappings, accessing with a key that doesn't exist returns `undefined`. This is a fundamental JavaScript behavior that requires careful handling.
+
+**Compilation Error:**
+```bash
+Type 'string | undefined' is not assignable to type 'string'.
+```
+
+**Problem Example:**
+```typescript
+// ❌ WRONG: Missing key returns undefined, bypassing outer fallback
+const requestBody = {
+  fileName: input?.fileName ?? "default.txt",
+  mimeType: input?.mimeType ??
+    (input?.extension
+      ? {
+          jpg: "image/jpeg",
+          png: "image/png",
+          pdf: "application/pdf",
+        }[input.extension as string]  // ⚠️ Returns undefined for "txt"!
+      : "application/octet-stream"),
+} satisfies IFileUpload.ICreate;
+
+// When input.extension = "txt":
+// 1. input?.extension = "txt" (truthy)
+// 2. mapping["txt"] = undefined (key doesn't exist)
+// 3. Ternary returns undefined ❌
+// 4. Outer fallback "application/octet-stream" is NOT used!
+// 5. Result: mimeType = undefined → COMPILATION ERROR!
+```
+
+**Why This Fails:**
+- JavaScript object property access `obj[key]` returns `undefined` for missing keys
+- Ternary operator's false branch only executes when **condition is falsy**
+- `input.extension = "txt"` is **truthy**, so true branch executes
+- Mapping returns `undefined`, but ternary is already resolved
+- Outer `?? "application/octet-stream"` doesn't catch it
+
+**Solution: Add `?? fallback` immediately after mapping access**
+```typescript
+// ✅ CORRECT: Inner ?? catches undefined from mapping
+const requestBody = {
+  fileName: input?.fileName ?? "default.txt",
+  mimeType: input?.mimeType ??
+    (input?.extension
+      ? ({
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+          gif: "image/gif",
+          pdf: "application/pdf",
+          doc: "application/msword",
+          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          zip: "application/zip",
+        }[input.extension as string] ?? "application/octet-stream")  // ← CRITICAL!
+      : "application/octet-stream"),
+} satisfies IFileUpload.ICreate;
+
+// When input.extension = "txt":
+// 1. input?.extension = "txt" (truthy)
+// 2. mapping["txt"] = undefined
+// 3. Inner ?? catches undefined → "application/octet-stream" ✅
+// 4. Result: mimeType = "application/octet-stream" ✅
+```
+
+**General Pattern for Object Mappings:**
+```typescript
+// ❌ WRONG: Single fallback doesn't catch mapping failures
+value: condition
+  ? MAPPING_OBJECT[dynamicKey]
+  : "fallback"
+
+// ✅ CORRECT: Inner ?? catches undefined from missing keys
+value: condition
+  ? (MAPPING_OBJECT[dynamicKey] ?? "fallback")
+  : "fallback"
+```
+
+**Real-World Examples:**
+```typescript
+// HTTP status codes
+const responseBody = {
+  statusCode: response.status,
+  statusText: response.status
+    ? ({ 200: "OK", 404: "Not Found", 500: "Error" }[response.status] ?? "Unknown")
+    : "Unknown"
+} satisfies IApiResponse.ICreate;
+
+// User role mapping
+const userData = {
+  userId: user.id,
+  roleName: user.roleId
+    ? ({ admin: "Administrator", user: "User", guest: "Guest" }[user.roleId] ?? "Unknown Role")
+    : "Unknown Role"
+} satisfies IUserInfo.ICreate;
+
+// File type detection
+const fileData = {
+  path: file.path,
+  type: file.extension
+    ? ({ ts: "typescript", js: "javascript", py: "python" }[file.extension] ?? "text")
+    : "text"
+} satisfies IFileInfo.ICreate;
+```
+
+**Key Takeaway:**
+- Object index access requires **TWO layers of fallback**:
+  1. **Inner `?? fallback`**: Catches `undefined` from missing keys (mapping failure)
+  2. **Outer ternary/`??`**: Catches falsy conditions (no value to map)
+- **NEVER** rely solely on outer fallback for object mappings with unknown keys
+- **ALWAYS** add `?? fallback` immediately after `OBJECT[key]` access
+
+**Remember:** This is NOT a TypeScript quirk—it's fundamental JavaScript behavior. Plan for it when using object literals as lookup tables.
+
 ## 4.10. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
 
 **🚨 CRITICAL: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
@@ -4422,6 +4539,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] **No Non-null Assertions**: Never use `!` operator - handle nulls explicitly
 - [ ] **Complete Type Annotations**: All parameters and variables have appropriate types
 - [ ] **Modern TypeScript Features**: Leverage advanced features where they improve code quality
+- [ ] **Object Index Access**: All `OBJECT[dynamicKey]` patterns have `?? fallback` immediately after to catch undefined
 
 **Markdown Contamination Prevention - CRITICAL:**
 - [ ] **NO Markdown Syntax**: Zero markdown headers, code blocks, or formatting

@@ -262,7 +262,105 @@ export const prepare_random_order = (
 
 **Rule**: Generate exactly ONE exported function with ALL logic inline.
 
-### 11. **Variable Declaration Errors - Immutability Violations**
+### 11. **Object Index Access with Missing Keys - undefined Return**
+
+**CRITICAL ERROR PATTERN: Object mapping returns undefined for unmapped keys**
+
+When using object literals as key-value mappings, accessing with a key that doesn't exist in the mapping returns `undefined`, NOT the fallback value from the outer ternary operator.
+
+**Compilation Error:**
+```bash
+Type 'string | undefined' is not assignable to type 'string'.
+```
+
+**Error Pattern:** Missing key in object mapping
+```typescript
+// ❌ WRONG: Mapping returns undefined for unknown extension
+mimetype: input?.mimetype ??
+  (input?.extension
+    ? {
+        jpg: "image/jpeg",
+        png: "image/png",
+        pdf: "application/pdf",
+      }[input.extension as string]  // Returns undefined for "txt"!
+    : "application/octet-stream"),
+
+// Execution flow when input.extension = "txt":
+// Step 1: input?.mimetype → undefined (없음)
+// Step 2: input?.extension → "txt" (truthy)
+// Step 3: mapping["txt"] → undefined ⚠️
+// Step 4: Ternary returns undefined (false branch not executed)
+// Step 5: Result: mimetype = undefined ❌ COMPILATION ERROR!
+```
+
+**Why This Fails:**
+1. Object property access `obj[unknownKey]` returns `undefined` in JavaScript
+2. Ternary's false branch only executes when **condition is falsy**
+3. `input.extension = "txt"` is **truthy**, so true branch executes
+4. Mapping returns `undefined`, but ternary is already resolved
+5. Outer `?? "application/octet-stream"` doesn't catch it
+
+**Solution: Add `?? fallback` immediately after mapping access**
+```typescript
+// ✅ CORRECT: Catch undefined from mapping with inner ??
+mimetype: input?.mimetype ??
+  (input?.extension
+    ? ({
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        gif: "image/gif",
+        pdf: "application/pdf",
+        doc: "application/msword",
+        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        zip: "application/zip",
+      }[input.extension as string] ?? "application/octet-stream")  // ← CRITICAL!
+    : "application/octet-stream"),
+
+// Execution flow when input.extension = "txt":
+// Step 1-3: Same as above → mapping["txt"] = undefined
+// Step 4: Inner ?? detects undefined → "application/octet-stream" ✅
+// Step 5: Result: mimetype = "application/octet-stream" ✅
+```
+
+**General Pattern for Object Mappings:**
+```typescript
+// ❌ WRONG: Single fallback doesn't catch mapping failures
+value: condition
+  ? MAPPING_OBJECT[dynamicKey]
+  : "fallback"
+
+// ✅ CORRECT: Inner ?? catches undefined from missing keys
+value: condition
+  ? (MAPPING_OBJECT[dynamicKey] ?? "fallback")
+  : "fallback"
+```
+
+**Real-World Examples:**
+```typescript
+// File extensions
+extension: input?.extension
+  ? ({ ts: "typescript", js: "javascript", py: "python" }[input.extension] ?? "text")
+  : "text"
+
+// HTTP status codes
+statusText: response?.status
+  ? ({ 200: "OK", 404: "Not Found", 500: "Error" }[response.status] ?? "Unknown")
+  : "Unknown"
+
+// User roles
+roleName: user?.role
+  ? ({ admin: "Administrator", user: "User", guest: "Guest" }[user.role] ?? "Unknown Role")
+  : "Unknown Role"
+```
+
+**Key Takeaway:**
+- Object index access requires **TWO layers of fallback**:
+  1. **Inner `?? fallback`**: Catches `undefined` from missing keys (mapping failure)
+  2. **Outer ternary/`??`**: Catches falsy conditions (no value to map)
+- **NEVER** rely solely on outer fallback for object mappings with unknown keys
+
+### 12. **Variable Declaration Errors - Immutability Violations**
 
 **CRITICAL: Using `let` Violates Single Assignment Principle**
 

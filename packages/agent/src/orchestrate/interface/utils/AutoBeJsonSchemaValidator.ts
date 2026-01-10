@@ -84,6 +84,21 @@ export namespace AutoBeJsonSchemaValidator {
   }): void => {
     const transform = props.transform ?? ((typeName: string) => typeName);
     const elements: string[] = props.key.split(".");
+    if (elements.length > 2)
+      props.errors.push({
+        path: props.path,
+        expected: "At most one dot(.) character allowed in type name",
+        value: transform(props.key),
+        description: StringUtil.trim`
+          JSON schema type name allows at most one dot(.) character to separate
+          module name and interface name.
+          
+          However, current key name ${transform(JSON.stringify(props.key))}
+          contains multiple dot(.) characters (${elements.length - 1} times). 
+          
+          Change it to a valid type name with at most one dot(.) character at the next time.
+        `,
+      });
     if (elements.every(Escaper.variable) === false)
       props.errors.push({
         path: props.path,
