@@ -17,9 +17,7 @@ export default function AutoBeDemoPhaseMovie(
             {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
           </span>
         </td>
-        <td className="py-2 pl-1 text-sm text-gray-500 whitespace-nowrap">
-          -
-        </td>
+        <td className="py-2 pl-1 text-sm text-gray-500 whitespace-nowrap">-</td>
         {showTimeColumn && (
           <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap">
             -
@@ -28,6 +26,17 @@ export default function AutoBeDemoPhaseMovie(
       </tr>
     );
   }
+  if (
+    phaseName === "interface" &&
+    phase.aggregates.total.tokenUsage.total > 1_000_000 * 1_000
+  )
+    console.log(
+      phaseName,
+      phase.aggregates.total.tokenUsage.total,
+      Object.entries(phase.aggregates)
+        .filter(([key]) => key !== "total")
+        .map(([key, value]) => [key, value.tokenUsage.total.toLocaleString()]),
+    );
 
   // Build commodity details string
   const detail = phase.commodity
