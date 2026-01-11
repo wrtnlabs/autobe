@@ -1,5 +1,3 @@
-import { AutoBeTimeoutError } from "./AutoBeTimeoutError";
-
 export const forceRetry = async <T>(
   task: () => Promise<T>,
   count: number,
@@ -10,8 +8,7 @@ export const forceRetry = async <T>(
     try {
       return await task();
     } catch (e) {
-      if (e instanceof AutoBeTimeoutError) throw e;
-      else if (predicate(e) === false) throw e;
+      if (predicate(e) === false) throw e;
       error = e;
     }
   throw error;
