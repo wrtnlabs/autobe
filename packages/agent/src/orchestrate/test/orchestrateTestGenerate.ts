@@ -78,6 +78,7 @@ export async function orchestrateTestGenerate(
     instruction: props.instruction,
     progress: props.correctProgress,
     procedures,
+    discard: false,
   });
   return procedures.map((p) => p.function);
 }

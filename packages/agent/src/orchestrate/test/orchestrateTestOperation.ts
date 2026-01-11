@@ -90,6 +90,7 @@ export async function orchestrateTestOperation(
     procedures,
     instruction: props.instruction,
     progress: props.correctProgress,
+    discard: true,
   });
   return procedures.map((p) => p.function);
 }

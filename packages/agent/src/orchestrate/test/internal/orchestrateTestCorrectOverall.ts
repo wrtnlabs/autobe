@@ -37,6 +37,7 @@ export async function orchestrateTestCorrectOverall<
     procedures: Procedure[];
     instruction: string;
     progress: AutoBeProgressEventBase;
+    discard: boolean;
   },
 ): Promise<Procedure[]> {
   const results: Array<Procedure | null> = await executeCachedBatch(
@@ -55,6 +56,7 @@ export async function orchestrateTestCorrectOverall<
           },
           ctx.retry,
         );
+      if (event.result.type === "failure" && props.discard) return null;
       return {
         ...procedure,
         function: event.function,

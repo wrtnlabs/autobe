@@ -65,6 +65,7 @@ export async function orchestrateTestPrepare(
     procedures,
     instruction: props.instruction,
     progress: props.correctProgress,
+    discard: false,
   });
   return procedures.map((p) => p.function);
 }

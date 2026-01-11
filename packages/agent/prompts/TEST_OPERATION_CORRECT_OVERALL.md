@@ -877,6 +877,155 @@ console.log(user.lastLoginDate); // Correct camelCase property name
 
 **Note:** For missing required properties errors, see section 4.12.
 
+#### 4.7.1. TestValidator with Non-existent Properties - DELETE or EXPLORE
+
+**🚨 CRITICAL: When TestValidator accesses non-existent properties, you have TWO options 🚨**
+
+**Error Pattern:**
+```
+Property 'bbs_writer_id' does not exist on type 'IBbsArticle'
+Property 'author_name' does not exist on type 'IPost'
+Property 'created_by_id' does not exist on type 'IComment'
+```
+
+**When this happens in TestValidator calls:**
+
+```typescript
+// ❌ ERROR: Property 'writer_id' does not exist on type 'IBbsArticle'
+const updatedArticle = await api.functional.bbs.articles.update(customerConnection, {
+  id: article.id,
+  body: updateData
+});
+
+TestValidator.equals(
+  "writer is not changed",
+  updatedArticle.writer_id,  // Property doesn't exist!
+  user.id,
+);
+```
+
+**DECISION TREE: What to do?**
+
+**Option 1: DELETE the TestValidator call entirely**
+
+If the property genuinely doesn't exist and there's no alternative:
+
+```typescript
+// ✅ SOLUTION 1: Remove the TestValidator call
+const updatedArticle = await api.functional.bbs.articles.update(customerConnection, {
+  id: article.id,
+  body: updateData
+});
+
+// Removed TestValidator.equals for non-existent writer_id
+// Continue with rest of test...
+```
+
+**Option 2: EXPLORE the DTO for alternative properties**
+
+Search the actual DTO structure for properties with similar meaning:
+
+```typescript
+// 🔍 INVESTIGATE: What does IBbsArticle actually have?
+interface IBbsArticle {
+  id: string;
+  title: string;
+  content: string;
+  author_id: string;  // ← AHA! It's 'author_id', not 'writer_id'!
+  created_at: string;
+  updated_at: string;
+}
+
+// ✅ SOLUTION 2: Use the correct property name
+const updatedArticle = await api.functional.bbs.articles.update(customerConnection, {
+  id: article.id,
+  body: updateData
+});
+
+TestValidator.equals(
+  "author is not changed",  // Updated description
+  updatedArticle.author_id,  // Use correct property!
+  user.id,
+);
+```
+
+**Common Property Name Variations to Check:**
+
+| ❌ Non-existent Name | ✅ Possible Actual Names |
+|---------------------|-------------------------|
+| `writer_id` | `author_id`, `creator_id`, `user_id`, `member_id` |
+| `author_name` | `author`, `writer`, `created_by_name`, `user_name` |
+| `created_by_id` | `creator_id`, `author_id`, `user_id` |
+| `updated_by_id` | `updater_id`, `modifier_id`, `last_modified_by` |
+| `owner_id` | `user_id`, `member_id`, `creator_id` |
+| `deleted_by_id` | `deleter_id`, `removed_by_id` |
+
+**THREE-STEP RESOLUTION PROTOCOL:**
+
+1. **READ THE EXACT ERROR** - What property name is missing?
+2. **EXAMINE THE ACTUAL DTO** - Check the type definition for similar properties
+3. **DECIDE**:
+   - **Property has NO equivalent** → DELETE the TestValidator call
+   - **Property has an alternative** → REPLACE with correct property name
+   - **Validation is CRITICAL to test** → EXPLORE object for nested properties
+
+**Advanced: Nested Property Exploration**
+
+Sometimes the information exists in a nested structure:
+
+```typescript
+// ❌ ERROR: Property 'writer_name' does not exist on type 'IBbsArticle'
+TestValidator.equals(
+  "writer name matches",
+  article.writer_name,  // Doesn't exist!
+  "John Doe"
+);
+
+// 🔍 ACTUAL DTO STRUCTURE:
+interface IBbsArticle {
+  id: string;
+  title: string;
+  author: {  // Nested author object!
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+// ✅ SOLUTION: Access nested property
+TestValidator.equals(
+  "writer name matches",
+  article.author.name,  // Use nested property!
+  "John Doe"
+);
+```
+
+**When Multiple TestValidator Calls Fail:**
+
+If many TestValidator calls reference non-existent properties, it often indicates:
+
+1. **The DTO structure changed** - Old test code doesn't match current DTOs
+2. **Wrong DTO is being used** - Check if the API returns a different type
+3. **Test assumptions are wrong** - The scenario itself might be flawed
+
+**In these cases:**
+- **DELETE all invalid TestValidator calls**
+- **REWRITE the validation logic** with properties that actually exist
+- **SIMPLIFY the test** - Focus on properties that matter and exist
+
+**Key Principles:**
+
+- **Trust the compiler** - If it says a property doesn't exist, it doesn't
+- **Don't invent properties** - Never use type bypasses to access non-existent properties
+- **Explore thoroughly** - Check the full DTO structure before deleting
+- **Delete confidently** - If no alternative exists, remove the validation
+- **Preserve intent** - If the validation is important, find the right property to check
+
+**Remember:**
+- TestValidator validations are SECONDARY to compilation success
+- A test that compiles without a specific validation is better than a test that doesn't compile at all
+- Focus on validations that are possible with the actual DTO structure
+
 ### 4.8. Missing Generic Type Arguments in typia.random()
 
 If you encounter compilation errors related to `typia.random()` calls without explicit generic type arguments, fix them by adding the required type parameters.
@@ -2175,6 +2324,7 @@ Ensure all corrections follow the guidelines provided in [SYSTEM PROMPT: TEST_WR
 - [ ] **Null/undefined checks:** ALL `| null | undefined` have BOTH checks?
 - [ ] **TestValidator.error:** async callback → has `await TestValidator.error()`?
 - [ ] **Non-existent properties:** NO references to properties that don't exist in DTOs?
+- [ ] **TestValidator with non-existent properties:** DELETE the TestValidator call or EXPLORE DTO for alternatives?
 - [ ] **Type bypasses:** ZERO uses of `any`, `as any`, `@ts-ignore`, etc.?
 - [ ] **Object index access:** ALL `OBJECT[dynamicKey]` have `?? fallback` after to catch undefined?
 
