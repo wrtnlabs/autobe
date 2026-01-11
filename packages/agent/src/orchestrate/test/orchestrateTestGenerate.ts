@@ -59,6 +59,7 @@ export async function orchestrateTestGenerate(
     },
     procedures,
     progress: props.correctProgress,
+    discard: false,
   });
   // procedures = await orchestrateTestCorrectRequest(ctx, {
   //   programmer: {
