@@ -218,7 +218,7 @@ ${Object.keys(props.schema.properties)
   
             Please provide mapping only for existing Prisma members:
   
-            ${required.map((r) => `- ${r}`).join("\n")}
+            ${required.map((r) => `- ${r.member}`).join("\n")}
           `,
         });
       else {
