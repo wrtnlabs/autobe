@@ -26,17 +26,6 @@ export default function AutoBeDemoPhaseMovie(
       </tr>
     );
   }
-  if (
-    phaseName === "interface" &&
-    phase.aggregates.total.tokenUsage.total > 1_000_000 * 1_000
-  )
-    console.log(
-      phaseName,
-      phase.aggregates.total.tokenUsage.total,
-      Object.entries(phase.aggregates)
-        .filter(([key]) => key !== "total")
-        .map(([key, value]) => [key, value.tokenUsage.total.toLocaleString()]),
-    );
 
   // Build commodity details string
   const detail = phase.commodity
