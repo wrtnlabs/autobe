@@ -36,11 +36,13 @@ import {
   StringUtil,
   TokenUsageComputer,
 } from "@autobe/utils";
+import { APIError } from "openai";
 import { Semaphore } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
+import { OPENAI_API_ERROR_KEYS } from "../constants/OPENAI_API_ERROR_KEYS";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -48,6 +50,7 @@ import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent"
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
+import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
@@ -321,7 +324,14 @@ export const createAutoBeContext = (props: {
         }
         return success(result.histories);
       };
-      return await execute();
+      return await forceRetry(
+        execute,
+        config.retry,
+        (error) =>
+          error instanceof APIError ||
+          (error instanceof Error &&
+            OPENAI_API_ERROR_KEYS.every((key) => error.hasOwnProperty(key))),
+      );
     },
     getCurrentAggregates: (phase) => {
       const previous: AutoBeProcessAggregateCollection =
