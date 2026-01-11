@@ -1119,10 +1119,18 @@ export namespace AutoBeOpenApi {
        */
       maximum?: number;
 
-      /** Exclusive minimum value restriction. */
+      /**
+       * Exclusive minimum value restriction.
+       *
+       * @type int64
+       */
       exclusiveMinimum?: number;
 
-      /** Exclusive maximum value restriction. */
+      /**
+       * Exclusive maximum value restriction.
+       *
+       * @type int64
+       */
       exclusiveMaximum?: number;
 
       /**
