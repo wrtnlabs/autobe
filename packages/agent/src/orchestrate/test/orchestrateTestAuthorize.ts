@@ -54,7 +54,6 @@ export async function orchestrateTestAuthorize(
     },
     procedures,
     progress: props.correctProgress,
-    discard: false,
   });
   // procedures = await orchestrateTestCorrectRequest(ctx, {
   //   programmer: {

@@ -26,7 +26,6 @@ export const orchestrateTestCorrectCasting = async <
     programmer: IProgrammer<Procedure>;
     procedures: Procedure[];
     progress: AutoBeProgressEventBase;
-    discard: boolean;
   },
 ): Promise<Procedure[]> => {
   const result: Array<Procedure | null> = await executeCachedBatch(
@@ -76,14 +75,12 @@ export const orchestrateTestCorrectCasting = async <
             },
             procedure.function.content,
           );
-        if (event.result.type === "failure" && props.discard) return null;
         return {
           ...procedure,
           function: event.function,
         };
-      } catch (error) {
-        if (props.discard) return null;
-        throw error;
+      } catch {
+        return procedure;
       }
     }),
   );

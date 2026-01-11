@@ -55,7 +55,6 @@ export async function orchestrateTestPrepare(
     },
     procedures,
     progress: props.correctProgress,
-    discard: false,
   });
   procedures = await orchestrateTestCorrectOverall(ctx, {
     programmer: {

@@ -64,7 +64,7 @@ export async function orchestrateTestCorrectOverall<
         };
       } catch (error) {
         if (props.discard) return null;
-        throw error;
+        else return procedure;
       }
     }),
   );
