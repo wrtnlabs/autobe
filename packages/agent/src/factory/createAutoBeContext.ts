@@ -48,7 +48,6 @@ import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent"
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
-import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
@@ -322,10 +321,7 @@ export const createAutoBeContext = (props: {
         }
         return success(result.histories);
       };
-
-      if (next.enforceFunctionCall === true)
-        return await forceRetry(execute, config.retry);
-      else return await execute();
+      return await execute();
     },
     getCurrentAggregates: (phase) => {
       const previous: AutoBeProcessAggregateCollection =

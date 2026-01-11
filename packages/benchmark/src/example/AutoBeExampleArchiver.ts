@@ -155,7 +155,9 @@ export namespace AutoBeExampleArchiver {
       agent.on(type, (e) => {
         const s: AutoBeEventSnapshot = {
           event: e,
-          tokenUsage: agent.getTokenUsage(),
+          tokenUsage: typia.misc.clone<IAutoBeTokenUsageJson>(
+            agent.getTokenUsage(),
+          ),
         };
         ctx.on(s);
         snapshots.push(s);
