@@ -3,6 +3,7 @@
 import { AutoBeDemoStorage } from "@/src/data/AutoBeDemoStorage";
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import { useEffect, useRef, useState } from "react";
+import AutoBeDemoPhaseMovie from "./AutoBeDemoPhaseMovie";
 
 export default function AutoBeDemoProjectMovie(
   props: AutoBeDemoProjectMovie.IProps,
@@ -103,76 +104,13 @@ export default function AutoBeDemoProjectMovie(
               ["analyze", "database", "interface", "test", "realize"] as const
             ).map((phaseName) => {
               const phase = replay[phaseName];
-              if (!phase) {
-                return (
-                  <tr
-                    key={phaseName}
-                    className="border-b border-gray-700/30 last:border-0"
-                  >
-                    <td className="py-2 pr-3 w-6">
-                      <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
-                    </td>
-                    <td className="py-2 pr-1 text-sm">
-                      <span className="text-gray-500">
-                        {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-2 pl-1 text-sm text-gray-500 whitespace-nowrap">
-                      -
-                    </td>
-                    {showTimeColumn && (
-                      <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap">
-                        -
-                      </td>
-                    )}
-                  </tr>
-                );
-              }
-
-              const detail = phase.commodity
-                ? Object.entries(phase.commodity)
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join(", ")
-                : "-";
-
               return (
-                <tr
+                <AutoBeDemoPhaseMovie
                   key={phaseName}
-                  className="border-b border-gray-700/30 last:border-0"
-                >
-                  <td className="py-2 pr-3 w-6">
-                    <div
-                      className={`w-3 h-3 ${
-                        phase.success === true
-                          ? "bg-green-500"
-                          : phase.success === false
-                            ? "bg-yellow-500"
-                            : "bg-gray-600"
-                      } rounded-full`}
-                    ></div>
-                  </td>
-                  <td className="py-2 pr-3 text-sm w-20">
-                    <span
-                      className={
-                        phase.success === true
-                          ? "text-white"
-                          : phase.success === false
-                            ? "text-yellow-400"
-                            : "text-gray-500"
-                      }
-                    >
-                      {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
-                    </span>
-                  </td>
-                  <td className="py-2 pl-1 text-sm text-gray-400 whitespace-nowrap">
-                    {detail}
-                  </td>
-                  {showTimeColumn && (
-                    <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap">
-                      {phase.elapsed ? formatElapsedTime(phase.elapsed) : "-"}
-                    </td>
-                  )}
-                </tr>
+                  phaseName={phaseName}
+                  phase={phase}
+                  showTimeColumn={showTimeColumn}
+                />
               );
             })}
           </tbody>
