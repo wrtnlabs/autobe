@@ -247,6 +247,7 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
       errors,
     });
     validateNeighbors({
+      plan: props.plan,
       neighbors: props.neighbors,
       content: props.draft,
       path: "$input.request.draft",
@@ -260,6 +261,7 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
         errors,
       });
       validateNeighbors({
+        plan: props.plan,
         neighbors: props.neighbors,
         content: props.revise.final,
         path: "$input.request.revise.final",
@@ -363,14 +365,19 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
   }
 
   function validateNeighbors(props: {
+    plan: AutoBeRealizeCollectorPlan;
     neighbors: AutoBeRealizeCollectorPlan[];
     content: string;
     path: string;
     errors: IValidation.IError[];
   }): void {
+    const selfName: string = getName(props.plan.dtoTypeName);
     const neighborNames: string[] = getNeighbors(props.content);
     for (const x of neighborNames)
-      if (props.neighbors.some((y) => getName(y.dtoTypeName) === x) === false)
+      if (
+        x !== selfName &&
+        props.neighbors.some((y) => getName(y.dtoTypeName) === x) === false
+      )
         props.errors.push({
           path: props.path,
           expected: `Use existing transformer.`,
