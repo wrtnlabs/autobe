@@ -89,5 +89,23 @@ export interface IAutoBeVendor {
    */
   semaphore?: number | undefined;
 
+  /**
+   * Indicates whether this vendor/model supports explicit tool choice control.
+   *
+   * When set to `true`, the agent may pass the `tool_choice` parameter with a
+   * value of `"required"` (or other explicit values) for models that implement
+   * OpenAI-style tool calling. This allows the agent to force the model to call
+   * one of the provided tools when appropriate.
+   *
+   * When set to `false`, the agent will avoid sending `tool_choice` in a way
+   * that forces tool invocation, and will instead rely on the model's default
+   * behavior or omit tool-choice configuration entirely. This should be used
+   * for vendors or models that do not understand, partially implement, or are
+   * unstable with the `tool_choice` parameter.
+   *
+   * This flag is necessary so that a single agent implementation can work
+   * across multiple vendors and models with differing levels of tool-calling
+   * support, without causing API errors or unexpected behavior.
+   */
   supportToolChoice?: boolean;
 }
