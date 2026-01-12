@@ -88,4 +88,6 @@ export interface IAutoBeVendor {
    * @default 16
    */
   semaphore?: number | undefined;
+
+  supportToolChoice?: boolean;
 }

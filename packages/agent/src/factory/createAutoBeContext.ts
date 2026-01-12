@@ -1,4 +1,6 @@
 import {
+  AgenticaJsonParseError,
+  AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -158,8 +160,12 @@ export const createAutoBeContext = (props: {
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {
-          // if (next.enforceFunctionCall === true && !!event.body.tools?.length)
-          //   event.body.tool_choice = "required";
+          if (
+            next.enforceFunctionCall === true &&
+            !!event.body.tools?.length &&
+            props.vendor.supportToolChoice === true
+          )
+            event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
             delete event.body.parallel_tool_calls;
           if (next.promptCacheKey)
@@ -325,9 +331,11 @@ export const createAutoBeContext = (props: {
       };
       return await forceRetry(
         execute,
-        config.retry,
+        AutoBeConfigConstant.FUNCTION_CALLING_RETRY,
         (error) =>
           error instanceof APIError ||
+          error instanceof AgenticaJsonParseError ||
+          error instanceof AgenticaValidationError ||
           (error instanceof Error &&
             OPENAI_API_ERROR_KEYS.get().every((key) =>
               error.hasOwnProperty(key),
