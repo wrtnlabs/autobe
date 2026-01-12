@@ -10,6 +10,7 @@ import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
@@ -69,7 +70,7 @@ export const orchestrateRealizeCorrectOverall = async <
     functions: RealizeFunction[];
     progress: AutoBeProgressEventBase;
   },
-  life: number = ctx.retry,
+  life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<RealizeFunction[]> => {
   const validateEvent: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,

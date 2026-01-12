@@ -31,6 +31,8 @@ export const enum AutoBeConfigConstant {
    */
   RETRY = 5,
 
+  COMPILER_RETRY = 3,
+
   /**
    * Batch count for parallel operation processing.
    *

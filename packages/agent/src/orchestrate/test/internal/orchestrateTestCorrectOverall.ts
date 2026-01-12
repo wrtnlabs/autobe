@@ -6,6 +6,7 @@ import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
 import { transformTestCorrectOverallHistory } from "../histories/transformTestCorrectOverallHistory";
@@ -55,7 +56,7 @@ export async function orchestrateTestCorrectOverall<
               promptCacheKey,
               instruction: props.instruction,
             },
-            ctx.retry,
+            AutoBeConfigConstant.COMPILER_RETRY,
           );
         if (event.result.type === "failure" && props.discard) return null;
         return {

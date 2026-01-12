@@ -9,6 +9,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
 import { IAutoBeCommonCorrectCastingApplication } from "../../common/structures/IAutoBeCommonCorrectCastingApplication";
@@ -40,7 +41,7 @@ export const orchestrateRealizeCorrectCasting = async <
     functions: RealizeFunction[];
     progress: AutoBeProgressEventBase;
   },
-  life: number = ctx.retry,
+  life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<RealizeFunction[]> => {
   const validateEvent: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,

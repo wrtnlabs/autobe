@@ -11,6 +11,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationCorrectHistory } from "./histories/transformRealizeAuthorizationCorrectHistory";
@@ -25,7 +26,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
     template: Record<string, string>;
     prismaClient: Record<string, string>;
   },
-  life: number = ctx.retry,
+  life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<AutoBeRealizeAuthorization> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const providerContent: string = await compiler.typescript.beautify(

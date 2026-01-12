@@ -11,6 +11,7 @@ import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { transformCommonCorrectCastingHistory } from "./histories/transformCommonCorrectCastingHistory";
@@ -45,7 +46,14 @@ export const orchestrateCommonCorrectCasting = async <
   script: string,
 ): Promise<ValidateEvent> => {
   const event: ValidateEvent = await factory.validate(script);
-  return await predicate(ctx, factory, [], script, event, ctx.retry);
+  return await predicate(
+    ctx,
+    factory,
+    [],
+    script,
+    event,
+    AutoBeConfigConstant.COMPILER_RETRY,
+  );
 };
 
 const predicate = async <
