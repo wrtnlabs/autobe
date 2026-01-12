@@ -36,7 +36,7 @@ export class TestGlobal {
       }),
       model: vendor,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? 32),
-      supportToolChoice: vendor.startsWith("openai/"),
+      useToolChoice: vendor.startsWith("openai/"),
     };
   }
 

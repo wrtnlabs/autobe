@@ -106,6 +106,8 @@ export interface IAutoBeVendor {
    * This flag is necessary so that a single agent implementation can work
    * across multiple vendors and models with differing levels of tool-calling
    * support, without causing API errors or unexpected behavior.
+   *
+   * @default false
    */
-  supportToolChoice?: boolean;
+  useToolChoice?: boolean;
 }
