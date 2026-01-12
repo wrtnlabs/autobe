@@ -31,6 +31,22 @@ export const enum AutoBeConfigConstant {
    */
   RETRY = 5,
 
+  /**
+   * Retry attempts specifically for AutoBE compiler error correction loops.
+   *
+   * Used by compiler/diagnostic passes that iteratively refine generated code
+   * or AST based on compiler feedback (syntax errors, type errors, or invalid
+   * transformations). Unlike the general `RETRY` constant, this is scoped to
+   * compilation and code-fix phases where each iteration tends to be more
+   * expensive and has diminishing returns after a few attempts.
+   *
+   * Value of 3 keeps compiler correction cycles shorter than general LLM
+   * interaction retries (which default to 5). Most compiler issues are either
+   * resolved within the first couple of passes or indicate a fundamental
+   * mismatch that won't benefit from further attempts. The lower limit reduces
+   * end-to-end latency and avoids long-running compile/fix loops while still
+   * allowing meaningful automatic correction.
+   */
   COMPILER_RETRY = 3,
 
   FUNCTION_CALLING_RETRY = 3,
