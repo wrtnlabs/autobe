@@ -49,6 +49,23 @@ export const enum AutoBeConfigConstant {
    */
   COMPILER_RETRY = 3,
 
+  /**
+   * Retry attempts for LLM function-calling execution flows.
+   *
+   * Applied when orchestrators invoke tools/functions through LLM
+   * function-calling interfaces (e.g., to resolve missing parameters,
+   * invalid argument shapes, or misaligned tool selections). Unlike the
+   * general `RETRY` constant (which also covers raw completion failures),
+   * this value is scoped to the tighter loop around function-call planning
+   * and argument repair.
+   *
+   * Value of 3 reflects the higher cost of each function-calling cycle
+   * (tool selection + argument generation + execution) compared to simple
+   * completions. Empirically, most function-call issues are corrected within
+   * 1–2 iterations once validation feedback is provided; additional attempts
+   * beyond 3 rarely improve success rates but notably increase latency and
+   * resource usage.
+   */
   FUNCTION_CALLING_RETRY = 3,
 
   /**
