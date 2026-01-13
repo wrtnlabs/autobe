@@ -117,7 +117,6 @@ export function AutoBePlaygroundChatMovie(
                   backgroundColor: "lightblue",
                 }}
                 isReplay={props.isReplay}
-                conversate={null!} // @todo SunRabbit
               />
             </div>
           </AutoBeAgentProvider>

@@ -2,7 +2,6 @@ import {
   AutoBeAgentProvider,
   AutoBeAgentSessionListProvider,
   AutoBeChatMain,
-  AutoBeChatSidebar,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
   SearchParamsProvider,
@@ -20,7 +19,6 @@ export function AutoBePlaygroundChatMovie(
   //----
   // STATES
   const [, setError] = useState<Error | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [storageStrategy] = useState<IAutoBeAgentSessionStorageStrategy>(
     props.storageStrategyFactory(),

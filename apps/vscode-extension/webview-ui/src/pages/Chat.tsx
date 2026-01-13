@@ -1,23 +1,14 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBeRpcListener,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
+import { IAutoBePlaygroundHeader, IAutoBeRpcListener } from "@autobe/interface";
 import { AutoBeChatMain, AutoBeListener } from "@autobe/ui";
 import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
 import { useEffect, useState } from "react";
 
-import { useAutoBeService } from "../hooks/use-autobe-service";
 import useVsCode from "../hooks/use-vscode";
 
 const Chat = () => {
   const vscode = useVsCode();
   const [listener] = useState<AutoBeListener>(new AutoBeListener());
-  const service = useAutoBeService();
   const [, setError] = useState<Error | null>(null);
-  const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
-    null,
-  );
   const [header, setHeader] = useState<IAutoBePlaygroundHeader | null>(null);
 
   useEffect(() => {
@@ -66,9 +57,6 @@ const Chat = () => {
       <div className="flex-1 overflow-hidden h-full mx-1">
         <AutoBeChatMain
           isMobile={true}
-          conversate={async (contents) => {
-            return await service.conversate(contents);
-          }}
           setError={setError}
           className="h-full"
         />
