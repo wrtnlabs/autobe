@@ -4,7 +4,6 @@ import {
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
-import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
