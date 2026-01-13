@@ -6,3 +6,4 @@ export * from "./types";
 export * from "./context/AutoBeAgentContext";
 export * from "./context/AutoBeAgentSessionList";
 export * from "./context/SearchParamsContext";
+export * from "./strategy/AutoBeAgentSessionStorageStrategy";

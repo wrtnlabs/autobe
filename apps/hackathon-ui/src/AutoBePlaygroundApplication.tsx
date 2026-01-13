@@ -29,7 +29,7 @@ export function AutoBePlaygroundApplication() {
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
     const listener = new AutoBeListener();
-    const { service, sessionId, connector } = await (async () => {
+    const { service, sessionId, close } = await (async () => {
       const connection = {
         host: import.meta.env.VITE_API_BASE_URL,
         headers: {
@@ -61,7 +61,7 @@ export function AutoBePlaygroundApplication() {
             .catch(errorHandler);
         return {
           service: driver,
-          connector,
+          close: connector.close,
           sessionId: config.sessionId,
         };
       }
@@ -87,7 +87,6 @@ export function AutoBePlaygroundApplication() {
       return {
         service: driver,
         listener,
-        connector,
         close: connector.close,
         sessionId: session.id,
       } satisfies IAutoBeServiceData;
@@ -97,8 +96,7 @@ export function AutoBePlaygroundApplication() {
       service,
       sessionId,
       listener,
-      connector,
-      close: connector.close,
+      close,
       uploadConfig: {
         supportAudio: config.supportAudioEnable ?? false,
       },

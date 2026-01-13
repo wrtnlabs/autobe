@@ -1,4 +1,4 @@
-import { AutoBeHistory, AutoBeUserConversateContent } from "@autobe/interface";
+import { AutoBeUserConversateContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef } from "react";
 

@@ -25,7 +25,9 @@ export function AutoBeReplayPlayground() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Playground service factory
-  const serviceFactory = async (config: IAutoBeConfig): Promise<IAutoBeServiceData> => {
+  const serviceFactory = async (
+    config: IAutoBeConfig,
+  ): Promise<IAutoBeServiceData> => {
     const listener = new AutoBeListener();
     const { service, sessionId, connector } = await (async () => {
       const connection = {
@@ -38,13 +40,13 @@ export function AutoBeReplayPlayground() {
       };
 
       if (config.sessionId != null && typeof config.sessionId === "string") {
-        const result= await hApi.functional.autobe.hackathon.participants.sessions
-            .replay(
-              connection,
-              HACKATHON_CODE,
-              config.sessionId,
-              listener.getListener(),
-            );
+        const result =
+          await hApi.functional.autobe.hackathon.participants.sessions.replay(
+            connection,
+            HACKATHON_CODE,
+            config.sessionId,
+            listener.getListener(),
+          );
         return {
           service: result.driver,
           connector: result.connector,
@@ -60,7 +62,6 @@ export function AutoBeReplayPlayground() {
       // uploadConfig: {
       //   supportAudio: config.supportAudioEnable ?? false,
       // },
-      connector,
       close: () => connector.close(),
     } satisfies IAutoBeServiceData;
   };
