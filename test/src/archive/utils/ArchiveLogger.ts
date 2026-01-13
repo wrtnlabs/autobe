@@ -162,6 +162,16 @@ export namespace ArchiveLogger {
           .map((line) => `    ${line}`)
           .join("\n"),
       );
+    else if (
+      event.type === "realizeComplete" &&
+      event.compiled.type === "failure"
+    )
+      content.push(
+        JSON.stringify(event.compiled.diagnostics, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     // PRINT
     console.log(content.join("\n"));
   };
