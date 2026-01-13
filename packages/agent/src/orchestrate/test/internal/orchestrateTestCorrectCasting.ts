@@ -7,6 +7,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../../common/orchestrateCommonCorrectCasting";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
 
@@ -40,8 +41,7 @@ export const orchestrateTestCorrectCasting = async <
             ctx,
             {
               source: "testCorrect",
-              asynchronous: props.programmer.asynchronous,
-              validate: (content) =>
+              compile: (content) =>
                 props.programmer.compile({
                   ...procedure,
                   function: {
@@ -71,7 +71,15 @@ export const orchestrateTestCorrectCasting = async <
                   step: ctx.state().analyze?.step ?? 0,
                 }) satisfies AutoBeTestCorrectEvent,
               script: (event) => event.function.content,
-              functionName: procedure.function.name,
+              validateEmptyCode: (next) =>
+                validateEmptyCode({
+                  name: procedure.function.name,
+                  path: next.path,
+                  asynchronous: props.programmer.asynchronous,
+                  draft: next.draft,
+                  revise: next.revise,
+                }),
+              location: procedure.function.location,
             },
             procedure.function.content,
           );

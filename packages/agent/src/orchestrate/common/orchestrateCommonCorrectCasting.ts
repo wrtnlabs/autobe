@@ -13,7 +13,6 @@ import typia from "typia";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { transformCommonCorrectCastingHistory } from "./histories/transformCommonCorrectCastingHistory";
 import { IAutoBeCommonCorrectCastingApplication } from "./structures/IAutoBeCommonCorrectCastingApplication";
 
@@ -21,7 +20,7 @@ interface IFactoryProps<
   ValidateEvent extends AutoBeTestValidateEvent | AutoBeRealizeValidateEvent,
   CorrectEvent extends AutoBeTestCorrectEvent | AutoBeRealizeCorrectEvent,
 > {
-  validate(script: string): Promise<ValidateEvent>;
+  compile(script: string): Promise<ValidateEvent>;
   correct(next: {
     failure: IAutoBeTypeScriptCompileResult.IFailure;
     think: string;
@@ -32,9 +31,15 @@ interface IFactoryProps<
     tokenUsage: IAutoBeTokenUsageJson.IComponent;
   }): Promise<CorrectEvent>;
   script(event: ValidateEvent): string;
+  validateEmptyCode(props: {
+    path: string;
+    draft: string;
+    revise: {
+      final: string | null;
+    };
+  }): IValidation.IError[];
+  location: string;
   source: "testCorrect" | "realizeCorrect";
-  asynchronous: boolean;
-  functionName: string;
 }
 
 export const orchestrateCommonCorrectCasting = async <
@@ -45,7 +50,11 @@ export const orchestrateCommonCorrectCasting = async <
   factory: IFactoryProps<ValidateEvent, CorrectEvent>,
   script: string,
 ): Promise<ValidateEvent> => {
-  const event: ValidateEvent = await factory.validate(script);
+  const event: ValidateEvent = await compileWithFiltering({
+    compile: factory.compile,
+    location: factory.location,
+    script,
+  });
   return await predicate(
     ctx,
     factory,
@@ -132,9 +141,31 @@ const correct = async <
     factory,
     [...failures, event],
     script,
-    await factory.validate(pointer.value.revise.final ?? pointer.value.draft),
+    await compileWithFiltering({
+      compile: factory.compile,
+      location: factory.location,
+      script: pointer.value.revise.final ?? pointer.value.draft,
+    }),
     life - 1,
   );
+};
+
+const compileWithFiltering = async <
+  ValidateEvent extends AutoBeTestValidateEvent | AutoBeRealizeValidateEvent,
+>(props: {
+  compile: (script: string) => Promise<ValidateEvent>;
+  script: string;
+  location: string;
+}): Promise<ValidateEvent> => {
+  const event: ValidateEvent = await props.compile(props.script);
+  if (event.result.type === "failure") {
+    event.result.diagnostics = event.result.diagnostics.filter(
+      (d) => d.file === props.location,
+    );
+    if (event.result.diagnostics.length === 0)
+      event.result = { type: "success" };
+  }
+  return event;
 };
 
 const createController = (props: {
@@ -148,12 +179,10 @@ const createController = (props: {
     const result: IValidation<IAutoBeCommonCorrectCastingApplication.IProps> =
       typia.validate<IAutoBeCommonCorrectCastingApplication.IProps>(input);
     if (result.success === false) return result;
-    const errors: IValidation.IError[] = validateEmptyCode({
-      name: props.factory.functionName,
+    const errors: IValidation.IError[] = props.factory.validateEmptyCode({
       draft: result.data.draft,
       revise: result.data.revise,
       path: "$input",
-      asynchronous: props.factory.asynchronous,
     });
     return errors.length
       ? {

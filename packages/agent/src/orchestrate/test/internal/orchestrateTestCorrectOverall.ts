@@ -52,7 +52,10 @@ export async function orchestrateTestCorrectOverall<
               programmer: props.programmer,
               procedure,
               failures: [],
-              validate: await props.programmer.compile(procedure),
+              validate: await compileWithFiltering({
+                compile: props.programmer.compile,
+                procedure,
+              }),
               promptCacheKey,
               instruction: props.instruction,
             },
@@ -153,7 +156,10 @@ async function correct<
     },
   };
   const newValidate: AutoBeTestValidateEvent<Procedure["function"]> =
-    await props.programmer.compile(newProcedure);
+    await compileWithFiltering({
+      compile: props.programmer.compile,
+      procedure: newProcedure,
+    });
 
   ctx.dispatch({
     type: "testCorrect",
@@ -186,3 +192,23 @@ async function correct<
     life,
   );
 }
+
+const compileWithFiltering = async <
+  Procedure extends IAutoBeTestProcedure,
+>(props: {
+  compile(
+    procedure: Procedure,
+  ): Promise<AutoBeTestValidateEvent<Procedure["function"]>>;
+  procedure: Procedure;
+}): Promise<AutoBeTestValidateEvent<Procedure["function"]>> => {
+  const event: AutoBeTestValidateEvent<Procedure["function"]> =
+    await props.compile(props.procedure);
+  if (event.result.type === "failure") {
+    event.result.diagnostics = event.result.diagnostics.filter(
+      (d) => d.file === props.procedure.function.location,
+    );
+    if (event.result.diagnostics.length === 0)
+      event.result = { type: "success" };
+  }
+  return event;
+};

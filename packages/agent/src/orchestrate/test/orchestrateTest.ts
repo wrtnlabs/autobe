@@ -3,6 +3,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
+  AutoBeTestCompleteEvent,
   AutoBeTestFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestHistory,
@@ -10,7 +11,6 @@ import {
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
   IAutoBeCompiler,
-  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
@@ -85,40 +85,6 @@ export const orchestrateTest =
       completed: 0,
     };
 
-    // PREPARE COMPILER
-    const compile = async (
-      functions: AutoBeTestFunction[],
-    ): Promise<IAutoBeTypeScriptCompileResult> => {
-      const c: IAutoBeCompiler = await ctx.compiler();
-      return await c.typescript.compile({
-        files: Object.fromEntries([
-          ...Object.entries(
-            await ctx.files({
-              dbms: "sqlite",
-            }),
-          ).filter(
-            ([key]) =>
-              key.endsWith(".ts") && key.startsWith("test/features") === false,
-          ),
-          ...functions.map((f) => [f.location, f.content]),
-        ]),
-      });
-    };
-    const out = async (
-      functions: AutoBeTestFunction[],
-      result?: IAutoBeTypeScriptCompileResult,
-    ): Promise<AutoBeTestHistory> =>
-      ctx.dispatch({
-        type: "testComplete",
-        id: v7(),
-        functions,
-        compiled: result ?? (await compile(functions)),
-        aggregates: ctx.getCurrentAggregates("test"),
-        step: ctx.state().analyze?.step ?? 0,
-        elapsed: new Date().getTime() - start.getTime(),
-        created_at: new Date().toISOString(),
-      });
-
     // AUTHORIZE
     const authorizes: AutoBeTestAuthorizeFunction[] =
       await orchestrateTestAuthorize(ctx, {
@@ -138,12 +104,8 @@ export const orchestrateTest =
         correctProgress,
       },
     );
-    const prepareCompiled: IAutoBeTypeScriptCompileResult =
-      await compile(prepares);
-    if (prepareCompiled.type !== "success")
-      return await out([...authorizes, ...prepares]);
 
-    // GENERATE API
+    // GENERATOR FUNCTIONS (C of CRUD)
     const generates: AutoBeTestGenerateFunction[] =
       await orchestrateTestGenerate(ctx, {
         instruction: props.instruction,
@@ -152,16 +114,6 @@ export const orchestrateTest =
         writeProgress,
         correctProgress,
       });
-    const generateCompiled: IAutoBeTypeScriptCompileResult = await compile([
-      ...authorizes,
-      ...prepares,
-      ...generates,
-    ]);
-    if (generateCompiled.type !== "success")
-      return await out(
-        [...authorizes, ...prepares, ...generates],
-        generateCompiled,
-      );
 
     // ACTUAL TEST FUNCTION
     const operations: AutoBeTestOperationFunction[] =
@@ -175,5 +127,35 @@ export const orchestrateTest =
         writeProgress,
         correctProgress,
       });
-    return await out([...authorizes, ...prepares, ...generates, ...operations]);
+
+    // FINALIZE WITH COMPILATION
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const functions: AutoBeTestFunction[] = [
+      ...authorizes,
+      ...prepares,
+      ...generates,
+      ...operations,
+    ];
+    return ctx.dispatch({
+      type: "testComplete",
+      id: v7(),
+      functions,
+      compiled: await compiler.typescript.compile({
+        files: Object.fromEntries([
+          ...Object.entries(
+            await ctx.files({
+              dbms: "sqlite",
+            }),
+          ).filter(
+            ([key]) =>
+              key.endsWith(".ts") && key.startsWith("test/features") === false,
+          ),
+          ...functions.map((f) => [f.location, f.content]),
+        ]),
+      }),
+      aggregates: ctx.getCurrentAggregates("test"),
+      step: ctx.state().analyze?.step ?? 0,
+      elapsed: new Date().getTime() - start.getTime(),
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeTestCompleteEvent);
   };
