@@ -1,15 +1,11 @@
-import { IAutoBePlaygroundHeader, IAutoBeRpcListener } from "@autobe/interface";
 import {
   AutoBeAgentProvider,
   AutoBeAgentSessionStorageStrategy,
   AutoBeChatMain,
-  AutoBeListener,
-  IAutoBeConfig,
 } from "@autobe/ui";
-import { useEffect, useState } from "react";
-import { useServiceFactory } from "src/hooks/use-service-factory";
+import { useState } from "react";
 
-import useVsCode from "../hooks/use-vscode";
+import { useServiceFactory } from "../hooks/use-service-factory";
 
 const Chat = () => {
   const [, setError] = useState<Error | null>(null);
