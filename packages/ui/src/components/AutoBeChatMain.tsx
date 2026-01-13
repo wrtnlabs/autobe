@@ -27,12 +27,6 @@ export interface IAutoBeChatMainProps {
 
   /** Additional required config fields beyond openApiKey */
   requiredFields?: string[];
-  conversate: (
-    content:
-      | string
-      | AutoBeUserConversateContent
-      | AutoBeUserConversateContent[],
-  ) => Promise<AutoBeHistory[]>;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -97,7 +91,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           title="Server Connection Required"
           fields={props.configFields || []}
           onSave={() => {
-            props.conversate(messages);
+            conversate(messages);
           }}
         />
       ));
