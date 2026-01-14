@@ -121,14 +121,6 @@ export const orchestrateRealize =
         created_at: new Date().toISOString(),
       });
 
-    const assetCompiled: AutoBeRealizeValidateEvent = await compile([]);
-    if (assetCompiled.result.type === "failure")
-      return out({
-        event: assetCompiled,
-        operations: [],
-        controllers: {},
-      });
-
     // FINAL STEP, THE OPERATIONS
     const finalOperations: AutoBeRealizeOperationFunction[] =
       await orchestrateRealizeOperation(ctx, {
