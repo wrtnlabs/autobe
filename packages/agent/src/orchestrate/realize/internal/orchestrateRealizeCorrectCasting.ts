@@ -43,11 +43,11 @@ export const orchestrateRealizeCorrectCasting = async <
   },
   life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<RealizeFunction[]> => {
-  const validateEvent: AutoBeRealizeValidateEvent = await compileRealizeFiles(
+  const validateEvent: AutoBeRealizeValidateEvent = await compileWithFiltering(
     ctx,
     {
       functions: props.functions,
-      additional: props.programmer.additional(props.functions),
+      programmer: props.programmer,
     },
   );
   return predicate(
@@ -61,6 +61,51 @@ export const orchestrateRealizeCorrectCasting = async <
     },
     life,
   );
+};
+
+const compileWithFiltering = async <
+  RealizeFunction extends AutoBeRealizeFunction,
+>(
+  ctx: AutoBeContext,
+  props: {
+    functions: RealizeFunction[];
+    programmer: IProgrammer<RealizeFunction>;
+  },
+): Promise<AutoBeRealizeValidateEvent> => {
+  const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
+    functions: props.functions,
+    additional: props.programmer.additional(props.functions),
+  });
+  if (compiled.result.type !== "failure") {
+    return compiled;
+  }
+
+  const functionLocations: string[] = props.functions.map((f) => f.location);
+  const filteredDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+    compiled.result.diagnostics.filter(
+      (d) =>
+        d.file !== null &&
+        d.file.startsWith(props.programmer.location) &&
+        functionLocations.includes(d.file),
+    );
+  if (filteredDiagnostics.length === 0) {
+    return {
+      ...compiled,
+      id: v7(),
+      result: {
+        type: "success",
+      },
+    };
+  }
+
+  return {
+    ...compiled,
+    id: v7(),
+    result: {
+      type: "failure",
+      diagnostics: filteredDiagnostics,
+    },
+  };
 };
 
 const predicate = async <RealizeFunction extends AutoBeRealizeFunction>(
@@ -205,11 +250,11 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
     ...unchangedFunctions,
   ];
 
-  const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
+  const newValidate: AutoBeRealizeValidateEvent = await compileWithFiltering(
     ctx,
     {
       functions: allFunctionsForValidation,
-      additional: props.programmer.additional(allFunctionsForValidation),
+      programmer: props.programmer,
     },
   );
 
@@ -219,13 +264,6 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
   } else if (newResult.type === "exception") {
     // Compilation exception, return current functions. because retrying won't help.
     return props.functions;
-  }
-
-  if (
-    newResult.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
-  ) {
-    // No diagnostics related to provider functions, stop correcting
-    return allFunctionsForValidation;
   }
 
   const newLocations: string[] =
