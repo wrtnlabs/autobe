@@ -63,51 +63,6 @@ export const orchestrateRealizeCorrectCasting = async <
   );
 };
 
-const compileWithFiltering = async <
-  RealizeFunction extends AutoBeRealizeFunction,
->(
-  ctx: AutoBeContext,
-  props: {
-    functions: RealizeFunction[];
-    programmer: IProgrammer<RealizeFunction>;
-  },
-): Promise<AutoBeRealizeValidateEvent> => {
-  const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
-    functions: props.functions,
-    additional: props.programmer.additional(props.functions),
-  });
-  if (compiled.result.type !== "failure") {
-    return compiled;
-  }
-
-  const functionLocations: string[] = props.functions.map((f) => f.location);
-  const filteredDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
-    compiled.result.diagnostics.filter(
-      (d) =>
-        d.file !== null &&
-        d.file.startsWith(props.programmer.location) &&
-        functionLocations.includes(d.file),
-    );
-  if (filteredDiagnostics.length === 0) {
-    return {
-      ...compiled,
-      id: v7(),
-      result: {
-        type: "success",
-      },
-    };
-  }
-
-  return {
-    ...compiled,
-    id: v7(),
-    result: {
-      type: "failure",
-      diagnostics: filteredDiagnostics,
-    },
-  };
-};
-
 const predicate = async <RealizeFunction extends AutoBeRealizeFunction>(
   ctx: AutoBeContext,
   props: {
@@ -331,6 +286,34 @@ const getErrorFiles = (props: {
     .filter((f): f is string => f !== null)
     .filter((f) => f.startsWith(props.location));
   return Array.from(new Set(locations));
+};
+
+const compileWithFiltering = async <
+  RealizeFunction extends AutoBeRealizeFunction,
+>(
+  ctx: AutoBeContext,
+  props: {
+    functions: RealizeFunction[];
+    programmer: IProgrammer<RealizeFunction>;
+  },
+): Promise<AutoBeRealizeValidateEvent> => {
+  const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
+    functions: props.functions,
+    additional: props.programmer.additional(props.functions),
+  });
+  if (compiled.result.type !== "failure") {
+    return compiled;
+  }
+
+  const functionLocations: string[] = props.functions.map((f) => f.location);
+
+  compiled.result.diagnostics = compiled.result.diagnostics.filter(
+    (d) => d.file !== null && functionLocations.includes(d.file),
+  );
+  if (compiled.result.diagnostics.length === 0) {
+    compiled.result = { type: "success" };
+  }
+  return compiled;
 };
 
 /**

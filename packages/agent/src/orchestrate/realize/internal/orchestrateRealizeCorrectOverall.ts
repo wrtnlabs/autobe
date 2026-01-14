@@ -59,53 +59,6 @@ interface ICorrectionResult<RealizeFunction extends AutoBeRealizeFunction> {
   function: RealizeFunction;
 }
 
-const compileWithFiltering = async <
-  RealizeFunction extends AutoBeRealizeFunction,
-  PreliminaryKind extends AutoBePreliminaryKind,
-  Complete extends IComplete,
->(
-  ctx: AutoBeContext,
-  props: {
-    functions: RealizeFunction[];
-    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
-  },
-): Promise<AutoBeRealizeValidateEvent> => {
-  const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
-    functions: props.functions,
-    additional: props.programmer.additional(props.functions),
-  });
-  if (compiled.result.type !== "failure") {
-    return compiled;
-  }
-
-  const functionLocations: string[] = props.functions.map((f) => f.location);
-  const filteredDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
-    compiled.result.diagnostics.filter(
-      (d) =>
-        d.file !== null &&
-        d.file.startsWith(props.programmer.location) &&
-        functionLocations.includes(d.file),
-    );
-  if (filteredDiagnostics.length === 0) {
-    return {
-      ...compiled,
-      id: v7(),
-      result: {
-        type: "success",
-      },
-    };
-  }
-
-  return {
-    ...compiled,
-    id: v7(),
-    result: {
-      type: "failure",
-      diagnostics: filteredDiagnostics,
-    },
-  };
-};
-
 export const orchestrateRealizeCorrectOverall = async <
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
@@ -373,6 +326,36 @@ const process = async <
       },
     });
   });
+};
+
+const compileWithFiltering = async <
+  RealizeFunction extends AutoBeRealizeFunction,
+  PreliminaryKind extends AutoBePreliminaryKind,
+  Complete extends IComplete,
+>(
+  ctx: AutoBeContext,
+  props: {
+    functions: RealizeFunction[];
+    programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
+  },
+): Promise<AutoBeRealizeValidateEvent> => {
+  const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
+    functions: props.functions,
+    additional: props.programmer.additional(props.functions),
+  });
+  if (compiled.result.type !== "failure") {
+    return compiled;
+  }
+
+  const functionLocations: string[] = props.functions.map((f) => f.location);
+
+  compiled.result.diagnostics = compiled.result.diagnostics.filter(
+    (d) => d.file !== null && functionLocations.includes(d.file),
+  );
+  if (compiled.result.diagnostics.length === 0) {
+    compiled.result = { type: "success" };
+  }
+  return compiled;
 };
 
 /**
