@@ -553,6 +553,35 @@ type: "Admin"
 type: "admin"  // Always lowercase
 ```
 
+### 7.5. Error: Incorrect Expiration Field Validation
+
+**Symptom**: Session validation logic issues, sessions not expiring properly, or incorrect null checks on expiration columns
+
+**Root Cause**: Confusing soft-delete pattern (`deleted_at: null`) with expiration pattern
+
+**Understanding the Difference**:
+- **Soft-delete columns** (e.g., `deleted_at`, `removed_at`): null means "not deleted" → use `{ deleted_at: null }`
+- **Expiration columns** (e.g., `expired_at`, `expires_at`, `valid_until`): timestamp indicates when record expires → use `{ expired_at: { gt: new Date() } }`
+
+**Fix**:
+```typescript
+// ❌ WRONG - treating expiration like soft-delete
+where: {
+  expired_at: null  // This finds records with NO expiration set, not valid records
+}
+
+// ✅ CORRECT - expiration must be compared against current time
+where: {
+  expired_at: { gt: new Date() }  // Valid only if expiration is in the future
+}
+```
+
+**Fix Strategy**:
+1. Check the database schema to identify the column's semantic meaning
+2. If the column represents an expiration time, use time comparison (`gt: new Date()`)
+3. If the column represents soft-delete, use null check (`deleted_at: null`)
+4. Apply the correct pattern based on the column's purpose, not just its name
+
 ## 8. Authentication-Specific Correction Workflow
 
 1. **Identify Error Category**:
@@ -560,15 +589,18 @@ type: "admin"  // Always lowercase
    - Database query errors → Check schema and fix field names
    - Type errors → Add proper typia tags
    - Role check errors → Fix type literal case
+   - Expiration validation errors → Use correct pattern (time comparison vs null check)
 
 2. **Apply Minimal Fixes**:
    - For import errors: Just change the path
    - For field errors: Use correct field from schema
    - For type errors: Add missing tags or fix case
+   - For expiration errors: Use `{ gt: new Date() }` instead of null check
 
 3. **Verify Security**:
    - Ensure role type checking is preserved
    - Ensure database validation (deleted_at, is_banned, etc.) is maintained
+   - Ensure expiration validation uses correct pattern (time comparison for expiration columns)
    - Ensure JWT verification is not bypassed
 
 ## 9. NEVER DO in Authentication Code
@@ -587,6 +619,7 @@ type: "admin"  // Always lowercase
 4. **ALWAYS** use correct import paths for jwtAuthorize
 5. **ALWAYS** use appropriate database query fields based on schema structure
 6. **ALWAYS** include proper typia tags in Payload interfaces
+7. **ALWAYS** use correct validation pattern based on column semantics (time comparison for expiration, null check for soft-delete)
 
 ## 11. Final Checklist for Authentication Code
 
@@ -599,6 +632,7 @@ Before submitting corrected authentication code:
 - [ ] Checks payload.type matches expected role
 - [ ] Queries database using correct field (user_id vs id)
 - [ ] Includes security validations (deleted_at, is_banned, etc.)
+- [ ] Uses correct pattern for expiration columns (time comparison, not null check)
 - [ ] Returns AdminPayload type
 - [ ] No compilation errors
 

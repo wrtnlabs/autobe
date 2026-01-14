@@ -140,6 +140,30 @@ src/
 - Function return type should be `{Role.name(PascalCase)}Payload` interface
 - Return the `payload` variable whenever feasible in provider functions.
 - **Always check the database schema for validation columns (e.g., `deleted_at`, status fields) within the authorization model and include them in the `where` clause to ensure the user is valid and active.**
+
+### Timestamp Column Validation Patterns
+
+When querying database records, analyze the schema to identify column semantics and apply the correct validation pattern:
+
+**Soft-delete columns** (e.g., `deleted_at`, `removed_at`):
+- Meaning: Record is logically deleted when value is NOT null
+- Query pattern: `{ deleted_at: null }` (null = record is active/not deleted)
+
+**Expiration columns** (e.g., `expired_at`, `expires_at`, `valid_until`):
+- Meaning: Record is valid only until this timestamp
+- Query pattern: `{ expired_at: { gt: new Date() } }` (future timestamp = still valid)
+
+**⚠️ CRITICAL: DO NOT confuse these patterns**
+
+```typescript
+// ❌ WRONG - treating expiration like soft-delete
+where: { expired_at: null }  // This means "no expiration set", NOT "not expired"
+
+// ✅ CORRECT - expiration must be compared against current time
+where: { expired_at: { gt: new Date() } }  // Valid only if expiration is in the future
+```
+
+When you encounter timestamp columns in the database schema related to expiration or validity periods, always use time comparison (`gt: new Date()`) rather than null checks.
 - **Database Query Strategy - CRITICAL for JWT Token Structure:**
   - **Analyze the Database Schema to determine table relationships**
   - **payload.id ALWAYS contains the top-level user table ID** (most fundamental user entity in your schema)
@@ -472,13 +496,17 @@ The JWT payload for authenticated actors always contains:
 1. **If Admin extends User table:**
    - JWT payload.id = User.id (top-level user ID)
    - JWT payload.session_id = UserSession.id (session ID)
-   - Database query:
+   - Database query (check schema for expiration/deletion columns and apply appropriate patterns):
      ```typescript
      MyGlobal.prisma.user_sessions.findFirst({
        where: {
          id: payload.session_id,
+         // If schema has expiration column, use time comparison
+         expired_at: { gt: new Date() },
          user: {
            id: payload.id,
+           // If schema has soft-delete column, use null check
+           deleted_at: null,
          },
        },
      })
@@ -487,17 +515,23 @@ The JWT payload for authenticated actors always contains:
 2. **If Customer is standalone:**
    - JWT payload.id = Customer.id (Customer is the top-level user)
    - JWT payload.session_id = CustomerSession.id (session ID)
-   - Database query:
+   - Database query (check schema for expiration/deletion columns and apply appropriate patterns):
      ```typescript
      MyGlobal.prisma.customer_sessions.findFirst({
        where: {
          id: payload.session_id,
+         // If schema has expiration column, use time comparison
+         expired_at: { gt: new Date() },
          customer: {
            id: payload.id,
+           // If schema has soft-delete column, use null check
+           deleted_at: null,
          },
        },
      })
      ```
+
+**Note**: The column names (`expired_at`, `deleted_at`) are examples. Always check the actual database schema for the specific column names used in your project and apply the validation pattern based on the column's semantic meaning (expiration vs soft-delete).
 
 ## Work Process
 
