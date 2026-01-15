@@ -137,7 +137,7 @@ async function process(
         build: (op) => {
           pointer.value ??= [];
           for (const p of op.parameters)
-            AutoBeJsonSchemaFactory.fixSchema(p.schema);
+            p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
           const matrix: AutoBeOpenApi.IOperation[] =
             op.authorizationActors.length === 0
               ? [
