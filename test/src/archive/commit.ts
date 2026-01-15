@@ -17,11 +17,24 @@ import OpenAI from "openai";
 
 import { TestGlobal } from "../TestGlobal";
 
-const initialize = (): void => {
+const initialize = async (): Promise<void> => {
   cp.execSync("git config core.longpaths true", {
     cwd: AutoBeExampleStorage.repository(),
     stdio: "inherit",
   });
+  if (process.argv.includes("--reset") === true)
+    for (const file of await fs.promises.readdir(
+      AutoBeExampleStorage.repository(),
+    )) {
+      const location: string = `${AutoBeExampleStorage.repository()}/${file}`;
+      const stat: fs.Stats = await fs.promises.lstat(location);
+      if (stat.isDirectory() === true && file !== ".git" && file !== "raw") {
+        await fs.promises.rm(location, {
+          recursive: true,
+          force: true,
+        });
+      }
+    }
 };
 
 const main = async (): Promise<void> => {
@@ -29,7 +42,6 @@ const main = async (): Promise<void> => {
   initialize();
 
   // GATHER DATA
-  const bucket: Record<string, string> = {};
   const experiments: IAutoBePlaygroundBenchmark[] = [];
   for (const vendor of await AutoBeExampleStorage.getVendorModels()) {
     const replayList: IAutoBePlaygroundReplay[] =
@@ -48,11 +60,13 @@ const main = async (): Promise<void> => {
         compiler: (listener) => new AutoBeCompiler(listener),
         histories: replay.histories,
       });
-      const files: Record<string, string> = await agent.getFiles({
-        dbms: "sqlite",
+      await FileSystemIterator.save({
+        root: `${AutoBeExampleStorage.repository()}/${replay.vendor}/${replay.project}`,
+        files: await agent.getFiles({
+          dbms: "sqlite",
+        }),
+        overwrite: false,
       });
-      for (const [k, v] of Object.entries(files))
-        bucket[`${replay.vendor}/${replay.project}/${k}`] = v;
     }
 
     const summaries: IAutoBePlaygroundReplay.ISummary[] = replayList.map(
@@ -70,25 +84,11 @@ const main = async (): Promise<void> => {
       ? a.vendor.localeCompare(b.vendor)
       : b.score.aggregate - a.score.aggregate,
   );
-
-  // COMMIT
-  bucket["README.md"] = AutoBeReplayDocumentation.readme(experiments);
-  for (const file of await fs.promises.readdir(
-    AutoBeExampleStorage.repository(),
-  )) {
-    const location: string = `${AutoBeExampleStorage.repository()}/${file}`;
-    const stat: fs.Stats = await fs.promises.lstat(location);
-    if (stat.isDirectory() === true && file !== ".git" && file !== "raw")
-      await fs.promises.rm(location, {
-        recursive: true,
-        force: true,
-      });
-  }
-  await FileSystemIterator.save({
-    root: AutoBeExampleStorage.repository(),
-    files: bucket,
-    overwrite: true,
-  });
+  await fs.promises.writeFile(
+    `${AutoBeExampleStorage.repository()}/README.md`,
+    AutoBeReplayDocumentation.readme(experiments),
+    "utf8",
+  );
 
   // COMMIT
   if (TestGlobal.getArguments("no-commit") === null) {

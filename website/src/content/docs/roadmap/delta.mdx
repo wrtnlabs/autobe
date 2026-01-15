@@ -1,6 +1,6 @@
 ## Preface
 
-import AutoBeDemoModelMovie from "../../../movies/demo/AutoBeDemoModelMovie";
+import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
 
 ```mermaid
 gantt
@@ -56,7 +56,9 @@ Delta fills these gaps. We leverage Local LLM benchmarks to unearth logic flaws 
 
 ## 1. Local LLM Benchmark
 
-<AutoBeDemoModelMovie model="qwen/qwen3-next-80b-a3b-instruct" />
+<br />
+
+<AutoBeDemoMovie model="qwen/qwen3-next-80b-a3b-instruct" />
 
 Commercial models like Claude Sonnet and GPT are remarkably capable. Even when system prompts are somewhat ambiguous or validation feedback logic has blind spots, these models rarely trigger those edge cases. For developers, this means defects remain hidden—everything appears to work, so we assume nothing is broken.
 
