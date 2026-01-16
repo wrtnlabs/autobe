@@ -14,7 +14,7 @@ export function createAutoBeUserMessageContent(props: {
       return {
         type: "text",
         text: StringUtil.trim`
-          Analyzed image description: 
+          image description: 
           
           \`\`\`text
           ${description}
