@@ -39,14 +39,20 @@ export const imageDescribe = async (
       description: d.description,
     }),
   );
+  const userInput: AutoBeUserMessageContent[] = props.content
+    .filter((c) => c.type !== "image")
+    .map((c) => createAutoBeUserMessageContent({ content: c }));
   const query: AutoBeUserMessageContent = {
     type: "text",
-    text: "Based on the image analysis above, please analyze and write a comprehensive requirements specification document.",
+    text:
+      userInput.length > 0
+        ? "Please analyze the user's input and the image descriptions provided, and write a comprehensive requirements specification document."
+        : "Please analyze the image descriptions provided and write a comprehensive requirements specification document.",
   };
   const complete: AutoBeImageDescribeCompleteEvent = {
     type: "imageDescribeComplete",
     id: v7(),
-    contents: [...draftContents, query],
+    contents: [...userInput, ...draftContents, query],
     elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   };
