@@ -1,3 +1,4 @@
+import { AutoBeInterfaceSchemaPropertyErase } from "../histories";
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
@@ -17,6 +18,7 @@ import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
+import { AutoBeInterfaceSchemaDepictEvent } from "./AutoBeInterfaceSchemaDepictEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
@@ -87,6 +89,8 @@ export type AutoBeEventSource =
   | AutoBeInterfaceOperationReviewEvent["type"]
   | AutoBeInterfaceSchemaEvent["type"]
   | AutoBeInterfaceSchemaReviewEvent["type"]
+  | AutoBeInterfaceSchemaPropertyErase["type"]
+  | AutoBeInterfaceSchemaDepictEvent["type"]
   | AutoBeInterfaceSchemaRenameEvent["type"]
   | AutoBeInterfaceComplementEvent["type"]
   | AutoBeInterfacePrerequisiteEvent["type"]
