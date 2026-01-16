@@ -1,58 +1,15 @@
+import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+import AutoBeDeltaRoadmap from "../../../template/diagrams/AutoBeDeltaRoadmap.mdx";
+
 ## Preface
 
-import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+<AutoBeDeltaRoadmap />
 
-```mermaid
-gantt
-  dateFormat YYYY-MM-DD
-  title AutoBE Delta Roadmap Timeline (2026 Q1)
+The AutoBE Delta roadmap focuses on transitioning from the **horizontal expansion** of Gamma to **vertical deepening**.
 
-  section Local LLM Benchmark
-  Qwen3 Database Phase             : done,    2026-01-01, 31d
-  Qwen3 Interface Phase            : active,  2026-01-16, 31d
-  Qwen3 Test Phase                 : active,  2026-02-01, 21d
-  Qwen3 Realize Phase              : planned, 2026-02-01, 59d
+In the Gamma roadmap, we rapidly implemented various features such as RAG, Modularization, and Complementation under the "just ship it" philosophy. By prioritizing breadth of features over quality, AutoBE grew into a platform covering all areas of backend generation, but at the same time, stability gaps remained throughout.
 
-  section Validation Logic Enhancement
-  Dynamic Function Calling Schema  : done,    2026-01-01, 7d
-  Validation Feedback Stringify    : done,    2026-01-08, 3d
-  JSON Schema Validator            : active,  2026-01-08, 12d
-  Schema Review Validation Logic   : planned, 2026-01-20, 35d
-  Test Mapping Plan Enhancement    : planned, 2026-02-01, 28d
-  Realize Mapping Plan Enhancement : planned, 2026-02-15, 35d
-
-  section RAG Optimization
-  Hybrid Search (Vector + BM25)    : done,    2026-01-01, 14d
-  Dynamic K Retrieval              : done,    2026-01-15, 14d
-  RAG Benchmark & Tuning           : active,  2026-01-29, 21d
-  RAG Preliminary Prompt Tuning    : planned, 2026-02-01, 35d
-  Analyze Agent Restructuring      : planned, 2026-02-15, 45d
-
-  section Design Integrity
-  DB Coverage Agent                : 2026-01-15, 28d
-  API Endpoint Coverage Agent      : 2026-01-22, 28d
-  Schema Relation Agent            : 2026-02-12, 21d
-  Schema Structure Agent           : 2026-02-19, 21d
-  Schema Content Agent             : 2026-03-05, 21d
-
-  section Multi-lingual Support
-  Java Compiler PoC                : done,    2026-01-01, 30d
-  Java Database                    : done,    2026-01-01, 14d
-  Java Interface                   : done,    2026-01-15, 21d
-  Java Test                        : active,  2026-02-05, 28d
-  Java Realize                     : planned, 2026-03-01, 31d
-
-  section Miscellaneous
-  System Prompt Simplification     : planned, 2026-02-01, 59d
-  Playground Service Enhancement   : planned, 2026-02-01, 59d
-  PR Articles                      : planned, 2026-02-01, 59d
-```
-
-The AutoBE Delta roadmap pivots from the **horizontal expansion** of Gamma to **vertical refinement**.
-
-During the Gamma roadmap, we operated under a "ship fast, iterate later" philosophy, rapidly implementing features such as RAG, Modularization, and Complementation. By prioritizing breadth over polish, AutoBE evolved into a platform spanning the entire backend generation domain—but left stability gaps scattered throughout the system.
-
-Delta fills these gaps. We leverage Local LLM benchmarks to unearth logic flaws and missing validations that commercial models gracefully masked, then systematically address them. We also complete the Hybrid Search architecture by adding **Vector Similarity search** to the RAG introduced in Gamma, and formally launch **Multi-lingual Support** (Java/Kotlin).
+In Delta, we fill these gaps. We discover logic defects and validation omissions that weren't exposed in commercial models through Local LLM benchmarks and systematically fix them. We also complete the Hybrid Search system by adding **Vector Similarity search** to the RAG introduced in Gamma, and fully launch **Multi-lingual Support** (Java/Kotlin).
 
 ## 1. Local LLM Benchmark
 
@@ -60,25 +17,25 @@ Delta fills these gaps. We leverage Local LLM benchmarks to unearth logic flaws 
 
 <AutoBeDemoMovie model="qwen/qwen3-next-80b-a3b-instruct" />
 
-Commercial models like Claude Sonnet and GPT are remarkably capable. Even when system prompts are somewhat ambiguous or validation feedback logic has blind spots, these models rarely trigger those edge cases. For developers, this means defects remain hidden—everything appears to work, so we assume nothing is broken.
+Commercial models like Claude Sonnet or GPT are smart. Even if system prompts are somewhat ambiguous or there are gaps in validation feedback logic, they rarely create situations that trigger those issues. This also means it's difficult for developers to discover defects. Since everything works, we mistakenly assume there are no problems.
 
-Running the same workflows on open-source models such as `qwen3-next-80b-a3b` or `qwen3-30b-a3b-thinking` tells a different story. Workflows that never failed on commercial models falter repeatedly on Qwen3. The model references non-existent database tables, uses reserved keywords as DTO property names, and embeds `description` or entirely fictitious spec data inside JSON Schema `properties`.
+However, when running the same workflow with open-source models like `qwen3-next-80b-a3b` or `qwen3-30b-a3b-thinking`, the story changes. Workflows that never failed with commercial models frequently crash with Qwen3. They reference non-existent DB tables, use reserved words for DTO property names, and put `description` or non-existent spec data inside JSON Schema `properties`.
 
-This is the core strategy of Delta: **Use Qwen3 as the crucible to surface hidden defects, then fix them to ensure even more robust operation on commercial models.** We benchmark each Phase—Database, Interface, Test, and Realize—analyze failure causes, and iterate on improvements. Once a Phase achieves 100% success rate, we advance to the next, then analyze and improve again. This simple yet relentless cycle forms the backbone of Delta.
+This is Delta's core strategy. **Using Qwen3 as a touchstone to discover hidden defects and fixing them ensures more robust operation even with commercial models.** We perform benchmarks for each Phase—Database, Interface, Test, and Realize—repeatedly analyzing failure causes and making improvements. When we achieve 100% success rate in one Phase, we move to the next, then analyze and improve again. This simple but tedious repetition is the foundation of Delta.
 
 ## 2. Validation Logic Enhancement
 
-Before prompts come schemas and logic—and they must be bulletproof. Edge cases invisible on commercial models surface on Qwen3, revealing design oversights. We harden schemas and validation logic toward flawlessness, continuously improving as benchmarks uncover new edge cases.
+Schema and logic must be perfect before prompts. Edge cases that weren't problematic with commercial models are exposed with Qwen3, revealing gaps in existing designs. We strengthen schemas and validation logic to be flawless, continuously improving edge cases discovered during benchmarking.
 
 ### 2.1. Dynamic Function Calling Schema
 
-The **Preliminary Asset** feature introduced in Gamma enables subsequent Phases to access artifacts from earlier Phases. For instance, when designing DTOs in the Interface Phase, calling `getDatabaseTable(name: string)` retrieves the table schema designed in the Database Phase. Similarly, the Test Phase calls `getInterfaceOperation(endpoint: string)` to fetch API endpoint information.
+The **Preliminary Asset** introduced in Gamma allows subsequent Phases to access outputs from previous Phases. For example, when designing DTOs in Interface Phase, you can call `getDatabaseTable(name: string)` to reference table schemas designed in Database Phase. Test Phase uses `getInterfaceOperation(endpoint: string)` to get API endpoint information.
 
-The problem is that these functions' parameter types are statically declared as `string`. Even when the system prompt explicitly states "do not request non-existent endpoints" and validation feedback returns errors, Qwen3 stubbornly ignores these instructions.
+The problem is that these functions' parameter types are statically declared as `string`. Even when the system prompt states "do not request non-existent endpoints" and validation feedback returns errors, Qwen3 rarely follows this.
 
-To address this, we construct **dynamic function calling schemas** for preliminary asset functions. By constraining requestable table names and endpoints to `enum` unions, we block access to non-existent database tables or API operations at the schema level itself.
+Therefore, we construct **dynamic function calling schemas** for preliminary asset-related functions. By restricting requestable table names or endpoints to `enum` unions, we completely block access to non-existent DB tables or API operations at the type level.
 
-```typescript
+```tsx
 // Before: Static schema
 interface IAutoBePreliminaryGetDatabaseSchemas {
   type: "getDatabaseSchemas";
@@ -96,405 +53,480 @@ interface IAutoBePreliminaryGetDatabaseSchemas {
     | ...
   > & tags.MinItems<1>;
 }
+
 ```
 
 ### 2.2. JSON Schema Validator
 
-When designing DTOs in the Interface Phase, Qwen3 commits an impressive variety of JSON Schema errors—from simple constraint violations to structural defects:
+When designing DTOs in Interface Phase, Qwen3 makes a wide variety of JSON Schema errors. From simple constraint errors to structural defects, the types are extensive:
 
 - Placing Object type metadata (`description`, `AutoBeOpenApi.IJsonSchema.IObject["x-autobe-database-schema"]`) inside `properties`
 - Specifying `AutoBeOpenApi.IJsonSchema.IObject["x-autobe-database-schema"]` on non-Object types
-- Constructing contradictory JSON schema constraints (e.g., `minimum > maximum`)
-- Inconsistent casing in DTO type/property names and use of system reserved words
-- Non-compliance with UUID type requirements for `id` and `*_id` properties
+- Constructing mutually contradictory JSON schema constraints (e.g., `minimum > maximum`)
+- Mixed case in DTO type/property names and use of system reserved words
+- Non-compliance with UUID type for `id` and `_id` properties
 
-Additional edge cases continue to emerge through benchmarking. We add validators for these errors to prevent malformed schemas from propagating to subsequent Phases.
+Various other edge cases are continuously discovered during benchmarking. We add validators to verify these errors, preventing malformed schemas from propagating to subsequent Phases.
 
 ### 2.3. Validation Feedback Stringify
 
-Previously, when runtime validation failed, we fed the `IValidation.IFailure` value returned by `typia.validate<T>()` directly to the agent. However, this structure contains only mechanical error information, and Qwen3 often failed to understand exactly what went wrong.
+Previously, when runtime validation failed, the `IValidation.IFailure` value returned by `typia.validate<T>()` was fed back directly to the agent. However, this struct contains only mechanical error information, and Qwen3 often couldn't accurately understand what went wrong.
 
-We developed a **custom JSON stringify function** that annotates validation errors as comments. By appending `// ERROR: ...` with specific error reasons next to problematic properties, the agent can intuitively identify what needs fixing and how.
+We develop a **custom JSON stringify function** that annotates validation error details as comments. By specifying concrete error reasons in `// ERROR: ...` format next to properties where errors occurred, agents can intuitively understand what to fix and how.
 
 ### 2.4. Schema Review Validation Logic
 
-The Schema Relation/Structure/Content Agents covered in the Design Integrity section are core agents ensuring DTO quality. For these agents to function properly, **robust validation logic** must come first. We systematically build validation logic to eliminate issues exposed in Qwen3 benchmarks—skipped property reviews, nonsensical review results, and modification instructions not reflected in the actual schema.
+The Schema Relation/Structure/Content Agents covered in the Design Integrity section are core agents for ensuring DTO quality. For these agents to function properly, **strong validation logic** must be in place first. We systematically build validation logic to prevent issues revealed in Qwen3 benchmarks—partial property review omissions, nonsensical review results, and unimplemented modification instructions.
 
 **Complete Traversal Verification**:
-- Verify that the agent's review output includes every type and property
-- Return an error if even a single type or property is missing
+
+- Verify that all types and properties are included in the agent's output review results
+- Return error if even one type or property is missing
 - Confirm that the `path` field in review results matches actual schema paths
 
 **Modification Instruction Consistency Verification**:
-- Validate required fields by modification type (`add`/`modify` require `property`)
-- Confirm the location pointed to by `path` exists in the actual schema (for `delete`, `modify`)
-- For `add`, verify no existing property exists at the same path
-- Pre-validate potential circular references
 
-**Agent-Specific Validation**:
+- Verify required fields based on modification type (`add`/`modify` require `property`)
+- Confirm that the location pointed to by `path` exists in the actual schema (for `delete`, `modify`)
+- Confirm no existing property at the same path for `add`
+- Pre-verify circular reference possibility
+
+**Agent-Specific Verification**:
+
 - **Relation Agent**: Bidirectional consistency of FK relationships, existence of referenced types
-- **Structure Agent**: 1:1 correspondence between DB columns and DTO properties, type compatibility matrix
-- **Content Agent**: Non-empty verification for description/example fields, type appropriateness of example values
+- **Structure Agent**: 1:1 correspondence verification between DB columns and DTO properties, apply type compatibility matrix
+- **Content Agent**: Non-empty verification of description/example fields, type appropriateness of example values
 
-This validation logic must be implemented before the Schema Agents operate and applies commonly to all three agents in the Design Integrity section.
+This validation logic must be implemented before Schema Agents operate and applies commonly to all three agents in the Design Integrity section.
 
 ### 2.5. Test Mapping Plan Enhancement
 
-The **Modularization** introduced in Gamma divides large projects into multiple modules, generating code independently for each. The Test Phase's Mapping Plan defines which test files cover which API endpoints, along with execution order and dependencies between tests. On Qwen3, the following issues occurred frequently:
+**Modularization** introduced in Gamma is a feature that divides large projects into multiple modules, generating code independently for each. Test Phase's Mapping Plan defines which test files cover which API endpoints, and the execution order and dependencies between tests. The following issues frequently occurred with Qwen3:
 
 - Specifying non-existent endpoints as test targets
-- Duplicate test assignments for the same endpoint
+- Duplicate test assignment for the same endpoint
 - Circular dependencies between tests (A→B→C→A)
-- Attempting to execute successor tests without their predecessors
+- Attempting to execute subsequent tests without prerequisite tests
 
-**Validation Enhancements**:
+**Validation Enhancement Items**:
+
 - Endpoint existence verification
-- Duplicate assignment detection
-- Dependency DAG verification (cycle detection)
+- Duplicate assignment verification
+- Dependency DAG verification (circular reference detection)
 - Dependency order verification (topological sort feasibility)
 
 **Dynamic Enum Schema Application**:
-- Change the endpoint field in Mapping Plans from `string` to an `enum` union of actually existing endpoints
-- Also constrain test filename fields with dynamic enums to prevent typos and references to non-existent files
+
+- Change Mapping Plan's endpoint field from `string` to `enum` union of actually existing endpoints
+- Restrict test filename field to dynamic enum to prevent typos and references to non-existent files
 
 ### 2.6. Realize Mapping Plan Enhancement
 
-The Realize Phase's Mapping Plan defines which Provider implements which API endpoint and the call relationships between Providers. It has a more complex dependency structure than the Test Phase, with the following additional issues:
+Realize Phase's Mapping Plan defines which Provider implements which API endpoint and the call relationships between Providers. It has a more complex dependency structure than Test Phase, and the following additional issues occurred:
 
-- Omissions in N:M mappings between Providers and endpoints
+- Omissions in N:M mapping between Providers and endpoints
 - Duplicate generation of common utility functions
 - Circular calls between Providers
-- DB transaction boundary mismatches
+- DB transaction boundary inconsistencies
 
-**Validation Enhancements**:
+**Validation Enhancement Items**:
+
 - Complete endpoint coverage verification
-- Provider dependency DAG verification
+- Provider inter-dependency DAG verification
 - Common utility duplication detection
 - DB access pattern consistency verification
 
 **Hierarchical Mapping Plan Structure**:
+
 - Redesign the existing flat Mapping Plan into a **hierarchical structure**
-- Define clear ownership through a 3-tier hierarchy: `Module → Provider → Endpoint`
-- Perform validation independently at each tier for easier error source identification
+- Define clear ownership with 3-tier hierarchy: `Module → Provider → Endpoint`
+- Perform validation independently per tier for easier error cause identification
 
 **Explicit Provider Dependency Declaration**:
-- When a Provider calls another Provider, force explicit declaration in the Mapping Plan
+
+- Force explicit declaration in Mapping Plan when a Provider calls another Provider
 - Treat undeclared Provider calls as compilation errors
-- This prevents runtime errors from implicit dependencies
+- Prevent runtime errors from implicit dependencies
 
 **Progressive Validation Pipeline**:
+
 1. **Syntactic Validation**: Grammatical correctness of Mapping Plan structure
 2. **Semantic Validation**: Endpoint/Provider existence, type matching
-3. **Dependency Validation**: DAG verification, cycle detection
-4. **Coverage Validation**: Confirmation that all endpoints are implemented
+3. **Dependency Validation**: DAG verification, circular reference detection
+4. **Coverage Validation**: Confirm all endpoints are implemented
 
-Each stage must pass before proceeding to the next; on failure, provide detailed error messages specific to that stage.
+Each stage must pass before proceeding to the next, with detailed error messages specific to the failed stage.
 
 ## 3. RAG Optimization
 
-The RAG (Retrieval-Augmented Generation) introduced in Gamma had a monolithic structure where agents received all input materials at once. As project scale grew, token consumption increased exponentially, and context included information the agent didn't actually need—creating inefficiency.
+The RAG (Retrieval-Augmented Generation) introduced in Gamma had a monolithic structure where agents received all input materials at once. As project size grew, token consumption increased exponentially, and inefficiencies arose from including information the agent didn't actually need in the context.
 
-In Delta, we transition to a structure where agents **actively request only the information they need**. We add functions like `analyzeFiles()`, `getDatabaseSchemas()`, `getInterfaceOperations()`, and `getInterfaceSchemas()` to each workflow agent's function calling schema, enabling agents to acquire necessary assets based on their own judgment. The target is a **70% reduction in token consumption**.
+In Delta, we transition to a structure where agents **actively request only the information they need selectively**. By adding functions like `analyzeFiles()`, `getDatabaseSchemas()`, `getInterfaceOperations()`, and `getInterfaceSchemas()` to each workflow agent's function calling schema, agents acquire necessary assets based on their own judgment. This aims to reduce function calling frequency for preliminary asset acquisition.
 
 ### 3.1. Hybrid Search (Vector + BM25)
 
-The existing BM25-based keyword search relies on exact keyword matching, making it difficult to capture synonyms or similar concepts. When searching for "payment system," results like "payment processing" or "purchase handling" might be missed.
+Existing BM25-based keyword search relies on exact keyword matching, making it difficult to capture synonyms or similar concepts. When searching for "payment system," "payment processing" or "purchase handling" might be missed.
 
-In Delta, we add **Vector Similarity search** to establish a Hybrid Search architecture. We embed each section of requirements documents using OpenAI's `text-embedding-3-small` model and calculate cosine similarity with queries. By weighted aggregation of BM25 and Vector scores, we can compute final rankings that consider both keyword matches and semantic relevance.
+In Delta, we build a Hybrid Search system by adding **Vector Similarity search**. Each section of requirements documents is embedded using `Xenova Transformers`' `Xenova/all-MiniLM-L6-v2` model, and cosine similarity with queries is calculated. By computing weighted sums of BM25 scores and Vector scores for final ranking, searches that consider both keyword matching and semantic relevance become possible.
 
 ```
 final_score = α × BM25_score + (1 - α) × vector_similarity
+
 ```
 
-The optimal α value will be determined through benchmarking, with an initial value of 0.5.
+The optimal α value is derived through benchmarking, with an initial value of 0.5.
 
 ### 3.2. Dynamic K Retrieval
 
-Fixing the K value in Top-K search creates two problems. If K is too small, relevant documents are missed; if too large, unnecessary documents are included, wasting tokens. Depending on the query, the actually relevant documents might number 3 or 30.
+Fixing the K value in Top-K search causes two problems. If K is too small, relevant documents are missed; if K is too large, unnecessary documents are included, wasting tokens. Depending on the query, there might be 3 or 30 actually relevant documents.
 
-In Delta, we analyze the **score distribution (sharpness)** of search results to dynamically adjust K. We detect the point where scores drop sharply (elbow point) and return results only up to that point.
+In Delta, we dynamically adjust the K value by analyzing the **score distribution (sharpness)** of search results. We detect the point where scores drop sharply (elbow point) and return results only up to that point.
 
-- **Sharpness threshold**: Raised from 0.2 to 0.5 (based on benchmarking)
-- **K range**: kMin=5, kMax=150
+- **Sharpness threshold**: Raised from 0.2 to 0.5 (based on benchmarks)
+- **K range**: kMin=3, kMax=8~12
 
 This loads only the appropriate amount of context for each query's characteristics, reducing token costs while maintaining recall.
 
 ### 3.3. RAG Benchmark & Tuning
 
-We build a benchmark framework for quantitative evaluation of RAG system performance. We construct 14 test cases with clear correct answers and verify whether intended documents are retrieved as Top-1.
+We build a benchmark framework to quantitatively evaluate RAG system performance. We construct 14 test cases with clear answers and verify whether intended documents are retrieved as Top-1.
 
 Benchmark items:
-- **Retrieval Accuracy**: Whether intended documents are included in Top-K
-- **Token Efficiency**: Token consumption comparison before and after RAG implementation
-- **Tool Calling Count**: Function calling count measurements for todo, bbs, and shopping projects
 
-In particular, we continuously strengthen validation feedback logic and system prompts to resolve the "infinite re-request of already-acquired assets" issue that occurred on open-source models (Qwen3).
+- **Retrieval Accuracy**: Whether intended documents are included in Top-K
+- **Token Efficiency**: Token consumption comparison before and after RAG introduction
+- **Tool Calling Count**: Measure function calling frequency for todo, bbs, shopping projects
+
+To solve the "infinite re-request of already acquired assets" problem occurring with open-source models (Qwen3), we continuously strengthen validation feedback logic and system prompts.
 
 ### 3.4. RAG Preliminary Prompt Tuning
 
-The key to the RAG system is for agents to **request appropriate assets at the right moment**. However, current agents rarely call the `getAnalysisFiles()` function that queries requirements documents. They readily request DB schemas and API specs, yet neglect to reference the requirements documents that justify those designs.
+The core of the RAG system is that agents **request appropriate assets at the right time**. However, current agents rarely call the `getAnalysisFiles()` function that retrieves requirements documents. They request DB schemas and API specs well, but don't reference the requirements documents that form the basis of those designs.
 
-The root cause lies in the RAG preliminary agent's system prompt. We only instructed agents to "request when needed" without providing concrete guidance on **when to reference requirements**.
+The cause of this problem lies in the RAG preliminary agent's system prompt. Agents were only instructed to "request when needed," lacking concrete guidance on **when to reference requirements**.
 
 **Prompt Optimization Directions**:
-- Explicitly enumerate situations where requirements reference is mandatory
-- Provide specific trigger conditions for `getAnalysisFiles()` calls
-- Warn about potential problems from not referencing requirements
-- Contrast good vs. poor requirements utilization examples
 
-**Dual Index File Structure**:
-For large requirements documents, loading everything at once exceeds token limits. To solve this, we apply a dual structure of **[Index file] + [RAG top-k files]**. The index file contains the table of contents, section titles, and 1-2 sentence summaries of each section. The agent first reads the index file to grasp the overall structure, then selectively requests only the detailed sections needed for the current task. This enables efficient information exploration where the agent "sees the forest, then picks the trees."
+- Explicitly enumerate situations requiring requirements reference
+- Present specific trigger conditions for `getAnalysisFiles()` calls
+- Warn about problems that can occur when requirements aren't referenced
+- Provide examples contrasting good and bad requirements utilization
 
-We review and optimize prompts comprehensively across not just the RAG preliminary agent, but all agents that utilize requirements (Database, Interface, Test, Realize).
+**Index File Dual Structure**: For large requirements documents, loading everything at once exceeds token limits. To solve this, we apply a **`[index file] + [RAG top-k files]`** dual structure. The index file contains the table of contents, section titles, and 1-2 sentence summaries of each section. Agents first read the index file to understand the overall structure, then selectively request only the detailed sections needed for current work. This enables efficient information exploration where agents "see the forest and pick the trees."
+
+We comprehensively review and optimize prompts for not just RAG preliminary agents but all agents that utilize requirements (Database, Interface, Test, Realize).
 
 ### 3.5. Analyze Agent Restructuring
 
-The Analyze Phase is the first step in transforming user requirements into structured form. Currently it merely organizes input documents, but with RAG optimization, **fundamental redesign** is needed.
+Analyze Phase is the first step in transforming user requirements into structured form. Currently it only organizes input documents, but **fundamental redesign** is needed in conjunction with RAG optimization.
 
 **Current Problems**:
-- Requirements documents are RAG-searched and loaded at **file granularity**, causing significant size variation between files
-- Core feature pages span thousands of tokens while auxiliary feature pages span hundreds, causing ranking imbalance
-- File boundaries don't align with logical units
-- Chunk division criteria should be determined at the Analyze stage but currently aren't considered
+
+- Requirements documents are RAG searched and loaded at **file granularity**, causing large variance in content size between files
+- Main feature pages have thousands of tokens, subsidiary feature pages have hundreds, causing search ranking imbalance
+- File boundaries don't match logical units
+- Chunk division criteria should be determined at Analyze stage but currently aren't considered
 - Cross-references and dependency information between requirements are missing
 
-**Chunk Granularization Strategy**:
-- Divide chunks by **topic** or **section** rather than file
+**Chunk Granulation Strategy**:
+
+- Divide chunks from file units to **topic** or **section** units
 - Hierarchical division based on heading levels (H1, H2, H3)
-- Set appropriate token count range per chunk (e.g., 500-2000 tokens)
-- Overlap between chunks to ensure contextual continuity
+- Set appropriate token count range per chunk (e.g., 500~2000 tokens)
+- Ensure context continuity through chunk overlap
 
 **Search Method Improvements**:
-- Automatically include parent context (parent sections) after chunk-level search
-- Simultaneous loading of related documents through chunk clustering
+
+- Automatically include parent context (parent section) after chunk-level search
+- Load related documents simultaneously through clustering of related chunks
 - Utilize chunk metadata (source file, section path, token count)
 
-**Analyze Agent Redesign Directions**:
-- **Automatic hierarchy analysis** of requirements documents and chunk boundary determination
-- **Automatic summary generation** for each chunk (for index files)
-- Build **cross-reference graphs** between requirements
+**Analyze Agent Restructuring Directions**:
+
+- **Automatic hierarchical structure analysis** of requirements documents and chunk boundary determination
+- **Automatic summary generation** for each chunk (for index file)
+- Build **cross-reference graph** between requirements
 - Automatic assignment of **semantic tags** for use in subsequent Phases
 
-We clearly define and integrate the interface between these two systems so that Analyze Agent output can directly serve as RAG system input.
+Clearly define and integrate the interface between the two systems so that Analyze Agent's output can be directly used as RAG system input.
 
 ## 4. Design Integrity
 
-In backend systems, DB design and Interface design must be tightly coupled. Tables defined in the DB should be appropriately exposed through APIs, data referenced by APIs must exist in the DB, and DB column types must be consistent with DTO property types. When this design consistency breaks, it can lead to runtime errors, data loss, and security vulnerabilities.
+In backend systems, DB design and Interface design must be closely connected. Tables defined in DB should be appropriately exposed via API, data referenced by API must exist in DB, and DB column types and DTO property types must be consistent. When this design consistency breaks, it can lead to runtime errors, data loss, and security vulnerabilities.
 
-In Gamma, each Phase operated independently, lacking this cross-validation. In Delta, we introduce the concept of **Design Integrity**, building mechanisms to verify and guarantee inter-Phase design consistency.
+In Gamma, each Phase operated independently, lacking such cross-verification. In Delta, we introduce the concept of **Design Integrity** to build mechanisms that verify and ensure design consistency between Phases.
 
 ### 4.1. DB Coverage Agent
 
-We develop an agent that verifies **coverage** of DB table design against requirements documents. It analyzes requirements documents to extract mentioned entities, attributes, and relationships, then confirms whether these are reflected in the actual DB schema.
+We develop an agent that verifies the **coverage** of DB table design against requirements documents. It analyzes requirements documents to extract mentioned entities, attributes, and relationships, and confirms whether these are reflected in actual DB schemas.
 
 Verification items:
+
 - **Entity Coverage**: Are all concepts specified in requirements modeled as tables?
 - **Attribute Coverage**: Are each entity's attributes defined as columns?
-- **Relationship Coverage**: Are inter-entity relationships (1:1, 1:N, M:N) implemented as FKs and junction tables?
+- **Relationship Coverage**: Are entity relationships (1:1, 1:N, M:N) implemented as FKs and junction tables?
 
-When omissions are detected, the agent proposes supplementary tables/columns, which are reflected in Database Phase artifacts after user approval.
+When omissions are detected, the agent suggests supplementary tables/columns, reflecting them in Database Phase outputs after user approval.
 
 ### 4.2. API Endpoint Coverage Agent
 
-We develop an agent that verifies API endpoint coverage against requirements and DB design. It confirms whether appropriate CRUD endpoints exist for tables defined in the DB and whether business logic specified in requirements is exposed through APIs.
+We develop an agent that verifies API endpoint coverage against requirements and DB design. It confirms whether appropriate CRUD endpoints exist for tables defined in DB and whether business logic specified in requirements is exposed as APIs.
 
 Verification items:
-- **Base CRUD Coverage**: Existence of basic CRUD (Create, Read, Update, Delete) endpoints for each table
-- **Action Endpoint Coverage**: Existence of endpoints for special actions specified in requirements (e.g., "cancel order," "approve payment")
-- **Query Endpoint Coverage**: Existence of endpoints for list retrieval, search, filtering, and other query functions
 
-We provide an interactive review process enabling addition, modification, and deletion of existing endpoints.
+- **Base CRUD Coverage**: Existence of basic CRUD (Create, Read, Update, Delete) endpoints for each table
+- **Action Endpoint Coverage**: Existence of endpoints for special actions specified in requirements (e.g., "cancel order", "approve payment")
+- **Query Endpoint Coverage**: Existence of endpoints for query features like list retrieval, search, filtering
+
+We provide an interactive review process enabling addition, modification, and deletion of already designed endpoints.
 
 ### 4.3. Schema Relation Agent
 
-In Gamma, four review agents operated sequentially to ensure DTO quality:
+In Gamma, 4 review agents operated sequentially to ensure DTO quality:
 
 1. **Relation Review Agent**: FK relationships, referential integrity verification
 2. **Security Review Agent**: Security vulnerabilities, authentication boundary verification
 3. **Content Review Agent**: Field completeness, type appropriateness verification
-4. **Phantom Review Agent**: Removal of properties not existing in actual DB
+4. **Phantom Review Agent**: Remove properties that don't exist in actual DB
 
-On commercial models, these agents generally functioned properly. However, Qwen3 benchmarks revealed serious problems. Agents frequently skipped reviewing certain properties, produced nonsensical review results, or failed to properly reflect modification instructions in actual schemas.
+These agents generally worked properly with commercial models. However, serious issues were revealed in Qwen3 benchmarks. They frequently skipped reviewing some properties, wrote nonsensical review results, or failed to properly reflect modification instructions in actual schemas.
 
-In Delta, we reorganize these into three agents (Relation, Structure, Content) and **extremely strengthen function calling schemas and validation logic**. The goal is **super-schema + logic hardening** that leaves no room for error.
+In Delta, we restructure these into 3 agents (Relation, Structure, Content) and **extremely strengthen function calling schemas and validation logic**. The goal is **super schema + logic strengthening** that leaves no room for error.
 
-The previous approach regenerated entire JSON Schemas as review results, but this consumed many tokens and risked unintended changes. In Delta, all three agents transition to outputting **AST structures containing targeted modification instructions for individual properties**:
+The previous approach regenerated entire JSON Schemas as review results, which consumed many tokens and risked unintended changes. In Delta, all three agents switch output to **AST structures containing targeted modification instructions for individual properties**:
 
-```typescript
+```tsx
 interface ISchemaModification {
   type: "add" | "delete" | "modify";
   path: string;           // e.g., "IShoppingSale.seller_id"
   property?: IProperty;   // for add/modify
   reason: string;         // modification reason
 }
+
 ```
 
-Additionally, all three agents are **forced to completely traverse all properties**. The agent must review each type and property one by one and explicitly output the review result (modification needed/not needed). The validator checks for review omissions and returns an error if even a single property is skipped. This eliminates Qwen3's tendency to skip certain properties.
+Additionally, all three agents enforce **complete traversal of all properties**. Agents must review each type and property one by one, explicitly outputting review results (modification needed/not needed). The Validator checks for review omissions, returning errors if even a single property is missed. This completely blocks Qwen3 from skipping some properties.
 
 **Schema Relation Agent** verifies and corrects **reference relationships** between DTOs:
 
 - **FK Relation Integrity**: Verify that DB FK relationships are correctly reflected in DTOs
-- **Reference Type Consistency**: Confirm correctness of reference types (e.g., `IShoppingSale.seller: IShoppingSeller`)
+- **Reference Type Consistency**: Confirm correctness of reference types (`IShoppingSale.seller: IShoppingSeller`)
 - **Aggregation/Composition**: Verify that 1:N, M:N relationships are appropriately expressed as array types
 - **Circular Reference Prevention**: Prevent infinite loops from circular references
 
 ### 4.4. Schema Structure Agent
 
-**Schema Structure Agent** verifies and corrects the **structural consistency** of DTOs. It particularly uses consistency with DB schema as the core criterion:
+**Schema Structure Agent** verifies and corrects the **structural correctness** of DTOs. It particularly uses alignment with DB schema as the core criterion:
 
-- **DB Existence Check**: Confirm DTO properties correspond to actual DB columns; issue deletion instructions if not (Phantom functionality integrated)
-- **Type Consistency**: Verify compatibility between DB types and DTO types; modify to match DB on inconsistency
-- **Nullable Consistency**: Adjust DTO optional/required based on DB `NOT NULL` constraints
-- **Security Boundary**: Verify sensitive information (actor_id, actor_session_id, etc.) is not exposed in Write DTOs (Security functionality integrated)
+- **DB Existence Check**: Confirm that DTO properties correspond to actual DB columns, instruct deletion if not (Phantom functionality integrated)
+- **Type Consistency**: Verify compatibility between DB types and DTO types, modify to match DB on mismatch
+- **Nullable Consistency**: Adjust DTO optional/required according to DB's `NOT NULL` constraints
+- **Security Boundary**: Verify that sensitive information (actor_id, actor_session_id, etc.) is not exposed in Write DTOs (Security functionality integrated)
 
-Like the Relation Agent, complete traversal of all properties is enforced, and errors are returned on review omissions. When inconsistencies are detected, **DTOs are modified based on the DB schema**. The DB is the source of truth.
+Like Relation Agent, complete traversal of all properties is enforced, returning errors on review omissions. When inconsistencies are detected, DTOs are modified **based on DB schema**. DB is the source of truth.
 
 ### 4.5. Schema Content Agent
 
-**Schema Content Agent** does not change DTO structure; it only supplements **metadata (descriptions, examples, comments)**. Like the Relation and Structure Agents, it outputs **AST structures containing targeted modification instructions** rather than regenerating entire JSON Schemas:
+**Schema Content Agent** doesn't change DTO structure, only supplements **metadata (descriptions, examples, comments)**. Like Relation and Structure Agents, it doesn't regenerate entire JSON Schemas but outputs **AST structures containing targeted modification instructions**:
 
-```typescript
+```tsx
 interface IContentModification {
   path: string;                    // e.g., "IShoppingSale.customer_id"
   description?: string;            // type/property description
   example?: unknown;               // example value
   deprecated?: string;             // deprecation notice
 }
+
 ```
 
 Review items:
 
 - **Type Description**: Write clear descriptions of what each DTO type represents
-- **Property Description**: Document each property's meaning, purpose, and constraints
+- **Property Description**: Describe each property's meaning, purpose, and constraints
 - **Example Values**: Provide representative example values (OpenAPI's `example` field)
 - **Deprecation Notice**: Guidance for properties scheduled for deprecation
 
-Like other agents, **complete traversal of all types and properties** is enforced. The validator checks for review omissions and returns errors if any property lacks a description or example.
+Like other agents, **complete traversal of all types and properties** is enforced. The Validator checks for review omissions, returning errors if any property lacks description or example.
 
-By separating Relation, Structure, and Content Agents, each agent's role becomes clear, they can work independently, and review completeness can be individually guaranteed for each.
+By separating Relation, Structure, and Content Agents, each agent's role becomes clear, work can proceed independently, and review completeness can be individually guaranteed for each.
 
 ## 5. Multi-lingual Support
 
-AutoBE currently generates TypeScript/NestJS-based backend code. However, demand for the Java/Spring ecosystem remains substantial in the enterprise market. In Delta, we formally launch architectural restructuring for multi-lingual support and Java Compiler development.
+AutoBE currently generates TypeScript/NestJS-based backend code. However, demand for the Java/Spring ecosystem remains strong in the enterprise market. In Delta, we fully launch architecture restructuring and Java Compiler development for Multi-lingual support.
 
-Each Phase of AutoBE has different code generation structures, so Java support strategies also vary by Phase. Some Phases already use language-neutral AST (Abstract Syntax Tree) and can be addressed by adding code generators, while others have TypeScript-specific structures requiring fundamental architectural restructuring.
+Each Phase of AutoBE has different code generation structures, so Java support strategies also differ by Phase. Some Phases already use language-neutral ASTs (Abstract Syntax Trees) and can be addressed by adding code generators, but some Phases have TypeScript-specific structures requiring fundamental architecture restructuring.
 
-| Phase | Current Structure | Java Support Strategy |
-|-------|------------------|----------------------|
+| **Phase** | **Current Structure** | **Java Support Strategy** |
+| --- | --- | --- |
 | **Database** | Agent generates AST | Develop Java code generator |
 | **Interface** | Agent generates AST | Develop Java code generator |
 | **Test** | Agent writes TypeScript as text | TS → AST conversion Agent → Java code gen |
-| **Realize** | No AST structure | Language-neutral AST design required |
+| **Realize** | No AST structure | Language-neutral AST design needed |
 
 ### 5.1. Java Compiler PoC
 
-We conducted a Java Compiler PoC by the first week of January 2026. We attempted Java code generation for each of the Database, Interface, and Test Phases to identify potential challenges in actual implementation.
+We perform Java Compiler PoC by the first week of January 2026. We attempt Java code generation for each of Database, Interface, and Test Phases, identifying anticipated difficulties during actual implementation in advance.
 
-Key challenges derived from the PoC:
+Key issues derived from PoC:
+
 - **Database**: Define mapping rules between Prisma schema and Hibernate Entity
-- **Interface**: Define conversion rules from OpenAPI spec to Spring Controller/DTO
-- **Test**: Analyze TypeScript test code structure and examine AST conversion feasibility
+- **Interface**: Define transformation rules from OpenAPI spec to Spring Controller/DTO
+- **Test**: Analyze TypeScript test code structure and review AST conversion feasibility
 
-This identified focus areas for each Phase and refined the overall implementation roadmap.
+Through this, we derive focus work points for each Phase and concretize the overall implementation roadmap.
 
 ### 5.2. Java Database
 
-In the Database Phase, agents generate [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) AST through function calling. This AST represents all DB schema information—tables, columns, relationships, indexes—in a language-neutral manner.
+In Database Phase, agents generate [`AutoBeDatabase.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) AST through function calling. This AST represents all DB schema information—tables, columns, relationships, indexes—in a language-neutral way.
 
 The Java code generator takes this AST as input and generates:
+
 - **Hibernate Entity classes**: Java classes with JPA annotations like `@Entity`, `@Table`, `@Column`
 - **Repository interfaces**: Interfaces extending Spring Data JPA's `JpaRepository`
 - **Relationship mappings**: Relationship annotations like `@OneToMany`, `@ManyToOne`, `@ManyToMany`
 
-Conceptual differences exist between Prisma's relation syntax and Hibernate's relationship mappings, requiring accurate conversion logic. Particular care is needed for implicit many-to-many relationships, cascade options, and fetch strategies.
+There are conceptual differences between Prisma's relation syntax and Hibernate's relationship mapping, requiring logic to accurately convert between them. Careful handling is particularly needed for implicit many-to-many relationships, cascade options, and fetch strategies.
 
 ### 5.3. Java Interface
 
-In the Interface Phase, agents also generate [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) AST. This AST represents API endpoints, request/response schemas, and authentication information based on the OpenAPI 3.1 spec.
+In Interface Phase, agents also generate [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) AST. This AST represents API endpoints, request/response schemas, authentication information, etc., based on OpenAPI 3.1 spec.
 
 The Java code generator takes this AST as input and generates:
-- **Spring Controllers**: Controller classes with `@RestController`, `@RequestMapping`, `@GetMapping`, etc.
+
+- **Spring Controller**: Controller classes with `@RestController`, `@RequestMapping`, `@GetMapping`, etc.
 - **DTO classes**: Java records or classes representing Request/Response bodies
 - **Swagger documentation**: SpringDoc annotations like `@Operation`, `@ApiResponse`, `@Schema`
 
-The key challenge is mapping between OpenAPI's JSON Schema and Java's type system, particularly handling `oneOf`, `anyOf`, and `nullable`. Additionally, we must consider correspondence between NestJS's decorator-based validation and Spring's Bean Validation (`@Valid`, `@NotNull`, etc.).
+Mapping between OpenAPI's JSON Schema and Java type system, particularly handling of `oneOf`, `anyOf`, `nullable`, is the core challenge. Correspondence between NestJS's decorator-based validation and Spring's Bean Validation (`@Valid`, `@NotNull`, etc.) must also be considered.
 
 ### 5.4. Java Test
 
-The Test Phase has agents directly writing TypeScript code as text. Without a language-neutral AST, an intermediate conversion stage is needed for Java support.
+Test Phase has a structure where agents directly write TypeScript code as text. Since code is generated without language-neutral AST, intermediate conversion steps are needed for Java support.
 
-The [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) structure exists as a remnant of past AST mode attempts. However, this structure also contains TypeScript-specific representations, limiting its direct use as Java code generator input. Therefore, we employ a multi-stage strategy:
+The [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) struct exists as a remnant of past AST mode. However, this struct also contains TypeScript-specific expressions, limiting its direct use as Java code generator input. Therefore, we employ the following multi-stage strategy:
 
 1. **TypeScript code generation**: Agent writes TypeScript e2e test code as text
-2. **AST conversion Agent**: Separate conversion agent parses TypeScript code into `AutoBeTest` structure
+2. **AST conversion Agent**: Separate conversion agent parses TypeScript code into `AutoBeTest` struct
 3. **Language neutralization**: Refine TypeScript-specific expressions in `AutoBeTest` to language-neutral form
-4. **Java code generator**: Generate JUnit 5-based test code from the refined AST
+4. **Java code generator**: Generate JUnit 5-based test code from refined AST
+5. **Language-specific utility module support**: Current test code uses random functions from libraries like Typia to ensure test integrity. These must be reimplemented for each language.
 
-The language neutralization in stage 3 requires various experiments:
+Particularly in step 3, language neutralization requires various experiments:
 
-- Convert TypeScript's `async/await` patterns to Java synchronous calls or CompletableFuture
+- Convert TypeScript's `async/await` pattern to Java's synchronous calls or CompletableFuture
 - Convert arrow function callbacks to Java lambdas or anonymous classes
 - Convert type assertions to Java casting
 - Address test framework differences (vitest → JUnit 5, expect → AssertJ)
 
-This process may require restructuring the `AutoBeTest` structure itself, potentially designing a more language-neutral test representation system.
+In this process, `AutoBeTest` struct itself may need restructuring, and a more language-neutral test expression system may need to be designed.
 
 ### 5.5. Java Realize
 
-The Realize Phase is the most challenging area. Currently no AST structure exists; agents directly write TypeScript Provider code as text. Provider code implements actual business logic, defining API endpoint behavior.
+Realize Phase is the most challenging area. Currently no AST structure exists, and agents directly write TypeScript Provider code as text. Provider code implements actual business logic, defining API endpoint behavior.
 
-For Java support, we must design a **new language-neutral AST**. This AST must be capable of expressing the following programming concepts:
+For Java support, a **language-neutral AST** must be newly designed. This AST must be able to express the following programming concepts:
 
 - **Control flow**: if/else, switch, for/while, try/catch
-- **Data manipulation**: Variable declaration, assignment, operations
-- **Function calls**: Method invocation, chaining, callbacks
-- **Object manipulation**: Property access, instance creation
+- **Data manipulation**: variable declaration, assignment, operations
+- **Function calls**: method calls, chaining, callbacks
+- **Object manipulation**: property access, instance creation
 
-The challenge is TypeScript-specific syntax:
+The problem is TypeScript-specific syntax:
+
 - **Object Literal**: Instant object creation in `{ key: value }` form
-- **Undefined/Null handling**: The `undefined` keyword, optional chaining (`?.`), nullish coalescing (`??`)
+- **Undefined/Null handling**: `undefined` keyword, optional chaining (`?.`), nullish coalescing (`??`)
 - **Spread Operator**: Object/array spreading in `...obj` form
 - **Destructuring**: Destructuring assignment in `const { a, b } = obj` form
 
-We must design a **universal AST** that excludes these TypeScript-specific constructs and develop a code generator that converts this to Java code. The goal within three months is a **draft-level design**, with actual implementation and verification proceeding in subsequent roadmaps.
+We must design a **universal AST** that excludes these TypeScript-specific syntax elements and develop a code generator to convert it to Java code. The goal within the 3-month period is **draft-level design**, with actual implementation and verification proceeding in subsequent roadmaps.
 
-## 6. Miscellaneous
+## 6. Human Modification Support
 
-### 6.1. System Prompt Simplification
+Backend code generated by AutoBE is complete production code. However, in reality, users frequently modify generated code directly. Code changes for various reasons—new business requirements, bug fixes, performance optimization. The problem is that if AutoBE can no longer support maintenance for such modified code, AutoBE's value degrades to a one-time code generator.
 
-AutoBE's system prompts are structured using **Meta Prompting**. We provide agents with functions to call and their type definitions, where JSDoc comments on functions and interface types serve as documentation.
+In Delta, we introduce **Human Modification Support**, ensuring maintenance continuity by converting user-modified code into AutoBE's internal representation. The key is utilizing parsers. Previously, we generated code in the AST → source code direction; now we parse in the source code → AST direction. Parsed ASTs are reflected in AutoBE's history, enabling continued maintenance in subsequent conversations while being aware of user modifications.
 
-The problem is that we had AI generate explanations of these comments to create system prompts. The result is excessively verbose prompts with redundant expressions that sometimes miss the point. This leads to unnecessary token consumption and uncertain prompt quality.
+### 6.1. Database Schema Parser
+
+When users directly modify Prisma schema files (`schema.prisma`), we parse them and convert to `AutoBeDatabase.IApplication` AST. We implement a parser matching Prisma schema grammar to syntactically analyze schema files and map them to AutoBE's internal representation.
+
+Parsing targets:
+
+- **Model definitions**: Table names, column names, types, constraints
+- **Relation definitions**: FK relationships expressed via `@relation` annotations
+- **Index definitions**: Index settings like `@@index`, `@@unique`
+
+Considerations when parsing:
+
+- AutoBE AST correspondence for Prisma-specific syntax (`@default(autoincrement())`, `@updatedAt`, etc.)
+- Preserve custom annotations or comments added by users
+- Identification and integration of new tables/columns not generated by AutoBE
+
+### 6.2. Interface Schema Parser
+
+When users directly modify NestJS Controller/DTO code, we parse TypeScript source code and convert to `AutoBeOpenApi.IDocument` AST.
+
+**TypeScript code parsing**:
+- Extract operation information from NestJS Controller files (parsing `@Get`, `@Post`, etc. decorators)
+- Extract schema information from DTO classes (type definitions, validation decorators)
+- Static analysis using TypeScript AST parser
+
+Considerations when parsing:
+
+- Identification and integration of new endpoints added by users
+- Detection of modifications to existing endpoints (parameter additions, response type changes, etc.)
+- Accurate reflection of DTO schema changes
+
+### 6.3. Requirements Synchronization Agent
+
+When DB schema or Interface changes, this signifies requirements changes. Users directly modifying code means new requirements not in original requirements have emerged, or existing requirements have changed.
+
+**Requirements Synchronization Agent** analyzes parsed ASTs to automatically revise requirements documents:
+
+- **Added entity/property detection**: Reflect new tables or columns in requirements documents
+- **Changed relationship detection**: Update related requirements sections when FK relationships or reference structures change
+- **Added endpoint detection**: Document functionality requirements when new API endpoints are added
+- **Changed schema detection**: Reflect DTO field additions/deletions/type changes in requirements
+
+The agent summarizes changes and presents them to users, updating requirements documents after approval. This maintains consistency between code and documentation, enabling change history tracking for future maintenance.
+
+## 7. Miscellaneous
+
+### 7.1. System Prompt Simplification
+
+AutoBE's system prompts are structured using **Meta Prompting**. We provide agents with functions to call and their type definitions, where JSDoc comments written on functions and interface types serve as documentation.
+
+The problem is that we had AI explain these comments and generate system prompts. As a result, system prompts are overly verbose, with redundant expressions or missed key points. This leads to unnecessary token consumption, and prompt quality itself cannot be guaranteed.
 
 In Delta, we fundamentally review system prompts:
 
-- **Remove redundant expressions**: Consolidate sections explaining the same concept multiple times
-- **Clarify core directives**: Concisely organize rules agents must follow
-- **Improve token efficiency**: Remove unnecessary modifiers and explanations to reduce token consumption
+- **Remove duplicate expressions**: Consolidate parts explaining the same concept multiple times
+- **Clarify core instructions**: Concisely organize rules agents must follow
+- **Improve token efficiency**: Reduce token consumption by removing unnecessary modifiers and explanations
 - **Ensure consistency**: Unify writing style and structure across Phase-specific system prompts
 
-### 6.2. Playground Service Enhancement
+### 7.2. Playground Service Enhancement
 
-AutoBE provides a locally-runnable Playground service. However, the current version implements only minimal functionality with an inadequate user experience.
+AutoBE provides a Playground service that can run locally. However, the current version has only minimal functionality implemented, with poor user experience.
 
-In Delta, we enhance the Playground to the level of the service developed during a past hackathon:
+In Delta, we enhance Playground to the level of services developed in past hackathons:
 
-- **SQLite-based history storage**: Permanently preserve backend applications and conversation histories in local SQLite DB
-- **Project management**: Management capabilities to create, view, and delete multiple backend projects
-- **Conversation history viewing**: View conversation records with agents for each project in timeline format
-- **Artifact download**: Batch download of generated code, schemas, and documentation
+- **SQLite-based history storage**: Permanently preserve backend applications and conversation history in local SQLite DB
+- **Project management**: Management features to create, view, and delete multiple backend projects
+- **Conversation history viewing**: View conversation records with agents per project in timeline format
+- **Artifact download**: Batch download generated code, schemas, and documents
 
-This enables users to systematically preserve and manage backend applications created through AutoBE.
+This enables users to systematically preserve and manage backend applications generated through AutoBE.
 
-### 6.3. PR Articles
+### 7.3. PR Articles
 
-We will conduct promotional activities to introduce AutoBE to the developer community. We will continuously post technical articles on major developer communities including dev.to, Reddit, and Hacker News.
+We conduct promotional activities to introduce AutoBE to the developer community. We continuously post technical articles on major developer communities like dev.to, Reddit, and Hacker News.
 
 Planned topics:
 
-- **AutoBE Introduction**: Concepts and operating principles of the AI-powered automatic backend generation platform
-- **Deep Technical Analysis**: Core technology explanations including RAG, Multi-Phase Architecture, and Design Integrity
-- **Use Cases**: Tutorials for generating actual backends with AutoBE
+- **AutoBE Introduction**: Concepts and operating principles of AI-based automatic backend generation platform
+- **Technical Deep Dive**: Core technology explanations including RAG, Multi-Phase Architecture, Design Integrity
+- **Use Cases**: Tutorials on generating actual backends with AutoBE
 - **Benchmark Results**: Performance comparison analysis between commercial and open-source models
 
-We will continuously write articles throughout the quarter to raise AutoBE awareness and collect community feedback.
+We continuously write articles throughout the quarter to raise AutoBE's awareness and collect community feedback.

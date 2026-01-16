@@ -2,6 +2,7 @@ import {
   AutoBeUserConversateContent,
   AutoBeUserMessageContent,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 
 export function createAutoBeUserMessageContent(props: {
   content: AutoBeUserConversateContent;
@@ -12,7 +13,13 @@ export function createAutoBeUserMessageContent(props: {
     if (description !== undefined) {
       return {
         type: "text",
-        text: description,
+        text: StringUtil.trim`
+          image description: 
+          
+          \`\`\`text
+          ${description}
+          \`\`\`
+          `,
       };
     }
     return {

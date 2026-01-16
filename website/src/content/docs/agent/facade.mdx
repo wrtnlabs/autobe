@@ -10,6 +10,7 @@ import LocalSource from "../../../components/LocalSource";
 <Tabs items={[
   <code>src/main.ts</code>,
   <code>AutoBeAgent</code>,
+  <code>IAutoBeAgent</code>,
 ]}>
   <Tabs.Tab>
     <LocalSource
@@ -21,6 +22,12 @@ import LocalSource from "../../../components/LocalSource";
     <LocalSource
       path="packages/agent/lib/AutoBeAgent.d.ts"
       filename="@autobe/agent"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <LocalSource
+      path="packages/interface/src/facade/IAutoBeAgent.ts"
+      filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
 </Tabs>

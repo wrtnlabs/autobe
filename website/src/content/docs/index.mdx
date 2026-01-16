@@ -2,7 +2,7 @@
 title: AutoBE > Guide Documents
 ---
 import AutoBeDemoMovie from "../../movies/demo/AutoBeDemoMovie";
-import AutoBeGammaRoadmap from "../../template/diagrams/AutoBeGammaRoadmap.mdx";
+import AutoBeDeltaRoadmap from "../../template/diagrams/AutoBeDeltaRoadmap.mdx";
 
 # AI backend builder for prototype to production
 
@@ -142,23 +142,22 @@ This SDK eliminates the traditional pain points of API integration - no more man
 
 ## Roadmap Schedule
 
-<AutoBeGammaRoadmap />
+<AutoBeDeltaRoadmap />
 
-AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation with **100% compilation success rate**. The current **Gamma Release** represents a strategic evolution based on real-world production experience.
+AutoBE has successfully completed Alpha, Beta, and Gamma development phases, establishing a solid foundation with **100% compilation success rate**. The current **Delta Release** focuses on transitioning from horizontal expansion to vertical deepening.
 
-**Production Testing Experience**: Through enterprise development, open-source contests, and hackathons, we validated AutoBE in real production environments. This practical experience revealed both strengths and areas for improvement, directly shaping our development priorities.
-
-**Strategic Shift**: While earlier phases pursued perfection for each feature, Gamma adopts a breadth-first approach - rapidly building foundational prototypes across more features, with quality refinement following through team expansion and incremental improvement.
+**Strategic Shift**: In Gamma, we rapidly implemented features like RAG, Modularization, and Complementation under a "just ship it" philosophy. Delta fills the stability gaps that remained by systematically discovering and fixing hidden defects through Local LLM benchmarks.
 
 **Key Focus Areas**:
 
-- **RAG Optimization**: Transitioning from batch processing to intelligent iterative workflows, where agents selectively request only necessary information, achieving up to 70% token reduction
-- **Modularization**: Generating reusable, maintainable code modules instead of duplicated implementations, making AI-generated code developer-friendly
-- **Complementation**: Enabling incremental updates to generated backends instead of full regeneration, supporting iterative improvement workflows
-- **Multimodal Support**: Extracting requirements from visual artifacts like Figma designs and ERD diagrams, not just natural language
-- **Direct Instruction**: Allowing precise technical specifications for database schemas and API designs when business constraints require it
+- **Local LLM Benchmark**: Using open-source models like Qwen3 as a touchstone to discover hidden defects that commercial models mask, ensuring more robust operation across all model types
+- **Validation Logic Enhancement**: Strengthening schemas and validation logic through dynamic function calling schemas, JSON Schema validators, and progressive validation pipelines
+- **RAG Optimization**: Completing the Hybrid Search system (Vector + BM25) with dynamic K retrieval and comprehensive benchmark tuning
+- **Design Integrity**: Building mechanisms to verify and ensure design consistency between Database and Interface phases through coverage and schema review agents
+- **Multi-lingual Support**: Launching Java/Spring code generation alongside TypeScript/NestJS, with language-neutral AST structures enabling future language additions
+- **Human Modification Support**: Enabling maintenance continuity by parsing user-modified code back into AutoBE's internal AST representation, ensuring AutoBE remains useful beyond initial generation
 
-This roadmap prioritizes practical developer experience over theoretical perfection, informed by months of real-world usage in enterprise environments.
+This roadmap prioritizes stability and depth over feature breadth, informed by real-world production experience from Gamma.
 
 ## Current Limitations
 
