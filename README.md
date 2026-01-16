@@ -90,7 +90,8 @@ Find comprehensive resources at our [official website](https://autobe.dev).
 - 📅 Roadmap
   - [Alpha Release (done)](https://autobe.dev/docs/roadmap/alpha)
   - [Beta Release (done)](https://autobe.dev/docs/roadmap/beta)
-  - [Gamma Release (active)](https://autobe.dev/docs/roadmap/gamma)
+  - [Gamma Release (done)](https://autobe.dev/docs/roadmap/gamma)
+  - [Delta Release (active)](https://autobe.dev/docs/roadmap/delta)
 - 🔧 [API Documentation](https://autobe.dev/api)
 
 ## How AutoBE Works
@@ -175,56 +176,56 @@ This SDK eliminates the traditional pain points of API integration - no more man
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
-  title AutoBE Gamma Roadmap Timeline
+  title AutoBE Delta Roadmap Timeline (2026 Q1)
 
-  section Production Testing
-  Hackathon Contest     : done, 2025-09-16,  7d
-  Open Source Contest   : done, 2025-09-16, 50d
-  Enterprise Development: done, 2025-10-01, 31d
-  Performance Benchmark : done, 2025-11-01, 14d
-  
-  section Lessons Learned
-  Direct Instruction     : done, 2025-10-15, 14d
-  Interface Schema Review: done, 2025-10-20, 16d
-  JSON Schema Guideline  : done, 2025-10-29,  7d
-  Image Understanding    : done, 2025-11-17, 13d
+  section Local LLM Benchmark
+  Qwen3 Database Phase             : done,    2026-01-01, 31d
+  Qwen3 Interface Phase            : active,  2026-01-16, 31d
+  Qwen3 Test Phase                 : active,  2026-02-01, 21d
+  Qwen3 Realize Phase              : planned, 2026-02-01, 59d
+
+  section Validation Logic Enhancement
+  Dynamic Function Calling Schema  : done,    2026-01-01, 7d
+  Validation Feedback Stringify    : done,    2026-01-08, 3d
+  JSON Schema Validator            : active,  2026-01-08, 12d
+  Schema Review Validation Logic   : planned, 2026-01-20, 35d
 
   section RAG Optimization
-  Prisma   : done, 2025-11-10,  7d
-  Interface: done, 2025-11-17, 13d
-  Test     : done, 2025-11-24, 13d
-  Realize  : done, 2025-11-24, 13d
+  Hybrid Search (Vector + BM25)    : done,    2026-01-01, 14d
+  Dynamic K Retrieval              : done,    2026-01-15, 14d
+  RAG Benchmark & Tuning           : active,  2026-01-29, 21d
 
-  section Modularization
-  (Test) Authorization    : done, 2025-11-10, 14d
-  (Test) Data Creation    : done, 2025-11-17, 14d
-  (Realize) Transformation: done, 2025-11-17, 20d
-  (Realize) Collector     : done, 2025-11-24, 13d
+  section Design Integrity
+  DB Coverage Agent                : planned, 2026-01-15, 28d
+  API Endpoint Coverage Agent      : planned, 2026-01-22, 28d
+  Schema Relation Agent            : planned, 2026-02-12, 21d
 
-  section Complementation
-  Analyze  : done, 2025-12-09,  7d
-  Prisma   : done, 2025-12-09, 14d
-  Interface: done, 2025-12-09, 14d
+  section Multi-lingual Support
+  Java Compiler PoC                : done,    2026-01-01, 30d
+  Java Database                    : done,    2026-01-01, 14d
+  Java Interface                   : done,    2026-01-15, 21d
+  Java Test                        : active,  2026-02-05, 28d
 
-  section Recruitment
-  AutoBE Developer: active, 2025-11-10, 50d
+  section Human Modification Support
+  Database Schema Parser           : planned, 2026-02-15, 28d
+  Interface Schema Parser          : planned, 2026-02-22, 28d
+  Requirements Sync Agent          : planned, 2026-03-08, 24d
 ```
 
-AutoBE has successfully completed both Alpha and Beta development phases, establishing a solid foundation with **100% compilation success rate**. The current **Gamma Release** represents a strategic evolution based on real-world production experience.
+AutoBE has successfully completed Alpha, Beta, and Gamma development phases, establishing a solid foundation with **100% compilation success rate**. The current **Delta Release** focuses on transitioning from horizontal expansion to vertical deepening.
 
-**Production Testing Experience**: Through enterprise development, open-source contests, and hackathons, we validated AutoBE in real production environments. This practical experience revealed both strengths and areas for improvement, directly shaping our development priorities.
-
-**Strategic Shift**: While earlier phases pursued perfection for each feature, Gamma adopts a breadth-first approach - rapidly building foundational prototypes across more features, with quality refinement following through team expansion and incremental improvement.
+**Strategic Shift**: In Gamma, we rapidly implemented features like RAG, Modularization, and Complementation under a "just ship it" philosophy. Delta fills the stability gaps that remained by systematically discovering and fixing hidden defects through Local LLM benchmarks.
 
 **Key Focus Areas**:
 
-- **RAG Optimization**: Transitioning from batch processing to intelligent iterative workflows, where agents selectively request only necessary information, achieving up to 70% token reduction
-- **Modularization**: Generating reusable, maintainable code modules instead of duplicated implementations, making AI-generated code developer-friendly
-- **Complementation**: Enabling incremental updates to generated backends instead of full regeneration, supporting iterative improvement workflows
-- **Multimodal Support**: Extracting requirements from visual artifacts like Figma designs and ERD diagrams, not just natural language
-- **Direct Instruction**: Allowing precise technical specifications for database schemas and API designs when business constraints require it
+- **Local LLM Benchmark**: Using open-source models like Qwen3 as a touchstone to discover hidden defects that commercial models mask, ensuring more robust operation across all model types
+- **Validation Logic Enhancement**: Strengthening schemas and validation logic through dynamic function calling schemas, JSON Schema validators, and progressive validation pipelines
+- **RAG Optimization**: Completing the Hybrid Search system (Vector + BM25) with dynamic K retrieval and comprehensive benchmark tuning
+- **Design Integrity**: Building mechanisms to verify and ensure design consistency between Database and Interface phases through coverage and schema review agents
+- **Multi-lingual Support**: Launching Java/Spring code generation alongside TypeScript/NestJS, with language-neutral AST structures enabling future language additions
+- **Human Modification Support**: Enabling maintenance continuity by parsing user-modified code back into AutoBE's internal AST representation, ensuring AutoBE remains useful beyond initial generation
 
-This roadmap prioritizes practical developer experience over theoretical perfection, informed by months of real-world usage in enterprise environments.
+This roadmap prioritizes stability and depth over feature breadth, informed by real-world production experience from Gamma.
 
 ## Current Limitations
 
