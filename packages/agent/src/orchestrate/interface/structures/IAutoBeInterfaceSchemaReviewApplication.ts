@@ -1,13 +1,13 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceSchemaPropertyRevise } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
   /**
@@ -69,66 +69,25 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
   }
 
   /**
-   * Request to review and validate schemas.
-   *
-   * Executes schema review to ensure DTOs meet quality standards and comply
-   * with domain requirements. Validates schema structure, content, and
-   * adherence to system policies.
+   * Complete schema review with property-level revisions.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
     type: "complete";
 
-    /** Analysis and planning information for the review process. */
-    think: IThink;
-
-    /**
-     * Modified schema resulting from review fixes.
-     *
-     * - If the schema has issues and needs modifications: return the corrected
-     *   schema
-     * - If the schema is perfect and requires no changes: return null
-     *
-     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
-     * accidental overwrites. Use null to explicitly indicate "no changes
-     * needed".
-     */
-    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
-  }
-
-  /**
-   * Structured thinking process for schema review.
-   *
-   * Contains analytical review findings and improvement action plan organized
-   * for systematic enhancement of the schemas.
-   */
-  export interface IThink {
-    /**
-     * Findings from the review process.
-     *
-     * Documents all issues discovered during validation, categorized by type
-     * and severity. Each issue includes the specific problem identified in the
-     * schema.
-     *
-     * Should state "No issues found." when the schema passes validation.
-     */
+    /** Summary of issues found and fixes applied. */
     review: string;
 
     /**
-     * Corrections and fixes applied during review.
+     * Property-level revisions to apply.
      *
-     * Lists all modifications implemented during the review process, organized
-     * by fix type. Documents the changes made to the schema.
+     * Each revision is an atomic operation:
+     * - `create`: Add missing property
+     * - `erase`: Remove invalid property
+     * - `nullish`: Fix nullable/required status
+     * - `update`: Replace schema (use `newKey` to rename, e.g., FK to object)
      *
-     * Should state "No issues require fixes. The schema is correct." when no
-     * modifications were necessary.
+     * Empty array means no changes needed.
      */
-    plan: string;
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
 }

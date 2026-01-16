@@ -30,7 +30,6 @@ export * from "./AutoBeInterfaceSchemaPropertyCreate";
 export * from "./AutoBeInterfaceSchemaPropertyErase";
 export * from "./AutoBeInterfaceSchemaPropertyNullish";
 export * from "./AutoBeInterfaceSchemaPropertyUpdate";
-export * from "./AutoBeInterfaceSchemaDepict";
 
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";

@@ -106,7 +106,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Validated all relationships, verified scopes, corrected patterns.",
-  request: { type: "complete", think: {...}, content: {...} }
+  request: { type: "complete", review: "...", revises: [...] }
 }
 ```
 
@@ -539,7 +539,7 @@ process({ thinking: "Missing operation specs for DTO usage context. Don't have t
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
 process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
-process({ thinking: "Relation review complete", request: { type: "complete", think: {...}, content: {...} } })  // This executes with OLD materials!
+process({ thinking: "Relation review complete", request: { type: "complete", review: "...", revises: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
@@ -547,7 +547,7 @@ process({ thinking: "Missing entity relationship patterns. Don't have them.", re
 process({ thinking: "Missing operation context for scope validation. Don't have it.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/orders", method: "post" }] } })
 
 // Then: After materials are loaded, call complete
-process({ thinking: "Verified all relationships, validated scopes, ready to complete", request: { type: "complete", think: {...}, content: {...} } })
+process({ thinking: "Verified all relationships, validated scopes, ready to complete", request: { type: "complete", review: "...", revises: [...] } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
@@ -3707,12 +3707,12 @@ interface IShoppingSaleReview.IUpdate {
 
 ## 9. Function Output Interface
 
-You must return a structured output following the `IAutoBeInterfaceSchemasRelationReviewApplication.IProps` interface.
+You must return a structured output following the `IAutoBeInterfaceSchemaReviewApplication.IProps` interface.
 
-### 10.1. TypeScript Interface
+### 9.1. TypeScript Interface
 
 ```typescript
-export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
+export namespace IAutoBeInterfaceSchemaReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -3739,120 +3739,207 @@ export namespace IAutoBeInterfaceSchemasRelationReviewApplication {
    */
   export interface IComplete {
     type: "complete";
-    think: IThink;
-    /**
-     * Relation-reviewed schema result.
-     *
-     * - If the schema has relationship issues and needs fixes: return the corrected schema
-     * - If the schema is perfect and compliant: return null
-     *
-     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
-     * accidental overwrites. Use null to explicitly indicate "no relation fixes needed".
-     */
-    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
-  }
 
-  /**
-   * Structured thinking process for relation review.
-   */
-  export interface IThink {
-    review: string;  // Relation issues found
-    plan: string;    // Relation fixes applied
+    /**
+     * Relation review findings summary.
+     *
+     * Documents all relation and structural violations found.
+     * Should describe what fields were transformed and why.
+     *
+     * Format:
+     * - List violations by severity (CRITICAL, HIGH, MEDIUM, LOW)
+     * - Explain the relation issue
+     * - State "No relation issues found." if schema is correct
+     */
+    review: string;
+
+    /**
+     * Array of property revisions to apply.
+     *
+     * Each revision represents an atomic change to a property:
+     * - `update`: Transform FK field to $ref object reference
+     * - `erase`: Remove incorrect reverse relation
+     *
+     * Empty array `[]` means no relation issues found.
+     */
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
 }
 ```
 
-### 10.2. Field Specifications
+### 9.2. Property Revision Types
 
-#### thinking (IProps)
-Required self-reflection before action. For completion, summarize accomplishments concisely.
+**For Relation Review, you use `update` and `erase` revisions**:
 
-#### request (IProps)
-Discriminated union: IComplete or preliminary data requests.
+```typescript
+// Update revision - transform FK to $ref reference (with optional rename)
+interface AutoBeInterfaceSchemaPropertyUpdate {
+  type: "update";
+  reason: string;     // Why this field is being transformed
+  key: string;        // Current property key to update
+  newKey: string | null;  // New key after update (null = keep same key)
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive;  // New schema definition
+  required: boolean;  // Whether to include in required array
+}
 
-#### think (IComplete)
-Structured thinking with review and plan sub-fields.
+// Erase revision - remove incorrect reverse relation
+interface AutoBeInterfaceSchemaPropertyErase {
+  type: "erase";
+  reason: string;  // Why this field is being removed
+  key: string;     // Property name to remove
+}
+```
 
-#### think.review (IThink) - Document ALL Violations
+**Using `newKey` for FK Transformation**:
+- When transforming `author_id` → `author`, set `key: "author_id"` and `newKey: "author"`
+- This replaces the FK field with the object reference in a single revision
+- No need for separate `erase` + `update` - just one `update` with `newKey`
 
-The `think.review` field must document ALL relation and structural violations found.
+### 9.3. Review Field Documentation
 
-**Format**:
+**Document ALL relation violations found in the `review` field**:
 
 ```markdown
 ## Relation & Structure Violations Found
 
-### HIGH - Incorrect `x-autobe-database-schema` Values (Object Type Schemas Only)
-- [violations - entity DTOs with null, request/wrapper DTOs with table names, non-existent table references]
-
 ### CRITICAL - Inline Object Types
-- [violations]
-
-### CRITICAL - Actor Reversal Violations
-- [violations]
+- items: Inline object definition prevents code generation
 
 ### HIGH - Foreign Key Issues
-- [violations]
+- author_id: FK not transformed to object reference
+- category_id: Should be category with $ref to ISummary
 
-### HIGH - Wrong Relation Types
-- [violations]
+### HIGH - Actor Reversal Violations
+- articles: User DTO contains articles array (N+1 risk)
 
 ### MEDIUM - Missing IInvert Types
-- [violations]
-
-### LOW - Naming Convention Issues
-- [violations]
-```
+- comments in IArticle: Should use IComment.IArticleInvert
 
 If no violations: "No relation or structure issues found."
-
-#### 10.2.2. think.plan - Document ALL Fixes
-
-The `think.plan` field must document ALL fixes applied.
-
-**Format**:
-
-```markdown
-## Relation & Structure Fixes Applied
-
-### `x-autobe-database-schema` Values Corrected (Object Type Schemas Only)
-- [fixes - corrected incorrect mappings with before/after values]
-
-### Inline Objects Extracted
-- [fixes]
-
-### Actor Reversals Removed
-- [fixes]
-
-### Foreign Keys Transformed
-- [fixes]
-
-### Relation Types Corrected
-- [fixes]
-
-### IInvert Types Added
-- [fixes]
-
-### Naming Conventions Fixed
-- [fixes]
 ```
 
-If no fixes: "No relation issues require fixes. All relations are properly structured."
+### 9.4. Output Examples
 
-#### 10.2.3. content - CRITICAL RULES
+**Example 1: FK Transformation (Use update with newKey)**
 
-**ABSOLUTE REQUIREMENT**: Return ONLY schemas that you actively MODIFIED for relation/structure reasons.
+```typescript
+process({
+  thinking: "Found FK fields that need transformation to $ref.",
+  request: {
+    type: "complete",
+    review: `## Relation Violations Found
 
-**Decision Tree for Each Schema**:
-1. Did I EXTRACT inline objects to named types? → Include ALL new types
-2. Did I REPLACE properties with $ref? → Include modified schema
-3. Did I TRANSFORM FK to object? → Include modified schema
-4. Did I REMOVE reverse relations? → Include modified schema
-5. Did I CREATE IInvert type? → Include new IInvert schema
-6. Did I RENAME for conventions? → Include with new name
-7. Is the schema unchanged? → DO NOT include
+### HIGH - Foreign Key Issues
+- author_id: FK not transformed to object reference
+- category_id: Should be category with $ref to ISummary`,
 
-**If ALL relations are correct**: Return empty object `{}`
+    revises: [
+      {
+        type: "update",
+        reason: "Transform FK author_id to author with $ref to IUser.ISummary",
+        key: "author_id",      // Current FK field
+        newKey: "author",      // Rename to object field
+        schema: {
+          "$ref": "#/components/schemas/IUser.ISummary",
+          "description": "Author who created this article"
+        },
+        required: true
+      },
+      {
+        type: "update",
+        reason: "Transform FK category_id to category with $ref to ICategory.ISummary",
+        key: "category_id",    // Current FK field
+        newKey: "category",    // Rename to object field
+        schema: {
+          "$ref": "#/components/schemas/ICategory.ISummary",
+          "description": "Category this article belongs to"
+        },
+        required: true
+      }
+    ]
+  }
+})
+```
+
+**Example 2: Remove Actor Reversal (Use erase revision)**
+
+```typescript
+process({
+  thinking: "Found actor reversal - user should not contain articles array.",
+  request: {
+    type: "complete",
+    review: `## Relation Violations Found
+
+### HIGH - Actor Reversal Violations
+- articles: User DTO contains articles array - causes N+1 queries and unbounded data`,
+
+    revises: [
+      {
+        type: "erase",
+        reason: "Actor reversal: User should not contain articles array. Access via /users/:id/articles instead.",
+        key: "articles"
+      }
+    ]
+  }
+})
+```
+
+**Example 3: Transform Inline Object to $ref**
+
+```typescript
+process({
+  thinking: "Found inline object - needs to be extracted to named type via $ref.",
+  request: {
+    type: "complete",
+    review: `## Relation Violations Found
+
+### CRITICAL - Inline Object Types
+- items: Inline object definition prevents code generation`,
+
+    revises: [
+      {
+        type: "update",
+        reason: "Replace inline object with $ref to IOrderItem. INTERFACE_COMPLEMENT will create the type definition.",
+        key: "items",
+        newKey: null,  // Keep same key
+        schema: {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IOrderItem"
+          },
+          "description": "Order line items"
+        },
+        required: true
+      }
+    ]
+  }
+})
+```
+
+**Example 4: No Issues Found (Empty revises)**
+
+```typescript
+process({
+  thinking: "All relations are properly structured, no issues found.",
+  request: {
+    type: "complete",
+    review: "No relation or structure issues found. All relations are properly structured.",
+    revises: []  // Empty array - no relation issues
+  }
+})
+```
+
+### 9.5. Critical Relation Rules for Revisions
+
+**ABSOLUTE REQUIREMENT**: Create revisions for ALL relation issues found.
+
+**Revision Types by Violation**:
+1. FK needs transformation → `update` with `newKey` (e.g., `author_id` → `author`)
+2. Actor reversal → `erase` (remove array field)
+3. Inline object → `update` with `newKey: null` (replace with $ref, keep key)
+4. Incorrect relation type → `update` with `newKey: null` (fix $ref target)
+
+**CRITICAL**: Empty `revises` array means all relations are correct - no fixes needed
 
 ---
 

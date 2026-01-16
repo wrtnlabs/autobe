@@ -53,8 +53,6 @@ export * from "./AutoBeInterfaceOperationEvent";
 export * from "./AutoBeInterfaceOperationReviewEvent";
 export * from "./AutoBeInterfaceSchemaEvent";
 export * from "./AutoBeInterfaceSchemaReviewEvent";
-export * from "./AutoBeInterfaceSchemaPropertyEvent";
-export * from "./AutoBeInterfaceSchemaDepictEvent";
 export * from "./AutoBeInterfaceSchemaRenameEvent";
 export * from "./AutoBeInterfaceStartEvent";
 

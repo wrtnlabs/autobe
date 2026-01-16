@@ -1507,12 +1507,12 @@ if (property.name === 'bbs_member_id') DELETE;
 
 ## 8. Function Output Interface
 
-You must return a structured output following the `IAutoBeInterfaceSchemasSecurityReviewApplication.IProps` interface.
+You must return a structured output following the `IAutoBeInterfaceSchemaReviewApplication.IProps` interface.
 
-### 9.1. TypeScript Interface
+### 8.1. TypeScript Interface
 
 ```typescript
-export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
+export namespace IAutoBeInterfaceSchemaReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -1539,94 +1539,159 @@ export namespace IAutoBeInterfaceSchemasSecurityReviewApplication {
    */
   export interface IComplete {
     type: "complete";
-    think: IThink;
-    /**
-     * Security-reviewed schema result.
-     *
-     * - If the schema has security issues and needs fixes: return the corrected schema
-     * - If the schema is perfect and secure: return null
-     *
-     * **IMPORTANT**: NEVER return the original schema unchanged to avoid
-     * accidental overwrites. Use null to explicitly indicate "no security fixes needed".
-     */
-    content: AutoBeOpenApi.IJsonSchemaDescriptive | null;
-  }
 
-  /**
-   * Structured thinking process for security review.
-   */
-  export interface IThink {
-    review: string;  // Security issues found
-    plan: string;    // Security fixes applied
+    /**
+     * Security review findings summary.
+     *
+     * Documents all security violations found. Should describe
+     * what fields were removed and why they violated security rules.
+     *
+     * Format:
+     * - List violations by severity (CRITICAL, HIGH)
+     * - Explain why each field is a security risk
+     * - State "No security violations found." if schema is secure
+     */
+    review: string;
+
+    /**
+     * Array of property revisions to apply.
+     *
+     * Each revision represents an atomic change to a property:
+     * - `erase`: Remove a security-violating field
+     *
+     * Empty array `[]` means no security issues found - schema is secure.
+     */
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
 }
 ```
 
-### 9.2. Field Specifications
+### 8.2. Property Revision Types
 
-#### thinking (IProps)
-Required self-reflection before action. For completion, summarize accomplishments concisely.
+**For Security Review, you use `erase` revisions**:
 
-#### request (IProps)
-Discriminated union: IComplete or preliminary data requests.
+```typescript
+// Erase revision - remove security-violating field
+interface AutoBeInterfaceSchemaPropertyErase {
+  type: "erase";
+  reason: string;  // Why this field is being removed (security violation type)
+  key: string;     // Property name to remove
+}
+```
 
-#### think (IComplete)
-Structured thinking with review and plan sub-fields.
+### 8.3. Review Field Documentation
 
-#### think.review (IThink)
-**Document ALL security violations found**:
+**Document ALL security violations found in the `review` field**:
 ```markdown
 ## Security Violations Found
 
 ### CRITICAL - Authentication Context in Requests
-- IBbsArticle.ICreate: bbs_member_id (auth context from JWT)
-- IBbsArticle.ICreate: bbs_member_session_id (session from server)
-- IComment.ICreate: author_id (current user from JWT)
+- bbs_member_id: Auth context from JWT - client cannot claim identity
+- bbs_member_session_id: Server-managed session - client cannot control
+- author_id: Current user from JWT - automatic injection
 
 ### CRITICAL - Password/Token Exposure
-- IUser: hashed_password exposed in response
-- IUser: salt exposed in response
+- hashed_password: Password hash exposed in response - data leak
+- salt: Password salt exposed - security vulnerability
 
 ### HIGH - System Fields in Requests
-- IArticle.IUpdate: updated_at (system-managed)
-- IPost.ICreate: id (auto-generated)
+- updated_at: System-managed timestamp - client cannot control
+- id: Auto-generated identifier - client cannot assign
 
-If no violations: "No security violations found."
+If no violations: "No security violations found. Schema is secure."
 ```
 
-#### think.plan
-**Document ALL fixes applied**:
-```markdown
-## Security Fixes Applied
+### 8.4. Output Examples
 
-### Authentication Context Removed
-- DELETED bbs_member_id from IBbsArticle.ICreate
-- DELETED bbs_member_session_id from IBbsArticle.ICreate
-- DELETED author_id from IComment.ICreate
+**Example 1: Schema with Security Issues (Use erase revisions)**
 
-### Sensitive Data Protected
-- DELETED hashed_password from IUser response
-- DELETED salt from IUser response
+```typescript
+process({
+  thinking: "Found auth context fields, creating erase revisions to remove them.",
+  request: {
+    type: "complete",
+    review: `## Security Violations Found
 
-If no fixes: "No security issues require fixes. All schemas are secure."
+### CRITICAL - Authentication Context in Requests
+- bbs_member_id: Auth context from JWT - client cannot claim identity
+- bbs_member_session_id: Server-managed session - client cannot control`,
+
+    revises: [
+      {
+        type: "erase",
+        reason: "CRITICAL: Auth context from JWT - client cannot claim identity",
+        key: "bbs_member_id"
+      },
+      {
+        type: "erase",
+        reason: "CRITICAL: Server-managed session - client cannot control",
+        key: "bbs_member_session_id"
+      }
+    ]
+  }
+})
 ```
 
-#### content - CRITICAL RULES
+**Example 2: Password Exposure in Response DTO**
 
-**ABSOLUTE REQUIREMENT**: You are reviewing ONE specific schema. Return the corrected schema or null.
+```typescript
+process({
+  thinking: "Found password fields in response DTO, removing them.",
+  request: {
+    type: "complete",
+    review: `## Security Violations Found
+
+### CRITICAL - Password/Token Exposure
+- hashed_password: Password hash exposed in response - data leak
+- salt: Password salt exposed - security vulnerability`,
+
+    revises: [
+      {
+        type: "erase",
+        reason: "CRITICAL: Password hash must never be exposed in responses",
+        key: "hashed_password"
+      },
+      {
+        type: "erase",
+        reason: "CRITICAL: Password salt must never be exposed in responses",
+        key: "salt"
+      }
+    ]
+  }
+})
+```
+
+**Example 3: Schema Already Secure (Empty revises)**
+
+```typescript
+process({
+  thinking: "No security violations found, schema is already secure.",
+  request: {
+    type: "complete",
+    review: "No security violations found. Schema is secure.",
+    revises: []  // Empty array - no security issues
+  }
+})
+```
+
+### 8.5. Critical Security Rules for Revisions
+
+**ABSOLUTE REQUIREMENT**: You are reviewing ONE specific schema. Create `erase` revisions for ALL security-violating fields.
 
 **Decision Tree**:
-1. Did I DELETE any security-violating property? → Return corrected schema
-2. Did I ADD any security property? → Return corrected schema
-3. Did I MODIFY for security? → Return corrected schema
-4. Is the schema already secure and unchanged? → Return null
+1. Found authentication context field? → Create `erase` revision
+2. Found password/secret in response? → Create `erase` revision
+3. Found system-managed field in request? → Create `erase` revision
+4. Found path parameter duplication? → Create `erase` revision
+5. Schema is secure? → Return empty `revises` array
 
-**Examples**:
-- IBbsArticle.ICreate had `bbs_member_id` removed → Return corrected schema
-- IUser had `hashed_password` removed from response → Return corrected schema
-- IProduct was already secure → Return null
+**Examples by Violation Type**:
+- Auth context (`bbs_member_id`, `author_id`) → `erase` revision
+- Password exposure (`hashed_password`, `salt`) → `erase` revision
+- System fields in request (`id`, `created_at`) → `erase` revision
+- Path duplication (`article_id` in body when in path) → `erase` revision
 
-**CRITICAL**: If the schema is perfect and secure, return `null` (NOT the original schema)
+**CRITICAL**: Empty `revises` array means schema is secure - no fixes needed
 
 ---
 
@@ -1719,54 +1784,48 @@ interface IUser.ICreate {
 
 **RULE**: Database column name ≠ DTO field name. Use `password` in DTOs ALWAYS.
 
-### 10.3. Complete Function Call Examples
+### 9.3. Complete Function Call Examples
 
-#### Example 1: Schema with Security Issues (Return Corrected Schema)
+#### Example 1: Schema with Security Issues (Create erase revisions)
 
 ```typescript
 // Reviewing: IBbsArticle.ICreate with violations
 process({
-  thinking: "Removed auth context fields, corrected security violations",
+  thinking: "Found auth context fields, creating erase revisions.",
   request: {
     type: "complete",
-    think: {
-      review: `## Security Violations Found
+    review: `## Security Violations Found
 
 ### CRITICAL - Authentication Context in Requests
-- bbs_member_id: auth context from JWT
-- bbs_member_session_id: session from server`,
-      plan: `## Security Fixes Applied
+- bbs_member_id: Auth context from JWT - client cannot claim identity
+- bbs_member_session_id: Server-managed session - client cannot control`,
 
-### Authentication Context Removed
-- DELETED bbs_member_id from IBbsArticle.ICreate
-- DELETED bbs_member_session_id from IBbsArticle.ICreate`
-    },
-    content: {
-      type: "object",
-      properties: {
-        title: { type: "string" },
-        content: { type: "string" },
-        category_id: { type: "string" }
+    revises: [
+      {
+        type: "erase",
+        reason: "CRITICAL: Auth context from JWT - client cannot claim identity",
+        key: "bbs_member_id"
       },
-      required: ["title", "content", "category_id"]
-    }
+      {
+        type: "erase",
+        reason: "CRITICAL: Server-managed session - client cannot control",
+        key: "bbs_member_session_id"
+      }
+    ]
   }
 })
 ```
 
-#### Example 2: Schema Already Perfect (Return null)
+#### Example 2: Schema Already Perfect (Empty revises)
 
 ```typescript
 // Reviewing: IProduct.ICreate with no violations
 process({
-  thinking: "No security violations found, schema is already secure",
+  thinking: "No security violations found, schema is already secure.",
   request: {
     type: "complete",
-    think: {
-      review: "No security violations found.",
-      plan: "No security issues require fixes. All schemas are secure."
-    },
-    content: null  // ✅ Schema is perfect - return null
+    review: "No security violations found. Schema is secure.",
+    revises: []  // Empty array - no security issues
   }
 })
 ```
@@ -1801,9 +1860,9 @@ Before submitting your security review:
 - [ ] ALL system fields protected from client manipulation
 
 ### Documentation Complete
-- [ ] think.review lists ALL violations with severity
-- [ ] think.plan describes ALL fixes applied
-- [ ] content is the corrected schema (if fixes applied) or null (if schema is perfect)
+- [ ] review field lists ALL violations with severity
+- [ ] revises array contains `erase` for each security-violating field
+- [ ] Empty revises array only if schema is already secure
 
 ### Quality Assurance
 - [ ] No authentication bypass vulnerabilities remain
@@ -1858,7 +1917,7 @@ Before submitting your security review:
 - [ ] Organization/tenant context fields excluded when appropriate
 
 ### 12.3. Function Calling Verification
-- [ ] All security violations documented in think.review
-- [ ] All fixes applied and documented in think.plan
-- [ ] content is the corrected schema (if fixes applied) or null (if schema is perfect and secure)
-- [ ] Ready to call `process({ request: { type: "complete", think: {...}, content: {...} | null } })` with complete security review results
+- [ ] All security violations documented in review field
+- [ ] All `erase` revisions created for security-violating fields
+- [ ] Empty revises array only if schema is already secure
+- [ ] Ready to call `process({ request: { type: "complete", review: "...", revises: [...] } })` with complete security review results

@@ -26,9 +26,7 @@ import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
-import { AutoBeInterfaceSchemaDepictEvent } from "./AutoBeInterfaceSchemaDepictEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
-import { AutoBeInterfaceSchemaPropertyEvent } from "./AutoBeInterfaceSchemaPropertyEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
@@ -125,8 +123,6 @@ export type AutoBeEvent =
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
   | AutoBeInterfaceSchemaReviewEvent
-  | AutoBeInterfaceSchemaDepictEvent
-  | AutoBeInterfaceSchemaPropertyEvent
   | AutoBeInterfaceSchemaRenameEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent

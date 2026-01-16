@@ -1,3 +1,4 @@
+import { AutoBeInterfaceSchemaPropertyRevise } from "../histories/contents/AutoBeInterfaceSchemaPropertyRevise";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -36,7 +37,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaReviewEvent
-  extends AutoBeEventBase<"interfaceSchemaReview">,
+  extends
+    AutoBeEventBase<"interfaceSchemaReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -53,8 +55,8 @@ export interface AutoBeInterfaceSchemaReviewEvent
   /**
    * Type name of the schema being reviewed.
    *
-   * Specifies the specific DTO type name that is being validated in this review.
-   * Examples: "IUser.ICreate", "IProduct.ISummary", "IBbsArticle"
+   * Specifies the specific DTO type name that is being validated in this
+   * review. Examples: "IUser.ICreate", "IProduct.ISummary", "IBbsArticle"
    */
   typeName: string;
 
@@ -82,29 +84,7 @@ export interface AutoBeInterfaceSchemaReviewEvent
    */
   review: string;
 
-  /**
-   * Correction plan applied.
-   *
-   * Outlines the specific fixes implemented to address identified violations.
-   * Details vary by review kind but always include concrete changes made to
-   * ensure compliance.
-   *
-   * If the schema was already compliant, explicitly states that no fixes were
-   * required.
-   */
-  plan: string;
-
-  /**
-   * Schema modified for compliance.
-   *
-   * Contains the schema that was actively modified to fix violations.
-   * If the schema passed validation without changes, this will be identical
-   * to the input schema.
-   *
-   * For relation reviews, may reference newly created schemas (extracted
-   * types, IInvert types) via $ref.
-   */
-  content: AutoBeOpenApi.IJsonSchemaDescriptive;
+  revises: AutoBeInterfaceSchemaPropertyRevise[];
 
   /**
    * Current iteration number of the schema generation being reviewed.

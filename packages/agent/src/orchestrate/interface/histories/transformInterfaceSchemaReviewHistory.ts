@@ -107,13 +107,17 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Review ${JSON.stringify(props.typeName)} type named JSON schema 
-    component based on the provided API design instructions and 
+    Review ${JSON.stringify(props.typeName)} type named JSON schema
+    component based on the provided API design instructions and
     relevant operations.
 
-    Note that, when making changes, what you make is not
-    "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>" type,
-    but "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for
-    the ${JSON.stringify(props.typeName)} type.
+    Return property-level revisions in the \`revises\` array. Each revision
+    represents an atomic change to a property:
+    - \`create\`: Add a new missing property
+    - \`erase\`: Remove an invalid property
+    - \`nullish\`: Correct nullable/required status
+    - \`update\`: Transform or modify a property schema
+
+    Return an empty \`revises\` array if no changes are needed.
   `,
 });
