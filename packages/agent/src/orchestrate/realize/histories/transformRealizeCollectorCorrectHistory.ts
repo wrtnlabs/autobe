@@ -126,6 +126,7 @@ export const transformRealizeCollectorCorrectHistory = async (
       \`\`\`
 
       Remember: Collectors transform DTO → Database CreateInput. Focus on:
+      
       - Field mapping between ${props.function.plan.dtoTypeName} and Prisma.${props.function.plan.databaseSchemaName}CreateInput
       - UUID generation for primary keys
       - Foreign key connections using { connect: { id: ... } }

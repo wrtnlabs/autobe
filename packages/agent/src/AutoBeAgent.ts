@@ -41,7 +41,7 @@ import { randomBackoffStrategy } from "./utils/backoffRetry";
  *
  * The AutoBeAgent serves as the central coordinator for the waterfall-based
  * development process with spiral model iterative improvements. It manages the
- * five specialized agents (Analyze, Prisma, Interface, Test, Realize) that
+ * five specialized agents (Analyze, Database, Interface, Test, Realize) that
  * transform user conversations into complete working applications through a
  * sophisticated AST-based compilation infrastructure.
  *

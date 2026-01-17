@@ -20,7 +20,7 @@ import { getAutoBeRealizeGenerated } from "./getAutoBeRealizeGenerated";
  * Aggregates all generated files from the development pipeline into a complete
  * project structure.
  *
- * Collects artifacts from all completed phases (Analyze, Prisma, Interface,
+ * Collects artifacts from all completed phases (Analyze, Database, Interface,
  * Test, Realize) and assembles them into a deployable project with proper
  * directory organization. Includes requirements documentation, database
  * schemas, API specifications, implementation code, test suites, and benchmark

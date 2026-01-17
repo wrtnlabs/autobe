@@ -167,14 +167,14 @@ namespace PreliminaryTransformer {
         previous:
           AutoBeSystemPromptConstant.PRELIMINARY_DATABASE_SCHEMA_PREVIOUS,
         content:
-          props.config.prisma === "ast"
+          props.config.database === "ast"
             ? StringUtil.trim`
-                ## Prisma AST Data
+                ## Database AST Data
 
                 ${toJsonBlock(oldbie)}
               `
             : StringUtil.trim`
-                ## Prisma Schema Files
+                ## Database Schema Files
 
                 \`\`\`prisma
                 ${writePrismaApplication({

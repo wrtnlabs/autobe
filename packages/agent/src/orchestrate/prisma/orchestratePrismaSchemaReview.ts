@@ -85,7 +85,8 @@ async function step(
     | "previousAnalysisFiles"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeDatabaseSchemaReviewApplication>(),
+    application:
+      typia.json.application<IAutoBeDatabaseSchemaReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -101,7 +102,7 @@ async function step(
       databaseSchemas: [props.model],
     },
     config: {
-      prisma: "ast",
+      database: "ast",
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {

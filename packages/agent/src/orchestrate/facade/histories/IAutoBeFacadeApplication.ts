@@ -32,19 +32,19 @@ export interface IAutoBeFacadeApplication {
    *
    * Executes the Database agent to generate database schema files and ERD
    * documentation. This agent reads the requirements specification created by
-   * the {@link analyze Analyze agent} and produces a complete database schema with
-   * comprehensive documentation for each entity and attribute.
+   * the {@link analyze Analyze agent} and produces a complete database schema
+   * with comprehensive documentation for each entity and attribute.
    *
    * **PREREQUISITE**: Only call this function after the {@link analyze} function
    * has been successfully executed and a requirements specification document
-   * has been generated. The Database agent depends on the structured requirements
-   * analysis to design the database schema properly. Without a completed
-   * requirements specification, this function should NOT be called.
+   * has been generated. The Database agent depends on the structured
+   * requirements analysis to design the database schema properly. Without a
+   * completed requirements specification, this function should NOT be called.
    *
-   * The agent will automatically validate the generated schema using the database
-   * schema compilation, self-correct any compilation errors through feedback loops, and
-   * generate ERD documentation using prisma-markdown. An internal review
-   * process ensures schema quality and optimization.
+   * The agent will automatically validate the generated schema using the
+   * database schema compilation, self-correct any compilation errors through
+   * feedback loops, and generate ERD documentation using prisma-markdown. An
+   * internal review process ensures schema quality and optimization.
    */
   database(props: {
     /**
@@ -124,8 +124,8 @@ export interface IAutoBeFacadeApplication {
    * The agent will create service implementations with multiple validation
    * layers: TypeScript compiler feedback, runtime validation through test
    * execution, and quality optimization through internal review. The generated
-   * code handles database interactions through Prisma, implements security and
-   * validation checks, and processes business rules according to
+   * code handles database interactions through Database, implements security
+   * and validation checks, and processes business rules according to
    * specifications.
    */
   realize(props: {
