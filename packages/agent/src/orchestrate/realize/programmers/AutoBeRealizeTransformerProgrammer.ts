@@ -219,9 +219,7 @@ ${Object.keys(props.schema.properties)
         props.errors.push({
           path: `$input.request.selectMappings[${i}].member`,
           value: m.member,
-          expected: required
-            .map((r) => `AutoBeRealizeMapping<"${r.member}">`)
-            .join(" | "),
+          expected: required.map((s) => JSON.stringify(s)).join(" | "),
           description: StringUtil.trim`
             '${m.member}' is not a valid Prisma member.
   
@@ -287,14 +285,11 @@ ${Object.keys(props.schema.properties)
     props.transformMappings.forEach((m, i) => {
       if (schema.properties[m.property] !== undefined) return;
       props.errors.push({
-        path: `$input.request.transformMappings[${i}]`,
-        value: m,
-        expected: StringUtil.trim`{
-            property: ${Object.keys(schema.properties)
-              .map((key) => `${JSON.stringify(key)}`)
-              .join(" | ")};
-            how: string;
-          }`,
+        path: `$input.request.transformMappings[${i}].property`,
+        value: m.property,
+        expected: Object.keys(schema.properties)
+          .map((key) => JSON.stringify(key))
+          .join(" | "),
         description: StringUtil.trim`
           The mapping for the property '${m.property}' does not exist in DTO '${props.plan.dtoTypeName}'.
 
