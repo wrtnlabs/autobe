@@ -55,7 +55,8 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     revise: AutoBeInterfaceSchemaPropertyCreate,
   ): void => {
     schema.properties[revise.key] = revise.schema;
-    if (revise.required === true) schema.required.push(revise.key);
+    if (revise.required === true && !schema.required.includes(revise.key))
+      schema.required.push(revise.key);
   };
 
   const updateObjectProperty = (
