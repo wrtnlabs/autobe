@@ -36,7 +36,6 @@ async function iterate(
   application: AutoBeDatabase.IApplication,
   life: number,
 ): Promise<IAutoBeDatabaseValidation> {
-  console.log("ITERATE LIFE", life);
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const result: IAutoBeDatabaseValidation =
     await compiler.database.validate(application);
