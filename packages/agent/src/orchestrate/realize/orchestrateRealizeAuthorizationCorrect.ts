@@ -175,12 +175,14 @@ function createController(props: {
     });
   };
 
-  const application: ILlmApplication =
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeRealizeAuthorizationCorrectApplication>({
       validate: {
         process: validate,
       },
-    });
+    }),
+  );
+
   return {
     protocol: "class",
     name: SOURCE,

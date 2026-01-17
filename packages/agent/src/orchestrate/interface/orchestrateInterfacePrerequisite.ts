@@ -183,13 +183,13 @@ function createController(props: {
         };
   };
 
-  const application: ILlmApplication =
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeInterfacePrerequisiteApplication>({
       validate: {
         process: validate,
       },
-    });
-  props.preliminary.fixApplication(application);
+    }),
+  );
 
   return {
     protocol: "class",

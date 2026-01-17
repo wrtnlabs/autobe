@@ -6,7 +6,14 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  IValidation,
+  LlmTypeChecker,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
+import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -293,9 +300,7 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
         props.errors.push({
           path: `$input.request.mappings[${i}].member`,
           value: m.member,
-          expected: required
-            .map((r) => `AutoBeRealizeMapping<"${r.member}">`)
-            .join(" | "),
+          expected: required.map((r) => JSON.stringify(r)).join(" | "),
           description: StringUtil.trim`
           '${m.member}' is not a valid Prisma member.
 
@@ -311,9 +316,9 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
             value: m.kind,
             expected: `"${metadata.kind}"`,
             description: StringUtil.trim`
-            The mapping kind for Prisma member '${m.member}' is invalid.
+              The mapping kind for Prisma member '${m.member}' is invalid.
 
-            Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
+              Expected kind is '${metadata.kind}', but received kind is '${m.kind}'.
           `,
           });
         if (metadata.nullable !== m.nullable)
@@ -383,14 +388,37 @@ ${mappings.map((r) => `      ${r}: ...,`).join("\n")}
           expected: `Use existing transformer.`,
           value: props.content,
           description: StringUtil.trim`
-              You've imported and utilized ${x}, but it does not exist.
-  
-              Use one of them below, or change to another code:
-  
-              ${props.neighbors
-                .map((y) => `- ${getName(y.dtoTypeName)}`)
-                .join("\n")}
-            `,
+            You've imported and utilized ${x}, but it does not exist.
+
+            Use one of them below, or change to another code:
+
+            ${props.neighbors
+              .map((y) => `- ${getName(y.dtoTypeName)}`)
+              .join("\n")}
+          `,
         });
   }
+
+  export const fixApplication = (props: {
+    definition: ILlmApplication;
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
+  }): void => {
+    const mapping: ILlmSchema | undefined =
+      props.definition.functions[0].parameters.$defs[
+        typia.reflect.name<AutoBeRealizeCollectorMapping>()
+      ];
+    if (mapping === undefined || LlmTypeChecker.isObject(mapping) === false)
+      throw new Error(
+        "AutoBeRealizeCollectorMapping type is not defined in the function calling schema.",
+      );
+
+    const member: ILlmSchema | undefined = mapping.properties.member;
+    if (member === undefined || LlmTypeChecker.isString(member) === false)
+      throw new Error(
+        "AutoBeRealizeCollectorMapping.member is not defined or string type.",
+      );
+
+    member.enum = getMappingMetadata(props).map((m) => m.member);
+  };
 }

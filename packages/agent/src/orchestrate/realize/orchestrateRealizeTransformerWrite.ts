@@ -189,12 +189,21 @@ function createController(props: {
         }
       : result;
   };
-  const application: ILlmApplication =
+
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeRealizeTransformerWriteApplication>({
       validate: {
         process: validate,
       },
-    });
+    }),
+  );
+  AutoBeRealizeTransformerProgrammer.fixApplication({
+    definition: application,
+    application: props.application,
+    document: props.document,
+    plan: props.plan,
+  });
+
   return {
     protocol: "class",
     name: SOURCE,

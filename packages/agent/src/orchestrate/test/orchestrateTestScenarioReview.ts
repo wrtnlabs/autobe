@@ -224,12 +224,13 @@ function createController(props: {
     return result;
   };
 
-  const application: ILlmApplication =
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeTestScenarioReviewApplication>({
       validate: {
         process: validate,
       },
-    });
+    }),
+  );
 
   return {
     protocol: "class",

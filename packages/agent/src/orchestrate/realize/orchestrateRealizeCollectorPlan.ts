@@ -197,12 +197,14 @@ function createController(props: {
       : result;
   };
 
-  const application: ILlmApplication =
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeRealizeCollectorPlanApplication>({
       validate: {
         process: validate,
       },
-    });
+    }),
+  );
+
   return {
     protocol: "class",
     name: SOURCE,

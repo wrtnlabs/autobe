@@ -125,12 +125,19 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
             : result;
         };
 
-        const application: ILlmApplication =
+        const application: ILlmApplication = next.preliminary.fixApplication(
           typia.llm.application<IAutoBeRealizeTransformerCorrectApplication>({
             validate: {
               process: validate,
             },
-          });
+          }),
+        );
+        AutoBeRealizeTransformerProgrammer.fixApplication({
+          definition: application,
+          application: prismaApplication,
+          document,
+          plan: next.function.plan,
+        });
 
         return {
           protocol: "class",

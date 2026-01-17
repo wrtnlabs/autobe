@@ -120,12 +120,22 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
             : result;
         };
 
-        const application: ILlmApplication =
+        const application: ILlmApplication = next.preliminary.fixApplication(
           typia.llm.application<IAutoBeRealizeCollectorCorrectApplication>({
             validate: {
               process: validate,
             },
-          });
+          }),
+        );
+        AutoBeRealizeCollectorProgrammer.fixApplication({
+          definition: application,
+          application: ctx.state().database!.result.data,
+          model: ctx
+            .state()
+            .database!.result.data.files.map((f) => f.models)
+            .flat()
+            .find((m) => m.name === next.function.plan.databaseSchemaName)!,
+        });
 
         return {
           protocol: "class",

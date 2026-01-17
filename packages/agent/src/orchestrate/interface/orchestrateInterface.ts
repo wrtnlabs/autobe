@@ -188,7 +188,12 @@ export const orchestrateInterface =
       completed: 0,
       total:
         Object.keys(document.components.schemas).filter(
-          (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
+          (k) =>
+            AutoBeJsonSchemaValidator.isPreset(k) === false &&
+            AutoBeJsonSchemaValidator.isObjectType({
+              operations: document.operations,
+              typeName: k,
+            }),
         ).length * REVIEWERS.length,
     };
     for (const config of REVIEWERS)

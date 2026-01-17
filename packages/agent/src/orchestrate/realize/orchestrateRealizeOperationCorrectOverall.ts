@@ -121,12 +121,15 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               }
             : result;
         };
-        const application: ILlmApplication =
+
+        const application: ILlmApplication = next.preliminary.fixApplication(
           typia.llm.application<IAutoBeRealizeOperationCorrectApplication>({
             validate: {
               process: validate,
             },
-          });
+          }),
+        );
+
         return {
           protocol: "class",
           name: next.source,
