@@ -63,13 +63,18 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
     revise: AutoBeInterfaceSchemaPropertyUpdate,
   ): void => {
-    delete schema.properties[revise.key];
-    if (schema.required.includes(revise.key))
-      schema.required.splice(schema.required.indexOf(revise.key), 1);
-
-    schema.properties[revise.newKey ?? revise.key] = revise.schema;
-    if (revise.required === true)
-      schema.required.push(revise.newKey ?? revise.key);
+    eraseObjectProperty(schema, {
+      type: "erase",
+      key: revise.key,
+      reason: revise.reason,
+    });
+    createObjectProperty(schema, {
+      type: "create",
+      key: revise.newKey ?? revise.key,
+      schema: revise.schema,
+      required: revise.required,
+      reason: revise.reason,
+    });
   };
 
   const eraseObjectProperty = (
