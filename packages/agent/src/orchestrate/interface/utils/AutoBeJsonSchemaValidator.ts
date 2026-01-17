@@ -136,7 +136,8 @@ export namespace AutoBeJsonSchemaValidator {
           Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
-    } else if (props.key === "IPageIRequest")
+    }
+    if (props.key === "IPageIRequest")
       props.errors.push({
         path: props.path,
         expected: `"IPageIRequest" is a mistake. Use "IPage.IRequest" instead.`,
@@ -149,7 +150,7 @@ export namespace AutoBeJsonSchemaValidator {
           Change it to "${transform("IPage.IRequest")}" at the next time.
         `,
       });
-    else if (
+    if (
       props.key.startsWith("IPage") &&
       props.key.startsWith("IPageI") === false &&
       props.key !== "IPage.IPagination" &&
@@ -178,7 +179,8 @@ export namespace AutoBeJsonSchemaValidator {
           or change it to another valid interface name at the next time.
         `,
       });
-    } else if (elements.some((s) => s.startsWith("I") === false) === true) {
+    }
+    if (elements.some((s) => s.startsWith("I") === false) === true) {
       const expected: string = elements
         .map((s) => (s.startsWith("I") ? s : `I${s}`))
         .join(".");
@@ -200,6 +202,43 @@ export namespace AutoBeJsonSchemaValidator {
         `,
       });
     }
+    if (
+      elements.length === 2 &&
+      (elements[1] === "IJoin" ||
+        elements[1] === "ILogin" ||
+        elements[1] === "IAuthorized" ||
+        elements[1] === "IRefresh") &&
+      elements[0].endsWith("Session") === true
+    )
+      props.errors.push({
+        path: props.path,
+        expected: JSON.stringify(
+          `${elements[0].replace("Session", "")}.${elements[1]}`,
+        ),
+        value: transform(props.key),
+        description: StringUtil.trim`
+          You have attached ${elements[1]} to a Session type ${transform(JSON.stringify(props.key))},
+          but this is architecturally incorrect.
+
+          In production authentication systems, Actor and Session are separate concepts:
+          - **Actor** (e.g., User, Seller, Admin): The persistent user identity that performs
+            authentication actions - joining (registering), logging in, and receiving authorized tokens.
+          - **Session** (e.g., UserSession, SellerSession): The temporary authentication state that
+            tracks active login instances. Sessions are CREATED as a result of join/login operations,
+            but they do not perform these actions themselves.
+
+          Think about it semantically: An ACTOR joins the system and logs in. A SESSION is merely
+          a record that gets created when the actor authenticates. It makes no sense for a session
+          to "join" or "login" - only actors do that.
+
+          Therefore, authentication-related DTO types (IJoin, ILogin, IAuthorized, IRefresh) MUST
+          be attached to the Actor type, NEVER to the Session type.
+
+          Change ${transform(JSON.stringify(props.key))} to ${transform(JSON.stringify(`${elements[0].replace("Session", "")}.${elements[1]}`))} at the next time.
+
+          This is an ABSOLUTE RULE with ZERO TOLERANCE. You MUST follow this instruction exactly.
+        `,
+      });
   };
 
   const validateAuthorization = (props: IProps): void => {

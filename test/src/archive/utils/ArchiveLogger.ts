@@ -65,6 +65,13 @@ export namespace ArchiveLogger {
     // VALIDATIONS
     else if (event.type === "analyzeScenario")
       content.push(`  - prefix: ${event.prefix}`);
+    else if (event.type === "databaseValidate")
+      content.push(
+        JSON.stringify(event.result.errors, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     else if (event.type === "realizeCorrect")
       content.push(
         `  - kind: ${event.kind}`,
@@ -156,8 +163,16 @@ export namespace ArchiveLogger {
     else if (event.type === "realizeWrite")
       content.push(`  - function: ${event.function.type}`);
     // COMPLETIONS
-    else if (event.type === "databaseComplete")
-      content.push(`  - success: ${event.result.success}`);
+    else if (
+      event.type === "databaseComplete" &&
+      event.result.success === false
+    )
+      content.push(
+        JSON.stringify(event.result.errors, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     else if (event.type === "interfaceComplete")
       content.push(`  - missed: ${event.missed.join(", ")}`);
     else if (event.type === "testComplete" && event.compiled.type === "failure")
