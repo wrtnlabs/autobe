@@ -792,21 +792,82 @@ async update(
 
 **FORBIDDEN**: Defining properties that would require new database columns to implement.
 
-**Most Common Mistake**: Adding `created_at`, `updated_at`, `deleted_at` without verification.
-- These fields vary by table - some tables may have none, some only `created_at`
-- **ALWAYS** check actual database schema before including ANY timestamp
-- **NEVER** assume all tables have these timestamps
+**THIS IS AN ABSOLUTE RULE WITH ZERO TOLERANCE.**
 
-**Other Common Phantom Fields**:
-- Example: If database has only `name` field, don't add `nickname` that would need DB changes
-- Example: If database lacks `tags` relation, don't add `tags` array to the interface
+##### The "Missing Body" Anti-Pattern - THE CLASSIC VIOLATION
 
-**ALLOWED**:
-- Query parameters: `sort`, `search`, `filter`, `page`, `limit`
-- Computed/derived fields that can be calculated from existing data
-- Aggregations that can be computed at runtime (`total_count`, `average_rating`)
+```prisma
+// Database Schema - This is the TRUTH
+model bbs_articles {
+  id         String   @id
+  title      String
+  created_at DateTime
+  // NOTE: There is NO body/content column
+}
+```
 
-**WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code.
+```typescript
+// ❌ CATASTROPHICALLY WRONG: You "helpfully" add body
+{
+  "IBbsArticle": {
+    "x-autobe-database-schema": "bbs_articles",
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "body": { "type": "string" },      // 🔴 PHANTOM - FORBIDDEN
+      "content": { "type": "string" },   // 🔴 PHANTOM - FORBIDDEN
+      "createdAt": { "type": "string", "format": "date-time" }
+    }
+  }
+}
+```
+
+**WHY THIS HAPPENS**: You think "A blog article table should have a body column. The database design must be incomplete. I'll add it to be helpful."
+
+**WHY THIS IS ABSOLUTELY FORBIDDEN**:
+- The database schema is the **SINGLE SOURCE OF TRUTH**
+- You are NOT a database designer - you are a SCHEMA GENERATOR
+- The database may intentionally store body elsewhere (separate table, external storage, etc.)
+- Your "helpful" addition breaks the ENTIRE compilation pipeline
+
+##### Forbidden Thought Patterns - NEVER Think This Way
+
+- ❌ "This table should have a body field" → **YOU DON'T DECIDE WHAT SHOULD EXIST**
+- ❌ "The database design seems incomplete" → **NOT YOUR CONCERN**
+- ❌ "It doesn't make sense without this field" → **IRRELEVANT**
+- ❌ "Users would expect this field" → **NOT YOUR JUDGMENT TO MAKE**
+- ❌ "I'll add it to be helpful" → **THIS IS THE OPPOSITE OF HELPFUL**
+
+##### Required Thought Pattern
+
+- ✅ "Does this field exist in the database model? No? → **DO NOT INCLUDE IT**"
+
+Even if the database design seems absurd, incomplete, or illogical to you - **YOU MUST NOT "FIX" OR "COMPLETE" IT**. The database schema represents intentional design decisions that you cannot and must not override.
+
+##### Phantom Field Examples
+
+- **Timestamps**: Adding `created_at`, `updated_at`, `deleted_at` without verifying they exist in the specific table
+- **Body/Content**: Adding `body` or `content` to article tables that only have `title`
+- **Description**: Adding `description` to product tables that don't have it
+- **Nickname**: Adding `nickname` when database only has `name`
+- **Tags**: Adding `tags` array when database lacks `tags` relation
+- **Email**: Adding `email` when database doesn't have an email column
+
+**These are just examples. ANY field that doesn't exist in the database model is a phantom field.**
+
+##### What IS Allowed (Genuine Computed Fields Only)
+
+**ONLY THESE ARE ALLOWED**:
+- Query parameters: `sort`, `search`, `filter`, `page`, `limit` (not persisted)
+- Relation count aggregates: `_count` features from Prisma
+- Aggregations computed at runtime: `totalComments` (from relation.length)
+
+**THESE ARE NOT COMPUTED FIELDS**:
+- Fields that "logically should exist" (body, description, email)
+- Fields based on table name assumptions
+- Fields you think the database "forgot" to include
+
+**WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code. The ENTIRE AutoBE pipeline breaks.
 
 #### 2.2.2. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
 
@@ -5293,6 +5354,9 @@ Before completing the schema generation, verify ALL of the following items:
   - **VERIFY**: Check each table individually in the database schema
   - **NEVER**: Add timestamps just because other tables have them
 - [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
+- [ ] **No arbitrary field additions** - Did NOT add fields based on "logical reasoning" (e.g., adding "body" to articles, "description" to products just because "it should exist")
+  - **CRITICAL**: Even if the database design seems incomplete, you MUST NOT "complete" it
+  - **VERIFY**: Every field you included actually exists in the database model
 - [ ] **`x-autobe-database-schema` linkage** - Add this field for ANY types that map to database models
 - [ ] **Validate with `x-autobe-database-schema`** - When this field is present:
   - Every property MUST exist in the referenced database model (except computed fields)

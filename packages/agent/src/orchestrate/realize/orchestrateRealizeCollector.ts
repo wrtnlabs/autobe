@@ -27,11 +27,11 @@ export async function orchestrateRealizeCollector(
       plans,
       progress: props.writeProgress,
     });
-  functions = await orchestrateRealizeCollectorCorrectOverall(ctx, {
+  functions = await orchestrateRealizeCollectorCorrectCasting(ctx, {
     functions,
     progress: props.correctProgress,
   });
-  functions = await orchestrateRealizeCollectorCorrectCasting(ctx, {
+  functions = await orchestrateRealizeCollectorCorrectOverall(ctx, {
     functions,
     progress: props.correctProgress,
   });

@@ -27,11 +27,11 @@ export async function orchestrateRealizeTransformer(
       plans,
       progress: props.writeProgress,
     });
-  functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
+  functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
     functions,
     progress: props.correctProgress,
   });
-  functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
+  functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
     functions,
     progress: props.correctProgress,
   });

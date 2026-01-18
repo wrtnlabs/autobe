@@ -21,26 +21,26 @@ export async function orchestrateRealizeOperation(
     correctProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
-  const writes: AutoBeRealizeOperationFunction[] =
+  let functions: AutoBeRealizeOperationFunction[] =
     await orchestrateRealizeOperationWrite(ctx, {
       authorizations: props.authorizations,
       collectors: props.collectors,
       transformers: props.transformers,
       progress: props.writeProgress,
     });
-  const castings: AutoBeRealizeOperationFunction[] =
-    await orchestrateRealizeOperationCorrectCasting(ctx, {
-      authorizations: props.authorizations,
-      collectors: props.collectors,
-      transformers: props.transformers,
-      functions: writes,
-      progress: props.correctProgress,
-    });
-  return await orchestrateRealizeOperationCorrectOverall(ctx, {
-    functions: castings,
+  functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
+    authorizations: props.authorizations,
+    collectors: props.collectors,
+    transformers: props.transformers,
+    functions,
+    progress: props.correctProgress,
+  });
+  functions = await orchestrateRealizeOperationCorrectOverall(ctx, {
+    functions,
     authorizations: props.authorizations,
     collectors: props.collectors,
     transformers: props.transformers,
     progress: props.correctProgress,
   });
+  return functions;
 }
