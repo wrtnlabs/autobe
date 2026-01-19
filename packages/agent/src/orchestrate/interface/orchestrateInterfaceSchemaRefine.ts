@@ -5,6 +5,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -32,11 +33,9 @@ export async function orchestrateInterfaceSchemaRefine(
   // Filter to only process non-object type schemas (potential degenerate primitives)
   const typeNames: string[] = Object.keys(props.schemas).filter(
     (k) =>
+      props.schemas[k] !== undefined &&
       AutoBeJsonSchemaValidator.isPreset(k) === false &&
-      AutoBeJsonSchemaValidator.isObjectType({
-        operations: props.document.operations,
-        typeName: k,
-      }) === false,
+      AutoBeOpenApiTypeChecker.isObject(props.schemas[k]) === false,
   );
   props.progress.total += typeNames.length;
 
