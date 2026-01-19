@@ -53,6 +53,7 @@ export namespace AutoBeJsonSchemaValidator {
     validateRecursive(props);
     validateReferenceId(props);
     validatePropertyNames(props);
+    validateNumericRanges(props);
 
     validateKey({
       errors: props.errors,
@@ -612,5 +613,134 @@ export namespace AutoBeJsonSchemaValidator {
           `,
         });
     }
+  };
+
+  const validateNumericRanges = (props: IProps): void => {
+    AutoBeOpenApiTypeChecker.skim({
+      schema: props.schema,
+      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+      closure: (schema, accessor) => {
+        if (
+          AutoBeOpenApiTypeChecker.isInteger(schema) === false &&
+          AutoBeOpenApiTypeChecker.isNumber(schema) === false
+        )
+          return;
+
+        const { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema;
+
+        // Case 1: minimum > maximum
+        if (
+          minimum !== undefined &&
+          maximum !== undefined &&
+          minimum > maximum
+        )
+          props.errors.push({
+            path: accessor,
+            expected: "minimum <= maximum",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid numeric range: minimum (${minimum}) is greater than maximum (${maximum}).
+
+              This creates an impossible range where no value can satisfy both constraints.
+              Either increase maximum or decrease minimum to create a valid range.
+            `,
+          });
+
+        // Case 2: exclusiveMinimum >= exclusiveMaximum
+        if (
+          exclusiveMinimum !== undefined &&
+          exclusiveMaximum !== undefined &&
+          exclusiveMinimum >= exclusiveMaximum
+        )
+          props.errors.push({
+            path: accessor,
+            expected: "exclusiveMinimum < exclusiveMaximum",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid numeric range: exclusiveMinimum (${exclusiveMinimum}) is greater than
+              or equal to exclusiveMaximum (${exclusiveMaximum}).
+
+              This creates an impossible range where no value can satisfy both constraints.
+              Either increase exclusiveMaximum or decrease exclusiveMinimum to create a valid range.
+            `,
+          });
+
+        // Case 3: minimum >= exclusiveMaximum
+        if (
+          minimum !== undefined &&
+          exclusiveMaximum !== undefined &&
+          minimum >= exclusiveMaximum
+        )
+          props.errors.push({
+            path: accessor,
+            expected: "minimum < exclusiveMaximum",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid numeric range: minimum (${minimum}) is greater than or equal to
+              exclusiveMaximum (${exclusiveMaximum}).
+
+              This creates an impossible range. A value cannot be >= ${minimum} and < ${exclusiveMaximum}
+              at the same time when minimum >= exclusiveMaximum.
+              Either increase exclusiveMaximum or decrease minimum to create a valid range.
+            `,
+          });
+
+        // Case 4: exclusiveMinimum >= maximum
+        if (
+          exclusiveMinimum !== undefined &&
+          maximum !== undefined &&
+          exclusiveMinimum >= maximum
+        )
+          props.errors.push({
+            path: accessor,
+            expected: "exclusiveMinimum < maximum",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid numeric range: exclusiveMinimum (${exclusiveMinimum}) is greater than
+              or equal to maximum (${maximum}).
+
+              This creates an impossible range. A value cannot be > ${exclusiveMinimum} and <= ${maximum}
+              at the same time when exclusiveMinimum >= maximum.
+              Either increase maximum or decrease exclusiveMinimum to create a valid range.
+            `,
+          });
+
+        // Case 5: minimum === maximum with exclusive constraints
+        if (
+          minimum !== undefined &&
+          maximum !== undefined &&
+          minimum === maximum &&
+          (exclusiveMinimum !== undefined || exclusiveMaximum !== undefined)
+        )
+          props.errors.push({
+            path: accessor,
+            expected:
+              "no exclusive constraints when minimum equals maximum",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid numeric range: minimum equals maximum (${minimum}), but exclusive
+              constraints are also defined.
+
+              When minimum === maximum, the only valid value is exactly ${minimum}.
+              Adding exclusiveMinimum or exclusiveMaximum makes this impossible.
+              Remove the exclusive constraints or adjust minimum/maximum to create a valid range.
+            `,
+          });
+
+        // Case 6: negative multipleOf
+        if (schema.multipleOf !== undefined && schema.multipleOf <= 0)
+          props.errors.push({
+            path: accessor,
+            expected: "multipleOf > 0",
+            value: schema,
+            description: StringUtil.trim`
+              Invalid multipleOf value: ${schema.multipleOf}.
+
+              The multipleOf constraint must be a positive number greater than zero.
+              Change multipleOf to a positive value.
+            `,
+          });
+      },
+    });
   };
 }
