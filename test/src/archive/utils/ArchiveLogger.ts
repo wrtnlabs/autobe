@@ -194,6 +194,12 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - typeName: ${event.typeName}`);
+    else if (event.type === "interfaceSchemaRefine")
+      content.push(
+        `  - typeName: ${event.typeName}`,
+        `  - original: ${JSON.stringify(event.original)}`,
+        `  - refined: ${!!event.refined}`,
+      );
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,
