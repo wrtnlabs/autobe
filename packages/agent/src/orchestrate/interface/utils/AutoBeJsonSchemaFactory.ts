@@ -37,14 +37,18 @@ export namespace AutoBeJsonSchemaFactory {
       else if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
       const parent: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
-        schemas[key.substring(0, key.length - ".IAuthorized".length)];
+        schemas[key.replace(".IAuthorized", "")];
       if (parent === undefined) continue;
       else if (AutoBeOpenApiTypeChecker.isObject(parent) === false) continue;
 
       value.properties = {
         ...parent.properties,
-        ...value.properties,
       };
+      if (value.properties.token === undefined)
+        value.properties.token = {
+          $ref: "#/components/schemas/IAuthorizationToken",
+          description: "Authorization token.",
+        };
       value.required = [...parent.required];
       if (value.required.includes("id") === false) value.required.push("id");
       if (value.required.includes("token") === false)
