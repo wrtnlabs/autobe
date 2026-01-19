@@ -80,6 +80,28 @@ export namespace IAutoBeDatabaseGroupApplication {
     type: "complete";
 
     /**
+     * Analysis of the requirements structure and domain organization.
+     *
+     * Documents the agent's understanding of the business requirements:
+     * - What major business domains were identified from the requirements?
+     * - How are these domains related to each other?
+     * - What organizational patterns exist in the requirements?
+     * - What foundational vs domain-specific components are needed?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the component grouping decisions.
+     *
+     * Explains why the groups were organized this way:
+     * - Why was each component group created?
+     * - Why were certain domains combined or kept separate?
+     * - How does the grouping reflect the business domain structure?
+     * - What considerations drove the component ordering?
+     */
+    rationale: string;
+
+    /**
      * Array of database component groups for organizing development.
      *
      * DO: Derive groups from business domains in requirements rather than

@@ -29,6 +29,26 @@ export interface AutoBeDatabaseGroupEvent
   extends AutoBeEventBase<"databaseGroup">,
     AutoBeAggregateEventBase {
   /**
+   * Analysis of the requirements structure and domain organization.
+   *
+   * Documents the agent's understanding of the business requirements, including
+   * what major business domains were identified, how these domains relate to
+   * each other, what organizational patterns exist in the requirements, and
+   * what foundational vs domain-specific components are needed.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the component grouping decisions.
+   *
+   * Explains why the groups were organized this way, including why each
+   * component group was created, why certain domains were combined or kept
+   * separate, how the grouping reflects the business domain structure, and
+   * what considerations drove the component ordering.
+   */
+  rationale: string;
+
+  /**
    * Array of database component groups organized by business domain.
    *
    * Each group represents a logical partition of the database based on

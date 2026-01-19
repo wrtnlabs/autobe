@@ -30,7 +30,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - 🚨 **NEVER skip this step** - Requirements documents are the ONLY source of truth for domain identification
 2. **Load Previous Version** (if applicable): Call `getPreviousDatabaseSchemas` if a previous version exists and you need consistency
 3. **Analyze Loaded Materials**: Study the requirements and identify all business domains and entities
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", groups: [...] } })` with complete component skeleton array
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })` with complete component skeleton array
 
 **REQUIRED ACTIONS**:
 - ✅ ALWAYS call `getAnalysisFiles` to load requirement documents BEFORE generating component groups - **NO EXCEPTIONS**
@@ -78,7 +78,7 @@ This is a required self-reflection step that helps you verify you have everythin
 ```typescript
 {
   thinking: "Created complete component skeleton structure covering all business domains.",
-  request: { type: "complete", groups: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", groups: [...] }
 }
 ```
 
@@ -653,14 +653,14 @@ process({ thinking: "Need previous schema structure for consistency.", request: 
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - complete called while preliminary requests pending
 process({ thinking: "Missing workflow details. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Features.md"] } })
-process({ thinking: "Component organization complete", request: { type: "complete", groups: [...] } })  // This executes with OLD materials!
+process({ thinking: "Component organization complete", request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
 process({ thinking: "Missing business logic for component organization. Don't have it.", request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md", "Feature_B.md"] } })
 
 // Then: After materials are loaded, call complete
-process({ thinking: "Created complete component skeleton structure", request: { type: "complete", groups: [...] } })
+process({ thinking: "Created complete component skeleton structure", request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })
 ```
 
 **Requirements Loading is MANDATORY, Not Strategic**:
@@ -687,10 +687,43 @@ export namespace IAutoBeDatabaseGroupApplication {
 
   export interface IComplete {
     type: "complete";
-    groups: AutoBeDatabaseGroup[];  // Component skeletons
+
+    /**
+     * Analysis of the requirements structure and domain organization.
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the component grouping decisions.
+     */
+    rationale: string;
+
+    /**
+     * Component skeletons organized by business domain.
+     */
+    groups: AutoBeDatabaseGroup[];
   }
 }
 ```
+
+### Field Descriptions
+
+#### analysis
+Analysis of the requirements structure and domain organization. Documents:
+- What major business domains were identified from the requirements?
+- How are these domains related to each other?
+- What organizational patterns exist in the requirements?
+- What foundational vs domain-specific components are needed?
+
+#### rationale
+Rationale for the component grouping decisions. Explains:
+- Why was each component group created?
+- Why were certain domains combined or kept separate?
+- How does the grouping reflect the business domain structure?
+- What considerations drove the component ordering?
+
+#### groups
+Array of component skeletons (AutoBeDatabaseGroup[]) organized by business domain.
 
 ### Field Descriptions
 
@@ -727,6 +760,8 @@ The `request` property is a **discriminated union** that can be one of four type
   thinking: "Created complete component skeleton structure covering all business domains.",
   request: {
     type: "complete",
+    analysis: "Requirements describe an e-commerce platform with 5 major business domains: system infrastructure, user identity, product catalog with sales, shopping cart management, and order processing. The domains have clear hierarchical relationships - infrastructure supports all others, identity is required for transactions, products feed into sales which lead to orders.",
+    rationale: "Created 5 component groups reflecting the natural domain boundaries. Separated Systematic and Actors as foundational layers. Kept Sales separate from Orders because they have different lifecycles (listing vs transaction). Cart is separate from Orders because cart is temporary selection state while orders are committed transactions.",
     groups: [
       {
         thinking: "System configuration, channels, and application metadata form the foundation",
@@ -849,7 +884,7 @@ Based on enterprise application patterns, organize into these common components:
    - Check proper dependency ordering
    - Confirm no overlapping responsibilities
 
-6. **Function Call**: Call `process({ request: { type: "complete", groups: [...] } })`
+6. **Function Call**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })`
 
 ## Generation Requirements
 
@@ -862,10 +897,12 @@ Based on enterprise application patterns, organize into these common components:
 
 ## Final Execution Checklist
 
-Before calling `process({ request: { type: "complete", groups: [...] } })`, verify:
+Before calling `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })`, verify:
 
 ### Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", groups: [...] } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] `analysis` field documents requirements structure, domain relationships, and organizational patterns identified
+- [ ] `rationale` field explains why each component was created and how grouping reflects business domain structure
 - [ ] **🚨 MANDATORY REQUIREMENT LOADING**: You MUST have:
   * Called `getAnalysisFiles` to load requirement documents
   * **NEVER proceeded without loading requirements** - This is ABSOLUTE
@@ -933,14 +970,16 @@ Before calling `process({ request: { type: "complete", groups: [...] } })`, veri
 - [ ] If component count is much lower than domain count, you reconsidered
 
 ### Function Call Preparation
+- [ ] `analysis` field documents requirements structure, domain relationships, and organizational patterns
+- [ ] `rationale` field explains grouping decisions and component ordering rationale
 - [ ] Component groups array ready with complete `IAutoBeDatabaseGroupApplication.IComponent[]`
 - [ ] Each component has: thinking, review, rationale, namespace, filename
 - [ ] JSON object properly formatted and valid
-- [ ] Ready to call `process({ request: { type: "complete", groups: [...] } })` immediately
+- [ ] Ready to call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })` immediately
 - [ ] NO user confirmation needed
 - [ ] NO waiting for approval
 
-**REMEMBER**: You MUST call `process({ request: { type: "complete", groups: [...] } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+**REMEMBER**: You MUST call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
 
 ---
 

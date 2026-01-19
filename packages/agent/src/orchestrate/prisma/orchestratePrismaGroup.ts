@@ -53,6 +53,8 @@ export async function orchestratePrismaGroup(
       type: SOURCE,
       id: v7(),
       created_at: start.toISOString(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
       groups: pointer.value.groups,
       metric: result.metric,
       tokenUsage: result.tokenUsage,

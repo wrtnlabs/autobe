@@ -31,12 +31,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Load Requirements**: Call `getAnalysisFiles` to load requirements documents you need
 2. **Load Previous Version** (if applicable): Call `getPreviousDatabaseSchemas` if you need consistency with previous version
 3. **Analyze Component Scope**: Study the component skeleton's rationale and identify all entities for THIS component
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", tables: [...] } })` with complete tables array
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` with complete tables array
 
 **REQUIRED ACTIONS**:
 - ✅ Request additional analysis files when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
-- ✅ Execute `process({ request: { type: "complete", tables: [...] } })` immediately after gathering complete context
+- ✅ Execute `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` immediately after gathering complete context
 - ✅ Generate the complete tables array directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**:
@@ -71,7 +71,7 @@ This is a required self-reflection step that helps you verify you have everythin
 ```typescript
 {
   thinking: "Designed 12 tables for the Systematic component covering all system configuration entities.",
-  request: { type: "complete", tables: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", tables: [...] }
 }
 ```
 
@@ -688,6 +688,16 @@ export namespace IAutoBeDatabaseComponentApplication {
     type: "complete";
 
     /**
+     * Analysis of the component's scope and table requirements.
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the table design decisions.
+     */
+    rationale: string;
+
+    /**
      * Array of table designs for THIS SINGLE component.
      *
      * Contains all database tables that belong to the component skeleton
@@ -698,7 +708,26 @@ export namespace IAutoBeDatabaseComponentApplication {
 }
 ```
 
-**CRITICAL**: The `IComplete` interface ONLY has `tables` field. You are NOT providing thinking, review, decision, or components. Those are already in the component skeleton you received.
+### Field Descriptions
+
+#### analysis
+Analysis of the component's scope and table requirements. Documents:
+- What is the component's business purpose (from the skeleton)?
+- What entities from the requirements belong to this component?
+- What relationships exist between these entities?
+- What normalization patterns were identified?
+
+#### rationale
+Rationale for the table design decisions. Explains:
+- Why was each table created?
+- Why were certain entities kept separate vs combined?
+- What normalization principles were applied?
+- How do the tables fulfill the component's rationale?
+
+#### tables
+Array of table designs (name + description) for THIS SINGLE component.
+
+**NOTE**: You are NOT providing thinking, review, decision, or components at the IComplete level. Those are already in the component skeleton you received. The `analysis` and `rationale` here are specifically about your TABLE DESIGN reasoning.
 
 ### Table Interface Compliance
 
@@ -718,7 +747,7 @@ interface AutoBeDatabaseComponentTableDesign {
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
 - **Table Descriptions**: Each table MUST include a clear and **concise** description explaining its purpose and what data it stores (keep it brief - one or two sentences maximum)
 - **Thinking Field**: Brief summary of what tables you designed (in IProps.thinking field)
-- **Request Structure**: Only provide `{ type: "complete", tables: [...] }` - NO other fields in IComplete
+- **Request Structure**: Provide `{ type: "complete", analysis: "...", rationale: "...", tables: [...] }` - analysis and rationale document TABLE DESIGN reasoning
 
 ---
 
@@ -1037,14 +1066,14 @@ process({ thinking: "Need previous schema for naming consistency.", request: { t
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN - complete called while preliminary requests pending
 process({ thinking: "Missing workflow details. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Workflows.md"] } })
-process({ thinking: "Table extraction complete", request: { type: "complete", tables: [...] } })  // This executes with OLD materials!
+process({ thinking: "Table extraction complete", request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
 process({ thinking: "Missing business logic for complete table extraction. Don't have it.", request: { type: "getAnalysisFiles", fileNames: ["Business_Logic.md", "Data_Requirements.md"] } })
 
 // Then: After materials are loaded, call complete
-process({ thinking: "Designed comprehensive table set for this component", request: { type: "complete", tables: [...] } })
+process({ thinking: "Designed comprehensive table set for this component", request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })
 ```
 
 **Strategic Context Gathering**:
@@ -1088,10 +1117,9 @@ export namespace IAutoBeDatabaseComponentApplication {
    *
    * CRITICAL CONSTRAINTS:
    * - You receive a component skeleton (namespace, filename, thinking, review, rationale)
-   * - Your ONLY job is to fill in the tables array
+   * - Your ONLY job is to fill in the tables array with analysis and rationale
    * - Do NOT create multiple components
    * - Do NOT reorganize component boundaries
-   * - Do NOT include thinking, review, decision, or components fields
    * - ALL tables generated here belong to THE SINGLE component skeleton provided
    */
   export interface IComplete {
@@ -1099,6 +1127,16 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Type discriminator indicating this is the final task execution request.
      */
     type: "complete";
+
+    /**
+     * Analysis of the component's scope and table requirements.
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the table design decisions.
+     */
+    rationale: string;
 
     /**
      * Array of table designs for THIS SINGLE component.
@@ -1201,17 +1239,20 @@ The `request` property is a **discriminated union** that can be one of four type
 
 **4. IComplete** - Complete the table design for this component:
 - **type**: `"complete"` - Discriminator indicating final task execution
+- **analysis**: Your understanding of the component's scope, entities, and normalization patterns
+- **rationale**: Explanation of why tables were designed this way, normalization principles applied
 - **tables**: Array of table designs (name + description) for THIS SINGLE component
-- **CRITICAL**: Only provide the tables array - nothing else. The component skeleton (namespace, filename, thinking, review, rationale) is already determined by DATABASE_GROUP phase
 
 ---
 
 ## Final Execution Checklist
 
-Before calling `process({ request: { type: "complete", tables: [...] } })`, verify:
+Before calling `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })`, verify:
 
 ### Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", tables: [...] } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] `analysis` field documents the component's scope, entities identified, relationships, and normalization patterns
+- [ ] `rationale` field explains table design decisions, why entities were separated or combined, and normalization principles applied
 - [ ] **Available materials list** reviewed in conversation history
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
 - [ ] When you need previous database schemas → Call `process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
@@ -1311,7 +1352,6 @@ Before calling `process({ request: { type: "complete", tables: [...] } })`, veri
 
 ### Common Pitfalls Avoided
 - [ ] **NOT** trying to reorganize components or change namespace/filename
-- [ ] **NOT** including extra fields (thinking, review, decision, components) in IComplete
 - [ ] **NOT** mixing naming conventions
 - [ ] **NOT** overlooking entities mentioned in component's rationale
 - [ ] **NOT** including tables from other components' domains
@@ -1321,15 +1361,16 @@ Before calling `process({ request: { type: "complete", tables: [...] } })`, veri
 - [ ] **NOT** misplacing session tables outside Actors component
 
 ### Function Call Preparation
+- [ ] `analysis` field documents component scope, entities, relationships, and normalization patterns
+- [ ] `rationale` field explains table design decisions and normalization principles applied
 - [ ] Tables array ready with complete `IAutoBeDatabaseComponentApplication.ITable[]`
 - [ ] Each table has: name (snake_case, plural) and description
-- [ ] **ONLY TABLES**: Providing ONLY the tables array - no thinking, review, decision, or components
 - [ ] JSON object properly formatted and valid
-- [ ] Ready to call `process({ request: { type: "complete", tables: [...] } })` immediately
+- [ ] Ready to call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` immediately
 - [ ] NO user confirmation needed
 - [ ] NO waiting for approval
 
-**REMEMBER**: You MUST call `process({ request: { type: "complete", tables: [...] } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+**REMEMBER**: You MUST call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
 
 **REMEMBER**: The DATABASE_COMPONENT_REVIEW agent will check your work, but it's YOUR responsibility to be complete FIRST. Missing tables at this stage cause cascading failures in the pipeline.
 

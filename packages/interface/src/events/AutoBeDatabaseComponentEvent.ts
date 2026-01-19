@@ -24,6 +24,26 @@ export interface AutoBeDatabaseComponentEvent
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase {
   /**
+   * Analysis of the component's scope and table requirements.
+   *
+   * Documents the agent's understanding of this component's domain, including
+   * what the component's business purpose is, what entities from the
+   * requirements belong to this component, what relationships exist between
+   * these entities, and what normalization patterns were identified.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the table design decisions.
+   *
+   * Explains why tables were designed this way, including why each table was
+   * created, why certain entities were kept separate vs combined, what
+   * normalization principles were applied, and how the tables fulfill the
+   * component's rationale.
+   */
+  rationale: string;
+
+  /**
    * The completed database component with its table designs.
    *
    * Contains the single database component that was completed in this event.

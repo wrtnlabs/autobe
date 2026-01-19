@@ -101,6 +101,8 @@ async function process(
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
       component,
       metric: result.metric,
       tokenUsage: result.tokenUsage,

@@ -86,6 +86,28 @@ export namespace IAutoBeDatabaseComponentApplication {
     type: "complete";
 
     /**
+     * Analysis of the component's scope and table requirements.
+     *
+     * Documents the agent's understanding of this component's domain:
+     * - What is the component's business purpose (from the skeleton)?
+     * - What entities from the requirements belong to this component?
+     * - What relationships exist between these entities?
+     * - What normalization patterns were identified?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the table design decisions.
+     *
+     * Explains why tables were designed this way:
+     * - Why was each table created?
+     * - Why were certain entities kept separate vs combined?
+     * - What normalization principles were applied?
+     * - How do the tables fulfill the component's rationale?
+     */
+    rationale: string;
+
+    /**
      * Array of table designs for THIS SINGLE component.
      *
      * Contains all database tables that belong to the component skeleton
