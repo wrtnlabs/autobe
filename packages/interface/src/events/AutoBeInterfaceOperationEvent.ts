@@ -29,6 +29,24 @@ export interface AutoBeInterfaceOperationEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
+   * Analysis of the endpoint's purpose and context.
+   *
+   * Documents the agent's understanding of what the endpoint is for, what
+   * business requirement it fulfills, database entities and fields involved,
+   * parameters and body types needed, and authorization considerations.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the operation design decisions.
+   *
+   * Explains why specific parameters and body types were chosen, authorization
+   * actor selection, how the operation fulfills endpoint description, and what
+   * was excluded from the design.
+   */
+  rationale: string;
+
+  /**
    * Array of API operations generated for the endpoint.
    *
    * Contains the detailed {@link AutoBeOpenApi.IOperation} specifications

@@ -4,7 +4,6 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceAuthorizationEvent,
-  AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -17,7 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
-import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
+import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceAuthorization(
@@ -67,7 +66,7 @@ async function process(
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<IAutoBeInterfaceAuthorizationsApplication>(),
+      typia.json.application<IAutoBeInterfaceAuthorizationApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -78,9 +77,10 @@ async function process(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -104,7 +104,9 @@ async function process(
         ? ({
             type: SOURCE,
             id: v7(),
-            operations: pointer.value,
+            analysis: pointer.value.analysis,
+            rationale: pointer.value.rationale,
+            operations: pointer.value.operations,
             completed: ++props.progress.completed,
             metric: result.metric,
             tokenUsage: result.tokenUsage,
@@ -125,13 +127,13 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: AutoBeOpenApi.IOperation[]) => void;
+  build: (next: IAutoBeInterfaceAuthorizationApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> =
-      typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
+  ): IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> =
+      typia.validate<IAutoBeInterfaceAuthorizationApplication.IProps>(next);
     if (result.success === false) return result;
     else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
@@ -165,7 +167,7 @@ function createController(props: {
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication>({
+    typia.llm.application<IAutoBeInterfaceAuthorizationApplication>({
       validate: {
         process: validate,
       },
@@ -181,17 +183,17 @@ function createController(props: {
           for (const o of next.request.operations)
             for (const p of o.parameters)
               AutoBeJsonSchemaFactory.fixSchema(p.schema);
-          props.build(
-            next.request.operations.filter((operation) =>
+          next.request.operations = next.request.operations.filter(
+            (operation) =>
               AutoBeInterfaceAuthorizationProgrammer.filter({
                 actor: props.actor.kind,
                 operation,
               }),
-            ),
           );
+          props.build(next.request);
         }
       },
-    } satisfies IAutoBeInterfaceAuthorizationsApplication,
+    } satisfies IAutoBeInterfaceAuthorizationApplication,
   };
 }
 

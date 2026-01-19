@@ -94,9 +94,10 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IPrerequisite[] | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -105,8 +106,7 @@ async function process(
         operation: props.operation,
         preliminary,
         build: (next) => {
-          pointer.value ??= [];
-          pointer.value.push(...next);
+          pointer.value = next;
         },
       }),
       enforceFunctionCall: true,
@@ -129,7 +129,9 @@ async function process(
         path: props.operation.path,
         method: props.operation.method,
       },
-      prerequisites: pointer.value,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      prerequisites: pointer.value.prerequisites,
       total: props.progress.total,
       completed: ++props.progress.completed,
       step: ctx.state().database?.step ?? 0,
@@ -153,7 +155,7 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
   >;
-  build: (next: AutoBeOpenApi.IPrerequisite[]) => void;
+  build: (next: IAutoBeInterfacePrerequisiteApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -197,8 +199,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete")
-          props.build(next.request.prerequisites);
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };

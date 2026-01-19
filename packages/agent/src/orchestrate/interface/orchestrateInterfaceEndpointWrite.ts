@@ -78,16 +78,16 @@ export const orchestrateInterfaceEndpointWrite = async (
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeInterfaceEndpointDesign[] | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceEndpointWriteApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
         preliminary,
         build: (next) => {
-          pointer.value ??= [];
-          pointer.value.push(...next);
+          pointer.value = next;
         },
       }),
       enforceFunctionCall: true,
@@ -100,7 +100,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     if (pointer.value === null) return out(result)(null);
 
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
-      pointer.value.map((c) => new Pair(c.endpoint, c)),
+      pointer.value.designs.map((c) => new Pair(c.endpoint, c)),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     )
@@ -112,6 +112,8 @@ export const orchestrateInterfaceEndpointWrite = async (
       type: SOURCE,
       kind: props.programmer.kind,
       group: props.group.name,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
       designs,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -132,7 +134,7 @@ const createController = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (next: AutoBeInterfaceEndpointDesign[]) => void;
+  build: (next: IAutoBeInterfaceEndpointWriteApplication.IComplete) => void;
 }): ILlmController => {
   const validate = (
     input: unknown,
@@ -161,7 +163,7 @@ const createController = (props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request.designs);
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceEndpointWriteApplication,
   };

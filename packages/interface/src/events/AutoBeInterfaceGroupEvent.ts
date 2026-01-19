@@ -30,6 +30,24 @@ export interface AutoBeInterfaceGroupEvent
   extends AutoBeEventBase<"interfaceGroup">,
     AutoBeAggregateEventBase {
   /**
+   * Analysis of the database schema structure and grouping needs.
+   *
+   * Documents the agent's understanding of namespaces, prefixes, organizational
+   * patterns in the database, which entities naturally belong together, and
+   * what business domains or functional areas can be identified.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the group design decisions.
+   *
+   * Explains why groups were organized this way, what entities are included
+   * in each group, how grouping reflects database schema structure, and what
+   * coverage is provided for all requirements.
+   */
+  rationale: string;
+
+  /**
    * Array of API endpoint groups organized by Prisma schema structure.
    *
    * Each group represents a logical partition of the API based on database

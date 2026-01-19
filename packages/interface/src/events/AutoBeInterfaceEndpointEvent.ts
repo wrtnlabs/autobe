@@ -39,6 +39,24 @@ export interface AutoBeInterfaceEndpointEvent
   group: string;
 
   /**
+   * Analysis of the requirements and database schema for endpoint design.
+   *
+   * Documents the agent's understanding of business requirements needing API
+   * coverage, database entities and relationships, CRUD operations needed,
+   * and special operations beyond basic CRUD.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the endpoint design decisions.
+   *
+   * Explains why paths and methods were chosen, how endpoints map to
+   * requirements and entities, what RESTful conventions were followed, and
+   * what was excluded.
+   */
+  rationale: string;
+
+  /**
    * Array of API endpoints that have been defined for the application.
    *
    * Contains the complete list of {@link AutoBeOpenApi.IEndpoint} definitions

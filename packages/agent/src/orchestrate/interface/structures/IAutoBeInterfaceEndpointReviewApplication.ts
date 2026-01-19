@@ -86,6 +86,19 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
     type: "complete";
 
     /**
+     * Summary of issues found and fixes applied during review.
+     *
+     * Document all issues discovered during endpoint validation:
+     *
+     * - What duplicates, inconsistencies, or design issues were found?
+     * - What endpoints needed to be added, modified, or removed?
+     * - What patterns or conventions were violated?
+     *
+     * State "No issues found." if all endpoints pass review.
+     */
+    review: string;
+
+    /**
      * All endpoint revisions to apply.
      *
      * Include all create, update, and erase operations identified during review.

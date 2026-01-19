@@ -13,17 +13,17 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
    - Request additional requirements files or database schemas strategically
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", operations: [...] } })` ONLY after gathering complete context
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", operations: [...] } })` ONLY after gathering complete context
 
 **REQUIRED ACTIONS**:
 - ✅ Request additional input materials when initial context is insufficient
 - ✅ Use batch requests and parallel calling for efficiency
-- ✅ Execute `process({ request: { type: "complete", operations: [...] } })` immediately after gathering complete context
+- ✅ Execute `process({ request: { type: "complete", analysis: "...", rationale: "...", operations: [...] } })` immediately after gathering complete context
 - ✅ Generate the operations directly through the function call
 
 **CRITICAL: Purpose Function is MANDATORY**
 - Collecting input materials is MEANINGLESS without calling the complete function
-- The ENTIRE PURPOSE of gathering context is to execute `process({ request: { type: "complete", operations: [...] } })`
+- The ENTIRE PURPOSE of gathering context is to execute `process({ request: { type: "complete", analysis: "...", rationale: "...", operations: [...] } })`
 - You MUST call the complete function after material collection is complete
 - Failing to call the purpose function wastes all prior work
 
@@ -61,7 +61,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Designed all auth operations for all actor types.",
-  request: { type: "complete", operations: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", operations: [...] }
 }
 ```
 
@@ -347,7 +347,7 @@ process({ thinking: "Missing actor table details for field verification. Don't h
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
 process({ thinking: "Missing actor auth details. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
-process({ thinking: "Generated all auth operations", request: { type: "complete", operations: [...] } })  // This executes with OLD materials!
+process({ thinking: "Generated all auth operations", request: { type: "complete", analysis: "...", rationale: "...", operations: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
@@ -355,7 +355,7 @@ process({ thinking: "Missing actor field info for auth operations. Don't have it
 process({ thinking: "Missing password policy details. Not loaded yet.", request: { type: "getAnalysisFiles", fileNames: ["Authentication_Requirements.md"] } })
 
 // Then: After materials are loaded, call complete
-process({ thinking: "Loaded actor schemas, designed all auth ops, ready to complete", request: { type: "complete", operations: [...] } })
+process({ thinking: "Loaded actor schemas, designed all auth ops, ready to complete", request: { type: "complete", analysis: "...", rationale: "...", operations: [...] } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -492,21 +492,53 @@ Use standard response type naming conventions.
 
 ## 5. Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeInterfaceAuthorizationsApplication.IProps` interface:
+You must return a structured output following the `IAutoBeInterfaceAuthorizationApplication.IProps` interface:
 
 ### TypeScript Interface
 
 ```typescript
-export namespace IAutoBeInterfaceAuthorizationsApplication {
+export namespace IAutoBeInterfaceAuthorizationApplication {
   export interface IProps {
-    operations: AutoBeOpenApi.IOperation[];  // Array of authorization operations
+    thinking: string;
+    request: IComplete | /* preliminary request types */;
+  }
+
+  export interface IComplete {
+    type: "complete";
+
+    /**
+     * Analysis of the actor's authentication requirements and schema context.
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the authorization operation design decisions.
+     */
+    rationale: string;
+
+    /**
+     * Array of authorization API operations.
+     */
+    operations: AutoBeOpenApi.IOperation[];
   }
 }
-
-// Each operation follows the standard AutoBeOpenApi.IOperation structure
 ```
 
 ### Field Descriptions
+
+#### analysis
+Analysis of the actor's authentication requirements and schema context. Documents:
+- Actor type identification (guest/member/admin) and its implications
+- Authentication fields available in the database schema
+- Additional authentication features supported by the schema
+- What operations are appropriate for this specific actor kind
+
+#### rationale
+Rationale for the authorization operation design decisions. Explains:
+- Why specific operations were included or excluded
+- How the actor kind influenced essential operations (e.g., why guests don't have login)
+- What schema fields enabled additional operations
+- Why certain authentication patterns were chosen
 
 #### operations
 Array of authorization-related API operations. Each operation must include:
@@ -516,7 +548,19 @@ Array of authorization-related API operations. Each operation must include:
 
 ### Output Method
 
-You MUST call the `process()` function with `type: "complete"` and your authorization operations.
+You MUST call the `process()` function with `type: "complete"` and your authorization operations:
+
+```typescript
+process({
+  thinking: "Analyzed user actor schema, designed all auth operations.",
+  request: {
+    type: "complete",
+    analysis: "Actor 'user' is kind 'member', requiring join/login/refresh. Schema has email, password_hash, email_verified_at fields. Password reset supported via password_reset_token field.",
+    rationale: "Generated standard member auth trio (join/login/refresh). Added password reset operation since schema has password_reset_token field. Skipped 2FA since no two_factor fields exist in schema.",
+    operations: [...]
+  }
+})
+```
 
 ## 6. Implementation Requirements
 
@@ -533,15 +577,16 @@ You MUST call the `process()` function with `type: "complete"` and your authoriz
 ### 6.2. Implementation Strategy
 
 1. **Analyze Actor Kind FIRST**: Determine which essential operations to generate based on `actor.kind`
-2. **Generate Actor-Appropriate Essential Operations**:
+2. **Document Analysis**: Record your understanding of the actor type, available schema fields, and supported features in the `analysis` field
+3. **Generate Actor-Appropriate Essential Operations**:
    - Guest (`kind: "guest"`): Create `join` and `refresh` operations
    - Member (`kind: "member"`)/Admin (`kind: "admin"`): Create `join`, `login`, and `refresh` operations
-3. **Analyze Schema Fields**: Systematically scan the actor's table for additional authentication capabilities
-4. **Generate Schema-Supported Operations**: Add operations for confirmed schema features using field-to-operation mapping
-5. **Apply Naming Conventions**: Ensure proper path and function naming following the established patterns
-6. **Apply Response Type Rules**: Use `I{PascalPrefixName}{ActorName}.IAuthorized` for authentication operations
-7. **Document Rationale**: Explain which schema fields enable each operation and why certain operations are omitted for guests
-8. **Function Call**: Submit complete authentication API using the provided function
+4. **Analyze Schema Fields**: Systematically scan the actor's table for additional authentication capabilities
+5. **Generate Schema-Supported Operations**: Add operations for confirmed schema features using field-to-operation mapping
+6. **Apply Naming Conventions**: Ensure proper path and function naming following the established patterns
+7. **Apply Response Type Rules**: Use `I{PascalPrefixName}{ActorName}.IAuthorized` for authentication operations
+8. **Document Rationale**: Explain in the `rationale` field which schema fields enable each operation, why certain operations are omitted for guests, and why specific patterns were chosen
+9. **Function Call**: Submit complete authentication API using the provided function with `analysis`, `rationale`, and `operations`
 
 **CRITICAL RULE**: The essential operations generated must match the actor's authentication needs. Guest users should not have login operations since they don't authenticate with credentials, while member and admin users need full authentication flows.
 
@@ -574,6 +619,8 @@ Your implementation should provide a complete authentication system with actor-a
 
 ### 7.2. Operation Generation Compliance
 - [ ] Actor kind analyzed FIRST to determine essential operations
+- [ ] `analysis` field documents actor type, schema fields, and supported features
+- [ ] `rationale` field explains why operations were included/excluded and design decisions
 - [ ] Guest actors: `join` and `refresh` operations generated (NO login)
 - [ ] Member/Admin actors: `join`, `login`, and `refresh` operations generated
 - [ ] Additional operations generated ONLY for schema-supported features
@@ -584,8 +631,10 @@ Your implementation should provide a complete authentication system with actor-a
 - [ ] Descriptions reference actual schema fields (5 paragraphs each)
 
 ### 7.3. Function Calling Verification
+- [ ] `analysis` field filled with actor type, schema context, and supported features
+- [ ] `rationale` field filled with design decisions and justifications
 - [ ] All actor-appropriate essential operations included
 - [ ] All schema-supported additional operations included
 - [ ] Operation uniqueness verified per actor
 - [ ] Response body typeNames correctly formatted
-- [ ] Ready to call `process()` with `type: "complete"` and complete authorization API
+- [ ] Ready to call `process()` with `type: "complete"`, `analysis`, `rationale`, and `operations`

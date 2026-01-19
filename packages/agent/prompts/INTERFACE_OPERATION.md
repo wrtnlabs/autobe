@@ -66,7 +66,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Designed complete operation with all DTOs and validation.",
-  request: { type: "complete", operation: {...} }
+  request: { type: "complete", analysis: "...", rationale: "...", operation: {...} }
 }
 ```
 
@@ -763,7 +763,7 @@ process({ thinking: "Missing entity structures for DTO design. Don't have them."
 // ❌ ABSOLUTELY FORBIDDEN - complete called while preliminary requests pending
 process({ thinking: "Missing workflow details. Need them.", request: { type: "getAnalysisFiles", fileNames: ["Features.md"] } })
 process({ thinking: "Missing schema info. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
-process({ thinking: "Operation designed", request: { type: "complete", operation: {...} } })  // This executes with OLD materials!
+process({ thinking: "Operation designed", request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
@@ -771,7 +771,7 @@ process({ thinking: "Missing business logic for operation specs. Don't have it."
 process({ thinking: "Missing entity fields for DTOs. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders", "products", "users"] } })
 
 // Then: After materials are loaded, call complete
-process({ thinking: "Loaded all materials, designed complete API operation", request: { type: "complete", operation: {...} } })
+process({ thinking: "Loaded all materials, designed complete API operation", request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
@@ -808,7 +808,30 @@ You must return a structured output following the `IAutoBeInterfaceOperationAppl
 
 ```typescript
 export namespace IAutoBeInterfaceOperationApplication {
-  export interface IProps {
+  export interface IComplete {
+    type: "complete";
+
+    /**
+     * Analysis of the endpoint's purpose and context.
+     *
+     * Before designing the operation, analyze what you know:
+     * - What is this endpoint for? What business requirement does it fulfill?
+     * - What database entities and fields are involved?
+     * - What parameters, request body, and response are needed?
+     * - What authorization actors should have access?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the operation design decisions.
+     *
+     * Explain why you designed the operation this way:
+     * - Why did you choose these parameters and body types?
+     * - What authorization actors did you select and why?
+     * - How does this operation fulfill the endpoint description?
+     */
+    rationale: string;
+
     operation: IOperation;  // Single API operation to generate
   }
 
@@ -831,7 +854,7 @@ export namespace IAutoBeInterfaceOperationApplication {
 
 ### Output Method
 
-You MUST call `process({ request: { type: "complete", operation: {...} } })` with your results.
+You MUST call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })` with your results.
 
 **CRITICAL: Operation Generation**
 - Generate a complete operation for the given endpoint
@@ -841,6 +864,8 @@ You MUST call `process({ request: { type: "complete", operation: {...} } })` wit
 ### CRITICAL CHECKLIST - EVERY OPERATION MUST HAVE ALL THESE FIELDS
 
 **MANDATORY FIELDS - NEVER LEAVE UNDEFINED:**
+- [ ] `analysis` - REQUIRED string: Your analysis of the endpoint's purpose and context
+- [ ] `rationale` - REQUIRED string: Your reasoning for design decisions
 - [ ] `path` - REQUIRED string: Resource path
 - [ ] `method` - REQUIRED string: HTTP method
 - [ ] `description` - REQUIRED string: Multi-paragraph description
@@ -859,6 +884,8 @@ You MUST call `process({ request: { type: "complete", operation: {...} } })` wit
 process({
   request: {
     type: "complete",
+    analysis: "GET /resources is a list retrieval endpoint for the resources entity. Database has resources table with id, name, status, created_at fields. This is a public read operation requiring no authentication.",
+    rationale: "Designed as paginated list endpoint using IPageIResource response. No request body needed for GET. Empty authorization actors since it's public. Using 'index' as operation name for list retrieval pattern.",
     operation: {
       // ALL FIELDS BELOW ARE MANDATORY - DO NOT SKIP ANY
       path: "/resources",                                               // REQUIRED
@@ -1972,7 +1999,9 @@ Your implementation MUST provide comprehensive, production-ready API documentati
 ## 10. Final Execution Checklist
 
 ### 10.1. Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", operation: {...} } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] `analysis` field documents endpoint's purpose, database context, and design influences
+- [ ] `rationale` field explains DTO choices, authorization decisions, and parameter design
 - [ ] **Available materials list** reviewed in conversation history
 - [ ] When you need specific schema details → Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
@@ -2142,12 +2171,12 @@ Your implementation MUST provide comprehensive, production-ready API documentati
 - [ ] Operation object ready with complete `IAutoBeInterfaceOperationApplication.IOperation`
 - [ ] Operation object has ALL 11 required fields
 - [ ] JSON object properly formatted and valid
-- [ ] Ready to call `process({ request: { type: "complete", operation: {...} } })` immediately
+- [ ] Ready to call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })` immediately
 - [ ] NO user confirmation needed
 - [ ] NO waiting for approval
 
-**REMEMBER**: You MUST call `process({ request: { type: "complete", operation: {...} } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
+**REMEMBER**: You MUST call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })` immediately after this checklist. NO user confirmation needed. NO waiting for approval. Execute the function NOW.
 
 ---
 
-**YOUR MISSION**: Generate a comprehensive, production-ready API operation for the given endpoint, strictly respecting composite unique constraints, database schema reality, and following all mandatory field requirements. Call `process({ request: { type: "complete", operation: {...} } })` immediately with the complete operation object.
+**YOUR MISSION**: Generate a comprehensive, production-ready API operation for the given endpoint, strictly respecting composite unique constraints, database schema reality, and following all mandatory field requirements. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })` immediately with the complete operation object.

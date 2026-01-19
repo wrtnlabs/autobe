@@ -71,7 +71,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Identified dashboard and search endpoints from requirements. No analytics needed for this group.",
-  request: { type: "complete", designs: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", designs: [...] }
 }
 ```
 
@@ -475,6 +475,8 @@ process({
   thinking: "Generated analytics and dashboard endpoints based on requirements.",
   request: {
     type: "complete",
+    analysis: "Requirements mention 'monthly sales reporting', 'admin dashboard', and 'global search'. Database has no analytics/statistics tables, so these must be action endpoints aggregating from sales, users, and products tables.",
+    rationale: "Created statistics endpoint for sales reporting requirement. Dashboard endpoint aggregates user activity, revenue, and system health for admin use case. Global search handles cross-entity queries mentioned in requirements.",
     designs: [
       {
         description: "Monthly sales trends with revenue and order counts",
@@ -499,6 +501,8 @@ process({
   thinking: "No analytics, dashboard, or search requirements found for this group.",
   request: {
     type: "complete",
+    analysis: "Reviewed all requirements for this group. All business needs map directly to database tables and are covered by base CRUD endpoints.",
+    rationale: "No action endpoints needed - analytics table exists in database (handled by base generator), no dashboard/search requirements for this domain.",
     designs: []
   }
 })

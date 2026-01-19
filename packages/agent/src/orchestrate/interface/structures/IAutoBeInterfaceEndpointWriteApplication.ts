@@ -82,6 +82,30 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
     type: "complete";
 
     /**
+     * Analysis of the requirements and database schema for endpoint design.
+     *
+     * Before designing endpoints, analyze what you know:
+     *
+     * - What business requirements need API coverage?
+     * - What database entities and relationships inform endpoint structure?
+     * - What CRUD operations are needed for each entity?
+     * - What special operations beyond basic CRUD are required?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the endpoint design decisions.
+     *
+     * Explain why you designed endpoints this way:
+     *
+     * - Why did you choose these paths and methods?
+     * - How do endpoints map to requirements and entities?
+     * - What RESTful conventions did you follow?
+     * - What was excluded and why?
+     */
+    rationale: string;
+
+    /**
      * Array of endpoint designs to generate.
      *
      * Each design pairs an endpoint (path + method) with a description of its

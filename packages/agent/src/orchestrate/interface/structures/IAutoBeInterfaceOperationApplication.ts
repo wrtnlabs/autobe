@@ -83,6 +83,30 @@ export namespace IAutoBeInterfaceOperationApplication {
     type: "complete";
 
     /**
+     * Analysis of the endpoint's purpose and context.
+     *
+     * Before designing the operation, analyze what you know:
+     *
+     * - What is this endpoint for? What business requirement does it fulfill?
+     * - What database entities and fields are involved?
+     * - What parameters, request body, and response are needed?
+     * - What authorization actors should have access?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the operation design decisions.
+     *
+     * Explain why you designed the operation this way:
+     *
+     * - Why did you choose these parameters and body types?
+     * - What authorization actors did you select and why?
+     * - How does this operation fulfill the endpoint description?
+     * - What was excluded from the design and why?
+     */
+    rationale: string;
+
+    /**
      * The API operation to generate.
      *
      * The operation includes:

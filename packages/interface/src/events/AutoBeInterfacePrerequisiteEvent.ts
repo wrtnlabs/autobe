@@ -30,6 +30,24 @@ export interface AutoBeInterfacePrerequisiteEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
+   * Analysis of the operation's resource dependencies.
+   *
+   * Documents the agent's understanding of what resources the operation
+   * requires to exist, foreign key relationships, path parameters implying
+   * dependencies, and request body fields referencing other resources.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the prerequisite chain decisions.
+   *
+   * Explains why each prerequisite operation is necessary, what resources
+   * must exist, the correct ordering of prerequisite operations, and what
+   * prerequisites were excluded.
+   */
+  rationale: string;
+
+  /**
    * The API endpoint being analyzed for prerequisite dependencies.
    *
    * Identifies the specific operation (method + path) that requires

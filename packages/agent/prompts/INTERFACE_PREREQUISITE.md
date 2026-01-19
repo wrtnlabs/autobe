@@ -274,7 +274,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Mapped all prerequisites, validated dependency chains.",
-  request: { type: "complete", endpoint: {...}, prerequisites: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", endpoint: {...}, prerequisites: [...] }
 }
 ```
 
@@ -393,7 +393,7 @@ process({ thinking: "Missing POST operation specs for prerequisite chains. Don't
 // ❌ ABSOLUTELY FORBIDDEN - complete called with input requests
 process({ thinking: "Missing schema info. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
 process({ thinking: "Missing operation specs. Need them.", request: { type: "getInterfaceOperations", endpoints: [{ path: "/products", method: "post" }] } })
-process({ thinking: "All prerequisites analyzed", request: { type: "complete", endpoint: {...}, prerequisites: [...] } })  // This executes with OLD materials!
+process({ thinking: "All prerequisites analyzed", request: { type: "complete", analysis: "...", rationale: "...", endpoint: {...}, prerequisites: [...] } })  // This executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 // First: Request additional materials
@@ -404,7 +404,7 @@ process({ thinking: "Missing operation specs for prerequisite chains. Don't have
 ]}})
 
 // Then: After materials are loaded, call purpose function
-process({ thinking: "Loaded all materials, analyzed prerequisites, ready to complete", request: { type: "complete", endpoint: {...}, prerequisites: [...] } })
+process({ thinking: "Loaded all materials, analyzed prerequisites, ready to complete", request: { type: "complete", analysis: "...", rationale: "...", endpoint: {...}, prerequisites: [...] } })
 ```
 
 **Critical Warning: Do NOT Re-Request Already Loaded Materials**
@@ -647,6 +647,26 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
     type: "complete";
 
     /**
+     * Analysis of the operation's resource dependencies.
+     *
+     * Before determining prerequisites, analyze what you know:
+     * - What resources does this operation require to exist?
+     * - What foreign key relationships affect this operation?
+     * - What path parameters imply resource dependencies?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the prerequisite chain decisions.
+     *
+     * Explain why you selected these prerequisites:
+     * - Why is each prerequisite operation necessary?
+     * - What resource must exist before this operation can succeed?
+     * - What is the correct ordering of prerequisite operations?
+     */
+    rationale: string;
+
+    /**
      * The API endpoint being analyzed.
      */
     endpoint: {
@@ -672,6 +692,12 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
 
 ### Field Descriptions
 
+#### analysis
+Your analysis of the operation's resource dependencies. Document what resources the operation requires, foreign key relationships, path parameters implying dependencies, and request body fields referencing other resources.
+
+#### rationale
+Your reasoning for the prerequisite chain. Explain why each prerequisite is necessary, what resources must exist, and the correct ordering.
+
 #### endpoint
 The target operation being analyzed (path and method). This must match the Target Operation provided in the input materials.
 
@@ -689,6 +715,8 @@ process({
   thinking: "Analyzed all dependencies and mapped prerequisites successfully.",
   request: {
     type: "complete",
+    analysis: "DELETE /orders/{orderId}/items/{itemId} requires both an order and an item to exist. Path parameters {orderId} and {itemId} indicate resource dependencies. Database schema shows order_items has FK to orders.",
+    rationale: "Selected POST /orders to create the order first (parent resource). Then POST /orders/{orderId}/items to create the item (child resource). Order must be created before items due to FK constraint.",
     endpoint: {
       path: "/target/operation/path",
       method: "post"

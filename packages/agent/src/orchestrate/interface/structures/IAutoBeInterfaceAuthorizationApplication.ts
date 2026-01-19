@@ -2,11 +2,11 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
-export interface IAutoBeInterfaceAuthorizationsApplication {
+export interface IAutoBeInterfaceAuthorizationApplication {
   /**
    * Process authorization operations generation task or preliminary data
    * requests.
@@ -17,10 +17,10 @@ export interface IAutoBeInterfaceAuthorizationsApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceAuthorizationsApplication.IProps): void;
+  process(props: IAutoBeInterfaceAuthorizationApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceAuthorizationsApplication {
+export namespace IAutoBeInterfaceAuthorizationApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -79,6 +79,26 @@ export namespace IAutoBeInterfaceAuthorizationsApplication {
      * execution request.
      */
     type: "complete";
+
+    /**
+     * Analysis of the actor's authentication requirements and schema context.
+     *
+     * Documents the agent's understanding of the actor type
+     * (guest/member/admin), what authentication fields exist in the database
+     * schema, what additional authentication features are supported by the
+     * schema, and what operations are appropriate for this actor kind.
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the authorization operation design decisions.
+     *
+     * Explains why specific operations were included or excluded, how the actor
+     * kind influenced the essential operations selection (e.g., why guests
+     * don't have login), what schema fields enabled additional operations, and
+     * why certain authentication patterns were chosen.
+     */
+    rationale: string;
 
     /**
      * Array of API operations to generate authorization operation for.

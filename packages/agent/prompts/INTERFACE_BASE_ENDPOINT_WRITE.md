@@ -58,7 +58,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Designed complete endpoint set covering all user workflows.",
-  request: { type: "complete", designs: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", designs: [...] }
 }
 ```
 
@@ -534,6 +534,8 @@ process({
   thinking: "Generated base CRUD endpoints for all safe tables in the group.",
   request: {
     type: "complete",
+    analysis: "Group contains 5 tables: resources, resource_items, categories, tags, resource_tags. Resources is the main entity with items as composition. Categories and tags are lookup tables. resource_tags is a junction table for many-to-many.",
+    rationale: "Created standard CRUD (index, at, create, update, erase) for resources and categories. Items are nested under resources for composition. Skipped POST for tags since they're admin-managed. Skipped resource_tags as it's a junction table managed through resource operations.",
     designs: [
       {
         description: "Search and filter resources collection",
@@ -561,6 +563,8 @@ process({
 ```
 
 **CRITICAL**: Each endpoint object must have:
+- `analysis`: Your analysis of requirements and database schema for endpoint design
+- `rationale`: Your reasoning for the endpoint design decisions
 - `endpoint`: Object with `path` and `method`
 - `description`: Brief explanation of why this endpoint was created
 
@@ -629,7 +633,7 @@ Check "Already Existing Endpoints" list. Do NOT create endpoints that already ex
 
 ### Step 6: Call Complete
 
-Assemble all endpoints and call `process({ request: { type: "complete", designs: [...] } })`.
+Assemble all endpoints and call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })`.
 
 ## 8. Examples
 

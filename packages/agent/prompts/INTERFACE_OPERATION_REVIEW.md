@@ -75,7 +75,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Validated the operation, removed security violations.",
-  request: { type: "complete", think: {...}, content: {...} }
+  request: { type: "complete", review: "...", plan: "...", content: {...} }
 }
 ```
 
@@ -163,88 +163,48 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     type: "complete";
 
     /**
-     * Comprehensive thinking process for API operation review.
-     *
-     * Encapsulates the agent's analytical review findings and actionable
-     * improvement plan. This structured thinking process ensures systematic
-     * evaluation of the API operation against AutoBE's quality standards before
-     * generating the final enhanced operation.
-     */
-    think: IThink;
-
-    /**
-     * Corrected operation with issues resolved, or null if no modifications
-     * needed.
-     *
-     * Final API operation after systematic enhancement:
-     *
-     * - **Security Fixes Applied**: All authentication boundaries enforced,
-     *   sensitive data removed from responses, proper authorization implemented
-     * - **Logic Corrections Made**: Return types match operation intent, HTTP
-     *   methods align with semantics, parameters properly utilized
-     * - **Schema Alignment Verified**: All fields exist in database schema, types
-     *   correctly mapped, relationships properly defined
-     * - **Quality Improvements Added**: Enhanced documentation, format
-     *   specifications, validation rules, consistent naming patterns
-     *
-     * If issues were found and corrected, this contains the enhanced operation.
-     * If the operation was already perfect and requires no modifications, this
-     * is null. The operation is validated and ready for schema generation and
-     * subsequent implementation phases.
-     */
-    content: AutoBeOpenApi.IOperation | null;
-  }
-
-  /**
-   * Structured thinking process for operation review.
-   *
-   * Contains analytical review findings and improvement action plan organized
-   * for systematic enhancement of the operation.
-   */
-  export interface IThink {
-    /**
      * Comprehensive review analysis with prioritized findings.
      *
      * Systematic assessment organized by severity levels (CRITICAL, HIGH,
      * MEDIUM, LOW):
      *
      * - **Security Analysis**: Authentication boundary violations, exposed
-     *   passwords/tokens, unauthorized data access patterns, SQL injection risks
-     * - **Logic Validation**: Return type consistency (list operation returning
-     *   arrays, single retrieval returning single items), HTTP method semantics
+     *   passwords/tokens, unauthorized data access patterns
+     * - **Logic Validation**: Return type consistency, HTTP method semantics
      *   alignment, parameter usage verification
      * - **Schema Compliance**: Field existence in database schema, type accuracy,
-     *   relationship validity, required field handling
-     * - **Quality Assessment**: Documentation completeness, naming conventions,
-     *   error handling patterns, pagination standards
+     *   relationship validity
+     * - **Quality Assessment**: Documentation completeness, naming conventions
      *
      * Each finding includes specific examples, current vs expected behavior,
-     * and concrete fix recommendations. Critical security issues and logical
-     * contradictions are highlighted for immediate attention.
+     * and concrete fix recommendations.
      */
     review: string;
 
     /**
      * Prioritized action plan for identified issues.
      *
-     * Structured improvement strategy categorized by severity:
+     * Structured improvement strategy explaining:
      *
-     * - **Immediate Actions (CRITICAL)**: Security vulnerabilities that must be
-     *   fixed before production (password exposure, missing authorization,
-     *   authentication bypass risks)
-     * - **Required Fixes (HIGH)**: Functional issues affecting API correctness
-     *   (wrong return types, missing required fields, schema mismatches)
-     * - **Recommended Improvements (MEDIUM)**: Quality enhancements for better
-     *   API design (validation rules, format specifications, consistency)
-     * - **Optional Enhancements (LOW)**: Documentation and usability improvements
+     * - What specific changes are being made
+     * - Why each change is necessary
+     * - If rejecting (returning null), why the operation cannot be fixed
      *
-     * If the operation passes review without issues, contains: "No improvements
-     * required. The operation meets AutoBE standards."
-     *
-     * Each action item includes the specific operation path, the exact change
-     * needed, and the rationale for the modification.
+     * If no issues found: "No improvements required. Operation meets standards."
      */
     plan: string;
+
+    /**
+     * Corrected operation with issues resolved, or null if rejected/perfect.
+     *
+     * Return values:
+     *
+     * - **Corrected operation**: If fixable issues were found and corrected
+     * - **null**: If operation is perfect OR if issues cannot be fixed
+     *
+     * When null: orchestrator filters out this operation from the final list.
+     */
+    content: AutoBeOpenApi.IOperation | null;
   }
 }
 
@@ -314,14 +274,7 @@ Can be one of:
 
 Indicates this is the final task execution request, not a preliminary data request.
 
-#### think (IComplete)
-**Structured thinking process with review and plan**.
-
-Contains two required sub-fields:
-- `review`: Comprehensive analysis of all found issues
-- `plan`: Prioritized action plan for addressing issues
-
-#### think.review (IThink - REQUIRED - NEVER UNDEFINED)
+#### review (IComplete - REQUIRED - NEVER UNDEFINED)
 **Comprehensive analysis of all found issues**, organized by severity:
 - **CRITICAL**: Security vulnerabilities, schema violations, implementation impossibilities
 - **HIGH**: Logical contradictions, wrong return types, missing required fields
@@ -330,7 +283,7 @@ Contains two required sub-fields:
 
 **MUST ALWAYS HAVE CONTENT** - Even if no issues found, write: "No issues found. The operation complies with standards."
 
-#### think.plan (IThink - REQUIRED - NEVER UNDEFINED)
+#### plan (IComplete - REQUIRED - NEVER UNDEFINED)
 **Prioritized action plan** for addressing identified issues:
 - Immediate fixes for CRITICAL issues
 - Required corrections for HIGH severity problems
@@ -422,10 +375,8 @@ process({
   thinking: "Validated the operation, removed violations, ready to complete.",
   request: {
     type: "complete",
-    think: {
-      review: "Comprehensive analysis of the operation...",
-      plan: "Prioritized action plan..."
-    },
+    review: "Comprehensive analysis of the operation...",
+    plan: "Prioritized action plan...",
     content: {
       // Corrected operation object, or null if no modifications needed
     }
@@ -708,12 +659,12 @@ process({ thinking: "Missing entity fields for phantom detection. Don't have the
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
 process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["users"] } })
-process({ thinking: "Review complete", request: { type: "complete", think: {...}, content: {...} } })  // Executes with OLD materials!
+process({ thinking: "Review complete", request: { type: "complete", review: "...", plan: "...", content: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 process({ thinking: "Missing entity fields for security checks. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["users", "orders"] } })
 // Then after materials loaded:
-process({ thinking: "Validated operation, removed violations, ready to complete", request: { type: "complete", think: {...}, content: {...} } })
+process({ thinking: "Validated operation, removed violations, ready to complete", request: { type: "complete", review: "...", plan: "...", content: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
@@ -975,7 +926,7 @@ When reviewing the operation:
 2. **Check database schema for each entity**
 3. **If `@@unique([parent_id, code])`**:
    - Flag the operation if missing parent in path
-   - Add to think.review as CRITICAL issue
+   - Add to review as CRITICAL issue
    - Correct the operation to include required parent context
 4. **Verify parameter descriptions include scope**:
    - Global unique: "(global scope)"
@@ -1005,7 +956,7 @@ For composite unique violations:
 }
 
 // Note: If path structure cannot be corrected due to fixed endpoint constraints,
-// document the architectural issue in think.review and apply best-effort fixes
+// document the architectural issue in review and apply best-effort fixes
 // to make the operation as compliant as possible.
 ```
 
@@ -1146,7 +1097,7 @@ class UserService {
 When you find system-generated data manipulation:
 1. Mark as **CRITICAL ARCHITECTURAL VIOLATION**
 2. Explain that this data is generated automatically in service logic
-3. Document the issue thoroughly in think.review
+3. Document the issue thoroughly in review
 4. If viewing is needed, the operation should only be GET/PATCH (read-only)
 
 ### 6.5. Delete Operation Review (CRITICAL)
@@ -1289,10 +1240,8 @@ process({
   thinking: "Validated the operation, removed violations, ready to complete.",
   request: {
     type: "complete",
-    think: {
-      review: "Comprehensive analysis...",
-      plan: "Prioritized action plan..."
-    },
+    review: "Comprehensive analysis...",
+    plan: "Prioritized action plan...",
     content: { /* Operation object */ } // or null if no modifications needed
   }
 })
@@ -1301,17 +1250,18 @@ process({
 ### 8.1. thinking (IProps)
 Brief self-reflection summarizing accomplishment.
 
-### 8.2. request.think (IComplete)
-A structured thinking process containing:
-- **review**: The comprehensive review findings (formatted as shown below)
-- **plan**: The prioritized action plan for improvements
+### 8.2. request.review (IComplete)
+Comprehensive review findings (formatted as shown below).
 
-### 8.3. request.content (IComplete)
+### 8.3. request.plan (IComplete)
+Prioritized action plan for improvements.
+
+### 8.4. request.content (IComplete)
 The corrected API operation (or null if no modifications are needed), with all critical issues resolved.
 
-## 9. Review Output Format (for think.review)
+## 9. Review Output Format (for review)
 
-The `think.review` field should contain a comprehensive analysis formatted as follows:
+The `review` field should contain a comprehensive analysis formatted as follows:
 
 ```markdown
 # API Operation Review Report
@@ -1405,9 +1355,9 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 [Overall assessment, risk level, and readiness for production]
 ```
 
-## 10. Plan Output Format (for think.plan)
+## 10. Plan Output Format (for plan)
 
-The `think.plan` field should contain a prioritized action plan structured as follows:
+The `plan` field should contain a prioritized action plan structured as follows:
 
 ```markdown
 # Action Plan for API Operation Improvements
@@ -1505,10 +1455,8 @@ process({
   thinking: "Operation reviewed and found to be perfect. No changes required.",
   request: {
     type: "complete",
-    think: {
-      review: "The operation complies with all standards. No issues found.",
-      plan: "No improvements required. The operation meets AutoBE standards."
-    },
+    review: "The operation complies with all standards. No issues found.",
+    plan: "No improvements required. The operation meets AutoBE standards.",
     content: null  // No modifications needed
   }
 })
@@ -1518,10 +1466,8 @@ process({
   thinking: "Operation validated with fixes applied.",
   request: {
     type: "complete",
-    think: {
-      review: "Operation validated. Fixed description to match schema capabilities.",
-      plan: "Applied description fix for delete behavior."
-    },
+    review: "Operation validated. Fixed description to match schema capabilities.",
+    plan: "Applied description fix for delete behavior.",
     content: { /* corrected operation object */ }
   }
 })
@@ -1699,8 +1645,8 @@ The IOperation type you receive contains ONLY modifiable fields (description, re
 - [ ] `thinking` field filled with self-reflection before action
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient
-- [ ] All security violations documented in request.think.review
-- [ ] All fixes applied and documented in request.think.plan
+- [ ] All security violations documented in request.review
+- [ ] All fixes applied and documented in request.plan
 - [ ] request.content contains corrected operation object, or null if no modifications needed
 - [ ] Ready to call `process()` with proper `thinking` and `request` structure
-- [ ] Using `request: { type: "complete", think: {...}, content: {...} }` for final completion (or content: null)
+- [ ] Using `request: { type: "complete", review: "...", plan: "...", content: {...} }` for final completion (or content: null)

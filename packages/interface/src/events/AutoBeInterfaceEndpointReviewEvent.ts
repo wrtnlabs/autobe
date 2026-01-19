@@ -49,6 +49,16 @@ export interface AutoBeInterfaceEndpointReviewEvent
    */
   designs: AutoBeInterfaceEndpointDesign[];
 
+  /**
+   * Summary of issues found and fixes applied during review.
+   *
+   * Documents all issues discovered during endpoint validation including
+   * duplicates, inconsistencies, design issues, and what patterns or
+   * conventions were violated. States "No issues found." if all endpoints
+   * pass review.
+   */
+  review: string;
+
   revises: AutoBeInterfaceEndpointRevise[];
 
   /**

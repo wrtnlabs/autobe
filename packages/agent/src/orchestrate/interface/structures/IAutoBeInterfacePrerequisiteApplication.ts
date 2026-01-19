@@ -87,6 +87,30 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
     type: "complete";
 
     /**
+     * Analysis of the operation's resource dependencies.
+     *
+     * Before determining prerequisites, analyze what you know:
+     *
+     * - What resources does this operation require to exist?
+     * - What foreign key relationships affect this operation?
+     * - What path parameters imply resource dependencies?
+     * - What request body fields reference other resources?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the prerequisite chain decisions.
+     *
+     * Explain why you selected these prerequisites:
+     *
+     * - Why is each prerequisite operation necessary?
+     * - What resource must exist before this operation can succeed?
+     * - What is the correct ordering of prerequisite operations?
+     * - What prerequisites were excluded and why?
+     */
+    rationale: string;
+
+    /**
      * The API endpoint being analyzed.
      *
      * Identifies the specific operation (method + path) that needs

@@ -29,6 +29,26 @@ export interface AutoBeInterfaceAuthorizationEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
+   * Analysis of the actor's authentication requirements and schema context.
+   *
+   * Documents the agent's understanding of the actor type (guest/member/admin),
+   * what authentication fields exist in the database schema, what additional
+   * authentication features are supported by the schema, and what operations
+   * are appropriate for this actor kind.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the authorization operation design decisions.
+   *
+   * Explains why specific operations were included or excluded, how the actor
+   * kind influenced the essential operations selection (e.g., why guests don't
+   * have login), what schema fields enabled additional operations, and why
+   * certain authentication patterns were chosen.
+   */
+  rationale: string;
+
+  /**
    * Array of API operations being defined for the endpoints.
    *
    * Contains the detailed {@link AutoBeOpenApi.IOperation} specifications that

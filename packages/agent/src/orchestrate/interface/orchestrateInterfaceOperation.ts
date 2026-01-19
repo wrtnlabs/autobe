@@ -126,46 +126,17 @@ async function process(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceOperationApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
         preliminary,
         actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
-        build: (op) => {
-          pointer.value ??= [];
-          for (const p of op.parameters)
-            p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
-          const matrix: AutoBeOpenApi.IOperation[] =
-            op.authorizationActors.length === 0
-              ? [
-                  {
-                    ...op,
-                    path:
-                      "/" +
-                      [prefix, ...op.path.split("/")]
-                        .filter((it) => it !== "")
-                        .join("/"),
-                    authorizationActor: null,
-                    authorizationType: null,
-                    prerequisites: [],
-                  },
-                ]
-              : op.authorizationActors.map((actor) => ({
-                  ...op,
-                  path:
-                    "/" +
-                    [prefix, actor, ...op.path.split("/")]
-                      .filter((it) => it !== "")
-                      .join("/"),
-                  authorizationActor: actor,
-                  authorizationType: null,
-                  prerequisites: [],
-                }));
-          pointer.value.push(...matrix.flat());
-          ++props.progress.completed;
+        build: (complete) => {
+          pointer.value = complete;
         },
       }),
       enforceFunctionCall: true,
@@ -179,17 +150,52 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
+    for (const p of pointer.value.operation.parameters)
+      p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
+    const matrix: AutoBeOpenApi.IOperation[] =
+      pointer.value.operation.authorizationActors.length === 0
+        ? [
+            {
+              ...pointer.value.operation,
+              path:
+                "/" +
+                [prefix, ...pointer.value.operation.path.split("/")]
+                  .filter((it) => it !== "")
+                  .join("/"),
+              authorizationActor: null,
+              authorizationType: null,
+              prerequisites: [],
+            } satisfies AutoBeOpenApi.IOperation,
+          ]
+        : pointer.value.operation.authorizationActors.map(
+            (actor) =>
+              ({
+                ...pointer.value!.operation,
+                path:
+                  "/" +
+                  [prefix, actor, ...pointer.value!.operation.path.split("/")]
+                    .filter((it) => it !== "")
+                    .join("/"),
+                authorizationActor: actor,
+                authorizationType: null,
+                prerequisites: [],
+              }) satisfies AutoBeOpenApi.IOperation,
+          );
+    ++props.progress.completed;
+
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
-      operations: pointer.value,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      operations: matrix,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       ...props.progress,
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceOperationEvent);
-    return out(result)(pointer.value);
+    return out(result)(matrix);
   });
 }
 
@@ -202,7 +208,7 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (operation: IAutoBeInterfaceOperationApplication.IOperation) => void;
+  build: (operation: IAutoBeInterfaceOperationApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -265,8 +271,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete")
-          props.build(next.request.operation);
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceOperationApplication,
   };

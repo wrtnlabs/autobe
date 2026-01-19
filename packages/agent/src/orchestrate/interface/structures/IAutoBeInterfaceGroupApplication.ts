@@ -83,6 +83,30 @@ export namespace IAutoBeInterfaceGroupApplication {
     type: "complete";
 
     /**
+     * Analysis of the database schema structure and grouping needs.
+     *
+     * Before designing groups, analyze what you know:
+     *
+     * - What namespaces, prefixes, or organizational patterns exist in the DB?
+     * - Which entities naturally belong together based on table relationships?
+     * - What business domains or functional areas can be identified?
+     * - Are there existing interface operations that suggest grouping patterns?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the group design decisions.
+     *
+     * Explain why you organized groups this way:
+     *
+     * - Why did you create each group?
+     * - What entities are included in each group and why?
+     * - How does this grouping reflect the database schema structure?
+     * - What coverage does this provide for all requirements?
+     */
+    rationale: string;
+
+    /**
      * Array of API endpoint groups for organizing development.
      *
      * DO: Derive groups from database schema organization (namespaces, file

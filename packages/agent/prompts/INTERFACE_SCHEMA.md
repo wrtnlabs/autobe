@@ -433,12 +433,12 @@ process({ thinking: "Missing operation context for DTO usage patterns. Don't hav
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests are still pending
 process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["sales"] } })
-process({ thinking: "Schema designed", request: { type: "complete", schema: {...} } })  // Executes with OLD materials!
+process({ thinking: "Schema designed", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Complete preliminary gathering first, then execute complete
 process({ thinking: "Missing entity fields for comprehensive DTO design. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["sales", "orders"] } })
 // Then after materials loaded:
-process({ thinking: "Generated schema, mapped all relationships", request: { type: "complete", schema: {...} } })
+process({ thinking: "Generated schema, mapped all relationships", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
@@ -5752,4 +5752,6 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - [ ] Schema defined with complete properties for the target type
 - [ ] Security rules applied consistently
 - [ ] All required relations properly modeled with $ref
-- [ ] Ready to call `process({ request: { type: "complete", schema: {...} } })` with the complete schema definition
+- [ ] `analysis` field documents type's purpose, context, and structural influences
+- [ ] `rationale` field explains property choices, required vs optional decisions, and exclusions
+- [ ] Ready to call `process({ request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })`

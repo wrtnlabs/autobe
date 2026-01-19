@@ -72,6 +72,8 @@ export async function orchestrateInterfaceGroup(
     const event: AutoBeInterfaceGroupEvent = {
       type: SOURCE,
       id: v7(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
       created_at: start.toISOString(),
       groups: pointer.value.groups,
       metric: result.metric,

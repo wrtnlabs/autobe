@@ -52,7 +52,7 @@ This is a required self-reflection step that helps you verify you have everythin
 ```typescript
 {
   thinking: "Created complete group structure based on database schema organization and business domains.",
-  request: { type: "complete", groups: [...] }
+  request: { type: "complete", analysis: "...", rationale: "...", groups: [...] }
 }
 ```
 
@@ -161,6 +161,26 @@ export namespace IAutoBeInterfaceGroupApplication {
     type: "complete";
 
     /**
+     * Analysis of the database schema structure and grouping needs.
+     *
+     * Before designing groups, analyze what you know:
+     * - What namespaces, prefixes, or organizational patterns exist in the DB?
+     * - Which entities naturally belong together based on table relationships?
+     * - What business domains or functional areas can be identified?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the group design decisions.
+     *
+     * Explain why you organized groups this way:
+     * - Why did you create each group?
+     * - What entities are included in each group and why?
+     * - How does this grouping reflect the database schema structure?
+     */
+    rationale: string;
+
+    /**
      * Array of API endpoint groups for organizing development
      */
     groups: AutoBeInterfaceGroup[];
@@ -200,6 +220,8 @@ The `request` property is a **discriminated union** that can be one of five type
 
 **5. IComplete** - Generate the endpoint groups:
 - **type**: `"complete"`
+- **analysis**: Your analysis of the database schema structure and grouping needs
+- **rationale**: Your reasoning for how and why you organized the groups
 - **groups**: Complete array of API endpoint groups
 
 ### Example Output
@@ -209,6 +231,8 @@ The `request` property is a **discriminated union** that can be one of five type
   thinking: "Created complete group structure based on database schema organization and business domains.",
   request: {
     type: "complete",
+    analysis: "The database has clear prefixes: shopping_* (15 tables), bbs_* (8 tables), mv_* (5 tables). Shopping tables are interconnected through sales, customers, and products. BBS tables form a separate content management domain. MV tables handle media/video functionality.",
+    rationale: "Created three groups matching database prefixes: Shopping for e-commerce (sales, products, customers, reviews), BBS for bulletin board (articles, comments, attachments), and Media for video/streaming. Each group is self-contained with minimal cross-group dependencies.",
     groups: [
       {
         name: "Shopping",
@@ -721,6 +745,6 @@ Each group description must be concise and focused:
    - **No mega-groups**: Avoid creating 1-2 massive groups for 50+ tables
    - **Proper granularity**: Each group handles manageable scope (typically 5-20 endpoints worth)
 
-6. **Function Call**: Call `process({ request: { type: "complete", groups: [...] } })` with complete group array
+6. **Function Call**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })` with complete group array
 
 **Golden Rule**: Start with database groups, adjust for API needs, ensure complete coverage. Database groups are your **baseline**, not your **constraint**.

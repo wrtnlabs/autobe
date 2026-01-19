@@ -94,14 +94,33 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     type: "complete";
 
     /**
-     * Comprehensive thinking process for API operation review.
+     * Comprehensive operation-level review findings.
      *
-     * Encapsulates the agent's analytical review findings and actionable
-     * improvement plan. This structured thinking process ensures systematic
-     * evaluation of the API operation against AutoBE's quality standards before
-     * generating the final enhanced operation.
+     * Systematic assessment of the operation organized by severity:
+     *
+     * - Authorization configuration issues
+     * - Path structure violations
+     * - Metadata consistency problems
+     * - Description accuracy issues
+     *
+     * Documents what issues were found during review, with specific examples
+     * and current vs expected behavior.
      */
-    think: IThink;
+    review: string;
+
+    /**
+     * Action plan for identified issues.
+     *
+     * Structured improvement strategy explaining what corrections will be
+     * applied and why:
+     *
+     * - What specific changes are being made
+     * - Why each change is necessary
+     * - If rejecting (returning null), why the operation cannot be fixed
+     *
+     * If no issues found: "No improvements required. Operation meets standards."
+     */
+    plan: string;
 
     /**
      * Corrected operation with issues resolved, or null if operation rejected.
@@ -148,65 +167,4 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     "description" | "requestBody" | "responseBody"
   > {}
 
-  /**
-   * Structured thinking process for operation review.
-   *
-   * Contains analytical review findings and improvement action plan organized
-   * for systematic enhancement of the operation.
-   */
-  export interface IThink {
-    /**
-     * Comprehensive operation-level review analysis with prioritized findings.
-     *
-     * Systematic assessment organized by severity levels (CRITICAL, HIGH,
-     * MEDIUM, LOW):
-     *
-     * - **Authorization Analysis**: `authorizationActor` and `authorizationType`
-     *   configuration issues, missing authorization on sensitive operations
-     * - **Path Structure Validation**: Composite unique constraint completeness,
-     *   unique code usage vs UUID, path-parameter correspondence
-     * - **Metadata Consistency**: Method-name alignment (POST→create,
-     *   DELETE→erase), typeName conventions, HTTP method semantics
-     * - **Description Accuracy**: Operation descriptions contradicting database
-     *   schema capabilities (e.g., soft delete mentioned without schema
-     *   support), inappropriate security mentions
-     *
-     * Note: This review focuses on Operation metadata. DTO field-level issues
-     * (password fields in response types, missing required fields, etc.) are
-     * validated by Schema Review agents.
-     *
-     * Each finding includes specific examples, current vs expected behavior,
-     * and concrete fix recommendations. Critical authorization and path
-     * structure issues are highlighted for immediate attention.
-     */
-    review: string;
-
-    /**
-     * Prioritized action plan for identified operation-level issues.
-     *
-     * Structured improvement strategy categorized by severity:
-     *
-     * - **Immediate Actions (CRITICAL)**: Authorization configuration failures
-     *   (missing `authorizationActor` on sensitive operations), path structure
-     *   violations (incomplete composite unique paths)
-     * - **Required Fixes (HIGH)**: Metadata consistency issues (method-name
-     *   misalignment, typeName convention violations), description accuracy
-     *   problems (soft delete mentioned without schema support)
-     * - **Recommended Improvements (MEDIUM)**: Suboptimal authorization
-     *   configuration, minor path parameter issues
-     * - **Optional Enhancements (LOW)**: Description improvements, documentation
-     *   enhancements
-     *
-     * Note: This plan addresses Operation metadata only. DTO field-level fixes
-     * (password field removal, required field additions, etc.) are handled by
-     * Schema Review agents.
-     *
-     * If the operation passes review without issues, contains: "No improvements
-     * required. The operation meets AutoBE standards."
-     *
-     * Each action item includes the specific operation path, the exact change
-     * needed, and the rationale for the modification.
-     */
-    plan: string;
-  }
 }
