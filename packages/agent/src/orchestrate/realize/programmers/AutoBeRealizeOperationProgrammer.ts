@@ -234,6 +234,7 @@ function writeImportStatements(props: {
     'import { PasswordUtil } from "../utils/PasswordUtil";',
     'import { toISOStringSafe } from "../utils/toISOStringSafe"',
     "",
+    `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
     ...Array.from(typeReferences).map(
       (ref) =>
         `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,

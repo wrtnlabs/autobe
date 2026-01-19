@@ -342,6 +342,7 @@ ${Object.keys(props.schema.properties)
       `import { ArrayUtil } from "@nestia/e2e";`,
       `import typia, { tags } from "typia";`,
       "",
+      `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
       ...Array.from(typeReferences).map(
         (ref) =>
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
