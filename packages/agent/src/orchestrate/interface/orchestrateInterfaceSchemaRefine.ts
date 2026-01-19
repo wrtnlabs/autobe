@@ -120,7 +120,7 @@ async function process(
   });
 
   const value = await preliminary.orchestrate<
-    AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false | null
+    AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false
   >(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IComplete | null> =
       {
