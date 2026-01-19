@@ -449,6 +449,5 @@ ${Object.keys(props.schema.properties)
           .find((m) => m.name === props.plan.databaseSchemaName)!,
       }).map((m) => m.member);
     })();
-    (() => {})();
   };
 }
