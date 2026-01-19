@@ -1,12 +1,41 @@
 import {
+  AutoBeInterfaceSchemaPropertyErase,
   AutoBeInterfaceSchemaPropertyNullish,
   AutoBeInterfaceSchemaPropertyRevise,
+  AutoBeInterfaceSchemaPropertyUpdate,
   AutoBeOpenApi,
 } from "@autobe/interface";
+import { AutoBeInterfaceSchemaPropertyKeep } from "@autobe/interface/src/histories/contents/AutoBeInterfaceSchemaPropertyKeep";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { IValidation } from "typia";
+import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
+import typia, { IValidation } from "typia";
+
+import { AutoBeState } from "../../../context/AutoBeState";
+import { AutoBeLlmSchemaFactory } from "../utils/AutoBeLlmSchemaFactory";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
+  export const fixApplication = (props: {
+    state: AutoBeState;
+    application: ILlmApplication;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  }): void => {
+    const $defs = props.application.functions[0].parameters.$defs;
+    AutoBeLlmSchemaFactory.fixDatabasePlugin(props.state, $defs);
+
+    const fix = (next: ILlmSchema | undefined): void => {
+      if (next === undefined) return;
+      else if (LlmTypeChecker.isObject(next) === false) return;
+
+      const key: ILlmSchema | undefined = next.properties.key;
+      if (key === undefined || LlmTypeChecker.isString(key) === false) return;
+      key.enum = Object.keys(props.schema.properties);
+    };
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
+  };
+
   export const validate = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
@@ -31,9 +60,25 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         `,
         });
     });
+    for (const key of Object.keys(props.schema.properties))
+      if (props.revises.some((revise) => revise.key === key) === false)
+        props.errors.push({
+          path: `${props.path}.revises[]`,
+          value: undefined,
+          expected: `AutoBeInterfaceSchemaPropertyRevise (key: ${JSON.stringify(key)})`,
+          description: StringUtil.trim`
+            Missing revise for property ${JSON.stringify(key)}.
+
+            You MUST provide a revise for EVERY property in the object schema.
+
+            Use \`{ type: "keep", key: ${JSON.stringify(key)}, reason: "..." }\` 
+            if no changes are needed. Otherwise, choose an appropriate revise type 
+            to modify or erase the property.
+          `,
+        });
   };
 
-  export const reviseObjectType = (props: {
+  export const refine = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
@@ -59,7 +104,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           result.required.push(revise.key);
       } else if (revise.type === "nullish") {
         // change nullable or required status only
-        nullishObjectProperty({
+        nullish({
           schema: result,
           property: props.schema.properties[revise.key],
           revise: revise,
@@ -69,7 +114,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     return result;
   };
 
-  const nullishObjectProperty = (props: {
+  const nullish = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     property: Exclude<
       AutoBeOpenApi.IJsonSchemaDescriptive,

@@ -3769,7 +3769,9 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
 
 ### 9.2. Property Revision Types
 
-**For Relation Review, you use `update` and `erase` revisions**:
+**CRITICAL: You MUST provide a revise for EVERY property in the object schema.**
+
+For Relation Review, you use `update`, `erase`, and `keep` revisions:
 
 ```typescript
 // Update revision - transform FK to $ref reference (with optional rename)
@@ -3788,7 +3790,19 @@ interface AutoBeInterfaceSchemaPropertyErase {
   reason: string;  // Why this field is being removed
   key: string;     // Property name to remove
 }
+
+// Keep revision - keep existing property unchanged
+interface AutoBeInterfaceSchemaPropertyKeep {
+  type: "keep";
+  reason: string;  // Why this property is kept unchanged
+  key: string;     // Property name to keep
+}
 ```
+
+**When to use each revision type**:
+- **`update`**: Transform FK fields to object references
+- **`erase`**: Remove incorrect reverse relations
+- **`keep`**: Explicitly acknowledge existing properties that are correct
 
 **Using `newKey` for FK Transformation**:
 - When transforming `author_id` → `author`, set `key: "author_id"` and `newKey: "author"`
@@ -3916,7 +3930,7 @@ process({
 })
 ```
 
-**Example 4: No Issues Found (Empty revises)**
+**Example 4: No Issues Found (Keep existing properties)**
 
 ```typescript
 process({
@@ -3924,22 +3938,44 @@ process({
   request: {
     type: "complete",
     review: "No relation or structure issues found. All relations are properly structured.",
-    revises: []  // Empty array - no relation issues
+    revises: [
+      {
+        type: "keep",
+        reason: "Relation is properly structured with correct $ref",
+        key: "author"
+      },
+      {
+        type: "keep",
+        reason: "Business field - no relation concerns",
+        key: "title"
+      },
+      {
+        type: "keep",
+        reason: "Business field - no relation concerns",
+        key: "content"
+      },
+      {
+        type: "keep",
+        reason: "Relation array is properly scoped",
+        key: "comments"
+      }
+    ]
   }
 })
 ```
 
 ### 9.5. Critical Relation Rules for Revisions
 
-**ABSOLUTE REQUIREMENT**: Create revisions for ALL relation issues found.
+**ABSOLUTE REQUIREMENT**: Create revisions for ALL properties in the schema.
 
-**Revision Types by Violation**:
+**Revision Types by Scenario**:
 1. FK needs transformation → `update` with `newKey` (e.g., `author_id` → `author`)
 2. Actor reversal → `erase` (remove array field)
 3. Inline object → `update` with `newKey: null` (replace with $ref, keep key)
 4. Incorrect relation type → `update` with `newKey: null` (fix $ref target)
+5. Correct property → `keep` (explicitly acknowledge)
 
-**CRITICAL**: Empty `revises` array means all relations are correct - no fixes needed
+**CRITICAL**: EVERY property in the schema MUST have a corresponding revise
 
 ---
 
@@ -4069,6 +4105,8 @@ Repeat these as you review:
 9. **"Same transaction = composition, different actor = aggregation"**
 10. **"IInvert provides context without circular references"**
 11. **"NEVER EVER transform `parent_id` to `parent: IEntity.ISummary` in Create/Update DTOs"**
+12. **"Use `keep` revisions to acknowledge correct properties"**
+13. **"EVERY property in the schema MUST have a revise (update, erase, or keep)"**
 
 ---
 
@@ -4174,6 +4212,8 @@ Repeat these as you review:
 - [ ] think.review lists ALL violations
 - [ ] think.plan describes ALL fixes
 - [ ] content contains ONLY modified schemas
+- [ ] revises contains `keep` for each correct property
+- [ ] EVERY property in schema has a corresponding revise
 
 **Remember**: You are the architect of the API's data model. Every relation you fix improves developer experience and system performance. Be thorough, be consistent, and create a beautiful, logical data structure.
 

@@ -775,9 +775,12 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
 
 ### 7.2. Property Revision Types
 
-**For Content Review, you primarily use `create` revisions**:
+**CRITICAL: You MUST provide a revise for EVERY property in the object schema.**
+
+For Content Review, you primarily use `create` and `keep` revisions:
 
 ```typescript
+// Create revision - add missing property
 interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;  // Why this field is being added
@@ -785,7 +788,18 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   schema: AutoBeOpenApi.IJsonSchemaDescriptive;  // Schema definition
   required: boolean;  // Add to required array?
 }
+
+// Keep revision - keep existing property unchanged
+interface AutoBeInterfaceSchemaPropertyKeep {
+  type: "keep";
+  reason: string;  // Why this property is kept unchanged
+  key: string;     // Property name to keep
+}
 ```
+
+**When to use each revision type**:
+- **`create`**: Add missing properties from database schema
+- **`keep`**: Explicitly acknowledge existing properties that need no changes
 
 ### 7.3. Output Examples
 
@@ -850,7 +864,7 @@ process({
 })
 ```
 
-**Example 2: Schema is Complete**
+**Example 2: Schema is Complete (Keep existing properties)**
 
 ```typescript
 process({
@@ -858,7 +872,28 @@ process({
   request: {
     type: "complete",
     review: "No missing fields found. All database fields are properly mapped to the schema.",
-    revises: []  // Empty array - no changes needed
+    revises: [
+      {
+        type: "keep",
+        reason: "Property correctly maps to database field with proper type",
+        key: "id"
+      },
+      {
+        type: "keep",
+        reason: "Property correctly maps to database field with proper type",
+        key: "name"
+      },
+      {
+        type: "keep",
+        reason: "Property correctly maps to database field with proper type",
+        key: "price"
+      },
+      {
+        type: "keep",
+        reason: "Property correctly maps to database field with proper type",
+        key: "createdAt"
+      }
+    ]
   }
 })
 ```
@@ -873,7 +908,8 @@ Repeat these as you review:
 2. **"Types must accurately map from database to OpenAPI"**
 3. **"I only ADD missing fields - I don't delete or modify existing ones"**
 4. **"Use `create` revisions to add missing properties"**
-5. **"Empty revises array means schema is complete"**
+5. **"Use `keep` revisions to acknowledge correct existing properties"**
+6. **"EVERY property in the schema MUST have a revise (create or keep)"**
 
 ---
 
@@ -895,7 +931,8 @@ Before submitting your content review:
 ### 9.3. Documentation Complete
 - [ ] `review` field lists ALL missing fields found
 - [ ] `revises` array contains `create` for each missing field
-- [ ] Empty `revises` only if schema is already complete
+- [ ] `revises` array contains `keep` for each existing correct property
+- [ ] EVERY property in schema has a corresponding revise
 
 ### 9.4. Function Calling Verification
 - [ ] `thinking` field filled with brief summary

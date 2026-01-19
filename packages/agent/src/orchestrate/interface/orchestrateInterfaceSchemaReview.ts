@@ -19,7 +19,6 @@ import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInter
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
-import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 interface IConfig {
@@ -166,7 +165,7 @@ async function process(
     const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
       pointer.value.revises.length === 0
         ? props.reviewSchema
-        : AutoBeInterfaceSchemaReviewProgrammer.reviseObjectType({
+        : AutoBeInterfaceSchemaReviewProgrammer.refine({
             schema: props.reviewSchema,
             revises: pointer.value.revises,
           });
@@ -245,10 +244,11 @@ function createController(
       },
     }),
   );
-  AutoBeLlmSchemaFactory.fixDatabasePlugin(
-    ctx.state(),
-    application.functions[0].parameters.$defs,
-  );
+  AutoBeInterfaceSchemaReviewProgrammer.fixApplication({
+    state: ctx.state(),
+    application,
+    schema: props.schema,
+  });
 
   return {
     protocol: "class",

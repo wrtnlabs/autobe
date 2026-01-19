@@ -13,21 +13,27 @@ export namespace AutoBeLlmSchemaFactory {
       .map((f) => f.models.map((m) => m.name))
       .flat()
       .sort();
-    const fix = (obj: ILlmSchema | undefined) => {
-      if (obj === undefined || LlmTypeChecker.isObject(obj) === false) return;
+    for (const value of Object.values($defs)) {
+      LlmTypeChecker.visit({
+        $defs,
+        schema: value,
+        closure: (next) => {
+          if (LlmTypeChecker.isObject(next) === false) return;
 
-      const property = obj.properties["x-autobe-database-schema"];
-      if (property === undefined || LlmTypeChecker.isAnyOf(property) === false)
-        return;
+          const property: ILlmSchema | undefined =
+            next.properties["x-autobe-database-schema"];
+          if (property !== undefined && LlmTypeChecker.isString(property)) {
+            property.enum = models;
+            property.description ??= "";
+            property.description += "\n\n";
+            property.description += StringUtil.trim`
+              Here is the list of database schemas available for association:
 
-      property.description += "\n\n";
-      property.description += StringUtil.trim`
-        Here is the list of database schemas available for association:
-
-        ${models.map((m) => `- \`${m}\``).join("\n")}
-      `;
-    };
-    fix($defs["AutoBeOpenApi.IJsonSchema.IObject"]);
-    fix($defs["AutoBeOpenApi.IJsonSchemaDescriptive.IObject"]);
+              ${models.map((m) => `- \`${m}\``).join("\n")}
+            `;
+          }
+        },
+      });
+    }
   };
 }

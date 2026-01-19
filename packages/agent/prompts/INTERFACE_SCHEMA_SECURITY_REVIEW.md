@@ -1835,7 +1835,9 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
 
 ### 8.2. Property Revision Types
 
-**For Security Review, you use `erase` and `create` revisions**:
+**CRITICAL: You MUST provide a revise for EVERY property in the object schema.**
+
+For Security Review, you use `erase`, `create`, and `keep` revisions:
 
 ```typescript
 // Erase revision - remove security-violating field
@@ -1856,11 +1858,19 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   };
   required: boolean; // Whether the field is required (true for password)
 }
+
+// Keep revision - keep existing property unchanged
+interface AutoBeInterfaceSchemaPropertyKeep {
+  type: "keep";
+  reason: string;  // Why this property is kept unchanged
+  key: string;     // Property name to keep
+}
 ```
 
 **When to use each revision type**:
 - **`erase`**: Remove security-violating fields (auth context, exposed passwords, system fields)
 - **`create`**: Add missing `password` field to IJoin/ILogin DTOs
+- **`keep`**: Explicitly acknowledge existing properties that pass security review
 
 ### 8.3. Review Field Documentation
 
@@ -1944,7 +1954,7 @@ process({
 })
 ```
 
-**Example 3: Schema Already Secure (Empty revises)**
+**Example 3: Schema Already Secure (Keep existing properties)**
 
 ```typescript
 process({
@@ -1952,7 +1962,23 @@ process({
   request: {
     type: "complete",
     review: "No security violations found. Schema is secure.",
-    revises: []  // Empty array - no security issues
+    revises: [
+      {
+        type: "keep",
+        reason: "Business field - no security concerns",
+        key: "title"
+      },
+      {
+        type: "keep",
+        reason: "Business field - no security concerns",
+        key: "content"
+      },
+      {
+        type: "keep",
+        reason: "Reference field - allowed for category selection",
+        key: "category_id"
+      }
+    ]
   }
 })
 ```
@@ -2197,7 +2223,7 @@ process({
 })
 ```
 
-#### Example 2: Schema Already Perfect (Empty revises)
+#### Example 2: Schema Already Perfect (Keep existing properties)
 
 ```typescript
 // Reviewing: IProduct.ICreate with no violations
@@ -2206,7 +2232,23 @@ process({
   request: {
     type: "complete",
     review: "No security violations found. Schema is secure.",
-    revises: []  // Empty array - no security issues
+    revises: [
+      {
+        type: "keep",
+        reason: "Business field - no security concerns",
+        key: "name"
+      },
+      {
+        type: "keep",
+        reason: "Business field - no security concerns",
+        key: "price"
+      },
+      {
+        type: "keep",
+        reason: "Reference field - allowed for category selection",
+        key: "category_id"
+      }
+    ]
   }
 })
 ```
@@ -2224,6 +2266,8 @@ Repeat these as you review:
 5. **"Password fields in Request DTOs must be plain `password`, not `password_hashed`"**
 6. **"ILogin DTOs ALWAYS need `password` field - ADD if missing"**
 7. **"IJoin DTOs need `password` ONLY for member/admin actors - NOT for guest actors"**
+8. **"Use `keep` revisions to acknowledge secure properties"**
+9. **"EVERY property in the schema MUST have a revise (erase, create, or keep)"**
 
 ---
 
@@ -2249,7 +2293,8 @@ Before submitting your security review:
 - [ ] revises array contains `erase` for each security-violating field
 - [ ] revises array contains `create` for missing password field in ILogin DTOs (always)
 - [ ] revises array contains `create` for missing password field in member/admin IJoin DTOs
-- [ ] Empty revises array only if schema is already secure AND complete
+- [ ] revises array contains `keep` for each secure property
+- [ ] EVERY property in schema has a corresponding revise
 
 ### Quality Assurance
 - [ ] No authentication bypass vulnerabilities remain
