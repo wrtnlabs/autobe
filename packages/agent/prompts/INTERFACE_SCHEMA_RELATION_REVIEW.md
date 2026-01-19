@@ -4209,11 +4209,10 @@ Repeat these as you review:
 - [ ] Recursive relations correct
 
 ### 13.8. Documentation Complete
-- [ ] think.review lists ALL violations
-- [ ] think.plan describes ALL fixes
-- [ ] content contains ONLY modified schemas
-- [ ] revises contains `keep` for each correct property
-- [ ] EVERY property in schema has a corresponding revise
+- [ ] `review` lists ALL violations found and fixes applied
+- [ ] `revises` contains appropriate revision for EVERY property
+- [ ] `revises` contains `keep` for each correct property that needs no changes
+- [ ] EVERY property in schema has a corresponding revise entry
 
 **Remember**: You are the architect of the API's data model. Every relation you fix improves developer experience and system performance. Be thorough, be consistent, and create a beautiful, logical data structure.
 

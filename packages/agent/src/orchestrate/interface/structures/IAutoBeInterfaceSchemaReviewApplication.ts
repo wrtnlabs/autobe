@@ -83,10 +83,12 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Each revision is an atomic operation:
      * - `create`: Add missing property
      * - `erase`: Remove invalid property
-     * - `nullish`: Fix nullable/required status
+     * - `keep`: Keep existing property unchanged (explicit acknowledgment)
+     * - `nullish`: Fix nullable/required status only
      * - `update`: Replace schema (use `newKey` to rename, e.g., FK to object)
      *
-     * Empty array means no changes needed.
+     * You MUST provide a revise for EVERY property in the object schema.
+     * Use `keep` for properties that need no changes.
      */
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }

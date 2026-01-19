@@ -1,11 +1,11 @@
 import {
   AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyKeep,
   AutoBeInterfaceSchemaPropertyNullish,
   AutoBeInterfaceSchemaPropertyRevise,
   AutoBeInterfaceSchemaPropertyUpdate,
   AutoBeOpenApi,
 } from "@autobe/interface";
-import { AutoBeInterfaceSchemaPropertyKeep } from "@autobe/interface/src/histories/contents/AutoBeInterfaceSchemaPropertyKeep";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
