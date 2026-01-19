@@ -28,9 +28,9 @@ export interface AutoBeInterfaceSchemaEvent
   /**
    * Type name of the schema being defined.
    *
-   * Represents the unique identifier for the schema definition being created
-   * in the OpenAPI specification. This type name will be used as the key in
-   * the OpenAPI components.schemas object and referenced throughout the API
+   * Represents the unique identifier for the schema definition being created in
+   * the OpenAPI specification. This type name will be used as the key in the
+   * OpenAPI components.schemas object and referenced throughout the API
    * specification for type consistency and reusability.
    *
    * The type name follows TypeScript naming conventions and should be
@@ -38,6 +38,25 @@ export interface AutoBeInterfaceSchemaEvent
    * understanding of the schema's purpose in the API contract.
    */
   typeName: string;
+
+  /**
+   * Analysis of the type's purpose and context.
+   *
+   * Documents the agent's understanding of the schema before designing it,
+   * including the type's purpose, related database entities or operations,
+   * expected fields based on variant type, and structural hints from related
+   * types.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the schema design decisions.
+   *
+   * Explains why the schema was designed with specific properties, required vs
+   * optional field choices, $ref usage decisions, and what was excluded (e.g.,
+   * auto-generated fields for ICreate variants).
+   */
+  rationale: string;
 
   /**
    * Schema definitions being defined for the API specification.

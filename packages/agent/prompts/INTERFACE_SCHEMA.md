@@ -1254,6 +1254,173 @@ model Session {
 - **Read DTOs**: All fields present, use `oneOf` for nullable values
 - **Request DTOs**: Optional fields omitted from `required` array
 
+#### 2.2.5. Database JSON String Fields with `additionalProperties`
+
+**CRITICAL RECOGNITION**: When a database column is typed as `String` but its description indicates "JSON string containing key-value pairs" (or similar phrases like "JSON object", "key-value map", "dictionary"), this is a **classic indicator** that the field should use `additionalProperties` in OpenAPI Schema.
+
+**The Pattern to Recognize**:
+
+```prisma
+model Product {
+  id          String @id
+  name        String
+  attributes  String /// JSON string containing key-value pairs for dynamic product attributes
+  settings    String /// JSON object with configuration key-value pairs
+  labels      String /// Key-value map of custom labels
+}
+```
+
+**WHY THIS HAPPENS**: Databases often store dynamic key-value data as JSON strings because:
+- The keys are not known at schema design time
+- The structure varies per record
+- It provides flexibility for user-defined data
+
+**HOW TO TRANSLATE TO OpenAPI SCHEMA**:
+
+When you see a `String` field with a description mentioning "key-value pairs", "JSON object", "dictionary", or "map", use `additionalProperties`:
+
+**❌ WRONG - Treating it as a plain string**:
+```json
+{
+  "attributes": {
+    "type": "string",
+    "description": "JSON string containing key-value pairs for dynamic product attributes"
+  }
+}
+```
+
+**✅ CORRECT - Using additionalProperties for key-value structure**:
+```json
+{
+  "attributes": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": {
+      "type": "string"
+    },
+    "description": "Dynamic product attributes as key-value pairs. Keys are attribute names, values are attribute values."
+  }
+}
+```
+
+**CRITICAL**: Even when using `additionalProperties`, you MUST always include `properties` and `required` fields. Use empty object `{}` and empty array `[]` respectively when there are no fixed properties.
+
+**COMMON DESCRIPTION PATTERNS TO RECOGNIZE**:
+
+| Database Description Pattern | OpenAPI Schema |
+|------------------------------|----------------|
+| "JSON string containing key-value pairs" | `{ type: "object", properties: {}, required: [], additionalProperties: { type: "string" } }` |
+| "JSON object with string values" | `{ type: "object", properties: {}, required: [], additionalProperties: { type: "string" } }` |
+| "Key-value map" / "Dictionary" | `{ type: "object", properties: {}, required: [], additionalProperties: { type: "..." } }` |
+| "Dynamic properties as JSON" | `{ type: "object", properties: {}, required: [], additionalProperties: { ... } }` |
+| "Metadata JSON object" | `{ type: "object", properties: {}, required: [], additionalProperties: { type: "string" } }` |
+| "JSON with arbitrary keys" | `{ type: "object", properties: {}, required: [], additionalProperties: { ... } }` |
+
+**VALUE TYPE INFERENCE**:
+
+The type inside `additionalProperties` depends on the description context:
+
+```json
+// When values are strings (most common)
+{
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": { "type": "string" }
+}
+
+// When values are numbers
+{
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": { "type": "number" }
+}
+
+// When values are mixed/any type (less common, use sparingly)
+{
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": {}
+}
+
+// When values are objects with known structure, extract as named type
+{
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": { "$ref": "#/components/schemas/IAttributeValue" }
+}
+```
+
+**COMPLETE EXAMPLE**:
+
+**Database Schema**:
+```prisma
+model User {
+  id            String  @id
+  email         String
+  preferences   String  /// JSON string containing key-value pairs of user preferences
+  custom_fields String? /// Optional JSON object with arbitrary custom field values
+}
+```
+
+**OpenAPI Schema**:
+```json
+// Schema: IUser
+{
+  "type": "object",
+  "description": "User entity with dynamic preferences and custom fields.",
+  "x-autobe-database-schema": "users",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the user."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address."
+    },
+    "preferences": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings."
+    },
+    "customFields": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        { "type": "null" }
+      ],
+      "description": "Optional custom fields as key-value pairs. Null if not set."
+    }
+  },
+  "required": ["id", "email", "preferences", "customFields"]
+}
+```
+
+**KEY POINTS**:
+1. **Recognition is crucial**: The DB column type is `String`, but the description reveals the true structure
+2. **Don't be fooled by the `String` type**: It's storage representation, not the logical structure
+3. **Use `additionalProperties`**: This correctly models dynamic key-value pairs in OpenAPI/JSON Schema
+4. **ALWAYS include `properties` and `required`**: Even with `additionalProperties`, you MUST include `properties: {}` and `required: []` - these fields are mandatory for all object types
+5. **Infer value types from context**: Usually `string`, but check the description for hints
+6. **Handle nullability**: If the DB field is `String?`, wrap with `oneOf: [..., { type: "null" }]`
+
 ### 2.3. Named Types and $ref Principle
 
 **ABSOLUTE MANDATE**: Every object type MUST be defined as a named DTO and referenced using `$ref`. This is not a suggestion - it's MANDATORY.
@@ -5095,12 +5262,67 @@ You must return a structured output following the `IAutoBeInterfaceSchemaApplica
 ```typescript
 export namespace IAutoBeInterfaceSchemaApplication {
   export interface IProps {
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;  // Single JSON Schema component for the specific DTO type
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+
+  export interface IComplete {
+    type: "complete";
+
+    /**
+     * Analysis of the type's purpose and context.
+     *
+     * Before designing the schema, analyze what you know:
+     * - What is this type for? (e.g., IProduct.ICreate is a creation request)
+     * - What database entities or operations inform its structure?
+     * - What fields should be included based on the variant type?
+     * - Are there related types that provide structural hints?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the schema design decisions.
+     *
+     * Explain why you designed the schema this way:
+     * - Which properties did you include and why?
+     * - What is required vs optional, and why?
+     * - Which types use $ref and why?
+     * - What was excluded and why? (e.g., auto-generated fields for ICreate)
+     */
+    rationale: string;
+
+    /**
+     * JSON schema component for the specified type.
+     */
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
   }
 }
 ```
 
 ### 7.2. Field Description
+
+**analysis**: Your analysis of the type's purpose and context before designing the schema. Document what you understand about the type, its role, and what informs its structure.
+
+**rationale**: Your reasoning for the schema design decisions. Explain property choices, required vs optional decisions, $ref usage, and exclusions.
 
 **schema**: A single JSON schema component for the specific DTO type that will be used in the OpenAPI specification's components.schemas section. The type name for which to create this schema is provided in the input context.
 

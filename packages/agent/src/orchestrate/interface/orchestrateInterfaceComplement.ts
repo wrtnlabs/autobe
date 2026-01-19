@@ -110,16 +110,17 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceComplementApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
         typeName: props.typeName,
         operations: props.document.operations,
         build: (next) => {
-          pointer.value = AutoBeJsonSchemaFactory.fixSchema(next);
+          pointer.value = next;
         },
         preliminary,
       }),
@@ -135,11 +136,17 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     ++props.progress.completed;
+
+    const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
+      AutoBeJsonSchemaFactory.fixSchema(pointer.value.schema);
+
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
-      schema: pointer.value,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      schema,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
@@ -147,7 +154,7 @@ async function process(
       total: props.progress.total,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceComplementEvent);
-    return out(result)(pointer.value);
+    return out(result)(schema);
   });
 }
 
@@ -166,7 +173,7 @@ function createController(
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
-    build: (schema: AutoBeOpenApi.IJsonSchemaDescriptive) => void;
+    build: (schema: IAutoBeInterfaceComplementApplication.IComplete) => void;
   },
 ): IAgenticaController.IClass {
   const validate = (
@@ -237,7 +244,7 @@ function createController(
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request.schema);
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceComplementApplication,
   };

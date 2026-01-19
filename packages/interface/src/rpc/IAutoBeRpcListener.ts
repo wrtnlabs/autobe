@@ -357,6 +357,8 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchema?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
+  interfaceSchemaRefine?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
+
   interfaceSchemaReview?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
   /**

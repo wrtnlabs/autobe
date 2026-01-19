@@ -617,6 +617,28 @@ export namespace IAutoBeInterfaceComplementApplication {
     type: "complete";
 
     /**
+     * Analysis of the missing type's purpose and context.
+     *
+     * Before designing the schema, analyze what you know:
+     * - What is this missing type for? Why is it referenced?
+     * - Where is it referenced from? ($ref in which schemas/operations?)
+     * - What does the reference context tell us about its expected structure?
+     * - Are there similar types that provide structural hints?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the schema design decisions.
+     *
+     * Explain why you designed the schema this way:
+     * - Which properties did you include and why?
+     * - What is required vs optional, and why?
+     * - How does this satisfy the referencing schemas' expectations?
+     * - What patterns from existing schemas did you follow?
+     */
+    rationale: string;
+
+    /**
      * The missing schema definition that needs to be added to the OpenAPI
      * document's `components.schemas` section.
      *
@@ -673,6 +695,16 @@ Discriminated union type that determines your action:
 
 Indicates this is the final task execution request, not a preliminary data request.
 
+#### analysis (IComplete)
+**Type**: `string` (REQUIRED)
+
+Your analysis of the missing type's purpose and context before designing the schema. Document why this type is referenced, where it's referenced from, what the reference context reveals about expected structure, and similar types that provide hints.
+
+#### rationale (IComplete)
+**Type**: `string` (REQUIRED)
+
+Your reasoning for the schema design decisions. Explain property choices, required vs optional decisions, how the schema satisfies referencing schemas' expectations, and what patterns you followed.
+
 #### schema (IComplete)
 **Type**: `AutoBeOpenApi.IJsonSchemaDescriptive` (REQUIRED)
 
@@ -689,6 +721,8 @@ process({
   thinking: "Generated missing schema definition, resolved undefined ref.",
   request: {
     type: "complete",
+    analysis: "IProduct.ISummary is referenced in IOrder.product and ICartItem.product. These are response DTOs showing order/cart details, so they need a lightweight product representation with essential fields.",
+    rationale: "Included id, name, price as core identifiers. Excluded detailed fields like description and inventory since summary is for display in lists. Required all fields since products always have these basics.",
     schema: {
       // Complete JSON Schema definition for the specific type
       type: "object",

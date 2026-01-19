@@ -1,13 +1,13 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceComplementApplication {
   /**
@@ -53,10 +53,11 @@ export namespace IAutoBeInterfaceComplementApplication {
      *
      * Determines which action to perform: preliminary data retrieval
      * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas, getPreviousAnalysisFiles, getPreviousDatabaseSchemas,
-     * getPreviousInterfaceOperations, getPreviousInterfaceSchemas) or final
-     * schema complementation (complete). When preliminary returns empty array,
-     * that type is removed from the union, physically preventing repeated calls.
+     * getInterfaceSchemas, getPreviousAnalysisFiles,
+     * getPreviousDatabaseSchemas, getPreviousInterfaceOperations,
+     * getPreviousInterfaceSchemas) or final schema complementation (complete).
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -86,6 +87,30 @@ export namespace IAutoBeInterfaceComplementApplication {
      * execution request.
      */
     type: "complete";
+
+    /**
+     * Analysis of the missing type's purpose and context.
+     *
+     * Before designing the schema, analyze what you know:
+     *
+     * - What is this missing type for? Why is it referenced?
+     * - Where is it referenced from? ($ref in which schemas/operations?)
+     * - What does the reference context tell us about its expected structure?
+     * - Are there similar types that provide structural hints?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the schema design decisions.
+     *
+     * Explain why you designed the schema this way:
+     *
+     * - Which properties did you include and why?
+     * - What is required vs optional, and why?
+     * - How does this satisfy the referencing schemas' expectations?
+     * - What patterns from existing schemas did you follow?
+     */
+    rationale: string;
 
     /**
      * The missing schema definition that needs to be added to the OpenAPI

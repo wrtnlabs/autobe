@@ -54,6 +54,7 @@ export * from "./AutoBeInterfaceOperationReviewEvent";
 export * from "./AutoBeInterfaceSchemaEvent";
 export * from "./AutoBeInterfaceSchemaReviewEvent";
 export * from "./AutoBeInterfaceSchemaRenameEvent";
+export * from "./AutoBeInterfaceSchemaRefineEvent";
 export * from "./AutoBeInterfaceStartEvent";
 
 // TEST

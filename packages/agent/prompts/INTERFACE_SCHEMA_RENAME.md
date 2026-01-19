@@ -59,20 +59,29 @@ This rule applies to **ALL type variants** including `.ICreate`, `.IUpdate`, `.I
 
 **The Dot Separator Rule**:
 - Type variants MUST use dot notation: `IShoppingSale.ICreate` ✅
-- NEVER concatenate: `IShoppingSaleICreate` ❌
+- NEVER concatenate with I prefix: `IShoppingSaleICreate` ❌
+- NEVER concatenate without I prefix: `IShoppingSaleCreate` ❌
 
 **How to Detect This Violation**:
 
 When analyzing type names, check if they follow these patterns:
 
 ```typescript
-// ❌ CONCATENATED VIOLATIONS (Multiple capital "I"s without dots)
+// ❌ CONCATENATED VIOLATIONS (With "I" prefix but missing dot)
 "IShoppingSaleICreate"          // Missing dot before "ICreate"
 "IBbsArticleIUpdate"            // Missing dot before "IUpdate"
 "IShoppingSaleReviewISummary"   // Missing dot before "ISummary"
 "IPageIShoppingSaleISummary"    // Missing dot before final "ISummary"
 
-// ✅ CORRECT PATTERNS (Dot separators present)
+// ❌ CONCATENATED VIOLATIONS (Without "I" prefix - NO DOT AND NO "I")
+"IShoppingSaleSummary"          // Missing dot AND "I" prefix → should be ".ISummary"
+"IShoppingSaleCreate"           // Missing dot AND "I" prefix → should be ".ICreate"
+"IBbsArticleUpdate"             // Missing dot AND "I" prefix → should be ".IUpdate"
+"IShoppingOrderRequest"         // Missing dot AND "I" prefix → should be ".IRequest"
+"IShoppingSaleReviewInvert"     // Missing dot AND "I" prefix → should be ".IInvert"
+"IProductAbridge"               // Missing dot AND "I" prefix → should be ".IAbridge"
+
+// ✅ CORRECT PATTERNS (Dot separators AND "I" prefix present)
 "IShoppingSale.ICreate"         // Dot before variant
 "IBbsArticle.IUpdate"           // Dot before variant
 "IShoppingSaleReview.ISummary"  // Dot before variant
@@ -82,13 +91,22 @@ When analyzing type names, check if they follow these patterns:
 **Pattern Recognition**:
 
 A concatenated violation has these characteristics:
+
+**Type 1 - With "I" prefix but missing dot**:
 1. Multiple capital "I" letters in sequence without dots between them
 2. Ends with `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, or `IAbridge`
 3. The variant suffix is directly attached to the base type name
 
+**Type 2 - Without "I" prefix (more subtle)**:
+1. Ends with `Create`, `Update`, `Summary`, `Request`, `Invert`, or `Abridge` (NO "I" prefix)
+2. No dot separator before the suffix
+3. The suffix is a known variant keyword directly concatenated to the base type
+
 **Refactoring Concatenated Types**:
 
-When you encounter a concatenated type name like `IShoppingSaleICreate`:
+When you encounter a concatenated type name, identify which type of violation it is:
+
+**Type 1 - With "I" prefix** (e.g., `IShoppingSaleICreate`):
 
 1. **Identify the base type**: Find where the variant suffix starts
    - Look for common suffixes: `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge`
@@ -100,6 +118,31 @@ When you encounter a concatenated type name like `IShoppingSaleICreate`:
    - To: `IShoppingSale.ICreate`
 
 3. **Verify no other violations**: Check that the base name (`IShoppingSale`) also preserves all table words
+
+**Type 2 - Without "I" prefix** (e.g., `IShoppingSaleSummary`):
+
+1. **Identify the base type**: Find where the variant suffix starts
+   - Look for suffixes WITHOUT "I" prefix: `Create`, `Update`, `Summary`, `Request`, `Invert`, `Abridge`
+   - Base: `IShoppingSale`
+   - Suffix: `Summary` (missing "I" prefix)
+
+2. **Insert dot separator AND add "I" prefix**:
+   - From: `IShoppingSaleSummary`
+   - To: `IShoppingSale.ISummary` (added both "." and "I")
+
+3. **Verify no other violations**: Check that the base name (`IShoppingSale`) also preserves all table words
+
+**More Examples of Type 2 Violations**:
+
+```typescript
+// ❌ WRONG → ✅ CORRECT
+"IShoppingSaleCreate"     → "IShoppingSale.ICreate"
+"IBbsArticleUpdate"       → "IBbsArticle.IUpdate"
+"IProductSummary"         → "IProduct.ISummary"
+"IShoppingOrderRequest"   → "IShoppingOrder.IRequest"
+"IUserInvert"             → "IUser.IInvert"
+"ICustomerAbridge"        → "ICustomer.IAbridge"
+```
 
 **Special Case - IPage Container**:
 
@@ -159,14 +202,29 @@ When generating refactoring operations, you fix the BASE TYPE NAME only (without
 
 When analyzing a type name string:
 
-1. **Strip variant suffix if present**:
-   - Check for: `.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert`, `.IAbridge`
-   - Also check concatenated forms: `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge` at the end
+1. **Strip variant suffix if present** (check in this order - most specific first):
+   - Check for proper form: `.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert`, `.IAbridge`
+   - Check for concatenated WITH "I": `ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge` at the end
+   - Check for concatenated WITHOUT "I": `Create`, `Update`, `Summary`, `Request`, `Invert`, `Abridge` at the end
    - Extract base type name
 
 2. **Analyze base type** for word omission (your primary task)
 
 3. **If concatenation detected**: The system will handle dot separator correction automatically when you provide the correct base type name
+
+**Examples of Suffix Stripping**:
+
+```typescript
+// Proper form (already correct separator)
+"IShoppingSale.ICreate" → base: "IShoppingSale", suffix: ".ICreate"
+
+// Concatenated WITH "I" prefix
+"IShoppingSaleICreate" → base: "IShoppingSale", suffix: "ICreate"
+
+// Concatenated WITHOUT "I" prefix (Type 2)
+"IShoppingSaleSummary" → base: "IShoppingSale", suffix: "Summary"
+"IBbsArticleCreate" → base: "IBbsArticle", suffix: "Create"
+```
 
 ---
 
@@ -196,6 +254,8 @@ When analyzing a type name string:
 
 ### 2.3. Concatenated Variant Suffix (CATASTROPHIC ERROR)
 
+**Type 1 - Concatenated WITH "I" prefix** (missing dot only):
+
 | Type Name (Input) | ❌ WRONG (Concatenated) | ✅ CORRECT (Dot Separator) | Problem |
 |-------------------|------------------------|---------------------------|---------|
 | Base + Variant | `IShoppingSaleICreate` | `IShoppingSale.ICreate` | Missing dot separator |
@@ -204,9 +264,22 @@ When analyzing a type name string:
 | Base + Variant | `IShoppingOrderIRequest` | `IShoppingOrder.IRequest` | Missing dot separator |
 | Container + Variant | `IPageIShoppingSaleISummary` | `IPageIShoppingSale.ISummary` | Missing dot separator |
 
-**Impact**: Type literally doesn't exist in the generated code. Compilation fails with "Cannot find name 'IShoppingSaleICreate'". Import statements break. Runtime crashes occur.
+**Type 2 - Concatenated WITHOUT "I" prefix** (missing BOTH dot AND "I"):
 
-**Detection Pattern**: Look for multiple consecutive capital "I"s followed by known variant suffixes (`ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge`) without a dot separator.
+| Type Name (Input) | ❌ WRONG (No dot, No "I") | ✅ CORRECT (Dot + "I" prefix) | Problem |
+|-------------------|--------------------------|-------------------------------|---------|
+| Base + Variant | `IShoppingSaleSummary` | `IShoppingSale.ISummary` | Missing dot AND "I" prefix |
+| Base + Variant | `IShoppingSaleCreate` | `IShoppingSale.ICreate` | Missing dot AND "I" prefix |
+| Base + Variant | `IBbsArticleUpdate` | `IBbsArticle.IUpdate` | Missing dot AND "I" prefix |
+| Base + Variant | `IShoppingOrderRequest` | `IShoppingOrder.IRequest` | Missing dot AND "I" prefix |
+| Base + Variant | `IUserProfileInvert` | `IUserProfile.IInvert` | Missing dot AND "I" prefix |
+| Base + Variant | `IProductAbridge` | `IProduct.IAbridge` | Missing dot AND "I" prefix |
+
+**Impact**: Type literally doesn't exist in the generated code. Compilation fails with "Cannot find name 'IShoppingSaleCreate'". Import statements break. Runtime crashes occur.
+
+**Detection Pattern**:
+- **Type 1**: Look for multiple consecutive capital "I"s followed by known variant suffixes (`ICreate`, `IUpdate`, `ISummary`, `IRequest`, `IInvert`, `IAbridge`) without a dot separator.
+- **Type 2**: Look for type names ending with variant keywords WITHOUT "I" prefix (`Create`, `Update`, `Summary`, `Request`, `Invert`, `Abridge`) - these are missing BOTH the dot separator AND the "I" prefix.
 
 **Refactoring Strategy**: When you detect concatenation, strip the suffix to get the base type, then provide the refactoring for the base type only. The system will automatically apply it to all variants and fix the dot separator.
 
@@ -226,15 +299,26 @@ When analyzing a type name string:
 
 ### 2.4. Combined Violations (DISASTER SCENARIO)
 
+**Type 1 - Word omission + Concatenation WITH "I"**:
+
 | Database Table | ❌ WRONG Type | Issues | ✅ CORRECT Type |
 |--------------|--------------|---------|-----------------|
 | `shopping_sale_reviews` | `ISaleReviewICreate` | Missing prefix + concatenated | `IShoppingSaleReview.ICreate` |
 | `bbs_article_comments` | `ICommentISummary` | Missing context + concatenated | `IBbsArticleComment.ISummary` |
 | `shopping_order_goods` | `IOrderGoodIUpdate` | Missing prefix + concatenated | `IShoppingOrderGood.IUpdate` |
 
+**Type 2 - Word omission + Concatenation WITHOUT "I"** (EVEN WORSE):
+
+| Database Table | ❌ WRONG Type | Issues | ✅ CORRECT Type |
+|--------------|--------------|---------|-----------------|
+| `shopping_sale_reviews` | `ISaleReviewSummary` | Missing prefix + no dot + no "I" | `IShoppingSaleReview.ISummary` |
+| `bbs_article_comments` | `ICommentCreate` | Missing context + no dot + no "I" | `IBbsArticleComment.ICreate` |
+| `shopping_order_goods` | `IOrderGoodUpdate` | Missing prefix + no dot + no "I" | `IShoppingOrderGood.IUpdate` |
+| `shopping_sales` | `ISaleRequest` | Missing prefix + no dot + no "I" | `IShoppingSale.IRequest` |
+
 **Impact**: Multiple cascading failures. Type doesn't exist (concatenation), AND wrong type (word omission), AND broken imports, AND compilation errors, AND runtime crashes.
 
-**Your Response**: Focus on correcting the BASE TYPE NAME. Provide refactoring that fixes word omission. The system handles dot separator correction automatically.
+**Your Response**: Focus on correcting the BASE TYPE NAME. Provide refactoring that fixes word omission. The system handles dot separator correction automatically (including adding the missing "I" prefix for Type 2 violations).
 
 ---
 

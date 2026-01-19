@@ -33,6 +33,24 @@ export interface AutoBeInterfaceComplementEvent
   typeName: string;
 
   /**
+   * Analysis of the missing type's purpose and context.
+   *
+   * Documents the agent's understanding of why this type is referenced, where
+   * it is referenced from ($ref locations), what the reference context reveals
+   * about expected structure, and similar types that provide structural hints.
+   */
+  analysis: string;
+
+  /**
+   * Rationale for the schema design decisions.
+   *
+   * Explains why the schema was designed with specific properties, required
+   * vs optional field choices, how it satisfies referencing schemas'
+   * expectations, and what patterns from existing schemas were followed.
+   */
+  rationale: string;
+
+  /**
    * Additional schema definition being added to complement the API
    * specification.
    *

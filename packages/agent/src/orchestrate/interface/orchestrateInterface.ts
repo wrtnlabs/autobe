@@ -30,6 +30,7 @@ import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
 import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
+import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
@@ -183,6 +184,20 @@ export const orchestrateInterface =
       }),
     );
 
+    // REFINE NONE-OBJECT TYPES
+    const refineProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: 0,
+    };
+    assign(
+      await orchestrateInterfaceSchemaRefine(ctx, {
+        instruction: props.instruction,
+        document,
+        schemas: document.components.schemas,
+        progress: refineProgress,
+      }),
+    );
+
     // REVIEW GENERATED
     const reviewProgress: AutoBeProgressEventBase = {
       completed: 0,
@@ -220,6 +235,14 @@ export const orchestrateInterface =
           document,
         });
       assign(complemented);
+      assign(
+        await orchestrateInterfaceSchemaRefine(ctx, {
+          instruction: props.instruction,
+          document,
+          schemas: complemented,
+          progress: refineProgress,
+        }),
+      );
 
       // REVIEW COMPLEMENTED
       for (const config of REVIEWERS) {

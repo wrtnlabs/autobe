@@ -99,6 +99,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Schemas",
           description: "Designing API type schemas",
         };
+      case "interfaceSchemaRefine":
+        return {
+          title: "Interface Schemas Refine",
+          description: `Refining degenerate API type schemas' structure`,
+        };
       case "interfaceSchemaReview":
         return {
           title: "Interface Schemas Review",

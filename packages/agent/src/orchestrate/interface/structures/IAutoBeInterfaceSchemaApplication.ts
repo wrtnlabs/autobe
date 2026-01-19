@@ -1,12 +1,12 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceSchemaApplication {
   /**
@@ -84,6 +84,30 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * execution request.
      */
     type: "complete";
+
+    /**
+     * Analysis of the type's purpose and context.
+     *
+     * Before designing the schema, analyze what you know:
+     *
+     * - What is this type for? (e.g., IProduct.ICreate is a creation request)
+     * - What database entities or operations inform its structure?
+     * - What fields should be included based on the variant type?
+     * - Are there related types that provide structural hints?
+     */
+    analysis: string;
+
+    /**
+     * Rationale for the schema design decisions.
+     *
+     * Explain why you designed the schema this way:
+     *
+     * - Which properties did you include and why?
+     * - What is required vs optional, and why?
+     * - Which types use $ref and why?
+     * - What was excluded and why? (e.g., auto-generated fields for ICreate)
+     */
+    rationale: string;
 
     /**
      * JSON schema component for the specified type.

@@ -127,9 +127,10 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeOpenApi.IJsonSchemaDescriptive | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeInterfaceSchemaApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
@@ -153,12 +154,14 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      AutoBeJsonSchemaFactory.fixSchema(pointer.value);
+      AutoBeJsonSchemaFactory.fixSchema(pointer.value.schema);
 
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
       schema,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -174,7 +177,7 @@ async function process(
 function createController(
   ctx: AutoBeContext,
   props: {
-    build: (next: AutoBeOpenApi.IJsonSchemaDescriptive) => Promise<void>;
+    build: (next: IAutoBeInterfaceSchemaApplication.IComplete) => Promise<void>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
       | "databaseSchemas"
@@ -257,8 +260,7 @@ function createController(
     application,
     execute: {
       process: async (next) => {
-        if (next.request.type === "complete")
-          await props.build(next.request.schema);
+        if (next.request.type === "complete") await props.build(next.request);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
   };
