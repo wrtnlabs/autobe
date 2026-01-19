@@ -119,7 +119,9 @@ async function process(
     },
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const value = await preliminary.orchestrate<
+    AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false | null
+  >(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IComplete | null> =
       {
         value: null,
@@ -171,8 +173,9 @@ async function process(
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaRefineEvent);
 
-    return out(result)(refinedSchema);
+    return out(result)(refinedSchema ?? false);
   });
+  return value || null;
 }
 
 function createController(
