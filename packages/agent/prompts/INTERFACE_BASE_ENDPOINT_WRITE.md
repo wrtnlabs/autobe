@@ -13,10 +13,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - Request ONLY the specific schemas or files needed to resolve ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", designs: [...] } })` with your designed endpoints
+4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
 
 **CRITICAL: Purpose Function is MANDATORY**
-- Your PRIMARY GOAL is to call `process({ request: { type: "complete", designs: [...] } })` with endpoint designs
+- Your PRIMARY GOAL is to call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with endpoint designs
 - Gathering input materials is ONLY to resolve specific ambiguities or gaps
 - DON'T treat material gathering as a checklist to complete
 - Call the complete function as soon as you have sufficient context to design endpoints
@@ -757,10 +757,12 @@ model article_snapshots {
 - [ ] No duplicates with existing authorization endpoints
 
 ### Output Format
+- [ ] `analysis` field documents what tables were analyzed, what CRUD operations were identified
+- [ ] `rationale` field explains why endpoints were designed this way, what was skipped and why
 - [ ] Each endpoint has `endpoint` object with `path` and `method`
 - [ ] Each endpoint has `description` explaining purpose
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Ready to call `process()` with `type: "complete"`, `analysis`, `rationale`, and `designs`
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Skip POST for actor tables (handled by Authorization). Call `process()` with `type: "complete"` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Skip POST for actor tables (handled by Authorization). Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.
