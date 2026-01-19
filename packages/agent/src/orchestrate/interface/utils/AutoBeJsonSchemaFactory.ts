@@ -43,13 +43,16 @@ export namespace AutoBeJsonSchemaFactory {
 
       value.properties = {
         ...parent.properties,
+        ...value.properties,
       };
       if (value.properties.token === undefined)
         value.properties.token = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "Authorization token.",
         };
-      value.required = [...parent.required];
+      value.required = Array.from(
+        new Set([...parent.required, ...value.required]),
+      );
       if (value.required.includes("id") === false) value.required.push("id");
       if (value.required.includes("token") === false)
         value.required.push("token");
