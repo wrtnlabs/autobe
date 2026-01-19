@@ -58,8 +58,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source_id = v7();
     this.kinds = props.kinds;
     this.config = {
-      prisma: props.config?.database ?? "text",
-    } as any;
+      database: props.config?.database ?? "text",
+    } as AutoBePreliminaryController.IConfig<any>;
 
     this.argumentTypeNames = (() => {
       const func = props.application.functions.find(
