@@ -274,6 +274,9 @@ export namespace AutoBeJsonSchemaFactory {
           else if (k.startsWith("x-")) delete (next as any)[k];
         if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
         else if (AutoBeOpenApiTypeChecker.isArray(next)) fixArraySchema(next);
+        else if (AutoBeOpenApiTypeChecker.isInteger(next))
+          fixIntegerSchema(next);
+        else if (AutoBeOpenApiTypeChecker.isNumber(next)) fixNumberSchema(next);
       },
     });
     return emended as Schema;
@@ -300,6 +303,121 @@ export namespace AutoBeJsonSchemaFactory {
 
   const fixArraySchema = (schema: AutoBeOpenApi.IJsonSchema.IArray): void => {
     if (schema.minItems === 0) delete schema.minItems;
+  };
+
+  /**
+   * Fix integer schema to prevent nonsensical typia tag configurations.
+   *
+   * Handles:
+   *
+   * - Decimal values in min/max constraints (integers must have integer bounds)
+   * - Impossible ranges (min > max, exclusiveMin >= exclusiveMax, etc.)
+   */
+  const fixIntegerSchema = (
+    schema: AutoBeOpenApi.IJsonSchema.IInteger,
+  ): void => {
+    if (schema.minimum !== undefined && !Number.isInteger(schema.minimum))
+      schema.minimum = Math.ceil(schema.minimum);
+    if (schema.maximum !== undefined && !Number.isInteger(schema.maximum))
+      schema.maximum = Math.floor(schema.maximum);
+    if (
+      schema.exclusiveMinimum !== undefined &&
+      !Number.isInteger(schema.exclusiveMinimum)
+    )
+      schema.exclusiveMinimum = Math.floor(schema.exclusiveMinimum);
+    if (
+      schema.exclusiveMaximum !== undefined &&
+      !Number.isInteger(schema.exclusiveMaximum)
+    )
+      schema.exclusiveMaximum = Math.ceil(schema.exclusiveMaximum);
+
+    // Apply common number range fixes
+    fixNumberRanges(schema);
+  };
+
+  /**
+   * Fix number schema to prevent nonsensical typia tag configurations.
+   *
+   * Handles:
+   *
+   * - Impossible ranges (min > max, exclusiveMin >= exclusiveMax, etc.)
+   */
+  const fixNumberSchema = (schema: AutoBeOpenApi.IJsonSchema.INumber): void => {
+    fixNumberRanges(schema);
+  };
+
+  /**
+   * Common logic for fixing impossible number ranges. Applies to both integer
+   * and number schemas.
+   */
+  const fixNumberRanges = (
+    schema:
+      | AutoBeOpenApi.IJsonSchema.IInteger
+      | AutoBeOpenApi.IJsonSchema.INumber,
+  ): void => {
+    const { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema;
+
+    // Case 1: minimum > maximum - impossible range
+    if (minimum !== undefined && maximum !== undefined && minimum > maximum) {
+      delete schema.minimum;
+      delete schema.maximum;
+    }
+
+    // Case 2: exclusiveMinimum >= exclusiveMaximum - impossible range (e.g., >0 && <0)
+    if (
+      exclusiveMinimum !== undefined &&
+      exclusiveMaximum !== undefined &&
+      exclusiveMinimum >= exclusiveMaximum
+    ) {
+      delete schema.exclusiveMinimum;
+      delete schema.exclusiveMaximum;
+    }
+
+    // Case 3: minimum >= exclusiveMaximum - impossible range (e.g., >=5 && <5)
+    if (
+      minimum !== undefined &&
+      exclusiveMaximum !== undefined &&
+      minimum >= exclusiveMaximum
+    ) {
+      delete schema.minimum;
+      delete schema.exclusiveMaximum;
+    }
+
+    // Case 4: exclusiveMinimum >= maximum - impossible range (e.g., >5 && <=5)
+    if (
+      exclusiveMinimum !== undefined &&
+      maximum !== undefined &&
+      exclusiveMinimum >= maximum
+    ) {
+      delete schema.exclusiveMinimum;
+      delete schema.maximum;
+    }
+
+    // Case 5: minimum === maximum - convert to const literal
+    if (
+      schema.minimum !== undefined &&
+      schema.maximum !== undefined &&
+      schema.minimum === schema.maximum
+    ) {
+      // If exclusive constraints exist with equal min/max, it's impossible
+      // e.g., >=5 && <=5 && >5 or >=5 && <=5 && <5
+      if (
+        schema.exclusiveMinimum !== undefined ||
+        schema.exclusiveMaximum !== undefined
+      ) {
+        delete schema.minimum;
+        delete schema.maximum;
+        delete schema.exclusiveMinimum;
+        delete schema.exclusiveMaximum;
+      } else {
+        // Convert to const literal
+        const value = schema.minimum;
+        delete (schema as any).type;
+        delete schema.minimum;
+        delete schema.maximum;
+        (schema as any).const = value;
+      }
+    }
   };
 }
 
