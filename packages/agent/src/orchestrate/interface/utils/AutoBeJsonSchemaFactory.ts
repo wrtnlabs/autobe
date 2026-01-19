@@ -418,6 +418,10 @@ export namespace AutoBeJsonSchemaFactory {
         (schema as any).const = value;
       }
     }
+
+    // Case 6: negative multipleOf - invalid
+    if (schema.multipleOf !== undefined && schema.multipleOf < 0)
+      delete schema.multipleOf;
   };
 }
 
