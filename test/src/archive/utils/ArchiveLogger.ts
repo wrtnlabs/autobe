@@ -100,7 +100,12 @@ export namespace ArchiveLogger {
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,
+        `  - typeName: ${event.typeName}`,
         `  - revises: ${event.revises.length}`,
+        ...event.revises.map(
+          (r) =>
+            `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
+        ),
       );
     else if (event.type === "interfaceSchemaRename")
       content.push(

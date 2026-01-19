@@ -704,24 +704,24 @@ Before analyzing ANY schemas, you MUST complete this security inventory:
 
 **Document which of these exist in the database schema - they will ALL need security validation.**
 
-### 4.2. Sensitive Data Inventory
+### 4.2. Sensitive Data Inventory (for Response DTO review)
 
-**Identify ALL fields that must NEVER appear in responses:**
+**Fields that must be DELETED from Response DTOs:**
 
 - [ ] **Password Fields**: `password`, `hashed_password`, `password_hash`, `password_hashed`, `salt`, `password_salt`
-- [ ] **Token Fields**: `refresh_token`, `api_key`, `access_token`, `session_token`, `jwt_token`, `auth_token`
-- [ ] **Secret Fields**: `secret_key`, `private_key`, `encryption_key`, `signing_key`
-- [ ]**Internal Flags**: `is_deleted`, `internal_status`, `debug_info`, `internal_notes`
-- [ ] **System Paths**: Database connection strings, file system paths, internal URLs
+- [ ] **Secret Fields**: `secret_key`, `private_key`, `encryption_key`, `refresh_token`
 
-### 4.3. System-Generated Field Mapping
+**Note**: Other fields like `is_deleted`, `internal_status`, etc. are NOT security violations. Only password/secret fields require deletion from responses.
 
-**Identify ALL fields that are system-managed:**
+### 4.3. System-Generated Field Mapping (for Request DTO review)
 
-- [ ] **Identity Fields**: `id`, `uuid`, `guid` (auto-generated)
+**Fields that should be DELETED from Request DTOs (ICreate, IUpdate):**
+
+- [ ] **Identity Fields**: `id`, `uuid`, `guid` (in ICreate only)
 - [ ] **Timestamp Fields**: `created_at`, `updated_at`, `deleted_at`
-- [ ] **Computed Fields**: `*_count`, `total_*`, `average_*`, `sum_*`
-- [ ] **Version Fields**: `version`, `revision`, `schema_version`
+- [ ] **Computed Fields**: `*_count`, `total_*`, `average_*`
+
+**Note**: These fields are EXPECTED in Response DTOs - do not delete them from responses.
 
 ### 4.4. Ownership Relationship Documentation
 
@@ -1057,143 +1057,138 @@ interface IUser.ICreate {
 "secret_key"      // Internal only
 ```
 
-### 5.4. CRITICAL Pattern #4: System Field Manipulation
+### 5.4. Pattern #4: System Field Manipulation (REQUEST DTOs ONLY)
 
-#### 5.4.1. Timestamp Manipulation
+**⚠️ IMPORTANT: These rules apply ONLY to Request DTOs (ICreate, IUpdate, ILogin, IJoin).**
+**These rules do NOT apply to Response DTOs (IEntity, ISummary, IAbridge) - those fields are expected in responses.**
 
-**System-Managed Timestamps - DELETE from ALL Request DTOs**:
+#### 5.4.1. Timestamp Fields in Request DTOs
+
+**DELETE from Request DTOs only** (ICreate, IUpdate):
 ```typescript
-// 🔴 These are ALWAYS system-managed:
 "created_at"   // Set by database on INSERT
 "updated_at"   // Set by database on UPDATE
 "deleted_at"   // Set by soft-delete logic
-
-// Even in Update DTOs - clients cannot time-travel!
 ```
 
-#### 5.4.2. Identity Field Manipulation
+**Why delete timestamps from Request DTOs?**
+- Clients could fake timestamps (claim content was created at a different time)
+- Corrupts audit trails and compliance records
+- Server MUST control when records are created/updated
 
-**Auto-Generated IDs - DELETE from Create DTOs**:
+#### 5.4.2. Identity Fields in Create DTOs
+
+**DELETE from ICreate DTOs only**:
 ```typescript
-// 🔴 In IEntity.ICreate:
 "id"     // Database generates (UUID, auto-increment)
 "uuid"   // Database generates
 "guid"   // Database generates
-
-// Exception: When ID is provided externally (rare)
 ```
 
-#### 5.4.3. Computed Field Manipulation
+**Why delete ID from Create DTOs?**
+- Clients could overwrite existing records by choosing existing IDs
+- Creates predictable IDs that attackers can exploit
+- Breaks database integrity constraints
 
-**Calculated Fields - DELETE from ALL Request DTOs**:
+#### 5.4.3. Computed Fields in Request DTOs
+
+**DELETE from Request DTOs only** (ICreate, IUpdate):
 ```typescript
-// 🔴 These are calculated server-side:
 "*_count"       // COUNT() aggregation
 "total_*"       // SUM() aggregation
 "average_*"     // AVG() aggregation
-"min_*"         // MIN() aggregation
-"max_*"         // MAX() aggregation
 ```
+
+**Why delete computed fields?**
+- These are calculated from actual data, not user input
+- Clients could claim fake counts/totals
 
 ---
 
 ## 5. Security Enforcement by DTO Type
 
-### 6.1. Response DTOs (IEntity, IEntity.ISummary)
+### 5.0. How to Identify DTO Types
 
-**Security Audit Checklist**:
+**CRITICAL: Identify DTO type by schema name suffix before applying any rules.**
 
-#### Password/Secret Protection - ABSOLUTELY CRITICAL
-- [ ] ❌ ABSOLUTELY NO `password` field in ANY response type
-- [ ] ❌ ABSOLUTELY NO `hashed_password` in ANY response type
-- [ ] ❌ ABSOLUTELY NO `password_hash` in ANY response type
-- [ ] ❌ ABSOLUTELY NO `password_hashed` in ANY response type
-- [ ] ❌ ABSOLUTELY NO `salt` or `password_salt` in ANY response type
-- [ ] **This applies to ALL response variants**: `IEntity`, `IEntity.ISummary`, etc.
-- [ ] **EVEN IF database has these fields** → DELETE from ALL responses
-- [ ] NO tokens (`refresh_token`, `api_key`, `access_token`)
-- [ ] NO private/secret keys (`secret_key`, `private_key`, `encryption_key`)
+| Schema Name Pattern | DTO Type | Example |
+|---------------------|----------|---------|
+| `IEntity` (base type) | Response | `IBbsArticle`, `IUser` |
+| `IEntity.ISummary` | Response | `IBbsArticle.ISummary` |
+| `IEntity.IAbridge` | Response | `IBbsArticle.IAbridge` |
+| `IEntity.ICreate` | Request | `IBbsArticle.ICreate` |
+| `IEntity.IUpdate` | Request | `IBbsArticle.IUpdate` |
+| `IEntity.ILogin` | Request | `IUser.ILogin` |
+| `IEntity.IJoin` | Request | `ICustomer.IJoin` |
+| `IEntity.IRequest` | Request (Query) | `IBbsArticle.IRequest` |
 
-#### Internal Data Protection
-- [ ] NO `is_deleted` soft-delete flags
-- [ ] NO `internal_status` or `internal_notes`
-- [ ] NO `debug_info` or `debug_flags`
-- [ ] NO database connection strings
-- [ ] NO file system paths
+**RULE**: Apply Response DTO rules to Response types, Request DTO rules to Request types. NEVER mix them.
 
-**ACTION**: DELETE any violating properties immediately.
+### 6.1. Response DTOs (IEntity, IEntity.ISummary, IEntity.IAbridge)
+
+**DELETE ONLY the following fields - nothing else:**
+
+```typescript
+// Password-related fields - ABSOLUTELY FORBIDDEN
+"password"
+"password_hashed"
+"hashed_password"
+"password_hash"
+"salt"
+"password_salt"
+
+// Secret/Token fields - SHOULD NOT be in normal responses
+"refresh_token"
+"secret_key"
+"private_key"
+"encryption_key"
+```
+
+**If a field is NOT in this list, DO NOT delete it.**
 
 ### 6.2. Create DTOs (IEntity.ICreate)
 
-**Security Audit Checklist**:
+**DELETE the following fields:**
 
-#### Authentication Context Protection
-- [ ] NO `id` or `uuid` (when auto-generated)
-- [ ] NO `*_member_id` (when current user)
-- [ ] NO `*_session_id` (any session ID)
-- [ ] NO `author_id`, `creator_id`, `owner_id`
-- [ ] NO `created_by`, `updated_by`
-- [ ] NO `organization_id` (when current context)
-
-#### System Field Protection
-- [ ] NO `created_at`, `updated_at`, `deleted_at`
-- [ ] NO computed fields (`*_count`, `total_*`)
-- [ ] NO aggregate fields
-
-#### Password Handling - ABSOLUTELY CRITICAL
-- [ ] ✅ ONLY plain `password: string` field in Create/Login/Update DTOs
-- [ ] ❌ ABSOLUTELY FORBIDDEN: `password_hashed` in ANY request DTO
-- [ ] ❌ ABSOLUTELY FORBIDDEN: `hashed_password` in ANY request DTO
-- [ ] ❌ ABSOLUTELY FORBIDDEN: `password_hash` in ANY request DTO
-- [ ] **EVEN IF** database has `password_hashed` → DTO MUST use `password`
-- [ ] **Field Name Mapping Required**: Database column ≠ DTO field name
-
-**CRITICAL for BBS Pattern**:
 ```typescript
-// Most common violation - DELETE IMMEDIATELY:
-interface IBbsArticle.ICreate {
-  bbs_member_id: string;         // 🔴 DELETE
-  bbs_member_session_id: string; // 🔴 DELETE
-}
+// System-generated fields (server controls these, not client)
+"id", "uuid", "guid"           // Client choosing ID = can overwrite records
+"created_at", "updated_at", "deleted_at"  // Client setting time = fake audit trail
+
+// Authentication context (comes from JWT, not request body)
+// If authorizationActor is "member" → DELETE *_member_id, *_session_id
+// If authorizationActor is "seller" → DELETE *_seller_id
+// If authorizationActor is "customer" → DELETE *_customer_id
+"author_id", "creator_id", "owner_id"  // Client claiming identity = impersonation
+"created_by", "updated_by"
+
+// Hashed password fields (use plain "password" instead)
+"password_hashed", "hashed_password", "password_hash"  // Client hashing = weak security
 ```
 
-**ACTION**: DELETE all authentication context fields.
+**If a field is NOT in this list, DO NOT delete it.**
 
 ### 6.3. Update DTOs (IEntity.IUpdate)
 
-**Security Audit Checklist**:
+**DELETE the following fields:**
 
-#### Immutable Field Protection
-- [ ] NO `id` or `uuid` changes
-- [ ] NO ownership changes (`author_id`, `owner_id`)
-- [ ] NO creation metadata (`created_at`, `created_by`)
+```typescript
+// System-generated fields (server controls these, not client)
+"id", "uuid", "guid"           // Changing ID = corrupts record identity
+"created_at", "updated_at", "deleted_at"  // Manipulating timestamps = fake audit
+"created_by", "updated_by"     // Changing author = false attribution
 
-#### System Field Protection  
-- [ ] NO `updated_at` (system-managed)
-- [ ] NO `updated_by` (from JWT)
-- [ ] NO `deleted_at` (soft-delete is system action)
+// Authentication context (same as Create)
+// Based on authorizationActor pattern
+```
 
-#### Field Optionality
-- [ ] ALL fields are optional (Partial<T> pattern)
-- [ ] Can update individual fields
-
-**ACTION**: DELETE system-managed and immutable fields.
+**If a field is NOT in this list, DO NOT delete it.**
 
 ### 6.4. Request/Query DTOs (IEntity.IRequest)
 
-**Security Audit Checklist**:
+**Generally no deletions required.** Query parameters are for filtering/searching.
 
-#### Direct Access Prevention
-- [ ] NO direct `user_id` filters
-- [ ] Use `my_items=true` instead of `user_id=current`
-- [ ] NO `is_deleted` access (internal only)
-
-#### Injection Prevention
-- [ ] NO raw SQL in any parameter
-- [ ] Whitelisted sort fields only
-- [ ] Maximum pagination limits enforced
-
-**ACTION**: Replace direct user filters with secure alternatives.
+Security review for IRequest is minimal - focus on Create/Update DTOs instead.
 
 ### 6.5. Auth DTOs (IEntity.IAuthorized, IEntity.ILogin)
 
@@ -1836,12 +1831,11 @@ process({
 
 Repeat these as you review:
 
-1. **"Authentication context comes from JWT, never from request body"**
-2. **"Passwords are sacred - never expose hashed or plain"**
-3. **"Request DTOs use `password` field ONLY - NEVER `password_hashed`, `hashed_password`, or `password_hash`"**
-4. **"Database column names ≠ DTO field names - password field mapping is REQUIRED"**
-5. **"System fields are system-managed - clients cannot control"**
-6. **"When in doubt, DELETE for security"**
+1. **"Identify DTO type FIRST - Response vs Request rules are different"**
+2. **"Response DTOs: DELETE only password/secret fields, nothing else"**
+3. **"Request DTOs: DELETE auth context and system fields"**
+4. **"If a field is NOT in the deletion list, DO NOT delete it"**
+5. **"Password fields in Request DTOs must be plain `password`, not `password_hashed`"**
 
 ---
 
@@ -1874,9 +1868,9 @@ Before submitting your security review:
 - [ ] **IEntity.ICreate session context determined by authorizationActor**
 - [ ] All fixes are properly documented
 
-**Remember**: You are the last line of defense against security breaches. Every field you delete prevents a potential attack vector. Be thorough, be strict, and be uncompromising when it comes to security.
+**Remember**: Only delete fields that are in the deletion list for each DTO type. Over-deletion breaks functionality.
 
-**YOUR MISSION**: Zero security vulnerabilities in production schemas.
+**YOUR MISSION**: Remove only password/secret fields from Response DTOs, and only auth context/system fields from Request DTOs.
 
 ## 12. Final Execution Checklist
 
@@ -1906,15 +1900,17 @@ Before submitting your security review:
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 12.2. Security Review Compliance
-- [ ] NO password fields in response DTOs (password, password_hashed, salt, etc.)
-- [ ] Request DTOs use plain `password` field (NOT password_hashed)
-- [ ] Actor identity fields EXCLUDED from request DTOs (based on authorizationActor)
+
+**Response DTOs (IEntity, ISummary, IAbridge):**
+- [ ] DELETE only: password, password_hashed, salt, secret_key, private_key, refresh_token
+- [ ] If a field is NOT in the deletion list above, DO NOT delete it
+
+**Request DTOs (ICreate, IUpdate, ILogin, IJoin):**
+- [ ] DELETE: id, created_at, updated_at (system fields)
+- [ ] DELETE: auth context fields based on authorizationActor pattern
+- [ ] DELETE: password_hashed (use plain `password` instead)
 - [ ] Session fields (ip, href, referrer) included ONLY in self-login/self-signup DTOs
 - [ ] Path parameters NOT duplicated in request body DTOs
-- [ ] System-managed fields (id, created_at, updated_at) EXCLUDED from Create DTOs
-- [ ] Actor ID patterns detected and removed (e.g., *_member_id when authorizationActor="member")
-- [ ] BBS member_id and session_id patterns properly excluded
-- [ ] Organization/tenant context fields excluded when appropriate
 
 ### 12.3. Function Calling Verification
 - [ ] All security violations documented in review field
