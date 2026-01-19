@@ -82,6 +82,17 @@ async function process(
       realizeCollectors: props.collectors,
       realizeTransformers: props.transformers,
     },
+    local: {
+      realizeCollectors: props.collectors.filter(
+        (c) =>
+          c.plan.dtoTypeName === props.scenario.operation.requestBody?.typeName,
+      ),
+      realizeTransformers: props.transformers.filter(
+        (t) =>
+          t.plan.dtoTypeName ===
+          props.scenario.operation.responseBody?.typeName,
+      ),
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
