@@ -22,7 +22,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   >;
   typeName: string;
   reviewOperations: AutoBeOpenApi.IOperation[];
-  reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive;
+  reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -99,6 +99,13 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         \`\`\`json
         ${JSON.stringify(props.reviewSchema)}
         \`\`\`
+
+        Also, here is the list of properties currently defined in this schema,
+        so you have to check them one by one:
+
+        ${Object.keys(props.reviewSchema.properties)
+          .map((k) => `- ${k}`)
+          .join("\n")}
 
         IMPORTANT: Only this schema needs review and potential modification.
         Other schemas in the complete schema set are provided for reference 

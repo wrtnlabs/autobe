@@ -14,7 +14,9 @@ export namespace ArchiveLogger {
       " mins";
     const content: string[] = [`${event.type}: ${time(start)}`];
 
+    //----
     // BASIC TYPES
+    //----
     if (typia.is<ProgressEvent>(event))
       content.push(`  - progress: (${event.completed} of ${event.total})`);
     if (typia.is<TokenUsageEvent>(event))
@@ -24,7 +26,9 @@ export namespace ArchiveLogger {
           event.tokenUsage.input.total,
         )}`,
       );
+    //----
     // FUNCTION CALLING
+    //----
     if (event.type === "assistantMessage") content.push(event.text);
     else if (event.type === "consentFunctionCall")
       content.push(
@@ -62,63 +66,76 @@ export namespace ArchiveLogger {
         `  - requested: ${event.requested.length}, ${JSON.stringify(event.requested)}`,
       );
     }
-    // VALIDATIONS
-    else if (event.type === "analyzeScenario")
-      content.push(`  - prefix: ${event.prefix}`);
-    else if (event.type === "databaseValidate")
+    //----
+    // COMPLETES
+    //----
+    else if (event.type === "analyzeComplete")
+      content.push(
+        `  - files: ${event.files.length}`,
+        `  - actors: ${event.actors.length}`,
+        ...event.actors.map((a) => `    - ${a.name}, ${a.kind}`),
+      );
+    else if (
+      event.type === "databaseComplete" &&
+      event.result.success === false
+    )
       content.push(
         JSON.stringify(event.result.errors, null, 2)
           .split("\n")
           .map((line) => `    ${line}`)
           .join("\n"),
       );
-    else if (event.type === "realizeCorrect")
+    else if (event.type === "interfaceComplete")
       content.push(
-        `  - kind: ${event.kind}`,
-        `  - function: ${event.function.type}`,
-        `  - file: ${event.function.location}`,
+        `  - operations: ${event.document.operations.length}`,
+        `  - schemas: ${Object.keys(event.document.components.schemas).length}`,
       );
-    else if (event.type === "realizeValidate")
+    else if (event.type === "testComplete")
       content.push(
-        ...printRealizeCompiled(event.result, Object.keys(event.files).length),
+        `  - functions: ${event.functions.length}`,
+        ...(event.compiled.type === "failure"
+          ? [
+              JSON.stringify(event.compiled.diagnostics, null, 2)
+                .split("\n")
+                .map((line) => `    ${line}`)
+                .join("\n"),
+            ]
+          : []),
       );
-    else if (event.type === "testWrite")
-      content.push(`  - function: ${event.function.type}`);
-    else if (event.type === "testCorrect") {
+    else if (
+      event.type === "realizeComplete" &&
+      event.compiled.type === "failure"
+    )
       content.push(
-        `  - kind: ${event.kind}`,
-        `  - function: ${event.function.type}`,
-        `  - file: ${event.function.location}`,
-        `  - diagnostics:`,
-        JSON.stringify(event.result.diagnostics, null, 2)
+        JSON.stringify(event.compiled.diagnostics, null, 2)
           .split("\n")
           .map((line) => `    ${line}`)
           .join("\n"),
       );
-    } else if (event.type === "interfaceComplement")
-      content.push(`  - typeName: ${event.typeName}`);
-    else if (event.type === "interfaceSchemaReview")
+    //----
+    // ANALYSIS
+    //----
+    else if (event.type === "analyzeScenario")
       content.push(
-        `  - kind: ${event.kind}`,
-        `  - typeName: ${event.typeName}`,
-        `  - revises: ${event.revises.length}`,
-        ...event.revises.map(
-          (r) =>
-            `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
-        ),
+        `  - prefix: ${event.prefix}`,
+        `  - actors: ${event.actors.length}`,
+        ...event.actors.map((a) => `    - ${a.name}, ${a.kind}`),
+        `  - files: ${event.files.length}`,
+        ...event.files.map((f) => `    - ${f.filename}`),
       );
-    else if (event.type === "interfaceSchemaRename")
-      content.push(
-        `  - refactors:`,
-        ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
-      );
-    // GENERATIONS
+    //----
+    // DATABASE
+    //----
     else if (event.type === "databaseGroup")
-      content.push(`  - groups: ${event.groups.length}`);
+      content.push(
+        `  - groups: ${event.groups.length}`,
+        ...event.groups.map((g) => `    - ${g.namespace}`),
+      );
     else if (event.type === "databaseComponent")
       content.push(
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
+        ...event.component.tables.map((t) => `    - ${t.name}`),
       );
     else if (event.type === "databaseComponentReview")
       content.push(
@@ -126,11 +143,30 @@ export namespace ArchiveLogger {
         `  - tables: ${event.modification.tables.length}`,
         `  - revised:`,
         `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
+        ...event.revises
+          .filter((r) => r.type === "create")
+          .map((r) => `      - ${r.table}`),
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
+        ...event.revises
+          .filter((r) => r.type === "update")
+          .map((r) => `      - ${r.original} => ${r.updated}`),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
+        ...event.revises
+          .filter((r) => r.type === "erase")
+          .map((r) => `      - ${r.table}`),
       );
     else if (event.type === "databaseSchema")
       content.push(`  - model: ${event.model.name}`);
+    else if (event.type === "databaseValidate")
+      content.push(
+        JSON.stringify(event.result.errors, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
+    //----
+    // INTERFACE
+    //----
     else if (event.type === "interfaceGroup")
       content.push(
         `  - groups: ${event.groups.length}`,
@@ -158,45 +194,65 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - typeName: ${event.typeName}`);
+    else if (event.type === "interfaceSchemaReview")
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - typeName: ${event.typeName}`,
+        `  - revises: ${event.revises.length}`,
+        ...event.revises.map(
+          (r) =>
+            `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
+        ),
+      );
+    else if (event.type === "interfaceComplement")
+      content.push(`  - typeName: ${event.typeName}`);
+    else if (event.type === "interfaceSchemaRename")
+      content.push(
+        `  - refactors:`,
+        ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
+      );
+    //----
+    // TEST
+    //----
     else if (event.type === "testScenario")
       content.push(
         `  - functions: ${event.scenarios.length}`,
         ...event.scenarios.map((s) => `    - ${s.functionName}`),
       );
+    else if (event.type === "testWrite")
+      content.push(`  - function: ${event.function.type}`);
+    else if (event.type === "testCorrect")
+      content.push(
+        `  - kind: ${event.kind}`,
+        `  - function: ${event.function.type}`,
+        `  - file: ${event.function.location}`,
+        `  - diagnostics:`,
+        JSON.stringify(event.result.diagnostics, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
+    //----
+    // REALIZE
+    //----
     else if (event.type === "realizePlan")
       content.push(`  - plan: ${event.plans[0]?.type}`);
     else if (event.type === "realizeWrite")
-      content.push(`  - function: ${event.function.type}`);
-    // COMPLETIONS
-    else if (
-      event.type === "databaseComplete" &&
-      event.result.success === false
-    )
       content.push(
-        JSON.stringify(event.result.errors, null, 2)
-          .split("\n")
-          .map((line) => `    ${line}`)
-          .join("\n"),
+        `  - function: ${event.function.type}`,
+        `  - location: ${event.function.location}`,
       );
-    else if (event.type === "interfaceComplete")
-      content.push(`  - missed: ${event.missed.join(", ")}`);
-    else if (event.type === "testComplete" && event.compiled.type === "failure")
+    else if (event.type === "realizeCorrect")
       content.push(
-        JSON.stringify(event.compiled.diagnostics, null, 2)
-          .split("\n")
-          .map((line) => `    ${line}`)
-          .join("\n"),
+        `  - kind: ${event.kind}`,
+        `  - function: ${event.function.type}`,
+        `  - location: ${event.function.location}`,
       );
-    else if (
-      event.type === "realizeComplete" &&
-      event.compiled.type === "failure"
-    )
+    else if (event.type === "realizeValidate")
       content.push(
-        JSON.stringify(event.compiled.diagnostics, null, 2)
-          .split("\n")
-          .map((line) => `    ${line}`)
-          .join("\n"),
+        ...printRealizeCompiled(event.result, Object.keys(event.files).length),
       );
+
     // PRINT
     console.log(content.join("\n"));
   };
