@@ -312,6 +312,7 @@ export namespace AutoBeJsonSchemaFactory {
    *
    * - Decimal values in min/max constraints (integers must have integer bounds)
    * - Impossible ranges (min > max, exclusiveMin >= exclusiveMax, etc.)
+   * - Single valid integer ranges converted to const
    */
   const fixIntegerSchema = (
     schema: AutoBeOpenApi.IJsonSchema.IInteger,
@@ -330,6 +331,55 @@ export namespace AutoBeJsonSchemaFactory {
       !Number.isInteger(schema.exclusiveMaximum)
     )
       schema.exclusiveMaximum = Math.ceil(schema.exclusiveMaximum);
+
+    // Integer-specific: convert single valid value ranges to const
+    // Case 1: minimum: N, exclusiveMaximum: N+1 → only N is valid
+    if (
+      schema.minimum !== undefined &&
+      schema.exclusiveMaximum !== undefined &&
+      schema.exclusiveMaximum - schema.minimum === 1
+    ) {
+      const value = schema.minimum;
+      delete (schema as any).type;
+      delete schema.minimum;
+      delete schema.maximum;
+      delete schema.exclusiveMinimum;
+      delete schema.exclusiveMaximum;
+      (schema as any).const = value;
+      return;
+    }
+
+    // Case 2: exclusiveMinimum: N-1, maximum: N → only N is valid
+    if (
+      schema.exclusiveMinimum !== undefined &&
+      schema.maximum !== undefined &&
+      schema.maximum - schema.exclusiveMinimum === 1
+    ) {
+      const value = schema.maximum;
+      delete (schema as any).type;
+      delete schema.minimum;
+      delete schema.maximum;
+      delete schema.exclusiveMinimum;
+      delete schema.exclusiveMaximum;
+      (schema as any).const = value;
+      return;
+    }
+
+    // Case 3: exclusiveMinimum: N-1, exclusiveMaximum: N+1 → only N is valid
+    if (
+      schema.exclusiveMinimum !== undefined &&
+      schema.exclusiveMaximum !== undefined &&
+      schema.exclusiveMaximum - schema.exclusiveMinimum === 2
+    ) {
+      const value = schema.exclusiveMinimum + 1;
+      delete (schema as any).type;
+      delete schema.minimum;
+      delete schema.maximum;
+      delete schema.exclusiveMinimum;
+      delete schema.exclusiveMaximum;
+      (schema as any).const = value;
+      return;
+    }
 
     // Apply common number range fixes
     fixNumberRanges(schema);
