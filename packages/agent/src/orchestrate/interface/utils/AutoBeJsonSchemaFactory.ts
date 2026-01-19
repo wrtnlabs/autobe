@@ -306,34 +306,33 @@ export namespace AutoBeJsonSchemaFactory {
   };
 
   /**
-   * Fix integer schema to prevent nonsensical typia tag configurations.
+   * Fix integer schema by converting single valid value ranges to const.
    *
    * Handles:
    *
-   * - Decimal values in min/max constraints (integers must have integer bounds)
-   * - Impossible ranges (min > max, exclusiveMin >= exclusiveMax, etc.)
-   * - Single valid integer ranges converted to const
+   * - minimum === maximum → const
+   * - minimum: N, exclusiveMaximum: N+1 → const N
+   * - exclusiveMinimum: N-1, maximum: N → const N
+   * - exclusiveMinimum: N-1, exclusiveMaximum: N+1 → const N
    */
   const fixIntegerSchema = (
     schema: AutoBeOpenApi.IJsonSchema.IInteger,
   ): void => {
-    if (schema.minimum !== undefined && !Number.isInteger(schema.minimum))
-      schema.minimum = Math.ceil(schema.minimum);
-    if (schema.maximum !== undefined && !Number.isInteger(schema.maximum))
-      schema.maximum = Math.floor(schema.maximum);
+    // Case 1: minimum === maximum → const
     if (
-      schema.exclusiveMinimum !== undefined &&
-      !Number.isInteger(schema.exclusiveMinimum)
-    )
-      schema.exclusiveMinimum = Math.floor(schema.exclusiveMinimum);
-    if (
-      schema.exclusiveMaximum !== undefined &&
-      !Number.isInteger(schema.exclusiveMaximum)
-    )
-      schema.exclusiveMaximum = Math.ceil(schema.exclusiveMaximum);
+      schema.minimum !== undefined &&
+      schema.maximum !== undefined &&
+      schema.minimum === schema.maximum
+    ) {
+      const value = schema.minimum;
+      delete (schema as any).type;
+      delete schema.minimum;
+      delete schema.maximum;
+      (schema as any).const = value;
+      return;
+    }
 
-    // Integer-specific: convert single valid value ranges to const
-    // Case 1: minimum: N, exclusiveMaximum: N+1 → only N is valid
+    // Case 2: minimum: N, exclusiveMaximum: N+1 → only N is valid
     if (
       schema.minimum !== undefined &&
       schema.exclusiveMaximum !== undefined &&
@@ -349,7 +348,7 @@ export namespace AutoBeJsonSchemaFactory {
       return;
     }
 
-    // Case 2: exclusiveMinimum: N-1, maximum: N → only N is valid
+    // Case 3: exclusiveMinimum: N-1, maximum: N → only N is valid
     if (
       schema.exclusiveMinimum !== undefined &&
       schema.maximum !== undefined &&
@@ -365,7 +364,7 @@ export namespace AutoBeJsonSchemaFactory {
       return;
     }
 
-    // Case 3: exclusiveMinimum: N-1, exclusiveMaximum: N+1 → only N is valid
+    // Case 4: exclusiveMinimum: N-1, exclusiveMaximum: N+1 → only N is valid
     if (
       schema.exclusiveMinimum !== undefined &&
       schema.exclusiveMaximum !== undefined &&
@@ -380,98 +379,28 @@ export namespace AutoBeJsonSchemaFactory {
       (schema as any).const = value;
       return;
     }
-
-    // Apply common number range fixes
-    fixNumberRanges(schema);
   };
 
   /**
-   * Fix number schema to prevent nonsensical typia tag configurations.
+   * Fix number schema by converting single valid value ranges to const.
    *
    * Handles:
    *
-   * - Impossible ranges (min > max, exclusiveMin >= exclusiveMax, etc.)
+   * - minimum === maximum → const
    */
   const fixNumberSchema = (schema: AutoBeOpenApi.IJsonSchema.INumber): void => {
-    fixNumberRanges(schema);
-  };
-
-  /**
-   * Common logic for fixing impossible number ranges. Applies to both integer
-   * and number schemas.
-   */
-  const fixNumberRanges = (
-    schema:
-      | AutoBeOpenApi.IJsonSchema.IInteger
-      | AutoBeOpenApi.IJsonSchema.INumber,
-  ): void => {
-    const { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema;
-
-    // Case 1: minimum > maximum - impossible range
-    if (minimum !== undefined && maximum !== undefined && minimum > maximum) {
-      delete schema.minimum;
-      delete schema.maximum;
-    }
-
-    // Case 2: exclusiveMinimum >= exclusiveMaximum - impossible range (e.g., >0 && <0)
-    if (
-      exclusiveMinimum !== undefined &&
-      exclusiveMaximum !== undefined &&
-      exclusiveMinimum >= exclusiveMaximum
-    ) {
-      delete schema.exclusiveMinimum;
-      delete schema.exclusiveMaximum;
-    }
-
-    // Case 3: minimum >= exclusiveMaximum - impossible range (e.g., >=5 && <5)
-    if (
-      minimum !== undefined &&
-      exclusiveMaximum !== undefined &&
-      minimum >= exclusiveMaximum
-    ) {
-      delete schema.minimum;
-      delete schema.exclusiveMaximum;
-    }
-
-    // Case 4: exclusiveMinimum >= maximum - impossible range (e.g., >5 && <=5)
-    if (
-      exclusiveMinimum !== undefined &&
-      maximum !== undefined &&
-      exclusiveMinimum >= maximum
-    ) {
-      delete schema.exclusiveMinimum;
-      delete schema.maximum;
-    }
-
-    // Case 5: minimum === maximum - convert to const literal
+    // minimum === maximum → const
     if (
       schema.minimum !== undefined &&
       schema.maximum !== undefined &&
       schema.minimum === schema.maximum
     ) {
-      // If exclusive constraints exist with equal min/max, it's impossible
-      // e.g., >=5 && <=5 && >5 or >=5 && <=5 && <5
-      if (
-        schema.exclusiveMinimum !== undefined ||
-        schema.exclusiveMaximum !== undefined
-      ) {
-        delete schema.minimum;
-        delete schema.maximum;
-        delete schema.exclusiveMinimum;
-        delete schema.exclusiveMaximum;
-      } else {
-        // Convert to const literal
-        const value = schema.minimum;
-        delete (schema as any).type;
-        delete schema.minimum;
-        delete schema.maximum;
-        (schema as any).const = value;
-      }
+      const value = schema.minimum;
+      delete (schema as any).type;
+      delete schema.minimum;
+      delete schema.maximum;
+      (schema as any).const = value;
     }
-
-    // Case 6: negative multipleOf - invalid
-    if (schema.multipleOf !== undefined && schema.multipleOf < 0)
-      delete schema.multipleOf;
   };
 }
 
