@@ -1,5 +1,5 @@
-I want to create a Todo list application that multiple users can use. Users can join to the todo service, and manage their todo list. They can't access to other's todo list.
+I want to create a multi-user Todo list application. Users should be able to register and log in to the service, and manage their own personal todo lists. Each user's todo list must be private and inaccessible to other users.
 
-By the way, except the user membership feature, when I build an application, I only want the minimum functionality required for Todo list.
+For the core Todo functionality, I only need the essential features - keeping it minimal and simple. However, please include complete user authentication and authorization features to ensure proper user separation.
 
-Since I'm not familiar with programming, please write a requirements analysis report as you see fit.
+Since I'm not familiar with programming, please analyze these requirements and create a detailed requirements specification document as you see fit, including any technical decisions and assumptions you need to make.
