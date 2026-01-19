@@ -58,8 +58,17 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           collectors: props.collectors,
           transformers: props.transformers,
         }),
-      preliminary: (next) =>
-        new AutoBePreliminaryController({
+      preliminary: (next) => {
+        const scenario: IAutoBeRealizeScenarioResult =
+          AutoBeRealizeOperationProgrammer.getScenario({
+            authorizations: props.authorizations,
+            operation: document.operations.find(
+              (o) =>
+                o.method === next.function.endpoint.method &&
+                o.path === next.function.endpoint.path,
+            )!,
+          });
+        return new AutoBePreliminaryController({
           source: next.source,
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
@@ -73,7 +82,19 @@ export const orchestrateRealizeOperationCorrectOverall = async (
             realizeCollectors: props.collectors,
             realizeTransformers: props.transformers,
           },
-        }),
+          local: {
+            realizeCollectors: props.collectors.filter(
+              (c) =>
+                c.plan.dtoTypeName === scenario.operation.requestBody?.typeName,
+            ),
+            realizeTransformers: props.transformers.filter(
+              (t) =>
+                t.plan.dtoTypeName ===
+                scenario.operation.responseBody?.typeName,
+            ),
+          },
+        });
+      },
       histories: async (next) => {
         const operation: AutoBeOpenApi.IOperation = document.operations.find(
           (o) =>
