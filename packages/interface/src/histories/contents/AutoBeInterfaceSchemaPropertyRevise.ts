@@ -1,5 +1,6 @@
 import { AutoBeInterfaceSchemaPropertyCreate } from "./AutoBeInterfaceSchemaPropertyCreate";
 import { AutoBeInterfaceSchemaPropertyErase } from "./AutoBeInterfaceSchemaPropertyErase";
+import { AutoBeInterfaceSchemaPropertyKeep } from "./AutoBeInterfaceSchemaPropertyKeep";
 import { AutoBeInterfaceSchemaPropertyNullish } from "./AutoBeInterfaceSchemaPropertyNullish";
 import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaPropertyUpdate";
 
@@ -15,4 +16,5 @@ export type AutoBeInterfaceSchemaPropertyRevise =
   | AutoBeInterfaceSchemaPropertyCreate
   | AutoBeInterfaceSchemaPropertyErase
   | AutoBeInterfaceSchemaPropertyNullish
-  | AutoBeInterfaceSchemaPropertyUpdate;
+  | AutoBeInterfaceSchemaPropertyUpdate
+  | AutoBeInterfaceSchemaPropertyKeep;

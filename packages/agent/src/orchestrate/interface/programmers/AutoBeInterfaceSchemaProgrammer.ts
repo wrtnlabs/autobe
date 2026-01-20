@@ -1,9 +1,6 @@
 import {
-  AutoBeInterfaceSchemaPropertyCreate,
-  AutoBeInterfaceSchemaPropertyErase,
   AutoBeInterfaceSchemaPropertyNullish,
   AutoBeInterfaceSchemaPropertyRevise,
-  AutoBeInterfaceSchemaPropertyUpdate,
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
@@ -38,74 +35,63 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
-    const result: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = JSON.parse(
-      JSON.stringify(props.schema),
-    );
-    for (const r of props.revises)
-      if (r.type === "create") createObjectProperty(result, r);
-      else if (r.type === "update") updateObjectProperty(result, r);
-      else if (r.type === "erase") eraseObjectProperty(result, r);
-      else if (r.type === "nullish") nullishObjectProperty(result, r);
-      else r satisfies never;
+    const result: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
+      ...props.schema,
+      properties: {},
+      required: [],
+    };
+    for (const revise of props.revises)
+      if (revise.type === "create") {
+        // create new property
+        result.properties[revise.key] = revise.schema;
+        if (revise.required === true) result.required.push(revise.key);
+      } else if (revise.type === "update") {
+        // update existing property
+        const newKey: string = revise.newKey ?? revise.key;
+        result.properties[newKey] = revise.schema;
+        if (revise.required === true) result.required.push(newKey);
+      } else if (revise.type === "keep") {
+        // keep original property
+        result.properties[revise.key] = props.schema.properties[revise.key];
+        if (props.schema.required.includes(revise.key))
+          result.required.push(revise.key);
+      } else if (revise.type === "nullish") {
+        // change nullable or required status only
+        nullishObjectProperty({
+          schema: result,
+          property: props.schema.properties[revise.key],
+          revise: revise,
+        });
+      } else if (revise.type === "erase") continue;
+      else revise satisfies never;
     return result;
   };
 
-  const createObjectProperty = (
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
-    revise: AutoBeInterfaceSchemaPropertyCreate,
-  ): void => {
-    schema.properties[revise.key] = revise.schema;
-    if (revise.required === true && !schema.required.includes(revise.key))
-      schema.required.push(revise.key);
-  };
-
-  const updateObjectProperty = (
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
-    revise: AutoBeInterfaceSchemaPropertyUpdate,
-  ): void => {
-    eraseObjectProperty(schema, {
-      type: "erase",
-      key: revise.key,
-      reason: revise.reason,
-    });
-    createObjectProperty(schema, {
-      type: "create",
-      key: revise.newKey ?? revise.key,
-      schema: revise.schema,
-      required: revise.required,
-      reason: revise.reason,
-    });
-  };
-
-  const eraseObjectProperty = (
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
-    revise: AutoBeInterfaceSchemaPropertyErase,
-  ): void => {
-    delete schema.properties[revise.key];
-    if (schema.required.includes(revise.key))
-      schema.required.splice(schema.required.indexOf(revise.key), 1);
-  };
-
-  const nullishObjectProperty = (
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
-    revise: AutoBeInterfaceSchemaPropertyNullish,
-  ): void => {
-    const value: AutoBeOpenApi.IJsonSchemaDescriptive =
-      schema.properties[revise.key];
-    if (value === undefined) return;
-    else if (revise.nullable === true) {
-      if (AutoBeOpenApiTypeChecker.isOneOf(value)) {
+  const nullishObjectProperty = (props: {
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    property: Exclude<
+      AutoBeOpenApi.IJsonSchemaDescriptive,
+      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
+    >;
+    revise: AutoBeInterfaceSchemaPropertyNullish;
+  }): void => {
+    let cloned: Exclude<
+      AutoBeOpenApi.IJsonSchemaDescriptive,
+      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
+    > = JSON.parse(JSON.stringify(props.property));
+    if (props.revise.nullable === true) {
+      if (AutoBeOpenApiTypeChecker.isOneOf(cloned)) {
         if (
-          value.oneOf.some((item) => AutoBeOpenApiTypeChecker.isNull(item)) ===
+          cloned.oneOf.some((item) => AutoBeOpenApiTypeChecker.isNull(item)) ===
           false
         )
-          value.oneOf.push({ type: "null" });
-      } else if (AutoBeOpenApiTypeChecker.isNull(value) === false)
-        schema.properties[revise.key] = {
-          description: value.description,
+          cloned.oneOf.push({ type: "null" });
+      } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
+        cloned = {
+          description: cloned.description,
           oneOf: [
             {
-              ...value,
+              ...cloned,
               ...{
                 description: undefined,
               },
@@ -113,17 +99,20 @@ export namespace AutoBeInterfaceSchemaProgrammer {
             { type: "null" },
           ],
         };
-    } else if (revise.nullable === false) {
-      if (AutoBeOpenApiTypeChecker.isOneOf(value)) {
-        value.oneOf = value.oneOf.filter(
+    } else if (props.revise.nullable === false) {
+      if (AutoBeOpenApiTypeChecker.isOneOf(cloned)) {
+        cloned.oneOf = cloned.oneOf.filter(
           (value) => AutoBeOpenApiTypeChecker.isNull(value) === false,
         );
-        if (value.oneOf.length === 1)
-          schema.properties[revise.key] = {
-            ...value.oneOf[0],
-            description: value.description,
+        if (cloned.oneOf.length === 1)
+          cloned = {
+            ...cloned.oneOf[0],
+            description: cloned.description,
           };
       }
     }
+    props.schema.properties[props.revise.key] = cloned;
+    if (props.revise.required === true)
+      props.schema.required.push(props.revise.key);
   };
 }
