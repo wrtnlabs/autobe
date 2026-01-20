@@ -22,10 +22,7 @@ export namespace AutoBeLlmSchemaFactory {
 
           const property: ILlmSchema | undefined =
             next.properties["x-autobe-database-schema"];
-          if (
-            property !== undefined &&
-            LlmTypeChecker.isAnyOf(property) === false
-          ) {
+          if (property && LlmTypeChecker.isAnyOf(property)) {
             property.description ??= "";
             property.description += "\n\n";
             property.description += StringUtil.trim`
