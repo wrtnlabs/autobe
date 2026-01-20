@@ -229,6 +229,51 @@ export namespace AutoBeDatabase {
      * - `bbs_article_comments` - User comments that require independent
      *   management
      *
+     * ### `"actor"` - Authenticated Actor Entity
+     *
+     * Tables that represent a true actor in the system (a distinct user type
+     * with its own authentication flow, table schema, and business logic).
+     * Actor tables are the canonical identity records used across the system,
+     * and their sessions are recorded in a separate session table.
+     *
+     * **Key principle**: If the user type requires a distinct table and
+     * authentication flow (not just an attribute), the table is an actor.
+     *
+     * **Characteristics:**
+     *
+     * - Serves as the primary identity record for that actor type
+     * - Owns credentials and actor-specific profile data
+     * - Has one-to-many sessions stored in a dedicated session table
+     * - Used as the root of permission and ownership relationships
+     *
+     * **Examples:**
+     *
+     * - `users` - Standard application users with authentication
+     * - `shopping_customers` - Customers with login and purchase history
+     * - `shopping_sellers` - Sellers with business credentials
+     * - `administrators` - Admins with elevated permissions
+     *
+     * ### `"session"` - Actor Session Entity
+     *
+     * Tables that represent login sessions for a specific actor. A session
+     * table always belongs to exactly one actor type and contains connection
+     * context and temporal fields for auditing.
+     *
+     * **Key principle**: A session table exists only to track actor logins and
+     * must reference exactly one actor table.
+     *
+     * **Characteristics:**
+     *
+     * - Child of a single actor table (many sessions per actor)
+     * - Stores connection metadata (IP, headers, referrer)
+     * - Append-only audit trail of login events
+     * - Managed through authentication flows, not direct user CRUD
+     *
+     * **Examples:**
+     *
+     * - `user_sessions` - Sessions for `users`
+     * - `shopping_customer_sessions` - Sessions for `shopping_customers`
+     *
      * ### `"subsidiary"` - Supporting/Dependent Entity
      *
      * Tables that exist to support primary entities but are not independently
@@ -271,6 +316,10 @@ export namespace AutoBeDatabase {
      *
      * The stance property guides automatic API endpoint generation:
      *
+     * - **`"actor"`** → Generate identity and authentication endpoints for the
+     *   actor type
+     * - **`"session"`** → Generate session lifecycle endpoints bound to actor
+     *   authentication flows
      * - **`"primary"`** → Generate full CRUD endpoints based on business
      *   requirements
      * - **`"subsidiary"`** → Evaluate carefully; often managed through parent
@@ -280,6 +329,20 @@ export namespace AutoBeDatabase {
      *
      * @example
      *   ```typescript
+     *   // Actor entity - identity and authentication root
+     *   {
+     *     name: "users",
+     *     stance: "actor",
+     *     description: "Authenticated users of the application"
+     *   }
+     *
+     *   // Session entity - audit log of logins for an actor
+     *   {
+     *     name: "user_sessions",
+     *     stance: "session",
+     *     description: "Login sessions for users"
+     *   }
+     *
      *   // Primary business entity - needs full CRUD API
      *   {
      *     name: "bbs_articles",
@@ -309,7 +372,7 @@ export namespace AutoBeDatabase {
      *   }
      *   ```;
      */
-    stance: "primary" | "subsidiary" | "snapshot";
+    stance: "primary" | "subsidiary" | "snapshot" | "actor" | "session";
 
     //----
     // FIELDS
