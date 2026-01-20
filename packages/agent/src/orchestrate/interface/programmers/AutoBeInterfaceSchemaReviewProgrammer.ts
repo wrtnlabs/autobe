@@ -6,29 +6,31 @@ import {
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 
-export namespace AutoBeInterfaceSchemaProgrammer {
-  export const validateRevise = (props: {
+export namespace AutoBeInterfaceSchemaReviewProgrammer {
+  export const validate = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    revise: AutoBeInterfaceSchemaPropertyRevise;
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
     path: string;
     errors: IValidation.IError[];
   }): void => {
-    if (
-      props.revise.type !== "create" &&
-      props.schema.properties[props.revise.key] === undefined
-    )
-      props.errors.push({
-        path: `${props.path}.key`,
-        expected: Object.keys(props.schema.properties)
-          .map((s) => JSON.stringify(s))
-          .join(" | "),
-        value: props.revise.key,
-        description: StringUtil.trim`
-          Property ${JSON.stringify(props.revise.key)} does not exist in schema.
+    props.revises.forEach((revise, i) => {
+      if (
+        revise.type !== "create" &&
+        props.schema.properties[revise.key] === undefined
+      )
+        props.errors.push({
+          path: `${props.path}.revises[${i}].key`,
+          expected: Object.keys(props.schema.properties)
+            .map((s) => JSON.stringify(s))
+            .join(" | "),
+          value: revise.key,
+          description: StringUtil.trim`
+          Property ${JSON.stringify(revise.key)} does not exist in schema.
 
-          To ${props.revise.type} a property, it must exist in the object type.
+          To ${revise.type} a property, it must exist in the object type.
         `,
-      });
+        });
+    });
   };
 
   export const reviseObjectType = (props: {
