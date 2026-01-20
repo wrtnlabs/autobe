@@ -766,7 +766,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Each revision represents an atomic change to a property:
      * - `create`: Add a new missing property
      *
-     * Empty array `[]` means no changes needed - schema is complete.
+     * You MUST provide a revise for EVERY property in the object schema.
+     * Use `keep` for properties that need no changes.
      */
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }

@@ -159,16 +159,11 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     // Apply revises to generate the modified schema content
-    for (const r of pointer.value.revises)
-      if (r.type === "create" || r.type === "update")
-        r.schema = AutoBeJsonSchemaFactory.fixSchema(r.schema);
     const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      pointer.value.revises.length === 0
-        ? props.reviewSchema
-        : AutoBeInterfaceSchemaReviewProgrammer.refine({
-            schema: props.reviewSchema,
-            revises: pointer.value.revises,
-          });
+      AutoBeInterfaceSchemaReviewProgrammer.refine({
+        schema: props.reviewSchema,
+        revises: pointer.value.revises,
+      });
     ctx.dispatch({
       type: SOURCE,
       kind: config.kind,

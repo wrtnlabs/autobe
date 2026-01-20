@@ -11,6 +11,7 @@ import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
 import { AutoBeState } from "../../../context/AutoBeState";
+import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeLlmSchemaFactory } from "../utils/AutoBeLlmSchemaFactory";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
@@ -90,12 +91,16 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     for (const revise of props.revises)
       if (revise.type === "create") {
         // create new property
-        result.properties[revise.key] = revise.schema;
+        result.properties[revise.key] = AutoBeJsonSchemaFactory.fixSchema(
+          revise.schema,
+        );
         if (revise.required === true) result.required.push(revise.key);
       } else if (revise.type === "update") {
         // update existing property
         const newKey: string = revise.newKey ?? revise.key;
-        result.properties[newKey] = revise.schema;
+        result.properties[newKey] = AutoBeJsonSchemaFactory.fixSchema(
+          revise.schema,
+        );
         if (revise.required === true) result.required.push(newKey);
       } else if (revise.type === "keep") {
         // keep original property

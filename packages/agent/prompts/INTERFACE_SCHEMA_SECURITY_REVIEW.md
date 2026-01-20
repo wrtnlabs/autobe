@@ -1826,7 +1826,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Each revision represents an atomic change to a property:
      * - `erase`: Remove a security-violating field
      *
-     * Empty array `[]` means no security issues found - schema is secure.
+     * You MUST provide a revise for EVERY property in the object schema.
+     * Use `keep` for properties that need no changes.
      */
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
@@ -2068,7 +2069,10 @@ process({
 - Guests don't authenticate with credentials - they receive temporary access tokens
 - No password field needed - this is correct behavior`,
 
-    revises: []  // Empty - guest IJoin correctly has no password
+    revises: [
+      { type: "keep", reason: "Business field - no security concerns", key: "name" },
+      { type: "keep", reason: "Business field - no security concerns", key: "email" }
+    ]
   }
 })
 ```
@@ -2087,7 +2091,7 @@ process({
 7. **IJoin DTO missing `password` field?** → Check actor's `kind`:
    - `kind: "guest"` → Do NOT add password (correct behavior)
    - `kind: "member"` or `kind: "admin"` → Create `create` revision to add password
-8. Schema is secure and complete? → Return empty `revises` array
+8. Schema is secure and complete? → Use `keep` for all properties
 
 **Examples by Violation Type**:
 - Auth context (`bbs_member_id`, `author_id`) → `erase` revision
@@ -2098,7 +2102,7 @@ process({
 - **Missing password in member/admin IJoin** → `create` revision
 - **Missing password in guest IJoin** → No action (correct)
 
-**CRITICAL**: Empty `revises` array means schema is secure AND complete - no fixes needed
+**CRITICAL**: EVERY property in the schema MUST have a corresponding revise
 
 ---
 
@@ -2367,5 +2371,5 @@ Before submitting your security review:
 - [ ] **All `create` revisions created for missing password fields in ILogin DTOs**
 - [ ] **All `create` revisions created for missing password fields in member/admin IJoin DTOs**
 - [ ] **NO `create` revisions for guest IJoin DTOs (password not needed)**
-- [ ] Empty revises array only if schema is already secure AND complete
+- [ ] `revises` contains `keep` for each secure property that needs no changes
 - [ ] Ready to call `process({ request: { type: "complete", review: "...", revises: [...] } })` with complete security review results

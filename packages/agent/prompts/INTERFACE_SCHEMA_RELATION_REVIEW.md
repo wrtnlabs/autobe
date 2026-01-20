@@ -3760,7 +3760,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * - `update`: Transform FK field to $ref object reference
      * - `erase`: Remove incorrect reverse relation
      *
-     * Empty array `[]` means no relation issues found.
+     * You MUST provide a revise for EVERY property in the object schema.
+     * Use `keep` for properties that need no changes.
      */
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }

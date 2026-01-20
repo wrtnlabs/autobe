@@ -673,7 +673,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * - `erase`: Remove a phantom field
      * - `nullish`: Correct nullable/required status
      *
-     * Empty array `[]` means no issues found.
+     * You MUST provide a revise for EVERY property in the object schema.
+     * Use `keep` for properties that need no changes.
      */
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
