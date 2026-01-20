@@ -282,6 +282,24 @@ export namespace AutoBeJsonSchemaFactory {
     return emended as Schema;
   };
 
+  const convertConst = (
+    schema:
+      | AutoBeOpenApi.IJsonSchema.INumber
+      | AutoBeOpenApi.IJsonSchema.IInteger,
+    value: number,
+  ): void => {
+    const description: string | undefined = (schema as any).description;
+
+    for (const key of Object.keys(schema)) {
+      delete (schema as any)[key];
+    }
+
+    (schema as any).const = value;
+    if (description !== undefined) {
+      (schema as any).description = description;
+    }
+  };
+
   const fixStringSchema = (schema: AutoBeOpenApi.IJsonSchema.IString): void => {
     if (schema.format !== undefined) {
       delete schema.pattern;
@@ -318,67 +336,19 @@ export namespace AutoBeJsonSchemaFactory {
   const fixIntegerSchema = (
     schema: AutoBeOpenApi.IJsonSchema.IInteger,
   ): void => {
-    // Case 1: minimum === maximum → const
-    if (
-      schema.minimum !== undefined &&
-      schema.maximum !== undefined &&
-      schema.minimum === schema.maximum
-    ) {
-      const value = schema.minimum;
-      delete (schema as any).type;
-      delete schema.minimum;
-      delete schema.maximum;
-      (schema as any).const = value;
-      return;
-    }
+    const value: number | undefined = (() => {
+      if (schema.minimum !== undefined && schema.maximum === schema.minimum)
+        return schema.minimum;
+      if (schema.minimum !== undefined && schema.exclusiveMaximum === schema.minimum + 1)
+        return schema.minimum;
+      if (schema.maximum !== undefined && schema.exclusiveMinimum === schema.maximum - 1)
+        return schema.maximum;
+      if (schema.exclusiveMinimum !== undefined && schema.exclusiveMaximum === schema.exclusiveMinimum + 2)
+        return schema.exclusiveMinimum + 1;
+      return undefined;
+    })();
 
-    // Case 2: minimum: N, exclusiveMaximum: N+1 → only N is valid
-    if (
-      schema.minimum !== undefined &&
-      schema.exclusiveMaximum !== undefined &&
-      schema.exclusiveMaximum - schema.minimum === 1
-    ) {
-      const value = schema.minimum;
-      delete (schema as any).type;
-      delete schema.minimum;
-      delete schema.maximum;
-      delete schema.exclusiveMinimum;
-      delete schema.exclusiveMaximum;
-      (schema as any).const = value;
-      return;
-    }
-
-    // Case 3: exclusiveMinimum: N-1, maximum: N → only N is valid
-    if (
-      schema.exclusiveMinimum !== undefined &&
-      schema.maximum !== undefined &&
-      schema.maximum - schema.exclusiveMinimum === 1
-    ) {
-      const value = schema.maximum;
-      delete (schema as any).type;
-      delete schema.minimum;
-      delete schema.maximum;
-      delete schema.exclusiveMinimum;
-      delete schema.exclusiveMaximum;
-      (schema as any).const = value;
-      return;
-    }
-
-    // Case 4: exclusiveMinimum: N-1, exclusiveMaximum: N+1 → only N is valid
-    if (
-      schema.exclusiveMinimum !== undefined &&
-      schema.exclusiveMaximum !== undefined &&
-      schema.exclusiveMaximum - schema.exclusiveMinimum === 2
-    ) {
-      const value = schema.exclusiveMinimum + 1;
-      delete (schema as any).type;
-      delete schema.minimum;
-      delete schema.maximum;
-      delete schema.exclusiveMinimum;
-      delete schema.exclusiveMaximum;
-      (schema as any).const = value;
-      return;
-    }
+    if (value !== undefined) convertConst(schema, value);
   };
 
   /**
@@ -394,13 +364,8 @@ export namespace AutoBeJsonSchemaFactory {
       schema.minimum !== undefined &&
       schema.maximum !== undefined &&
       schema.minimum === schema.maximum
-    ) {
-      const value = schema.minimum;
-      delete (schema as any).type;
-      delete schema.minimum;
-      delete schema.maximum;
-      (schema as any).const = value;
-    }
+    )
+      return convertConst(schema, schema.minimum);
   };
 }
 

@@ -57,4 +57,17 @@ export const test_json_schema_fix_numeric_schema = () => {
   TestValidator.equals("integer exclusiveMin & exclusiveMax", case5, {
     const: 5,
   });
+
+  // Case 6: description should be preserved when converting to const
+  const case6: AutoBeOpenApi.IJsonSchema.IConstant =
+    AutoBeJsonSchemaFactory.fixSchema({
+      type: "integer",
+      minimum: 1,
+      maximum: 1,
+      description: "Version number",
+    } as any) as AutoBeOpenApi.IJsonSchema.IConstant;
+  TestValidator.equals("description preserved", case6, {
+    const: 1,
+    description: "Version number",
+  });
 };
