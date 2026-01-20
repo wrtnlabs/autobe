@@ -103,8 +103,10 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         );
         if (revise.required === true) result.required.push(newKey);
       } else if (revise.type === "keep") {
-        // keep original property
-        result.properties[revise.key] = props.schema.properties[revise.key];
+        // keep original property (deep clone to avoid shared references)
+        result.properties[revise.key] = JSON.parse(
+          JSON.stringify(props.schema.properties[revise.key]),
+        );
         if (props.schema.required.includes(revise.key))
           result.required.push(revise.key);
       } else if (revise.type === "nullish") {
