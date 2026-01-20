@@ -255,9 +255,9 @@ export namespace AutoBeDatabase {
      *
      * ### `"session"` - Actor Session Entity
      *
-     * Tables that represent login sessions for a specific actor. A session table
-     * always belongs to exactly one actor type and contains connection context
-     * and temporal fields for auditing.
+     * Tables that represent login sessions for a specific actor. A session
+     * table always belongs to exactly one actor type and contains connection
+     * context and temporal fields for auditing.
      *
      * **Key principle**: A session table exists only to track actor logins and
      * must reference exactly one actor table.
