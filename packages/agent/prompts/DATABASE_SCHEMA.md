@@ -273,6 +273,44 @@ bbs_article_comments: {
 
 The model you create must have a correctly assigned `stance` property that determines its architectural role and API generation strategy.
 
+### "actor" - Authenticated Actor Entity
+
+**Key Question**: "Does this table represent a true actor with its own authentication flow and distinct table schema?"
+
+**Characteristics:**
+- Represents a distinct user type, not just a role or attribute
+- Owns credentials and actor-specific profile data
+- Serves as the root for permission and ownership relationships
+- Requires dedicated session table (one-to-many)
+
+**Examples:**
+- `users` - Standard authenticated users
+- `shopping_customers` - Customers with login credentials
+- `shopping_sellers` - Sellers with business authentication
+- `administrators` - Admins with elevated authentication scope
+
+**API Strategy:**
+- Identity and authentication endpoints (registration, login, profile)
+- Actor-centric administration and ownership queries
+
+### "session" - Actor Session Entity
+
+**Key Question**: "Is this table dedicated to tracking login sessions for a single actor type?"
+
+**Characteristics:**
+- Child of exactly one actor table
+- Stores connection metadata and session lifecycle timestamps
+- Append-only audit trail for login events
+- Managed through authentication workflows, not generic CRUD
+
+**Examples:**
+- `user_sessions` - Sessions for `users`
+- `shopping_customer_sessions` - Sessions for `shopping_customers`
+
+**API Strategy:**
+- Session lifecycle endpoints scoped to the actor type
+- Typically read-only access for audit/history
+
 ### "primary" - Independent Business Entities
 
 **Key Question**: "Do users need to independently create, search, filter, or manage these entities?"
@@ -337,10 +375,16 @@ The model you create must have a correctly assigned `stance` property that deter
 1. **Is it a snapshot table (contains `_snapshots` or historical data)?**
    → `stance: "snapshot"`
 
-2. **Is it a supporting table (files, tags, junction tables, system-maintained)?**
+2. **Is it an actor table (true distinct user type with its own auth flow)?**
+  → `stance: "actor"`
+
+3. **Is it a session table for exactly one actor type?**
+  → `stance: "session"`
+
+4. **Is it a supporting table (files, tags, junction tables, system-maintained)?**
    → `stance: "subsidiary"`
 
-3. **Do users need independent operations across parent boundaries?**
+5. **Do users need independent operations across parent boundaries?**
    → `stance: "primary"`
 
 **Common Misclassification (Avoid This):**
@@ -696,8 +740,8 @@ When an actor requires login/authentication (e.g., users, administrators, custom
 
 **Stance:**
 
-- Default stance: `"subsidiary"`
-  - Rationale: Sessions are used for audit tracing of actions and are managed through identity flows.
+- Required stance: `"session"`
+  - Rationale: Session tables exist solely to track actor login sessions.
 
 **Required Fields (EXACT SET):**
 

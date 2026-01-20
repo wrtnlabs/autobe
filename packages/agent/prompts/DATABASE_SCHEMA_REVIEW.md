@@ -217,6 +217,7 @@ Your review must comprehensively evaluate the following aspects:
 - **Soft Delete**: Check deleted_at implementation where required
 - **Authentication Fields**: Verify password_hash exists if this entity requires login
 - **Status Management**: Confirm status/business_status fields if this entity has workflow
+- **Actor/Session Stance**: Ensure actor tables are marked `actor`, and session tables are marked `session`
 
 ### Dimension 7: Documentation Quality
 
@@ -780,6 +781,7 @@ Before calling `process({ request: { type: "complete", review: "...", plan: "...
 - [ ] Index strategy supports expected query patterns for this table
 - [ ] Business requirements are fully satisfied for this table
 - [ ] All EARS requirements from analysis reports are covered
+- [ ] Actor tables use `stance: "actor"` and session tables use `stance: "session"`
 
 ### Cross-Cutting Concerns
 - [ ] Consistency with other tables has been verified
