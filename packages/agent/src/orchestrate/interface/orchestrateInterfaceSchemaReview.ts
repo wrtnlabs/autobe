@@ -37,14 +37,23 @@ export async function orchestrateInterfaceSchemaReview(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // Filter to only process object-type schemas (non-preset and object type)
-  const typeNames: string[] = Object.keys(props.schemas).filter(
-    (k) =>
-      AutoBeJsonSchemaValidator.isPreset(k) === false &&
-      AutoBeJsonSchemaValidator.isObjectType({
-        operations: props.document.operations,
-        typeName: k,
-      }),
-  );
+  const typeNames: string[] = Object.keys(props.schemas)
+    .filter(
+      (k) =>
+        AutoBeJsonSchemaValidator.isPreset(k) === false &&
+        AutoBeJsonSchemaValidator.isObjectType({
+          operations: props.document.operations,
+          typeName: k,
+        }),
+    )
+    .filter(
+      (typeName) =>
+        config.kind !== "security" ||
+        AutoBeInterfaceSchemaReviewProgrammer.filterSecurity({
+          document: props.document,
+          typeName,
+        }),
+    );
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
     ctx,
@@ -217,7 +226,8 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeInterfaceSchemaReviewProgrammer.validate({
+    AutoBeInterfaceSchemaReviewProgrammer.validate(ctx, {
+      typeName: props.typeName,
       schema: props.schema,
       revises: result.data.request.revises,
       errors,

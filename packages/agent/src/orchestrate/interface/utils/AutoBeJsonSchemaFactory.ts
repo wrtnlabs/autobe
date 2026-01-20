@@ -299,6 +299,7 @@ export namespace AutoBeJsonSchemaFactory {
       ) {
         delete schema.minLength;
         delete schema.maxLength;
+        delete schema.contentMediaType;
       }
     }
     if (schema.contentMediaType === "") delete schema.contentMediaType;

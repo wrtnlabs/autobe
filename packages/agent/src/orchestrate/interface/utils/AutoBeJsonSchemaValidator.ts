@@ -54,11 +54,6 @@ export namespace AutoBeJsonSchemaValidator {
     validateReferenceId(props);
     validatePropertyNames(props);
 
-    validateKey({
-      errors: props.errors,
-      path: `${props.path}[${JSON.stringify(props.typeName)}]`,
-      key: props.typeName,
-    });
     vo(props.typeName, props.schema);
     AutoBeOpenApiTypeChecker.skim({
       schema: props.schema,

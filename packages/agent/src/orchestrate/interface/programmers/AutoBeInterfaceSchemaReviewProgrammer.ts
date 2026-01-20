@@ -10,11 +10,27 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeLlmSchemaFactory } from "../utils/AutoBeLlmSchemaFactory";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
+  export const filterSecurity = (props: {
+    document: AutoBeOpenApi.IDocument;
+    typeName: string;
+  }): boolean => {
+    const symbols: string[] = ["IAuthorized", "IJoin", "ILogin"];
+    return props.typeName.includes(".")
+      ? symbols.some((s) => `.${props.typeName.endsWith(s)}`)
+      : symbols.some(
+          (s) =>
+            props.document.components.schemas[`${props.typeName}.${s}`] !==
+            undefined,
+        );
+  };
+
   export const fixApplication = (props: {
     state: AutoBeState;
     application: ILlmApplication;
@@ -37,12 +53,16 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
   };
 
-  export const validate = (props: {
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    revises: AutoBeInterfaceSchemaPropertyRevise[];
-    path: string;
-    errors: IValidation.IError[];
-  }): void => {
+  export const validate = (
+    ctx: AutoBeContext,
+    props: {
+      typeName: string;
+      schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+      revises: AutoBeInterfaceSchemaPropertyRevise[];
+      path: string;
+      errors: IValidation.IError[];
+    },
+  ): void => {
     props.revises.forEach((revise, i) => {
       if (
         revise.type !== "create" &&
@@ -59,6 +79,22 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
 
           To ${revise.type} a property, it must exist in the object type.
         `,
+        });
+      if (revise.type === "create" || revise.type === "update")
+        AutoBeJsonSchemaValidator.validateSchema({
+          typeName: props.typeName,
+          schema: revise.schema,
+          operations: [],
+          path: `${props.path}.revises[${i}].schema`,
+          errors: props.errors,
+          databaseSchemas: new Set(
+            ctx
+              .state()
+              .database!.result.data.files.map((f) =>
+                f.models.map((m) => m.name),
+              )
+              .flat(),
+          ),
         });
     });
     for (const key of Object.keys(props.schema.properties))

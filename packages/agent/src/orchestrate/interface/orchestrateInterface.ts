@@ -33,6 +33,7 @@ import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
 import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
+import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
@@ -209,7 +210,14 @@ export const orchestrateInterface =
               operations: document.operations,
               typeName: k,
             }),
-        ).length * REVIEWERS.length,
+        ).length *
+          (REVIEWERS.length - 1) +
+        Object.keys(document.components.schemas).filter((key) =>
+          AutoBeInterfaceSchemaReviewProgrammer.filterSecurity({
+            document,
+            typeName: key,
+          }),
+        ).length,
     };
     for (const config of REVIEWERS)
       assign(
