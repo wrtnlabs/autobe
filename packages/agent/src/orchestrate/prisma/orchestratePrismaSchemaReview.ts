@@ -16,6 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaReviewHistory } from "./histories/transformPrismaSchemaReviewHistory";
+import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
 import { IAutoBeDatabaseSchemaReviewApplication } from "./structures/IAutoBeDatabaseSchemaReviewApplication";
 
 export async function orchestratePrismaSchemaReview(
@@ -130,6 +131,8 @@ async function step(
     });
     if (pointer.value === null) return out(result)(null);
 
+    if (pointer.value.content !== null)
+      AutoBeDatabaseModelProgrammer.emend(pointer.value.content);
     const event: AutoBeDatabaseSchemaReviewEvent = {
       type: SOURCE,
       id: v7(),

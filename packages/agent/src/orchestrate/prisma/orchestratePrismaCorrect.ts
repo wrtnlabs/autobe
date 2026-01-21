@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
+import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
 import { IAutoBeDatabaseCorrectApplication } from "./structures/IAutoBeDatabaseCorrectApplication";
 
 export function orchestratePrismaCorrect(
@@ -172,6 +173,7 @@ async function execute(
         filename: file.filename,
         namespace: file.namespace,
         models: file.models.map((model) => {
+          AutoBeDatabaseModelProgrammer.emend(model);
           const newbie = pointer.value?.models.find(
             (m) => m.name === model.name,
           );
