@@ -320,8 +320,11 @@ export namespace AutoBeJsonSchemaFactory {
         },
         schema: value,
         closure: (next) => {
-          if (AutoBeOpenApiTypeChecker.isObject(next))
+          if (AutoBeOpenApiTypeChecker.isObject(next)) {
             next["x-autobe-database-schema"] = null;
+            for (const p of Object.values(next.properties))
+              p["x-autobe-database-column"] = null;
+          }
         },
       });
     return init;
