@@ -444,6 +444,14 @@ function validateDuplicatedRelationOppositeNames(
   const errors: IAutoBeDatabaseValidation.IError[] = [];
   const group: Map<string, IOppositeNameContainer[]> = new Map();
 
+  // Collect all field/relation names in the target model
+  const targetFieldNames = new Set<string>([
+    model.primaryField.name,
+    ...model.foreignFields.map((f) => f.name),
+    ...model.foreignFields.map((f) => f.relation.name),
+    ...model.plainFields.map((f) => f.name),
+  ]);
+
   for (const c of dict.values()) {
     c.model.foreignFields.forEach((ff, i) => {
       if (ff.relation.targetModel !== model.name) return;
@@ -455,6 +463,41 @@ function validateDuplicatedRelationOppositeNames(
     });
   }
 
+  // Check oppositeName conflicts with target model's existing fields
+  for (const [oppositeName, array] of group) {
+    if (targetFieldNames.has(oppositeName)) {
+      array.forEach((item) => {
+        const c = item.container;
+        const ff = item.foreignField;
+        errors.push({
+          path: `application.files[${c.fileIndex}].models[${c.modelIndex}].foreignFields[${item.foreignFieldIndex}].relation.oppositeName`,
+          table: c.model.name,
+          field: ff.name,
+          message: StringUtil.trim`
+            oppositeName "${oppositeName}" conflicts with existing field in target model "${model.name}".
+
+            **What happened?**
+            The oppositeName "${oppositeName}" would create a reverse relation property in "${model.name}",
+            but "${model.name}" already has a field or relation with that name.
+
+            **Why is this a problem?**
+            - Prisma cannot have two properties with the same name in a model
+            - This will cause Prisma schema compilation errors
+            - The reverse relation would overwrite or conflict with the existing field
+
+            **How to fix:**
+            Choose a different oppositeName that doesn't conflict with existing fields in "${model.name}".
+
+            **Naming suggestions:**
+            - Add a descriptive prefix/suffix: "${oppositeName}List", "${oppositeName}Items", "related${oppositeName.charAt(0).toUpperCase() + oppositeName.slice(1)}"
+            - Use the source model name: "${c.model.name.replace(/_/g, "").toLowerCase()}s"
+          `,
+        });
+      });
+    }
+  }
+
+  // Check duplicate oppositeNames among relations targeting the same model
   for (const [oppositeName, array] of group) {
     if (array.length === 1) continue;
     array.forEach((item, i) => {
@@ -566,6 +609,11 @@ function validateValidNames(
     validate({
       value: ff.relation.name,
       accessor: `${accessor}.foreignFields[${i}].relation.name`,
+      field: ff.name,
+    });
+    validate({
+      value: ff.relation.oppositeName,
+      accessor: `${accessor}.foreignFields[${i}].relation.oppositeName`,
       field: ff.name,
     });
     if (ff.relation.mappingName)
