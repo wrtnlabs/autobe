@@ -156,9 +156,20 @@ export const orchestrateInterface =
     //------------------------------------------------
     // DTO SCHEMAS
     //------------------------------------------------
-    const assign = (
+    // RENAME REQUEST/RESPONSE BODY TYPE NAMES
+    const renameProgress: AutoBeProgressEventBase = {
+      completed: 0,
+      total: 0,
+    };
+    await orchestrateInterfaceSchemaRename(ctx, {
+      document,
+      progress: renameProgress,
+    });
+
+    // PREPARE SCHEMA OVERWRITER
+    const overwrite = async (
       schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    ) => {
+    ): Promise<void> => {
       schemas = Object.fromEntries(
         Object.entries(schemas).filter(([_k, v]) => v !== undefined),
       );
@@ -175,10 +186,14 @@ export const orchestrateInterface =
         document,
         application: ctx.state().database!.result.data,
       });
+      await orchestrateInterfaceSchemaRename(ctx, {
+        document,
+        progress: renameProgress,
+      });
     };
 
     // INITIAL SCHEMAS
-    assign(
+    await overwrite(
       await orchestrateInterfaceSchema(ctx, {
         instruction: props.instruction,
         operations,
@@ -190,7 +205,7 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
-    assign(
+    await overwrite(
       await orchestrateInterfaceSchemaRefine(ctx, {
         instruction: props.instruction,
         document,
@@ -220,7 +235,7 @@ export const orchestrateInterface =
         ).length,
     };
     for (const config of REVIEWERS)
-      assign(
+      await overwrite(
         await orchestrateInterfaceSchemaReview(ctx, config, {
           instruction: props.instruction,
           document,
@@ -242,8 +257,8 @@ export const orchestrateInterface =
           progress: complementProgress,
           document,
         });
-      assign(complemented);
-      assign(
+      await overwrite(complemented);
+      await overwrite(
         await orchestrateInterfaceSchemaRefine(ctx, {
           instruction: props.instruction,
           document,
@@ -256,7 +271,7 @@ export const orchestrateInterface =
       for (const config of REVIEWERS) {
         reviewProgress.total =
           Object.keys(document.components.schemas).length * REVIEWERS.length;
-        assign(
+        await overwrite(
           await orchestrateInterfaceSchemaReview(ctx, config, {
             instruction: props.instruction,
             document,
@@ -266,7 +281,6 @@ export const orchestrateInterface =
         );
       }
     }
-    await orchestrateInterfaceSchemaRename(ctx, document);
 
     //------------------------------------------------
     // FINALIZATION

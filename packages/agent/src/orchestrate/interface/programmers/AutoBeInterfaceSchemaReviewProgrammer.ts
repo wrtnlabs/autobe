@@ -159,16 +159,12 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
 
   const nullish = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    property: Exclude<
-      AutoBeOpenApi.IJsonSchemaDescriptive,
-      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-    >;
+    property: AutoBeOpenApi.IJsonSchemaProperty;
     revise: AutoBeInterfaceSchemaPropertyNullish;
   }): void => {
-    let cloned: Exclude<
-      AutoBeOpenApi.IJsonSchemaDescriptive,
-      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-    > = JSON.parse(JSON.stringify(props.property));
+    let cloned: AutoBeOpenApi.IJsonSchemaProperty = JSON.parse(
+      JSON.stringify(props.property),
+    );
     if (props.revise.nullable === true) {
       if (AutoBeOpenApiTypeChecker.isOneOf(cloned)) {
         if (
@@ -179,6 +175,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
           description: cloned.description,
+          "x-autobe-database-column": cloned["x-autobe-database-column"],
           oneOf: [
             {
               ...cloned,
@@ -198,6 +195,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             description: cloned.description,
+            "x-autobe-database-column": cloned["x-autobe-database-column"],
           };
       }
     }

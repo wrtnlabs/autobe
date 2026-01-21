@@ -668,6 +668,18 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 - Document violations in `think.review`
 - Apply corrections in `content`
 
+### 2.4. `x-autobe-database-column` Property-Level Mapping
+
+Every property within an object schema must specify its database column mapping:
+
+- When `x-autobe-database-schema` has a valid table name:
+  - Set `x-autobe-database-column` to the column name for direct mappings
+  - Set to `null` for computed properties, with detailed computation spec in `description`
+
+- When `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-column` is not applicable
+  - Each property's `description` must still contain detailed data sourcing specs
+
 ---
 
 ## 3. Theoretical Foundation of DTO Relations

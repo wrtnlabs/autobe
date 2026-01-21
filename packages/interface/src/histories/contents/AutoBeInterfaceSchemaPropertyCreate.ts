@@ -15,10 +15,7 @@ export interface AutoBeInterfaceSchemaPropertyCreate {
   key: string;
 
   /** Schema definition for the new property. */
-  schema: Exclude<
-    AutoBeOpenApi.IJsonSchemaDescriptive,
-    AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-  >;
+  schema: AutoBeOpenApi.IJsonSchemaProperty;
 
   /** Whether property should be in `required` array. */
   required: boolean;

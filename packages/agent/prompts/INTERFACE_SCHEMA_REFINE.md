@@ -247,7 +247,8 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+  "description": "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation with no direct database mapping. Computed by: SELECT category, COUNT(*) FROM reports GROUP BY category.",
+  "x-autobe-database-schema": null,
   "additionalProperties": {
     "type": "number",
     "description": "Count of reports in this category."
@@ -265,7 +266,8 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "User preferences containing display and localization settings.",
+  "description": "User preferences containing display and localization settings. Stored in users table's preferences JSON column.",
+  "x-autobe-database-schema": "users",
   "properties": {
     "theme": {
       "type": "string",
@@ -293,10 +295,35 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "Additional metadata stored as key-value pairs.",
+  "description": "Additional metadata stored as key-value pairs. Stored in the entity's metadata JSON column for flexible extension data.",
+  "x-autobe-database-schema": "orders",
   "additionalProperties": true
 }
 ```
+
+**CRITICAL: `x-autobe-database-schema` Requirement**
+
+All refined object schemas MUST include `x-autobe-database-schema`:
+- Set to **table name** when the object maps to a database table
+- Set to **`null`** when no direct database mapping exists
+
+**When `x-autobe-database-schema` is `null`**, the `description` MUST explain:
+1. **WHY**: Reason for no database mapping (computed aggregation, composite type, etc.)
+2. **HOW**: Detailed specification of data sourcing or computation (source tables, formulas, join conditions)
+
+The HOW must be **precise enough for downstream agents to implement** the data retrieval or computation.
+
+**`x-autobe-database-column` Property-Level Mapping**:
+
+Every property within a refined object schema must specify its database column mapping:
+
+- When `x-autobe-database-schema` has a valid table name:
+  - Set `x-autobe-database-column` to the column name for direct mappings
+  - Set to `null` for computed properties, with detailed computation spec in `description`
+
+- When `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-column` is not applicable
+  - Each property's `description` must still contain detailed data sourcing specs
 
 ---
 
@@ -445,7 +472,8 @@ process({
     verdict: "REFINE: This is a degenerate type. The documentation explicitly describes a Record<string, number> structure (key-value mapping) but the type is just `number`. Will refine to an object with additionalProperties.",
     schema: {
       type: "object",
-      description: "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+      description: "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation type with no direct database mapping. Computed by grouping reports by category and counting occurrences: SELECT category, COUNT(*) FROM reports GROUP BY category.",
+      "x-autobe-database-schema": null,
       additionalProperties: {
         type: "number",
         description: "Count of reports in this category."
@@ -467,7 +495,8 @@ process({
     verdict: "REFINE: This is a degenerate type. Documentation describes a structured object with email, push, and SMS settings but type is `string`. Will refine to object with specific properties.",
     schema: {
       type: "object",
-      description: "User notification preferences containing email, push, and SMS notification settings.",
+      description: "User notification preferences containing email, push, and SMS notification settings. Stored as JSON in user_preferences table's notification_settings column.",
+      "x-autobe-database-schema": "user_preferences",
       properties: {
         email: {
           type: "boolean",
@@ -590,6 +619,8 @@ Before calling the complete function:
 - [ ] Structure matches what documentation describes
 - [ ] Used `additionalProperties` for Record patterns
 - [ ] Used `properties` for structured objects
+- [ ] **`x-autobe-database-schema` field included** (set to table name or `null`)
+- [ ] **If `x-autobe-database-schema` is `null`**: Description contains WHY (no DB mapping) and HOW (data sourcing/computation spec)
 
 ---
 

@@ -961,6 +961,21 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 - **`create`**: Add missing `password` field to IJoin/ILogin, add missing session context fields
 - **`keep`**: Acknowledge existing properties that pass security review
 
+**`x-autobe-database-column` Requirement**:
+
+When creating properties, specify database column mapping:
+
+- For fields that directly map to a database column:
+  - Set `x-autobe-database-column` to the column name
+
+- For computed/derived fields (no direct column):
+  - Set `x-autobe-database-column` to `null`
+  - The `description` MUST contain detailed computation spec
+
+- When the parent object's `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-column` is not applicable
+  - The `description` must still contain detailed data sourcing specs
+
 ### 5.3. Output Examples
 
 **Example 1: ILogin with password_hashed (Erase + Create)**

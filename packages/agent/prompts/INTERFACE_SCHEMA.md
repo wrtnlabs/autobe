@@ -888,9 +888,39 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 **USAGE**:
 - Present in ANY object type schema that maps to a database model
 - Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
-- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
+- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types, composite types
 
 **FORMAT**: `"`x-autobe-database-schema`": "database_model_name"` (exact model name from database schema) or `null`
+
+**CRITICAL REQUIREMENT WHEN `null`**:
+
+When `x-autobe-database-schema` is `null`, the object's `description` field MUST contain:
+
+1. **WHY** - Clear reason for no database mapping:
+   - Request parameter type for API input (filters, pagination)
+   - Wrapper type for API responses (pagination container)
+   - Composite type aggregating data from multiple tables
+   - Computed result type from calculations
+   - Pure business logic type born from requirements
+
+2. **HOW** - Detailed implementation specification (if applicable):
+   - Source tables and columns involved
+   - Join conditions between tables
+   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+   - Business rules and transformation logic
+   - Edge cases (nulls, empty sets, defaults)
+
+The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague descriptions are unacceptable.
+
+**Example for `null` mapping**:
+```json
+{
+  "type": "object",
+  "description": "Search and pagination parameters for user listing. This is a request parameter type for API input, not a database entity. Contains optional filters for search term matching against user name and email fields, along with standard pagination controls.",
+  "x-autobe-database-schema": null,
+  "properties": { ... }
+}
+```
 
 **VALIDATION PROCESS**:
 1. **Check for `x-autobe-database-schema` field**: If present in an object type schema, it indicates direct database model mapping (string) or no mapping (null)
@@ -999,7 +1029,100 @@ Examples:
 - The `properties` object is ONLY for data that the API actually transmits
 - Always place metadata at the same level as `type` and `properties`, never inside `properties`
 
-#### 2.2.4. Database Nullable Field Handling - Nullable vs Optional
+#### 2.2.4. `x-autobe-database-column` Property-Level Database Mapping
+
+**PURPOSE**: This field links each DTO property to its corresponding database column for traceability.
+
+**APPLIES TO**: Every property within an object schema where `x-autobe-database-schema` has a valid table name.
+
+**TYPE**: `string | null`
+- `string`: The exact database column name this property maps to
+- `null`: Property is computed/derived and has no direct column mapping
+
+**USAGE RULES**:
+
+**Case 1: When `x-autobe-database-schema` has a valid table name**
+- Every property MUST have `x-autobe-database-column` filled
+- If property maps directly to a database column → set to column name
+- If property is computed/derived (no direct column) → set to `null`, and the property's `description` MUST contain detailed computation specification
+
+**Case 2: When `x-autobe-database-schema` is `null`**
+- `x-autobe-database-column` is **NOT APPLICABLE** (the entire object has no table mapping)
+- However, each property's `description` MUST still contain detailed specs explaining data sourcing
+
+**CRITICAL: Description Requirement for Computed Properties**
+
+When `x-autobe-database-column` is `null`, the property's `description` MUST contain:
+
+1. **WHY** - Reason for no direct column mapping:
+   - Aggregated from multiple columns/rows
+   - Calculated from other fields
+   - Joined from related tables
+   - Derived from business logic
+
+2. **HOW** - Detailed implementation specification:
+   - Source tables and columns involved
+   - Join conditions between tables
+   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+   - Business rules and transformation logic
+   - Edge cases (nulls, empty sets, defaults)
+
+The HOW must be **precise enough for downstream agents to implement** the actual computation.
+
+**Example - Object with direct table mapping**:
+```json
+{
+  "type": "object",
+  "description": "User entity from users table.",
+  "x-autobe-database-schema": "users",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the user.",
+      "x-autobe-database-column": "id"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address for login and communication.",
+      "x-autobe-database-column": "email"
+    },
+    "totalOrders": {
+      "type": "integer",
+      "description": "Total number of orders placed by this user. Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
+      "x-autobe-database-column": null
+    }
+  },
+  "required": ["id", "email", "totalOrders"]
+}
+```
+
+**Example - Object with no table mapping** (x-autobe-database-schema is null):
+```json
+{
+  "type": "object",
+  "description": "Sales statistics aggregating data from multiple tables. This is a computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
+  "x-autobe-database-schema": null,
+  "properties": {
+    "categoryName": {
+      "type": "string",
+      "description": "Category name from categories table. Source: categories.name via JOIN products ON products.category_id = categories.id."
+    },
+    "totalSales": {
+      "type": "integer",
+      "description": "Total units sold in this category. Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales."
+    },
+    "averagePrice": {
+      "type": "number",
+      "description": "Average sale price in this category. Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist."
+    }
+  },
+  "required": ["categoryName", "totalSales", "averagePrice"]
+}
+```
+
+#### 2.2.5. Database Nullable Field Handling - Nullable vs Optional
 
 **🚨 CRITICAL DISTINCTION**: Understand the difference between **nullable** (database) and **optional** (DTO).
 
@@ -4962,7 +5085,8 @@ interface IBbsArticle.IUpdate {
      - Include sort options (orderBy, direction)
      - Include common filters (search, status, dateRange)
      - May include "my_items_only" but not direct "user_id"
-     - NO `x-autobe-database-schema` (query params, not table mapping)
+     - Set `x-autobe-database-schema` to `null` (query params, not table mapping)
+     - **CRITICAL**: `description` MUST explain WHY (request parameter type for API input)
 
    - **`.IInvert`**:
      - Use when child needs parent context

@@ -696,11 +696,27 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
   key: "stock",
   schema: {
     type: "integer",
-    description: "Current inventory quantity. Automatically decremented when orders are placed."
+    description: "Current inventory quantity. Automatically decremented when orders are placed.",
+    "x-autobe-database-column": "stock"
   },
   required: true  // For Read DTOs, match database nullability
 }
 ```
+
+**`x-autobe-database-column` Requirement**:
+
+Every property you create MUST specify its database column mapping:
+
+- When adding a field that directly maps to a database column:
+  - Set `x-autobe-database-column` to the column name
+
+- When adding a computed/derived field (no direct column):
+  - Set `x-autobe-database-column` to `null`
+  - The `description` MUST contain detailed computation spec (source tables, formulas, join conditions)
+
+- When the parent object's `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-column` is not applicable
+  - The `description` must still contain detailed data sourcing specs
 
 **Revision Rules by DTO Type**:
 

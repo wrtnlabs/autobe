@@ -20,7 +20,10 @@ import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInt
 
 export async function orchestrateInterfaceSchemaRename(
   ctx: AutoBeContext,
-  document: AutoBeOpenApi.IDocument,
+  props: {
+    document: AutoBeOpenApi.IDocument;
+    progress: AutoBeProgressEventBase;
+  },
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY * 10,
 ): Promise<void> {
   const tableNames: string[] = ctx
@@ -29,21 +32,22 @@ export async function orchestrateInterfaceSchemaRename(
     .flat()
     .map((m) => m.name)
     .filter((m) => m.startsWith("mv_") === false);
+
   const entireTypeNames: Set<string> = new Set();
-  for (let name of Object.keys(document.components.schemas)) {
-    if (name.startsWith("IPage")) name = name.replace("IPage", "");
-    name = name.split(".")[0];
-    entireTypeNames.add(name);
-  }
+  const insert = (key: string) => {
+    if (key.startsWith("IPage")) key = key.replace("IPage", "");
+    key = key.split(".")[0];
+    entireTypeNames.add(key);
+  };
+
+  for (const key of Object.keys(props.document.components.schemas)) insert(key);
 
   const matrix: string[][] = divideArray({
     array: Array.from(entireTypeNames),
     capacity,
   });
-  const progress: AutoBeProgressEventBase = {
-    total: entireTypeNames.size,
-    completed: 0,
-  };
+  props.progress.total += matrix.length;
+
   const refactors: AutoBeInterfaceSchemaRefactor[] = uniqueRefactors(
     (
       await executeCachedBatch(
@@ -54,13 +58,13 @@ export async function orchestrateInterfaceSchemaRename(
               tableNames,
               typeNames,
               promptCacheKey,
-              progress,
+              progress: props.progress,
             }),
         ),
       )
     ).flat(),
   );
-  orchestrateInterfaceSchemaRename.rename(document, refactors);
+  orchestrateInterfaceSchemaRename.rename(props.document, refactors);
 }
 export namespace orchestrateInterfaceSchemaRename {
   export const rename = (
@@ -159,7 +163,7 @@ const divideAndConquer = async (
       ...transformInterfaceSchemaRenameHistory(props),
     });
     if (pointer.value === null) {
-      props.progress.completed += props.typeNames.length;
+      ++props.progress.completed;
       return [];
     }
 
@@ -169,14 +173,14 @@ const divideAndConquer = async (
       id: v7(),
       refactors: pointer.value.refactors,
       total: props.progress.total,
-      completed: (props.progress.completed += props.typeNames.length),
+      completed: ++props.progress.completed,
       metric,
       tokenUsage,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaRenameEvent);
     return pointer.value.refactors;
   } catch {
-    props.progress.completed += props.typeNames.length;
+    ++props.progress.completed;
     return [];
   }
 };

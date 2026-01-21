@@ -251,7 +251,8 @@ export namespace AutoBeJsonSchemaValidator {
         props.schema.properties["token"] = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "JWT token information for authentication",
-        } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
+          "x-autobe-database-column": null,
+        } as AutoBeOpenApi.IJsonSchemaProperty.IReference;
 
         props.schema.required ??= [];
         if (props.schema.required.includes("token") === false)
