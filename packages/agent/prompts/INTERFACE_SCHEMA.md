@@ -1667,53 +1667,60 @@ An **inline object type** occurs when you define an object's complete structure 
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "bbs_articles",
   "properties": {
-    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "title" },
+    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "content" },
     "attachments": {
       "type": "array",
       "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null,
       "items": {
         "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
       }
     },
     "metadata": {
       "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null
     }
   }
 }
 ```
 
 ```json
-// Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments
+// Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments (no direct DB mapping)
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": null,
   "properties": {
-    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>" },
-    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>" },
-    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>" }
+    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
+    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
+    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null }
   },
   "required": ["url", "name", "size"]
 }
 ```
 
 ```json
-// Schema: IBbsArticleMetadata - Supporting type for metadata
+// Schema: IBbsArticleMetadata - Supporting type for metadata (no direct DB mapping)
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": null,
   "properties": {
     "tags": {
       "type": "array",
       "description": "<DETAILED_DESCRIPTION>",
-      "items": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+      "x-autobe-database-schema-member": null,
+      "items": { "type": "string" }
     },
     "priority": {
       "type": "string",
       "enum": ["low", "medium", "high"],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null
     }
   }
 }
@@ -1830,10 +1837,12 @@ Before ANY schema is accepted:
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "posts",
   "properties": {
     "author": {
       "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "author"
     }
   }
 }
