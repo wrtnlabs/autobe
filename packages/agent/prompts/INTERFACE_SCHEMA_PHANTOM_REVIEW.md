@@ -191,9 +191,9 @@ Not all fields that don't exist in database schema are phantom fields. **DO NOT 
   "IBbsArticle": {
     "x-autobe-database-schema": "Article",
     "properties": {
-      "id": { "type": "string" },
-      "title": { "type": "string" },
-      "total_comments": { "type": "number" }  // ✅ DO NOT DELETE - computed from relation count
+      "id": { "type": "string", "x-autobe-database-column": "id" },
+      "title": { "type": "string", "x-autobe-database-column": "title" },
+      "total_comments": { "type": "number", "x-autobe-database-column": null }  // ✅ DO NOT DELETE - computed from relation count
     }
   }
 }
@@ -332,13 +332,13 @@ The `x-autobe-database-schema` field links OpenAPI schemas to their correspondin
 }
 ```
 
-**When Present**:
+**When value is a table name (string)**:
 - ✅ Schema directly maps to a database model
 - ✅ ALL properties must exist in the referenced database model
 - ✅ Phantom field validation is MANDATORY
 - ✅ Nullish validation is MANDATORY
 
-**When Absent**:
+**When value is `null`**:
 - Schema does NOT directly map to a database model
 - Examples: Query parameter DTOs, wrapper types, aggregation results
 - Phantom field and nullish validation do NOT apply

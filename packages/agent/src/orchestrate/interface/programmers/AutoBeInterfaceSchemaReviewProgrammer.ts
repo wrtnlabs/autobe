@@ -87,14 +87,9 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           operations: [],
           path: `${props.path}.revises[${i}].schema`,
           errors: props.errors,
-          databaseSchemas: new Set(
-            ctx
-              .state()
-              .database!.result.data.files.map((f) =>
-                f.models.map((m) => m.name),
-              )
-              .flat(),
-          ),
+          models: ctx
+            .state()
+            .database!.result.data.files.flatMap((f) => f.models),
         });
     });
     for (const key of Object.keys(props.schema.properties))

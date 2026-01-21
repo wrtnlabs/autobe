@@ -266,20 +266,20 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "User preferences containing display and localization settings. Stored in users table's preferences JSON column.",
-  "x-autobe-database-schema": "users",
+  "description": "User preferences containing display and localization settings. This is the internal structure of the users.preferences JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from users.preferences column as JSON object.",
+  "x-autobe-database-schema": null,
   "properties": {
     "theme": {
       "type": "string",
-      "description": "UI theme preference."
+      "description": "UI theme preference. Stored as 'theme' key in the JSON structure."
     },
     "language": {
       "type": "string",
-      "description": "Preferred language code."
+      "description": "Preferred language code. Stored as 'language' key in the JSON structure."
     },
     "timezone": {
       "type": "string",
-      "description": "User's timezone identifier."
+      "description": "User's timezone identifier. Stored as 'timezone' key in the JSON structure."
     }
   }
 }
@@ -295,8 +295,8 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "Additional metadata stored as key-value pairs. Stored in the entity's metadata JSON column for flexible extension data.",
-  "x-autobe-database-schema": "orders",
+  "description": "Additional metadata stored as key-value pairs. This is the internal structure of the orders.metadata JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from orders.metadata column as JSON object with dynamic keys.",
+  "x-autobe-database-schema": null,
   "additionalProperties": true
 }
 ```
@@ -495,20 +495,20 @@ process({
     verdict: "REFINE: This is a degenerate type. Documentation describes a structured object with email, push, and SMS settings but type is `string`. Will refine to object with specific properties.",
     schema: {
       type: "object",
-      description: "User notification preferences containing email, push, and SMS notification settings. Stored as JSON in user_preferences table's notification_settings column.",
-      "x-autobe-database-schema": "user_preferences",
+      description: "User notification preferences containing email, push, and SMS notification settings. This is the internal structure of user_preferences.notification_settings JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from user_preferences.notification_settings column as JSON object.",
+      "x-autobe-database-schema": null,
       properties: {
         email: {
           type: "boolean",
-          description: "Whether to receive email notifications."
+          description: "Whether to receive email notifications. Stored as 'email' key in the JSON structure."
         },
         push: {
           type: "boolean",
-          description: "Whether to receive push notifications."
+          description: "Whether to receive push notifications. Stored as 'push' key in the JSON structure."
         },
         sms: {
           type: "boolean",
-          description: "Whether to receive SMS notifications."
+          description: "Whether to receive SMS notifications. Stored as 'sms' key in the JSON structure."
         }
       }
     }

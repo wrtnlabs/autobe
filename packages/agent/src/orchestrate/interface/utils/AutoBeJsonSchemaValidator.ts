@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
@@ -35,7 +35,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   export interface IProps {
     errors: IValidation.IError[];
-    databaseSchemas: Set<string>;
+    models: AutoBeDatabase.IModel[];
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive;
@@ -340,23 +340,27 @@ export namespace AutoBeJsonSchemaValidator {
     AutoBeOpenApiTypeChecker.skim({
       schema: props.schema,
       accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
-      closure: (schema, accessor) => {
-        if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
+      closure: (next, accessor) => {
+        if (AutoBeOpenApiTypeChecker.isObject(next) === false) return;
         else if (
-          schema["x-autobe-database-schema"] !== null &&
-          schema["x-autobe-database-schema"] !== undefined &&
-          props.databaseSchemas.has(schema["x-autobe-database-schema"]) ===
-            false
+          next["x-autobe-database-schema"] === null ||
+          next["x-autobe-database-schema"] === undefined
         )
+          return;
+
+        const model: AutoBeDatabase.IModel | undefined = props.models.find(
+          (m) => m.name === next["x-autobe-database-schema"],
+        );
+        if (model === undefined)
           props.errors.push({
             path: `${accessor}["x-autobe-database-schema"]`,
-            expected: Array.from(props.databaseSchemas)
-              .map((s) => JSON.stringify(s))
+            expected: props.models
+              .map((s) => JSON.stringify(s.name))
               .join(" | "),
-            value: schema["x-autobe-database-schema"],
+            value: next["x-autobe-database-schema"],
             description: StringUtil.trim`
               You've referenced a non-existing database schema name
-              ${JSON.stringify(schema["x-autobe-database-schema"])} in
+              ${JSON.stringify(next["x-autobe-database-schema"])} in
               "x-autobe-database-schema" property. Make sure that the
               referenced database schema name exists in your database schema files.
 
@@ -365,9 +369,66 @@ export namespace AutoBeJsonSchemaValidator {
               value again. I repeat that, you have to choose one of below:
 
               Existing database schema names are:
-              - ${Array.from(props.databaseSchemas).join("\n- ")}
+              
+              ${props.models.map((m) => `- ${m.name}`).join("")}
             `,
           });
+        for (const [k, v] of Object.entries(next.properties)) {
+          if (
+            v["x-autobe-database-column"] === null ||
+            v["x-autobe-database-column"] === undefined
+          )
+            continue;
+
+          const pAcc: string = Escaper.variable(k)
+            ? `${accessor}.properties.${k}["x-autobe-database-column"]`
+            : `${accessor}.properties[${JSON.stringify(k)}]["x-autobe-database-column"]`;
+          if (model === undefined)
+            props.errors.push({
+              path: pAcc,
+              expected: "null",
+              value: v["x-autobe-database-column"],
+              description: StringUtil.trim`
+                You have defined "x-autobe-database-column" property referencing 
+                a database column, but the parent schema does not reference any 
+                database schema in "x-autobe-database-schema" property.
+
+                To reference a database column, first define the parent
+                schema's "x-autobe-database-schema" property with
+                a valid database schema name.
+
+                If not, remove this "x-autobe-database-column" property
+                at the next time, and then describe what this property is for
+                in the schema description instead.
+              `,
+            });
+          else {
+            const expected: string[] = [
+              model.primaryField.name,
+              ...model.plainFields.map((pp) => pp.name),
+              ...model.foreignFields.map((ff) => ff.name),
+            ];
+            if (expected.includes(v["x-autobe-database-column"]) === false)
+              props.errors.push({
+                path: pAcc,
+                expected: expected.map((s) => JSON.stringify(s)).join(" | "),
+                value: v["x-autobe-database-column"],
+                description: StringUtil.trim`
+                  You've referenced a non-existing database column name
+                  ${JSON.stringify(v["x-autobe-database-column"])} in
+                  "x-autobe-database-column" property. 
+                  
+                  Make sure that the referenced database column name exists in 
+                  your database schema "${model.name}".
+
+                  Here is the list of existing database column names in
+                  database schema "${model.name}":
+
+                  ${expected.map((m) => `- ${m}`).join("\n")}
+                `,
+              });
+          }
+        }
       },
     });
   };

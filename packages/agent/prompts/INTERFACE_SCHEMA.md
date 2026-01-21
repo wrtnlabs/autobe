@@ -938,15 +938,15 @@ The HOW must be **precise enough for downstream agents to implement** the actual
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "shopping_customers",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "email" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "name" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "created_at" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
-  "required": ["id", "email", "name", "createdAt"],
-  "x-autobe-database-schema": "shopping_customers"
+  "required": ["id", "email", "name", "createdAt"]
 }
 ```
 
@@ -985,8 +985,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
   "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "email" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -1501,12 +1501,14 @@ model User {
     "id": {
       "type": "string",
       "format": "uuid",
-      "description": "Unique identifier for the user."
+      "description": "Unique identifier for the user.",
+      "x-autobe-database-column": "id"
     },
     "email": {
       "type": "string",
       "format": "email",
-      "description": "User's email address."
+      "description": "User's email address.",
+      "x-autobe-database-column": "email"
     },
     "preferences": {
       "type": "object",
@@ -1515,7 +1517,8 @@ model User {
       "additionalProperties": {
         "type": "string"
       },
-      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings."
+      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
+      "x-autobe-database-column": "preferences"
     },
     "customFields": {
       "oneOf": [
@@ -1529,7 +1532,8 @@ model User {
         },
         { "type": "null" }
       ],
-      "description": "Optional custom fields as key-value pairs. Null if not set."
+      "description": "Optional custom fields as key-value pairs. Null if not set.",
+      "x-autobe-database-column": "custom_fields"
     }
   },
   "required": ["id", "email", "preferences", "customFields"]

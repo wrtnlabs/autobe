@@ -193,12 +193,7 @@ function createController(
     const errors: IValidation.IError[] = [];
     AutoBeJsonSchemaValidator.validateSchema({
       errors,
-      databaseSchemas: new Set(
-        ctx
-          .state()
-          .database!.result.data.files.map((f) => f.models.map((m) => m.name))
-          .flat(),
-      ),
+      models: ctx.state().database!.result.data.files.flatMap((f) => f.models),
       operations: props.operations,
       typeName: props.typeName,
       schema: result.data.request.schema,
