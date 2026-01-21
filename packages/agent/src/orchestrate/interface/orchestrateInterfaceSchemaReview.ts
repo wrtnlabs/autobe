@@ -137,6 +137,10 @@ async function process(
     local: {
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
+      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
+        typeName: props.typeName,
+        application: ctx.state().database!.result.data,
+      }),
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {

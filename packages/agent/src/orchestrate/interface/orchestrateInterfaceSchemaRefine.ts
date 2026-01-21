@@ -115,6 +115,10 @@ async function process(
     local: {
       interfaceOperations: props.refineOperations,
       interfaceSchemas: { [props.typeName]: props.originalSchema },
+      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
+        typeName: props.typeName,
+        application: ctx.state().database!.result.data,
+      }),
     },
   });
 

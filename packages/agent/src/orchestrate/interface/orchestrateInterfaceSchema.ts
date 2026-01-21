@@ -124,6 +124,10 @@ async function process(
           (o.responseBody && predicate(o.responseBody.typeName))
         );
       }),
+      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
+        typeName: props.typeName,
+        application: ctx.state().database!.result.data,
+      }),
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
