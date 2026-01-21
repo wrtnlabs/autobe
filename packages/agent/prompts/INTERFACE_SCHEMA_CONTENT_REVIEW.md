@@ -539,9 +539,9 @@ You are the **guardian of DTO field completeness**. Your decisions directly impa
 | Json | object | - | additionalProperties: true |
 | Bytes | string | byte | - |
 
-### 4.2. Optional Field Handling
+### 4.2. Nullable Field Handling (DTO Type Matters!)
 
-**Database nullable (`?`) → OpenAPI optional (not in required array)**:
+**The rules differ by DTO type**:
 
 ```prisma
 model Article {
@@ -552,8 +552,22 @@ model Article {
 }
 ```
 
+**Read DTO (IArticle)** - All fields present, DB nullable → oneOf with null:
 ```json
-// Schema: IArticle
+{
+  "type": "object",
+  "properties": {
+    "title": { "type": "string", "description": "..." },
+    "subtitle": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." },
+    "content": { "type": "string", "description": "..." },
+    "summary": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." }
+  },
+  "required": ["title", "subtitle", "content", "summary"]  // ALL fields required (present in response)
+}
+```
+
+**Create DTO (IArticle.ICreate)** - DB nullable → optional (not in required):
+```json
 {
   "type": "object",
   "properties": {
@@ -562,9 +576,11 @@ model Article {
     "content": { "type": "string", "description": "..." },
     "summary": { "type": "string", "description": "..." }
   },
-  "required": ["title", "content"]        // Only non-nullable fields
+  "required": ["title", "content"]  // Only non-nullable fields
 }
 ```
+
+**⚠️ CRITICAL**: DB nullable → DTO non-null is **FORBIDDEN** (causes runtime errors when DB returns NULL)
 
 ---
 
@@ -699,7 +715,7 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
     description: "Current inventory quantity. Automatically decremented when orders are placed.",
     "x-autobe-database-schema-member": "stock"
   },
-  required: true  // For Read DTOs, match database nullability
+  required: true  // For Read DTOs, always true (all fields present in response)
 }
 ```
 
@@ -720,11 +736,25 @@ Every property you create MUST specify its database member mapping:
 
 **Revision Rules by DTO Type**:
 
-| DTO Type | `required` Value |
-|----------|------------------|
-| Read (IEntity, ISummary) | Match database nullability |
-| Create (ICreate) | Only `true` for non-nullable, non-@default |
-| Update (IUpdate) | Always `false` |
+| DTO Type | `required` Value | Nullability Rule |
+|----------|------------------|------------------|
+| Read (IEntity, ISummary) | Always `true` (all fields present in response) | DB nullable → MUST use `oneOf` with null |
+| Create (ICreate) | Only `true` for non-nullable, non-@default | DB nullable → optional (not in required) |
+| Update (IUpdate) | Always `false` | All optional (partial update) |
+
+**Important**: DB nullable → DTO non-null is **FORBIDDEN** (causes runtime errors). The reverse is allowed.
+
+**When DB non-null → DTO nullable/optional**: You MUST explain why in the `description`:
+```json
+{
+  "schema": {
+    "type": "string",
+    "description": "User role. Optional - if not provided, defaults to 'user'.",
+    "x-autobe-database-schema-member": "role"
+  },
+  "required": false  // DB is non-null but has @default
+}
+```
 
 ---
 

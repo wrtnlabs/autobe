@@ -1134,12 +1134,75 @@ The HOW must be **precise enough for downstream agents to implement** the actual
 
 ---
 
+### ⚠️ Important: DTO Nullability vs Database Nullability
+
+**The two directions have DIFFERENT rules**:
+
+#### ✅ DB non-null → DTO nullable: ALLOWED
+
+This direction is safe and commonly needed:
+
+| Scenario | DB | DTO | Reason |
+|----------|----|----|--------|
+| **Default value** | `role String @default("user")` (non-null) | `role?: string` (optional) | Client can omit; DB uses default |
+| **Auto-generated** | `created_at DateTime @default(now())` (non-null) | Not in Create DTO | Server generates automatically |
+| **Server-filled** | `created_by String` (non-null) | Not in Create DTO | Server extracts from auth context |
+| **Partial update** | `name String` (non-null) | `name?: string` (optional) | PATCH allows omitting unchanged fields |
+
+**⚠️ REQUIRED: Document the reason in `description`!**
+
+When DB is non-null but DTO is nullable/optional, you **MUST** explain why in the property's `description`:
+
+```json
+{
+  "role": {
+    "type": "string",
+    "description": "User's role in the system. Optional - if not provided, defaults to 'user'."
+  },
+  "nickname": {
+    "type": "string",
+    "description": "Display name. Optional - server generates from email prefix if not provided."
+  }
+}
+```
+
+This documentation is critical for:
+- API consumers to understand the behavior
+- Future maintainers to know the design decision
+- Code reviewers to verify the nullability is intentional
+
+#### ❌ DB nullable → DTO non-null: FORBIDDEN
+
+This direction is **dangerous** and will cause runtime errors:
+
+```
+DB: bio String?  (nullable - can return NULL)
+DTO: bio: string (non-null - expects value)
+→ Runtime error when DB returns NULL!
+```
+
+**You MUST use `oneOf` with null type when DB field is nullable**:
+```json
+{
+  "bio": {
+    "oneOf": [
+      { "type": "string" },
+      { "type": "null" }
+    ]
+  }
+}
+```
+
+This rule is **enforced by the validator**. Violating it will produce compilation errors.
+
+---
+
 ### Read DTOs (Response) - All Fields Always Present
 
-**Rule for Read DTOs** (`IEntity`, `IEntity.ISummary`):
+**General Guideline for Read DTOs** (`IEntity`, `IEntity.ISummary`):
 - **All fields are ALWAYS present in response JSON** (no optional fields)
-- Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]` to allow null values
 - **All fields MUST be in `required` array** (field always present, value may be null)
+- For fields that can return null: Use `oneOf: [{ type: "..." }, { type: "null" }]`
 
 **Database Schema**:
 ```prisma
@@ -1151,22 +1214,7 @@ model User {
 }
 ```
 
-**❌ WRONG - Read DTO with nullable as non-null type**:
-```json
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },        // ❌ Should allow null!
-    "expiredAt": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }   // ❌ Should allow null!
-  },
-  "required": ["id", "email", "bio", "expiredAt"]
-}
-```
-
-**✅ CORRECT - Read DTO respecting database nullability**:
+**Typical Pattern - nullable DB field as nullable DTO**:
 ```json
 {
   "type": "object",
@@ -1240,19 +1288,19 @@ model User {
 
 ---
 
-### Validation Rules by DTO Type
+### Rules by DTO Type
 
 **Read DTOs** (`IEntity`, `IEntity.ISummary`):
 1. ✅ All database fields appear in `properties`
-2. ✅ Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]`
-3. ✅ Database NOT NULL → Use simple type `{ type: "..." }`
+2. ✅ DB nullable (`?`) → **MUST** use `oneOf: [{ type: "..." }, { type: "null" }]`
+3. ✅ DB NOT NULL → simple type `{ type: "..." }`, OR can be nullable (safe direction)
 4. ✅ **All fields in `required` array** (fields always present, values may be null)
 
 **Create DTOs** (`IEntity.ICreate`):
 1. ✅ Exclude auto-generated fields (`id`, `created_at`)
 2. ✅ Exclude auth context fields (`user_id`, `session_id`)
-3. ✅ Database nullable (`?`) → NOT in `required` array (optional)
-4. ✅ Database with `@default` → NOT in `required` array (optional)
+3. ✅ DB nullable (`?`) → NOT in `required` array (optional)
+4. ✅ DB with `@default` → NOT in `required` array (optional, DB provides default)
 5. ✅ **Only non-nullable, non-default fields in `required` array**
 
 **Update DTOs** (`IEntity.IUpdate`):
@@ -1300,11 +1348,11 @@ model Session {
 
 ---
 
-### Common Mistakes
+### Common Patterns and Pitfalls
 
-❌ **Read DTO - Omitting nullable fields from required array**:
+❌ **Read DTO - Omitting fields from required array**:
 ```json
-// ❌ WRONG
+// ❌ WRONG - Read DTO fields must always be in required array
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
@@ -1321,43 +1369,43 @@ model Session {
 }
 ```
 
-❌ **Read DTO - Using simple type for nullable field**:
+❌ **Read DTO - DB nullable field as non-null type**:
 ```json
-// ❌ WRONG - bio is nullable in DB
+// ❌ FORBIDDEN - bio is nullable in DB, MUST allow null in DTO
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": { "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["bio"]
+  "required": ["bio"]  // ❌ Will cause runtime error when DB returns NULL!
 }
 
-// ✅ CORRECT
+// ✅ CORRECT - Use oneOf with null for DB nullable field
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" }
   },
-  "required": ["bio"]
+  "required": ["bio"]  // ✅ Field present, value may be null
 }
 ```
 
-❌ **Create DTO - Requiring nullable or default fields**:
+⚠️ **Create DTO - Requiring field with DB default**:
 ```json
-// ❌ WRONG - bio is nullable, should be optional
+// ⚠️ TYPICALLY WRONG - role has DB default, should be optional
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["email", "bio"]
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "required": ["email", "role"]  // ⚠️ role has @default("user") in DB
 }
 
-// ✅ CORRECT
+// ✅ CORRECT - Let DB use default value
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["email"]
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "required": ["email"]  // ✅ role optional, DB default applies
 }
 ```
 
@@ -1368,14 +1416,15 @@ model Session {
 | Database Field | Read DTO (Response) | Create DTO (Request) |
 |---------------|-------------------|-------------------|
 | `String` (NOT NULL) | `{ type: "string" }` + in required | `{ type: "string" }` + in required |
-| `String?` (nullable) | `{ oneOf: [string, null] }` + in required | `{ type: "string" }` + NOT in required |
+| `String?` (nullable) | **MUST** `{ oneOf: [string, null] }` + in required | `{ type: "string" }` + NOT in required |
 | `String @default(...)` | `{ type: "string" }` + in required | `{ type: "string" }` + NOT in required |
 | `DateTime` (NOT NULL) | `{ type: "string", format: "date-time" }` + in required | Usually excluded (auto) |
-| `DateTime?` (nullable) | `{ oneOf: [datetime, null] }` + in required | Usually excluded (auto) |
+| `DateTime?` (nullable) | **MUST** `{ oneOf: [datetime, null] }` + in required | Usually excluded (auto) |
 
 **REMEMBER**:
-- **Read DTOs**: All fields present, use `oneOf` for nullable values
-- **Request DTOs**: Optional fields omitted from `required` array
+- **DB nullable → DTO MUST be nullable**: Use `oneOf` with null type. This is enforced by validator.
+- **DB non-null → DTO can be nullable**: Safe direction, allowed for default values, server-generated fields, etc.
+- **Request DTOs**: Optional fields omitted from `required` array; DB default values allow optional in DTO.
 
 #### 2.2.5. Database JSON String Fields with `additionalProperties`
 

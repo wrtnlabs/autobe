@@ -475,56 +475,50 @@ export namespace AutoBeJsonSchemaValidator {
         `,
       });
     else if (
-      found.nullable !== AutoBeOpenApiTypeChecker.isNullable(props.value)
-    )
-      props.errors.push({
-        path: propertyAccessor,
-        expected:
-          found.nullable === true
-            ? JSON.stringify({
-                oneOf: [
-                  {
-                    ...props.value,
+      found.nullable === true &&
+      AutoBeOpenApiTypeChecker.isNullable(props.value) === false
+    ) {
+      const expected: AutoBeOpenApi.IJsonSchemaProperty = {
+        oneOf: [
+          ...(AutoBeOpenApiTypeChecker.isOneOf(props.value)
+            ? props.value.oneOf
+            : [
+                {
+                  ...props.value,
+                  ...{
                     description: undefined,
                     "x-autobe-database-schema-member": undefined,
                   },
-                  { type: "null" },
-                ],
-                description: props.value.description,
-                "x-autobe-database-schema-member":
-                  props.value["x-autobe-database-schema-member"],
-              })
-            : AutoBeOpenApiTypeChecker.isNull(props.value)
-              ? "AutoBeOpenApi.IJsonSchemaProperty"
-              : JSON.stringify({
-                  ...(
-                    props.value as AutoBeOpenApi.IJsonSchemaProperty.IOneOf
-                  ).oneOf.find(
-                    (n) => AutoBeOpenApiTypeChecker.isNull(n) === false,
-                  ),
-                  description: props.value.description,
-                  "x-autobe-database-schema-member":
-                    props.value["x-autobe-database-schema-member"],
-                }),
+                },
+              ]),
+          { type: "null" },
+        ],
+        description: props.value.description,
+        "x-autobe-database-schema-member":
+          props.value["x-autobe-database-schema-member"],
+      };
+      props.errors.push({
+        path: propertyAccessor,
+        expected: JSON.stringify(expected),
         value: props.value["x-autobe-database-schema-member"],
         description: StringUtil.trim`
-          The nullability of this property does not match the
-          database schema member "${found.key}" in database schema
-          "${props.target.name}".
+          The database schema member "${found.key}" in "${props.target.name}"
+          is nullable, but this DTO property is defined as non-nullable.
 
-          In the database schema, the member "${found.key}" is
-          defined as ${found.nullable ? "nullable" : "non-nullable"}. However,
-          in the JSON schema, this property is defined as ${
-            AutoBeOpenApiTypeChecker.isNullable(props.value)
-              ? "nullable"
-              : "non-nullable"
-          }.
+          This is dangerous because the database can return NULL values,
+          which would cause runtime errors if the DTO expects non-null.
 
-          Make sure to align the nullability of this property
-          with the database schema member "${found.key}" in database schema
-          "${props.target.name}" at the next time.
+          You MUST use "oneOf" with "null" type to allow null values:
+          
+          \`\`\`json
+          ${JSON.stringify(expected)}
+          \`\`\`
+
+          Note: The reverse case (DB non-null, DTO nullable) is allowed
+          because DB default values or server logic may fill the value.
         `,
       });
+    }
   };
 
   const validateRecursive = (props: IProps): void => {

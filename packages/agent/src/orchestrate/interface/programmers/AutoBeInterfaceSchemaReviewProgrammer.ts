@@ -196,6 +196,9 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           };
       }
     }
+    // Update description: null preserves existing, string replaces it
+    if (props.revise.description !== null)
+      cloned.description = props.revise.description;
     props.schema.properties[props.revise.key] = cloned;
     if (props.revise.required === true)
       props.schema.required.push(props.revise.key);

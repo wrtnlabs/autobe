@@ -1785,8 +1785,8 @@ export namespace AutoBeOpenApi {
       /**
        * Comprehensive documentation for the property.
        *
-       * This description serves dual purposes depending on the database column
-       * mapping status:
+       * This description serves multiple purposes depending on the database column
+       * mapping status and nullability:
        *
        * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
        *
@@ -1817,6 +1817,21 @@ export namespace AutoBeOpenApi {
        *    exceptional conditions
        * 5. **Example values**: Provide concrete examples to clarify the
        *    computation result
+       *
+       * ## For Nullability Mismatch (DB non-null → DTO nullable/optional)
+       *
+       * When the database column is non-null but the DTO property is nullable or
+       * optional (allowed direction), the description MUST explain why:
+       *
+       * - **Default value**: "Optional - if not provided, defaults to 'user'."
+       * - **Server-generated**: "Optional - server generates UUID if not provided."
+       * - **Partial update**: "Optional for update operations."
+       *
+       * This documentation is critical for API consumers to understand the behavior
+       * and for maintainers to verify the nullability mismatch is intentional.
+       *
+       * **Note**: The reverse (DB nullable → DTO non-null) is FORBIDDEN and will
+       * cause runtime errors.
        *
        * ## Format Requirements
        *
