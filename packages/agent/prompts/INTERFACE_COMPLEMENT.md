@@ -783,7 +783,7 @@ Every property within an object schema must specify its database member mapping:
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-schema-member` is not applicable
+  - `x-autobe-database-schema-member` MUST be set to `null` for all properties
   - Each property's `description` must still contain detailed data sourcing specs
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
