@@ -219,6 +219,9 @@ interface IError {
 - Invalid target model references: Update references in error model only
 - Missing relation configurations: Add/fix relations in affected model only
 - Relation naming conflicts: Resolve conflicts within affected model only
+- **Duplicated oppositeName**: When multiple relations from different models point to the same target model with identical `oppositeName`, each must be renamed to be unique per target model
+  - Example: If `Order.customerId` and `Order.sellerId` both reference `users` with oppositeName `orders`, rename them to `customerOrders` and `sellerOrders`
+  - Use descriptive names indicating the relationship's purpose (e.g., `createdItems`, `assignedItems`, `authoredPosts`)
 
 **Index Fixes (Scope: Affected Model Indexes)**:
 - Invalid field references: Fix index fieldNames in affected model only
