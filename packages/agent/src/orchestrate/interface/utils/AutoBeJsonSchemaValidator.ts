@@ -67,7 +67,7 @@ export namespace AutoBeJsonSchemaValidator {
           transform: (typeName) => `#/components/schemas/${typeName}`,
         });
       },
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+      accessor: props.path,
     });
   };
 
@@ -240,7 +240,7 @@ export namespace AutoBeJsonSchemaValidator {
     if (props.typeName.endsWith(".IAuthorized") === true) {
       if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) {
         props.errors.push({
-          path: `${props.path}[${JSON.stringify(props.typeName)}]`,
+          path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
           value: props.schema,
           description: `${props.typeName} must be an object type for authorization responses`,
@@ -262,7 +262,7 @@ export namespace AutoBeJsonSchemaValidator {
 
     AutoBeOpenApiTypeChecker.skim({
       schema: props.schema,
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+      accessor: props.path,
       closure: (next, accessor) => {
         if (AutoBeOpenApiTypeChecker.isReference(next) === false) return;
         const key: string = next.$ref.split("/").pop()!;
@@ -336,164 +336,192 @@ export namespace AutoBeJsonSchemaValidator {
         )}
       `;
     }
+
     // check database schema existence
-    AutoBeOpenApiTypeChecker.skim({
-      schema: props.schema,
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
-      closure: (next, accessor) => {
-        if (AutoBeOpenApiTypeChecker.isObject(next) === false) return;
-        else if (
-          next["x-autobe-database-schema"] === null ||
-          next["x-autobe-database-schema"] === undefined
-        )
-          return;
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    else if (
+      props.schema["x-autobe-database-schema"] === null ||
+      props.schema["x-autobe-database-schema"] === undefined
+    )
+      return;
 
-        const model: AutoBeDatabase.IModel | undefined = props.models.find(
-          (m) => m.name === next["x-autobe-database-schema"],
-        );
-        if (model === undefined)
-          props.errors.push({
-            path: `${accessor}["x-autobe-database-schema"]`,
-            expected: props.models
-              .map((s) => JSON.stringify(s.name))
-              .join(" | "),
-            value: next["x-autobe-database-schema"],
-            description: StringUtil.trim`
-              You've referenced a non-existing database schema name
-              ${JSON.stringify(next["x-autobe-database-schema"])} in
-              "x-autobe-database-schema" property. Make sure that the
-              referenced database schema name exists in your database schema files.
+    const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
+    const model: AutoBeDatabase.IModel | undefined = props.models.find(
+      (m) => m.name === next["x-autobe-database-schema"],
+    );
+    if (model === undefined)
+      props.errors.push({
+        path: `${props.path}["x-autobe-database-schema"]`,
+        expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
+        value: next["x-autobe-database-schema"],
+        description: StringUtil.trim`
+          You've referenced a non-existing database schema name
+          ${JSON.stringify(next["x-autobe-database-schema"])} in
+          "x-autobe-database-schema" property. Make sure that the
+          referenced database schema name exists in your database schema files.
 
-              Never assume non-existing models. This is not recommendation,
-              but an instruction you must follow. Never repeat the same
-              value again. I repeat that, you have to choose one of below:
+          Never assume non-existing models. This is not recommendation,
+          but an instruction you must follow. Never repeat the same
+          value again. I repeat that, you have to choose one of below:
 
-              Existing database schema names are:
-              
-              ${props.models.map((m) => `- ${m.name}`).join("")}
-            `,
-          });
-        for (const [k, v] of Object.entries(next.properties)) {
-          if (
-            v["x-autobe-database-column"] === null ||
-            v["x-autobe-database-column"] === undefined
-          )
-            continue;
+          Existing database schema names are:
+          
+          ${props.models.map((m) => `- ${m.name}`).join("\n")}
+        `,
+      });
+    for (const [key, value] of Object.entries(next.properties))
+      validateDatabaseSchemaMember({
+        models: props.models,
+        target: model,
+        key,
+        value,
+        errors: props.errors,
+        path: `${props.path}.properties${
+          Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+        }`,
+      });
+  };
 
-          const propertyAccessor: string = Escaper.variable(k)
-            ? `${accessor}.properties.${k}`
-            : `${accessor}.properties[${JSON.stringify(k)}]`;
-          const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-column"]`;
-          if (model === undefined)
-            props.errors.push({
-              path: pluginAccessor,
-              expected: "null",
-              value: v["x-autobe-database-column"],
-              description: StringUtil.trim`
-                You have defined "x-autobe-database-column" property referencing 
-                a database column, but the parent schema does not reference any 
-                database schema in "x-autobe-database-schema" property.
+  const validateDatabaseSchemaMember = (props: {
+    models: AutoBeDatabase.IModel[];
+    target: AutoBeDatabase.IModel | undefined;
+    key: string;
+    value: AutoBeOpenApi.IJsonSchemaProperty;
+    errors: IValidation.IError[];
+    path: string;
+  }): void => {
+    const member: string | null = props.value["x-autobe-database-column"];
+    if (member === null || member === undefined) return;
 
-                To reference a database column, first define the parent
-                schema's "x-autobe-database-schema" property with
-                a valid database schema name.
+    const propertyAccessor: string = Escaper.variable(props.key)
+      ? `${props.path}.properties.${props.key}`
+      : `${props.path}.properties[${JSON.stringify(props.key)}]`;
+    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-column"]`;
 
-                If not, remove this "x-autobe-database-column" property
-                at the next time, and then describe what this property is for
-                in the schema description instead.
-              `,
-            });
-          else {
-            const columns: Array<
-              | AutoBeDatabase.IPrimaryField
-              | AutoBeDatabase.IPlainField
-              | AutoBeDatabase.IForeignField
-            > = [
-              model.primaryField,
-              ...model.plainFields,
-              ...model.foreignFields,
-            ];
-            const found = columns.find(
-              (c) => c.name === v["x-autobe-database-column"],
-            );
-            if (found === undefined)
-              props.errors.push({
-                path: pluginAccessor,
-                expected: columns
-                  .map((c) => JSON.stringify(c.name))
-                  .join(" | "),
-                value: v["x-autobe-database-column"],
-                description: StringUtil.trim`
-                  You've referenced a non-existing database column name
-                  ${JSON.stringify(v["x-autobe-database-column"])} in
-                  "x-autobe-database-column" property. 
-                  
-                  Make sure that the referenced database column name exists in 
-                  your database schema "${model.name}".
+    if (props.target === undefined) {
+      props.errors.push({
+        path: pluginAccessor,
+        expected: "null",
+        value: member,
+        description: StringUtil.trim`
+          You have defined "x-autobe-database-column" property referencing 
+          a database column, but the parent schema does not reference any 
+          database schema in "x-autobe-database-schema" property.
 
-                  Here is the list of existing database column names in
-                  database schema "${model.name}":
+          To reference a database column, first define the parent
+          schema's "x-autobe-database-schema" property with
+          a valid database schema name.
 
-                  ${columns.map((c) => `- ${c.name}`).join("\n")}
-                `,
-              });
-            else if (
-              !!found.nullable !== AutoBeOpenApiTypeChecker.isNullable(v)
-            ) {
-              const dbNullable: boolean = !!found.nullable;
-              props.errors.push({
-                path: propertyAccessor,
-                expected:
-                  dbNullable === true
-                    ? JSON.stringify({
-                        oneOf: [
-                          {
-                            ...v,
-                            description: undefined,
-                            "x-autobe-database-column": undefined,
-                          },
-                          { type: "null" },
-                        ],
-                        description: v.description,
-                        "x-autobe-database-column":
-                          v["x-autobe-database-column"],
-                      })
-                    : AutoBeOpenApiTypeChecker.isNull(v)
-                      ? "AutoBeOpenApi.IJsonSchemaProperty"
-                      : JSON.stringify({
-                          ...(
-                            v as AutoBeOpenApi.IJsonSchemaProperty.IOneOf
-                          ).oneOf.find((n) =>
-                            AutoBeOpenApiTypeChecker.isNull(n),
-                          ),
-                          description: v.description,
-                          "x-autobe-database-column":
-                            v["x-autobe-database-column"],
-                        }),
-                value: v["x-autobe-database-column"],
-                description: StringUtil.trim`
-                  The nullability of this property does not match the
-                  database column "${found.name}" in database schema
-                  "${model.name}".
+          If not, remove this "x-autobe-database-column" property
+          at the next time, and then describe what this property is for
+          in the schema description instead.
+        `,
+      });
+      return;
+    }
 
-                  In the database schema, the column "${found.name}" is
-                  defined as ${dbNullable ? "nullable" : "non-nullable"}. However,
-                  in the JSON schema, this property is defined as ${
-                    AutoBeOpenApiTypeChecker.isNullable(v)
-                      ? "nullable"
-                      : "non-nullable"
-                  }.
-
-                  Make sure to align the nullability of this property
-                  with the database column "${found.name}" in database schema
-                  "${model.name}" at the next time.
-                `,
-              });
-            }
-          }
-        }
+    interface ICandidate {
+      key: string;
+      nullable: boolean;
+    }
+    const candidates: ICandidate[] = [
+      {
+        key: props.target.primaryField.name,
+        nullable: false,
       },
-    });
+      ...props.target.plainFields.map((f) => ({
+        key: f.name,
+        nullable: f.nullable,
+      })),
+      ...props.target.foreignFields.map((f) => ({
+        key: f.name,
+        nullable: f.nullable,
+      })),
+      ...props.target.foreignFields.map((f) => ({
+        key: f.relation.name,
+        nullable: f.nullable,
+      })),
+      ...props.models
+        .map((m) =>
+          m.foreignFields
+            .filter((ff) => ff.relation.name === props.target!.name)
+            .map((ff) => ({
+              key: ff.relation.oppositeName,
+              nullable: ff.unique,
+            })),
+        )
+        .flat(),
+    ];
+    const found: ICandidate | undefined = candidates.find(
+      (c) => c.key === member,
+    );
+    if (found === undefined)
+      props.errors.push({
+        path: pluginAccessor,
+        expected: candidates.map((c) => JSON.stringify(c.key)).join(" | "),
+        value: member,
+        description: StringUtil.trim`
+          You have defined "x-autobe-database-column" property with value
+          ${JSON.stringify(member)} that does not match any column or relation
+          in the database schema "${props.target.name}".
+
+          The column name you specified does not exist in the target database
+          schema. Please check the spelling and ensure you're referencing
+          an existing column or relation.
+
+          Available columns and relations in "${props.target.name}" are:
+          ${candidates.map((c) => `- ${c.key}`).join("\n")}
+        `,
+      });
+    else if (
+      found.nullable !== AutoBeOpenApiTypeChecker.isNullable(props.value)
+    )
+      props.errors.push({
+        path: propertyAccessor,
+        expected:
+          found.nullable === true
+            ? JSON.stringify({
+                oneOf: [
+                  {
+                    ...props.value,
+                    description: undefined,
+                    "x-autobe-database-column": undefined,
+                  },
+                  { type: "null" },
+                ],
+                description: props.value.description,
+                "x-autobe-database-column":
+                  props.value["x-autobe-database-column"],
+              })
+            : AutoBeOpenApiTypeChecker.isNull(props.value)
+              ? "AutoBeOpenApi.IJsonSchemaProperty"
+              : JSON.stringify({
+                  ...(
+                    props.value as AutoBeOpenApi.IJsonSchemaProperty.IOneOf
+                  ).oneOf.find((n) => AutoBeOpenApiTypeChecker.isNull(n) === false),
+                  description: props.value.description,
+                  "x-autobe-database-column":
+                    props.value["x-autobe-database-column"],
+                }),
+        value: props.value["x-autobe-database-column"],
+        description: StringUtil.trim`
+          The nullability of this property does not match the
+          database column "${found.key}" in database schema
+          "${props.target.name}".
+
+          In the database schema, the column "${found.key}" is
+          defined as ${found.nullable ? "nullable" : "non-nullable"}. However,
+          in the JSON schema, this property is defined as ${
+            AutoBeOpenApiTypeChecker.isNullable(props.value)
+              ? "nullable"
+              : "non-nullable"
+          }.
+
+          Make sure to align the nullability of this property
+          with the database column "${found.key}" in database schema
+          "${props.target.name}" at the next time.
+        `,
+      });
   };
 
   const validateRecursive = (props: IProps): void => {
