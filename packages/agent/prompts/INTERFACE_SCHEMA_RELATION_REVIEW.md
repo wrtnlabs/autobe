@@ -3868,7 +3868,8 @@ process({
         newKey: "author",      // Rename to object field
         schema: {
           "$ref": "#/components/schemas/IUser.ISummary",
-          "description": "Author who created this article"
+          "description": "Author who created this article. Joined via articles.author_id FK to users table.",
+          "x-autobe-database-column": null  // Relation field - joined data, not direct column
         },
         required: true
       },
@@ -3879,7 +3880,8 @@ process({
         newKey: "category",    // Rename to object field
         schema: {
           "$ref": "#/components/schemas/ICategory.ISummary",
-          "description": "Category this article belongs to"
+          "description": "Category this article belongs to. Joined via articles.category_id FK to categories table.",
+          "x-autobe-database-column": null  // Relation field - joined data, not direct column
         },
         required: true
       }
@@ -3934,7 +3936,8 @@ process({
           "items": {
             "$ref": "#/components/schemas/IOrderItem"
           },
-          "description": "Order line items"
+          "description": "Order line items. Each item represents a product in the order with quantity and pricing. Composition relation - items are created with the order.",
+          "x-autobe-database-column": null  // Composition array - not a direct column mapping
         },
         required: true
       }

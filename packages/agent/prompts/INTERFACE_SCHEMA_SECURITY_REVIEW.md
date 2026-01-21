@@ -982,6 +982,8 @@ When creating properties, specify database column mapping:
 
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
+// Note: ILogin is a request DTO with x-autobe-database-schema: null
+// Therefore x-autobe-database-column is not applicable for its properties
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {
@@ -1004,7 +1006,7 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "User's password for authentication"
+          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing."
         },
         required: true
       },
@@ -1073,6 +1075,7 @@ process({
 ```typescript
 // Reviewing: ISeller.IJoin - missing password field
 // Actor: { name: "seller", kind: "member" }
+// Note: IJoin is a request DTO with x-autobe-database-schema: null
 process({
   thinking: "Seller has kind: 'member', so IJoin requires password. Adding password field.",
   request: {
@@ -1090,7 +1093,7 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "Password for the new seller account"
+          description: "Password for the new seller account. Will be hashed before storing in sellers.password column."
         },
         required: true
       },
@@ -1144,6 +1147,7 @@ process({
 
 ```typescript
 // Reviewing: ICustomer.IJoin - missing session context fields
+// Note: IJoin is a request DTO with x-autobe-database-schema: null
 process({
   thinking: "IJoin missing required session context fields. Adding href and referrer.",
   request: {
@@ -1161,7 +1165,7 @@ process({
         key: "href",
         schema: {
           type: "string",
-          description: "Connection URL (current page URL)"
+          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking."
         },
         required: true
       },
@@ -1171,7 +1175,7 @@ process({
         key: "referrer",
         schema: {
           type: "string",
-          description: "Referrer URL (previous page URL)"
+          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking."
         },
         required: true
       },

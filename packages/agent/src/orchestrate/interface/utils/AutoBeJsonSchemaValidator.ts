@@ -380,12 +380,13 @@ export namespace AutoBeJsonSchemaValidator {
           )
             continue;
 
-          const pAcc: string = Escaper.variable(k)
-            ? `${accessor}.properties.${k}["x-autobe-database-column"]`
-            : `${accessor}.properties[${JSON.stringify(k)}]["x-autobe-database-column"]`;
+          const propertyAccessor: string = Escaper.variable(k)
+            ? `${accessor}.properties.${k}`
+            : `${accessor}.properties[${JSON.stringify(k)}]`;
+          const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-column"]`;
           if (model === undefined)
             props.errors.push({
-              path: pAcc,
+              path: pluginAccessor,
               expected: "null",
               value: v["x-autobe-database-column"],
               description: StringUtil.trim`
@@ -403,15 +404,24 @@ export namespace AutoBeJsonSchemaValidator {
               `,
             });
           else {
-            const expected: string[] = [
-              model.primaryField.name,
-              ...model.plainFields.map((pp) => pp.name),
-              ...model.foreignFields.map((ff) => ff.name),
+            const columns: Array<
+              | AutoBeDatabase.IPrimaryField
+              | AutoBeDatabase.IPlainField
+              | AutoBeDatabase.IForeignField
+            > = [
+              model.primaryField,
+              ...model.plainFields,
+              ...model.foreignFields,
             ];
-            if (expected.includes(v["x-autobe-database-column"]) === false)
+            const found = columns.find(
+              (c) => c.name === v["x-autobe-database-column"],
+            );
+            if (found === undefined)
               props.errors.push({
-                path: pAcc,
-                expected: expected.map((s) => JSON.stringify(s)).join(" | "),
+                path: pluginAccessor,
+                expected: columns
+                  .map((c) => JSON.stringify(c.name))
+                  .join(" | "),
                 value: v["x-autobe-database-column"],
                 description: StringUtil.trim`
                   You've referenced a non-existing database column name
@@ -424,9 +434,62 @@ export namespace AutoBeJsonSchemaValidator {
                   Here is the list of existing database column names in
                   database schema "${model.name}":
 
-                  ${expected.map((m) => `- ${m}`).join("\n")}
+                  ${columns.map((c) => `- ${c.name}`).join("\n")}
                 `,
               });
+            else if (
+              !!found.nullable !== AutoBeOpenApiTypeChecker.isNullable(v)
+            ) {
+              const dbNullable: boolean = !!found.nullable;
+              props.errors.push({
+                path: propertyAccessor,
+                expected:
+                  dbNullable === true
+                    ? JSON.stringify({
+                        oneOf: [
+                          {
+                            ...v,
+                            description: undefined,
+                            "x-autobe-database-column": undefined,
+                          },
+                          { type: "null" },
+                        ],
+                        description: v.description,
+                        "x-autobe-database-column":
+                          v["x-autobe-database-column"],
+                      })
+                    : AutoBeOpenApiTypeChecker.isNull(v)
+                      ? "AutoBeOpenApi.IJsonSchemaProperty"
+                      : JSON.stringify({
+                          ...(
+                            v as AutoBeOpenApi.IJsonSchemaProperty.IOneOf
+                          ).oneOf.find((n) =>
+                            AutoBeOpenApiTypeChecker.isNull(n),
+                          ),
+                          description: v.description,
+                          "x-autobe-database-column":
+                            v["x-autobe-database-column"],
+                        }),
+                value: v["x-autobe-database-column"],
+                description: StringUtil.trim`
+                  The nullability of this property does not match the
+                  database column "${found.name}" in database schema
+                  "${model.name}".
+
+                  In the database schema, the column "${found.name}" is
+                  defined as ${dbNullable ? "nullable" : "non-nullable"}. However,
+                  in the JSON schema, this property is defined as ${
+                    AutoBeOpenApiTypeChecker.isNullable(v)
+                      ? "nullable"
+                      : "non-nullable"
+                  }.
+
+                  Make sure to align the nullability of this property
+                  with the database column "${found.name}" in database schema
+                  "${model.name}" at the next time.
+                `,
+              });
+            }
           }
         }
       },

@@ -841,7 +841,8 @@ process({
         key: "stock",
         schema: {
           type: "integer",
-          description: "Current inventory quantity. Automatically decremented when orders are placed."
+          description: "Current inventory quantity. Automatically decremented when orders are placed.",
+          "x-autobe-database-column": "stock"
         },
         required: true
       },
@@ -851,7 +852,8 @@ process({
         key: "featured",
         schema: {
           type: "boolean",
-          description: "Whether this product is featured on the homepage."
+          description: "Whether this product is featured on the homepage.",
+          "x-autobe-database-column": "featured"
         },
         required: true
       },
@@ -861,7 +863,8 @@ process({
         key: "discount",
         schema: {
           type: "number",
-          description: "Discount percentage applied to the product price."
+          description: "Discount percentage applied to the product price.",
+          "x-autobe-database-column": "discount"
         },
         required: false
       },
@@ -872,7 +875,8 @@ process({
         schema: {
           type: "string",
           format: "date-time",
-          description: "Timestamp when the product was created."
+          description: "Timestamp when the product was created.",
+          "x-autobe-database-column": "created_at"
         },
         required: true
       }

@@ -471,6 +471,12 @@ export namespace AutoBeDatabase {
      * **IMPORTANT**: Description must be written in English.
      */
     description: string;
+
+    /**
+     * @ignore
+     * @internal
+     */
+    nullable?: boolean;
   }
 
   /**
