@@ -177,6 +177,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
               ...cloned,
               ...{
                 description: undefined,
+                "x-autobe-database-schema-member": undefined,
               },
             },
             { type: "null" },
