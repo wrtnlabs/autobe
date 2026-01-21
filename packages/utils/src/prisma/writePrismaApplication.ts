@@ -208,7 +208,7 @@ function writeRelations(props: {
     ),
     hasRelationships.map((r) =>
       [
-        r.oppositeName,
+        r.oppositeName ?? r.mappingName ?? r.modelName, // for legacy histories
         `${r.modelName}${r.unique ? "?" : "[]"}`,
         ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
       ].join(" "),
