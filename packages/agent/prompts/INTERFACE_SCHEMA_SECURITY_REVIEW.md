@@ -1091,7 +1091,8 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "Password for the new seller account. Will be hashed before storing in sellers.password column."
+          description: "Password for the new seller account. Will be hashed before storing in sellers.password column.",
+          "x-autobe-database-schema-member": null  // IJoin has no DB mapping
         },
         required: true
       },
@@ -1163,7 +1164,8 @@ process({
         key: "href",
         schema: {
           type: "string",
-          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking."
+          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking.",
+          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
         },
         required: true
       },
@@ -1173,7 +1175,8 @@ process({
         key: "referrer",
         schema: {
           type: "string",
-          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking."
+          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking.",
+          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
         },
         required: true
       },

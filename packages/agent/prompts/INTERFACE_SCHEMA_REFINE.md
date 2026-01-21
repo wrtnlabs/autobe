@@ -500,15 +500,18 @@ process({
       properties: {
         email: {
           type: "boolean",
-          description: "Whether to receive email notifications. Stored as 'email' key in the JSON structure."
+          description: "Whether to receive email notifications. Stored as 'email' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         push: {
           type: "boolean",
-          description: "Whether to receive push notifications. Stored as 'push' key in the JSON structure."
+          description: "Whether to receive push notifications. Stored as 'push' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         sms: {
           type: "boolean",
-          description: "Whether to receive SMS notifications. Stored as 'sms' key in the JSON structure."
+          description: "Whether to receive SMS notifications. Stored as 'sms' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         }
       }
     }
