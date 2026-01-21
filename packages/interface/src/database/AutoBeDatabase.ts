@@ -598,6 +598,35 @@ export namespace AutoBeDatabase {
     targetModel: string;
 
     /**
+     * Name of the inverse relation property that will be generated in the
+     * target model.
+     *
+     * In Prisma's bidirectional relationships, both sides need relation
+     * properties. While {@link name} defines the property in the current model
+     * (the one with the foreign key), `oppositeName` defines the property that
+     * will be generated in the target model for back-reference.
+     *
+     * For 1:N relationships, the target model's property will be an array type.
+     * For 1:1 relationships (when the foreign key has unique constraint), it
+     * will be a singular reference.
+     *
+     * Examples (when this FK is defined in `bbs_article_comments` model):
+     *
+     * - Name: "article" → `comment.article` accesses the parent article
+     * - OppositeName: "comments" → `article.comments` accesses child comments
+     *
+     * More examples:
+     *
+     * - "sessions" for `users` model to access `user_sessions[]`
+     * - "snapshots" for `bbs_articles` model to access `bbs_article_snapshots[]`
+     * - "children" for self-referential hierarchies via `parent` relation
+     *
+     * Naming convention: camelCase, typically plural for 1:N relationships,
+     * singular for 1:1 relationships.
+     */
+    oppositeName: string & CamelCasePattern;
+
+    /**
      * Optional explicit mapping name for complex relationship scenarios.
      *
      * Used internally by Prisma to handle advanced relationship patterns such

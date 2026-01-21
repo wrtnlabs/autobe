@@ -183,6 +183,9 @@ Your review must comprehensively evaluate the following aspects:
 
 - **Foreign Key Validation**: Verify all references point to existing tables
 - **Cardinality Accuracy**: Confirm one-to-one, one-to-many, many-to-many relationships are correctly implemented
+- **Bidirectional Relation Names**: Validate `relation.name` (forward) and `relation.oppositeName` (inverse) are properly named
+  - `name`: camelCase, singular (e.g., `article`, `customer`, `parent`)
+  - `oppositeName`: camelCase, plural for 1:N (e.g., `comments`, `sessions`), singular for 1:1
 - **Cascade Rules**: Validate ON DELETE and ON UPDATE behaviors align with business logic
 - **Junction Tables**: Ensure proper implementation for many-to-many relationships
 

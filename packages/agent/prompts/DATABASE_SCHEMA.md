@@ -422,7 +422,8 @@ All database-related names in database schemas MUST use **snake_case** notation:
 - **AutoBeDatabase.IPrimaryField.name**: snake_case (e.g., `id`)
 - **AutoBeDatabase.IForeignField.name**: snake_case (e.g., `shopping_customer_id`, `parent_id`)
 - **AutoBeDatabase.IPlainField.name**: snake_case (e.g., `created_at`, `updated_at`, `deleted_at`)
-- **AutoBeDatabase.IRelation.name**: camelCase (e.g., `customer`, `parent`)
+- **AutoBeDatabase.IRelation.name**: camelCase (e.g., `customer`, `parent`, `article`)
+- **AutoBeDatabase.IRelation.oppositeName**: camelCase, typically plural for 1:N, singular for 1:1 (e.g., `sessions`, `comments`, `snapshots`)
 
 ## 7. Normalization Patterns
 
@@ -928,8 +929,9 @@ interface IModel {
     name: string  // Format: {table_name}_id
     type: "uuid"
     relation: {
-      name: string  // Relation property name
-      targetModel: string  // Target table name
+      name: string  // Relation property name (e.g., "article" for comment.article)
+      targetModel: string  // Target table name (e.g., "bbs_articles")
+      oppositeName: string  // Inverse relation name in target model (e.g., "comments" for article.comments)
     }
     unique: boolean  // true for 1:1
     nullable: boolean
