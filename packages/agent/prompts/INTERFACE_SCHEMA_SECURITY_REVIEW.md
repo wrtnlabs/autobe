@@ -941,10 +941,7 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;   // Why this field is being added
   key: string;      // Property name to add
-  schema: {         // Schema definition for the new property
-    type: string;   // e.g., "string"
-    description: string;
-  };
+  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-database-schema-member
   required: boolean; // Whether the field is required
 }
 
@@ -983,7 +980,7 @@ When creating properties, specify database member mapping:
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
 // Note: ILogin is a request DTO with x-autobe-database-schema: null
-// Therefore x-autobe-database-schema-member is not applicable for its properties
+// When x-autobe-database-schema is null, x-autobe-database-schema-member should also be null
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {
@@ -1006,7 +1003,8 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing."
+          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing.",
+          "x-autobe-database-schema-member": null  // null because parent has no DB mapping
         },
         required: true
       },

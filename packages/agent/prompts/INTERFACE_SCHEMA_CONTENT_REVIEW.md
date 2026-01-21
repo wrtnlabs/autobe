@@ -832,7 +832,7 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;  // Why this field is being added
   key: string;     // Property name to add
-  schema: AutoBeOpenApi.IJsonSchemaDescriptive;  // Schema definition
+  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-database-schema-member
   required: boolean;  // Add to required array?
 }
 

@@ -3793,7 +3793,7 @@ interface AutoBeInterfaceSchemaPropertyUpdate {
   reason: string;     // Why this field is being transformed
   key: string;        // Current property key to update
   newKey: string | null;  // New key after update (null = keep same key)
-  schema: AutoBeOpenApi.IJsonSchemaDescriptive;  // New schema definition
+  schema: AutoBeOpenApi.IJsonSchemaProperty;  // New schema definition with x-autobe-database-schema-member
   required: boolean;  // Whether to include in required array
 }
 

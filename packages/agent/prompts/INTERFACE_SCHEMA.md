@@ -5304,9 +5304,9 @@ export namespace IJsonSchemaDescriptive {
   }
 }
 
-// IObject.properties requires IJsonSchemaDescriptive for each property
+// IObject.properties requires IJsonSchemaProperty for each property
 export interface IObject {
-  properties: Record<string, IJsonSchemaDescriptive>;  // ← Each value MUST have description
+  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description AND x-autobe-database-schema-member
 }
 ```
 
