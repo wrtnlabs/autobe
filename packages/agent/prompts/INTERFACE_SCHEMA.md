@@ -1031,20 +1031,20 @@ Examples:
 
 #### 2.2.4. `x-autobe-database-schema-member` Property-Level Database Mapping
 
-**PURPOSE**: This field links each DTO property to its corresponding database column for traceability.
+**PURPOSE**: This field links each DTO property to its corresponding database member (field or relation) for traceability.
 
 **APPLIES TO**: Every property within an object schema where `x-autobe-database-schema` has a valid table name.
 
 **TYPE**: `string | null`
-- `string`: The exact database column name this property maps to
-- `null`: Property is computed/derived and has no direct column mapping
+- `string`: The exact database member name (scalar field, foreign key field, or relation name) this property maps to
+- `null`: Property is computed/derived and has no direct member mapping
 
 **USAGE RULES**:
 
 **Case 1: When `x-autobe-database-schema` has a valid table name**
 - Every property MUST have `x-autobe-database-schema-member` filled
-- If property maps directly to a database column → set to column name
-- If property is computed/derived (no direct column) → set to `null`, and the property's `description` MUST contain detailed computation specification
+- If property maps directly to a database member (scalar field, FK field, or relation) → set to member name
+- If property is computed/derived (no direct member) → set to `null`, and the property's `description` MUST contain detailed computation specification
 
 **Case 2: When `x-autobe-database-schema` is `null`**
 - `x-autobe-database-schema-member` is **NOT APPLICABLE** (the entire object has no table mapping)
@@ -1054,8 +1054,8 @@ Examples:
 
 When `x-autobe-database-schema-member` is `null`, the property's `description` MUST contain:
 
-1. **WHY** - Reason for no direct column mapping:
-   - Aggregated from multiple columns/rows
+1. **WHY** - Reason for no direct member mapping:
+   - Aggregated from multiple fields/rows
    - Calculated from other fields
    - Joined from related tables
    - Derived from business logic

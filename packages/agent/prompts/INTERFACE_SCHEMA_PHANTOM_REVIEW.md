@@ -363,17 +363,17 @@ System types             // Error responses, etc.
 
 ### 2.3. `x-autobe-database-schema-member` Property-Level Mapping
 
-Every property within an object schema should specify its database column mapping:
+Every property within an object schema should specify its database member mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
-  - `x-autobe-database-schema-member` should be set to the column name for direct mappings
+  - `x-autobe-database-schema-member` should be set to the member name (scalar field, FK field, or relation) for direct mappings
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` is not applicable
   - Each property's `description` must still contain detailed data sourcing specs
 
-**Note**: Phantom Review primarily focuses on detecting and removing fields that don't exist in the database. The `x-autobe-database-schema-member` field helps trace which column each property maps to, but your main task is to verify properties exist in the database model.
+**Note**: Phantom Review primarily focuses on detecting and removing fields that don't exist in the database. The `x-autobe-database-schema-member` field helps trace which member (field or relation) each property maps to, but your main task is to verify properties exist in the database model.
 
 ---
 

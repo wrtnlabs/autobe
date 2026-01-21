@@ -670,10 +670,10 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 
 ### 2.4. `x-autobe-database-schema-member` Property-Level Mapping
 
-Every property within an object schema must specify its database column mapping:
+Every property within an object schema must specify its database member mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
-  - Set `x-autobe-database-schema-member` to the column name for direct mappings
+  - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:
@@ -3869,7 +3869,7 @@ process({
         schema: {
           "$ref": "#/components/schemas/IUser.ISummary",
           "description": "Author who created this article. Joined via articles.author_id FK to users table.",
-          "x-autobe-database-schema-member": null  // Relation field - joined data, not direct column
+          "x-autobe-database-schema-member": null  // Relation field - joined data, not a direct scalar field
         },
         required: true
       },
@@ -3881,7 +3881,7 @@ process({
         schema: {
           "$ref": "#/components/schemas/ICategory.ISummary",
           "description": "Category this article belongs to. Joined via articles.category_id FK to categories table.",
-          "x-autobe-database-schema-member": null  // Relation field - joined data, not direct column
+          "x-autobe-database-schema-member": null  // Relation field - joined data, not a direct scalar field
         },
         required: true
       }
@@ -3937,7 +3937,7 @@ process({
             "$ref": "#/components/schemas/IOrderItem"
           },
           "description": "Order line items. Each item represents a product in the order with quantity and pricing. Composition relation - items are created with the order.",
-          "x-autobe-database-schema-member": null  // Composition array - not a direct column mapping
+          "x-autobe-database-schema-member": null  // Composition array - not a direct member mapping
         },
         required: true
       }

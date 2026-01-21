@@ -963,12 +963,12 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 
 **`x-autobe-database-schema-member` Requirement**:
 
-When creating properties, specify database column mapping:
+When creating properties, specify database member mapping:
 
-- For fields that directly map to a database column:
-  - Set `x-autobe-database-schema-member` to the column name
+- For fields that directly map to a database member (scalar field, FK field, or relation):
+  - Set `x-autobe-database-schema-member` to the member name
 
-- For computed/derived fields (no direct column):
+- For computed/derived fields (no direct member):
   - Set `x-autobe-database-schema-member` to `null`
   - The `description` MUST contain detailed computation spec
 

@@ -776,10 +776,10 @@ The HOW must be **precise enough for downstream agents to implement** the actual
 
 **`x-autobe-database-schema-member` Property-Level Mapping**:
 
-Every property within an object schema must specify its database column mapping:
+Every property within an object schema must specify its database member mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
-  - Set `x-autobe-database-schema-member` to the column name for direct mappings
+  - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:

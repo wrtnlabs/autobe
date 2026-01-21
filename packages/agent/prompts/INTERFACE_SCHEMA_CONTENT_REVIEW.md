@@ -705,12 +705,12 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 **`x-autobe-database-schema-member` Requirement**:
 
-Every property you create MUST specify its database column mapping:
+Every property you create MUST specify its database member mapping:
 
-- When adding a field that directly maps to a database column:
-  - Set `x-autobe-database-schema-member` to the column name
+- When adding a field that directly maps to a database member (scalar field, FK field, or relation):
+  - Set `x-autobe-database-schema-member` to the member name
 
-- When adding a computed/derived field (no direct column):
+- When adding a computed/derived field (no direct member):
   - Set `x-autobe-database-schema-member` to `null`
   - The `description` MUST contain detailed computation spec (source tables, formulas, join conditions)
 
