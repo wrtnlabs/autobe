@@ -961,19 +961,19 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 - **`create`**: Add missing `password` field to IJoin/ILogin, add missing session context fields
 - **`keep`**: Acknowledge existing properties that pass security review
 
-**`x-autobe-database-column` Requirement**:
+**`x-autobe-database-schema-member` Requirement**:
 
 When creating properties, specify database column mapping:
 
 - For fields that directly map to a database column:
-  - Set `x-autobe-database-column` to the column name
+  - Set `x-autobe-database-schema-member` to the column name
 
 - For computed/derived fields (no direct column):
-  - Set `x-autobe-database-column` to `null`
+  - Set `x-autobe-database-schema-member` to `null`
   - The `description` MUST contain detailed computation spec
 
 - When the parent object's `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-column` is not applicable
+  - `x-autobe-database-schema-member` is not applicable
   - The `description` must still contain detailed data sourcing specs
 
 ### 5.3. Output Examples
@@ -983,7 +983,7 @@ When creating properties, specify database column mapping:
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
 // Note: ILogin is a request DTO with x-autobe-database-schema: null
-// Therefore x-autobe-database-column is not applicable for its properties
+// Therefore x-autobe-database-schema-member is not applicable for its properties
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {

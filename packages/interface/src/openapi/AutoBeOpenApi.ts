@@ -1632,7 +1632,7 @@ export namespace AutoBeOpenApi {
    * `IJsonSchemaProperty` extends the base JSON Schema types with database
    * traceability metadata. Each property in an
    * {@link IJsonSchema.IObject object schema} uses this type, which includes an
-   * `x-autobe-database-column` field linking the property to its source
+   * `x-autobe-database-schema-member` field linking the property to its source
    * database column.
    *
    * ## Purpose
@@ -1653,7 +1653,7 @@ export namespace AutoBeOpenApi {
    * While {@link IJsonSchemaDescriptive} is used for top-level component schemas
    * (types in `components.schemas`), `IJsonSchemaProperty` is used for
    * properties within those schemas. The key addition is the
-   * `x-autobe-database-column` field.
+   * `x-autobe-database-schema-member` field.
    *
    * ## Type Exclusions
    *
@@ -1698,9 +1698,9 @@ export namespace AutoBeOpenApi {
      * Reference property with database column mapping.
      *
      * Used when a property references another named schema. For relation fields
-     * (foreign keys), the `x-autobe-database-column` should map to the foreign
-     * key column (e.g., `author_id`), while the `$ref` points to the related
-     * entity type (e.g., `IUser.ISummary`).
+     * (foreign keys), the `x-autobe-database-schema-member` should map to the
+     * foreign key column (e.g., `author_id`), while the `$ref` points to the
+     * related entity type (e.g., `IUser.ISummary`).
      */
     export interface IReference extends IJsonSchema.IReference, IProperty {}
 
@@ -1720,9 +1720,9 @@ export namespace AutoBeOpenApi {
      *
      * ## Database Column Mapping
      *
-     * The `x-autobe-database-column` field establishes a direct link between a
-     * DTO property and a specific database column. This mapping is critical
-     * for:
+     * The `x-autobe-database-schema-member` field establishes a direct link
+     * between a DTO property and a specific database column. This mapping is
+     * critical for:
      *
      * - Code generation: Realize agents use this to generate correct database
      *   queries
@@ -1731,8 +1731,8 @@ export namespace AutoBeOpenApi {
      *
      * ## Computed Properties
      *
-     * When `x-autobe-database-column` is `null`, the property represents a
-     * **computed value** derived from other data sources. In this case, the
+     * When `x-autobe-database-schema-member` is `null`, the property represents
+     * a **computed value** derived from other data sources. In this case, the
      * `description` field MUST contain detailed computation specifications.
      */
     interface IProperty {
@@ -1780,7 +1780,7 @@ export namespace AutoBeOpenApi {
        * This enables Realize agents to correctly implement the computation
        * logic in service layer code.
        */
-      "x-autobe-database-column": string | null;
+      "x-autobe-database-schema-member": string | null;
 
       /**
        * Comprehensive documentation for the property.
@@ -1788,7 +1788,7 @@ export namespace AutoBeOpenApi {
        * This description serves dual purposes depending on the database column
        * mapping status:
        *
-       * ## For Mapped Properties (`x-autobe-database-column` is set)
+       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
        *
        * When the property maps to an actual database column, the description
        * should:
@@ -1802,7 +1802,7 @@ export namespace AutoBeOpenApi {
        * 4. **Describe relationships**: If the column is a foreign key, explain the
        *    relationship semantics
        *
-       * ## For Computed Properties (`x-autobe-database-column` is `null`)
+       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
        *
        * When the property is computed (not directly mapped to a column), the
        * description MUST include a **detailed computation specification**:

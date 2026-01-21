@@ -170,7 +170,8 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
           description: cloned.description,
-          "x-autobe-database-column": cloned["x-autobe-database-column"],
+          "x-autobe-database-schema-member":
+            cloned["x-autobe-database-schema-member"],
           oneOf: [
             {
               ...cloned,
@@ -190,7 +191,8 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             description: cloned.description,
-            "x-autobe-database-column": cloned["x-autobe-database-column"],
+            "x-autobe-database-schema-member":
+              cloned["x-autobe-database-schema-member"],
           };
       }
     }

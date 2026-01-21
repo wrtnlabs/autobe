@@ -774,16 +774,16 @@ Every object type schema MUST include `x-autobe-database-schema`:
 
 The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation.
 
-**`x-autobe-database-column` Property-Level Mapping**:
+**`x-autobe-database-schema-member` Property-Level Mapping**:
 
 Every property within an object schema must specify its database column mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
-  - Set `x-autobe-database-column` to the column name for direct mappings
+  - Set `x-autobe-database-schema-member` to the column name for direct mappings
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-column` is not applicable
+  - `x-autobe-database-schema-member` is not applicable
   - Each property's `description` must still contain detailed data sourcing specs
 
 From `INTERFACE_SCHEMA_REVIEW.md`:

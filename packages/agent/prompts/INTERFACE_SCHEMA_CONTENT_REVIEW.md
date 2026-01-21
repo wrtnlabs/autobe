@@ -697,25 +697,25 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
   schema: {
     type: "integer",
     description: "Current inventory quantity. Automatically decremented when orders are placed.",
-    "x-autobe-database-column": "stock"
+    "x-autobe-database-schema-member": "stock"
   },
   required: true  // For Read DTOs, match database nullability
 }
 ```
 
-**`x-autobe-database-column` Requirement**:
+**`x-autobe-database-schema-member` Requirement**:
 
 Every property you create MUST specify its database column mapping:
 
 - When adding a field that directly maps to a database column:
-  - Set `x-autobe-database-column` to the column name
+  - Set `x-autobe-database-schema-member` to the column name
 
 - When adding a computed/derived field (no direct column):
-  - Set `x-autobe-database-column` to `null`
+  - Set `x-autobe-database-schema-member` to `null`
   - The `description` MUST contain detailed computation spec (source tables, formulas, join conditions)
 
 - When the parent object's `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-column` is not applicable
+  - `x-autobe-database-schema-member` is not applicable
   - The `description` must still contain detailed data sourcing specs
 
 **Revision Rules by DTO Type**:
@@ -842,7 +842,7 @@ process({
         schema: {
           type: "integer",
           description: "Current inventory quantity. Automatically decremented when orders are placed.",
-          "x-autobe-database-column": "stock"
+          "x-autobe-database-schema-member": "stock"
         },
         required: true
       },
@@ -853,7 +853,7 @@ process({
         schema: {
           type: "boolean",
           description: "Whether this product is featured on the homepage.",
-          "x-autobe-database-column": "featured"
+          "x-autobe-database-schema-member": "featured"
         },
         required: true
       },
@@ -864,7 +864,7 @@ process({
         schema: {
           type: "number",
           description: "Discount percentage applied to the product price.",
-          "x-autobe-database-column": "discount"
+          "x-autobe-database-schema-member": "discount"
         },
         required: false
       },
@@ -876,7 +876,7 @@ process({
           type: "string",
           format: "date-time",
           description: "Timestamp when the product was created.",
-          "x-autobe-database-column": "created_at"
+          "x-autobe-database-schema-member": "created_at"
         },
         required: true
       }

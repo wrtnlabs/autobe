@@ -191,9 +191,9 @@ Not all fields that don't exist in database schema are phantom fields. **DO NOT 
   "IBbsArticle": {
     "x-autobe-database-schema": "Article",
     "properties": {
-      "id": { "type": "string", "x-autobe-database-column": "id" },
-      "title": { "type": "string", "x-autobe-database-column": "title" },
-      "total_comments": { "type": "number", "x-autobe-database-column": null }  // ✅ DO NOT DELETE - computed from relation count
+      "id": { "type": "string", "x-autobe-database-schema-member": "id" },
+      "title": { "type": "string", "x-autobe-database-schema-member": "title" },
+      "total_comments": { "type": "number", "x-autobe-database-schema-member": null }  // ✅ DO NOT DELETE - computed from relation count
     }
   }
 }
@@ -361,19 +361,19 @@ IInvert types            // Alternative view types
 System types             // Error responses, etc.
 ```
 
-### 2.3. `x-autobe-database-column` Property-Level Mapping
+### 2.3. `x-autobe-database-schema-member` Property-Level Mapping
 
 Every property within an object schema should specify its database column mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
-  - `x-autobe-database-column` should be set to the column name for direct mappings
+  - `x-autobe-database-schema-member` should be set to the column name for direct mappings
   - Set to `null` for computed properties, with detailed computation spec in `description`
 
 - When `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-column` is not applicable
+  - `x-autobe-database-schema-member` is not applicable
   - Each property's `description` must still contain detailed data sourcing specs
 
-**Note**: Phantom Review primarily focuses on detecting and removing fields that don't exist in the database. The `x-autobe-database-column` field helps trace which column each property maps to, but your main task is to verify properties exist in the database model.
+**Note**: Phantom Review primarily focuses on detecting and removing fields that don't exist in the database. The `x-autobe-database-schema-member` field helps trace which column each property maps to, but your main task is to verify properties exist in the database model.
 
 ---
 

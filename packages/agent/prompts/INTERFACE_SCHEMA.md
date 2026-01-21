@@ -940,10 +940,10 @@ The HOW must be **precise enough for downstream agents to implement** the actual
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "shopping_customers",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "id" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "email" },
-    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "name" },
-    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "created_at" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "name" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "created_at" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
   "required": ["id", "email", "name", "createdAt"]
@@ -985,8 +985,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
   "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "id" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-column": "email" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -1029,7 +1029,7 @@ Examples:
 - The `properties` object is ONLY for data that the API actually transmits
 - Always place metadata at the same level as `type` and `properties`, never inside `properties`
 
-#### 2.2.4. `x-autobe-database-column` Property-Level Database Mapping
+#### 2.2.4. `x-autobe-database-schema-member` Property-Level Database Mapping
 
 **PURPOSE**: This field links each DTO property to its corresponding database column for traceability.
 
@@ -1042,17 +1042,17 @@ Examples:
 **USAGE RULES**:
 
 **Case 1: When `x-autobe-database-schema` has a valid table name**
-- Every property MUST have `x-autobe-database-column` filled
+- Every property MUST have `x-autobe-database-schema-member` filled
 - If property maps directly to a database column → set to column name
 - If property is computed/derived (no direct column) → set to `null`, and the property's `description` MUST contain detailed computation specification
 
 **Case 2: When `x-autobe-database-schema` is `null`**
-- `x-autobe-database-column` is **NOT APPLICABLE** (the entire object has no table mapping)
+- `x-autobe-database-schema-member` is **NOT APPLICABLE** (the entire object has no table mapping)
 - However, each property's `description` MUST still contain detailed specs explaining data sourcing
 
 **CRITICAL: Description Requirement for Computed Properties**
 
-When `x-autobe-database-column` is `null`, the property's `description` MUST contain:
+When `x-autobe-database-schema-member` is `null`, the property's `description` MUST contain:
 
 1. **WHY** - Reason for no direct column mapping:
    - Aggregated from multiple columns/rows
@@ -1080,18 +1080,18 @@ The HOW must be **precise enough for downstream agents to implement** the actual
       "type": "string",
       "format": "uuid",
       "description": "Unique identifier for the user.",
-      "x-autobe-database-column": "id"
+      "x-autobe-database-schema-member": "id"
     },
     "email": {
       "type": "string",
       "format": "email",
       "description": "User's email address for login and communication.",
-      "x-autobe-database-column": "email"
+      "x-autobe-database-schema-member": "email"
     },
     "totalOrders": {
       "type": "integer",
       "description": "Total number of orders placed by this user. Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
-      "x-autobe-database-column": null
+      "x-autobe-database-schema-member": null
     }
   },
   "required": ["id", "email", "totalOrders"]
@@ -1502,13 +1502,13 @@ model User {
       "type": "string",
       "format": "uuid",
       "description": "Unique identifier for the user.",
-      "x-autobe-database-column": "id"
+      "x-autobe-database-schema-member": "id"
     },
     "email": {
       "type": "string",
       "format": "email",
       "description": "User's email address.",
-      "x-autobe-database-column": "email"
+      "x-autobe-database-schema-member": "email"
     },
     "preferences": {
       "type": "object",
@@ -1518,7 +1518,7 @@ model User {
         "type": "string"
       },
       "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
-      "x-autobe-database-column": "preferences"
+      "x-autobe-database-schema-member": "preferences"
     },
     "customFields": {
       "oneOf": [
@@ -1533,7 +1533,7 @@ model User {
         { "type": "null" }
       ],
       "description": "Optional custom fields as key-value pairs. Null if not set.",
-      "x-autobe-database-column": "custom_fields"
+      "x-autobe-database-schema-member": "custom_fields"
     }
   },
   "required": ["id", "email", "preferences", "customFields"]

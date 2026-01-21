@@ -251,7 +251,7 @@ export namespace AutoBeJsonSchemaValidator {
         props.schema.properties["token"] = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "JWT token information for authentication",
-          "x-autobe-database-column": null,
+          "x-autobe-database-schema-member": null,
         } as AutoBeOpenApi.IJsonSchemaProperty.IReference;
 
         props.schema.required ??= [];
@@ -390,13 +390,14 @@ export namespace AutoBeJsonSchemaValidator {
     errors: IValidation.IError[];
     path: string;
   }): void => {
-    const member: string | null = props.value["x-autobe-database-column"];
+    const member: string | null =
+      props.value["x-autobe-database-schema-member"];
     if (member === null || member === undefined) return;
 
     const propertyAccessor: string = Escaper.variable(props.key)
       ? `${props.path}.properties.${props.key}`
       : `${props.path}.properties[${JSON.stringify(props.key)}]`;
-    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-column"]`;
+    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-schema-member"]`;
 
     if (props.target === undefined) {
       props.errors.push({
@@ -404,15 +405,15 @@ export namespace AutoBeJsonSchemaValidator {
         expected: "null",
         value: member,
         description: StringUtil.trim`
-          You have defined "x-autobe-database-column" property referencing 
-          a database column, but the parent schema does not reference any 
+          You have defined "x-autobe-database-schema-member" property referencing
+          a database schema member, but the parent schema does not reference any
           database schema in "x-autobe-database-schema" property.
 
-          To reference a database column, first define the parent
+          To reference a database schema member, first define the parent
           schema's "x-autobe-database-schema" property with
           a valid database schema name.
 
-          If not, remove this "x-autobe-database-column" property
+          If not, remove this "x-autobe-database-schema-member" property
           at the next time, and then describe what this property is for
           in the schema description instead.
         `,
@@ -461,15 +462,15 @@ export namespace AutoBeJsonSchemaValidator {
         expected: candidates.map((c) => JSON.stringify(c.key)).join(" | "),
         value: member,
         description: StringUtil.trim`
-          You have defined "x-autobe-database-column" property with value
-          ${JSON.stringify(member)} that does not match any column or relation
+          You have defined "x-autobe-database-schema-member" property with value
+          ${JSON.stringify(member)} that does not match any member (field or relation)
           in the database schema "${props.target.name}".
 
-          The column name you specified does not exist in the target database
+          The member name you specified does not exist in the target database
           schema. Please check the spelling and ensure you're referencing
-          an existing column or relation.
+          an existing field or relation.
 
-          Available columns and relations in "${props.target.name}" are:
+          Available members in "${props.target.name}" are:
           ${candidates.map((c) => `- ${c.key}`).join("\n")}
         `,
       });
@@ -485,31 +486,33 @@ export namespace AutoBeJsonSchemaValidator {
                   {
                     ...props.value,
                     description: undefined,
-                    "x-autobe-database-column": undefined,
+                    "x-autobe-database-schema-member": undefined,
                   },
                   { type: "null" },
                 ],
                 description: props.value.description,
-                "x-autobe-database-column":
-                  props.value["x-autobe-database-column"],
+                "x-autobe-database-schema-member":
+                  props.value["x-autobe-database-schema-member"],
               })
             : AutoBeOpenApiTypeChecker.isNull(props.value)
               ? "AutoBeOpenApi.IJsonSchemaProperty"
               : JSON.stringify({
                   ...(
                     props.value as AutoBeOpenApi.IJsonSchemaProperty.IOneOf
-                  ).oneOf.find((n) => AutoBeOpenApiTypeChecker.isNull(n) === false),
+                  ).oneOf.find(
+                    (n) => AutoBeOpenApiTypeChecker.isNull(n) === false,
+                  ),
                   description: props.value.description,
-                  "x-autobe-database-column":
-                    props.value["x-autobe-database-column"],
+                  "x-autobe-database-schema-member":
+                    props.value["x-autobe-database-schema-member"],
                 }),
-        value: props.value["x-autobe-database-column"],
+        value: props.value["x-autobe-database-schema-member"],
         description: StringUtil.trim`
           The nullability of this property does not match the
-          database column "${found.key}" in database schema
+          database schema member "${found.key}" in database schema
           "${props.target.name}".
 
-          In the database schema, the column "${found.key}" is
+          In the database schema, the member "${found.key}" is
           defined as ${found.nullable ? "nullable" : "non-nullable"}. However,
           in the JSON schema, this property is defined as ${
             AutoBeOpenApiTypeChecker.isNullable(props.value)
@@ -518,7 +521,7 @@ export namespace AutoBeJsonSchemaValidator {
           }.
 
           Make sure to align the nullability of this property
-          with the database column "${found.key}" in database schema
+          with the database schema member "${found.key}" in database schema
           "${props.target.name}" at the next time.
         `,
       });
