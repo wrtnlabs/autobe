@@ -1047,8 +1047,8 @@ Examples:
 - If property is computed/derived (no direct member) → set to `null`, and the property's `description` MUST contain detailed computation specification
 
 **Case 2: When `x-autobe-database-schema` is `null`**
-- `x-autobe-database-schema-member` is **NOT APPLICABLE** (the entire object has no table mapping)
-- However, each property's `description` MUST still contain detailed specs explaining data sourcing
+- `x-autobe-database-schema-member` MUST be set to `null` for all properties (entire object has no table mapping)
+- Each property's `description` MUST still contain detailed specs explaining data sourcing
 
 **CRITICAL: Description Requirement for Computed Properties**
 
@@ -1107,15 +1107,18 @@ The HOW must be **precise enough for downstream agents to implement** the actual
   "properties": {
     "categoryName": {
       "type": "string",
-      "description": "Category name from categories table. Source: categories.name via JOIN products ON products.category_id = categories.id."
+      "description": "Category name from categories table. Source: categories.name via JOIN products ON products.category_id = categories.id.",
+      "x-autobe-database-schema-member": null
     },
     "totalSales": {
       "type": "integer",
-      "description": "Total units sold in this category. Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales."
+      "description": "Total units sold in this category. Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
+      "x-autobe-database-schema-member": null
     },
     "averagePrice": {
       "type": "number",
-      "description": "Average sale price in this category. Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist."
+      "description": "Average sale price in this category. Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
+      "x-autobe-database-schema-member": null
     }
   },
   "required": ["categoryName", "totalSales", "averagePrice"]
