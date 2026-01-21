@@ -1222,22 +1222,25 @@ model User {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "users",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
     "bio": {
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
       ],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "bio"
     },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
       ],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "expired_at"
     }
   },
   "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
@@ -1275,10 +1278,11 @@ model User {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "users",
   "properties": {
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "bio" },
+    "role": { "type": "string", "description": "Optional - if not provided, defaults to 'user'.", "x-autobe-database-schema-member": "role" }
   },
   "required": ["email"]  // ✅ Only non-nullable, non-default fields required
 }
@@ -5350,8 +5354,8 @@ Soft deletion is supported to preserve historical transaction records.
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
   "properties": {
-    "id": { "type": "string", "description": "Sale unique identifier" },
-    "title": { "type": "string", "description": "Sale listing title" }
+    "id": { "type": "string", "description": "Sale unique identifier", "x-autobe-database-schema-member": "id" },
+    "title": { "type": "string", "description": "Sale listing title", "x-autobe-database-schema-member": "title" }
   },
   "required": ["id", "title"]
 }
@@ -5362,8 +5366,8 @@ Summary variant excludes large text fields for list performance.`,
   "type": "object",
   "description": "Sale entity. Contains product and seller information.",
   "properties": {
-    "id": { "type": "string", "description": "Sale ID" },
-    "title": { "type": "string", "description": "Title" }
+    "id": { "type": "string", "description": "Sale ID", "x-autobe-database-schema-member": "id" },
+    "title": { "type": "string", "description": "Title", "x-autobe-database-schema-member": "title" }
   }
 }
 ```
@@ -5372,7 +5376,7 @@ Summary variant excludes large text fields for list performance.`,
 
 **⚠️ MANDATORY: Every single property MUST have a `description` field ⚠️**
 
-This is NOT optional. The type system requires `IJsonSchemaDescriptive` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
+This is NOT optional. The type system requires `IJsonSchemaProperty` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
 
 Write clear, detailed property descriptions explaining the purpose, constraints, and business context of each field.
 
@@ -5390,7 +5394,8 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
   "email": {
     "type": "string",
     "format": "email",
-    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards."
+    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards.",
+    "x-autobe-database-schema-member": "email"
   }
 }
 
@@ -5399,15 +5404,17 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
   "price": {
     "type": "number",
     "minimum": 0,
-    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents."
+    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents.",
+    "x-autobe-database-schema-member": "price"
   }
 }
 
-// WRONG: Too brief
+// WRONG: Too brief (description insufficient)
 {
   "email": {
     "type": "string",
-    "description": "Email"
+    "description": "Email",
+    "x-autobe-database-schema-member": "email"
   }
 }
 
@@ -5415,8 +5422,9 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 {
   "email": {
     "type": "string",
-    "format": "email"
-    // Missing description! This violates IJsonSchemaDescriptive type requirement
+    "format": "email",
+    "x-autobe-database-schema-member": "email"
+    // Missing description! This violates IJsonSchemaProperty type requirement
   }
 }
 
@@ -5424,7 +5432,8 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 {
   "description": {
     "type": "string",
-    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"
+    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision",
+    "x-autobe-database-schema-member": "description"
   }
 }
 ```
