@@ -445,7 +445,7 @@ export namespace AutoBeJsonSchemaValidator {
       ...props.models
         .map((m) =>
           m.foreignFields
-            .filter((ff) => ff.relation.name === props.target!.name)
+            .filter((ff) => ff.relation.targetModel === props.target!.name)
             .map((ff) => ({
               key: ff.relation.oppositeName,
               nullable: ff.unique,
