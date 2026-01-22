@@ -75,8 +75,8 @@ export const orchestrateInterfaceEndpointOverall = async (
           promptCacheKey: promptCacheKey + "_review",
         })) {
           if (revise.type === "create")
-            dict.set(revise.endpoint, {
-              endpoint: revise.endpoint,
+            dict.set(revise.design, {
+              endpoint: revise.design,
               description: revise.description,
               authorizationType: revise.authorizationType,
               authorizationActors: revise.authorizationActors,
