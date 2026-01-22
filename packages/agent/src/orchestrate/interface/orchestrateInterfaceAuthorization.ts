@@ -102,36 +102,25 @@ async function process(
         preliminary,
       }),
     });
-    pointer.value?.operations
-      .filter((op) => op.authorizationType !== "management")
-      .forEach(
-        (op) =>
-          ({
-            ...op,
-            path:
-              "/" +
-              [prefix, ...op.path.split("/")]
-                .filter((it) => it !== "")
-                .join("/"),
-          }) satisfies AutoBeOpenApi.IOperation,
-      );
-    return out(result)(
-      pointer.value !== null
-        ? ({
-            type: SOURCE,
-            id: v7(),
-            analysis: pointer.value.analysis,
-            rationale: pointer.value.rationale,
-            operations: pointer.value.operations,
-            completed: ++props.progress.completed,
-            metric: result.metric,
-            tokenUsage: result.tokenUsage,
-            created_at: new Date().toISOString(),
-            step: ctx.state().analyze?.step ?? 0,
-            total: props.progress.total,
-          } satisfies AutoBeInterfaceAuthorizationEvent)
-        : null,
-    );
+    if (pointer.value === null) return out(result)(null);
+    const operations: AutoBeOpenApi.IOperation[] =
+      AutoBeInterfaceAuthorizationProgrammer.fixOperations({
+        operations: pointer.value?.operations ?? [],
+        prefix,
+      });
+    return out(result)({
+      type: SOURCE,
+      id: v7(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      operations,
+      completed: ++props.progress.completed,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      created_at: new Date().toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      total: props.progress.total,
+    } satisfies AutoBeInterfaceAuthorizationEvent);
   });
 }
 

@@ -87,10 +87,6 @@ export const orchestrateInterface =
       .map((authorization) => authorization.operations)
       .flat();
 
-    console.log(
-      `[DEBUG] authorization operations: ${JSON.stringify(authOperations, null, 2)}`,
-    );
-
     const endpointProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: init.groups.length * endpointSteps.length,

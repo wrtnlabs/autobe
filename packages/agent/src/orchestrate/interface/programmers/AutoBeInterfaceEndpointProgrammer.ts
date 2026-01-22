@@ -51,15 +51,12 @@ export namespace AutoBeInterfaceEndpointProgrammer {
       if (props.actors.find((actor) => actor.name === actorName) === undefined)
         props.errors.push({
           path: `${props.path}.authorizationActors[${i}]`,
-          expected: props.actors
-            .map((a) => a.name)
-            .map((s) => JSON.stringify(s))
-            .join(" | "),
+          expected: `null | ${props.actors.map((a) => JSON.stringify(a.name)).join(" | ")}`,
           value: actorName,
           description: StringUtil.trim`
-            The actor name must be one of the analyzed actors.
+            Actor "${actorName}" is not defined in the roles list.
 
-            Avilable actors are as follows:
+            Please select one of them below, or do not define (\`null\`):
 
             ${props.actors.map((actor) => `- ${actor.name}`).join("\n")}
           `,

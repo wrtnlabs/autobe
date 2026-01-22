@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeActor,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -6,7 +7,6 @@ import {
   AutoBeInterfaceGroup,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -15,6 +15,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointReviewApplication } from "./structures/IAutoBeInterfaceEndpointReviewApplication";
 
 interface IProgrammer {
@@ -75,7 +76,7 @@ export const orchestrateInterfaceEndpointReview = async (
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
-        actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
+        actors: ctx.state().analyze?.actors ?? [],
         preliminary,
         build: (next) => {
           pointer.value = next;
@@ -91,12 +92,17 @@ export const orchestrateInterfaceEndpointReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
+    // TODO: create Filter Function to Programmer.
     // Filter out authorization endpoints from revises (login, join, refresh, management)
     // props.designs is already filtered by orchestrateInterfaceEndpointWrite
     const filteredRevises = pointer.value.revises.filter((r) =>
       r.type === "erase"
         ? true
-        : r.authorizationType === null || r.authorizationType === "management",
+        : r.type === "create"
+          ? r.design.authorizationType === null
+          : r.type === "update"
+            ? r.updated.authorizationType === null
+            : false,
     );
 
     ctx.dispatch({
@@ -119,7 +125,7 @@ export const orchestrateInterfaceEndpointReview = async (
 };
 
 const createController = (props: {
-  actors: string[];
+  actors: AutoBeAnalyzeActor[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -147,26 +153,21 @@ const createController = (props: {
 
     if (props.actors.length === 0)
       revises.forEach((r) => {
-        if (r.type === "create" || r.type === "update")
-          r.authorizationActors = [];
+        if (r.type === "create") r.design.authorizationActors = [];
+        else if (r.type === "update") r.updated.authorizationActors = [];
       });
     revises.forEach((r, i) => {
-      if (r.type !== "create" && r.type !== "update") return;
-      if (r.authorizationActors.length !== 0 && props.actors.length !== 0) {
-        r.authorizationActors.forEach((actor, j) => {
-          if (props.actors.includes(actor) === true) return;
-          errors.push({
-            path: `$input.request.revises[${i}].authorizationActors[${j}]`,
-            expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
-            description: StringUtil.trim`
-            Actor "${actor}" is not defined in the roles list.
-
-            Please select one of them below, or do not define (\`null\`):
-
-            ${props.actors.map((role) => `- ${role}`).join("\n")}
-          `,
-            value: actor,
-          });
+      if (r.type === "erase") return;
+      const design = r.type === "create" ? r.design : r.updated;
+      if (
+        props.actors.length !== 0 &&
+        design.authorizationActors.length !== 0
+      ) {
+        AutoBeInterfaceEndpointProgrammer.validateDesign({
+          actors: props.actors,
+          design: r.type === "create" ? r.design : r.updated,
+          errors,
+          path: `$input.request.revises[${i}]`,
         });
       }
     });
