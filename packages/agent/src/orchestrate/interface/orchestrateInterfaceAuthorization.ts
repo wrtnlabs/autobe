@@ -4,11 +4,13 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceAuthorizationEvent,
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -59,6 +61,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
+  const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
@@ -99,6 +102,19 @@ async function process(
         preliminary,
       }),
     });
+    pointer.value?.operations
+      .filter((op) => op.authorizationType !== "management")
+      .forEach(
+        (op) =>
+          ({
+            ...op,
+            path:
+              "/" +
+              [prefix, ...op.path.split("/")]
+                .filter((it) => it !== "")
+                .join("/"),
+          }) satisfies AutoBeOpenApi.IOperation,
+      );
     return out(result)(
       pointer.value !== null
         ? ({

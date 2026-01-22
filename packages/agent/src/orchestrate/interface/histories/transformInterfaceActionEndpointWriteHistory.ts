@@ -10,7 +10,6 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceActionEndpointWriteHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
-  authorizations: AutoBeOpenApi.IOperation[];
   baseEndpoints: AutoBeOpenApi.IEndpoint[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -50,21 +49,6 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
         follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
-
-        ## Authorization Endpoints (Reference - Already Exist)
-
-        These authorization endpoints already exist. Do NOT create similar endpoints:
-
-        \`\`\`json
-        ${JSON.stringify(
-          props.authorizations.map((op) => ({
-            path: op.path,
-            method: op.method,
-            name: op.name,
-            summary: StringUtil.summary(op.description),
-          })),
-        )}
-        \`\`\`
 
         ## Base CRUD Endpoints (Reference - Already Exist)
 

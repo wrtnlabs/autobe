@@ -1,5 +1,4 @@
-import { AutoBeOpenApi, CamelCasePattern } from "@autobe/interface";
-import { tags } from "typia";
+import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -174,7 +173,7 @@ export namespace IAutoBeInterfaceOperationApplication {
    */
   export interface IOperation extends Omit<
     AutoBeOpenApi.IOperation,
-    "authorizationActor" | "prerequisites"
+    "authorizationType" | "authorizationActor" | "prerequisites"
   > {
     /**
      * Authorization actors required to access this API operation.
@@ -257,6 +256,6 @@ export namespace IAutoBeInterfaceOperationApplication {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
+    // authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
   }
 }

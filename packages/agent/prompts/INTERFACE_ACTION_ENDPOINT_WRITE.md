@@ -120,7 +120,7 @@ This agent does NOT create endpoints for database schema tables:
 
 If all requirements for a group are satisfied by database table CRUD operations, returning an empty array is the correct response. Don't force action endpoints where they're not needed.
 
-### 2.1. Collision Prevention with Base Endpoints
+### 2.2. Collision Prevention with Base Endpoints
 
 **🚨 CRITICAL: Check Exact Endpoint Match, NOT Path Prefix**
 
@@ -353,10 +353,6 @@ Endpoints Created:
 - Action endpoints should aggregate, analyze, or search data from these schemas
 - If a requirement doesn't relate to any schema in this group, skip it
 
-**Already Existing Endpoints (Authorization)**:
-- Authorization endpoints that already exist (login, join, refresh, etc.)
-- Do NOT create duplicate endpoints for these
-
 **Excluded Endpoints (Base CRUD)**:
 - Base CRUD endpoints that already exist
 - Do NOT create duplicate or similar endpoints for these
@@ -480,15 +476,21 @@ process({
     designs: [
       {
         description: "Monthly sales trends with revenue and order counts",
-        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+        endpoint: { path: "/statistics/sales/monthly", method: "get" },
+        authorizationType: null,
+        authorizationActors: ["admin"]
       },
       {
         description: "Admin dashboard with active users, revenue, and system health",
-        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+        endpoint: { path: "/dashboard/admin/overview", method: "get" },
+        authorizationType: null,
+        authorizationActors: ["admin"]
       },
       {
         description: "Cross-entity search across articles, products, and categories",
-        endpoint: { path: "/search/global", method: "patch" }
+        endpoint: { path: "/search/global", method: "patch" },
+        authorizationType: null,
+        authorizationActors: []
       }
     ]
   }
@@ -507,6 +509,51 @@ process({
   }
 })
 ```
+
+### 5.1. Authorization Fields
+
+Each endpoint design must include `authorizationType` and `authorizationActors` fields.
+
+#### `authorizationType`
+
+Identifies special authorization endpoints. **You MUST set this value based on the endpoint's path pattern:**
+
+| Path Pattern | `authorizationType` |
+|--------------|---------------------|
+| `*/login` | `"login"` |
+| `*/join` | `"join"` |
+| `*/refresh` | `"refresh"` |
+| Other `/auth/*` paths (logout, password, verify, 2fa, oauth, me, sessions) | `"management"` |
+| All other paths | `null` |
+
+- `"login"` - User login endpoint (e.g., `/auth/members/login`)
+- `"join"` - User registration endpoint (e.g., `/auth/members/join`)
+- `"refresh"` - Token refresh endpoint (e.g., `/auth/members/refresh`)
+- `"management"` - Other auth-related operations (logout, password reset/change, verify, 2fa, oauth, sessions, me)
+- `null` - Regular business endpoint (most common for action endpoints)
+
+#### `authorizationActors`
+
+This field specifies which actors can access the endpoint. It directly affects how many API endpoints are generated.
+
+**⚠️ CRITICAL: Actor Multiplication Effect**
+
+Each actor in the array generates a SEPARATE endpoint with that actor's path prefix:
+- `authorizationActors: []` → 1 public endpoint: `/prefix/statistics/sales`
+- `authorizationActors: ["admin"]` → 1 endpoint: `/prefix/admin/statistics/sales`
+- `authorizationActors: ["admin", "seller"]` → 2 endpoints
+
+**Guidelines**:
+- `[]` - Public endpoint, no authentication required (use for public search, public analytics)
+- `["admin"]` - Admin only (use for admin dashboards, admin-specific analytics)
+- `["member"]` - Any authenticated user
+- Use actor names that match exactly with the actors defined in the Analyze phase
+
+**Best Practices for Action Endpoints**:
+1. Dashboard endpoints typically require specific actor access (`["admin"]`, `["seller"]`)
+2. Global search may be public (`[]`) or require authentication (`["member"]`)
+3. Analytics endpoints are usually admin-only (`["admin"]`)
+4. Minimize actors to prevent endpoint multiplication
 
 ## 6. Endpoint Path Patterns
 
@@ -760,7 +807,6 @@ This rule applies to **resource collections** (entities stored in database), NOT
 ### Validation
 - [ ] NO CRUD endpoints created (those are for Base Endpoint Generator)
 - [ ] NO exact (path + method) duplicates with Base CRUD endpoints
-- [ ] NO exact (path + method) duplicates with authorization endpoints
 - [ ] **All resource collection names are PLURAL (no singular forms)**
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**

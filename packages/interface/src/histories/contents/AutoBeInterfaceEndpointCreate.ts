@@ -1,4 +1,7 @@
+import { tags } from "typia";
+
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
+import { CamelCasePattern } from "../../typings/CamelCasePattern";
 
 /**
  * Request to create a new endpoint.
@@ -13,7 +16,8 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * @author Michael
  * @author Samchon
  */
-export interface AutoBeInterfaceEndpointCreate {
+export interface AutoBeInterfaceEndpointCreate
+  extends Pick<AutoBeOpenApi.IOperation, "authorizationType"> {
   /** Type discriminator indicating this is a create operation. */
   type: "create";
 
@@ -34,4 +38,12 @@ export interface AutoBeInterfaceEndpointCreate {
    * Functional description of the endpoint's purpose and business context.
    */
   description: string;
+
+  /**
+   * Authorization actors required to access this endpoint.
+   *
+   * Set to empty array `[]` for public endpoints.
+   * Set to array with actor strings for actor-restricted endpoints.
+   */
+  authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
 }

@@ -106,31 +106,84 @@ For these tables, generate ONLY read endpoints (at, index) - NO write operations
    - System-defined lookup tables
    - Country codes, currency codes, etc.
 
-### 2.2. Actor/User Tables - Handle with Care
+### 2.2. Actor Tables - Authentication Endpoints
 
-**Actor tables** (guests, members, admins, users, etc.) require special consideration because Authorization endpoints already handle user creation and authentication.
+**Actor tables** (users, members, admins, guests, etc.) require authentication endpoints in addition to CRUD.
 
-**Rules for Actor Tables**:
+For each actor table, generate these **authentication endpoints**:
 
-1. **Skip POST (create)** - User creation is handled by Authorization's `join` operation
-2. **Skip direct password/credential updates** - Use dedicated auth flows (change password, reset password)
-3. **Consider generating**:
-   - `GET /{actors}/{actorId}` - View profile (if needed beyond auth response)
-   - `PUT /{actors}/{actorId}` - Update profile (non-auth fields only)
-   - `PATCH /{actors}` - Search/list users (admin functionality)
-   - `DELETE /{actors}/{actorId}` - Account deletion (if required)
+| Endpoint | Method | `authorizationType` | Description |
+|----------|--------|---------------------|-------------|
+| `/auth/{actors}/login` | POST | `"login"` | User login with credentials |
+| `/auth/{actors}/join` | POST | `"join"` | User registration |
+| `/auth/{actors}/refresh` | POST | `"refresh"` | Token refresh |
 
-**Check "Already Existing Endpoints"** - If Authorization already provides profile access via login response, additional GET may be redundant.
+**Additional Auth Management Endpoints**:
 
-### 2.3. Security Evaluation Checklist
+Analyze the actor table schema thoroughly and generate a **comprehensive set of auth management endpoints**. These endpoints use `authorizationType: "management"`.
+
+**Autonomous Rich Generation**:
+- Deeply analyze ALL fields in the actor table schema
+- Infer what authentication/authorization management operations would be valuable based on the schema structure
+- Generate `/auth/{actors}/*` management endpoints **as richly as possible** - cover all reasonable auth management scenarios the schema can support
+- Think creatively about what users would need: account security, credential management, session control, verification flows, recovery mechanisms, etc.
+- You have full autonomy to design management endpoints - use your best judgment to create a complete auth management API surface
+- The goal is **comprehensive coverage**, not minimal implementation
+
+**IMPORTANT: Actor POST (create) = Registration**
+
+The standard CRUD `POST /{actors}` endpoint for actor tables is also a registration endpoint. It MUST have `authorizationType: "join"`.
+
+| Endpoint | Method | `authorizationType` |
+|----------|--------|---------------------|
+| `POST /{actors}` | POST | `"join"` |
+
+**Example for `members` table**:
+```json
+[
+  {"endpoint": {"path": "/auth/members/login", "method": "post"}, "authorizationType": "login", "authorizationActors": []},
+  {"endpoint": {"path": "/auth/members/join", "method": "post"}, "authorizationType": "join", "authorizationActors": []},
+  {"endpoint": {"path": "/auth/members/refresh", "method": "post"}, "authorizationType": "refresh", "authorizationActors": []},
+  // + Generate additional management endpoints based on schema analysis (authorizationType: "management")
+  {"endpoint": {"path": "/members", "method": "post"}, "authorizationType": "join", "authorizationActors": []},
+  {"endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]},
+  {"endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
+]
+```
+
+**Note**:
+- Auth endpoints (login, join, refresh) and actor POST have `authorizationActors: []` (public) because they are used before authentication.
+- Beyond the essential three (login, join, refresh), generate any additional management endpoints you determine necessary based on the actor table schema.
+
+### 2.3. Session Tables - No Updates
+
+**Session tables** store authentication session data. Update operations are not allowed because session state changes are managed through authentication flows.
+
+**Rules for Session Tables**:
+- ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search), `POST` (create), `DELETE` (erase)
+- ❌ **FORBIDDEN**: `PUT` (update) - Session modification should go through auth flows (refresh token, etc.)
+
+### 2.4. Snapshot Tables - Read & Create Only
+
+**Snapshot tables** (stance: "snapshot") store historical point-in-time data. Once created, snapshots must remain immutable - they cannot be modified or deleted.
+
+**Rules for Snapshot Tables**:
+- ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search), `POST` (create)
+- ❌ **FORBIDDEN**: `PUT` (update) - Historical data must remain immutable once created
+- ❌ **FORBIDDEN**: `DELETE` (erase) - Historical data must be preserved
+
+### 2.5. Security Evaluation Checklist
 
 Before generating endpoints for a table, verify:
 
-- [ ] For **Actor tables**: Skip POST (create) - handled by Authorization's `join`
-- [ ] For **Snapshot tables**: Read-only endpoints (at, index only)
+- [ ] For **Actor tables**: POST endpoint has `authorizationType: "join"`
+- [ ] For **Session tables**: Skip PUT (update) - session modification goes through auth flows
+- [ ] For **Snapshot tables**: Skip PUT (update) and DELETE (erase) - historical data is immutable and must be preserved
 - [ ] IS intended for user interaction based on requirements
 
-**Note**: Tables with password, session, token, or sensitive fields CAN have endpoints. The implementation layer will handle field filtering and access control.
+**Note**: Tables with password, session, token, or sensitive fields CAN have read endpoints. The implementation layer will handle field filtering and access control.
 
 ## 3. Stance-Based Endpoint Generation
 
@@ -168,16 +221,18 @@ Nested endpoints only - accessed through parent:
 
 ### 3.3. Snapshot Stance (`stance: "snapshot"`)
 
-Read-only endpoints:
+Immutable endpoints (no updates allowed):
 
 ```json
 [
   {"path": "/resources", "method": "patch"},
-  {"path": "/resources/{resourceCode}", "method": "get"}
+  {"path": "/resources/{resourceCode}", "method": "get"},
+  {"path": "/resources", "method": "post"},
+  {"path": "/resources/{resourceCode}", "method": "delete"}
 ]
 ```
 
-**NO POST/PUT/DELETE** for snapshot entities.
+**NO PUT (update)** for snapshot entities - historical data must remain immutable once created.
 
 ### 3.4. Detecting Parent-Child Relationships from Foreign Keys
 
@@ -411,10 +466,6 @@ Path: /enterprises/{enterpriseCode}/teams/{teamCode}/members
 - Do NOT create endpoints for tables outside this array
 - Each table name in `databaseSchemas` corresponds to a loaded database schema
 
-**Already Existing Endpoints**:
-- Authorization endpoints that already exist (login, join, refresh, etc.)
-- Do NOT create duplicate endpoints for these
-
 **API Design Instructions**:
 - Endpoint URL patterns and structure preferences
 - HTTP method usage guidelines
@@ -539,23 +590,33 @@ process({
     designs: [
       {
         description: "Search and filter resources collection",
-        endpoint: { path: "/resources", method: "patch" }
+        endpoint: { path: "/resources", method: "patch" },
+        authorizationType: null,
+        authorizationActors: []
       },
       {
         description: "Retrieve a single resource by code",
-        endpoint: { path: "/resources/{resourceCode}", method: "get" }
+        endpoint: { path: "/resources/{resourceCode}", method: "get" },
+        authorizationType: null,
+        authorizationActors: []
       },
       {
         description: "Create a new resource",
-        endpoint: { path: "/resources", method: "post" }
+        endpoint: { path: "/resources", method: "post" },
+        authorizationType: null,
+        authorizationActors: ["member"]
       },
       {
         description: "Update an existing resource",
-        endpoint: { path: "/resources/{resourceCode}", method: "put" }
+        endpoint: { path: "/resources/{resourceCode}", method: "put" },
+        authorizationType: null,
+        authorizationActors: ["member"]
       },
       {
         description: "Delete a resource",
-        endpoint: { path: "/resources/{resourceCode}", method: "delete" }
+        endpoint: { path: "/resources/{resourceCode}", method: "delete" },
+        authorizationType: null,
+        authorizationActors: ["member"]
       }
     ]
   }
@@ -567,6 +628,50 @@ process({
 - `rationale`: Your reasoning for the endpoint design decisions
 - `endpoint`: Object with `path` and `method`
 - `description`: Brief explanation of why this endpoint was created
+- `authorizationType`: Type of authorization endpoint (`"login"`, `"join"`, `"refresh"`, `"management"`, or `null` for regular endpoints)
+- `authorizationActors`: Array of actor names who can access this endpoint. Use `[]` for public endpoints, or `["actorName"]` for authenticated endpoints
+
+### 6.1. Authorization Fields
+
+#### `authorizationType`
+
+Identifies special authorization endpoints. **You MUST set this value based on the endpoint's path pattern:**
+
+| Path Pattern | `authorizationType` |
+|--------------|---------------------|
+| `*/login` | `"login"` |
+| `*/join` | `"join"` |
+| `*/refresh` | `"refresh"` |
+| Other `/auth/*` paths | `"management"` |
+| All other paths | `null` |
+
+- `"login"` - User login endpoint
+- `"join"` - User registration endpoint
+- `"refresh"` - Token refresh endpoint
+- `"management"` - Any other auth-related management operations (generate richly based on schema analysis)
+- `null` - Regular business endpoint (most common for CRUD)
+
+#### `authorizationActors`
+
+This field specifies which actors can access the endpoint. It directly affects how many API endpoints are generated.
+
+**⚠️ CRITICAL: Actor Multiplication Effect**
+
+Each actor in the array generates a SEPARATE endpoint with that actor's path prefix:
+- `authorizationActors: []` → 1 public endpoint: `/prefix/resources`
+- `authorizationActors: ["member"]` → 1 endpoint: `/prefix/member/resources`
+- `authorizationActors: ["admin", "member"]` → 2 endpoints: `/prefix/admin/resources`, `/prefix/member/resources`
+
+**Guidelines**:
+- `[]` - Public endpoint, no authentication required (use for read operations on public data)
+- `["user"]` or `["member"]` - Any authenticated user (use for user-specific operations)
+- `["admin"]` - Admin only (use sparingly)
+- Use actor names that match exactly with the actors defined in the Analyze phase
+
+**Best Practices**:
+1. Start with `[]` for read operations unless data is sensitive
+2. Use single actor `["member"]` for write operations
+3. Avoid multiple actors unless truly needed - it multiplies endpoints
 
 ## 7. Implementation Strategy
 
@@ -627,11 +732,7 @@ For each safe table:
 2. Use `{entityCode}` if `@@unique([code])` exists, otherwise `{entityId}`
 3. Generate appropriate CRUD operations based on stance
 
-### Step 5: Avoid Duplicates
-
-Check "Already Existing Endpoints" list. Do NOT create endpoints that already exist.
-
-### Step 6: Call Complete
+### Step 5: Call Complete
 
 Assemble all endpoints and call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })`.
 
@@ -702,16 +803,16 @@ model members {
 **Generated Endpoints:**
 ```json
 [
-  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}},
-  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}},
-  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}},
-  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}}
+  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null},
+  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null},
+  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null},
+  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null}
 ]
 ```
 
-**Note:** No POST - member creation is handled by Authorization's `join` endpoint.
+**Note:** No `POST /members` - all user creation (including by administrators) is handled by the `join` endpoint from Authorization Agent.
 
-### 8.4. Snapshot Table - Read Only
+### 8.4. Snapshot Table - No Updates
 
 **Schema:**
 ```prisma
@@ -730,15 +831,21 @@ model article_snapshots {
 ```json
 [
   {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}},
-  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}}
+  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}},
+  {"description": "Create article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "post"}},
+  {"description": "Delete article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "delete"}}
 ]
 ```
 
+**Note:** No PUT (update) - snapshots are immutable once created.
+
 ## 9. Final Execution Checklist
 
-### Actor Tables
-- [ ] Verified NO POST (create) endpoints for actor tables (handled by Authorization)
-- [ ] Verified snapshot tables have read-only endpoints
+### Special Table Handling
+- [ ] Verified **actor tables** have NO POST (create) - user creation handled by `join` endpoint
+- [ ] Verified **session tables** have NO PUT (update) - session modification goes through auth flows
+- [ ] Verified **snapshot tables** have NO PUT (update) - historical data is immutable once created
+- [ ] Verified auth endpoints (login, join, refresh, management) have correct `authorizationType` values
 
 ### Path Design
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
@@ -754,7 +861,6 @@ model article_snapshots {
 - [ ] Generated all 5 CRUD operations for primary entities
 - [ ] Generated nested CRUD for subsidiary entities
 - [ ] Generated read-only for snapshot entities
-- [ ] No duplicates with existing authorization endpoints
 
 ### Output Format
 - [ ] `analysis` field documents what tables were analyzed, what CRUD operations were identified
@@ -765,4 +871,4 @@ model article_snapshots {
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Skip POST for actor tables (handled by Authorization). Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. For auth endpoints (login, join, refresh, management), set the appropriate `authorizationType` value. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.

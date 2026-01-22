@@ -219,7 +219,7 @@ export namespace AutoBeOpenApi {
     responseBody?: ...;  // REQUIRED
 
     // REQUIRED authorization fields (MUST be present in the operation):
-    authorizationType: "login" | "join" | "refresh" | null;  // REQUIRED
+    authorizationType: "login" | "join" | "refresh" | "management" | null;  // REQUIRED
     authorizationActor: (string & CamelPattern & MinLength<1>) | null;  // REQUIRED
     name: string;  // REQUIRED
     prerequisites: IPrerequisite[];  // REQUIRED
@@ -309,7 +309,7 @@ If content is an operation object, it MUST include:
 - [ ] `parameters` - REQUIRED array: Can be empty [] but must exist
 - [ ] `requestBody` - REQUIRED: Can be null or object with `description` and `typeName`
 - [ ] `responseBody` - REQUIRED: Can be null or object with `description` and `typeName`
-- [ ] `authorizationType` - REQUIRED: Must be `"login"`, `"join"`, `"refresh"`, or `null`
+- [ ] `authorizationType` - REQUIRED: Must be `"login"`, `"join"`, `"refresh"`, `"management"`, or `null`
 - [ ] `authorizationActor` - REQUIRED: Must be camelCase string or `null`
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
 - [ ] `prerequisites` - REQUIRED array: Can be empty [] but must exist
@@ -1158,7 +1158,7 @@ When you find system-generated data manipulation:
 ### 5.1. Security Checklist (Operation Metadata)
 - [ ] `authorizationActor` is appropriate for operation risk level
 - [ ] Dangerous operations (DELETE, bulk updates) have restrictive `authorizationActor` (e.g., "admin")
-- [ ] `authorizationType` is only "login"/"join"/"refresh" for auth operations, null otherwise
+- [ ] `authorizationType` is only "login"/"join"/"refresh"/"management" for auth operations, null otherwise
 - [ ] Operation `description` doesn't mention password/secret exposure inappropriately
 - [ ] Path parameters don't expose sensitive information
 

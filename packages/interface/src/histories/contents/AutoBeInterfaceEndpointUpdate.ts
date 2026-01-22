@@ -1,4 +1,7 @@
+import { tags } from "typia";
+
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
+import { CamelCasePattern } from "../../typings/CamelCasePattern";
 
 /**
  * Request to update an existing endpoint.
@@ -14,7 +17,8 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * @author Michael
  * @author Samchon
  */
-export interface AutoBeInterfaceEndpointUpdate {
+export interface AutoBeInterfaceEndpointUpdate
+  extends Pick<AutoBeOpenApi.IOperation, "authorizationType"> {
   /** Type discriminator indicating this is an update operation. */
   type: "update";
 
@@ -47,4 +51,12 @@ export interface AutoBeInterfaceEndpointUpdate {
    * Functional description of the endpoint's purpose.
    */
   description: string;
+
+  /**
+   * Authorization actors required to access this endpoint.
+   *
+   * Set to empty array `[]` for public endpoints.
+   * Set to array with actor strings for actor-restricted endpoints.
+   */
+  authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
 }

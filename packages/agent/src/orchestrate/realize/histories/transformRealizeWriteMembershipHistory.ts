@@ -8,7 +8,12 @@ export const transformRealizeWriteMembershipHistory = (
   operation: AutoBeOpenApi.IOperation,
   payload: Record<string, string>,
 ): Array<IAgenticaHistoryJson.ISystemMessage> => {
-  if (operation.authorizationType === null) return [];
+  if (
+    operation.authorizationType === null ||
+    operation.authorizationType === "management"
+  )
+    return [];
+
   const text: string = PROMPTS[operation.authorizationType].replace(
     "{{PAYLOAD}}",
     JSON.stringify(payload),

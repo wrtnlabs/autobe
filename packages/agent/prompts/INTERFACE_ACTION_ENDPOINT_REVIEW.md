@@ -35,8 +35,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Failing to call the purpose function wastes all prior work
 
 **AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
-- `create`: Add endpoint with `endpoint`, `description`, and `reason`
-- `update`: Modify endpoint with `original`, `updated`, `description`, and `reason`
+- `create`: Add endpoint with `endpoint`, `description`, `authorizationType`, `authorizationActors`, and `reason`
+- `update`: Modify endpoint with `original`, `updated`, `description`, `authorizationType`, `authorizationActors`, and `reason`
 - `erase`: Remove endpoint with `endpoint` and `reason`
 
 **ABSOLUTE PROHIBITIONS**:
@@ -375,14 +375,18 @@ process({
         reason: "Converting singular 'report' to plural 'reports'.",
         original: { path: "/report/revenue/summary", method: "get" },
         updated: { path: "/reports/revenue/summary", method: "get" },
-        description: "Get revenue summary report."
+        description: "Get revenue summary report.",
+        authorizationType: null,
+        authorizationActors: ["admin"]
       },
       {
         type: "update",
         reason: "Converting singular segments to plural: analytic→analytics, customer→customers.",
         original: { path: "/analytic/customer/behavior", method: "patch" },
         updated: { path: "/analytics/customers/behavior", method: "patch" },
-        description: "Analyze customer behavior patterns."
+        description: "Analyze customer behavior patterns.",
+        authorizationType: null,
+        authorizationActors: ["admin", "analyst"]
       }
     ],
     review: "Fixed 4 singular/plural issues. Erased 1 duplicate singular form. Updated 3 singular paths to plural."
@@ -472,9 +476,6 @@ You receive context about the specific group you're reviewing:
 **Base CRUD Endpoints (Already Exist)**
 - Endpoints created by Base Endpoint Generator for all groups
 - Do NOT create action endpoints that have exact (path + method) match
-
-**Authorization Endpoints (Already Exist)**
-- Login, join, refresh operations that should not be duplicated
 
 **Database Schema Information**
 - Database models - check if action endpoint conflicts with existing tables
@@ -690,7 +691,9 @@ process({
         reason: "Converting camelCase to hierarchical structure.",
         original: { path: "/statistics/salesByMonth", method: "get" },
         updated: { path: "/statistics/sales/monthly", method: "get" },
-        description: "Get monthly sales statistics."
+        description: "Get monthly sales statistics.",
+        authorizationType: null,
+        authorizationActors: ["admin"]
       },
       // Fix HTTP method
       {
@@ -698,14 +701,18 @@ process({
         reason: "Global search requires complex request body. PATCH is appropriate.",
         original: { path: "/search/global", method: "get" },
         updated: { path: "/search/global", method: "patch" },
-        description: "Search across all entities with complex filters."
+        description: "Search across all entities with complex filters.",
+        authorizationType: null,
+        authorizationActors: []
       },
       // Create missing endpoint from requirements
       {
         type: "create",
         reason: "Requirements specify 'Administrators SHALL view monthly sales trends'.",
         endpoint: { path: "/reports/monthly/summary", method: "get" },
-        description: "Get monthly summary report for trend analysis."
+        description: "Get monthly summary report for trend analysis.",
+        authorizationType: null,
+        authorizationActors: ["admin"]
       }
     ],
     review: "Reviewed 12 action endpoints. Erased 4 unjustified endpoints (no requirements backing). Updated 3 paths from camelCase to hierarchical. Final count: 8 action endpoints, all justified by requirements."
@@ -714,9 +721,62 @@ process({
 ```
 
 **Action Types**:
-- `create`: Add endpoint with `type`, `reason` (why adding), `endpoint`, and `description` (what it does)
-- `update`: Fix path/method with `type`, `reason` (why changing), `original`, `updated`, and `description` (what it does)
-- `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
+- `create`: Add endpoint with `type`, `reason`, `endpoint`, `description`, `authorizationType`, and `authorizationActors`
+- `update`: Fix path/method with `type`, `reason`, `original`, `updated`, `description`, `authorizationType`, and `authorizationActors`
+- `erase`: Remove endpoint with `type`, `reason`, and `endpoint`
+
+### 5.3. Authorization Fields in Revises
+
+**IMPORTANT**: For `create` and `update` actions, you MUST include authorization fields:
+
+- **`authorizationType`**: Identifies special authorization endpoints. **Set based on path pattern:**
+
+  | Path Pattern | `authorizationType` |
+  |--------------|---------------------|
+  | `*/login` | `"login"` |
+  | `*/join` | `"join"` |
+  | `*/refresh` | `"refresh"` |
+  | Other `/auth/*` paths (logout, password, verify, 2fa, oauth, me, sessions) | `"management"` |
+  | All other paths | `null` |
+
+- **`authorizationActors`**: Array of actor names (camelCase)
+  - Empty array `[]`: Public endpoint (no authentication required)
+  - Single actor `["admin"]`: Admin-only endpoint
+  - Multiple actors `["admin", "seller"]`: Multiple actors can access (creates separate endpoints per actor)
+
+**Examples**:
+```typescript
+// Public analytics endpoint
+{
+  type: "create",
+  reason: "Requirements specify public access to statistics.",
+  endpoint: { path: "/statistics/overview", method: "get" },
+  description: "Public statistics overview.",
+  authorizationType: null,
+  authorizationActors: []
+}
+
+// Admin-only dashboard
+{
+  type: "update",
+  reason: "Dashboard should be admin-only.",
+  original: { path: "/dashboard/overview", method: "get" },
+  updated: { path: "/dashboard/overview", method: "get" },
+  description: "Admin dashboard overview.",
+  authorizationType: null,
+  authorizationActors: ["admin"]
+}
+
+// Multi-actor endpoint (seller and admin)
+{
+  type: "create",
+  reason: "Both sellers and admins need access to sales reports.",
+  endpoint: { path: "/reports/sales", method: "patch" },
+  description: "Sales report with filtering.",
+  authorizationType: null,
+  authorizationActors: ["admin", "seller"]
+}
+```
 
 ### 5.2. No Modifications Needed
 

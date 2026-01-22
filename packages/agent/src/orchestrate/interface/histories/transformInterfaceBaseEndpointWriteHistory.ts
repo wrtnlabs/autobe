@@ -1,4 +1,4 @@
-import { AutoBeInterfaceGroup, AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -10,7 +10,6 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformInterfaceBaseEndpointWriteHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
-  authorizations: AutoBeOpenApi.IOperation[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -49,21 +48,6 @@ export const transformInterfaceBaseEndpointWriteHistory = (props: {
         follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
-
-        ## Authorization Endpoints (Reference - Already Exist)
-
-        These authorization endpoints already exist. Do NOT create similar endpoints:
-
-        \`\`\`json
-        ${JSON.stringify(
-          props.authorizations.map((op) => ({
-            path: op.path,
-            method: op.method,
-            name: op.name,
-            summary: StringUtil.summary(op.description),
-          })),
-        )}
-        \`\`\`
 
         ## Target Group for Design (YOUR TASK)
 

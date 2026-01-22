@@ -156,6 +156,8 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
   }): void => {
     type AuthorizaationType = AutoBeOpenApi.IOperation["authorizationType"];
     for (const type of typia.misc.literals<AuthorizaationType>()) {
+      // Skip null and management - these are handled by Base/Action Endpoint generators
+      if (type === null || type === "management") continue;
       if (props.actor === "guest" && type === "login") continue;
       const count: number = props.operations.filter(
         (o) => o.authorizationType === type,

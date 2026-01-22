@@ -1,7 +1,6 @@
 import {
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceGroup,
-  AutoBeOpenApi,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -19,7 +18,6 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
     | "previousInterfaceOperations"
   >;
   designs: AutoBeInterfaceEndpointDesign[];
-  authorizations: AutoBeOpenApi.IOperation[];
   group: AutoBeInterfaceGroup;
 }): IAutoBeOrchestrateHistory => {
   return {
@@ -41,21 +39,6 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         id: v7(),
         type: "assistantMessage",
         text: StringUtil.trim`
-        ## Authorization Endpoints (Reference - Already Exist)
-
-        These authorization endpoints already exist. For reference only:
-
-        \`\`\`json
-        ${JSON.stringify(
-          props.authorizations.map((op) => ({
-            path: op.path,
-            method: op.method,
-          })),
-          null,
-          2,
-        )}
-        \`\`\`
-
         ## Target Group
 
         You are reviewing endpoints for the **${props.group.name}** group.
@@ -68,7 +51,7 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         ⚠️ CRITICAL: These are the ONLY endpoints you can review.
 
         You can ONLY create new endpoints, update these endpoints, or erase these endpoints.
-        
+
         DO NOT reference any endpoint that is not listed here.
 
         \`\`\`json
