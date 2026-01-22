@@ -166,7 +166,7 @@ async function process(
                   .filter((it) => it !== "")
                   .join("/"),
               authorizationActor: null,
-              authorizationType: props.design.authorizationType,
+              authorizationType: null,
               prerequisites: [],
             } satisfies AutoBeOpenApi.IOperation,
           ]
@@ -180,7 +180,7 @@ async function process(
                     .filter((it) => it !== "")
                     .join("/"),
                 authorizationActor: actor,
-                authorizationType: props.design.authorizationType,
+                authorizationType: null,
                 prerequisites: [],
               }) satisfies AutoBeOpenApi.IOperation,
           );

@@ -75,19 +75,19 @@ export const orchestrateInterfaceEndpointOverall = async (
           promptCacheKey: promptCacheKey + "_review",
         })) {
           if (revise.type === "create")
-            dict.set(revise.endpoint, {
-              endpoint: revise.endpoint,
-              description: revise.description,
-              authorizationType: revise.authorizationType,
-              authorizationActors: revise.authorizationActors,
+            dict.set(revise.design.endpoint, {
+              endpoint: revise.design.endpoint,
+              description: revise.design.description,
+              authorizationType: revise.design.authorizationType,
+              authorizationActors: revise.design.authorizationActors,
             });
           else if (revise.type === "update") {
             dict.erase(revise.original);
-            dict.set(revise.updated, {
-              endpoint: revise.updated,
-              description: revise.description,
-              authorizationType: revise.authorizationType,
-              authorizationActors: revise.authorizationActors,
+            dict.set(revise.updated.endpoint, {
+              endpoint: revise.updated.endpoint,
+              description: revise.updated.description,
+              authorizationType: revise.updated.authorizationType,
+              authorizationActors: revise.updated.authorizationActors,
             });
           } else if (revise.type === "erase") dict.erase(revise.endpoint);
           else revise satisfies never;

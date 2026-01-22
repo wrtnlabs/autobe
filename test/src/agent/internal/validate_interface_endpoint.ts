@@ -4,32 +4,24 @@ import { orchestrateInterfaceBaseEndpoint } from "@autobe/agent/src/orchestrate/
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
-  AutoBeInterfaceAuthorization,
+  AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceGroupEvent,
-  AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 
-import { validate_interface_authorization } from "./validate_interface_authorization";
 import { validate_interface_group } from "./validate_interface_group";
 
 export const validate_interface_endpoint = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<AutoBeOpenApi.IEndpoint[]> => {
+}): Promise<AutoBeInterfaceEndpointDesign[]> => {
   const group: AutoBeInterfaceGroupEvent =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
       file: "interface.group.json",
     })) ?? (await validate_interface_group(props));
-  const authorizations: AutoBeInterfaceAuthorization[] =
-    (await AutoBeExampleStorage.load({
-      vendor: props.vendor,
-      project: props.project,
-      file: "interface.authorization.json",
-    })) ?? (await validate_interface_authorization(props));
 
   const progress: AutoBeProgressEventBase = {
     completed: 0,
@@ -39,24 +31,22 @@ export const validate_interface_endpoint = async (props: {
     completed: 0,
     total: group.groups.length * 2,
   };
-  const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
+  const baseEndpoints: AutoBeInterfaceEndpointDesign[] =
     await orchestrateInterfaceBaseEndpoint(props.agent.getContext(), {
       instruction: "",
       groups: group.groups,
-      authorizations: authorizations.map((a) => a.operations).flat(),
       progress,
       reviewProgress,
     });
-  const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
+  const actionEndpoints: AutoBeInterfaceEndpointDesign[] =
     await orchestrateInterfaceActionEndpoint(props.agent.getContext(), {
       instruction: "",
       groups: group.groups,
-      authorizations: authorizations.map((a) => a.operations).flat(),
       baseEndpoints,
       progress,
       reviewProgress,
     });
-  const endpoints: AutoBeOpenApi.IEndpoint[] = [
+  const endpoints: AutoBeInterfaceEndpointDesign[] = [
     ...baseEndpoints,
     ...actionEndpoints,
   ];
