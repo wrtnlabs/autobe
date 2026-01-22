@@ -187,6 +187,10 @@ const createController = (props: {
       },
     }),
   );
+  AutoBeInterfaceEndpointProgrammer.fixApplication({
+    application,
+    actors: props.actors,
+  });
 
   return {
     protocol: "class",
