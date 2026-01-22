@@ -93,31 +93,23 @@ export const orchestrateInterfaceEndpointReview = async (
     if (pointer.value === null) return out(result)(null);
 
     // Filter authorization actors and exclude auth-generated endpoints
-    const actors = ctx.state().analyze?.actors ?? [];
-    const designs = pointer.value.revises
-      .filter((r) => r.type !== "erase")
-      .map((r) => (r.type === "create" ? r.design : r.updated));
-    const filteredDesignSet = new Set(
-      AutoBeInterfaceEndpointProgrammer.filterDesigns({
-        kind: props.programmer.kind,
-        designs,
-        actors,
-      }),
-    );
-    const filteredRevises = pointer.value.revises.filter((r) => {
-      if (r.type === "erase") return true;
-      const design = r.type === "create" ? r.design : r.updated;
-      return filteredDesignSet.has(design);
-    });
-
-    // Log endpoint review results
-    console.log(JSON.stringify({
-      type: "endpoint-review",
-      kind: props.programmer.kind,
-      group: props.group.name,
-      revises: pointer.value.revises,
-      filteredRevises,
-    }, null, 2));
+    const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+    const revises: AutoBeInterfaceEndpointRevise[] =
+      pointer.value.revises.filter((r) =>
+        r.type === "create"
+          ? AutoBeInterfaceEndpointProgrammer.filter({
+              kind: props.programmer.kind,
+              design: r.design,
+              actors,
+            })
+          : r.type === "update"
+            ? AutoBeInterfaceEndpointProgrammer.filter({
+                kind: props.programmer.kind,
+                design: r.updated,
+                actors,
+              })
+            : true,
+      );
 
     ctx.dispatch({
       id: v7(),
@@ -126,7 +118,7 @@ export const orchestrateInterfaceEndpointReview = async (
       group: props.group.name,
       designs: props.designs,
       review: pointer.value.review,
-      revises: filteredRevises,
+      revises,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       completed: ++props.progress.completed,
@@ -134,7 +126,7 @@ export const orchestrateInterfaceEndpointReview = async (
       metric: result.metric,
       tokenUsage: result.tokenUsage,
     } satisfies AutoBeInterfaceEndpointReviewEvent);
-    return out(result)(filteredRevises);
+    return out(result)(revises);
   });
 };
 

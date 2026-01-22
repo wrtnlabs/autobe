@@ -14,38 +14,36 @@ import typia from "typia";
 export namespace AutoBeInterfaceEndpointProgrammer {
   /**
    * Filter endpoint designs:
-   * - For base: Remove guest actors and login/join/refresh/session authorizationType
-   * - For action: Remove all non-null authorizationType (action endpoints must be null only)
+   *
+   * - For base: Remove guest actors and login/join/refresh/session
+   *   authorizationType
+   * - For action: Remove all non-null authorizationType (action endpoints must be
+   *   null only)
    */
-  export const filterDesigns = (props: {
+  export const filter = (props: {
     kind: "base" | "action";
-    designs: AutoBeInterfaceEndpointDesign[];
+    design: AutoBeInterfaceEndpointDesign;
     actors: AutoBeAnalyzeActor[];
-  }): AutoBeInterfaceEndpointDesign[] =>
-    props.designs.filter((design) => {
-      // Action endpoints: only allow authorizationType: null
-      if (props.kind === "action") {
-        return design.authorizationType === null;
-      }
+  }): boolean => {
+    // Action endpoints: only allow authorizationType: null
+    if (props.kind === "action") {
+      return props.design.authorizationType === null;
+    }
 
-      // Base endpoints: remove guest actors and specific auth types
-      const hasGuestActor = design.authorizationActors.some((actorName) => {
-        const actor = props.actors.find((a) => a.name === actorName);
-        return actor?.kind === "guest";
-      });
-      if (hasGuestActor) return false;
-
-      const authType = design.authorizationType;
-      if (
-        authType === "login" ||
-        authType === "join" ||
-        authType === "refresh" ||
-        authType === "session"
-      )
-        return false;
-
-      return true;
-    });
+    // Base endpoints: remove guest actors and specific auth types
+    props.design.authorizationActors = props.design.authorizationActors.filter(
+      (actorName) => actorName !== "guest",
+    );
+    if (props.design.authorizationActors.length === 0) return false;
+    else if (
+      props.design.authorizationType === "login" ||
+      props.design.authorizationType === "join" ||
+      props.design.authorizationType === "refresh" ||
+      props.design.authorizationType === "session"
+    )
+      return false;
+    return true;
+  };
 
   export const fixApplication = (props: {
     application: ILlmApplication;
@@ -86,7 +84,7 @@ export namespace AutoBeInterfaceEndpointProgrammer {
       if (props.actors.find((actor) => actor.name === actorName) === undefined)
         props.errors.push({
           path: `${props.path}.authorizationActors[${i}]`,
-          expected: `null | ${props.actors.map((a) => JSON.stringify(a.name)).join(" | ")}`,
+          expected: props.actors.map((a) => JSON.stringify(a.name)).join(" | "),
           value: actorName,
           description: StringUtil.trim`
             Actor "${actorName}" is not defined in the roles list.

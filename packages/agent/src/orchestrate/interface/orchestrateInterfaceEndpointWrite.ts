@@ -102,31 +102,21 @@ export const orchestrateInterfaceEndpointWrite = async (
     });
     if (pointer.value === null) return out(result)(null);
 
+    const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
       pointer.value.designs.map((c) => new Pair(c.endpoint, c)),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
-      .map((it) => it.second);
-
-    // Filter authorization actors and exclude auth-generated endpoints
-    const actors = ctx.state().analyze?.actors ?? [];
-    const filteredDesigns = AutoBeInterfaceEndpointProgrammer.filterDesigns({
-      kind: props.programmer.kind,
-      designs,
-      actors,
-    });
-
-    // Log endpoint write results
-    console.log(JSON.stringify({
-      type: "endpoint-write",
-      kind: props.programmer.kind,
-      group: props.group.name,
-      designs,
-      filteredDesigns,
-    }, null, 2));
-
+      .map((it) => it.second)
+      .filter((design) =>
+        AutoBeInterfaceEndpointProgrammer.filter({
+          kind: props.programmer.kind,
+          design,
+          actors,
+        }),
+      );
     ctx.dispatch({
       id: v7(),
       type: SOURCE,
@@ -134,7 +124,7 @@ export const orchestrateInterfaceEndpointWrite = async (
       group: props.group.name,
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
-      designs: filteredDesigns,
+      designs,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: start.toISOString(),
@@ -142,7 +132,7 @@ export const orchestrateInterfaceEndpointWrite = async (
       completed: ++props.progress.completed,
       total: props.progress.total,
     } satisfies AutoBeInterfaceEndpointEvent);
-    return out(result)(filteredDesigns);
+    return out(result)(designs);
   });
 };
 
