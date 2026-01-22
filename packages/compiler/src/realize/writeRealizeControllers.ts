@@ -38,13 +38,24 @@ export const writeRealizeControllers = async (
           );
         if (func === undefined || operate === undefined) return method; // unreachable
 
+        // Skip decorator for public auth operations (login, join, refresh)
+        // These endpoints must be publicly accessible even if authorizationActor is set
+        const isPublicAuthOperation =
+          operate.authorizationType === "login" ||
+          operate.authorizationType === "join" ||
+          operate.authorizationType === "refresh";
+
         const authorization: AutoBeRealizeAuthorization | undefined =
-          operate.authorizationActor
+          operate.authorizationActor && !isPublicAuthOperation
             ? props.authorizations.find(
                 (d) => d.actor.name === operate.authorizationActor,
               )
             : undefined;
-        if (operate.authorizationActor && authorization === undefined)
+        if (
+          operate.authorizationActor &&
+          !isPublicAuthOperation &&
+          authorization === undefined
+        )
           return method; // unreachable
 
         ctx.importer.external({
@@ -56,8 +67,11 @@ export const writeRealizeControllers = async (
           name: func.name,
         });
 
+        // Don't pass auth parameter for public auth operations
         const inputArguments: string[] = [
-          ...(operate.authorizationActor ? [operate.authorizationActor] : []),
+          ...(operate.authorizationActor && !isPublicAuthOperation
+            ? [operate.authorizationActor]
+            : []),
           ...ctx.route.parameters.map((p) => p.name),
           ...(ctx.route.query ? [ctx.route.query.name] : []),
           ...(ctx.route.body ? [ctx.route.body.name] : []),

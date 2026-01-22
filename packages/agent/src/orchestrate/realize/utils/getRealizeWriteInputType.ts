@@ -1,6 +1,8 @@
 import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 
+import { AutoBeRealizeOperationProgrammer } from "../programmers/AutoBeRealizeOperationProgrammer";
+
 /**
  * Generate TypeScript type definition string for provider function props
  *
@@ -36,7 +38,11 @@ export function getRealizeWriteInputType(
   const functionParameterFields: string[] = [];
 
   // Add authentication field (user/admin/member) if endpoint requires auth
-  const hasAuthentication = authorization && operation.authorizationActor;
+  // Skip for public auth operations (login, join, refresh) - they must be publicly accessible
+  const hasAuthentication =
+    authorization &&
+    operation.authorizationActor &&
+    !AutoBeRealizeOperationProgrammer.isPublicAuthOperation(operation);
   if (hasAuthentication) {
     const authFieldName = operation.authorizationActor;
     const authFieldType = authorization.payload.name;

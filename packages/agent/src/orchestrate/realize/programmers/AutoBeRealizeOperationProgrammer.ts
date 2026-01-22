@@ -14,6 +14,20 @@ import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgra
 import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerProgrammer";
 
 export namespace AutoBeRealizeOperationProgrammer {
+  /**
+   * Check if the operation is a public auth operation (login, join, refresh).
+   * These operations must be publicly accessible and should not have auth decorators.
+   */
+  export function isPublicAuthOperation(
+    operation: AutoBeOpenApi.IOperation,
+  ): boolean {
+    return (
+      operation.authorizationType === "login" ||
+      operation.authorizationType === "join" ||
+      operation.authorizationType === "refresh"
+    );
+  }
+
   export function getName(operation: AutoBeOpenApi.IOperation): string {
     return getFunctionName(operation);
   }
@@ -22,10 +36,13 @@ export namespace AutoBeRealizeOperationProgrammer {
     authorizations: AutoBeRealizeAuthorization[];
     operation: AutoBeOpenApi.IOperation;
   }): IAutoBeRealizeScenarioResult {
+    // Skip authorization for public auth operations (login, join, refresh)
     const authorization: AutoBeRealizeAuthorization | undefined =
-      props.authorizations.find(
-        (el) => el.actor.name === props.operation.authorizationActor,
-      );
+      isPublicAuthOperation(props.operation)
+        ? undefined
+        : props.authorizations.find(
+            (el) => el.actor.name === props.operation.authorizationActor,
+          );
     const functionName: string = getFunctionName(props.operation);
     return {
       operation: props.operation,
@@ -120,14 +137,18 @@ export namespace AutoBeRealizeOperationProgrammer {
       authorizations: props.authorizations,
       operation: props.operation,
     });
+    // Skip authorization for public auth operations (login, join, refresh)
+    const authorization: AutoBeRealizeAuthorization | null =
+      isPublicAuthOperation(props.operation)
+        ? null
+        : (props.authorizations.find(
+            (a) => a.actor.name === props.operation.authorizationActor,
+          ) ?? null);
     return writeTemplateCode({
       scenario,
       operation: props.operation,
       schemas: props.schemas,
-      authorization:
-        props.authorizations.find(
-          (a) => a.actor.name === props.operation.authorizationActor,
-        ) ?? null,
+      authorization,
     });
   }
 
